@@ -50,7 +50,12 @@ export async function createProposal(args, cfg = cantonConfig()) {
   const lens = args.lens || (await allocateParty(cfg, `Lens-${tag}`));
   const owner = args.owner || (await allocateParty(cfg, `Owner-${tag}`));
   const buyer = args.buyer || (await allocateParty(cfg, `Buyer-${tag}`));
-  for (const p of [lens, owner, buyer]) await grantActAs(cfg, cfg.userId, p);
+  // Grant actAs for parties we host. A party supplied from another participant
+  // (e.g. a self-custody Loop wallet owner) can't be granted here and doesn't
+  // need to be — it's only an observer; it acts via its own wallet. Best-effort.
+  for (const p of [lens, owner, buyer]) {
+    try { await grantActAs(cfg, cfg.userId, p); } catch (_) { /* not hosted by us */ }
+  }
 
   await createContract(cfg, { templateId: templateId(cfg, 'OwnershipCertificate'), args: { lens, owner, parcelId }, actAs: lens });
   const certs = await activeContracts(cfg, lens, templateId(cfg, 'OwnershipCertificate'));

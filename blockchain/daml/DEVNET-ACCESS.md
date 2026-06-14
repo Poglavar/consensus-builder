@@ -82,6 +82,25 @@ curl "https://devnet.ccview.io/api/v4/parties/<party>" -H "X-API-Key: $CCVIEW_AP
   token-standard interface calls (or the Canton Wallet SDK). Since both sender and
   receiver can be parties we host (actable by user 6), no external signing needed.
 
+### Spike findings (Canton Coin / cross-participant)
+
+- ✅ **On-ledger token control confirmed.** Querying the `Holding` interface
+  (`…:Splice.Api.Token.HoldingV1:Holding`) for our validator party via
+  `/v2/state/active-contracts` returns holdings (incl. a `USDCx` test token, amount
+  200, and a `faucet-usdcx-mint` workflow) — we can see/exercise holdings with the
+  M2M token.
+- ⛔ **Custom templates can't cross to a Loop wallet party.** Creating a
+  `PurchaseProposal` with a Loop-wallet party (different participant) as observer
+  fails with `PACKAGE_SELECTION_FAILED` — the other participant hasn't **vetted**
+  `consensus-builder-daml`, and managed Loop wallets won't vet arbitrary packages.
+  → App contracts stay custodial on our validator; the only cross-participant
+  vocabulary with external wallets is the **token standard (Canton Coin)**.
+- ⛔ **Blocker for real transfers:** the Amulet **registry/scan URL** for the 5n
+  sandbox is not in the creds and not discoverable by hostname guessing
+  (`scan.*.fivenorth.io` don't resolve; ledger host has no scan proxy). The
+  token-standard transfer needs it to fetch the `TransferFactory`. **Ask the
+  organizer for the scan/registry URL.**
+
 ## Verified so far — FULL FLOW on live DevNet ✅
 
 The spike (`spike/json-ledger-spike.mjs`) ran the **entire purchase flow** against
