@@ -119,11 +119,40 @@
 
     window.CantonMode = { isActive, getParty, setParty, activate, deactivate, openIdentityPicker, hint };
 
-    // Routing bridge — create/accept are wired in P2/P3. Throw loudly so we never
-    // silently fall through to an EVM mint while Canton mode is active.
+    // Routing bridge. mintProposal creates a Canton proposal via the backend
+    // (P2). Accept is wired in P3. Shapes mirror the EVM/Solana bridges so the
+    // existing create flow consumes the result unchanged.
     window.CantonProposalChainBridge = {
         isSupported: () => true,
-        mintProposal: async () => { throw new Error('Canton proposal creation is coming in P2 — not wired yet.'); },
+        // options: { parcelIds: [string], price: number, imageURI?: string }
+        mintProposal: async (options = {}) => {
+            const buyer = getParty();
+            if (!buyer) throw new Error('Pick a Canton identity first (network pill → Canton).');
+            const ids = options.parcelIds || [];
+            const parcelId = Array.isArray(ids) ? ids[0] : ids;
+            if (!parcelId) throw new Error('Canton proposal needs a parcel.');
+            const price = String(options.price != null ? options.price : '');
+            if (!(parseFloat(price) > 0)) throw new Error('Canton purchase proposals need a positive offer amount.');
+
+            const res = await fetch(`${apiBase()}/canton/proposals`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parcelId, price, buyer }),
+            });
+            const j = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+            // Remember the auto-allocated owner/lens so they can be picked as
+            // identities (e.g. to Accept as the owner in P3), and refresh map counts.
+            rememberParty(j.owner, 'owner'); rememberParty(j.lens, 'lens');
+            try { window.CantonCounts && window.CantonCounts.refresh(); } catch (_) { }
+
+            return {
+                transactionHash: j.proposalContractId || 'canton',
+                proposalId: j.proposalContractId || null,
+                chainId: 'canton-devnet',
+                contractAddress: 'canton',
+                explorerUrl: '',
+            };
+        },
         acceptProposal: async () => { throw new Error('Canton accept is coming in P3 — not wired yet.'); },
         contributeToProposal: async () => { throw new Error('Canton contributions are not supported.'); },
         withdrawAcceptance: async () => { throw new Error('Canton withdrawal is coming later — not wired yet.'); },
