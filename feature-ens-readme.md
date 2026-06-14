@@ -9,7 +9,8 @@ Every parcel, every minted proposal, and the NFT contracts now have **human-read
 ENS names** under `urbangametheory.eth`. A name like
 `us-ny-1234.parcels.urbangametheory.eth` is a real mainnet ENS name you can paste into
 any wallet or explorer — and resolving it **deep-links into the app** and selects that
-parcel on the map.
+parcel on the map. The name is also shown right in the app: a compact, click-to-copy
+ENS line on the parcel info panel and on every minted-proposal card.
 
 The clever part: there are **40,000+ parcels** and a growing number of proposals, and
 **none of them are individually registered on-chain**. Instead one wildcard name resolves

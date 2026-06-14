@@ -353,6 +353,7 @@ The L1 resolver + contract naming (mainnet) and the optional Durin phase remain.
 | CCIP-Read gateway | `backend/ens/gateway.js`, `backend/routes/ens.js`; wired in `backend/index.js` | `GET /ens/{sender}/{data}.json`; signs ENS `SignatureVerifier` responses. `text(url/description/geo/avatar)`, `addr`, apex. 11 tests incl. recovered-signer checks. Dark (503) until `ENS_GATEWAY_SIGNER_KEY` set. |
 | Mapping table | `backend/ens/parcel-ens-ddl.sql` | `parcel_ens(slug PK, parcel_id, city_code, …)`; geo/avatar/token columns nullable for later enrichment. |
 | Populate | `backend/ens/populate-parcel-ens.js` | CLI, restartable, progress/ETA. NYC source live (42,120 rows, 0 collisions). Add cities via the `CITY_SOURCES` registry. |
+| In-app name display | `frontend/js/ens/ens-name.js`; `frontend/js/parcels/ui/parcel-panel.js`; `frontend/js/minted-proposals.js`; `.ens-name-*` in `frontend/css/utilities.css` | Compact, click-to-copy ENS line in the parcel info panel (`<slug>.parcels.…`) and on minted-proposal cards (`<id>.proposals.…`). Value ellipsis-truncates (`max-width:100%`) so it never overflows tight 300–400px panels. Helpers mirror the backend slug. |
 
 Dependency added: **`ethers@^6`** in `backend/`.
 
@@ -416,8 +417,9 @@ The gateway is namespace-driven (`backend/routes/ens.js` defines parcels + propo
 served by the same resolver contract.
 
 **Subnames wired (done).** `parcels.urbangametheory.eth` and `proposals.urbangametheory.eth`
-resolvers both point at the OffchainResolver `0x874a52…` (owner `0x15731543…`, via
-`scripts/ens-set-subname-resolvers.mjs`). Verified end-to-end from a mainnet client.
+resolvers both point at the active hybrid OffchainResolver `0x72684C772d8Db1D8A6Db00B511ab9dA02bfB1a4B`
+(set by the name owner via `scripts/ens-set-subname-resolvers.mjs`) — so the on-chain apex records
+and the gateway-served children both resolve. Verified end-to-end from a mainnet client.
 
 **Named plans (done & live).** Globally-unique, mutable names for a set of proposals, resolvable as
 `<name>.proposals.urbangametheory.eth` → `/proposals/<ids>`:
@@ -435,9 +437,10 @@ resolver (no gateway), `scripts/ens-set-contract-names.mjs`:
   coinType is a possible refinement). Resolve via standard `resolveName`.
 
 **Deployed:** backend `2026-nyc-ens` on `do` (gateway + `/plans`, `parcel_ens` + `ens_plan` on prod
-DB); frontend on krpa (deep-link route, zoom fix, named-plan UI). Parcel + proposal + plan names all
-verified resolving end-to-end on mainnet.
+DB); frontend on krpa (deep-link route, zoom fix, named-plan UI, and the in-app ENS-name display on
+the parcel panel + minted-proposal cards). Parcel + proposal + plan names all verified resolving
+end-to-end on mainnet, and shown (copyable) in the UI. The share-modal strings are localized
+(en/hr/sr/es).
 
-**Later:** i18n for the new share-modal strings (currently English fallbacks); `ownerOf` `addr`
-records (confirm ParcelNFT chain); populate other cities; named-plan abuse controls; optional Durin
-L2 NFTs; optional Option B (apex-on-chain hybrid resolver).
+**Later:** `ownerOf` `addr` records (confirm ParcelNFT chain); populate other cities; named-plan
+abuse controls; optional Durin L2 NFTs.
