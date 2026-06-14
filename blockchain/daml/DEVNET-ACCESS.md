@@ -55,10 +55,32 @@ purchase flow).
 
 ## CCView — data indexing APIs
 
-Canton data indexing / explorer APIs at https://docs.ccview.io. DevNet API key is
-in `spike/.env` (`CCVIEW_API_KEY`). Useful for **reading/indexing ledger data**
-(querying contracts, history) without scanning the raw Ledger API — directly
-relevant to buyer-side discovery and listing proposals.
+Canton data indexing / explorer APIs (docs at https://docs.ccview.io). Key in
+`spike/.env` (`CCVIEW_API_KEY`). **DevNet host is `https://devnet.ccview.io`** —
+the bare `ccview.io` is mainnet and rejects the devnet key with
+`API_KEY_NETWORK_MISMATCH`. Auth header: `X-API-Key`.
+
+CCView indexes Canton **Network/economic** data (Canton Coin balances, transfers,
+rewards, validators, ANS, governance) — **not** application contracts, so it can't
+list our proposals (we read those from the ledger ACS directly). It *is* the easy
+way to read **Canton Coin balances** (relevant to M4 funds).
+
+```bash
+curl "https://devnet.ccview.io/api/v4/parties/<party>" -H "X-API-Key: $CCVIEW_API_KEY"
+```
+
+### Canton Coin (M4 funds) notes
+
+- Our validator/operator party `5nsandbox-devnet-2::1220a14ca128…` (= M2M user 6's
+  primaryParty) **holds ~16.1M Canton Coin** on DevNet. We control it (user 6 can
+  actAs it), so we can fund demo buyer parties by transferring from it.
+- Canton Coin = **Amulet**, moved via the **token standard** (Holding /
+  TransferInstruction / TransferFactory). Default is a **2-step transfer**
+  (offer→accept); a **transfer pre-approval** makes it 1-step. DevNet also has a
+  **tap** faucet (`sdk.amulet.tap`) for minting test coin.
+- Integration needs the Amulet **registry/scan URL** for the 5n sandbox + the
+  token-standard interface calls (or the Canton Wallet SDK). Since both sender and
+  receiver can be parties we host (actable by user 6), no external signing needed.
 
 ## Verified so far — FULL FLOW on live DevNet ✅
 
