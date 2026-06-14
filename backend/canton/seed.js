@@ -3,16 +3,17 @@
 // IDs so they can be plugged into canton.html / the party switcher. Does NOT
 // accept, so the proposal stays active for display.
 //
-//   set -a; . ../../blockchain/daml/spike/.env; set +a
-//   DAR_PATH=../../blockchain/daml/.daml/dist/consensus-builder-daml-0.1.0.dar node backend/canton/seed.js
+//   (Canton config from backend/.env)
+//   DAR_PATH=../../blockchain/daml/.daml/dist/consensus-builder-daml-0.2.0.dar node backend/canton/seed.js
 
+import './load-env.js';
 import { readFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
 import { uploadDar, allocateParty, grantActAs, createContract, activeContracts } from './ledger.js';
 
 const main = async () => {
   const cfg = cantonConfig(process.env);
-  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('source blockchain/daml/spike/.env first');
+  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('missing CANTON_* config in backend/.env');
   const PKG = cfg.packageRef;
   const parcelId = process.env.PARCEL_ID || `PARCEL-${Date.now()}`;
   const price = process.env.PRICE || '100.0';

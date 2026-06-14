@@ -19,17 +19,17 @@ on top of this module.
 
 ## Config (env)
 
-`CANTON_LEDGER_API_URL`, `CANTON_TOKEN_URL`, `CANTON_CLIENT_ID`,
+All in **`backend/.env`** (loaded by the backend, and by the CLI scripts via
+`load-env.js`): `CANTON_LEDGER_API_URL`, `CANTON_TOKEN_URL`, `CANTON_CLIENT_ID`,
 `CANTON_CLIENT_SECRET`, `CANTON_AUDIENCE`, `CANTON_SCOPE` (default
-`daml_ledger_api`), `CANTON_USER_ID` (the Canton ledger user, e.g. `6`).
-Unprefixed names also work, so the spike's `.env` can be sourced directly.
+`daml_ledger_api`), `CANTON_USER_ID` (the Canton ledger user, e.g. `6`), plus
+`CCVIEW_API_URL` / `CCVIEW_API_KEY` for the explorer proxy.
 
 ## Verify
 
 ```bash
-cd backend/canton
-set -a; . ../../blockchain/daml/spike/.env; set +a
-export DAR_PATH=../../blockchain/daml/.daml/dist/consensus-builder-daml-0.1.0.dar  # optional
-node check.js
+# Config is read from backend/.env automatically (no sourcing needed).
+DAR_PATH=blockchain/daml/.daml/dist/consensus-builder-daml-0.2.0.dar \
+  node backend/canton/check.js   # DAR_PATH optional
 # -> CHECK OK — backend/canton module verified end-to-end on DevNet.
 ```

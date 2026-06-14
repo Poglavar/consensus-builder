@@ -2,11 +2,11 @@
 // (token.js + ledger.js), proving the reusable client works end-to-end against
 // the live 5n sandbox. Not a route — a manual verification tool.
 //
-// Run (loads the spike creds):
-//   set -a; . ../../blockchain/daml/spike/.env; set +a
+// Run (Canton config read from backend/.env):
 //   node backend/canton/check.js
 // Optionally set DAR_PATH to upload the DAR first.
 
+import './load-env.js';
 import { readFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
 import {
@@ -21,7 +21,7 @@ const log = (...a) => console.log(`[${new Date().toISOString()}]`, ...a);
 
 const main = async () => {
   const cfg = cantonConfig(env);
-  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('missing LEDGER_API_URL / USER_ID (source spike/.env)');
+  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('missing CANTON_LEDGER_API_URL / CANTON_USER_ID in backend/.env');
   log(`ledger=${cfg.ledgerApiUrl} userId=${cfg.userId} pkg=${PKG}`);
 
   if (env.DAR_PATH) {

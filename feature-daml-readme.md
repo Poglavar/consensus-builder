@@ -110,34 +110,29 @@ scope (a Loop-wallet party on another participant can't hold our contracts).
 # 1. (once) build the DAR
 cd blockchain/daml && daml build
 
-# 2. start the dev server with DevNet creds (no DB needed)
-cd ../../
-set -a; . blockchain/daml/spike/.env; set +a
-node backend/canton/dev-serve.js          # → http://localhost:3000/canton.html
+# 2. start the dev server (Canton creds read from backend/.env; no DB needed)
+node backend/canton/dev-serve.js          # prints a free-port URL (e.g. :62025)
 ```
 
-Open the page, click **Create proposal**, then use **View as** to switch
-perspectives and **Accept** as the owner. (The DAR must be deployed to the
-validator once — `seed.js`/`check.js` upload it via `DAR_PATH`, or deploy via Seaport.)
+Open `…/index.html` → network pill → **Canton** → pick an identity → select a
+parcel → **Create proposal**. Switch identity to the **owner** to **Accept** from
+the parcel panel's "Canton proposals" section. (Standalone console: `…/canton.html`,
+kept as a backup.) The DAR is deployed once via `seed.js`/`check.js` (`DAR_PATH`) or Seaport.
 
 ## Verified against live DevNet
 
-- Auth + full flow via `blockchain/daml/spike/json-ledger-spike.mjs`.
 - Module + routes via `backend/canton/check.js` and `check-route.js`.
-- End-to-end in a real browser (create → perspectives → accept → sale).
+- The full create → perspectives → accept → sale flow, in a real browser.
 
 ## Deferred / not built
 
 - **Real money** — `price` is a Canton-Coin number; no transfer yet (M4, parked on
-  the scan/registry URL).
-- **Main-app integration** — `canton.html` is standalone; folding it into the app
-  shell is pending.
-- **Owner self-custody** — out of scope (see decisions log).
-- **Parcel→proposal discovery** — how parcels signal attached Canton proposals is
-  under discussion.
+  the validator-app / scan-registry URL).
+- **Owner self-custody** — out of scope: a Loop-wallet party can't hold our DAR
+  (`PACKAGE_SELECTION_FAILED`). See decisions log.
 
 ## See also
 
-- `feature-daml.md` — the spec + decisions log.
+- `feature-daml.md` — the spec + decisions log + integration plan (§13).
 - `blockchain/daml/DEVNET-ACCESS.md` — endpoints, auth, Canton Coin findings.
-- `blockchain/daml/spike/README.md` — the auth/API spike + runbook.
+- `backend/canton/README.md` — the server-side client + how to verify.

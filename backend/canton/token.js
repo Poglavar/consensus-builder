@@ -2,20 +2,21 @@
 // caches it until shortly before expiry. The 5n sandbox token lives ~8h; callers
 // (see ledger.js) also force-refresh on a 401. Secret stays server-side only.
 
-// Config from env. CANTON_-prefixed names win; unprefixed fall back so the same
-// vars used by the spike (.env) work for the CLI check too.
+// Config from env (CANTON_-prefixed; lives in backend/.env alongside the rest of
+// the backend config). Prefixed names avoid collisions with the backend's other
+// generic vars (CLIENT_ID, RPC_URL, …).
 export function cantonConfig(env = process.env) {
   return {
-    ledgerApiUrl: (env.CANTON_LEDGER_API_URL || env.LEDGER_API_URL || '').replace(/\/$/, ''),
-    tokenUrl: env.CANTON_TOKEN_URL || env.TOKEN_URL,
-    grantType: env.CANTON_GRANT_TYPE || env.GRANT_TYPE || 'client_credentials',
-    clientId: env.CANTON_CLIENT_ID || env.CLIENT_ID,
-    clientSecret: env.CANTON_CLIENT_SECRET || env.CLIENT_SECRET,
-    audience: env.CANTON_AUDIENCE || env.AUDIENCE,
-    scope: env.CANTON_SCOPE || env.SCOPE || 'daml_ledger_api',
-    userId: env.CANTON_USER_ID || env.USER_ID, // Canton ledger user (e.g. "6")
-    packageRef: env.CANTON_PACKAGE_REF || env.PACKAGE_REF || '#consensus-builder-daml',
-    publicParty: env.CANTON_PUBLIC_PARTY || env.PUBLIC_PARTY || '', // observer for proposal markers
+    ledgerApiUrl: (env.CANTON_LEDGER_API_URL || '').replace(/\/$/, ''),
+    tokenUrl: env.CANTON_TOKEN_URL,
+    grantType: env.CANTON_GRANT_TYPE || 'client_credentials',
+    clientId: env.CANTON_CLIENT_ID,
+    clientSecret: env.CANTON_CLIENT_SECRET,
+    audience: env.CANTON_AUDIENCE,
+    scope: env.CANTON_SCOPE || 'daml_ledger_api',
+    userId: env.CANTON_USER_ID, // Canton ledger user (e.g. "6")
+    packageRef: env.CANTON_PACKAGE_REF || '#consensus-builder-daml',
+    publicParty: env.CANTON_PUBLIC_PARTY || '', // observer for proposal markers
   };
 }
 

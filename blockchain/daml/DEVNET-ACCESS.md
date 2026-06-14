@@ -6,9 +6,9 @@ query the ACS, and stream updates **directly via API** — no Seaport browser UI
 required for ledger operations.
 
 > **Secret handling.** The OIDC **client secret is NOT in this file or in git.**
-> It lives in `spike/.env` (gitignored). Treat it like a production credential:
-> it grants validator Ledger API access. **Never ship it to the browser** — see
-> [Approach impact](#approach-impact).
+> It lives in `backend/.env` (gitignored) as `CANTON_CLIENT_SECRET`. Treat it like
+> a production credential: it grants validator Ledger API access. **Never ship it
+> to the browser** — see [Approach impact](#approach-impact).
 
 ## Endpoints
 
@@ -22,7 +22,7 @@ required for ledger operations.
 
 - **Grant:** `client_credentials`
 - **Client ID:** `validator-devnet-m2m`
-- **Client Secret:** in `spike/.env` (`CLIENT_SECRET`)
+- **Client Secret:** in `backend/.env` (`CANTON_CLIENT_SECRET`)
 - **Audience:** `validator-devnet-m2m`
 - **Scope:** `daml_ledger_api`
 - **Token TTL:** **8 hours** (`expires_in=28800`) → app must detect 401 and refresh.
@@ -49,14 +49,14 @@ wscat --connect 'wss://ledger-api.validator.devnet.sandbox.fivenorth.io/v2/state
   -s 'jwt.token.<token>' -s 'daml.ws.auth'
 ```
 
-Our `spike/json-ledger-spike.mjs` already drives this — `set -a; . ./spike/.env; set +a`
-then run it (it exchanges the token, optionally uploads the DAR, and runs the
-purchase flow).
+The server-side client (`backend/canton/`) drives all of this; `node backend/canton/check.js`
+exchanges the token, optionally uploads the DAR, and runs the full purchase flow
+(config from `backend/.env`).
 
 ## CCView — data indexing APIs
 
 Canton data indexing / explorer APIs (docs at https://docs.ccview.io). Key in
-`spike/.env` (`CCVIEW_API_KEY`). **DevNet host is `https://devnet.ccview.io`** —
+`backend/.env` (`CCVIEW_API_KEY`). **DevNet host is `https://devnet.ccview.io`** —
 the bare `ccview.io` is mainnet and rejects the devnet key with
 `API_KEY_NETWORK_MISMATCH`. Auth header: `X-API-Key`.
 
@@ -103,8 +103,8 @@ curl "https://devnet.ccview.io/api/v4/parties/<party>" -H "X-API-Key: $CCVIEW_AP
 
 ## Verified so far — FULL FLOW on live DevNet ✅
 
-The spike (`spike/json-ledger-spike.mjs`) ran the **entire purchase flow** against
-the 5n sandbox:
+The server-side client (`backend/canton/`, verified via `check.js`/`check-route.js`)
+runs the **entire purchase flow** against the 5n sandbox:
 
 - ✅ Token exchange (Authentik) → JWT, `expires_in=28800` (8h).
 - ✅ `GET /v2/state/ledger-end`, `GET /v2/parties`, `GET /v2/users`.

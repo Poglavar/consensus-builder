@@ -2,9 +2,9 @@
 // canton route on a throwaway Express app, and hits the HTTP endpoints — proving
 // the route layer (not just the module) works. No DB / full app boot needed.
 //
-//   set -a; . ../../blockchain/daml/spike/.env; set +a
-//   node backend/canton/check-route.js
+//   node backend/canton/check-route.js   (Canton config from backend/.env)
 
+import './load-env.js';
 import express from 'express';
 import { cantonConfig } from './token.js';
 import { allocateParty, grantActAs, createContract, activeContracts, exerciseChoice } from './ledger.js';
@@ -14,7 +14,7 @@ const log = (...a) => console.log(`[${new Date().toISOString()}]`, ...a);
 
 const main = async () => {
   const cfg = cantonConfig(process.env);
-  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('source blockchain/daml/spike/.env first');
+  if (!cfg.ledgerApiUrl || !cfg.userId) throw new Error('missing CANTON_* config in backend/.env');
   const PKG = cfg.packageRef;
   const parcelId = `PARCEL-${Date.now()}`;
 
