@@ -142,3 +142,22 @@ These are **machine credentials**, not a per-user wallet. That changes two thing
    True owner **self-custody** (owner's own Loop wallet on another participant,
    named as cross-participant observer over the shared synchronizer) remains the
    production direction, deferred past the hackathon MVP.
+
+## Wallets & SDKs (Loop)
+
+The **5N Loop wallet** is the self-custodial browser wallet for Canton (external
+party ids, passkey). Its dApp SDK is **`@fivenorth/loop-sdk`**
+([github](https://github.com/fivenorth-io/loop-sdk) ·
+[npm](https://www.npmjs.com/package/@fivenorth/loop-sdk)); the vendor-neutral
+standard is **`@canton-network/dapp-sdk`** (CIP-0103).
+
+- Loop **can**: `connect()` (real `party_id`), `getHolding()` (CC balance),
+  `provider.transfer(recipient, amount, instrument)` (a real **Canton Coin
+  payment** — this is the M4 piece, wallet-signed, no scan/registry URL needed),
+  `submitTransaction()` for Splice/Utility DARs.
+- Loop **cannot**: create/exercise our custom `consensus-builder-daml` contracts —
+  it "only supports Splice + Utility DARs; no plan for third-party DARs." Confirms
+  the `PACKAGE_SELECTION_FAILED` limit. So the app agreement stays custodial; Loop
+  is usable for **identity + Canton Coin payments** only.
+
+Full assessment + integration options: `feature-daml.md` §14.

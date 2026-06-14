@@ -582,3 +582,63 @@ Canton has no wallet, so identity can't come from a connected wallet. Two parts:
   current identity (details if stakeholder, "private" otherwise) + Accept.
 - **P4 — Fold the rest**: CCView + test-parties into a Canton panel; demote
   `canton.html` to a dev console.
+
+---
+
+## 14. Loop wallet SDK — integration assessment
+
+The 5N **Loop wallet SDK** (`@fivenorth/loop-sdk`,
+[github](https://github.com/fivenorth-io/loop-sdk),
+[npm](https://www.npmjs.com/package/@fivenorth/loop-sdk)) is the browser-wallet
+client we earlier said Canton "lacked". Loop is a **self-custodial** wallet
+(external party ids, passkey auth, no extension), so this is the MetaMask/Phantom
+equivalent. There's also a vendor-neutral standard, `@canton-network/dapp-sdk`
+(CIP-0103), with Loop as one adapter.
+
+### What it can do (browser dApp)
+
+- `loop.init(...)` + `loop.connect()` → user approves via Loop (QR/popup/passkey);
+  `onAccept(provider)` returns a **`provider`** with `party_id`, `public_key`, `email`.
+- `provider.getHolding()` — the user's token holdings (CC, CIP-56 tokens, LOOP, …).
+- `provider.transfer(recipient, amount, instrument?)` — **prepares + wallet-signs a
+  token transfer** (i.e. a real **Canton Coin payment**).
+- `provider.submitTransaction(cmd)` / `getActiveContracts({templateId|interfaceId})`.
+- `loop.autoConnect()` / `verifySession()` / `logout()`; server-side signing variant.
+
+### The decisive limitation
+
+> "Currently, we only support DAML transactions from the **built-in Splice DAR
+> files and Utility app DAR files. There is no plan to upload and support third
+> party DAR at this moment.**"
+
+So Loop **cannot create or exercise our custom `consensus-builder-daml` contracts**
+(`PurchaseProposal`, `Sale`, …). This is the same wall as the
+`PACKAGE_SELECTION_FAILED` finding ([§12](#12-decisions-log-build)) — now confirmed
+by the wallet vendor. Consequence: a Loop user **can't** Accept our proposal or be
+a stakeholder on it. App-contract self-custody via Loop is **not** possible.
+
+### What Loop *does* unblock — Canton Coin payments (M4)
+
+`provider.transfer(...)` is the token-standard transfer we were blocked on (we
+lacked the validator scan/registry URL) — **the wallet performs it for us**. So the
+viable integration is a **hybrid**:
+
+- **Agreement** (cert → proposal → accept → sale + markers) stays **custodial on
+  our validator** (unchanged — Loop can't touch it).
+- **Identity + money via Loop**: the real buyer connects Loop; on purchase they
+  `provider.transfer(owner-recipient, price, CC)` — a real Canton Coin payment from
+  their own wallet. We link that transfer (`update_id`) to the proposal off-ledger.
+  The owner (a recipient party) needs a transfer pre-approval or to accept the
+  incoming holding.
+
+### Integration options
+
+1. **Connect + balance (small):** "Connect Loop wallet" in the Canton identity area
+   → show real `party_id` + CC balance (`getHolding`). Proves real wallet connect.
+2. **Real CC payment (M4, medium):** option 1 + a `provider.transfer` payment leg
+   tied to a proposal. Unblocks M4 without the scan/registry URL.
+3. **Full self-custody of the app flow:** **not possible** with Loop (third-party
+   DAR unsupported). Would require Loop to vet our package — out of our control.
+
+Recommendation: pursue **(2)** if we want real money in the demo; otherwise **(1)**
+as a quick "real wallet" proof. Both keep the app agreement custodial.
