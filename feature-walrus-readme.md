@@ -165,3 +165,17 @@ https://walruscan.com/testnet/blob/<blobId>
   (~30 parcels/min). A self-hosted publisher removes the rate limit but needs a funded Sui+WAL
   account; on testnet that's gated by faucet limits, so the public publisher is the practical path
   for large runs (restartable, chunked).
+- Cost scales with epochs (measured): per blob ≈ `0.000388 + 0.000194 × epochs` WAL. So all 42k
+  parcels (84k blobs) ≈ **~49 WAL for 1 epoch**, **~458 WAL for ~1 year** (26 mainnet 14-day epochs).
+  Each tiny blob still pays the ~63 MiB minimum-encoded floor, so **quilts** (packing many records
+  into one storage unit) would cut a real deployment to single-digit WAL/year.
+
+## Blob ownership & lifecycle
+
+Each stored blob creates a Sui `Blob` object; **its owner controls the lifecycle** (extend / delete).
+We set `WALRUS_SEND_OBJECT_TO` to our project Sui wallet, and the **public testnet publisher honors
+it** (verified) — so the publisher still *pays* for storage while the `Blob` object is transferred to
+**us**. That means free, publisher-funded uploads *plus* self-custody: only our wallet can later
+**extend** a blob's storage (paying the WAL + SUI itself). Without the flag, blobs are publisher-owned
+and simply expire after their epochs with no way for us to renew. For mainnet, point it at a dedicated
+project/treasury wallet.

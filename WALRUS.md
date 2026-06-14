@@ -35,10 +35,21 @@ Defaults target the **public Walrus testnet** — zero config needed for testnet
 | `WALRUS_AGGREGATOR_URL` | `https://aggregator.walrus-testnet.walrus.space` | where blobs are read |
 | `WALRUS_EPOCHS` | `5` | storage duration (testnet epoch ≈ 1 day) |
 | `WALRUS_PERMANENT` | `false` | set `true` instead of epochs (mainnet) |
-| `WALRUS_SEND_OBJECT_TO` | — | project-owned Sui address to receive the `Blob` objects |
+| `WALRUS_SEND_OBJECT_TO` | set to our project Sui address | the wallet that receives (owns) each `Blob` object — see below |
 
 Backend (`backend/storage/walrus.js`, `backend/routes/walrus.js`) and the mint scripts
 (`blockchain/scripts/walrus-storage.js`) read the same vars.
+
+### Blob ownership (`WALRUS_SEND_OBJECT_TO`)
+Each stored blob creates a Sui `Blob` object; whoever owns it controls its lifecycle (extend/delete).
+**The public testnet publisher honors `send_object_to`** — verified — so even though the publisher
+*pays* the storage, the `Blob` object is transferred to **our** wallet. We set
+`WALRUS_SEND_OBJECT_TO` (in `backend/.env` and `blockchain/.env`) to our project Sui address, so:
+- uploads are still free (publisher-funded), **and** we self-custody the `Blob` objects;
+- only that owning wallet can later **extend** storage (it pays the WAL + SUI gas to do so).
+
+Without it, blobs are owned by the publisher and expire after their epochs with no way for us to renew.
+For mainnet, point it at a dedicated project/treasury Sui wallet.
 
 ### Frontend toggle
 In `frontend/js/environment.js` (or set before the bundle loads):
@@ -87,10 +98,11 @@ from `parcel_nyc_geom ⋈ parcel_nyc_unit`. Cost is logged as a running WAL tota
 
 ## Deployments (Base Sepolia, chainId 84532)
 
-All redeployed 2026-06-13 from current source (the previous deployments predated the source and
-reverted new mints):
-- **ParcelNFT**: `0xa5eE0e1ae2cC2582731a1234FD8cDb7aD9225a50`
-- **ProposalNFT**: `0xC23D183B51e0290f6B93a60a791bC02b7aA37Bc4` — wired to the new ParcelNFT and the
+Current deployments (Base Sepolia):
+- **ParcelNFT**: `0x20e0A2897c642565905c0B45BBfaf7D8F96D1639` — **soulbound** (non-transferable;
+  ownership is EAS-attested, the holder is a registry custodian). Mint all parcels to one custodian
+  via `PARCEL_REGISTRY_ADDRESS`.
+- **ProposalNFT**: `0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F` — wired to the soulbound ParcelNFT and the
   EAS predeploy `0x4200000000000000000000000000000000000021`, with **real EAS schema UIDs** (the
   acceptance flow's claim/endorsement/owner-list schemas, registered on Base Sepolia 2026-06-13):
   - `OWN_THIS`   `0x6ea2f8780bc0ca556318a6d0d7ff13563b518bdb39f06a0544a69d51057f0f7c` — `string I_OWN_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID`
