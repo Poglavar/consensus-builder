@@ -4,6 +4,7 @@
 
 import { ledgerEnd } from '../canton/ledger.js';
 import { listProposalsForParty, listSalesForParty, createProposal, acceptProposal, allocateDemoParty } from '../canton/proposals.js';
+import { ccviewParty } from '../canton/ccview.js';
 
 export function setupCantonRoute(app) {
   // Connectivity check — confirms token exchange + Ledger API reachability.
@@ -62,6 +63,16 @@ export function setupCantonRoute(app) {
   app.post('/canton/parties', async (req, res) => {
     try {
       res.json(await allocateDemoParty((req.body || {}).hint));
+    } catch (e) {
+      res.status(502).json({ error: String(e.message || e) });
+    }
+  });
+
+  // CCView explorer summary for a party (Canton Coin balance + activity). The
+  // API key stays server-side; the browser only gets the compact summary + URL.
+  app.get('/canton/ccview/:party', async (req, res) => {
+    try {
+      res.json(await ccviewParty(req.params.party));
     } catch (e) {
       res.status(502).json({ error: String(e.message || e) });
     }

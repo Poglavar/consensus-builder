@@ -46,7 +46,7 @@ export async function createProposal(args, cfg = cantonConfig()) {
   const price = String(args.price);
   if (!parcelId || args.price == null) throw new Error('parcelId and price are required');
 
-  const tag = `${Date.now()}`;
+  const tag = Date.now().toString(36).slice(-5); // short, readable, unique-per-create
   const lens = args.lens || (await allocateParty(cfg, `Lens-${tag}`));
   const owner = args.owner || (await allocateParty(cfg, `Owner-${tag}`));
   const buyer = args.buyer || (await allocateParty(cfg, `Buyer-${tag}`));
