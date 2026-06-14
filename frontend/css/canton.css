@@ -26,7 +26,7 @@
 .canton-hint { color: #888; font-size: 0.8rem; margin: 0 0 10px; }
 .canton-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-bottom: 10px; }
 .canton-form label { display: flex; flex-direction: column; font-size: 0.8rem; color: #555; gap: 3px; }
-.canton-form input { padding: 7px 9px; font: inherit; border: 1px solid #ccc; border-radius: 6px; }
+.canton-form input, .canton-form select { padding: 7px 9px; font: inherit; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
 .canton-create button {
     padding: 8px 14px; font: inherit; cursor: pointer;
     border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;

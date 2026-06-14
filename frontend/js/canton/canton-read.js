@@ -20,6 +20,21 @@
         return ''; // same-origin
     }
 
+    // Where the project's real parcels live. In the full app they're same-origin
+    // (apiBase() resolves them). Under dev-serve (:4000) the parcels API is the
+    // separate Docker backend on :3000. Override with ?parcels=<url>.
+    function parcelsBase() {
+        try {
+            const override = new URLSearchParams(window.location.search).get('parcels');
+            if (override) return override.replace(/\/$/, '');
+            const base = apiBase();
+            if (base) return base; // file:// or prod host already points at the API
+            const { protocol, hostname, port } = window.location;
+            if (port && port !== '3000') return `${protocol}//${hostname}:3000`; // dev-serve -> Docker backend
+        } catch (_) { }
+        return ''; // same-origin
+    }
+
     const short = (s) => (typeof s === 'string' && s.length > 24) ? `${s.slice(0, 10)}…${s.slice(-6)}` : (s || '');
     const price = (p) => (p == null ? '' : String(p).replace(/0+$/, '').replace(/\.$/, ''));
 
@@ -134,8 +149,45 @@
         }
     }
 
+    // Pull a small sample of real NYC parcels into the create-proposal dropdown.
+    // A tiny bbox + limit keeps it light (the dataset has thousands of parcels).
+    async function populateParcels() {
+        const sel = document.getElementById('create-parcel');
+        if (!sel) return;
+        const bbox = '-74.012,40.706,-74.006,40.712'; // Lower Manhattan (NYSE area) sample
+        try {
+            const res = await fetch(`${parcelsBase()}/parcel-nyc?bbox=${encodeURIComponent(bbox)}&limit=12`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const fc = await res.json();
+            const parcels = (fc.features || []).map((f) => f.properties || {}).filter((p) => p.parcelId);
+            if (!parcels.length) throw new Error('no parcels returned');
+            sel.innerHTML = parcels.map((p) => {
+                const mp = p.estimatedMarketPrice != null ? Number(p.estimatedMarketPrice).toFixed(2) : '';
+                const owner = (p.ownershipList && p.ownershipList[0] && p.ownershipList[0].ownerLabel) || '';
+                const tag = [owner.slice(0, 22), mp && `$${Math.round(mp).toLocaleString()}`].filter(Boolean).join(' · ');
+                return `<option value="${p.parcelId}" data-price="${mp}">${p.parcelId}${tag ? ` — ${tag}` : ''}</option>`;
+            }).join('');
+            syncPriceFromParcel();
+            sel.addEventListener('change', syncPriceFromParcel);
+        } catch (e) {
+            // Parcels API unreachable (e.g. Docker backend down) — keep the form usable.
+            sel.innerHTML = `<option value="PARCEL-1">PARCEL-1 (parcels API unavailable: ${e.message})</option>`;
+        }
+    }
+
+    // Mirror the selected parcel's market value into the Price field (still editable).
+    function syncPriceFromParcel() {
+        const sel = document.getElementById('create-parcel');
+        const priceEl = document.getElementById('create-price');
+        if (!sel || !priceEl) return;
+        const opt = sel.options[sel.selectedIndex];
+        const p = opt && opt.getAttribute('data-price');
+        if (p) priceEl.value = p;
+    }
+
     function init() {
         const input = document.getElementById('canton-party');
+        populateParcels();
         const fromQuery = new URLSearchParams(window.location.search).get('party');
         if (fromQuery && input) input.value = fromQuery;
 
