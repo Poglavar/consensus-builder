@@ -1,2 +1,4 @@
-# Allocated public registry party id (per-environment, not source).
-.public-party.json
+# .public-party.json is intentionally committed: the public registry party id is
+# a stable, PUBLIC (non-secret) value shared across environments, and this
+# validator's API only returns the full id at allocation time — so we ship it
+# with the code instead of relying on per-environment CANTON_PUBLIC_PARTY config.
