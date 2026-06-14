@@ -44,13 +44,6 @@ export async function allocateParty(cfg, partyIdHint) {
   return party;
 }
 
-// List parties known to the participant. Used to reuse an existing well-known
-// party (e.g. the public registry party) instead of blindly re-allocating it.
-export async function listParties(cfg = cantonConfig()) {
-  const j = await call(cfg, '/v2/parties', { method: 'GET' });
-  return Array.isArray(j) ? j : (j.partyDetails || j.parties || []);
-}
-
 // Grant a ledger user CanActAs on a party (admin op). Idempotent in practice.
 export async function grantActAs(cfg, userId, party) {
   return call(cfg, `/v2/users/${userId}/rights`, {
