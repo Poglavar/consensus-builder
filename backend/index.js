@@ -33,6 +33,7 @@ import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
+import { setupCantonRoute } from './routes/canton.js';
 
 const { Pool } = pkg;
 
@@ -307,6 +308,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
+    setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

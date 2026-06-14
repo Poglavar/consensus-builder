@@ -14,6 +14,7 @@ export function cantonConfig(env = process.env) {
     audience: env.CANTON_AUDIENCE || env.AUDIENCE,
     scope: env.CANTON_SCOPE || env.SCOPE || 'daml_ledger_api',
     userId: env.CANTON_USER_ID || env.USER_ID, // Canton ledger user (e.g. "6")
+    packageRef: env.CANTON_PACKAGE_REF || env.PACKAGE_REF || '#consensus-builder-daml',
   };
 }
 
