@@ -91,4 +91,26 @@ describe('GET /ens/:sender/:data', () => {
         expect(res.status).toBe(200);
         expect(res.headers['access-control-allow-origin']).toBe('*');
     });
+
+    it('resolves a proposals name only when the proposal exists on this server', async () => {
+        pool.setResult({
+            rows: [{ proposal_id: '51', title: 'Riverside Lane', name: null, screenshot_url: null }],
+            rowCount: 1,
+        });
+        const callData = textUrlCallData('51.proposals.urbangametheory.eth');
+        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+        expect(res.status).toBe(200);
+        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
+        expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/51');
+    });
+
+    it('does not fabricate a url for a numeric proposal missing from this server', async () => {
+        // Mock pool returns no rows → the proposal does not exist here, so the
+        // gateway must resolve to an empty url instead of a dead /proposals link.
+        const callData = textUrlCallData('53.proposals.urbangametheory.eth');
+        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+        expect(res.status).toBe(200);
+        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
+        expect(abi.decode(['string'], result)[0]).toBe('');
+    });
 });

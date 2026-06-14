@@ -96,14 +96,24 @@ export function setupEnsRoute(app, pool) {
             const ids = label.split('-');
             let title;
             let screenshot_url;
-            if (ids.length === 1) {
-                try {
-                    const { rows } = await pool.query(
-                        'SELECT title, name, screenshot_url FROM proposal WHERE proposal_id = $1 LIMIT 1',
-                        [ids[0]],
-                    );
-                    if (rows.length) { title = rows[0].title || rows[0].name; screenshot_url = rows[0].screenshot_url; }
-                } catch (_) { /* proposal table absent → no enrichment */ }
+            // Resolve only ids that actually exist on THIS server. A proposal
+            // minted on-chain elsewhere (e.g. saved to a different DB) would
+            // otherwise yield a live ENS name pointing at a dead /proposals/<id>
+            // link. Fail closed: if we can't confirm existence, don't resolve.
+            try {
+                const { rows } = await pool.query(
+                    'SELECT proposal_id, title, name, screenshot_url FROM proposal WHERE proposal_id = ANY($1)',
+                    [ids],
+                );
+                const found = new Set(rows.map(r => String(r.proposal_id)));
+                if (!ids.every(id => found.has(id))) return null; // unknown proposal → not resolvable
+                if (ids.length === 1) {
+                    const row = rows[0];
+                    title = row.title || row.name;
+                    screenshot_url = row.screenshot_url;
+                }
+            } catch (_) {
+                return null; // proposal table absent / query failed → don't fabricate a link
             }
             return { ids, title, screenshot_url };
         }
