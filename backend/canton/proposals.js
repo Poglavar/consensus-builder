@@ -5,7 +5,7 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
-import { activeContracts, allocateParty, grantActAs, listUserParties, createContract, exerciseChoice } from './ledger.js';
+import { activeContracts, allocateParty, grantActAs, createContract, exerciseChoice } from './ledger.js';
 
 const templateId = (cfg, entity) => `${cfg.packageRef}:Proposal:${entity}`;
 
@@ -25,17 +25,23 @@ async function getPublicParty(cfg = cantonConfig()) {
     if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
   } catch (_) { /* no local cache yet */ }
 
-  // Discover the shared public party from the configured user's rights (it was
-  // granted actAs on it) — a targeted lookup that returns the full party id.
-  // Only allocate when it doesn't exist yet (first run on a fresh validator).
-  // Avoids needing a configured CANTON_PUBLIC_PARTY or a persisted cache file.
-  let party = null;
+  // Allocate on a fresh validator — allocation is the ONLY response that returns
+  // the full party id (this validator truncates ids in list/rights/error
+  // responses). If the party already exists here, the full id can't be recovered
+  // via the API, so it must be provided explicitly.
+  let party;
   try {
-    const mine = await listUserParties(cfg);
-    party = mine.find((p) => typeof p === 'string' && p.startsWith(`${PUBLIC_HINT}::`)) || null;
-  } catch (_) { /* fall through to allocate */ }
-  if (!party) {
     party = await allocateParty(cfg, PUBLIC_HINT);
+  } catch (e) {
+    if (/already (exist|allocat)/i.test(String((e && e.message) || e))) {
+      throw new Error(
+        'Public party already exists on this validator but its full id is not '
+        + 'recoverable via the API. Set CANTON_PUBLIC_PARTY to the full id '
+        + '(saved in backend/canton/.public-party.json on the machine that first '
+        + 'allocated it).',
+      );
+    }
+    throw e;
   }
   try { await grantActAs(cfg, cfg.userId, party); } catch (_) { /* best-effort */ }
   try { await writeFile(PUBLIC_FILE, JSON.stringify({ party }), 'utf8'); } catch (_) { }

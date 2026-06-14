@@ -44,19 +44,6 @@ export async function allocateParty(cfg, partyIdHint) {
   return party;
 }
 
-// Parties a ledger user is granted rights on (CanActAs/CanReadAs). Used to
-// discover the shared public party by its full id without listing all parties.
-export async function listUserParties(cfg = cantonConfig(), userId = cfg.userId) {
-  const j = await call(cfg, `/v2/users/${userId}/rights`, { method: 'GET' });
-  const rights = j.rights || j.userRights || (Array.isArray(j) ? j : []);
-  const parties = [];
-  for (const r of rights) {
-    const p = r?.kind?.CanActAs?.value?.party || r?.kind?.CanReadAs?.value?.party;
-    if (p) parties.push(p);
-  }
-  return parties;
-}
-
 // Grant a ledger user CanActAs on a party (admin op). Idempotent in practice.
 export async function grantActAs(cfg, userId, party) {
   return call(cfg, `/v2/users/${userId}/rights`, {
