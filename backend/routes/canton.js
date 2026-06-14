@@ -3,7 +3,7 @@
 // browser only ever sees this REST surface. Write endpoints come in a later step.
 
 import { ledgerEnd } from '../canton/ledger.js';
-import { listProposalsForParty, listSalesForParty, createProposal } from '../canton/proposals.js';
+import { listProposalsForParty, listSalesForParty, createProposal, acceptProposal, allocateDemoParty } from '../canton/proposals.js';
 
 export function setupCantonRoute(app) {
   // Connectivity check — confirms token exchange + Ledger API reachability.
@@ -42,6 +42,26 @@ export function setupCantonRoute(app) {
     if (!parcelId || price == null) return res.status(400).json({ error: 'parcelId and price are required' });
     try {
       res.json(await createProposal({ parcelId, price, buyer, owner, lens }));
+    } catch (e) {
+      res.status(502).json({ error: String(e.message || e) });
+    }
+  });
+
+  // Owner accepts a proposal. Body: { owner }.
+  app.post('/canton/proposals/:cid/accept', async (req, res) => {
+    const owner = (req.body || {}).owner;
+    if (!owner) return res.status(400).json({ error: 'owner is required' });
+    try {
+      res.json(await acceptProposal(req.params.cid, owner));
+    } catch (e) {
+      res.status(502).json({ error: String(e.message || e) });
+    }
+  });
+
+  // Allocate a fresh demo party (for the "stranger" perspective). Body: { hint? }.
+  app.post('/canton/parties', async (req, res) => {
+    try {
+      res.json(await allocateDemoParty((req.body || {}).hint));
     } catch (e) {
       res.status(502).json({ error: String(e.message || e) });
     }

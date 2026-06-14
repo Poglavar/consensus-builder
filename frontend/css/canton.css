@@ -33,6 +33,20 @@
 }
 .canton-create button:hover { background: #249; border-color: #249; }
 .canton-result { font-size: 0.85rem; color: #333; margin-top: 8px; min-height: 1.2em; }
+.canton-perspective { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.canton-perspective:empty { display: none; }
+.canton-persp-label { font-size: 0.8rem; color: #666; margin-right: 2px; }
+.canton-persp {
+    padding: 5px 12px; font: inherit; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid #bbb; background: #fff; color: #333; border-radius: 999px;
+}
+.canton-persp:hover { border-color: #2b6; color: #2b6; }
+.canton-persp.active { background: #2b6; border-color: #2b6; color: #fff; }
+.canton-accept {
+    margin-top: 8px; padding: 6px 14px; font: inherit; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-accept:hover { background: #249; border-color: #249; }
 @media (max-width: 380px) {
     .canton-controls button { flex: 1 1 100%; }
     .canton-form { grid-template-columns: 1fr; }

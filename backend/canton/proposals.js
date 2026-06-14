@@ -4,7 +4,7 @@
 // network data, so we read the ledger directly via backend/canton/ledger.js.)
 
 import { cantonConfig } from './token.js';
-import { activeContracts, allocateParty, grantActAs, createContract } from './ledger.js';
+import { activeContracts, allocateParty, grantActAs, createContract, exerciseChoice } from './ledger.js';
 
 const templateId = (cfg, entity) => `${cfg.packageRef}:Proposal:${entity}`;
 
@@ -65,4 +65,20 @@ export async function createProposal(args, cfg = cantonConfig()) {
   const created = props.find((p) => p.createArgument?.parcelId === parcelId && p.createArgument?.owner === owner);
 
   return { parcelId, price, lens, owner, buyer, proposalContractId: created?.contractId };
+}
+
+// Owner accepts a proposal → archives it, creates the Sale. Returns the owner's sales.
+export async function acceptProposal(contractId, owner, cfg = cantonConfig()) {
+  if (!contractId || !owner) throw new Error('contractId and owner are required');
+  await exerciseChoice(cfg, { templateId: templateId(cfg, 'PurchaseProposal'), contractId, choice: 'Accept', actAs: owner });
+  const sales = await activeContracts(cfg, owner, templateId(cfg, 'Sale'));
+  return { ok: true, sales: sales.map(mapSale) };
+}
+
+// Allocate a fresh party we host (granted actAs to the configured user). Used by
+// the UI's "stranger" perspective to show that a non-stakeholder sees nothing.
+export async function allocateDemoParty(hint, cfg = cantonConfig()) {
+  const party = await allocateParty(cfg, hint || `Party-${Date.now()}`);
+  await grantActAs(cfg, cfg.userId, party);
+  return { party };
 }
