@@ -17,10 +17,15 @@ describes **what exists and how it works**. It's a living doc — updated as we 
 | Ledger client (token + API) | `backend/canton/{token,ledger}.js` | ✅ verified on DevNet |
 | Domain logic | `backend/canton/proposals.js` | ✅ list / create / accept |
 | REST API | `backend/routes/canton.js` | ✅ mounted in the app |
-| Web UI | `frontend/canton.html` + `js/canton/canton-read.js` | ✅ standalone page |
+| Web UI (standalone console) | `frontend/canton.html` + `js/canton/canton-read.js` | ✅ standalone page |
+| Enter Canton mode (P0) | `js/canton/canton-mode.js` + `user-management.js` | ✅ network switch + identity picker |
+| Parcel proposal-count signal (P1) | `ProposalMarker` + `/canton/parcel-counts` + `js/canton/canton-counts.js` | ✅ on-ledger marker → map badges |
 | Real Canton Coin transfer | — | ⛔ parked (needs scan/registry URL) |
-| Fold into main app UI | — | ⬜ pending |
+| Create/View/Accept in main app (P2/P3) | — | ⬜ pending |
 | Owner self-custody | — | ❌ out of scope (see decisions log) |
+
+Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-plan-folding-canton-into-the-main-app)):
+**P0** ✅ enter Canton mode · **P1** ✅ counts (Option B markers) · **P2** create via map · **P3** view/accept on parcel · **P4** fold the rest.
 
 ## Architecture
 

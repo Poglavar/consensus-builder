@@ -15,6 +15,7 @@ export function cantonConfig(env = process.env) {
     scope: env.CANTON_SCOPE || env.SCOPE || 'daml_ledger_api',
     userId: env.CANTON_USER_ID || env.USER_ID, // Canton ledger user (e.g. "6")
     packageRef: env.CANTON_PACKAGE_REF || env.PACKAGE_REF || '#consensus-builder-daml',
+    publicParty: env.CANTON_PUBLIC_PARTY || env.PUBLIC_PARTY || '', // observer for proposal markers
   };
 }
 

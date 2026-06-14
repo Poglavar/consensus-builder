@@ -3,10 +3,31 @@
 // (CCView indexing does not cover application contracts, only Canton Coin /
 // network data, so we read the ledger directly via backend/canton/ledger.js.)
 
+import { readFile, writeFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
 import { activeContracts, allocateParty, grantActAs, createContract, exerciseChoice } from './ledger.js';
 
 const templateId = (cfg, entity) => `${cfg.packageRef}:Proposal:${entity}`;
+
+// The public "registry" party that observes ProposalMarker contracts, giving the
+// app a parcel→count signal without disclosing proposal terms. Allocated once on
+// our validator (granted actAs to our user) and cached to a gitignored file so it
+// is stable across restarts. Override with CANTON_PUBLIC_PARTY.
+const PUBLIC_FILE = new URL('./.public-party.json', import.meta.url);
+let publicPartyCache = null;
+async function getPublicParty(cfg = cantonConfig()) {
+  if (cfg.publicParty) return cfg.publicParty;
+  if (publicPartyCache) return publicPartyCache;
+  try {
+    const saved = JSON.parse(await readFile(PUBLIC_FILE, 'utf8'));
+    if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
+  } catch (_) { /* not allocated yet */ }
+  const party = await allocateParty(cfg, 'CantonPublic');
+  await grantActAs(cfg, cfg.userId, party);
+  try { await writeFile(PUBLIC_FILE, JSON.stringify({ party }), 'utf8'); } catch (_) { }
+  publicPartyCache = party;
+  return party;
+}
 
 function mapProposal(ev) {
   const a = ev.createArgument || {};
@@ -69,6 +90,16 @@ export async function createProposal(args, cfg = cantonConfig()) {
   const props = await activeContracts(cfg, buyer, templateId(cfg, 'PurchaseProposal'));
   const created = props.find((p) => p.createArgument?.parcelId === parcelId && p.createArgument?.owner === owner);
 
+  // Public existence signal (Option B): a marker observed by the public party,
+  // carrying only the parcel + opaque proposal cid (no terms).
+  if (created?.contractId) {
+    const publicParty = await getPublicParty(cfg);
+    await createContract(cfg, {
+      templateId: templateId(cfg, 'ProposalMarker'),
+      args: { buyer, public: publicParty, parcelId, proposalCid: created.contractId }, actAs: buyer,
+    });
+  }
+
   return { parcelId, price, lens, owner, buyer, proposalContractId: created?.contractId };
 }
 
@@ -76,8 +107,37 @@ export async function createProposal(args, cfg = cantonConfig()) {
 export async function acceptProposal(contractId, owner, cfg = cantonConfig()) {
   if (!contractId || !owner) throw new Error('contractId and owner are required');
   await exerciseChoice(cfg, { templateId: templateId(cfg, 'PurchaseProposal'), contractId, choice: 'Accept', actAs: owner });
+  await archiveMarkerFor(contractId, cfg); // drop the public existence signal
   const sales = await activeContracts(cfg, owner, templateId(cfg, 'Sale'));
   return { ok: true, sales: sales.map(mapSale) };
+}
+
+// Archive the public marker for a (now accepted/withdrawn) proposal. Best-effort.
+async function archiveMarkerFor(proposalCid, cfg = cantonConfig()) {
+  try {
+    const publicParty = await getPublicParty(cfg);
+    const markers = await activeContracts(cfg, publicParty, templateId(cfg, 'ProposalMarker'));
+    const m = markers.find((x) => x.createArgument?.proposalCid === proposalCid);
+    if (m) {
+      await exerciseChoice(cfg, {
+        templateId: templateId(cfg, 'ProposalMarker'), contractId: m.contractId,
+        choice: 'ArchiveMarker', actAs: m.createArgument.buyer,
+      });
+    }
+  } catch (_) { /* marker cleanup is non-critical */ }
+}
+
+// Public parcel→count map from active markers (read as the public party). The
+// existence signal for the map; no proposal terms are exposed.
+export async function listParcelCounts(cfg = cantonConfig()) {
+  const publicParty = await getPublicParty(cfg);
+  const markers = await activeContracts(cfg, publicParty, templateId(cfg, 'ProposalMarker'));
+  const counts = {};
+  for (const m of markers) {
+    const pid = m.createArgument?.parcelId;
+    if (pid) counts[pid] = (counts[pid] || 0) + 1;
+  }
+  return counts;
 }
 
 // Allocate a fresh party we host (granted actAs to the configured user). Used by

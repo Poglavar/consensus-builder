@@ -10,3 +10,8 @@
 .canton-id-modal .btn.canton-ghost { background: transparent; border: 1px solid #bbb; color: #555; }
 .canton-id-err { margin-top: 8px; font-size: 0.85rem; color: #b00; min-height: 1.1em; }
 .canton-id-modal .canton-empty { color: #999; font-size: 0.9rem; }
+
+/* Canton proposal-count badge on the map — distinct (purple) from EVM (blue),
+   signalling "Canton proposals exist here; terms private". */
+.parcel-canton-count-label { background: #7E57C2 !important; border-color: #5E35B1 !important; }
+.parcel-canton-count-label div { background: #7E57C2 !important; }

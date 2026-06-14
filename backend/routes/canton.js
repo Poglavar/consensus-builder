@@ -3,7 +3,7 @@
 // browser only ever sees this REST surface. Write endpoints come in a later step.
 
 import { ledgerEnd } from '../canton/ledger.js';
-import { listProposalsForParty, listSalesForParty, createProposal, acceptProposal, allocateDemoParty } from '../canton/proposals.js';
+import { listProposalsForParty, listSalesForParty, createProposal, acceptProposal, allocateDemoParty, listParcelCounts } from '../canton/proposals.js';
 import { ccviewParty } from '../canton/ccview.js';
 
 export function setupCantonRoute(app) {
@@ -63,6 +63,16 @@ export function setupCantonRoute(app) {
   app.post('/canton/parties', async (req, res) => {
     try {
       res.json(await allocateDemoParty((req.body || {}).hint));
+    } catch (e) {
+      res.status(502).json({ error: String(e.message || e) });
+    }
+  });
+
+  // Public parcel→proposal-count signal (existence only; no terms). Drives the
+  // map's "show proposal count" labels for Canton. Read from on-ledger markers.
+  app.get('/canton/parcel-counts', async (_req, res) => {
+    try {
+      res.json({ counts: await listParcelCounts() });
     } catch (e) {
       res.status(502).json({ error: String(e.message || e) });
     }

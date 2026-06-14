@@ -57,3 +57,22 @@ template PurchaseProposal
     choice Withdraw : ()
       controller buyer
       do return ()
+
+-- Public existence signal for a parcel. Carries ONLY the parcel + an opaque
+-- proposal contract-id — no price, no parties' terms. Observed by a designated
+-- public registry party so the app can show "this parcel has N Canton proposals"
+-- without disclosing the proposal itself (selective disclosure). Created with each
+-- PurchaseProposal and archived when it is accepted/withdrawn. See feature-daml.md §13.
+template ProposalMarker
+  with
+    buyer : Party
+    public : Party
+    parcelId : Text
+    proposalCid : Text
+  where
+    signatory buyer
+    observer public
+
+    choice ArchiveMarker : ()
+      controller buyer
+      do return ()

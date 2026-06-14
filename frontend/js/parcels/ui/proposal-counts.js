@@ -83,6 +83,10 @@
     function drawProposalCountLabels() {
         clearProposalCountLabels();
         if (!global.parcelLayer) return;
+        // Refresh the Canton public counts in the background (redraws on update).
+        if (global.CantonCounts && typeof global.CantonCounts.ensureFresh === 'function') {
+            global.CantonCounts.ensureFresh();
+        }
 
         const bounds = (global.map && typeof global.map.getBounds === 'function')
             ? global.map.getBounds()
@@ -114,9 +118,12 @@
         }
 
         const proposalCount = getProposalCountFromFeature(layer.feature);
+        // Canton proposals are private — we only know a public count (existence
+        // signal), not terms. Shown as a separate, distinctly-styled badge.
+        const cantonCount = (global.CantonCounts && parcelId) ? global.CantonCounts.getCount(parcelId) : 0;
 
-        // Don't show label if count is 0
-        if (proposalCount === 0) return;
+        // Don't show anything if there are no proposals of either kind.
+        if (proposalCount === 0 && cantonCount === 0) return;
 
         let labelLatLng = null;
         const geometry = layer.feature.geometry;
@@ -153,16 +160,33 @@
             return;
         }
 
-        const label = L.marker(labelLatLng, {
-            icon: L.divIcon({
-                className: 'parcel-proposal-count-label',
-                html: `${proposalCount}`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            }),
-            interactive: false
-        }).addTo(global.map);
-        proposalCountLabels.push(label);
+        if (proposalCount > 0) {
+            const label = L.marker(labelLatLng, {
+                icon: L.divIcon({
+                    className: 'parcel-proposal-count-label',
+                    html: `${proposalCount}`,
+                    iconSize: [20, 20],
+                    // Shift left when a Canton badge will sit beside it.
+                    iconAnchor: cantonCount > 0 ? [22, 10] : [10, 10]
+                }),
+                interactive: false
+            }).addTo(global.map);
+            proposalCountLabels.push(label);
+        }
+
+        if (cantonCount > 0) {
+            const cantonLabel = L.marker(labelLatLng, {
+                icon: L.divIcon({
+                    className: 'parcel-proposal-count-label parcel-canton-count-label',
+                    html: `${cantonCount}`,
+                    iconSize: [20, 20],
+                    iconAnchor: proposalCount > 0 ? [-2, 10] : [10, 10]
+                }),
+                title: 'Canton proposal(s) — terms private',
+                interactive: false
+            }).addTo(global.map);
+            proposalCountLabels.push(cantonLabel);
+        }
     }
 
     function clearProposalCountLabels() {
@@ -296,6 +320,9 @@
     global.clearProposalCountLabels = clearProposalCountLabels;
     global.refreshProposalCountLabelsIfVisible = refreshProposalCountLabelsIfVisible;
     global.setProposalCountLabelFilter = setProposalCountLabelFilter;
+
+    // Redraw labels when the Canton public counts update.
+    global.addEventListener('canton-counts-updated', refreshProposalCountLabelsIfVisible);
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
