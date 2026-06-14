@@ -153,7 +153,21 @@
                 explorerUrl: '',
             };
         },
-        acceptProposal: async () => { throw new Error('Canton accept is coming in P3 — not wired yet.'); },
+        // options: { contractId, owner? } — owner defaults to the current identity.
+        acceptProposal: async (options = {}) => {
+            const cid = options.contractId || options.cid || options.proposalContractId;
+            const owner = options.owner || getParty();
+            if (!cid) throw new Error('Canton accept: missing proposal contractId.');
+            if (!owner) throw new Error('Pick the owner identity before accepting.');
+            const res = await fetch(`${apiBase()}/canton/proposals/${encodeURIComponent(cid)}/accept`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ owner }),
+            });
+            const j = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+            try { window.CantonCounts && window.CantonCounts.refresh(); } catch (_) { }
+            return j;
+        },
         contributeToProposal: async () => { throw new Error('Canton contributions are not supported.'); },
         withdrawAcceptance: async () => { throw new Error('Canton withdrawal is coming later — not wired yet.'); },
     };

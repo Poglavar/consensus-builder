@@ -15,3 +15,21 @@
    signalling "Canton proposals exist here; terms private". */
 .parcel-canton-count-label { background: #7E57C2 !important; border-color: #5E35B1 !important; }
 .parcel-canton-count-label div { background: #7E57C2 !important; }
+
+/* Canton proposals section in the parcel panel (P3). */
+.canton-panel-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e2e2; }
+.canton-panel-title { margin: 0 0 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+.canton-panel-title .canton-badge {
+    background: #7E57C2; color: #fff; border-radius: 999px; font-size: 0.72rem;
+    padding: 1px 7px; font-weight: 700;
+}
+#canton-proposals-content .canton-card { border: 1px solid #e2e2e2; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+#canton-proposals-content .canton-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+#canton-proposals-content .canton-parcel { font-weight: 600; }
+#canton-proposals-content .canton-price { color: #5E35B1; font-variant-numeric: tabular-nums; }
+#canton-proposals-content .canton-you { font-size: 0.72rem; color: #5E35B1; background: #ede7f6; border-radius: 4px; padding: 1px 6px; }
+#canton-proposals-content .canton-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; font-size: 0.78rem; }
+#canton-proposals-content .canton-meta dt { color: #888; }
+#canton-proposals-content .canton-meta dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+#canton-proposals-content .canton-empty { color: #999; font-size: 0.82rem; margin: 4px 0; }
+.canton-panel-accept { margin-top: 8px; }

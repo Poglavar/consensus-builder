@@ -21,12 +21,13 @@ describes **what exists and how it works**. It's a living doc — updated as we 
 | Enter Canton mode (P0) | `js/canton/canton-mode.js` + `user-management.js` | ✅ network switch + identity picker |
 | Parcel proposal-count signal (P1) | `ProposalMarker` + `/canton/parcel-counts` + `js/canton/canton-counts.js` | ✅ on-ledger marker → map badges |
 | Create proposal via main app (P2) | `canton-mode.js` bridge + `proposals.js` routing | ✅ Canton mode mints via `/canton/proposals` (skips NFTs) |
+| View/Accept on parcel (P3) | `js/canton/canton-parcel.js` + `parcel-panel.js` | ✅ panel section: details if stakeholder, "private" otherwise, owner Accept |
 | Real Canton Coin transfer | — | ⛔ parked (needs scan/registry URL) |
-| View/Accept on parcel (P3) | — | ⬜ pending |
+| Fold the rest / cleanup (P4) | — | ⬜ pending |
 | Owner self-custody | — | ❌ out of scope (see decisions log) |
 
 Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-plan-folding-canton-into-the-main-app)):
-**P0** ✅ enter Canton mode · **P1** ✅ counts (Option B markers) · **P2** ✅ create via map · **P3** view/accept on parcel · **P4** fold the rest.
+**P0** ✅ enter Canton mode · **P1** ✅ counts (Option B markers) · **P2** ✅ create via map · **P3** ✅ view/accept on parcel · **P4** fold the rest.
 
 ## Architecture
 

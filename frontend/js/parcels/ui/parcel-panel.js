@@ -546,6 +546,7 @@
             ${roadDrawingActions}
         </div>
         ${parcelProposals.length > 0 ? proposalsHtml : ''}
+        <div id="canton-proposals-content"></div>
     `;
 
         const titleElement = global.document.getElementById('parcel-info-title');
@@ -739,6 +740,9 @@
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);
         }
+        // Canton proposals for this parcel (count is public; details gated to the
+        // current Canton identity). Fire-and-forget — populates #canton-proposals-content.
+        try { if (global.CantonParcel) global.CantonParcel.render(parcelId); } catch (_) { }
 
         applyParcelTranslations(global.document.getElementById('parcel-info-panel'));
 
