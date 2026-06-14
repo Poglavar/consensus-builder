@@ -108,6 +108,7 @@
                         <button type="button" class="btn canton-ghost" data-clear>Clear</button>
                     </div>
                     <div class="canton-id-foot">
+                        <button type="button" class="btn canton-ghost" data-explorer>Canton state explorer ↗</button>
                         <button type="button" class="btn canton-ghost" data-switch>Use a different network</button>
                         <button type="button" class="btn canton-ghost" data-leave>Leave Canton</button>
                     </div>
@@ -157,6 +158,14 @@
                 return;
             }
             if (e.target.closest('[data-clear]')) { clearParties(); redrawList(); return; }
+            if (e.target.closest('[data-explorer]')) {
+                // canton.html is our internal Canton state explorer — same backend /
+                // ledger and same-origin localStorage, so it sees parties + proposals
+                // created from the map. Prefill the current identity.
+                const p = getParty();
+                window.open('canton.html' + (p ? `?party=${encodeURIComponent(p)}` : ''), '_blank', 'noopener');
+                return;
+            }
             if (e.target.closest('[data-switch]')) { closePicker(); window.openChainSelectionModal && window.openChainSelectionModal(); return; }
             if (e.target.closest('[data-leave]')) { deactivate(); closePicker(); return; }
         });
