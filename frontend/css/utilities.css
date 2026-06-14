@@ -2578,3 +2578,10 @@ input:checked+.slider:before {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* In the centered proposal-details panel, center the line as a group while
+   keeping the value's ellipsis truncation. */
+.proposal-ens-row .ens-name-line {
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: middle;
+}

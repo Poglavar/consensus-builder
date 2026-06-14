@@ -6469,6 +6469,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const nftInfo = getProposalNftInfo(fullProposal);
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
 
+    // ENS line for minted proposals (numeric on-chain token id → <id>.proposals.…).
+    // Self-gates: proposalEnsName returns '' for non-numeric ids, so drafts show nothing.
+    const proposalEnsHtml = (isMinted && nftInfo
+        && typeof proposalEnsName === 'function' && typeof ensNameLineHtml === 'function')
+        ? ensNameLineHtml(proposalEnsName(nftInfo.tokenId))
+        : '';
+
     // Use stable proposalId only (hash support removed)
     const proposalKey = fullProposal.proposalId
         || proposal.proposalId;
@@ -6652,6 +6659,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <div class="proposal-id-label" style="font-size: 12px; color: #666;">ID: ${escapedProposalDisplayId}</div>
                     ${lensButtonHtml}
                 </div>` : ''}
+                ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
