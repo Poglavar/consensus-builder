@@ -3,11 +3,12 @@
 This complements `feature-daml.md`: the **spec** says what to build; this README
 describes **what exists and how it works**. It's a living doc — updated as we go.
 
-> **Status:** a working vertical slice of a single-parcel purchase on the live
-> **Canton DevNet** (5n sandbox), end-to-end through a web UI. Money is not yet
-> moved (price is a Canton-Coin-denominated number); the slice runs **custodially**
-> (all parties hosted on our validator, driven by the backend). See the
-> [decisions log](feature-daml.md#12-decisions-log-build).
+> **Status:** Canton is integrated into the main map app as a third chain option
+> and **deployed live** (the `2026-nyc-demo` branch → https://urbangametheory.xyz).
+> A single-parcel purchase runs end-to-end on the live **Canton DevNet** (5n
+> sandbox). Money is not yet moved (price is a Canton-Coin-denominated number); the
+> slice runs **custodially** (parties hosted on our validator, driven by the
+> backend). See the [decisions log](feature-daml.md#12-decisions-log-build).
 
 ## At a glance
 
@@ -21,10 +22,11 @@ describes **what exists and how it works**. It's a living doc — updated as we 
 | Enter Canton mode (P0) | `js/canton/canton-mode.js` + `user-management.js` | ✅ network switch + identity picker |
 | Parcel proposal-count signal (P1) | `ProposalMarker` + `/canton/parcel-counts` + `js/canton/canton-counts.js` | ✅ on-ledger marker → map badges |
 | Create proposal via main app (P2) | `canton-mode.js` bridge + `proposals.js` routing | ✅ Canton mode mints via `/canton/proposals` (skips NFTs) |
-| View/Accept on parcel (P3) | `js/canton/canton-parcel.js` + `parcel-panel.js` | ✅ panel section: details if stakeholder, "private" otherwise, owner Accept |
+| View/Accept on parcel (P3) | `js/canton/canton-parcel.js` + `parcel-panel.js` | ✅ panel section: "Open" proposals + "Accepted" sales; details if stakeholder, else "private"; owner Accept |
 | Identity tooling (P4) | `canton-mode.js` identity picker | ✅ pick/paste/generate + Copy / CCView / Forget / Clear |
+| State explorer link | `canton-mode.js` → `canton.html` | ✅ opens `canton.html` (same ledger + shared localStorage) prefilled with current identity |
 | Real Canton Coin transfer | — | ⛔ parked (needs scan/registry URL) |
-| Standalone console (`canton.html`) | `frontend/canton.html` | ✅ kept as backup demo |
+| Standalone console (`canton.html`) | `frontend/canton.html` | ✅ kept as backup demo + state explorer |
 | Owner self-custody | — | ❌ out of scope (see decisions log) |
 
 Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-plan-folding-canton-into-the-main-app)):
@@ -34,11 +36,14 @@ Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-pl
 
 ```mermaid
 flowchart LR
-    UI["Browser — canton.html<br/>(read / create / accept / perspective)"]
+    UI["Main map app (index.html)<br/>canton-mode · canton-counts · canton-parcel"]
+    EXP["canton.html<br/>(state explorer / backup)"]
     R["backend/routes/canton.js<br/>/canton/*"]
-    C["backend/canton<br/>token.js · ledger.js · proposals.js"]
+    C["backend/canton<br/>token · ledger · proposals"]
     L["Canton DevNet — 5n sandbox<br/>JSON Ledger API v2"]
-    UI -->|fetch /canton/*| R --> C -->|JWT + v2 calls| L
+    UI -->|fetch /canton/*| R
+    EXP -->|fetch /canton/*| R
+    R --> C -->|JWT + v2 calls| L
 ```
 
 The OIDC **client secret never leaves the backend**. The browser only calls
@@ -47,14 +52,18 @@ talks to the validator's JSON Ledger API v2.
 
 ## The DAML model (`blockchain/daml/`)
 
-SDK **3.4.11** (the DevNet target). Three templates in `daml/Proposal.daml`:
+SDK **3.4.11**, package **0.3.0**. Templates in `daml/Proposal.daml`:
 
 - **`OwnershipCertificate`** — signatory `lens`, observer `owner`. The buyer-chosen
   lens attests that `owner` owns `parcelId`.
 - **`PurchaseProposal`** — signatory `buyer`, observers `owner` + `lens`. Choices:
   - `Accept` (controller `owner`) → archives the proposal, creates a `Sale`.
   - `Withdraw` (controller `buyer`).
-- **`Sale`** — signatory `buyer` + `owner` (the executed agreement).
+- **`Sale`** — signatory `buyer` + `owner`, plus an **`Optional lens` observer**
+  (carried through `Accept`) so the lens still sees the completed sale post-accept.
+- **`ProposalMarker`** — public existence signal (signatory `buyer`, observer the
+  public registry party; parcel + opaque cid only). Created with each proposal,
+  archived on accept/withdraw → drives the map count without exposing terms.
 
 `daml test` covers the happy path, owner-only Accept, and Withdraw.
 
@@ -70,10 +79,13 @@ sequenceDiagram
     O->>O: exercise Accept → Sale
 ```
 
-Visibility is enforced by Canton, demonstrated live via the **perspective switcher**:
-- Before Accept: **buyer, owner, lens** all see the proposal; a **stranger** sees nothing.
-- After Accept: **owner** (and buyer) see the **Sale**; the **lens** sees nothing
-  (not a stakeholder of `Sale`); stranger still sees nothing.
+Visibility is enforced by Canton, demonstrated live by switching identities:
+- Before Accept: **buyer, owner, lens** all see the proposal (status **"Open"**); a
+  **stranger** sees nothing.
+- After Accept: **buyer, owner, and lens** all see the **Sale** (status
+  **"Accepted"**, read-only — the lens is an Optional observer on `Sale`); a
+  **stranger** still sees nothing. The public marker is archived, so the map count
+  drops to 0 while stakeholders keep the "Accepted" card.
 
 ## Backend (`backend/canton/`, `backend/routes/canton.js`)
 
@@ -83,18 +95,22 @@ Visibility is enforced by Canton, demonstrated live via the **perspective switch
   `grantActAs`, `submitAndWait` / `createContract` / `exerciseChoice`,
   `activeContracts(party, templateId)` (scoped by party+template — a wildcard query
   exceeds the node's 200-element cap on the shared validator).
-- **`proposals.js`** — `listProposalsForParty`, `listSalesForParty`,
-  `createProposal` (lens attest + buyer create; blanks auto-allocated),
-  `acceptProposal`, `allocateDemoParty`.
+- **`proposals.js`** — `listProposalsForParty`, `listSalesForParty` (sales carry
+  the lens), `createProposal` (lens attest + buyer create + write `ProposalMarker`;
+  blanks auto-allocated), `acceptProposal` (archives proposal + marker, creates
+  Sale), `listParcelCounts` (public counts from markers), `allocateDemoParty`,
+  `getPublicParty` (stable registry party, cached).
 - **Routes** (`setupCantonRoute`, mounted in `backend/index.js`, no DB):
   - `GET  /canton/ledger-end`
-  - `GET  /canton/proposals?party=…`
-  - `GET  /canton/sales?party=…`
+  - `GET  /canton/proposals?party=…` · `GET /canton/sales?party=…`
+  - `GET  /canton/parcel-counts` (public marker counts)
+  - `GET  /canton/ccview/:party` (CCView explorer summary, proxied)
   - `POST /canton/proposals` — `{ parcelId, price, buyer?, owner?, lens? }`
   - `POST /canton/proposals/:cid/accept` — `{ owner }`
   - `POST /canton/parties` — `{ hint? }` (demo/stranger party)
-- Helpers: `check.js`, `check-route.js` (verify module + routes vs DevNet),
-  `seed.js` (seed a demo proposal), `dev-serve.js` (static frontend + routes, no DB).
+- Helpers: `load-env.js` (loads `backend/.env`), `check.js` / `check-route.js`
+  (verify module + routes vs DevNet), `seed.js` (seed a demo proposal),
+  `dev-serve.js` (static frontend + routes, no DB).
 
 ## Identity model (custodial)
 
@@ -116,8 +132,10 @@ node backend/canton/dev-serve.js          # prints a free-port URL (e.g. :62025)
 
 Open `…/index.html` → network pill → **Canton** → pick an identity → select a
 parcel → **Create proposal**. Switch identity to the **owner** to **Accept** from
-the parcel panel's "Canton proposals" section. (Standalone console: `…/canton.html`,
-kept as a backup.) The DAR is deployed once via `seed.js`/`check.js` (`DAR_PATH`) or Seaport.
+the parcel panel's "Canton proposals" section. The identity picker also has a
+**"Canton state explorer ↗"** link → opens `canton.html` (same ledger + shared
+localStorage), our internal explorer / backup demo. The DAR is deployed once via
+`seed.js`/`check.js` (`DAR_PATH`) or Seaport.
 
 ## Verified against live DevNet
 

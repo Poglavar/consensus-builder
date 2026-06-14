@@ -502,6 +502,26 @@ for what's been built and how it works.
   validator app API / scan URL** from the organizer. Until then `price` stays a
   CC-denominated number. See `blockchain/daml/DEVNET-ACCESS.md`.
 
+### 2026-06-14 — integration complete (P0–P4) + deployed
+
+- **Canton is integrated and live.** P0–P4 ([§13](#13-integration-plan-folding-canton-into-the-main-app))
+  done: enter Canton mode via the network pill + identity picker; public parcel
+  count via `ProposalMarker`; create from the map flow; view/accept in the parcel
+  panel; identity tooling. Merged to `2026-nyc-demo` and **deployed to
+  https://urbangametheory.xyz** (frontend rsync + backend git-pull on `do`).
+- **Lens sees the accepted sale.** `Sale` gained an **`Optional lens` observer**
+  (carried through `Accept`) so buyer **and** owner **and** lens keep visibility
+  after acceptance (status "Accepted"); a stranger still sees nothing. Optional
+  keeps the package upgrade-compatible. Package → **0.3.0**.
+- **No double count.** A Canton proposal also gets a local/in-memory copy from the
+  create flow; it's now excluded from the EVM count + EVM list
+  (`CantonMode.isCantonProposal`), so it shows only as the purple Canton badge.
+- **Config folded into `backend/.env`** (`CANTON_*`), so the real API serves
+  `/canton`; the `blockchain/daml/spike/` dir was removed (superseded by
+  `backend/canton/`).
+- **`canton.html` kept** as an internal **state explorer** + backup demo, linked
+  from the identity picker (same ledger + same-origin localStorage).
+
 ### Under discussion (not yet decided)
 
 - **Parcel ↔ proposal discovery without NFTs.** Canton has no public NFT/contract
