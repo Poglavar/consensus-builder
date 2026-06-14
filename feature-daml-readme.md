@@ -24,9 +24,9 @@ describes **what exists and how it works**. It's a living doc — updated as we 
 | Create proposal via main app (P2) | `canton-mode.js` bridge + `proposals.js` routing | ✅ Canton mode mints via `/canton/proposals` (skips NFTs) |
 | View/Accept on parcel (P3) | `js/canton/canton-parcel.js` + `parcel-panel.js` | ✅ panel section: "Open" proposals + "Accepted" sales; details if stakeholder, else "private"; owner Accept |
 | Identity tooling (P4) | `canton-mode.js` identity picker | ✅ pick/paste/generate + Copy / CCView / Forget / Clear |
-| State explorer link | `canton-mode.js` → `canton.html` | ✅ opens `canton.html` (same ledger + shared localStorage) prefilled with current identity |
+| State explorer | `js/canton/canton-explorer.js` | ✅ in-app dialog (native `.wallet-modal` styling): pick/switch any party, see its proposals (Open) + sales (Accepted), owner Accept |
 | Real Canton Coin transfer | — | ⛔ parked (needs scan/registry URL) |
-| Standalone console (`canton.html`) | `frontend/canton.html` | ✅ kept as backup demo + state explorer |
+| Standalone console (`canton.html`) | `frontend/canton.html` | ✅ kept as backup demo (explorer fallback) |
 | Owner self-custody | — | ❌ out of scope (see decisions log) |
 
 Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-plan-folding-canton-into-the-main-app)):
@@ -133,9 +133,9 @@ node backend/canton/dev-serve.js          # prints a free-port URL (e.g. :62025)
 Open `…/index.html` → network pill → **Canton** → pick an identity → select a
 parcel → **Create proposal**. Switch identity to the **owner** to **Accept** from
 the parcel panel's "Canton proposals" section. The identity picker also has a
-**"Canton state explorer ↗"** link → opens `canton.html` (same ledger + shared
-localStorage), our internal explorer / backup demo. The DAR is deployed once via
-`seed.js`/`check.js` (`DAR_PATH`) or Seaport.
+**"Canton state explorer"** button → opens an **in-app dialog** to inspect any
+party's proposals/sales (the standalone `canton.html` page remains as a backup /
+fallback). The DAR is deployed once via `seed.js`/`check.js` (`DAR_PATH`) or Seaport.
 
 ## Verified against live DevNet
 
