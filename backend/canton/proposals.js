@@ -5,7 +5,7 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
-import { activeContracts, allocateParty, grantActAs, createContract, exerciseChoice } from './ledger.js';
+import { activeContracts, allocateParty, grantActAs, listUserParties, createContract, exerciseChoice } from './ledger.js';
 
 const templateId = (cfg, entity) => `${cfg.packageRef}:Proposal:${entity}`;
 
@@ -25,17 +25,17 @@ async function getPublicParty(cfg = cantonConfig()) {
     if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
   } catch (_) { /* no local cache yet */ }
 
-  // Allocate the shared public party; if it already exists on this node (a fresh
-  // deploy against a validator where it was allocated before), recover its id
-  // from the "already exists" error instead of failing. Avoids needing a
-  // configured CANTON_PUBLIC_PARTY or a persisted cache file.
-  let party;
+  // Discover the shared public party from the configured user's rights (it was
+  // granted actAs on it) — a targeted lookup that returns the full party id.
+  // Only allocate when it doesn't exist yet (first run on a fresh validator).
+  // Avoids needing a configured CANTON_PUBLIC_PARTY or a persisted cache file.
+  let party = null;
   try {
+    const mine = await listUserParties(cfg);
+    party = mine.find((p) => typeof p === 'string' && p.startsWith(`${PUBLIC_HINT}::`)) || null;
+  } catch (_) { /* fall through to allocate */ }
+  if (!party) {
     party = await allocateParty(cfg, PUBLIC_HINT);
-  } catch (e) {
-    const m = String((e && e.message) || e).match(/CantonPublic::[0-9a-fA-F]+/);
-    if (!m) throw e;
-    party = m[0];
   }
   try { await grantActAs(cfg, cfg.userId, party); } catch (_) { /* best-effort */ }
   try { await writeFile(PUBLIC_FILE, JSON.stringify({ party }), 'utf8'); } catch (_) { }
