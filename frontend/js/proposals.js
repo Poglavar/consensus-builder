@@ -1037,6 +1037,11 @@ function getProposalAreaMap(proposal) {
 }
 
 function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
+    // In Canton mode the EVM owner-acceptance UI doesn't apply — Canton proposals
+    // are accepted (by the owner) from the dedicated "Canton proposals" section.
+    if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
+        return '';
+    }
     const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];

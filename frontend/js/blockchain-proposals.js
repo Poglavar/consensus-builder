@@ -881,8 +881,8 @@
     }
 
     async function contributeToProposalWithRouting(options = {}) {
-        if (isCantonActive() && globalScope.CantonProposalChainBridge) {
-            return globalScope.CantonProposalChainBridge.contributeToProposal(options);
+        if (isCantonActive()) {
+            throw new Error('Contributions are not supported on Canton.');
         }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.contributeToProposal(options);
@@ -891,8 +891,11 @@
     }
 
     async function acceptProposalWithRouting(options = {}) {
-        if (isCantonActive() && globalScope.CantonProposalChainBridge) {
-            return globalScope.CantonProposalChainBridge.acceptProposal(options);
+        if (isCantonActive()) {
+            // Canton acceptance is done by the OWNER from the parcel panel's "Canton
+            // proposals" section (it carries the Canton contract id). The EVM accept
+            // path can't, so guide the user instead of failing cryptically.
+            throw new Error('To accept on Canton: switch your Canton identity to the owner, then use the "Canton proposals" section in the parcel panel.');
         }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.acceptProposal(options);
@@ -901,8 +904,8 @@
     }
 
     async function withdrawAcceptanceWithRouting(options = {}) {
-        if (isCantonActive() && globalScope.CantonProposalChainBridge) {
-            return globalScope.CantonProposalChainBridge.withdrawAcceptance(options);
+        if (isCantonActive()) {
+            throw new Error('Withdrawing acceptance is not wired on Canton.');
         }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.withdrawAcceptance(options);
