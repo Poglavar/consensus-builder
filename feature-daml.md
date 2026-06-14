@@ -467,3 +467,45 @@ sequenceDiagram
     B->>O: create PurchaseProposal (owner as observer) — visible to owner only
     O->>O: Accept → Sale
 ```
+
+---
+
+## 12. Decisions log (build)
+
+What we actually committed to as the build progressed. See `feature-daml-readme.md`
+for what's been built and how it works.
+
+### 2026-06-14 — after the DevNet spike
+
+- **Custodial MVP confirmed; production self-custody (Loop wallet) dropped.**
+  Creating a contract with a Loop-wallet party as stakeholder fails with
+  `PACKAGE_SELECTION_FAILED` — that party's participant hasn't **vetted** our DAR,
+  and managed Loop wallets won't vet arbitrary app packages. So a real owner
+  **cannot hold our `PurchaseProposal`** in their wallet. All app parties stay
+  hosted on our validator, driven by the backend (M2M user `6`). Real
+  cross-participant identity is **out of scope** for this MVP.
+  → supersedes the self-custody decision in [§11.2](#112-how-parties-are-onboarded-wallets--keys).
+
+- **Integration narrowed to a UI fold; no chain-router parity.** We will fold
+  `canton.html` into the main app shell as a **Canton section**, but **not** wire
+  Canton into the wallet-driven `*WithRouting` ([§5](#5-frontend-integration)).
+  Reason: that router selects a chain by *which browser wallet is connected*;
+  Canton here is backend-custodial with **no browser wallet to detect**, so there
+  is nothing for an `isCantonConnected()` branch to key off. Forcing it in would
+  mean inventing a separate selector and fighting the existing pattern.
+
+- **M4 real Canton Coin transfer: chosen (custodial buyer→owner), but parked.**
+  We hold ~16.1M CC on the validator party and confirmed on-ledger `Holding`
+  visibility, but a token-standard transfer needs the Amulet **registry/scan**
+  (the `TransferFactory`), reachable at `${validator-app-api}/v0/scan-proxy`. We
+  were only given the **ledger-api** host, so this is **blocked on obtaining the
+  validator app API / scan URL** from the organizer. Until then `price` stays a
+  CC-denominated number. See `blockchain/daml/DEVNET-ACCESS.md`.
+
+### Under discussion (not yet decided)
+
+- **Parcel ↔ proposal discovery without NFTs.** Canton has no public NFT/contract
+  state, so a parcel cannot publicly advertise its proposals the way EVM does.
+  Leaning toward: a **public proposal-count signal** (existence only, no details)
+  surfaced on the map via a backend index, with full details gated to the
+  attested owner. To be finalized in discussion.
