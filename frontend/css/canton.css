@@ -1,0 +1,27 @@
+/* Minimal styles for the Canton read-only view (canton.html). Mobile-first. */
+.canton-wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
+.canton-wrap h1 { font-size: 1.25rem; margin: 0 0 4px; }
+.canton-sub { color: #666; font-size: 0.85rem; margin: 0 0 16px; }
+.canton-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.canton-controls input {
+    flex: 1 1 220px; min-width: 0; padding: 8px 10px; font: inherit;
+    border: 1px solid #ccc; border-radius: 6px;
+}
+.canton-controls button {
+    padding: 8px 14px; font: inherit; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-controls button:hover { background: #249; border-color: #249; }
+.canton-status { font-size: 0.85rem; color: #555; min-height: 1.2em; margin-bottom: 12px; }
+.canton-section h2 { font-size: 1rem; margin: 16px 0 8px; }
+.canton-empty { color: #999; font-size: 0.9rem; margin: 0; }
+.canton-card { border: 1px solid #e2e2e2; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+.canton-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.canton-parcel { font-weight: 600; }
+.canton-price { color: #2b6; font-variant-numeric: tabular-nums; }
+.canton-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; font-size: 0.82rem; }
+.canton-meta dt { color: #888; }
+.canton-meta dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 380px) {
+    .canton-controls button { flex: 1 1 100%; }
+}

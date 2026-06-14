@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Canton chain option — minimal read-only view of a party's proposals/sales.
+     Standalone for now; becomes the party-perspective surface in a later step. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canton — Proposals</title>
+    <link rel="stylesheet" href="css/canton.css?v=1" />
+</head>
+<body>
+    <main class="canton-wrap">
+        <h1>Canton — Proposals</h1>
+        <p class="canton-sub">Read-only view. Enter a party ID to see proposals addressed to it and its completed sales.</p>
+
+        <div class="canton-controls">
+            <input id="canton-party" type="text" placeholder="party id (hint::fingerprint)" autocomplete="off" />
+            <button id="canton-load" type="button">Load</button>
+        </div>
+        <div id="canton-status" class="canton-status"></div>
+
+        <section class="canton-section">
+            <h2>Proposals</h2>
+            <div id="canton-proposals"></div>
+        </section>
+
+        <section class="canton-section">
+            <h2>Sales</h2>
+            <div id="canton-sales"></div>
+        </section>
+    </main>
+
+    <script src="js/canton/canton-read.js?v=1" defer></script>
+</body>
+</html>
