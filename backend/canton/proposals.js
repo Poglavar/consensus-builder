@@ -5,25 +5,55 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { cantonConfig } from './token.js';
-import { activeContracts, allocateParty, grantActAs, createContract, exerciseChoice } from './ledger.js';
+import { activeContracts, allocateParty, grantActAs, listParties, createContract, exerciseChoice } from './ledger.js';
 
 const templateId = (cfg, entity) => `${cfg.packageRef}:Proposal:${entity}`;
 
 // The public "registry" party that observes ProposalMarker contracts, giving the
-// app a parcel→count signal without disclosing proposal terms. Allocated once on
-// our validator (granted actAs to our user) and cached to a gitignored file so it
-// is stable across restarts. Override with CANTON_PUBLIC_PARTY.
+// app a parcel→count signal without disclosing proposal terms. It is a single,
+// STABLE, SHARED identity (unlike on-demand demo parties) — markers carry it as
+// observer and we read its ACS — so it must be reused, not re-created per call.
+const PUBLIC_HINT = 'CantonPublic';
 const PUBLIC_FILE = new URL('./.public-party.json', import.meta.url);
 let publicPartyCache = null;
+
+// Find an already-allocated public party on this participant (so we reuse the
+// shared one instead of failing to re-allocate it).
+async function findPublicParty(cfg) {
+  try {
+    const parties = await listParties(cfg);
+    const match = parties.find((p) => {
+      const id = typeof p === 'string' ? p : (p && p.party);
+      return typeof id === 'string' && (id === PUBLIC_HINT || id.startsWith(`${PUBLIC_HINT}::`));
+    });
+    return match ? (typeof match === 'string' ? match : match.party) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
 async function getPublicParty(cfg = cantonConfig()) {
-  if (cfg.publicParty) return cfg.publicParty;
+  if (cfg.publicParty) return cfg.publicParty;          // explicit override wins
   if (publicPartyCache) return publicPartyCache;
   try {
     const saved = JSON.parse(await readFile(PUBLIC_FILE, 'utf8'));
     if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
-  } catch (_) { /* not allocated yet */ }
-  const party = await allocateParty(cfg, 'CantonPublic');
-  await grantActAs(cfg, cfg.userId, party);
+  } catch (_) { /* no local cache yet */ }
+
+  // Reuse the existing shared public party if it's already on the node; only
+  // allocate when truly absent, and recover from an "already exists" race.
+  let party = await findPublicParty(cfg);
+  if (!party) {
+    try {
+      party = await allocateParty(cfg, PUBLIC_HINT);
+    } catch (e) {
+      if (/already (exist|allocat)/i.test(String((e && e.message) || e))) {
+        party = await findPublicParty(cfg);
+      }
+      if (!party) throw e;
+    }
+  }
+  try { await grantActAs(cfg, cfg.userId, party); } catch (_) { /* idempotent / best-effort */ }
   try { await writeFile(PUBLIC_FILE, JSON.stringify({ party }), 'utf8'); } catch (_) { }
   publicPartyCache = party;
   return party;
@@ -43,7 +73,8 @@ function mapProposal(ev) {
 
 function mapSale(ev) {
   const a = ev.createArgument || {};
-  return { contractId: ev.contractId, parcelId: a.parcelId, price: a.price, buyer: a.buyer, owner: a.owner };
+  // lens is Optional Party → a string when set, null/undefined when not.
+  return { contractId: ev.contractId, parcelId: a.parcelId, price: a.price, buyer: a.buyer, owner: a.owner, lens: a.lens || undefined };
 }
 
 // Active purchase proposals visible to `party` (as buyer, owner-observer, or lens).
