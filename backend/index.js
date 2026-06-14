@@ -181,6 +181,13 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         app.set('trust proxy', 1);
     }
 
+    // The ENS CCIP-Read gateway (/ens/...) is a public, read-only, signed
+    // endpoint — any origin may fetch it. Advertise permissive CORS so
+    // browser-based resolvers (e.g. app.ens.domains, which does the gateway
+    // fetch client-side) don't log CORS errors. Must run before the
+    // allowlist CORS below so it also answers any preflight.
+    app.use('/ens', cors({ origin: '*', methods: ['GET', 'OPTIONS'], credentials: false }));
+
     const isProduction = env.NODE_ENV === 'production';
     // USE_CORS_ALLOWLIST gates the explicit-allowlist CORS middleware. In
     // production it must be set to 'true' to enable CORS at all; in dev it

@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
+import express from 'express';
+import cors from 'cors';
 import {
     AbiCoder, Wallet, dnsEncode, namehash,
     recoverAddress, keccak256, solidityPackedKeccak256, getAddress,
@@ -64,5 +66,29 @@ describe('GET /ens/:sender/:data', () => {
         const unconfiguredApp = createRouteApp(setupEnsRoute, pool);
         const res = await request(unconfiguredApp).get(`/ens/${SENDER}/0xabcd.json`);
         expect(res.status).toBe(503);
+    });
+
+    // The CCIP-Read gateway is public — browser resolvers (app.ens.domains)
+    // fetch it cross-origin, so it must return Access-Control-Allow-Origin: *
+    // even though that origin is not in the allowlist. Mirrors index.js order:
+    // the permissive /ens CORS runs before the credentialed allowlist CORS.
+    it('returns permissive CORS for a disallowed origin', async () => {
+        const corsApp = express();
+        corsApp.use('/ens', cors({ origin: '*', methods: ['GET', 'OPTIONS'], credentials: false }));
+        corsApp.use(cors({ origin: (_o, cb) => cb(null, false), credentials: true }));
+        corsApp.use(express.json());
+        setupEnsRoute(corsApp, pool);
+
+        pool.setResult({
+            rows: [{ slug: 'us-ny-1234', parcel_id: 'US-NY-1234', city_code: 'ny', lat: null, lon: null, area_m2: null, token_id: null, image_url: null }],
+            rowCount: 1,
+        });
+        const callData = textUrlCallData('us-ny-1234.parcels.urbangametheory.eth');
+        const res = await request(corsApp)
+            .get(`/ens/${SENDER}/${callData}.json`)
+            .set('Origin', 'https://app.ens.domains');
+
+        expect(res.status).toBe(200);
+        expect(res.headers['access-control-allow-origin']).toBe('*');
     });
 });
