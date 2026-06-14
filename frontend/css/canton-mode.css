@@ -1,6 +1,17 @@
 /* Canton identity picker (the wallet stand-in) + Canton network pill bits.
    Reuses .wallet-modal / .wallet-option base styles; only the extras live here. */
-.canton-id-list { max-height: 240px; overflow-y: auto; margin-bottom: 10px; }
+.canton-id-list { max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+.canton-id-row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid #eee; }
+.canton-id-row2.is-current { background: #ede7f6; border-radius: 6px; }
+.canton-id-pick { flex: 1 1 auto; min-width: 0; text-align: left; background: transparent; border: 0; cursor: pointer; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px; }
+.canton-id-pick:hover { background: rgba(126, 87, 194, 0.08); border-radius: 6px; }
+.canton-id-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.canton-id-role { font-size: 0.74rem; color: #888; }
+.canton-id-acts { display: flex; gap: 4px; }
+.canton-id-acts button { font: inherit; font-size: 0.74rem; padding: 3px 7px; border: 1px solid #ccc; background: #fff; border-radius: 5px; cursor: pointer; }
+.canton-id-acts button:hover { border-color: #7E57C2; color: #5E35B1; }
+.canton-ccview-out { flex-basis: 100%; font-size: 0.76rem; color: #555; padding: 0 6px; }
+.canton-ccview-out:empty { display: none; }
 .canton-id-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .canton-id-row input {
     flex: 1 1 200px; min-width: 0; padding: 7px 9px; font: inherit;

@@ -33,6 +33,16 @@
         list.unshift({ party, role: role || 'identity', parcelId: '', ts: Date.now() });
         set(PARTIES_KEY, JSON.stringify(list.slice(0, 50)));
     }
+    function forgetParty(party) { set(PARTIES_KEY, JSON.stringify(partiesList().filter((p) => p.party !== party))); }
+    function clearParties() { del(PARTIES_KEY); }
+
+    // CCView explorer summary for a party (server-proxied; key stays server-side).
+    async function ccviewParty(party) {
+        const res = await fetch(`${apiBase()}/canton/ccview/${encodeURIComponent(party)}`);
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+        return j;
+    }
 
     const hint = (p) => (typeof p === 'string' && p.indexOf('::') !== -1) ? p.slice(0, p.indexOf('::')) : (p || '');
 
@@ -56,11 +66,29 @@
 
     const closePicker = () => { document.querySelector('.canton-id-overlay')?.remove(); };
 
-    // The "connect wallet" equivalent: choose which party you act as.
+    // The "connect wallet" equivalent: choose which party you act as. Also folds in
+    // the canton.html tooling — per-party Copy / CCView / Forget, and Clear all.
+    function partyRowsHtml(cur) {
+        const list = partiesList();
+        if (!list.length) return '<p class="canton-empty">No parties yet — paste one or generate a test party.</p>';
+        return list.map((p) => `
+            <div class="canton-id-row2${p.party === cur ? ' is-current' : ''}">
+                <button type="button" class="canton-id-pick" data-party-select="${p.party}" title="Use this identity">
+                    <span class="canton-id-name">${hint(p.party)}</span>
+                    <span class="canton-id-role">${p.role || 'party'}${p.parcelId ? ` · ${p.parcelId}` : ''}</span>
+                </button>
+                <span class="canton-id-acts">
+                    <button type="button" data-copy="${p.party}" title="Copy full party id">Copy</button>
+                    <button type="button" data-ccview="${p.party}" title="Canton Coin balance / explorer">CCView</button>
+                    <button type="button" data-forget="${p.party}" title="Forget">×</button>
+                </span>
+                <div class="canton-ccview-out"></div>
+            </div>`).join('');
+    }
+
     function openIdentityPicker() {
         closePicker();
         const cur = getParty();
-        const list = partiesList();
         const overlay = document.createElement('div');
         overlay.className = 'wallet-modal-overlay canton-id-overlay';
         overlay.setAttribute('tabindex', '-1');
@@ -72,19 +100,12 @@
                 </div>
                 <div class="wallet-modal-body">
                     <div class="wallet-modal-description">Canton has no browser wallet — choose the party you act as.${cur ? ` Current: <b>${hint(cur)}</b>` : ''}</div>
-                    <div class="wallet-options canton-id-list">
-                        ${list.length ? list.map((p) => `
-                            <button type="button" class="wallet-option canton-id-opt${p.party === cur ? ' chain-option--current' : ''}" data-party="${p.party}">
-                                <div class="wallet-option-meta">
-                                    <div class="wallet-option-name">${hint(p.party)}</div>
-                                    <div class="wallet-option-origin">${p.role || 'party'}${p.parcelId ? ` · ${p.parcelId}` : ''}</div>
-                                </div>
-                            </button>`).join('') : '<p class="canton-empty">No parties yet — paste one or generate a test party.</p>'}
-                    </div>
+                    <div class="canton-id-list" data-list>${partyRowsHtml(cur)}</div>
                     <div class="canton-id-row">
                         <input type="text" id="canton-id-paste" placeholder="paste party id (hint::fingerprint)" autocomplete="off" />
                         <button type="button" class="btn" data-use-paste>Use</button>
                         <button type="button" class="btn" data-gen>New test party</button>
+                        <button type="button" class="btn canton-ghost" data-clear>Clear</button>
                     </div>
                     <div class="canton-id-foot">
                         <button type="button" class="btn canton-ghost" data-switch>Use a different network</button>
@@ -96,11 +117,34 @@
         document.body.appendChild(overlay);
         overlay.focus({ preventScroll: true });
         const err = (m) => { const e = overlay.querySelector('[data-err]'); if (e) e.textContent = m; };
+        const redrawList = () => { const l = overlay.querySelector('[data-list]'); if (l) l.innerHTML = partyRowsHtml(getParty()); };
 
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay || e.target.closest('[data-close]')) return closePicker();
-            const opt = e.target.closest('[data-party]');
-            if (opt) { setParty(opt.getAttribute('data-party')); return closePicker(); }
+
+            const copy = e.target.closest('[data-copy]');
+            if (copy) { try { navigator.clipboard.writeText(copy.getAttribute('data-copy')); err('Copied party id.'); } catch (_) { } return; }
+
+            const cc = e.target.closest('[data-ccview]');
+            if (cc) {
+                const out = cc.closest('.canton-id-row2')?.querySelector('.canton-ccview-out');
+                if (out) out.textContent = 'Looking up on CCView…';
+                ccviewParty(cc.getAttribute('data-ccview')).then((d) => {
+                    if (!out) return;
+                    const link = `<a href="${d.explorerUrl}" target="_blank" rel="noopener">open on CCView ↗</a>`;
+                    out.innerHTML = d.indexed
+                        ? `CC balance: <b>${d.coinBalance ?? '—'}</b> · transfers: <b>${d.transfers ?? 0}</b> ${link}`
+                        : `Not yet indexed (no Canton Coin activity). ${link}`;
+                }).catch((x) => { if (out) out.textContent = `CCView error: ${x.message}`; });
+                return;
+            }
+
+            const forget = e.target.closest('[data-forget]');
+            if (forget) { forgetParty(forget.getAttribute('data-forget')); redrawList(); return; }
+
+            const pick = e.target.closest('[data-party-select]');
+            if (pick) { setParty(pick.getAttribute('data-party-select')); return closePicker(); }
+
             if (e.target.closest('[data-use-paste]')) {
                 const v = (overlay.querySelector('#canton-id-paste').value || '').trim();
                 if (v) { setParty(v); closePicker(); } else err('Enter a party id.');
@@ -112,6 +156,7 @@
                 generateParty().then((p) => { setParty(p); closePicker(); }).catch((x) => { err(x.message); gen.disabled = false; });
                 return;
             }
+            if (e.target.closest('[data-clear]')) { clearParties(); redrawList(); return; }
             if (e.target.closest('[data-switch]')) { closePicker(); window.openChainSelectionModal && window.openChainSelectionModal(); return; }
             if (e.target.closest('[data-leave]')) { deactivate(); closePicker(); return; }
         });

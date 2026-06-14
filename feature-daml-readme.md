@@ -22,12 +22,13 @@ describes **what exists and how it works**. It's a living doc — updated as we 
 | Parcel proposal-count signal (P1) | `ProposalMarker` + `/canton/parcel-counts` + `js/canton/canton-counts.js` | ✅ on-ledger marker → map badges |
 | Create proposal via main app (P2) | `canton-mode.js` bridge + `proposals.js` routing | ✅ Canton mode mints via `/canton/proposals` (skips NFTs) |
 | View/Accept on parcel (P3) | `js/canton/canton-parcel.js` + `parcel-panel.js` | ✅ panel section: details if stakeholder, "private" otherwise, owner Accept |
+| Identity tooling (P4) | `canton-mode.js` identity picker | ✅ pick/paste/generate + Copy / CCView / Forget / Clear |
 | Real Canton Coin transfer | — | ⛔ parked (needs scan/registry URL) |
-| Fold the rest / cleanup (P4) | — | ⬜ pending |
+| Standalone console (`canton.html`) | `frontend/canton.html` | ✅ kept as backup demo |
 | Owner self-custody | — | ❌ out of scope (see decisions log) |
 
 Integration phases (see [feature-daml.md §13](feature-daml.md#13-integration-plan-folding-canton-into-the-main-app)):
-**P0** ✅ enter Canton mode · **P1** ✅ counts (Option B markers) · **P2** ✅ create via map · **P3** ✅ view/accept on parcel · **P4** fold the rest.
+**P0** ✅ enter Canton mode · **P1** ✅ counts (Option B markers) · **P2** ✅ create via map · **P3** ✅ view/accept on parcel · **P4** ✅ identity tooling folded in (`canton.html` kept as backup).
 
 ## Architecture
 
