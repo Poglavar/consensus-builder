@@ -476,6 +476,7 @@
             },
             "proposalsSection": {
                 "create": "Kreiraj predlog",
+                "creating": "Kreiram...",
                 "empty": "Nema predloga",
                 "fallbackTitle": "Predlog",
                 "roadSuffix": " (Put)",

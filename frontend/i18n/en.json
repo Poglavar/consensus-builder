@@ -484,6 +484,7 @@
             },
             "proposalsSection": {
                 "create": "Create proposal",
+                "creating": "Creating...",
                 "empty": "No proposals",
                 "fallbackTitle": "Proposal",
                 "roadSuffix": " (Road)",
