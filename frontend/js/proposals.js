@@ -10360,30 +10360,16 @@ function showProposalWaitingPopup(message = 'Waiting for transaction...') {
     if (!popup) {
         popup = document.createElement('div');
         popup.id = 'proposal-waiting-popup';
-        popup.style.position = 'fixed';
-        popup.style.inset = '0';
-        popup.style.zIndex = '12050';
-        popup.style.display = 'flex';
-        popup.style.alignItems = 'center';
-        popup.style.justifyContent = 'center';
-        popup.style.pointerEvents = 'none';
+        // Full-screen blocking overlay (styling in css/modals.css). It must NOT be
+        // pointer-events:none — it's what stops clicks from reaching the map/parcels
+        // behind the dimmed dialog while the transaction is pending.
+        popup.className = 'proposal-waiting-overlay';
 
         const card = document.createElement('div');
-        card.style.background = '#0d3b66';
-        card.style.color = '#fff';
-        card.style.padding = '12px 16px';
-        card.style.borderRadius = '12px';
-        card.style.boxShadow = '0 12px 36px rgba(0,0,0,0.25)';
-        card.style.display = 'flex';
-        card.style.alignItems = 'center';
-        card.style.gap = '10px';
-        card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-        card.style.fontSize = '14px';
-        card.style.pointerEvents = 'none';
+        card.className = 'proposal-waiting-card';
 
         const indicator = document.createElement('span');
-        indicator.textContent = '⏳';
-        indicator.style.fontSize = '16px';
+        indicator.className = 'proposal-waiting-spinner';
         indicator.setAttribute('aria-hidden', 'true');
 
         const text = document.createElement('span');

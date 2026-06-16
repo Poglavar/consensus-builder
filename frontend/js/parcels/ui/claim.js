@@ -1678,7 +1678,11 @@
         closeBtn.type = 'button';
         closeBtn.className = 'close-circle-btn close-circle-btn--lg parcel-mint-close';
         closeBtn.textContent = '×';
-        closeBtn.onclick = () => removeParcelMintModal('close');
+        // Don't allow dismissing the modal while a mint transaction is in flight (is-busy).
+        closeBtn.onclick = () => {
+            if (overlay.classList.contains('is-busy')) return;
+            removeParcelMintModal('close');
+        };
         header.appendChild(titleWrap);
         header.appendChild(closeBtn);
 
@@ -1842,7 +1846,8 @@
         modal.appendChild(body);
         overlay.appendChild(modal);
         overlay.onclick = (event) => {
-            if (event.target === overlay) {
+            // Clicking the backdrop closes the modal, but not while a mint is in flight (is-busy).
+            if (event.target === overlay && !overlay.classList.contains('is-busy')) {
                 removeParcelMintModal('overlay');
             }
         };

@@ -2360,11 +2360,55 @@
     align-items: center;
 }
 
+/* Cosmetic only: the dimmed modal is darkened/blurred for depth while a tx is
+   pending. It deliberately keeps its z-index and pointer-events — the
+   .proposal-waiting-overlay on top is what blocks interaction (mirrors how the
+   parcel-mint overlay stays up). Dropping z-index / pointer-events here used to
+   expose the map behind, leaving parcels clickable during the wait. */
 .create-proposal-modal.dimmed-behind-overlay {
-    z-index: 1500;
     filter: blur(1px);
     opacity: 0.65;
-    pointer-events: none;
+}
+
+/* Proposal "waiting for transaction" overlay — mirrors .parcel-mint-overlay so
+   both flows block interaction the same way while a transaction is pending. */
+.proposal-waiting-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 12050; /* above the create-proposal modal (11000) */
+    cursor: progress;
+}
+
+.proposal-waiting-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    color: #334155;
+    padding: 14px 18px;
+    border-radius: 14px;
+    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
+    font-size: 14px;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.proposal-waiting-spinner {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(13, 59, 102, 0.25);
+    border-top-color: #0d3b66;
+    border-radius: 50%;
+    animation: proposal-waiting-spin 0.8s linear infinite;
+}
+
+@keyframes proposal-waiting-spin {
+    to { transform: rotate(360deg); }
 }
 
 #blockify-container {
