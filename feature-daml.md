@@ -232,6 +232,14 @@ Two options to decide in refinement:
 Recommendation: prototype on **A** against a local/test participant to validate
 the contract model, then move to **B** before anything non-local.
 
+> **Resolved (see [§11](#11-proposed-route--lens-trust-model)):** the DevNet-via-Seaport
+> route uses a **shared validator** (5n sandbox) that hosts the ledger, so we go
+> with **option A** (direct browser → JSON Ledger API, OIDC/JWT auth) and **never
+> run our own participant node**. The "thin backend proxy" (B) is no longer needed
+> for the MVP. The backend keeps its existing role (persist `onchain_data`); the
+> only possible addition is an optional, non-authoritative attestation index
+> ([§11.4](#114-sending-proposals-to-parcels-visible-to-owners)).
+
 ---
 
 ## 7. Contracts / tooling
@@ -279,23 +287,358 @@ flowchart LR
 
 ## 9. Open questions
 
-1. **Identity / "wallet".** What is a Canton "connect" in this UX? Config-driven
-   party + JWT? A self-hosted participant per user? This shapes
-   `cantonWalletManager` and [§6](#6-backend-the-one-real-divergence).
-2. **Participant access.** Direct browser → JSON API (A) or backend proxy (B)?
-   Where does the participant run (the `do` server? Canton testnet?)?
-3. **Funds model.** Custom `Token`/escrow templates vs. Canton token standard /
+**Resolved** (see [§11](#11-proposed-route--lens-trust-model)):
+- ~~**Identity / "wallet".**~~ → Loop wallet party + OIDC/JWT; `@c7/ledger` SDK.
+- ~~**Participant access.**~~ → Option A, shared DevNet validator via Seaport; no own node.
+- ~~**Ownership proof.**~~ → buyer-chosen **lens** attestation (`OwnershipCertificate`),
+  owners **self-custody** their party. No central authority.
+- ~~**Networks.**~~ → local `daml sandbox` for dev/test, **Canton DevNet** (via Seaport)
+  as the deployment target; chain keys `canton` / `canton-devnet`.
+
+**Still open:**
+1. **Funds model.** Custom `Token`/escrow templates vs. Canton token standard /
    Canton Coin? How are ETH/SOL "amounts" represented when there's no native
-   in-contract coin?
-4. **Ownership proof.** EVM uses EAS attestations, Solana uses PDA parcel certs.
-   What proves a party owns a parcel on Canton — a `Parcel` ownership template?
-   Who is its signatory (a city authority issuer)?
-5. **Feature parity.** `distributeFunds`/`cancelAndRefund` are Solana-only today;
+   in-contract coin? (M4)
+2. **Feature parity.** `distributeFunds`/`cancelAndRefund` are Solana-only today;
    does Canton implement the full set or follow the "throw if unsupported"
    convention (`blockchain-proposals.js:898,905`)?
-6. **State modeling.** Status as an enum field vs. distinct lifecycle templates;
+3. **State modeling.** Status as an enum field vs. distinct lifecycle templates;
    port full per-parcel share-bps (`ParcelOwnerState`) or simplify for v1.
-7. **Networks.** Which Canton networks do we target — local sandbox only first,
-   then a testnet? What are the `canton-*` keys and endpoints?
-8. **Router refactor.** Refactor three-way `*WithRouting()` into a bridge
+4. **Multi-lens.** When we add it (future), confirm **"any one of them"** semantics
+   and how the contract verifies which lens attested. *Not implemented in MVP.*
+5. **Router refactor.** Refactor three-way `*WithRouting()` into a bridge
    registry now, or keep adding branches?
+
+---
+
+## 10. Simplest first slice — what we're building first
+
+The MVP is a **single-parcel purchase** modeled with the classic DAML
+**propose-accept** pattern, plus a prior ownership attestation. **Money is
+deferred** (the hardest Canton concept) — v1 only proves the consensus/authorization
+mechanics. Lives in `blockchain/daml/`.
+
+Three parties:
+- **Lens** — vouches that the owner is the owner (signs *first*). **Buyer-chosen**
+  (a notary, a lawyer, or even the buyer themselves), not a central authority.
+  MVP = exactly **one** lens. See [§11](#11-proposed-route--lens-trust-model) for the trust model.
+- **Owner** — owns the parcel.
+- **Buyer** — wants to buy it.
+
+Flow:
+
+```mermaid
+sequenceDiagram
+    participant L as Lens (buyer-chosen)
+    participant B as Buyer
+    participant O as Owner
+    L->>L: create OwnershipCertificate (parcel X → Owner)
+    B->>B: create PurchaseProposal (parcel X, price, refs cert; Owner as observer)
+    O->>O: exercise Accept → Sale (signed by Buyer + Owner)
+```
+
+1. **Lens** creates `OwnershipCertificate` ("Owner owns parcel X").
+2. **Buyer** creates `PurchaseProposal` for parcel X at a price, referencing the cert,
+   with **Owner as observer** — so it appears in the owner's ledger view, and no one else's.
+3. **Owner** exercises `Accept`: the proposal is archived and a bilaterally-signed
+   `Sale` is created. One parcel + one owner ⇒ consensus in a single accept.
+
+This exercises every core Canton concept at minimum size — **Party** (×3),
+**signatory** vs **observer**, **controller**, a **choice** that **archives + creates**
+(the immutability model), and the **propose-accept** authorization handshake —
+without value transfer. The cert is passed as a `ContractId` and `fetch`ed inside
+`Accept` (owner is an observer of the cert, so the fetch is authorized) — avoids
+contract-key maintainer-authorization rules in v1.
+
+### Build milestones
+
+| # | Milestone | Output | Touches frontend? |
+|---|---|---|---|
+| **M0** | Local infra spike | `daml` SDK + local sandbox/JSON API runs; create/exercise/query from a script | no |
+| **M1** | Contracts + tests | the 3 templates + `daml test` running lens→buyer→owner end-to-end | no |
+| **M2** | Read path | `daml codegen js`; `CantonChainDataLoader` maps contracts → existing proposal DTO; render read-only | yes (read) |
+| **M3** | Write path | `CantonProposalChainBridge` (`mintProposal`=create, `acceptProposal`=exercise Accept) wired into `*WithRouting()`; "wallet" = config party + JWT | yes |
+| **M4** | Funds | token/escrow template so `price` is locked & transferred on Accept | contracts + bridge |
+| **M5** | Parity | multiple parcels/owners, share-bps, lens as observer list, status enum, expiry | all |
+
+**M0/M1 first, then stop for review** before touching the frontend.
+
+### Local stack decision (v1)
+
+Start with **`daml sandbox` + `daml json-api`** (the in-memory dev ledger) — the
+simplest possible local ledger, equivalent to a Hardhat node / Anchor localnet.
+The shared DevNet validator (see [§11](#11-proposed-route--lens-trust-model)) is the
+M3+ target. This keeps §6 option **A** (direct browser → JSON Ledger API) viable
+throughout — we never run our own node.
+
+---
+
+## 11. Proposed route + lens trust model
+
+This is the **chosen direction** (resolves much of §6/§9). It is the route the
+Canton ecosystem tooling expects, and it removes the need to run our own node.
+
+### 11.1 Deployment route — Canton DevNet via Seaport
+
+> "Seaport" here is **5North's Canton web IDE / deployment platform**
+> (`app.devnet.seaport.to`) — *not* OpenSea's Seaport protocol.
+
+- **Contracts in Daml, no EVM wrappers** — our `blockchain/daml/` DAR transfers
+  directly; Daml is identical on local sandbox and on DevNet.
+- **Deploy the DAR to Canton DevNet through Seaport**, onto the shared
+  **"5n sandbox" validator** → **we never run our own validator/participant node.**
+- **Frontend** uses the **`@c7/ledger`** SDK against the **JSON Ledger API v2**;
+  TS bindings via `dpm codegen-js`. (Replaces the older `daml codegen js` mention
+  in [§7](#7-contracts--tooling) for the DevNet path.)
+- **Auth** = **OIDC / JWT**; the token maps a user to the party(ies) it may act as.
+- **Demo expectation**: a web dApp that can **switch party perspectives live**
+  (lens / owner / buyer) to show the privacy/visibility differences.
+
+### 11.2 How parties are onboarded (wallets / keys)
+
+A Canton **Party is not an address.** It is `hint::fingerprint`, where the
+fingerprint is the cryptographic fingerprint of the **namespace key** of the node
+managing it (e.g. `alice::1220f2fe…eb72`).
+
+- **Party creation is not permissionless.** A party must be **allocated by a
+  participant/validator** (`POST /v2/parties {"partyIdHint":"..."}`); that node
+  becomes the party's host. You cannot mint one locally like an ETH keypair.
+- **Custody models:** *local party* (validator holds keys, signs on the party's
+  behalf — custodial) vs *external party* (user holds keys, external signing —
+  non-custodial).
+- **Wallet ≠ MetaMask.** For DevNet you get a **Loop wallet** at
+  `devnet.cantonloop.com`, which yields your Party ID on the shared validator.
+  (A **Canton Wallet SDK** exists for building wallet UX.)
+
+**Decision — owners self-custody.** Parcel owners hold their own party via a Loop
+wallet; the lens merely records the owner's Party ID in the attestation. We do
+**not** use lens-custodial parties. The owner's accept is therefore always signed
+by the owner's own key.
+
+### 11.3 Lens trust model (buyer-chosen)
+
+The **lens is the buyer's trust anchor**, chosen per-proposal — a notary, a
+lawyer, several of them, or the buyer themselves. There is **no central authority
+and no required global registry.** Two independent trust questions, and the lens
+touches only the first:
+
+1. **"Who is the owner?"** → answered by the **lens**. Establishes which Party the
+   proposal is addressed to. This is the buyer's own risk surface.
+2. **"Does the owner agree to sell?"** → answered by the **owner accepting with
+   their own key**. Trustless, on-ledger. The lens cannot fake this.
+
+So the owner need not trust the lens — they just see the claim and decide to
+accept or ignore.
+
+**MVP: exactly one lens, always.** The contracts take a single `lens : Party`.
+
+> **Future (noted, not implemented):** multiple lenses with **"any one of them"**
+> semantics — a proposal is valid if *any* of its listed lenses has attested the
+> owner. Mirrors EVM's `lens[]`. Do **not** build this yet; keep the single-lens
+> field until we explicitly take it on.
+
+### 11.4 Sending proposals to parcels, visible to owners
+
+Canton has **no global state and no broadcast** — a contract is visible only to
+its signatory/observer parties. We use that directly:
+
+- **Owner-side visibility is native.** The buyer sets the **owner as an observer**
+  on the `PurchaseProposal`; it then appears in the owner's JSON Ledger API
+  `active-contracts` query instantly, and in no one else's. "Proposals visible to
+  parcel owners" needs no feed, no polling, no directory — the dApp logged in as
+  the owner just lists the proposals addressed to them.
+- **The owner must already be a Party** for the buyer to name them as observer.
+  Onboarding therefore folds into the lens's (off-ledger) work: the lens
+  identifies the real owner and obtains their Party ID (the owner self-onboards a
+  Loop wallet — see [§11.2](#112-how-parties-are-onboarded-wallets--keys)), then
+  issues the attestation naming that Party.
+- **Buyer-side discovery** ("who owns parcel X?") is the **lens's off-ledger job**
+  (land registry, notarial records), not a protocol feature. An optional,
+  non-authoritative index of attestations the app has seen could be added later;
+  it is not part of the MVP.
+
+```mermaid
+sequenceDiagram
+    participant L as Lens (notary/lawyer/self)
+    participant O as Owner (self-custody Loop wallet)
+    participant B as Buyer
+    Note over L,O: off-ledger: L identifies owner, gets owner PartyID (owner self-onboards)
+    L->>O: create OwnershipCertificate (owner is observer)
+    B->>O: create PurchaseProposal (owner as observer) — visible to owner only
+    O->>O: Accept → Sale
+```
+
+---
+
+## 12. Decisions log (build)
+
+What we actually committed to as the build progressed. See `feature-daml-readme.md`
+for what's been built and how it works.
+
+### 2026-06-14 — after the DevNet spike
+
+- **Custodial MVP confirmed; production self-custody (Loop wallet) dropped.**
+  Creating a contract with a Loop-wallet party as stakeholder fails with
+  `PACKAGE_SELECTION_FAILED` — that party's participant hasn't **vetted** our DAR,
+  and managed Loop wallets won't vet arbitrary app packages. So a real owner
+  **cannot hold our `PurchaseProposal`** in their wallet. All app parties stay
+  hosted on our validator, driven by the backend (M2M user `6`). Real
+  cross-participant identity is **out of scope** for this MVP.
+  → supersedes the self-custody decision in [§11.2](#112-how-parties-are-onboarded-wallets--keys).
+
+- **Integration narrowed to a UI fold; no chain-router parity.** We will fold
+  `canton.html` into the main app shell as a **Canton section**, but **not** wire
+  Canton into the wallet-driven `*WithRouting` ([§5](#5-frontend-integration)).
+  Reason: that router selects a chain by *which browser wallet is connected*;
+  Canton here is backend-custodial with **no browser wallet to detect**, so there
+  is nothing for an `isCantonConnected()` branch to key off. Forcing it in would
+  mean inventing a separate selector and fighting the existing pattern.
+
+- **M4 real Canton Coin transfer: chosen (custodial buyer→owner), but parked.**
+  We hold ~16.1M CC on the validator party and confirmed on-ledger `Holding`
+  visibility, but a token-standard transfer needs the Amulet **registry/scan**
+  (the `TransferFactory`), reachable at `${validator-app-api}/v0/scan-proxy`. We
+  were only given the **ledger-api** host, so this is **blocked on obtaining the
+  validator app API / scan URL** from the organizer. Until then `price` stays a
+  CC-denominated number. See `blockchain/daml/DEVNET-ACCESS.md`.
+
+### 2026-06-14 — integration complete (P0–P4) + deployed
+
+- **Canton is integrated and live.** P0–P4 ([§13](#13-integration-plan-folding-canton-into-the-main-app))
+  done: enter Canton mode via the network pill + identity picker; public parcel
+  count via `ProposalMarker`; create from the map flow; view/accept in the parcel
+  panel; identity tooling. Merged to `2026-nyc-demo` and **deployed to
+  https://urbangametheory.xyz** (frontend rsync + backend git-pull on `do`).
+- **Lens sees the accepted sale.** `Sale` gained an **`Optional lens` observer**
+  (carried through `Accept`) so buyer **and** owner **and** lens keep visibility
+  after acceptance (status "Accepted"); a stranger still sees nothing. Optional
+  keeps the package upgrade-compatible. Package → **0.3.0**.
+- **No double count.** A Canton proposal also gets a local/in-memory copy from the
+  create flow; it's now excluded from the EVM count + EVM list
+  (`CantonMode.isCantonProposal`), so it shows only as the purple Canton badge.
+- **Config folded into `backend/.env`** (`CANTON_*`), so the real API serves
+  `/canton`; the `blockchain/daml/spike/` dir was removed (superseded by
+  `backend/canton/`).
+- **`canton.html` kept** as an internal **state explorer** + backup demo, linked
+  from the identity picker (same ledger + same-origin localStorage).
+
+### Under discussion (not yet decided)
+
+- **Parcel ↔ proposal discovery without NFTs.** Canton has no public NFT/contract
+  state, so a parcel cannot publicly advertise its proposals the way EVM does.
+  → **Resolved in [§13](#13-integration-plan-folding-canton-into-the-main-app):**
+  Option B (on-ledger `ProposalMarker` observed by a public party) signals
+  existence only; terms stay private to stakeholders.
+
+---
+
+## 13. Integration plan (folding Canton into the main app)
+
+Goal: move the proven `canton.html` functionality into the main map app so Canton
+sits alongside EVM/Solana — **without** the wallet-driven `*WithRouting` parity
+(Canton is backend-custodial; there's no browser wallet to detect).
+
+### Entry mechanism (agreed)
+
+Canton has no wallet, so identity can't come from a connected wallet. Two parts:
+
+1. **Network switch to "Canton".** Add a **"Canton (DevNet)"** entry to the existing
+   network pill → chain-selection modal (`user-management.js`:
+   `getAvailableChainOptions` / `openChainSelectionModal` / `requestChainSwitch`).
+   Unlike EVM/Solana it needs **no connected wallet**. Selecting it sets a persisted
+   `cantonActive` flag; `isCantonActive()` is checked **first** in the routing
+   functions in `blockchain-proposals.js`.
+2. **"Acting party" picker = the wallet stand-in.** When Canton is active, the
+   wallet button becomes a **Canton identity chip** showing the current party;
+   clicking opens a picker built from the remembered test-parties (pick / paste /
+   "new test party"). The selected party (`cantonCurrentParty`, persisted) is the
+   identity for reads, Accept, and as buyer when creating.
+
+### Discovery / counts — Option B (on-ledger marker)
+
+- **`ProposalMarker { buyer, public, parcelId, proposalCid }`** — signatory `buyer`,
+  observer a fixed **public registry party**. Carries only parcel + opaque cid —
+  **no price/terms**. Created with each `PurchaseProposal`; archived when the
+  proposal is accepted/withdrawn (backend controls `buyer`, so it archives the
+  marker too). Genuine selective disclosure: existence public, terms private.
+- **`GET /canton/parcel-counts`** — query active markers **as the public party**,
+  group by `parcelId` → `{ parcelId: count }`.
+- **Map**: `canton-counts.js` fetches+caches that map; `parcels/ui/proposal-counts.js`
+  adds Canton counts to the labels, styled distinctly. Canton-only parcels show
+  "N Canton proposal(s) — terms private"; if the current identity is a stakeholder,
+  details + Accept appear.
+
+### Phases (incremental, each verifiable)
+
+- **P0 — Entry** *(no contract changes)*: `canton-mode.js` (state: `cantonActive`,
+  `cantonCurrentParty`; identity picker; `CantonProposalChainBridge` stub) +
+  network-modal entry + `isCantonActive()` checked first in routing (create throws
+  a clear "wired in P2" until then).
+- **P1 — Counts (Option B)**: `ProposalMarker` template + redeploy; `/canton/parcel-counts`;
+  `canton-counts.js` into the map's proposal-count labels.
+- **P2 — Create via map**: Canton branch in `createProposal()`/`mintProposalWithRouting`
+  → `POST /canton/proposals` using the selected parcel + price + current party.
+- **P3 — View/Accept on a parcel**: parcel panel shows Canton proposals for the
+  current identity (details if stakeholder, "private" otherwise) + Accept.
+- **P4 — Fold the rest**: CCView + test-parties into a Canton panel; demote
+  `canton.html` to a dev console.
+
+---
+
+## 14. Loop wallet SDK — integration assessment
+
+The 5N **Loop wallet SDK** (`@fivenorth/loop-sdk`,
+[github](https://github.com/fivenorth-io/loop-sdk),
+[npm](https://www.npmjs.com/package/@fivenorth/loop-sdk)) is the browser-wallet
+client we earlier said Canton "lacked". Loop is a **self-custodial** wallet
+(external party ids, passkey auth, no extension), so this is the MetaMask/Phantom
+equivalent. There's also a vendor-neutral standard, `@canton-network/dapp-sdk`
+(CIP-0103), with Loop as one adapter.
+
+### What it can do (browser dApp)
+
+- `loop.init(...)` + `loop.connect()` → user approves via Loop (QR/popup/passkey);
+  `onAccept(provider)` returns a **`provider`** with `party_id`, `public_key`, `email`.
+- `provider.getHolding()` — the user's token holdings (CC, CIP-56 tokens, LOOP, …).
+- `provider.transfer(recipient, amount, instrument?)` — **prepares + wallet-signs a
+  token transfer** (i.e. a real **Canton Coin payment**).
+- `provider.submitTransaction(cmd)` / `getActiveContracts({templateId|interfaceId})`.
+- `loop.autoConnect()` / `verifySession()` / `logout()`; server-side signing variant.
+
+### The decisive limitation
+
+> "Currently, we only support DAML transactions from the **built-in Splice DAR
+> files and Utility app DAR files. There is no plan to upload and support third
+> party DAR at this moment.**"
+
+So Loop **cannot create or exercise our custom `consensus-builder-daml` contracts**
+(`PurchaseProposal`, `Sale`, …). This is the same wall as the
+`PACKAGE_SELECTION_FAILED` finding ([§12](#12-decisions-log-build)) — now confirmed
+by the wallet vendor. Consequence: a Loop user **can't** Accept our proposal or be
+a stakeholder on it. App-contract self-custody via Loop is **not** possible.
+
+### What Loop *does* unblock — Canton Coin payments (M4)
+
+`provider.transfer(...)` is the token-standard transfer we were blocked on (we
+lacked the validator scan/registry URL) — **the wallet performs it for us**. So the
+viable integration is a **hybrid**:
+
+- **Agreement** (cert → proposal → accept → sale + markers) stays **custodial on
+  our validator** (unchanged — Loop can't touch it).
+- **Identity + money via Loop**: the real buyer connects Loop; on purchase they
+  `provider.transfer(owner-recipient, price, CC)` — a real Canton Coin payment from
+  their own wallet. We link that transfer (`update_id`) to the proposal off-ledger.
+  The owner (a recipient party) needs a transfer pre-approval or to accept the
+  incoming holding.
+
+### Integration options
+
+1. **Connect + balance (small):** "Connect Loop wallet" in the Canton identity area
+   → show real `party_id` + CC balance (`getHolding`). Proves real wallet connect.
+2. **Real CC payment (M4, medium):** option 1 + a `provider.transfer` payment leg
+   tied to a proposal. Unblocks M4 without the scan/registry URL.
+3. **Full self-custody of the app flow:** **not possible** with Loop (third-party
+   DAR unsupported). Would require Loop to vet our package — out of our control.
+
+Recommendation: pursue **(2)** if we want real money in the demo; otherwise **(1)**
+as a quick "real wallet" proof. Both keep the app agreement custodial.

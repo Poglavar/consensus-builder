@@ -863,7 +863,17 @@
         return s && s.status === 'connected' && Array.isArray(s.accounts) && s.accounts.length > 0;
     }
 
+    // Canton is custodial (no browser wallet) — selected via the network switch,
+    // tracked by CantonMode. Checked FIRST so we never fall through to EVM/Solana
+    // while Canton mode is active. The bridge (canton-mode.js) handles the calls.
+    function isCantonActive() {
+        return !!(globalScope.CantonMode && typeof globalScope.CantonMode.isActive === 'function' && globalScope.CantonMode.isActive());
+    }
+
     async function mintProposalWithRouting(options = {}) {
+        if (isCantonActive() && globalScope.CantonProposalChainBridge) {
+            return globalScope.CantonProposalChainBridge.mintProposal(options);
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.mintProposal(options);
         }
@@ -871,6 +881,9 @@
     }
 
     async function contributeToProposalWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('Contributions are not supported on Canton.');
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.contributeToProposal(options);
         }
@@ -878,6 +891,12 @@
     }
 
     async function acceptProposalWithRouting(options = {}) {
+        if (isCantonActive()) {
+            // Canton acceptance is done by the OWNER from the parcel panel's "Canton
+            // proposals" section (it carries the Canton contract id). The EVM accept
+            // path can't, so guide the user instead of failing cryptically.
+            throw new Error('To accept on Canton: switch your Canton identity to the owner, then use the "Canton proposals" section in the parcel panel.');
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.acceptProposal(options);
         }
@@ -885,6 +904,9 @@
     }
 
     async function withdrawAcceptanceWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('Withdrawing acceptance is not wired on Canton.');
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
             return globalScope.SolanaProposalChainBridge.withdrawAcceptance(options);
         }
@@ -892,6 +914,9 @@
     }
 
     async function distributeFundsWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('Proposal fund distribution is not supported on Canton.');
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.distributeFunds === 'function') {
             return globalScope.SolanaProposalChainBridge.distributeFunds(options);
         }
@@ -899,6 +924,9 @@
     }
 
     async function cancelAndRefundWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('Proposal cancellation is not supported on Canton.');
+        }
         if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.cancelAndRefund === 'function') {
             return globalScope.SolanaProposalChainBridge.cancelAndRefund(options);
         }

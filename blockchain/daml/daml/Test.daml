@@ -1,0 +1,73 @@
+-- Daml Script tests for the minimal purchase flow (lens -> buyer -> owner).
+-- Run with `daml test`. See feature-daml.md §10.
+module Test where
+
+import Daml.Script
+import Proposal
+
+-- Happy path: lens certifies ownership, buyer proposes, owner accepts -> Sale.
+testHappyPath : Script ()
+testHappyPath = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with
+      lens
+      owner
+      parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer
+      owner
+      lens
+      parcelId = "PARCEL-1"
+      price = 100.0
+      certCid = cert
+
+  saleCid <- submit owner do
+    exerciseCmd proposal Accept
+
+  Some sale <- queryContractId owner saleCid
+  assertMsg "wrong price" (sale.price == 100.0)
+  assertMsg "wrong parcel" (sale.parcelId == "PARCEL-1")
+  assertMsg "wrong buyer" (sale.buyer == buyer)
+  pure ()
+
+-- Only the owner may accept: a buyer-submitted Accept must fail authorization.
+testOnlyOwnerAccepts : Script ()
+testOnlyOwnerAccepts = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with lens, owner, parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer, owner, lens, parcelId = "PARCEL-1", price = 50.0, certCid = cert
+
+  submitMustFail buyer do
+    exerciseCmd proposal Accept
+  pure ()
+
+-- Buyer can withdraw the offer before acceptance.
+testWithdraw : Script ()
+testWithdraw = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with lens, owner, parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer, owner, lens, parcelId = "PARCEL-1", price = 75.0, certCid = cert
+
+  submit buyer do
+    exerciseCmd proposal Withdraw
+  pure ()

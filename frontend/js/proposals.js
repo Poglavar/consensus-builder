@@ -1037,6 +1037,11 @@ function getProposalAreaMap(proposal) {
 }
 
 function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
+    // In Canton mode the EVM owner-acceptance UI doesn't apply — Canton proposals
+    // are accepted (by the owner) from the dedicated "Canton proposals" section.
+    if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
+        return '';
+    }
     const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
@@ -14366,9 +14371,12 @@ async function createProposal() {
             && solWm.getState().status === 'connected'
             && Array.isArray(solWm.getState().accounts) && solWm.getState().accounts.length > 0;
         const isWalletConnected = isEvmWalletConnected || isSolanaWalletConnected;
+        // Canton is a custodial network (no wallet) selected via CantonMode. When
+        // active we mint on Canton instead of EVM/Solana — and skip NFT checks.
+        const cantonActive = !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 
-        console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected);
-        let shouldMintOnchain = (blockchainSupported || solanaBlockchainSupported) && finalParcelIds.length > 0 && isWalletConnected;
+        console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
+        let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && finalParcelIds.length > 0);
 
         // Use the parent parcel IDs directly - these are what the proposal references
         const parcelIds = finalParcelIds.map(id => (id && id.toString ? id.toString() : String(id))).filter(Boolean);
@@ -14388,7 +14396,7 @@ async function createProposal() {
             }
         }
 
-        if (shouldMintOnchain) {
+        if (shouldMintOnchain && !cantonActive) {
             // Get chain ID from wallet or use default
             let chainId = null;
             if (isSolanaWalletConnected) {
@@ -14874,7 +14882,7 @@ async function createProposal() {
         // Try to mint on-chain if blockchain is available and parcels have NFTs
         let onchainResult = null;
         // walletManager already declared above
-        let hasWalletProvider = (walletManager && walletManager.getProvider()) || isSolanaWalletConnected;
+        let hasWalletProvider = (walletManager && walletManager.getProvider()) || isSolanaWalletConnected || cantonActive;
 
         // If blockchain is supported but wallet is not connected, prompt user to connect
         if (shouldMintOnchain && !hasWalletProvider) {
@@ -15284,7 +15292,7 @@ async function createProposal() {
                             .map(entry => entry.address.trim());
                         // Skip lens requirement for ownership-transfer-from-me proposals and Solana (wallet used as fallback lens)
                         const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
-                        if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected) {
+                        if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected && !cantonActive) {
                             throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
                         }
 
@@ -15365,7 +15373,15 @@ async function createProposal() {
                         setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
 
-                        if (isSolanaWalletConnected && window.SolanaProposalChainBridge) {
+                        if (cantonActive && window.CantonProposalChainBridge) {
+                            // Canton (custodial): create via the backend; the current
+                            // Canton identity is the buyer, owner/lens auto-allocated.
+                            onchainResult = await window.CantonProposalChainBridge.mintProposal({
+                                parcelIds: parcelIdsForMinting,
+                                price: offer,
+                                imageURI: metadataUri
+                            });
+                        } else if (isSolanaWalletConnected && window.SolanaProposalChainBridge) {
                             // For Solana, use the connected wallet as the lens if no valid Solana pubkeys are available
                             const solanaWalletAddress = solWm.getState().accounts[0];
                             const solanaLens = lensAddressesForMint.filter(a => !a.startsWith('0x'));

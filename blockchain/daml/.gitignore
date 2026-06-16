@@ -1,0 +1,4 @@
+.daml/
+*.dar
+log/
+*.port

@@ -1,0 +1,65 @@
+/* Canton identity picker (the wallet stand-in) + Canton network pill bits.
+   Reuses .wallet-modal / .wallet-option base styles; only the extras live here. */
+.canton-id-list { max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+.canton-id-row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 4px; border-bottom: 1px solid #eee; }
+.canton-id-row2.is-current { background: #ede7f6; border-radius: 6px; }
+.canton-id-pick { flex: 1 1 auto; min-width: 0; text-align: left; background: transparent; border: 0; cursor: pointer; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px; }
+.canton-id-pick:hover { background: rgba(126, 87, 194, 0.08); border-radius: 6px; }
+.canton-id-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.canton-id-role { font-size: 0.74rem; color: #888; }
+.canton-id-acts { display: flex; gap: 4px; }
+.canton-id-acts button { font: inherit; font-size: 0.74rem; padding: 3px 7px; border: 1px solid #ccc; background: #fff; border-radius: 5px; cursor: pointer; }
+.canton-id-acts button:hover { border-color: #7E57C2; color: #5E35B1; }
+.canton-ccview-out { flex-basis: 100%; font-size: 0.76rem; color: #555; padding: 0 6px; }
+.canton-ccview-out:empty { display: none; }
+.canton-id-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.canton-id-row input {
+    flex: 1 1 200px; min-width: 0; padding: 7px 9px; font: inherit;
+    border: 1px solid #ccc; border-radius: 6px;
+}
+.canton-id-foot { display: flex; gap: 6px; flex-wrap: wrap; }
+.canton-id-modal .btn.canton-ghost { background: transparent; border: 1px solid #bbb; color: #555; }
+.canton-id-err { margin-top: 8px; font-size: 0.85rem; color: #b00; min-height: 1.1em; }
+.canton-id-modal .canton-empty { color: #999; font-size: 0.9rem; }
+
+/* Canton proposal-count badge on the map — distinct (purple) from EVM (blue),
+   signalling "Canton proposals exist here; terms private". */
+.parcel-canton-count-label { background: #7E57C2 !important; border-color: #5E35B1 !important; }
+.parcel-canton-count-label div { background: #7E57C2 !important; }
+
+/* Canton proposals section in the parcel panel (P3). */
+.canton-panel-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e2e2; }
+.canton-panel-title { margin: 0 0 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+.canton-panel-title .canton-badge {
+    background: #7E57C2; color: #fff; border-radius: 999px; font-size: 0.72rem;
+    padding: 1px 7px; font-weight: 700;
+}
+.canton-card-host .canton-card { border: 1px solid #e2e2e2; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+.canton-card-host .canton-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.canton-card-host .canton-parcel { font-weight: 600; }
+.canton-card-host .canton-price { color: #5E35B1; font-variant-numeric: tabular-nums; }
+.canton-card-host .canton-you { font-size: 0.72rem; color: #5E35B1; background: #ede7f6; border-radius: 4px; padding: 1px 6px; }
+.canton-card-host .canton-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; font-size: 0.78rem; }
+.canton-card-host .canton-meta dt { color: #888; }
+.canton-card-host .canton-meta dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.canton-card-host .canton-empty { color: #999; font-size: 0.82rem; margin: 4px 0; }
+.canton-panel-accept { margin-top: 8px; }
+.canton-card-host .canton-status { font-size: 0.66rem; font-weight: 700; border-radius: 4px; padding: 1px 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+.canton-card-host .canton-status-open { background: #fff3e0; color: #e65100; }
+.canton-card-host .canton-status-accepted { background: #e8f5e9; color: #2e7d32; }
+
+/* Canton state explorer dialog (reuses .wallet-modal chrome). */
+.canton-explorer-modal { max-width: 560px; width: 92vw; }
+.canton-explorer-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.canton-explorer-controls input { flex: 1 1 220px; min-width: 0; padding: 8px 10px; font: inherit; border: 1px solid #ccc; border-radius: 6px; }
+.canton-explorer-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.canton-explorer-chips:empty { display: none; }
+.canton-explorer-chips-label { font-size: 0.78rem; color: #888; margin-right: 2px; }
+.canton-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; font: inherit; font-size: 0.8rem; cursor: pointer; border: 1px solid #bbb; background: #fff; border-radius: 999px; }
+.canton-chip:hover { border-color: #7E57C2; color: #5E35B1; }
+.canton-chip.active { background: #7E57C2; border-color: #7E57C2; color: #fff; }
+.canton-chip-role { font-size: 0.68rem; opacity: 0.7; }
+.canton-status-line { font-size: 0.82rem; color: #555; min-height: 1.2em; margin-bottom: 8px; }
+.canton-explorer-body { max-height: 50vh; overflow-y: auto; }
+.canton-explorer-h { margin: 12px 0 6px; font-size: 0.82rem; color: #666; text-transform: uppercase; letter-spacing: 0.03em; }
+.canton-explorer-h:first-child { margin-top: 0; }

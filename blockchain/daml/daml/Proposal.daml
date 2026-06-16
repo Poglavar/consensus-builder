@@ -1,0 +1,82 @@
+-- Minimal single-parcel purchase model for the Canton/DAML chain option.
+-- A buyer-chosen "lens" attests ownership, a buyer proposes a purchase,
+-- and the owner accepts. No money yet (M1): this only proves the
+-- consensus/authorization mechanics. See feature-daml.md §10.
+--
+-- The lens is whoever the buyer trusts to identify the owner (a notary, a
+-- lawyer, or even the buyer themselves). MVP uses exactly one lens. See the
+-- spec for the future multi-lens ("any one of them") generalization.
+module Proposal where
+
+-- The lens vouches that `owner` owns `parcelId`. Signed by the lens first;
+-- the owner observes it so they can later be checked against an Accept.
+template OwnershipCertificate
+  with
+    lens : Party
+    owner : Party
+    parcelId : Text
+  where
+    signatory lens
+    observer owner
+
+-- The executed agreement, signed by both buyer and owner. The lens that attested
+-- ownership stays an observer (Optional, so the package remains upgrade-compatible)
+-- so it can still see the completed sale, read-only, after acceptance.
+template Sale
+  with
+    buyer : Party
+    owner : Party
+    parcelId : Text
+    price : Decimal
+    lens : Optional Party
+  where
+    signatory buyer, owner
+    observer (case lens of None -> []; Some l -> [l])
+
+-- A buyer's offer for a single parcel, referencing the ownership certificate.
+template PurchaseProposal
+  with
+    buyer : Party
+    owner : Party
+    lens : Party
+    parcelId : Text
+    price : Decimal
+    certCid : ContractId OwnershipCertificate
+  where
+    signatory buyer
+    observer owner, lens
+    ensure price > 0.0
+
+    -- Owner accepts: archives the proposal and creates the bilateral Sale.
+    -- Owner is an observer of the cert, so the fetch is authorized.
+    choice Accept : ContractId Sale
+      controller owner
+      do
+        cert <- fetch certCid
+        assertMsg "certificate owner does not match" (cert.owner == owner)
+        assertMsg "certificate parcel does not match" (cert.parcelId == parcelId)
+        create Sale with buyer, owner, parcelId, price, lens = Some lens
+
+    -- Buyer pulls the offer before it is accepted.
+    choice Withdraw : ()
+      controller buyer
+      do return ()
+
+-- Public existence signal for a parcel. Carries ONLY the parcel + an opaque
+-- proposal contract-id — no price, no parties' terms. Observed by a designated
+-- public registry party so the app can show "this parcel has N Canton proposals"
+-- without disclosing the proposal itself (selective disclosure). Created with each
+-- PurchaseProposal and archived when it is accepted/withdrawn. See feature-daml.md §13.
+template ProposalMarker
+  with
+    buyer : Party
+    public : Party
+    parcelId : Text
+    proposalCid : Text
+  where
+    signatory buyer
+    observer public
+
+    choice ArchiveMarker : ()
+      controller buyer
+      do return ()

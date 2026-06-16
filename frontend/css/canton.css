@@ -1,0 +1,106 @@
+/* Minimal styles for the Canton read-only view (canton.html). Mobile-first. */
+.canton-wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
+/* Busy buttons: keep the label's width but hide it and show a centered spinner,
+   so the button never resizes. Pure CSS animation, no JS timer. */
+.canton-wrap button:disabled { cursor: progress; }
+.canton-wrap button.is-busy { position: relative; color: transparent; }
+.canton-wrap button.is-busy::after {
+    content: ''; position: absolute; top: 50%; left: 50%; width: 12px; height: 12px;
+    margin: -6px 0 0 -6px; box-sizing: border-box; border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.2); border-top-color: rgba(0, 0, 0, 0.6);
+    animation: canton-spin 0.6s linear infinite;
+}
+@keyframes canton-spin { to { transform: rotate(360deg); } }
+.canton-wrap h1 { font-size: 1.25rem; margin: 0 0 4px; }
+.canton-sub { color: #666; font-size: 0.85rem; margin: 0 0 16px; }
+.canton-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.canton-controls input {
+    flex: 1 1 220px; min-width: 0; padding: 8px 10px; font: inherit;
+    border: 1px solid #ccc; border-radius: 6px;
+}
+.canton-controls button {
+    padding: 8px 14px; font: inherit; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-controls button:hover { background: #249; border-color: #249; }
+.canton-status { font-size: 0.85rem; color: #555; min-height: 1.2em; margin-bottom: 12px; }
+.canton-section h2 { font-size: 1rem; margin: 16px 0 8px; }
+.canton-empty { color: #999; font-size: 0.9rem; margin: 0; }
+.canton-card { border: 1px solid #e2e2e2; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+.canton-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.canton-parcel { font-weight: 600; }
+.canton-you {
+    margin-right: auto; padding: 1px 8px; border-radius: 999px; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.02em; background: #fde9c8; color: #a85b00;
+}
+.canton-price { color: #2b6; font-variant-numeric: tabular-nums; }
+.canton-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; font-size: 0.82rem; }
+.canton-meta dt { color: #888; }
+.canton-meta dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.canton-create { border: 1px solid #e2e2e2; border-radius: 8px; padding: 12px; background: #fafafa; }
+.canton-hint { color: #888; font-size: 0.8rem; margin: 0 0 10px; }
+.canton-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-bottom: 10px; }
+.canton-form label { display: flex; flex-direction: column; font-size: 0.8rem; color: #555; gap: 3px; }
+.canton-form input, .canton-form select { padding: 7px 9px; font: inherit; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+.canton-create button {
+    padding: 8px 14px; font: inherit; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-create button:hover { background: #249; border-color: #249; }
+.canton-result { font-size: 0.85rem; color: #333; margin-top: 8px; min-height: 1.2em; }
+.canton-parties { border: 1px solid #e2e2e2; border-radius: 8px; padding: 12px; }
+.canton-parties-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.canton-parties-head h2 { margin: 0; }
+.canton-parties-actions { display: flex; gap: 6px; }
+.canton-parties-actions button {
+    padding: 5px 12px; font: inherit; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-parties-actions button:hover { background: #249; border-color: #249; }
+.canton-parties-actions .canton-ghost { border-color: #bbb; background: #fff; color: #555; }
+.canton-parties-actions .canton-ghost:hover { border-color: #999; background: #f3f3f3; color: #333; }
+.canton-parties-list { display: flex; flex-direction: column; gap: 6px; }
+.canton-party-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 6px 8px;
+    border: 1px solid #eee; border-radius: 6px; background: #fafafa; font-size: 0.85rem;
+}
+.canton-ccview-out { flex-basis: 100%; font-size: 0.8rem; color: #555; }
+.canton-ccview-out:empty { display: none; }
+.canton-ccview-out a { color: #2b6; }
+.canton-ccview-empty { color: #999; }
+.canton-party-role {
+    flex: 0 0 auto; padding: 1px 8px; border-radius: 999px; font-size: 0.72rem;
+    background: #e8f3ec; color: #2b6; text-transform: uppercase; letter-spacing: 0.02em;
+}
+.canton-party-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #222; font-weight: 600; }
+.canton-party-fp { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #b3b3b3; font-size: 0.74rem; }
+.canton-party-parcel { color: #888; font-size: 0.78rem; }
+.canton-party-actions { margin-left: auto; flex: 0 0 auto; display: flex; gap: 6px; }
+.canton-party-copy, .canton-party-view, .canton-party-ccview {
+    flex: 0 0 auto; padding: 3px 10px; font: inherit; font-size: 0.8rem; cursor: pointer;
+    border: 1px solid #2b6; background: #fff; color: #2b6; border-radius: 6px;
+}
+.canton-party-copy:hover, .canton-party-view:hover, .canton-party-ccview:hover { background: #2b6; color: #fff; }
+.canton-party-del {
+    flex: 0 0 auto; width: 24px; height: 24px; padding: 0; line-height: 1; cursor: pointer;
+    border: 1px solid #ddd; background: #fff; color: #999; border-radius: 6px; font-size: 1rem;
+}
+.canton-party-del:hover { border-color: #c44; color: #c44; }
+.canton-perspective { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.canton-perspective:empty { display: none; }
+.canton-persp-label { font-size: 0.8rem; color: #666; margin-right: 2px; }
+.canton-persp {
+    padding: 5px 12px; font: inherit; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid #bbb; background: #fff; color: #333; border-radius: 999px;
+}
+.canton-persp:hover { border-color: #2b6; color: #2b6; }
+.canton-persp.active { background: #2b6; border-color: #2b6; color: #fff; }
+.canton-accept {
+    margin-top: 8px; padding: 6px 14px; font: inherit; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid #2b6; background: #2b6; color: #fff; border-radius: 6px;
+}
+.canton-accept:hover { background: #249; border-color: #249; }
+@media (max-width: 380px) {
+    .canton-controls button { flex: 1 1 100%; }
+    .canton-form { grid-template-columns: 1fr; }
+}
