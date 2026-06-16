@@ -656,6 +656,12 @@
 
             main.appendChild(titleRow);
             main.appendChild(meta);
+            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(entry.proposalId) : '';
+            if (proposalEns && typeof ensNameLineHtml === 'function') {
+                const ensWrap = document.createElement('div');
+                ensWrap.innerHTML = ensNameLineHtml(proposalEns);
+                if (ensWrap.firstElementChild) main.appendChild(ensWrap.firstElementChild);
+            }
             if (entry.description) {
                 main.appendChild(description);
             }

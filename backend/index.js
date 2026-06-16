@@ -33,6 +33,8 @@ import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
+import { setupEnsRoute } from './routes/ens.js';
+import { setupEnsPlansRoute } from './routes/ens-plans.js';
 
 const { Pool } = pkg;
 
@@ -179,6 +181,13 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         app.set('trust proxy', 1);
     }
 
+    // The ENS CCIP-Read gateway (/ens/...) is a public, read-only, signed
+    // endpoint — any origin may fetch it. Advertise permissive CORS so
+    // browser-based resolvers (e.g. app.ens.domains, which does the gateway
+    // fetch client-side) don't log CORS errors. Must run before the
+    // allowlist CORS below so it also answers any preflight.
+    app.use('/ens', cors({ origin: '*', methods: ['GET', 'OPTIONS'], credentials: false }));
+
     const isProduction = env.NODE_ENV === 'production';
     // USE_CORS_ALLOWLIST gates the explicit-allowlist CORS middleware. In
     // production it must be set to 'true' to enable CORS at all; in dev it
@@ -307,6 +316,8 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
+    setupEnsRoute(app, activePool);
+    setupEnsPlansRoute(app, activePool);
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

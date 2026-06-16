@@ -1059,6 +1059,7 @@
         getCurrentCityId: () => currentCityId,
         setCurrentCityId: setStoredCityId,
         switchCity,
+        navigateToCity,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
         getCityCodeForCityId,

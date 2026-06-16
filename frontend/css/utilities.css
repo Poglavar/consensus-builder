@@ -2539,3 +2539,49 @@ input:checked+.slider:before {
     font-size: 12px;
     box-sizing: border-box;
 }
+
+/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
+   chip links to the ENS app, the name value is click-to-copy. Value
+   ellipsis-truncates so the long name never overflows tight panels. */
+.ens-name-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #64748b;
+    cursor: pointer;
+    min-width: 0;
+    max-width: 100%;
+}
+.ens-name-line:hover { color: #334155; }
+.ens-name-chip {
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: #6366f1;
+    border-radius: 4px;
+    padding: 1px 4px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.ens-name-chip:hover { background: #4f46e5; }
+.ens-name-chip:visited { color: #fff; }
+.ens-name-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* In the centered proposal-details panel, center the line as a group while
+   keeping the value's ellipsis truncation. */
+.proposal-ens-row .ens-name-line {
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: middle;
+}

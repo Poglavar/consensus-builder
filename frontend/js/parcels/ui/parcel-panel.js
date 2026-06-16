@@ -514,6 +514,7 @@
                 <div class="metric-value">${formattedPrice} ${priceCurrency}</div>
             </div>
         </div>
+        ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}
         <div id="roadMeasurements" style="display: none;">
         </div>
     `;
