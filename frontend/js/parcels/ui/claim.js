@@ -2029,7 +2029,8 @@
 
             try {
                 if (statusEl) {
-                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
+                    const storageLabel = (typeof global.getStorageProviderLabel === 'function') ? global.getStorageProviderLabel() : 'decentralized storage';
+                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to ${storageLabel}...` : `Uploading parcel metadata to ${storageLabel}...`;
                     statusEl.textContent = label;
                 }
                 if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {

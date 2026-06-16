@@ -41,6 +41,13 @@ function buildChainProposalId(chainId, contractAddress, tokenId) {
     return `${normalizedChain}-${addressPart}-${tokenPart}`;
 }
 
+function walrusAggregatorBase() {
+    const configured = (typeof window !== 'undefined' && typeof window.WALRUS_AGGREGATOR_URL === 'string')
+        ? window.WALRUS_AGGREGATOR_URL.trim()
+        : '';
+    return (configured || 'https://aggregator.walrus-testnet.walrus.space').replace(/\/$/, '');
+}
+
 function resolveProposalResourceUrl(url) {
     const value = typeof url === 'string' ? url.trim() : '';
     if (!value) return '';
@@ -48,6 +55,10 @@ function resolveProposalResourceUrl(url) {
     if (value.startsWith('ipfs://')) {
         const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
         return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
+    }
+    if (value.startsWith('walrus://')) {
+        const blobId = value.slice('walrus://'.length).replace(/^\/+/, '');
+        return blobId ? `${walrusAggregatorBase()}/v1/blobs/${blobId}` : '';
     }
     if (typeof window === 'undefined' || !window.location) return value;
     try {
@@ -15279,10 +15290,11 @@ async function createProposal() {
                         // Otherwise, set to 0 (no native funding, but proposal can still be minted)
                         const nativeAmount = (offerCurrency === 'ETH' || offerCurrency === 'SOL') ? offer : 0;
 
-                        console.debug('[createProposal] Uploading proposal image to IPFS');
+                        const storageLabel = (typeof window.getStorageProviderLabel === 'function') ? window.getStorageProviderLabel() : 'decentralized storage';
+                        console.debug(`[createProposal] Uploading proposal image to ${storageLabel}`);
                         const ipfsStartTime = performance.now();
-                        updateStatus('Uploading proposal image to IPFS...');
-                        showProposalWaitingPopup('Uploading proposal image to IPFS...');
+                        updateStatus(`Uploading proposal image to ${storageLabel}...`);
+                        showProposalWaitingPopup(`Uploading proposal image to ${storageLabel}...`);
                         const createdAtIso = proposal.createdAt || new Date().toISOString();
                         proposal.createdAt = createdAtIso;
 
@@ -21176,9 +21188,10 @@ function showUploadProposalModal(proposal) {
                             }
                         } // end of: if (!screenshotDataUrl)
 
-                        // Step 2: Build metadata and upload to IPFS
-                        setMintStatus(tShare('mintUploadingIPFS', 'Uploading to IPFS...'));
-                        console.log('[shareMint] Building metadata for IPFS upload');
+                        // Step 2: Build metadata and upload to the configured storage backend
+                        const shareStorageLabel = (typeof window.getStorageProviderLabel === 'function') ? window.getStorageProviderLabel() : 'decentralized storage';
+                        setMintStatus(tShare('mintUploadingStorage', `Uploading to ${shareStorageLabel}...`));
+                        console.log(`[shareMint] Building metadata for ${shareStorageLabel} upload`);
 
                         const createdAtIso = proposal.createdAt || new Date().toISOString();
                         const goalKey = resolveProposalGoalKey(proposal, null) || 'proposal';
