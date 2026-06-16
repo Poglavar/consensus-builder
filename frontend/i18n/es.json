@@ -1520,7 +1520,8 @@
                 "sweepLine": "Algoritmo de línea de barrido",
                 "centroidalVoronoi": "Voronoi centroidal",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual"
+                "manual": "Manual",
+                "manualCut": "Corte manual"
             },
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
@@ -1530,12 +1531,40 @@
             "selectedParcelsLabel": "parcelas seleccionadas",
             "defaultDescription": "Propuesta de reparcelación para {{label}}",
             "syntheticOwner": "Propietario de {{parcel}}",
+            "manualCut": {
+                "title": "Corte manual",
+                "instructions": "Pulsa Iniciar corte y dibuja una línea dentro de una parcela resultante. El primer y último punto deben ajustarse a un borde existente o a un corte anterior.",
+                "start": "Iniciar corte",
+                "finish": "Finalizar corte",
+                "cancel": "Cancelar"
+            },
+            "assignOwners": "Asignar propietarios",
+            "selectAllOwners": "Seleccionar todo",
+            "unassigned": "Sin asignar",
+            "originalOwners": "Propietarios originales",
+            "newPlots": "Nuevas parcelas",
+            "colOwner": "Propietario",
+            "colOrigArea": "Original",
+            "colNewArea": "Nueva",
+            "colPlot": "Parcela",
+            "colOwners": "Propietarios",
             "status": {
                 "preparingPreview": "Preparando vista previa de reparcelación...",
                 "missingOwners": "No se pudieron determinar los propietarios para la reparcelación.",
                 "algorithmUnavailable": "El algoritmo seleccionado aún no está disponible.",
                 "splitFailed": "No se pudo dividir la geometría de la parcela.",
-                "success": "Diseño generado. Revisa y pulsa Listo para guardar."
+                "success": "Diseño generado. Revisa y pulsa Listo para guardar.",
+                "manualReady": "Parcela fusionada lista. Dibuja cortes o pulsa Listo para mantener una parcela compartida.",
+                "drawCut": "Haz clic en un borde de parcela para iniciar el corte, agrega puntos y termina en un borde.",
+                "cutEndpointReady": "Extremo ajustado. Pulsa Finalizar corte para dividir la parcela.",
+                "cutMustStartOnBoundary": "El corte debe empezar en una línea de parcela existente.",
+                "cutMustStayInside": "Los puntos del corte y las líneas de vista previa deben permanecer dentro de la parcela fusionada.",
+                "cutMustEndOnSameParcel": "El corte debe empezar y terminar en el límite de la misma parcela resultante.",
+                "cutDidNotSplit": "Esa línea no crea una parcela separada. Empieza y termina en líneas existentes y mantén el corte dentro de una parcela.",
+                "cutApplied": "Corte aplicado. Haz clic en una parcela resultante para ajustar propietarios.",
+                "unassignedOwners": "Asigna cada propietario a al menos una parcela resultante antes de guardar.",
+                "ownerMustRemainAssigned": "Cada propietario debe conservar propiedad o copropiedad de al menos una parcela resultante.",
+                "selectionMustBeContiguous": "Selecciona parcelas contiguas antes de iniciar la reparcelación."
             }
         }
     },
@@ -1714,6 +1743,7 @@
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
             "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear una propuesta.",
             "select_at_least_one_parcel_before_running_reparcellization": "Selecciona al menos una parcela antes de ejecutar la reparcelación.",
+            "reparcellization_requires_contiguous_parcels": "Selecciona parcelas contiguas antes de ejecutar la reparcelación.",
             "select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear una propuesta.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Selecciona al menos una parcela para aplicar el plan vial gubernamental.",
             "select_parcels_before_applying_the_government_road_plan": "Selecciona parcelas antes de aplicar el plan vial gubernamental.",

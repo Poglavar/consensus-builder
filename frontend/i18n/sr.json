@@ -1456,7 +1456,8 @@
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} vlasnik{{ownerSuffix}}",
             "subtitleSingleOwner": "{{count}} parcel{{suffix}} · jedan vlasnik",
             "algorithms": {
-                "sweepLine": "Sweep line algoritam"
+                "sweepLine": "Sweep line algoritam",
+                "manualCut": "Ručno sečenje"
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
@@ -1465,6 +1466,14 @@
             "selectedParcelsLabel": "izabranih parcela",
             "defaultDescription": "Predlog reparcelacije za {{label}}",
             "syntheticOwner": "Vlasnik {{parcel}}",
+            "manualCut": {
+                "title": "Ručno sečenje",
+                "instructions": "Klikni Počni sečenje, zatim nacrtaj liniju unutar jedne rezultujuće parcele. Prva i poslednja tačka moraju se zakačiti za postojeću ivicu parcele ili prethodni rez.",
+                "start": "Počni sečenje",
+                "finish": "Završi sečenje",
+                "cancel": "Otkaži"
+            },
+            "selectAllOwners": "Izaberi sve",
             "single": {
                 "parcelListTitle": "Izabrane parcele",
                 "superParcelLabel": "Površina superparcele",
@@ -1492,7 +1501,17 @@
                 "missingOwners": "Nije moguće utvrditi vlasnike za reparcelaciju.",
                 "algorithmUnavailable": "Izabrani algoritam nije još dostupan.",
                 "splitFailed": "Nije uspelo deljenje geometrije parcele.",
-                "success": "Sweep line uspešno primеnjen. Pregledaj i klikni Gotovo da sačuvaš."
+                "success": "Sweep line uspešno primеnjen. Pregledaj i klikni Gotovo da sačuvaš.",
+                "manualReady": "Spojena parcela je spremna. Nacrtaj rezove ili klikni Gotovo da zadržiš jednu suvlasničku parcelu.",
+                "drawCut": "Klikni ivicu parcele za početak reza, dodaj tačke, zatim završi na ivici parcele.",
+                "cutEndpointReady": "Krajnja tačka je zakačena. Klikni Završi sečenje da podeliš parcelu.",
+                "cutMustStartOnBoundary": "Rez mora početi na postojećoj liniji parcele.",
+                "cutMustStayInside": "Tačke reza i pomoćne linije moraju ostati unutar spojene parcele.",
+                "cutMustEndOnSameParcel": "Rez mora početi i završiti na granici iste rezultujuće parcele.",
+                "cutDidNotSplit": "Ta linija ne pravi zasebnu parcelu. Počni i završi na postojećim linijama i drži rez unutar jedne parcele.",
+                "cutApplied": "Rez je primenjen. Klikni rezultujuću parcelu za podešavanje vlasnika.",
+                "unassignedOwners": "Dodeli svakog vlasnika bar jednoj rezultujućoj parceli pre čuvanja.",
+                "ownerMustRemainAssigned": "Svaki vlasnik mora zadržati vlasništvo ili suvlasništvo nad bar jednom rezultujućom parcelom."
             }
         }
     },
@@ -1681,6 +1700,7 @@
             "select_a_parcel_before_attempting_to_claim_it": "Izaberi parcelu pre preuzimanja.",
             "select_a_parcel_block_before_creating_a_proposal": "Izaberi blok parcela pre kreiranja predloga.",
             "select_at_least_one_parcel_before_running_reparcellization": "Izaberi bar jednu parcelu pre pokretanja reparcelacije.",
+            "reparcellization_requires_contiguous_parcels": "Izaberi povezane parcele pre pokretanja reparcelacije.",
             "select_at_least_one_parcel_to_create_a_proposal": "Izaberi bar jednu parcelu da kreiraš predlog.",
             "select_parcels_before_applying_the_government_road_plan": "Izaberi parcele pre primene državnog plana puteva.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Izaberi bar jednu parcelu da primeniš državni plan puteva.",
