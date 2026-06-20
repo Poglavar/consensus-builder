@@ -8357,7 +8357,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
     'decide-later': { icon: '🤔', label: 'Decide later' },
     'decide later': { icon: '🤔', label: 'Decide later' },
-    'reparcellization': { icon: '✂️', label: 'Reparcellization' },
+    'reparcellization': { icon: '✂️', label: 'Land readjustment' },
     'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
     'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
