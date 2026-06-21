@@ -708,6 +708,14 @@
     align-items: stretch;
 }
 
+/* Grid items default to min-width:auto, so a wide child (the 5-col ledger table)
+   would blow the track past the viewport. Let items shrink; tables scroll inside. */
+.reparcel-map-panel,
+.reparcel-legend-panel,
+.reparcel-actions {
+    min-width: 0;
+}
+
 .reparcel-map-panel {
     grid-area: map;
     background: #f8fafc;

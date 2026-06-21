@@ -26,23 +26,6 @@
         subtitleEl: null,
         subtitleData: null,
         ownershipMode: 'multiple',
-        singleConfig: {
-            lengthMode: 'split',
-            parcelCount: 2,
-            distributionMode: 'equal',
-            manualShares: []
-        },
-        singleOwnerLabel: null,
-        orientationHandles: [],
-        orientationLine: null,
-        orientationBorderLayer: null,
-        parcelListEl: null,
-        lengthModeRadios: [],
-        parcelCountInput: null,
-        parcelCountValueEl: null,
-        totalParcelsEl: null,
-        distributionRadios: [],
-        manualSharesContainer: null,
         uploadedGeometry: null,
         selectedSliceIndex: null,
         ownerAssignmentPopup: null,
@@ -70,7 +53,10 @@
         cashOfferOverrides: {},
         // Before/after swipe comparison (a second "before" map clipped by a slider).
         compareBtn: null,
-        compare: { active: false, map2: null, beforeEl: null, handleEl: null, labels: null, x: 0, cleanupDrag: null }
+        compare: { active: false, map2: null, beforeEl: null, handleEl: null, labels: null, x: 0, cleanupDrag: null },
+        // Footprints of applied building proposals overlapping the pool, shown as a
+        // guide layer so the readjustment can be aligned to planned buildings.
+        buildingFootprintLayer: null
     };
 
     // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
@@ -134,27 +120,6 @@
     function updateSubtitleWithOwners(ownerCount = 0) {
         if (!state.subtitleEl || !state.subtitleData) return;
 
-        if (state.ownershipMode === 'single') {
-            const targetParcels = state.singleConfig?.parcelCount || state.subtitleData.parcelCount || 0;
-            const params = {
-                count: targetParcels,
-                suffix: targetParcels === 1 ? '' : 's'
-            };
-            const subtitleText = t(
-                'reparcellization.modal.subtitleSingleOwner',
-                '{{count}} parcel{{suffix}} · single owner',
-                params
-            );
-            state.subtitleEl.textContent = subtitleText;
-            try {
-                state.subtitleEl.setAttribute('data-i18n-key', 'reparcellization.modal.subtitleSingleOwner');
-                state.subtitleEl.setAttribute('data-i18n-params', JSON.stringify(params));
-            } catch (_) {
-                state.subtitleEl.removeAttribute('data-i18n-params');
-            }
-            return;
-        }
-
         const parcelCount = state.subtitleData.parcelCount || 0;
         const algorithmLabel = state.subtitleData.algorithmLabel || '';
         const params = {
@@ -175,33 +140,6 @@
             state.subtitleEl.setAttribute('data-i18n-params', JSON.stringify(params));
         } catch (_) {
             state.subtitleEl.removeAttribute('data-i18n-params');
-        }
-    }
-
-    function computeResultingParcelCount() {
-        if (Array.isArray(state.slices) && state.slices.length) {
-            return state.slices.length;
-        }
-        const base = clampParcelCount(state.singleConfig?.parcelCount || 0);
-        const hasOrientation = state.singleConfig?.lengthMode === 'split' && !!state.orientationLine;
-        const multiplier = hasOrientation ? 2 : 1;
-        return Math.max(0, base * multiplier);
-    }
-
-    function updateTotalParcelsLabel() {
-        if (!state.totalParcelsEl) return;
-        const total = computeResultingParcelCount();
-        const text = t(
-            'reparcellization.modal.single.totalParcelsLabel',
-            'Total number of parcels: {{count}}',
-            { count: total }
-        );
-        state.totalParcelsEl.textContent = text;
-        state.totalParcelsEl.setAttribute('data-i18n-key', 'reparcellization.modal.single.totalParcelsLabel');
-        try {
-            state.totalParcelsEl.setAttribute('data-i18n-params', JSON.stringify({ count: total }));
-        } catch (_) {
-            state.totalParcelsEl.removeAttribute('data-i18n-params');
         }
     }
 
@@ -272,23 +210,13 @@
     function destroyMap() {
         exitCompare();
         destroySweepOrientation();
-        if (state.orientationLine) {
-            try { state.orientationLine.remove(); } catch (_) { }
-            state.orientationLine = null;
-        }
-        if (Array.isArray(state.orientationHandles) && state.orientationHandles.length) {
-            state.orientationHandles.forEach(marker => {
-                try { marker.remove(); } catch (_) { }
-            });
-            state.orientationHandles = [];
-        }
         if (state.previewLayer) {
             state.previewLayer.remove();
             state.previewLayer = null;
         }
-        if (state.orientationBorderLayer) {
-            state.orientationBorderLayer.remove();
-            state.orientationBorderLayer = null;
+        if (state.buildingFootprintLayer) {
+            state.buildingFootprintLayer.remove();
+            state.buildingFootprintLayer = null;
         }
         if (state.boundaryLayer) {
             state.boundaryLayer.remove();
@@ -328,7 +256,6 @@
         state.selection = null;
         state.superParcel = null;
         state.totalArea = 0;
-        state.singleOwnerLabel = null;
         state.commitBtns = [];
         state.uploadedGeometry = null;
         state.selectedSliceIndex = null;
@@ -347,30 +274,12 @@
             suffix: parcelCount === 1 ? '' : 's'
         };
         const titleText = t('reparcellization.modal.title', 'Reparcellization');
-        const isSingleOwner = state.ownershipMode === 'single';
-        const subtitleText = isSingleOwner
-            ? t('reparcellization.modal.subtitleSingleOwner', '{{count}} parcel{{suffix}} · single owner', subtitleParams)
-            : t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
+        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
-        const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
-        const parcelListTitle = t('reparcellization.modal.single.parcelListTitle', 'Selected parcels');
-        const parcelCountLabel = t('reparcellization.modal.single.parcelCountLabel', 'Number of parcels');
-        const totalParcelsLabel = t(
-            'reparcellization.modal.single.totalParcelsLabel',
-            'Total number of parcels: {{count}}',
-            { count: computeResultingParcelCount() }
-        );
-        const distributionLabel = t('reparcellization.modal.single.distributionLabel', 'Distribution');
-        const distributionOptions = {
-            equal: t('reparcellization.modal.single.distribution.equal', 'Equal'),
-            random: t('reparcellization.modal.single.distribution.random', 'Random'),
-            manual: t('reparcellization.modal.single.distribution.manual', 'Manual')
-        };
-        const orientationHint = t('reparcellization.modal.single.orientationHint', 'Drag the line on the map to set the split direction.');
 
-        const algorithmControls = isSingleOwner ? '' : `
+        const algorithmControls = `
                     <div class="reparcel-controls" data-reparcel-alg-group>
                         <p class="reparcel-controls__title" data-i18n-key="reparcellization.modal.algorithmTitle">${algorithmTitle}</p>
                         <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
@@ -392,42 +301,7 @@
                         </div>
                     </div>`;
 
-        const sidePanel = isSingleOwner
-            ? `<section class="reparcel-single-panel">
-                            <div class="single-owner-block">
-                                <h3 data-i18n-key="reparcellization.modal.single.parcelListTitle">${parcelListTitle}</h3>
-                                <div class="single-owner-parcel-list" data-reparcel-parcel-list></div>
-                            </div>
-                            <div class="single-owner-block">
-                                <label for="reparcel-parcel-count" data-i18n-key="reparcellization.modal.single.parcelCountLabel">${parcelCountLabel}</label>
-                                <div class="single-owner-slider">
-                                    <input type="range" id="reparcel-parcel-count" data-parcel-count min="2" max="20" step="1" value="${state.singleConfig.parcelCount || 2}" aria-valuemin="2" aria-valuemax="20" aria-valuenow="${state.singleConfig.parcelCount || 2}">
-                                    <span class="single-owner-slider__value" data-parcel-count-value>${state.singleConfig.parcelCount || 2}</span>
-                                </div>
-                                <p class="single-owner-total" data-total-parcels data-i18n-key="reparcellization.modal.single.totalParcelsLabel" data-i18n-params='${JSON.stringify({ count: computeResultingParcelCount() })}'>${totalParcelsLabel}</p>
-                            </div>
-                            <div class="single-owner-block">
-                                <p data-i18n-key="reparcellization.modal.single.distributionLabel">${distributionLabel}</p>
-                                <div class="single-owner-radio-group" data-distribution-group role="radiogroup" aria-label="${distributionLabel}">
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="equal" ${state.singleConfig.distributionMode === 'equal' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.equal">${distributionOptions.equal}</span>
-                                    </label>
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="random" ${state.singleConfig.distributionMode === 'random' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.random">${distributionOptions.random}</span>
-                                    </label>
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="manual" ${state.singleConfig.distributionMode === 'manual' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.manual">${distributionOptions.manual}</span>
-                                    </label>
-                                </div>
-                                <div class="single-owner-manual" data-manual-share-container></div>
-                            </div>
-                            <p class="single-owner-hint" data-i18n-key="reparcellization.modal.single.orientationHint">${orientationHint}</p>
-                            <div class="reparcel-status" data-reparcel-status></div>
-                        </section>`
-            : `<section class="reparcel-legend-panel">
+        const sidePanel = `<section class="reparcel-legend-panel">
                             <div class="reparcel-newplots-header">
                                 <h3>${t('reparcellization.modal.newPlots', 'New plots')}</h3>
                             </div>
@@ -445,13 +319,13 @@
                 <div class="reparcel-header">
                     <div class="reparcel-header__text">
                         <h2 data-i18n-key="reparcellization.modal.title">${titleText}</h2>
-                        <p class="reparcel-subtitle" data-i18n-key="${isSingleOwner ? 'reparcellization.modal.subtitleSingleOwner' : 'reparcellization.modal.subtitle'}" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
+                        <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
                     </div>
                     <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
                 </div>
                 <div class="reparcel-content">
                     ${algorithmControls}
-                    <div class="reparcel-layout${isSingleOwner ? ' reparcel-layout--single' : ''}">
+                    <div class="reparcel-layout">
                         <section class="reparcel-map-panel">
                             <button type="button" class="reparcel-compare-btn" data-reparcel-compare hidden>${t('reparcellization.modal.beforeAfter', 'Before / After')}</button>
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
@@ -465,28 +339,19 @@
             </div>`;
         document.body.appendChild(overlay);
         state.modal = overlay;
-        state.legendListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-owners-table]');
-        state.newPlotsListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-newplots-table]');
-        state.coverageEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-coverage]');
-        state.cashTotalEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-cashtotal]');
-        state.drawBtn = isSingleOwner ? null : overlay.querySelector('[data-reparcel-draw]');
-        state.lineBtn = isSingleOwner ? null : overlay.querySelector('[data-reparcel-line]');
-        state.compareBtn = isSingleOwner ? null : overlay.querySelector('[data-reparcel-compare]');
+        state.legendListEl = overlay.querySelector('[data-reparcel-owners-table]');
+        state.newPlotsListEl = overlay.querySelector('[data-reparcel-newplots-table]');
+        state.coverageEl = overlay.querySelector('[data-reparcel-coverage]');
+        state.cashTotalEl = overlay.querySelector('[data-reparcel-cashtotal]');
+        state.drawBtn = overlay.querySelector('[data-reparcel-draw]');
+        state.lineBtn = overlay.querySelector('[data-reparcel-line]');
+        state.compareBtn = overlay.querySelector('[data-reparcel-compare]');
         if (state.compareBtn) state.compareBtn.hidden = false;
-        state.drawToolbar = isSingleOwner ? null : overlay.querySelector('[data-reparcel-draw-toolbar]');
-        state.finishBtn = isSingleOwner ? null : overlay.querySelector('[data-reparcel-finish]');
-        state.undoBtn = isSingleOwner ? null : overlay.querySelector('[data-reparcel-undo]');
-        state.parcelListEl = isSingleOwner ? overlay.querySelector('[data-reparcel-parcel-list]') : null;
-        state.lengthModeRadios = [];
-        state.parcelCountInput = overlay.querySelector('[data-parcel-count]');
-        state.parcelCountValueEl = isSingleOwner ? overlay.querySelector('[data-parcel-count-value]') : null;
-        state.totalParcelsEl = overlay.querySelector('[data-total-parcels]');
-        state.distributionRadios = isSingleOwner ? Array.from(overlay.querySelectorAll('input[name="reparcel-distribution"]')) : [];
-        state.manualSharesContainer = overlay.querySelector('[data-manual-share-container]');
+        state.drawToolbar = overlay.querySelector('[data-reparcel-draw-toolbar]');
+        state.finishBtn = overlay.querySelector('[data-reparcel-finish]');
+        state.undoBtn = overlay.querySelector('[data-reparcel-undo]');
         state.subtitleEl = overlay.querySelector('.reparcel-subtitle');
-        state.subtitleData = isSingleOwner
-            ? { parcelCount }
-            : { algorithmLabel: subtitleParams.algorithm, parcelCount };
+        state.subtitleData = { algorithmLabel: subtitleParams.algorithm, parcelCount };
         state.statusEl = overlay.querySelector('[data-reparcel-status]');
 
         const closeBtn = overlay.querySelector('.reparcel-close-btn');
@@ -512,8 +377,6 @@
                 }
             });
         });
-
-        updateTotalParcelsLabel();
 
         state.resizeHandler = () => {
             if (state.map) {
@@ -576,11 +439,6 @@
             });
         }
 
-        if (isSingleOwner) {
-            initializeSingleOwnerControls();
-            renderSingleOwnerParcelList();
-        }
-
         const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
         if (shuffleBtn) {
             shuffleBtn.addEventListener('click', shuffleOwnership);
@@ -641,9 +499,7 @@
         state.baseLayer = baseLayer;
         state.map = map;
         map.whenReady(() => {
-            if (state.ownershipMode === 'single') {
-                initOrientationGuides();
-            } else if (state.algorithm === 'sweep-line') {
+            if (state.algorithm === 'sweep-line') {
                 initSweepOrientation();
                 updateSweepDirLine();
             }
@@ -757,10 +613,6 @@
     }
 
     function updateCommitState() {
-        if (state.ownershipMode === 'single') {
-            ensureCommitAvailability(Array.isArray(state.slices) && state.slices.length > 0);
-            return;
-        }
         const c = evaluatePlanCompleteness();
         ensureCommitAvailability(c.ok);
         if (!state.coverageEl) return;
@@ -881,149 +733,6 @@
         updateCommitState();
     }
 
-    function clampParcelCount(value) {
-        const parsed = parseInt(value, 10);
-        if (!Number.isFinite(parsed)) return 2;
-        return Math.min(20, Math.max(2, parsed));
-    }
-
-    function renderSingleOwnerParcelList() {
-        if (!state.parcelListEl) return;
-        const layers = (state.selection && Array.isArray(state.selection.layers)) ? state.selection.layers : [];
-        const parcelLabel = t('reparcellization.modal.single.parcelLabel', 'Parcel');
-        const totalArea = state.totalArea || computeFeatureArea(state.superParcel) || 0;
-        const rows = layers.map((layer, index) => {
-            const feature = layer?.feature;
-            const props = feature?.properties || {};
-            const parcelId = props.parcelId || props.parcel_id || props.id || index + 1;
-            return `<div class="single-parcel-row"><span>${parcelLabel} ${parcelId}</span></div>`;
-        });
-        const summaryRow = `<div class="single-parcel-row total"><span>${t('reparcellization.modal.single.superParcelLabel', 'Superparcel area')}</span><span> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</span></div>`;
-        state.parcelListEl.innerHTML = rows.length
-            ? [summaryRow, ...rows].join('')
-            : `<div class="single-parcel-row empty">${t('reparcellization.modal.single.noParcels', 'No parcels selected')}</div>`;
-        applyTranslations(state.parcelListEl);
-    }
-
-    function rebuildManualShareInputs(countOverride = null) {
-        if (!state.manualSharesContainer) return;
-        const isManual = state.singleConfig.distributionMode === 'manual';
-        state.manualSharesContainer.style.display = isManual ? '' : 'none';
-        if (!isManual) return;
-
-        const count = clampParcelCount(countOverride !== null ? countOverride : state.singleConfig.parcelCount || 2);
-        if (!Array.isArray(state.singleConfig.manualShares) || state.singleConfig.manualShares.length !== count) {
-            state.singleConfig.manualShares = Array(count).fill(Math.round(100 / count));
-        }
-        const shares = state.singleConfig.manualShares.slice(0, count);
-        state.manualSharesContainer.innerHTML = shares.map((value, index) => `
-            <div class="manual-share-row">
-                <label>${t('reparcellization.modal.single.lotLabel', 'Parcel {{index}}', { index: index + 1 })}</label>
-                <div class="manual-share-input">
-                    <input type="number" min="0" max="100" step="1" data-manual-share-index="${index}" value="${value}" aria-label="${t('reparcellization.modal.single.lotShareAria', 'Share for parcel {{index}}', { index: index + 1 })}">
-                    <span>%</span>
-                </div>
-            </div>`).join('');
-
-        const inputs = state.manualSharesContainer.querySelectorAll('input[data-manual-share-index]');
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                const idx = parseInt(input.getAttribute('data-manual-share-index'), 10);
-                const val = Number(input.value);
-                state.singleConfig.manualShares[idx] = Number.isFinite(val) ? Math.max(0, val) : 0;
-                refreshSingleOwnerPreview();
-            });
-        });
-    }
-
-    function initializeSingleOwnerControls() {
-        if (state.parcelCountInput) {
-            const setParcelCountValue = (value) => {
-                if (state.parcelCountValueEl) {
-                    state.parcelCountValueEl.textContent = value;
-                }
-                state.parcelCountInput.setAttribute('aria-valuenow', value);
-            };
-
-            const clamped = clampParcelCount(state.singleConfig.parcelCount);
-            state.singleConfig.parcelCount = clamped;
-            state.parcelCountInput.value = clamped;
-            setParcelCountValue(clamped);
-            state.parcelCountInput.addEventListener('input', () => {
-                const next = clampParcelCount(state.parcelCountInput.value);
-                state.singleConfig.parcelCount = next;
-                state.parcelCountInput.value = next;
-                setParcelCountValue(next);
-                rebuildManualShareInputs(next);
-                updateSubtitleWithOwners(state.ownerShares.length);
-                updateTotalParcelsLabel();
-                refreshSingleOwnerPreview();
-            });
-        }
-
-        if (Array.isArray(state.distributionRadios) && state.distributionRadios.length) {
-            state.distributionRadios.forEach(radio => {
-                radio.checked = radio.value === state.singleConfig.distributionMode;
-                radio.addEventListener('change', () => {
-                    if (!radio.checked) return;
-                    state.singleConfig.distributionMode = radio.value || 'equal';
-                    rebuildManualShareInputs();
-                    refreshSingleOwnerPreview();
-                });
-            });
-        }
-
-        rebuildManualShareInputs();
-        updateTotalParcelsLabel();
-    }
-
-    function getOrientationLineLatLngs() {
-        if (!Array.isArray(state.orientationHandles) || state.orientationHandles.length !== 2) return null;
-        return state.orientationHandles.map(marker => marker.getLatLng());
-    }
-
-    function getOrientationAngleDeg() {
-        const coords = getOrientationLineLatLngs();
-        if (!coords) return 0;
-        const [start, end] = coords;
-        // We want the angle such that when we rotate the parcel by -angle, 
-        // the orientation line becomes horizontal (pointing east).
-        // Then vertical cuts (perpendicular to east) will be correct.
-        // After rotating back, those cuts will be perpendicular to the original orientation.
-        //
-        // turf.bearing gives azimuth: 0=north, 90=east, 180=south, -90=west
-        // turf.transformRotate uses: positive = counter-clockwise
-        // 
-        // If bearing=90 (east), we want angle=0 (no rotation needed, cuts are already perpendicular)
-        // If bearing=0 (north), we want angle=90 (rotate parcel 90° CW so north becomes east)
-        // If bearing=45 (northeast), we want angle=45 (rotate 45° CW so NE becomes east)
-        // 
-        // Formula: angle = 90 - bearing
-        // But wait - transformRotate with -angle rotates clockwise.
-        // For bearing=0 (north): angle=90, -angle=-90, rotate 90° clockwise, north→east ✓
-        // For bearing=45 (NE): angle=45, -angle=-45, rotate 45° clockwise, NE→east ✓
-        // For bearing=90 (east): angle=0, no rotation, east stays east ✓
-
-        if (typeof turf !== 'undefined' && turf.bearing) {
-            try {
-                const p1 = turf.point([start.lng, start.lat]);
-                const p2 = turf.point([end.lng, end.lat]);
-                const bearing = turf.bearing(p1, p2);
-                const angle = 90 - bearing;
-                return angle;
-            } catch (e) {
-                console.warn('[reparcellization] turf.bearing failed', e);
-            }
-        }
-        // Fallback: account for latitude compression on longitude
-        const midLat = (start.lat + end.lat) / 2;
-        const cosLat = Math.cos(midLat * Math.PI / 180);
-        const dx = (end.lng - start.lng) * cosLat;
-        const dy = end.lat - start.lat;
-        const fallbackAngle = Math.atan2(dy, dx) * (180 / Math.PI);
-        return fallbackAngle;
-    }
-
     function computeRingCentroidAndAreaXY(ringXY) {
         if (!Array.isArray(ringXY) || ringXY.length < 3) {
             return { area: 0, centroid: null };
@@ -1140,282 +849,6 @@
             } catch (_) {
                 // fall through
             }
-        }
-        return null;
-    }
-
-    function computeDefaultOrientationLine() {
-        if (typeof turf === 'undefined' || !state.superParcel) {
-            return [L.latLng(0, 0), L.latLng(0.0005, 0.001)];
-        }
-        try {
-            // Use the same centroid implementation as the split line, so the line passes through
-            // the exact screen-space center the user expects.
-            const centroid = getSuperParcelCentroidLngLat(state.superParcel);
-            if (!centroid || !Number.isFinite(centroid[0]) || !Number.isFinite(centroid[1])) {
-                return [L.latLng(0, 0), L.latLng(0.0005, 0.001)];
-            }
-            // centroid is [lng, lat] in GeoJSON order
-            const centerLng = centroid[0];
-            const centerLat = centroid[1];
-
-            const bbox = turf.bbox(state.superParcel);
-            const spanX = Math.max(bbox[2] - bbox[0], 0.0005);
-            const handleOffset = spanX * 0.35; // distance from centroid to each handle
-
-            // Horizontal line through the centroid
-            const start = L.latLng(centerLat, centerLng - handleOffset);
-            const end = L.latLng(centerLat, centerLng + handleOffset);
-            return [start, end];
-        } catch (error) {
-            console.warn('Failed to compute default orientation line', error);
-            return [L.latLng(0, 0), L.latLng(0.0005, 0.001)];
-        }
-    }
-
-    function extendLineAcrossView(latLngA, latLngB) {
-        if (!state.map) return [latLngA, latLngB];
-        const zoom = state.map.getZoom ? state.map.getZoom() : undefined;
-        const a = state.map.project(latLngA, zoom);
-        const b = state.map.project(latLngB, zoom);
-        if (!state.map || !state.map._loaded) return [latLngA, latLngB];
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const len2 = dx * dx + dy * dy;
-        if (len2 === 0) return [latLngA, latLngB];
-
-        const bounds = state.map.getPixelBounds();
-        const corners = [
-            { x: bounds.min.x, y: bounds.min.y },
-            { x: bounds.max.x, y: bounds.min.y },
-            { x: bounds.max.x, y: bounds.max.y },
-            { x: bounds.min.x, y: bounds.max.y }
-        ];
-        const edges = [
-            [corners[0], corners[1]],
-            [corners[1], corners[2]],
-            [corners[2], corners[3]],
-            [corners[3], corners[0]]
-        ];
-
-        const intersects = [];
-        edges.forEach(([p, q]) => {
-            const ex = q.x - p.x;
-            const ey = q.y - p.y;
-            const det = dx * (-ey) - dy * (-ex);
-            if (Math.abs(det) < 1e-9) return; // parallel
-            const t = ((p.x - a.x) * (-ey) - (p.y - a.y) * (-ex)) / det;
-            const u = ((p.x - a.x) * dy - (p.y - a.y) * dx) / det;
-            if (u < -1e-6 || u > 1 + 1e-6) return; // outside segment
-            intersects.push({
-                t,
-                point: { x: a.x + dx * t, y: a.y + dy * t }
-            });
-        });
-
-        if (intersects.length < 2) {
-            return [latLngA, latLngB];
-        }
-
-        intersects.sort((p1, p2) => p1.t - p2.t);
-        const first = intersects[0].point;
-        const last = intersects[intersects.length - 1].point;
-
-        try {
-            return [
-                state.map.unproject(L.point(first.x, first.y), zoom),
-                state.map.unproject(L.point(last.x, last.y), zoom)
-            ];
-        } catch (_) {
-            return [latLngA, latLngB];
-        }
-    }
-
-    function updateOrientationLineFromHandles() {
-        const coords = getOrientationLineLatLngs();
-        if (!coords || coords.length !== 2 || !state.orientationLine) return;
-        const extended = extendLineAcrossView(coords[0], coords[1]);
-        state.orientationLine.setLatLngs(extended);
-    }
-
-    function handleOrientationDrag() {
-        updateOrientationLineFromHandles();
-        refreshSingleOwnerPreview();
-    }
-
-    function initOrientationGuides() {
-        if (!state.map || state.ownershipMode !== 'single') return;
-        const coords = computeDefaultOrientationLine();
-        const handles = coords.map(pt => L.marker(pt, {
-            draggable: true,
-            opacity: 0.9,
-            riseOnHover: true,
-            keyboard: false
-        }));
-        handles.forEach(marker => marker.on('drag', handleOrientationDrag));
-        state.orientationHandles = handles;
-        handles.forEach(marker => marker.addTo(state.map));
-
-        state.orientationLine = L.polyline(extendLineAcrossView(coords[0], coords[1]), {
-            color: '#111',
-            weight: 4,
-            dashArray: '6 4',
-            interactive: false
-        }).addTo(state.map);
-
-        // Keep line spanning current view on map moves
-        state.map.on('moveend zoomend', updateOrientationLineFromHandles);
-        // Initial draw
-        updateOrientationLineFromHandles();
-    }
-
-    function buildOrientationLineFeature() {
-        if (!state.superParcel) return null;
-
-        // Build a line through the centroid, parallel to the handles line
-        const centroid = getSuperParcelCentroidLngLat(state.superParcel);
-        if (!centroid || !Number.isFinite(centroid[0]) || !Number.isFinite(centroid[1])) {
-            return null;
-        }
-
-        const orientationCoords = getOrientationLineLatLngs();
-        if (!orientationCoords || orientationCoords.length < 2) {
-            return null;
-        }
-
-        const [startHandle, endHandle] = orientationCoords;
-        // Direction vector from handles (in lng/lat)
-        const dirLng = endHandle.lng - startHandle.lng;
-        const dirLat = endHandle.lat - startHandle.lat;
-        const dirLen = Math.sqrt(dirLng * dirLng + dirLat * dirLat);
-        if (dirLen < 1e-10) return null;
-
-        // Normalize and scale to span the parcel
-        const bbox = turf.bbox(state.superParcel);
-        const span = Math.max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * 4;
-        const scale = span / dirLen;
-
-        try {
-            return turf.lineString([
-                [centroid[0] - dirLng * scale, centroid[1] - dirLat * scale],
-                [centroid[0] + dirLng * scale, centroid[1] + dirLat * scale]
-            ]);
-        } catch (error) {
-            console.warn('Failed to build orientation line feature', error);
-            return null;
-        }
-    }
-
-    /**
-     * Split a polygon with a line into two halves.
-     * turf.lineSplit splits LineStrings, not polygons, so we use half-plane intersection.
-     */
-    function splitPolygonWithLine(polygon, line) {
-        if (!polygon || !line) return null;
-        try {
-            const lineCoords = line.geometry.coordinates;
-            if (!lineCoords || lineCoords.length < 2) return null;
-            const [lineStart, lineEnd] = [lineCoords[0], lineCoords[lineCoords.length - 1]];
-
-            const ringCoords = getPolygonCoordinates(polygon);
-            if (!ringCoords || ringCoords.length < 4) return null;
-
-            // Build the two result polygons by walking the boundary and splitting at intersection points
-            const ring = ringCoords.slice(0, -1); // Remove closing vertex (we'll close manually)
-            const n = ring.length;
-
-            // Find all intersection points with their edge indices
-            const intersections = [];
-            for (let i = 0; i < n; i++) {
-                const p1 = ring[i];
-                const p2 = ring[(i + 1) % n];
-
-                const ix = lineSegmentIntersection(p1, p2, lineStart, lineEnd);
-                if (ix) {
-                    intersections.push({ point: ix, edgeIndex: i, t: ix.t });
-                }
-            }
-
-            if (intersections.length < 2) {
-                // Line doesn't properly split the polygon
-                return null;
-            }
-
-            // Sort intersections by edge index, then by t parameter
-            intersections.sort((a, b) => {
-                if (a.edgeIndex !== b.edgeIndex) return a.edgeIndex - b.edgeIndex;
-                return a.t - b.t;
-            });
-
-            // Take the first two intersection points (entry and exit)
-            const int1 = intersections[0];
-            const int2 = intersections[1];
-
-            // EXACT shared boundary points - these will be used in BOTH polygons
-            const sharedPoint1 = [int1.point.x, int1.point.y];
-            const sharedPoint2 = [int2.point.x, int2.point.y];
-
-            // Build two polygons by walking the ring
-            const poly1Coords = [];
-            const poly2Coords = [];
-
-            // Walk from int1 to int2 (one direction)
-            poly1Coords.push(sharedPoint1);
-            let idx = (int1.edgeIndex + 1) % n;
-            while (idx !== (int2.edgeIndex + 1) % n) {
-                poly1Coords.push([ring[idx][0], ring[idx][1]]);
-                idx = (idx + 1) % n;
-            }
-            poly1Coords.push(sharedPoint2);
-            poly1Coords.push(sharedPoint1); // Close the ring
-
-            // Walk from int2 to int1 (other direction)
-            poly2Coords.push(sharedPoint2);
-            idx = (int2.edgeIndex + 1) % n;
-            while (idx !== (int1.edgeIndex + 1) % n) {
-                poly2Coords.push([ring[idx][0], ring[idx][1]]);
-                idx = (idx + 1) % n;
-            }
-            poly2Coords.push(sharedPoint1);
-            poly2Coords.push(sharedPoint2); // Close the ring
-
-            const results = [];
-            if (poly1Coords.length >= 4) {
-                const f1 = turf.polygon([poly1Coords]);
-                if (computeFeatureArea(f1) > 0) results.push(f1);
-            }
-            if (poly2Coords.length >= 4) {
-                const f2 = turf.polygon([poly2Coords]);
-                if (computeFeatureArea(f2) > 0) results.push(f2);
-            }
-
-            return results.length >= 2 ? results : null;
-        } catch (err) {
-            console.warn('splitPolygonWithLine failed', err);
-            return null;
-        }
-    }
-
-    // Helper: find intersection point of two line segments
-    function lineSegmentIntersection(p1, p2, p3, p4) {
-        const x1 = p1[0], y1 = p1[1];
-        const x2 = p2[0], y2 = p2[1];
-        const x3 = p3[0], y3 = p3[1];
-        const x4 = p4[0], y4 = p4[1];
-
-        const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-        if (Math.abs(denom) < 1e-14) return null;
-
-        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
-
-        // t must be in [0,1] for segment p1-p2, u can be anywhere for an infinite line
-        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-            return {
-                x: x1 + t * (x2 - x1),
-                y: y1 + t * (y2 - y1),
-                t: t
-            };
         }
         return null;
     }
@@ -1872,6 +1305,10 @@
         state.drawing.mode = mode === 'line' ? 'line' : 'polygon';
         state.drawing.points = [];
         clearDrawTemp();
+        // Close any plot tooltip that's open under the cursor as we enter draw mode.
+        if (state.previewLayer) {
+            try { state.previewLayer.eachLayer(l => l.closeTooltip && l.closeTooltip()); } catch (_) { }
+        }
         try { state.map.getContainer().style.cursor = 'crosshair'; } catch (_) { }
         state.map.on('click', onDrawClick);
         setDrawButtonsActive();
@@ -2467,6 +1904,54 @@
         });
     }
 
+    // Footprints of applied building proposals that overlap the pool. window.proposedBuildings
+    // holds GeoJSON footprint Features (lng/lat) for applied/executed building proposals;
+    // we clip them to the super parcel so they can guide the readjustment layout.
+    function collectAppliedBuildingFootprints() {
+        if (typeof turf === 'undefined' || !state.superParcel) return [];
+        const all = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
+            ? window.proposedBuildings
+            : [];
+        const out = [];
+        for (const feature of all) {
+            if (!feature || !feature.geometry) continue;
+            const gt = feature.geometry.type;
+            if (gt !== 'Polygon' && gt !== 'MultiPolygon') continue;
+            let intersects = false;
+            try { intersects = turf.booleanIntersects(state.superParcel, feature); } catch (_) { intersects = false; }
+            if (intersects) out.push(feature);
+        }
+        return out;
+    }
+
+    function drawBuildingFootprints() {
+        if (!state.map) return;
+        if (state.buildingFootprintLayer) {
+            state.buildingFootprintLayer.remove();
+            state.buildingFootprintLayer = null;
+        }
+        const footprints = collectAppliedBuildingFootprints();
+        if (!footprints.length) return;
+        state.buildingFootprintLayer = L.geoJSON(
+            { type: 'FeatureCollection', features: footprints },
+            {
+                interactive: false,
+                style: {
+                    color: '#b91c1c',
+                    weight: 2,
+                    fill: false,
+                    fillOpacity: 0,
+                    dashArray: '3 3'
+                }
+            }
+        ).addTo(state.map);
+        // Non-interactive, kept on top so the outlines read as a guide over the plots
+        // (clicks pass through to the plot layers below).
+        if (state.buildingFootprintLayer.bringToFront) {
+            try { state.buildingFootprintLayer.bringToFront(); } catch (_) { }
+        }
+    }
+
     function drawPreview() {
         if (!state.map) return;
         if (state.previewLayer) {
@@ -2522,7 +2007,10 @@
                             onSliceClick(idx, e.latlng);
                         });
                         layer.on('mouseover', () => {
-                            if (state.ownerAssignmentPopup) layer.closeTooltip();
+                            // Don't show the plot tooltip while drawing/splitting or comparing.
+                            if (state.ownerAssignmentPopup || state.drawing.active || state.compare.active) {
+                                layer.closeTooltip();
+                            }
                         });
                     }
                 }
@@ -2538,23 +2026,6 @@
             interactive: false
         }).addTo(state.map);
 
-        if (state.orientationBorderLayer) {
-            state.orientationBorderLayer.remove();
-            state.orientationBorderLayer = null;
-        }
-        if (state.ownershipMode === 'single' && state.singleConfig.lengthMode === 'split') {
-            const orientationFeature = buildOrientationLineFeature();
-            if (orientationFeature) {
-                state.orientationBorderLayer = L.geoJSON(orientationFeature, {
-                    style: {
-                        color: '#111',
-                        weight: 3,
-                        opacity: 0.8
-                    }
-                }).addTo(state.map);
-            }
-        }
-
         if (!state.hasFitBounds && state.boundaryLayer) {
             try {
                 state.map.fitBounds(state.boundaryLayer.getBounds(), { padding: [20, 20] });
@@ -2563,6 +2034,9 @@
                 console.warn('Failed to fit bounds for reparcellization preview', err);
             }
         }
+
+        // Building-footprint guide on top of the plots (outlines guide the layout).
+        drawBuildingFootprints();
 
         // Keep the sweep direction line visible above the freshly re-added slices.
         if (state.sweepHandle) updateSweepDirLine();
@@ -2581,7 +2055,7 @@
             totalValue: state.totalValue,
             poolUnitValue: state.poolUnitValue,
             contributionRatio: state.contributionRatio,
-            isSingleOwner: state.ownershipMode === 'single',
+            isSingleOwner: false,
             // Cash offers (the compensation part of the proposal) and their total.
             totalCashOffer: computeTotalCashOffer(),
             ownerShares: state.ownerShares.map(entry => {
@@ -2681,30 +2155,6 @@
             return parsed.map(entry => ({ slot: entry.slot, fraction: equalShare }));
         }
         return parsed.map(entry => ({ slot: entry.slot, fraction: entry.value / total }));
-    }
-
-    async function resolveSingleOwnerLabel(selection) {
-        if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) {
-            return null;
-        }
-        if (typeof ensureParcelOwnerSlots !== 'function') {
-            return null;
-        }
-
-        const firstFeature = selection.layers[0]?.feature;
-        const props = firstFeature?.properties || {};
-        const parcelId = props.parcelId || props.parcel_id || props.id;
-        if (!parcelId) return null;
-
-        try {
-            const slots = await ensureParcelOwnerSlots(parcelId);
-            if (!Array.isArray(slots) || !slots.length) return null;
-            const chosen = slots.find(slot => slot?.displayName) || slots[0];
-            return chosen?.displayName || null;
-        } catch (error) {
-            console.warn('Failed to resolve single-owner label for parcel', parcelId, error);
-            return null;
-        }
     }
 
     // Land value for a parcel: explicit estimatedMarketPrice when present,
@@ -2815,26 +2265,6 @@
             [minLng, minLat - latMargin]
         ];
         return turf.polygon([coords]);
-    }
-
-    function buildPerpendicularBand(startX, endX, nearY, farY) {
-        if (!isFinite(startX) || !isFinite(endX) || !isFinite(nearY) || !isFinite(farY)) {
-            return null;
-        }
-        if (endX <= startX) return null;
-        const coords = [
-            [startX, nearY],
-            [endX, nearY],
-            [endX, farY],
-            [startX, farY],
-            [startX, nearY]
-        ];
-        try {
-            return turf.polygon([coords]);
-        } catch (error) {
-            console.warn('Failed to build perpendicular band', error);
-            return null;
-        }
     }
 
     function safeIntersect(featureA, featureB) {
@@ -3172,313 +2602,7 @@
         return slices.filter(slice => slice.geometry);
     }
 
-    function normalizeFractions(values, count) {
-        const safeValues = Array.isArray(values) ? values : [];
-        const cleaned = safeValues.map(val => {
-            const num = Number(val);
-            return Number.isFinite(num) && num > 0 ? num : 0;
-        });
-        const total = cleaned.reduce((sum, val) => sum + val, 0);
-        if (!Number.isFinite(total) || total <= 0) {
-            return Array(count).fill(1 / count);
-        }
-        return cleaned.map(val => val / total);
-    }
-
-    function buildSingleOwnerShares() {
-        const baseCount = clampParcelCount(state.singleConfig.parcelCount);
-        const mode = state.singleConfig.distributionMode || 'equal';
-        let fractions = [];
-
-        if (mode === 'random') {
-            const randoms = Array.from({ length: baseCount }, () => Math.random() + 0.25);
-            fractions = normalizeFractions(randoms, baseCount);
-            state.singleConfig.manualShares = fractions.map(val => Math.round(val * 100));
-        } else if (mode === 'manual') {
-            const manual = Array.isArray(state.singleConfig.manualShares)
-                ? state.singleConfig.manualShares.slice(0, baseCount)
-                : [];
-            while (manual.length < baseCount) {
-                manual.push(Math.round(100 / baseCount));
-            }
-            fractions = normalizeFractions(manual, baseCount);
-        } else {
-            fractions = Array(baseCount).fill(1 / baseCount);
-        }
-        return fractions.map((percent, index) => {
-            const lotIndex = index + 1;
-            const ownerLabel = state.singleOwnerLabel;
-            const ownerKey = `lot-${lotIndex}`;
-            return {
-                ownerKey,
-                displayName: ownerLabel,
-                percent,
-                color: pickOwnerColor(ownerKey, index),
-                parcelIds: state.selection?.ids || []
-            };
-        });
-    }
-
-    function sliceSingleOwner(superParcel, shares, options = {}) {
-        if (typeof turf === 'undefined' || !shares || !shares.length) {
-            return [];
-        }
-        const activeShares = shares.filter(entry => entry && entry.percent > 0);
-        if (!activeShares.length) return [];
-
-        // Get the orientation line direction from the handles
-        const orientationCoords = getOrientationLineLatLngs();
-        if (!orientationCoords || orientationCoords.length < 2) {
-            console.warn('[reparcellization] No orientation line available');
-            return [];
-        }
-
-        const [startHandle, endHandle] = orientationCoords;
-
-        // To compute a true perpendicular, we need to account for the fact that
-        // 1° longitude ≠ 1° latitude. At latitude φ, 1° lng ≈ cos(φ) × 1° lat in distance.
-        // We work in a local "equirectangular" coordinate system where we scale lng by cos(lat).
-        const midLat = (startHandle.lat + endHandle.lat) / 2;
-        const cosLat = Math.cos(midLat * Math.PI / 180);
-
-        // Direction in scaled coordinates (x = lng * cosLat, y = lat)
-        const dx = (endHandle.lng - startHandle.lng) * cosLat;
-        const dy = endHandle.lat - startHandle.lat;
-        const len = Math.sqrt(dx * dx + dy * dy);
-        if (len < 1e-10) {
-            console.warn('[reparcellization] Orientation line too short');
-            return [];
-        }
-
-        // Normalized direction in scaled space
-        const dirX = dx / len;
-        const dirY = dy / len;
-        // Perpendicular in scaled space (rotate 90°): (dx, dy) → (-dy, dx)
-        const perpX = -dirY;
-        const perpY = dirX;
-
-        // Convert back to lng/lat deltas:
-        // dLng = dirX / cosLat, dLat = dirY (for direction along orientation)
-        // perpLng = perpX / cosLat, perpLat = perpY (for perpendicular)
-        const dLng = dirX / cosLat;
-        const dLat = dirY;
-        const perpLng = perpX / cosLat;
-        const perpLat = perpY;
-
-        // Project all parcel vertices onto the orientation axis to find extent
-        const bbox = turf.bbox(superParcel);
-        const bboxSpan = Math.max(bbox[2] - bbox[0], bbox[3] - bbox[1]);
-        const cutLineHalfLength = bboxSpan * 2; // Long enough to cross the parcel
-
-        // Get all ring coordinates
-        const ringCoords = getPolygonCoordinates(superParcel);
-        if (!ringCoords || ringCoords.length < 3) return [];
-
-        // Project each vertex onto the orientation axis in scaled space
-        const centroid = getSuperParcelCentroidLngLat(superParcel) || turf.centroid(superParcel).geometry.coordinates;
-        const projections = ringCoords.map(coord => {
-            // Convert to scaled space relative to centroid
-            const relX = (coord[0] - centroid[0]) * cosLat;
-            const relY = coord[1] - centroid[1];
-            // Dot product with direction in scaled space
-            return relX * dirX + relY * dirY;
-        });
-        const minProj = Math.min(...projections);
-        const maxProj = Math.max(...projections);
-
-        // Helper: create a cut line perpendicular to orientation at a given position along the axis
-        const createCutLine = (projPos) => {
-            // Point on the orientation axis at projPos distance from centroid (in scaled space)
-            // Convert back: lng = centroid[0] + (dirX * projPos) / cosLat
-            const pointLng = centroid[0] + (dirX * projPos) / cosLat;
-            const pointLat = centroid[1] + dirY * projPos;
-            // Line perpendicular to orientation, passing through this point
-            return turf.lineString([
-                [pointLng - perpLng * cutLineHalfLength, pointLat - perpLat * cutLineHalfLength],
-                [pointLng + perpLng * cutLineHalfLength, pointLat + perpLat * cutLineHalfLength]
-            ]);
-        };
-
-        // Find cut positions using binary search for equal area distribution
-        const totalArea = computeFeatureArea(superParcel);
-        if (!totalArea) return [];
-
-        const cutPositions = [];
-        let cumulativePercent = 0;
-
-        for (let i = 0; i < activeShares.length - 1; i++) {
-            cumulativePercent += activeShares[i].percent;
-            const targetArea = totalArea * cumulativePercent;
-
-            // Binary search for the projection position that gives targetArea
-            let lower = minProj;
-            let upper = maxProj;
-            let bestPos = (lower + upper) / 2;
-            let bestDiff = Infinity;
-
-            for (let iter = 0; iter < 30; iter++) {
-                const pos = (lower + upper) / 2;
-                const cutLine = createCutLine(pos);
-
-                // Create a half-plane polygon from minProj to pos
-                const halfPlane = createHalfPlane(centroid, dirX, dirY, perpX, perpY, cosLat, minProj, pos, cutLineHalfLength);
-
-                let sliceArea = 0;
-                try {
-                    const slice = turf.intersect(superParcel, halfPlane);
-                    if (slice) sliceArea = computeFeatureArea(slice);
-                } catch (_) { /* ignore */ }
-
-                const diff = Math.abs(sliceArea - targetArea);
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    bestPos = pos;
-                }
-
-                if (sliceArea < targetArea) {
-                    lower = pos;
-                } else {
-                    upper = pos;
-                }
-
-                if (targetArea > 0 && diff / targetArea < 0.005) break;
-            }
-
-            cutPositions.push(bestPos);
-        }
-
-        // Now slice the parcel using these cut lines
-        const slices = [];
-        let remaining = superParcel;
-
-        for (let i = 0; i < activeShares.length; i++) {
-            const owner = activeShares[i];
-
-            if (i < cutPositions.length) {
-                const cutLine = createCutLine(cutPositions[i]);
-                const parts = splitPolygonWithLine(remaining, cutLine);
-
-                if (parts && parts.length >= 2) {
-                    // Sort parts by their projection onto the orientation axis
-                    parts.sort((a, b) => {
-                        const centA = turf.centroid(a).geometry.coordinates;
-                        const centB = turf.centroid(b).geometry.coordinates;
-                        const projA = (centA[0] - centroid[0]) * dLng + (centA[1] - centroid[1]) * dLat;
-                        const projB = (centB[0] - centroid[0]) * dLng + (centB[1] - centroid[1]) * dLat;
-                        return projA - projB;
-                    });
-
-                    // First part is the slice, rest becomes remaining
-                    const slicePart = parts[0];
-                    remaining = parts.length > 2
-                        ? turf.union(...parts.slice(1))
-                        : parts[1];
-
-                    if (slicePart && slicePart.geometry) {
-                        slices.push({
-                            ownerKey: owner.ownerKey,
-                            displayName: owner.displayName,
-                            percent: owner.percent,
-                            color: owner.color,
-                            geometry: slicePart.geometry,
-                            owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
-                        });
-                    }
-                } else {
-                    // Cut failed, give remaining to this owner
-                    if (remaining && remaining.geometry) {
-                        slices.push({
-                            ownerKey: owner.ownerKey,
-                            displayName: owner.displayName,
-                            percent: owner.percent,
-                            color: owner.color,
-                            geometry: remaining.geometry,
-                            owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
-                        });
-                    }
-                    remaining = null;
-                }
-            } else {
-                // Last slice gets whatever remains
-                if (remaining && remaining.geometry) {
-                    slices.push({
-                        ownerKey: owner.ownerKey,
-                        displayName: owner.displayName,
-                        percent: owner.percent,
-                        color: owner.color,
-                        geometry: remaining.geometry,
-                        owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
-                    });
-                }
-            }
-        }
-
-        return slices.filter(s => s && s.geometry);
-    }
-
-    // Helper: create a half-plane polygon for area calculation
-    // dirX, dirY are in scaled space; cosLat is used to convert back to lng
-    function createHalfPlane(centroid, dirX, dirY, perpX, perpY, cosLat, fromProj, toProj, halfLen) {
-        // Four corners of the half-plane band
-        // Convert from scaled space to lng/lat: lng = x / cosLat, lat = y
-        const p1Lng = centroid[0] + (dirX * fromProj - perpX * halfLen) / cosLat;
-        const p1Lat = centroid[1] + (dirY * fromProj - perpY * halfLen);
-        const p2Lng = centroid[0] + (dirX * fromProj + perpX * halfLen) / cosLat;
-        const p2Lat = centroid[1] + (dirY * fromProj + perpY * halfLen);
-        const p3Lng = centroid[0] + (dirX * toProj + perpX * halfLen) / cosLat;
-        const p3Lat = centroid[1] + (dirY * toProj + perpY * halfLen);
-        const p4Lng = centroid[0] + (dirX * toProj - perpX * halfLen) / cosLat;
-        const p4Lat = centroid[1] + (dirY * toProj - perpY * halfLen);
-
-        return turf.polygon([[
-            [p1Lng, p1Lat],
-            [p2Lng, p2Lat],
-            [p3Lng, p3Lat],
-            [p4Lng, p4Lat],
-            [p1Lng, p1Lat]
-        ]]);
-    }
-
-    async function refreshSingleOwnerPreview() {
-        setStatus(
-            t('reparcellization.modal.status.preparingPreview', 'Preparing repartition preview...'),
-            'info',
-            'reparcellization.modal.status.preparingPreview'
-        );
-        ensureCommitAvailability(false);
-        state.ownerShares = buildSingleOwnerShares();
-        updateSubtitleWithOwners(state.ownerShares.length || state.singleConfig.parcelCount);
-
-        if (!state.totalArea) {
-            state.totalArea = computeFeatureArea(state.superParcel);
-        }
-
-        state.slices = sliceSingleOwner(state.superParcel, state.ownerShares, {
-            lengthMode: state.singleConfig.lengthMode
-        });
-
-        updateTotalParcelsLabel();
-
-        if (!state.slices.length) {
-            setStatus(
-                t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
-                'error',
-                'reparcellization.modal.status.splitFailed'
-            );
-            drawPreview();
-            return;
-        }
-
-        ensureCommitAvailability(true);
-        setStatus('', 'info');
-        drawPreview();
-    }
-
     async function refreshPreview() {
-        if (state.ownershipMode === 'single') {
-            await refreshSingleOwnerPreview();
-            return;
-        }
         setStatus(
             t('reparcellization.modal.status.preparingPreview', 'Preparing repartition preview...'),
             'info',
@@ -3533,7 +2657,6 @@
             );
             return;
         }
-        updateTotalParcelsLabel();
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
@@ -3588,29 +2711,12 @@
         }
         state.selection = selection;
         state.superParcel = superParcel;
-        state.ownershipMode = options.ownershipMode === 'single' ? 'single' : 'multiple';
-        state.singleOwnerLabel = null;
+        // One unified land-readjustment method for both single- and multiple-owner
+        // selections. ownershipMode is kept only as metadata on the saved plan.
+        state.ownershipMode = 'multiple';
         state.cashOfferOverrides = {};
-        state.singleConfig = {
-            lengthMode: 'split',
-            parcelCount: clampParcelCount(2),
-            distributionMode: 'equal',
-            manualShares: []
-        };
-        state.algorithm = state.ownershipMode === 'single'
-            ? 'sweep-line'
-            : (options.algorithm || 'sweep-line');
+        state.algorithm = options.algorithm || 'sweep-line';
         state.totalArea = computeFeatureArea(superParcel);
-        if (state.ownershipMode === 'single') {
-            const providedOwner = typeof options.singleOwnerLabel === 'string' ? options.singleOwnerLabel.trim() : '';
-            if (!providedOwner) {
-                if (typeof updateStatus === 'function') {
-                    updateStatus('Cannot open single-owner reparcellization without an explicit owner.');
-                }
-                return false;
-            }
-            state.singleOwnerLabel = providedOwner;
-        }
         buildModalStructure();
         initMap();
         await refreshPreview();
