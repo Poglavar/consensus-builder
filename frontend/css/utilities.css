@@ -587,6 +587,27 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     width: 100%;
 }
 
+/* Collapsed proposal-goal grid: show only the chosen goal as a chevron bar so
+   the sections below rise into view. Click it to re-expand all goals. */
+#proposalGoalGroup.is-collapsed .proposal-type-group {
+    grid-template-columns: 1fr;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button[data-proposal-tool]:not(.selected) {
+    display: none;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button.selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button.selected::after {
+    content: '\25BE';
+    margin-left: 8px;
+    opacity: 0.6;
+    font-size: 12px;
+}
+
 .proposal-type-button {
     width: 100%;
     min-width: 0;

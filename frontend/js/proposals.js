@@ -8381,7 +8381,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
     'decide-later': { icon: '🤔', label: 'Decide later' },
     'decide later': { icon: '🤔', label: 'Decide later' },
-    'reparcellization': { icon: '✂️', label: 'Reparcellization' },
+    'reparcellization': { icon: '✂️', label: 'Land readjustment' },
     'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
     'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
@@ -10103,26 +10103,6 @@ function setProposalBoundaryMode(mode = 'multiple', options = {}) {
     currentOwnershipMode = normalized;
 }
 
-async function resolveSingleOwnerLabelForSelection(selection) {
-    if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) return null;
-    if (typeof ensureParcelOwnerSlots !== 'function') return null;
-
-    const firstFeature = selection.layers[0]?.feature;
-    const parcelId = getParcelIdFromFeature(firstFeature);
-    if (!parcelId) return null;
-
-    try {
-        const slots = await ensureParcelOwnerSlots(parcelId);
-        if (!Array.isArray(slots) || !slots.length) return null;
-        const chosen = slots.find(slot => slot?.displayName) || slots[0];
-        const label = chosen?.displayName || chosen?.ownerKey || chosen?.name;
-        return label ? String(label).trim() : null;
-    } catch (error) {
-        console.warn('Failed to resolve single-owner label for selection', error);
-        return null;
-    }
-}
-
 function computeOwnershipStatsFromSelection(selection) {
     const result = {
         ownerKeys: new Set(),
@@ -10180,7 +10160,10 @@ function updateGoalDependentSections(toolKey) {
     const isOwnershipTransfer = toolKey === 'ownership-transfer';
 
     if (acquisitionGroup) {
-        acquisitionGroup.style.display = (isUrbanRule || isReparcellization || isOwnershipTransfer) ? 'none' : '';
+        // Acquisition strategy is derived from the goal and locked (non-selectable).
+        // Only road/track carries a meaningful value (partial-preferred); for every
+        // other goal it's always "full", so hide the section as it offers no choice.
+        acquisitionGroup.style.display = isRoad ? '' : 'none';
     }
     if (typologyGroup) {
         typologyGroup.style.display = isUrbanRule ? '' : 'none';
@@ -10530,29 +10513,17 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
     const ownershipModeInput = document.getElementById('proposalBoundaryMode');
     const ownershipMode = ownershipModeInput && ownershipModeInput.value ? ownershipModeInput.value : (currentOwnershipMode || 'multiple');
 
-    const selection = (typeof getCurrentParcelSelectionContext === 'function')
-        ? getCurrentParcelSelectionContext()
-        : null;
-    let singleOwnerLabel = null;
-    if (ownershipMode === 'single') {
-        singleOwnerLabel = await resolveSingleOwnerLabelForSelection(selection);
-        if (!singleOwnerLabel) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Cannot open single-owner reparcellization without an explicit owner.');
-            }
-            return false;
-        }
-    }
-
     currentProposalTool = 'reparcellization';
     const typeInput = document.getElementById('proposalType');
     if (typeInput) {
         typeInput.value = 'Reparcellization';
     }
 
+    // One unified land-readjustment method for both single- and multiple-owner
+    // selections (ownershipMode is kept only as informational metadata).
     const openModal = async () => {
         if (typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode, singleOwnerLabel });
+            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode });
             return true;
         }
         if (typeof updateStatus === 'function') {
@@ -10560,7 +10531,7 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
         }
         const loaded = await ensureReparcellizationModuleLoaded();
         if (loaded && typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode, singleOwnerLabel });
+            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode });
             return true;
         }
         console.warn('Reparcellization modal is not yet available.');
@@ -11338,6 +11309,40 @@ function handleProposalToolButton(toolKey) {
         default:
             break;
     }
+
+    // Once a goal is chosen, collapse the goal grid to just that goal so the
+    // sections below (typology/geometry/etc.) rise into view without scrolling.
+    collapseProposalGoalGroup();
+}
+
+// Collapse the proposal-goal grid down to the selected goal (a chevron bar the
+// user clicks to re-expand). Expanding shows all goals again.
+function collapseProposalGoalGroup() {
+    const group = document.getElementById('proposalGoalGroup');
+    if (!group) return;
+    const hasSelection = !!group.querySelector('.proposal-type-button[data-proposal-tool].selected');
+    group.classList.toggle('is-collapsed', hasSelection);
+}
+
+function expandProposalGoalGroup() {
+    const group = document.getElementById('proposalGoalGroup');
+    if (group) group.classList.remove('is-collapsed');
+}
+
+// When collapsed, a click on the selected goal re-expands the grid instead of
+// re-launching the tool. Capture-phase so it pre-empts the button's onclick.
+if (typeof document !== 'undefined' && !window.__proposalGoalCollapseInstalled) {
+    document.addEventListener('click', (e) => {
+        const group = document.getElementById('proposalGoalGroup');
+        if (!group || !group.classList.contains('is-collapsed') || !group.contains(e.target)) return;
+        const btn = e.target.closest('.proposal-type-button[data-proposal-tool]');
+        if (btn && btn.classList.contains('selected')) {
+            e.stopPropagation();
+            e.preventDefault();
+            expandProposalGoalGroup();
+        }
+    }, true);
+    window.__proposalGoalCollapseInstalled = true;
 }
 
 let teardownProposalBalanceWatcher = null;
