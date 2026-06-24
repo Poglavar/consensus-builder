@@ -2537,10 +2537,35 @@
         });
     }
 
+    // Expose the current 3D camera as a geographic view so the photorealistic (Cesium) mode can
+    // open from the exact same vantage point instead of flying in from space. Returns null when
+    // not in 3D. The scene is uniformly Web-Mercator scaled (horizontal distances inflated by
+    // ~1/cos(lat)), so the camera->target range is converted back to real metres; the tilt angle
+    // is scale-invariant and needs no correction.
+    function getGeoCameraView() {
+        try {
+            if (!isActive || !camera || !controls || !origin3857) return null;
+            const camLL = xyToLatLng(camera.position.x, camera.position.y);
+            const tgt = controls.target;
+            const tgtLL = xyToLatLng(tgt.x, tgt.y);
+            if (!camLL || !tgtLL) return null;
+            const polar = controls.getPolarAngle();        // 0 = top-down, π/2 = horizon
+            const pitchRad = polar - Math.PI / 2;           // Cesium: 0 horizon, -π/2 straight down
+            const latRad = tgtLL.lat * Math.PI / 180;
+            const range = Math.max(1, controls.getDistance() * Math.cos(latRad));
+            let headingDeg = 0;
+            if (typeof turf !== 'undefined' && turf) {
+                try { headingDeg = turf.bearing([camLL.lng, camLL.lat], [tgtLL.lng, tgtLL.lat]); } catch (_) { }
+            }
+            return { targetLng: tgtLL.lng, targetLat: tgtLL.lat, headingDeg: headingDeg, pitchRad: pitchRad, range: range };
+        } catch (_) { return null; }
+    }
+
     // Expose globals for debugging/manual control
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
+    window.getThree3DGeoView = getGeoCameraView;
 })();
 
 
