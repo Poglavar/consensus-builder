@@ -100,11 +100,17 @@
     // Parcel isolation: clicking a parcel hides everything but that parcel and the
     // building(s) sitting on it. null = not isolated (full scene).
     let isolatedParcelId = null;
+    // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
+    // reached via the [show] button in the parcel panel. null = not isolating a proposal.
+    let isolatedProposalId = null;
     let isolationResetEl = null;
     let parcelInfoPanelEl = null;
     // Floor areas of the currently-shown parcel, kept so the price slider can recompute the
     // value gain without re-running the (price-independent) volume maths on every tick.
     let lastFloorAreas = null;
+    // Parcel count behind the currently-shown panel (proposal panel only; null for single parcel),
+    // so the price slider can recompute the average gain/loss per parcel live.
+    let lastParcelCount = null;
 
     // Assumptions for the parcel value panel. GFA (floor area) is derived from built/proposed
     // volume by dividing out a typical storey height; value uses a €/m² rate the user can slide.
@@ -300,6 +306,49 @@
         try { return v.toLocaleString('en-US'); } catch (_) { return String(v); }
     }
 
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    // --- Proposal lookup helpers (for the "Proposal info" view) ---
+    function getProposalForParcel(parcelId) {
+        try {
+            const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
+            if (!store || typeof store.getProposalsForParcel !== 'function') return null;
+            const list = store.getProposalsForParcel(parcelId) || [];
+            if (!list.length) return null;
+            // Prefer an applied/executed proposal; else the first match.
+            const applied = list.find(p => {
+                const s = ((p && p.status) || '').toString().toLowerCase();
+                return s === 'applied' || s === 'executed';
+            });
+            return applied || list[0];
+        } catch (_) { return null; }
+    }
+
+    function proposalDisplayTitle(p) {
+        if (!p) return '';
+        return p.title || p.name || p.proposalName || ('Proposal ' + (p.proposalId || p.id || ''));
+    }
+
+    function proposalIdOf(p) {
+        return p ? (p.proposalId || p.id || null) : null;
+    }
+
+    // Union of every parcel id a proposal touches (before + after, across its sub-proposals).
+    function getProposalParcelIdSet(proposal) {
+        const ids = new Set();
+        if (!proposal) return ids;
+        const add = (arr) => { if (Array.isArray(arr)) arr.forEach(id => { if (id != null) ids.add(String(id)); }); };
+        add(proposal.parentParcelIds);
+        add(proposal.childParcelIds);
+        ['roadProposal', 'decideLaterProposal', 'reparcellization', 'buildingProposal', 'structureProposal'].forEach(k => {
+            const sp = proposal[k];
+            if (sp) { add(sp.parentParcelIds); add(sp.childParcelIds); }
+        });
+        return ids;
+    }
+
     function ensureParcelInfoPanel() {
         if (!threeContainer) return null;
         if (parcelInfoPanelEl && parcelInfoPanelEl.parentElement === threeContainer) return parcelInfoPanelEl;
@@ -312,6 +361,8 @@
 
     function hideParcelInfoPanel() {
         if (parcelInfoPanelEl) parcelInfoPanelEl.style.display = 'none';
+        // The open info box covers the floating status message (mobile); clear that when it closes.
+        try { document.body.classList.remove('three-info-open'); } catch (_) { }
     }
 
     // Refresh the price label and the value-gain line from the current slider price and the
@@ -339,40 +390,26 @@
                 gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
             }
         }
+
+        // Proposal panel only: average gain/loss per parcel (total gain ÷ parcel count).
+        const avgEl = panel.querySelector('[data-role="avg-gain"]');
+        if (avgEl) {
+            if (lastParcelCount && lastParcelCount > 0 && proposed > 0) {
+                const avg = gain / lastParcelCount;
+                const cls = avg > 0 ? 'gain-positive' : (avg < 0 ? 'gain-negative' : '');
+                const sign = avg > 0 ? '+' : '';
+                avgEl.className = 'parcel-panel-avg ' + cls;
+                avgEl.textContent = `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${sign}€${formatInt(avg)}`;
+            } else {
+                avgEl.className = 'parcel-panel-avg';
+                avgEl.textContent = '';
+            }
+        }
     }
 
-    function updateParcelInfoPanel(parcelId) {
-        const panel = ensureParcelInfoPanel();
-        if (!panel) return;
-        const m = computeParcelMetrics(parcelId);
-        if (!m) { panel.style.display = 'none'; return; }
-        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
-
-        const L = {
-            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
-            built: threeI18n('threeMode.parcelPanel.built', 'Built'),
-            proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
-            volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
-            floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
-            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
-            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²')
-        };
-
-        panel.innerHTML = `
-            <div class="parcel-panel-title">${L.title} ${parcelId}</div>
-            <table class="parcel-panel-table">
-                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
-                <tr><td>${L.volume}</td><td>${formatInt(m.builtVolume)} m³</td><td>${formatInt(m.proposedVolume)} m³</td></tr>
-                <tr><td>${L.floorArea}</td><td>${formatInt(m.builtFloorArea)} m²</td><td>${formatInt(m.proposedFloorArea)} m²</td></tr>
-            </table>
-            <div class="parcel-panel-note">${L.floorNote}</div>
-            <div class="parcel-panel-value-title" data-role="value-title"></div>
-            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
-                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
-                aria-label="${L.priceLabel}">
-            <div class="parcel-panel-gain" data-role="gain"></div>
-        `;
-
+    // Shared by the parcel and proposal panels: wire the price slider and render the value/gain
+    // line from the current priceEurPerM2 and lastFloorAreas, then reveal the panel.
+    function wireSliderAndGain(panel) {
         const slider = panel.querySelector('[data-role="price-slider"]');
         if (slider) {
             slider.addEventListener('input', () => {
@@ -383,28 +420,124 @@
         }
         renderValueAndGain(panel);
         panel.style.display = '';
+        // Mark an info box as open so CSS can cover the overlapping floating status on mobile.
+        try { document.body.classList.add('three-info-open'); } catch (_) { }
     }
 
-    // Hide everything except the given parcel and the building footprint(s) on it.
-    function isolateParcel(parcelId) {
-        if (!parcelId) return;
-        isolatedParcelId = parcelId;
-        updateIsolationButton();
-        updateParcelInfoPanel(parcelId);
-        // flatGroup holds parcels (tagged) and roads (untagged) — show only the match.
-        if (flatGroup) flatGroup.children.forEach(c => {
-            c.visible = !!(c.userData && c.userData.parcelId === parcelId);
+    // The Built/Proposed volume + floor-area rows shared by both panels.
+    function metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea) {
+        return `
+            <table class="parcel-panel-table">
+                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
+                <tr><td>${L.volume}</td><td>${formatInt(builtVolume)} m³</td><td>${formatInt(proposedVolume)} m³</td></tr>
+                <tr><td>${L.floorArea}</td><td>${formatInt(builtFloorArea)} m²</td><td>${formatInt(proposedFloorArea)} m²</td></tr>
+            </table>
+            <div class="parcel-panel-note">${L.floorNote}</div>
+            <div class="parcel-panel-value-title" data-role="value-title"></div>
+            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
+                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
+                aria-label="${L.priceLabel}">
+            <div class="parcel-panel-gain" data-role="gain"></div>`;
+    }
+
+    function panelLabels() {
+        return {
+            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
+            built: threeI18n('threeMode.parcelPanel.built', 'Built'),
+            proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
+            volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
+            floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
+            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
+            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²'),
+            proposalLabel: threeI18n('threeMode.parcelPanel.proposalLabel', 'Proposal'),
+            show: threeI18n('threeMode.parcelPanel.show', 'show'),
+            proposalHeading: threeI18n('threeMode.proposalPanel.title', 'Proposal info'),
+            parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
+        };
+    }
+
+    function updateParcelInfoPanel(parcelId) {
+        const panel = ensureParcelInfoPanel();
+        if (!panel) return;
+        const m = computeParcelMetrics(parcelId);
+        if (!m) { panel.style.display = 'none'; try { document.body.classList.remove('three-info-open'); } catch (_) { } return; }
+        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
+        lastParcelCount = null; // single parcel — no per-parcel average
+
+        const L = panelLabels();
+        // If the parcel belongs to a proposal, offer a [show] button that opens the proposal view.
+        const proposal = getProposalForParcel(parcelId);
+        const proposalRow = proposal ? `
+            <div class="parcel-panel-proposal">
+                <span class="parcel-panel-proposal-label">${L.proposalLabel}:</span>
+                <button type="button" class="parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
+            </div>` : '';
+
+        panel.innerHTML = `
+            <div class="parcel-panel-title">${L.title} ${escapeHtml(String(parcelId))}</div>
+            ${proposalRow}
+            ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
+        `;
+
+        const showBtn = panel.querySelector('[data-role="show-proposal"]');
+        if (showBtn && proposal) {
+            const pid = proposalIdOf(proposal);
+            showBtn.addEventListener('click', () => { if (pid != null) isolateProposal(pid); });
+        }
+        wireSliderAndGain(panel);
+    }
+
+    // Aggregate panel for a whole proposal: totals across all its parcels, total gain/loss.
+    function updateProposalInfoPanel(proposal, idSet) {
+        const panel = ensureParcelInfoPanel();
+        if (!panel) return;
+        let builtVolume = 0, proposedVolume = 0, builtFloorArea = 0, proposedFloorArea = 0, parcelCount = 0;
+        idSet.forEach(id => {
+            const m = computeParcelMetrics(id);
+            if (!m) return;
+            parcelCount++;
+            builtVolume += m.builtVolume;
+            proposedVolume += m.proposedVolume;
+            builtFloorArea += m.builtFloorArea;
+            proposedFloorArea += m.proposedFloorArea;
         });
-        // buildingGroup holds proposed slices (tagged with their parcelId) and existing
-        // context buildings (untagged). Show proposed slices on this parcel, plus existing
-        // buildings whose footprint center falls inside the parcel polygon.
-        const parcelFeature = getParcelFeatureById(parcelId);
+        lastFloorAreas = { built: builtFloorArea, proposed: proposedFloorArea };
+        lastParcelCount = parcelCount;
+
+        const L = panelLabels();
+        panel.innerHTML = `
+            <div class="parcel-panel-title">${L.proposalHeading}</div>
+            <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
+            <div class="parcel-panel-subnote">${L.parcelsLabel}: ${parcelCount}</div>
+            ${metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea)}
+            <div class="parcel-panel-avg" data-role="avg-gain"></div>
+        `;
+        wireSliderAndGain(panel);
+    }
+
+    // Show only the given set of parcels (and the buildings on them). Used by both single-parcel
+    // and whole-proposal isolation. parcelFeatures are the polygons for testing existing
+    // (untagged) context buildings by footprint centre.
+    function applyIsolationVisibility(parcelIdSet, parcelFeatures) {
+        // flatGroup holds parcels (tagged) and roads (untagged) — show only members of the set.
+        if (flatGroup) flatGroup.children.forEach(c => {
+            const pid = c.userData && c.userData.parcelId;
+            c.visible = (pid != null) && parcelIdSet.has(String(pid));
+        });
+        // buildingGroup holds proposed slices (tagged with their parcelId) and existing context
+        // buildings (untagged). Show proposed slices on member parcels, plus existing buildings
+        // whose footprint centre falls inside any member parcel polygon.
         if (buildingGroup) buildingGroup.children.forEach(c => {
             const ud = c.userData || {};
-            if (ud.parcelId) { c.visible = (ud.parcelId === parcelId); return; }
-            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeature) {
+            if (ud.parcelId != null) { c.visible = parcelIdSet.has(String(ud.parcelId)); return; }
+            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeatures.length) {
                 let inside = false;
-                try { inside = turf.booleanPointInPolygon(turf.point(ud.footprintLatLng), parcelFeature); } catch (_) { }
+                try {
+                    const pt = turf.point(ud.footprintLatLng);
+                    for (let i = 0; i < parcelFeatures.length; i++) {
+                        if (turf.booleanPointInPolygon(pt, parcelFeatures[i])) { inside = true; break; }
+                    }
+                } catch (_) { }
                 c.visible = inside;
                 return;
             }
@@ -414,9 +547,37 @@
         [plannedFlatGroup, parkGroup, squareGroup, lakeGroup].forEach(g => { if (g) g.visible = false; });
     }
 
-    function clearIsolation() {
-        if (isolatedParcelId === null) return;
+    // Hide everything except the given parcel and the building footprint(s) on it.
+    function isolateParcel(parcelId) {
+        if (!parcelId) return;
+        isolatedParcelId = parcelId;
+        isolatedProposalId = null;
+        updateIsolationButton();
+        updateParcelInfoPanel(parcelId);
+        const pf = getParcelFeatureById(parcelId);
+        applyIsolationVisibility(new Set([String(parcelId)]), pf ? [pf] : []);
+    }
+
+    // Hide everything except the parcels (and their buildings) belonging to a whole proposal.
+    function isolateProposal(proposalId) {
+        const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
+        const proposal = (store && typeof store.getProposal === 'function') ? store.getProposal(proposalId) : null;
+        if (!proposal) return;
+        const idSet = getProposalParcelIdSet(proposal);
+        if (!idSet.size) return;
+        isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
+        updateIsolationButton();
+        updateProposalInfoPanel(proposal, idSet);
+        const feats = [];
+        idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
+        applyIsolationVisibility(idSet, feats);
+    }
+
+    function clearIsolation() {
+        if (isolatedParcelId === null && isolatedProposalId === null) return;
+        isolatedParcelId = null;
+        isolatedProposalId = null;
         updateIsolationButton();
         hideParcelInfoPanel();
         // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
@@ -429,7 +590,7 @@
 
     function updateIsolationButton() {
         try {
-            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null) ? 'none' : '';
+            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null && isolatedProposalId === null) ? 'none' : '';
         } catch (_) { }
     }
 
@@ -1846,6 +2007,7 @@
 
         // Freshly rebuilt buildings default to visible; re-apply isolation if active.
         if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
+        else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
     }
 
     function computeContentBoundsXY() {
@@ -2668,7 +2830,7 @@
     }
 
     function handleIsolationKey(evt) {
-        if (evt.key === 'Escape' && isolatedParcelId !== null) clearIsolation();
+        if (evt.key === 'Escape' && (isolatedParcelId !== null || isolatedProposalId !== null)) clearIsolation();
     }
 
     function startWalkPick() {

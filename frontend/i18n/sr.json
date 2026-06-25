@@ -1221,12 +1221,19 @@
                 "perSlice": "Po parceli"
             },
             "recipientPlaceholder": "Ime ili 0x adresa primaoca",
+            "recipientScope": {
+                "specific": "Određena adresa",
+                "any": "Bilo ko"
+            },
             "ownershipTransfer": {
                 "label": "Smer prenosa:",
                 "toMe": "Na mene",
                 "fromMe": "Od mene",
                 "nameToMe": "Prenos vlasništva na mene",
-                "nameFromMe": "Prenos vlasništva od mene"
+                "nameFromMe": "Prenos vlasništva od mene",
+                "nameToCity": "Prenos vlasništva gradu",
+                "nameThirdParty": "Prenos vlasništva trećoj strani",
+                "nameOfferToSell": "Ponuda za prodaju"
             },
             "typologyOptions": {
                 "block": "Blok",
@@ -1904,7 +1911,14 @@
             "valueTitle": "Vrednost @ {{p}} €/m²",
             "priceLabel": "Cena po m²",
             "gain": "Dobit predloga",
-            "currentValue": "Trenutna vrednost"
+            "currentValue": "Trenutna vrednost",
+            "proposalLabel": "Predlog",
+            "show": "prikaži"
+        },
+        "proposalPanel": {
+            "title": "Podaci o predlogu",
+            "parcelsLabel": "Parcele",
+            "avgPerParcel": "Prosek / parceli"
         }
     }
 }

@@ -45,8 +45,8 @@ flowchart TD
 
     PR -.->|"park / square / lake /<br/>building / road / rule / none"| PR
     RE -.->|"keep 1:1 / merge N→1 /<br/>subdivide 1→M"| RE
-    OW -.->|"no change / to me /<br/>to city / to other"| OW
-    PC -.->|"amount; 0 = donation;<br/>shown only when ownership moves"| PC
+    OW -.->|"no change / to me /<br/>to city / third party"| OW
+    PC -.->|"the existing Offer field;<br/>0 = donation"| PC
 ```
 
 Each facet defaults to a no-op, so a trivial proposal stays trivial, and every one of the
@@ -58,10 +58,10 @@ old nine buttons becomes a *combination*:
 | Building(s) | building | No change (locked) | To me | offer |
 | Road/Track | road | **Merge** | **To city** | offer |
 | Urban Rule | urban-rule | Keep as-is | No change | — |
-| **Reparcellization** | none | **Subdivide** | per-slice | offer |
+| **Reparcellization** | none | **Readjust** | Per slice | offer |
 | **Decide later** | none | **Merge** | To me | offer |
-| Ownership transfer *to me* | none | Keep as-is | **To me** | offer |
-| Ownership transfer *from me* | none | Keep as-is | **To other**, proposer sells | offer |
+| Ownership transfer *to me* | none | No change | **To me** | offer |
+| Ownership transfer *from me* (sale) | none | No change | **Third party · Anyone** | asking price |
 
 - **`decide-later` disappears** → it's just `Parcels: Merge` with no program. The awkward
   name goes; the consolidation operation stays.
@@ -84,18 +84,13 @@ Picking a Program pre-sets the other facets to the common case (all overridable)
 | Urban Rule | Keep as-is | No change | A regulation overlay, not a land transaction |
 | None | Keep as-is | To me | Pure restructure/transfer ("decide later" lives here) |
 
-### Why Price is its own section
+### Price = the existing Offer field
 
-Price is the **consideration** for the ownership transfer, so it's logically *part of*
-Ownership — but we surface it separately because:
-
-- It only applies when ownership actually moves (no transfer → no price).
-- **0 = donation**, which is a meaningful, first-class case (esp. "donate to the city").
-- It is distinct from **build-funding / contributions** (the existing escrow pool that
-  pays to *execute* the proposal) — keeping price separate avoids conflating "what I pay
-  the current owner" with "what it costs to build."
-
-So: a dedicated **Price / compensation** section, shown only when there is a transfer.
+Price is the **consideration** for the ownership transfer. We did **not** add a separate
+Price control — it reuses the dialog's existing **Offer** field (with its currency select).
+For a sell (Third party · Anyone) the Offer is the **asking price**; `0` expresses a
+donation. It stays distinct from **build-funding / contributions** (the escrow pool that pays
+to *execute* a proposal), which is a different money concept.
 
 ## Trust model (decisions, mostly for a later phase)
 
@@ -126,7 +121,7 @@ The existing apply/mint mechanics are reused; the new facets route into them:
 | Facet value | Existing mechanic | Where |
 |---|---|---|
 | Parcels: **Merge** | merge selected parcels → one child, hide parents | `_applyDecideLaterProposal` / `_mergeParcelGeometries` (`proposal-manager.js`) |
-| Parcels: **Subdivide** | split parents → N owner-share children | `_applyReparcellizationProposal` |
+| Parcels: **Readjust** | split parents → N owner-share children | `_applyReparcellizationProposal` |
 | Parcels: **Keep as-is** | auto-geometry from parcels, or drawn geometry | `buildGeometryFromParcels` / draw tools |
 | Program: building / road / rule | structure / road / typology appliers | `_applyStructureProposal`, `_applyRoadProposal`, … |
 | Ownership: recipient + Price | purchase/transfer offer + acceptance gating | `ownershipTransferProposal`, ProposalNFT accept flow |
@@ -135,72 +130,85 @@ A combination like Park + Merge + To-city runs the merge to produce the consolid
 assigns the program (park geometry/designation) to it, and records a transfer to the City at
 the given price.
 
-## Dialog layout (target)
+## Dialog layout (shipped)
 
 The three facets are **persistent** — all visible until *Create Proposal* is clicked, never
 collapsed away — so the proposer always sees (and consciously decides, or accepts the
-defaults for) what happens to land use, parcels, and ownership. Parcels and Ownership are
-**radio groups** with safe defaults, not buttons that spawn more buttons.
+defaults for) what happens to land use, parcels, and ownership.
 
 ```
-┌─ Create Proposal ───────────────────────────────────────┐
-│  LAND USE  (what to build — buttons, default "As is")    │
-│    [As is] [Park] [Square] [Lake] [Building(s)]          │
-│    [Road/Track] [Urban Rule]                             │
-│                                                          │
-│  PARCELS  (how the land is restructured — radios)        │
-│    (•) As is    ( ) Merge (N→1)    ( ) Readjust (N→M)    │
-│      └─ Readjust → algorithm: [Sweep line ▾]            │
-│                                                          │
-│  OWNERSHIP  (who receives the land — radios)             │
-│    (•) No change  ( ) To me  ( ) To city  ( ) Third party│
-│        [0x… / name]            ( ) Per slice (readjust)  │
-│                                                          │
-│  PRICE  (compensation to current owners — when transfer) │
-│    [______]   0 = donation                               │
-│                                                          │
-│  …author, description, geometry (if drawn), options…     │
-└──────────────────────────────────────────────────────────┘
+┌─ Create Proposal ──────────────────────────────────────────┐
+│  🟢 Jure                                              [×]   │  ← avatar + name (no box)
+│  LAND USE                                                   │
+│  [No change] [⛲️ Square] [🌳 Park] [🐟 Lake]               │  ← segmented pills, filled = selected
+│  [🏠 Building(s)] [🛣️ Road/Track] [📜 Urban Rule]          │
+│    ┌ inset (Building/Road/Urban Rule) ───────────┐         │
+│    │ ✏️ Edit   ⬆️ Upload   (outlined actions)     │         │  ← subordinate, indented
+│    └──────────────────────────────────────────────┘         │
+│  PARCELS                                                    │
+│  [No change] [🪡 Merge] [✂️ Readjust]                       │   (Merge disabled if 1 parcel)
+│      — or, when locked —  🔒 No change · Building(s)         │  ← static line, not dead pills
+│  OWNERSHIP                                                  │
+│  [No change] [To me] [To city] [Third party]                │
+│    ┌ inset (Third party) ─────────────────┐                 │
+│    │ [Anyone] [Specific address]          │                 │  Anyone = open offer to sell
+│    │ (0x… / name, only for Specific)      │                 │
+│    └──────────────────────────────────────┘                 │
+│  ───────────────────────────────────────────────────────── │  ← divider
+│  Name / Description / Offer (price) / ▸ Options             │
+│              [ Create proposal ]                            │
+└────────────────────────────────────────────────────────────┘
 ```
 
-(Defaults shown are the no-op base: As is / As is / No change — a permissible
-"discussion" proposal. Picking a Land use re-sets Parcels + Ownership per the matrix above.)
+(Default no-op base: No change / No change / No change — Create disabled until something is
+chosen. Picking a Land use re-sets Parcels + Ownership per the matrix above.)
+
+### Control vocabulary (visual convention)
+- **Pills** = single-select state (Land use / Parcels / Ownership / Acquisition / typology);
+  **filled blue = selected**.
+- **Outlined, auto-width buttons** = *actions* (geometry Edit / Upload), kept distinct from
+  the filled state pills, and placed inside an **inset** panel (indent + left accent + recessed
+  bg) so they read as subordinate to the choice that opened them.
+- **Locked facets** render as a quiet static line (`🔒 <value> · <reason>`) instead of a row
+  of dead/disabled pills.
+- The `decide-later`, standalone `ownership-transfer`, `reparcellization` buttons, and the
+  locked single/multiple-owner box are **gone**; the `ownership-transfer` direction machinery
+  is kept hidden and driven from the Ownership facet.
 
 ## Decisions (locked)
 
-- **Naming**: the split operation is **"Readjust"** (accurately N→M re-slicing, matching the
-  "land readjustment" umbrella) — not "Subdivide" (which reads as 1→M). The Parcels facet
-  options are **As is · Merge · Readjust**.
+- **Naming**: the split operation is **"Readjust"** (N→M re-slicing) — not "Subdivide". Parcels
+  options: **No change · Merge · Readjust**. Single term **"No change"** for the unchanged
+  default across all three facets.
 - **Forcing = lock-the-hard, default-the-soft**:
-  - **Locked** (intrinsic to the choice): Park/Square/Lake/Road → Parcels **Merge**;
-    Parcels **Readjust** → Ownership **Per slice**; Urban Rule → Parcels **No change** +
-    Ownership **No change**; Building(s) → Parcels **No change** (build on parcels as-is,
-    like Urban Rule — no merge/subdivide).
-  - **Default but overridable** (soft): Building(s) → Ownership **To me**; public-good land
-    uses → Ownership **To city**.
-- **Per slice** is an Ownership option that appears only for Readjust (each slice carries its
-  own owner share via the reparcellization plan), and is the locked Ownership for Readjust.
+  - **Locked**: Park/Square/Lake/Road → Parcels **Merge** (but **No change** for a single
+    parcel — nothing to merge); Parcels **Readjust** → Ownership **Per slice**;
+    Urban Rule → Parcels **No change** + Ownership **No change**; Building(s) → Parcels **No
+    change** (build on parcels as-is, like Urban Rule).
+  - **Soft default**: Building(s) → Ownership **To me**; public-good uses → Ownership **To city**.
+- **Sell flow**: Ownership **Third party** offers **Anyone** (default — an open offer to sell,
+  routed to the `from-me` accepted-unfunded mechanic) or **Specific address** (directed
+  transfer). The auto-title reflects the recipient ("Offer to sell", "Ownership transfer to
+  city", …).
+- **Single parcel**: **Merge** disabled (needs ≥2 parcels).
 
-## Implementation plan
+## Status — what's shipped vs deferred
 
-No backward compatibility is required (negligible existing usage), so we introduce a single
-source-of-truth and drop the old goal-key sprawl where practical.
+**Shipped (this dialog):** the full facet UI and its **intent capture** — pills, locked-static,
+insets, the constraint matrix, the sell flow, single-parcel guard, recipient-aware titles. On
+submit the facets are mapped onto the **existing** goal-key machinery and recorded
+(`proposal.facets`, `ownershipTransferProposal.recipient/recipientScope/recipientAddress`).
 
-**Phase 1 — dialog reorg (this change):**
-1. Add one canonical facet definition (program list + parcels modes + ownership recipients)
-   as the single source of truth, replacing scattered label/icon/normalizer maps where the
-   dialog reads them.
-2. Rebuild the `#proposalGoalGroup` markup into the four sections above; remove the
-   `decide-later` and standalone `ownership-transfer`/`reparcellization` buttons (their
-   behavior is now reachable via facets).
-3. Wire `Program → defaults` (auto-set Parcels + Ownership, overridable).
-4. Geometry: `Subdivide` requires the reparcellization plan; `Merge`/auto-geometry programs
-   keep their current auto/optional-draw behavior; `Building`/`Road` keep manual draw.
-5. On submit, **derive** the internal goal/payload (`goal`, `decideLaterProposal`/merge,
-   `reparcellization`, `ownershipTransferProposal`, recipient, price) from the facet state so
-   the apply + mint mechanics run unchanged.
-6. i18n: new section labels in en/es/hr/sr.
+**Deferred — the execution layer has *not* caught up to the UI.** This is the honest gap:
+- The submit **derives a legacy goal key** and the **apply/mint mechanics are unchanged**.
+  So Park + Merge + To-city does *not* yet perform a true parcel merge **and** a city-ownership
+  transfer at execution — much of the new semantics (recipient = city / third party, "offer to
+  sell", per-slice ownership beyond the existing reparcellization path) is **recorded as
+  metadata**, not enforced.
+- **Recipient-as-required-accepter** (Phase 2) and **covenant / bound use** (Phase 3) are
+  expressible in intent but **not enforced** on-chain or in-app.
 
-**Phase 2 (later):** recipient as a required accepter in the on-chain acceptance flow.
-
-**Phase 3 (later):** covenant — in-system change-of-use constraint + attested use terms.
+In other words: the dialog now *captures* a clean, orthogonal intent; making every captured
+combination *execute* faithfully (real merge+transfer, recipient acceptance, sale settlement,
+covenants) is the remaining work. Treat the current state as clarified intent-capture, not a
+fully-wired transaction engine.
