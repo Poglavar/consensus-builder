@@ -2009,7 +2009,14 @@
             "valueTitle": "Value @ €{{p}}/m²",
             "priceLabel": "Price per m²",
             "gain": "Proposal gain",
-            "currentValue": "Current value"
+            "currentValue": "Current value",
+            "proposalLabel": "Proposal",
+            "show": "show"
+        },
+        "proposalPanel": {
+            "title": "Proposal info",
+            "parcelsLabel": "Parcels",
+            "avgPerParcel": "Avg / parcel"
         }
     }
 }
