@@ -19,10 +19,12 @@
     let googleTileset = null;
     let active = false;
     let statusEl = null;
+    let shadowsEnabled = true;   // proposed buildings cast a real shadow onto the photoreal mesh
     const proposalEntities = [];
 
     const containerEl = () => document.getElementById('cesium-container');
     const toggleBtn = () => document.getElementById('mode-realistic-toggle');
+    const shadowBtn = () => document.getElementById('photoreal-shadow-toggle');
 
     function setStatus(msg) {
         if (!statusEl) return;
@@ -152,7 +154,8 @@
             position: Cesium.Cartesian3.fromDegrees(lng, lat),
             model: {
                 uri: feat.properties.modelUrl,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                shadows: Cesium.ShadowMode.ENABLED
             }
         });
         proposalEntities.push(ent);
@@ -204,12 +207,57 @@
                         extrudedHeight: base + hM,
                         material: Cesium.Color.fromCssColorString(color).withAlpha(0.85),
                         outline: true,
-                        outlineColor: Cesium.Color.WHITE
+                        outlineColor: Cesium.Color.WHITE,
+                        shadows: Cesium.ShadowMode.ENABLED
                     }
                 });
                 proposalEntities.push(ent);
             }
         }
+    }
+
+    // ---- shadows ----
+    // Shadows cast from the Cesium sun. The photoreal tileset is ENABLED (cast + receive) so
+    // EXISTING buildings also throw real shadows — needed to study what overshadows a proposal.
+    // Caveat: the photo texture already has shadows baked in from capture time, so existing
+    // buildings show BOTH the baked shadow (short, fixed) and the dynamic one (follows the sun).
+    // The baked ones can't be removed from Google's tiles; scrub the sun off noon
+    // (setSunHourLocal) and the dynamic shadows are long & directional, clearly distinct.
+    function applyShadows() {
+        if (!viewer) return;
+        viewer.shadows = shadowsEnabled; // toggles viewer.shadowMap.enabled
+        if (viewer.shadowMap) {
+            viewer.shadowMap.softShadows = true;
+            viewer.shadowMap.darkness = 0.3;
+            viewer.shadowMap.maximumDistance = 5000;
+        }
+        if (googleTileset) {
+            googleTileset.shadows = shadowsEnabled ? Cesium.ShadowMode.ENABLED : Cesium.ShadowMode.DISABLED;
+        }
+    }
+
+    function updateShadowButton() {
+        const b = shadowBtn();
+        if (b) b.classList.toggle('active', shadowsEnabled);
+    }
+
+    function setShadows(on) {
+        shadowsEnabled = !!on;
+        applyShadows();
+        updateShadowButton();
+    }
+
+    // Put the sun at ~mid-afternoon local time for the target so shadows are clearly visible
+    // (long enough to read, sun well above the horizon). Derived from longitude, no TZ database.
+    function applyDaytimeSun(lng) {
+        if (!viewer || !isFinite(lng)) return;
+        try {
+            const utcHour = ((15 - lng / 15) % 24 + 24) % 24; // ~15:00 local solar
+            const d = new Date();
+            d.setUTCHours(Math.floor(utcHour), Math.round((utcHour % 1) * 60), 0, 0);
+            viewer.clock.currentTime = Cesium.JulianDate.fromDate(d);
+            viewer.clock.shouldAnimate = false;
+        } catch (_) { }
     }
 
     // ---- camera: open from the exact legacy-3D vantage point, no fly-in animation ----
@@ -285,6 +333,9 @@
             }
             await ensureTileset();
             await renderProposedBuildings();
+            if (entryView) applyDaytimeSun(entryView.targetLng);
+            applyShadows();
+            updateShadowButton();
             if (entryView) await applyEntryView(entryView); // fine-tune once the photoreal mesh is present
         } catch (err) {
             console.error('[photoreal] activation failed:', err);
@@ -323,6 +374,9 @@
     function init() {
         const btn = toggleBtn();
         if (btn) btn.addEventListener('click', toggle);
+        const sb = shadowBtn();
+        if (sb) sb.addEventListener('click', function () { setShadows(!shadowsEnabled); });
+        updateShadowButton();
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -335,6 +389,16 @@
         deactivate: deactivate,
         toggle: toggle,
         isActive: function () { return active; },
-        getViewer: function () { return viewer; }
+        getViewer: function () { return viewer; },
+        // Test helpers: toggle shadows, or scrub the sun to a local hour (0–24) for a shadow study.
+        setShadows: setShadows,
+        setSunHourLocal: function (hour) {
+            if (!viewer) return;
+            const lng = Cesium.Math.toDegrees(viewer.camera.positionCartographic.longitude);
+            const utc = ((hour - lng / 15) % 24 + 24) % 24;
+            const d = new Date();
+            d.setUTCHours(Math.floor(utc), Math.round((utc % 1) * 60), 0, 0);
+            viewer.clock.currentTime = Cesium.JulianDate.fromDate(d);
+        }
     };
 })();

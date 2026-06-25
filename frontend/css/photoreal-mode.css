@@ -66,6 +66,44 @@ body.three-mode-active #mode-realistic-toggle.map-mode-realistic-btn {
     border-color: #1a73e8;
 }
 
+/* Sun/shadow toggle — sub-control of photoreal mode, stacked above the globe button,
+   visible only while the photoreal globe is shown. */
+#photoreal-shadow-toggle.map-mode-shadow-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 192px;
+    z-index: 1001;
+    display: none;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 8px 10px;
+    min-width: 40px;
+    min-height: 36px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 1;
+    color: #333;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+body.realistic-mode-active #photoreal-shadow-toggle.map-mode-shadow-btn {
+    display: inline-flex;
+}
+
+#photoreal-shadow-toggle.map-mode-shadow-btn:hover {
+    background: #f5f5f5;
+}
+
+#photoreal-shadow-toggle.map-mode-shadow-btn.active {
+    background: #f4b400; /* sun-yellow when shadows are on */
+    color: #1a1a1a;
+    border-color: #f4b400;
+}
+
 #mode-realistic-toggle.map-mode-realistic-btn:disabled {
     opacity: 0.7;
     cursor: progress;
