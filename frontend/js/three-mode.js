@@ -47,10 +47,17 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
 
-    // Walk-mode launcher state. Target is the transit planner at zagreb.lol/prijevoz/
-    // with `?st3d=walk` (per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
-    // /voznja on that host is a tram redirect — do not use it for the walk overlay.
-    const WALK_URL_BASE = 'https://zagreb.lol/prijevoz/';
+    // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
+    // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
+    // with `?st3d=walk`, per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
+    // Cities without a `walk.url` hide the button entirely — it is NOT generally available yet.
+    function getWalkUrlBase() {
+        try {
+            const cfg = window.CityConfigManager;
+            const walk = cfg && typeof cfg.getWalkConfig === 'function' ? cfg.getWalkConfig() : null;
+            return walk && walk.url ? walk.url : null;
+        } catch (_) { return null; }
+    }
     let walkPickActive = false;
     let walkPickClickHandler = null;
     let walkPickKeyHandler = null;
@@ -2221,7 +2228,8 @@
             toggleBtn.textContent = 'Rendering…';
             toggleBtn.title = 'Preparing 3D view';
         }
-        if (walkBtn) walkBtn.hidden = false;
+        // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
+        if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -2424,7 +2432,9 @@
         params.set('lat', lat.toFixed(6));
         params.set('lon', lng.toFixed(6));
         if (ids.length) params.set('proposals', ids.join(','));
-        return `${WALK_URL_BASE}?${params.toString()}`;
+        const base = getWalkUrlBase();
+        if (!base) return null;
+        return `${base}?${params.toString()}`;
     }
 
     // Raycast a click on the renderer canvas onto the z=0 ground plane and return the lat/lng.
@@ -2504,6 +2514,7 @@
             }
             try {
                 const url = buildWalkUrl(ll.lat, ll.lng);
+                if (!url) { console.warn('[walk] no walk overlay configured for this city'); return; }
                 window.open(url, '_blank', 'noopener,noreferrer');
             } catch (e) {
                 console.warn('[walk] failed to open walk URL:', e);

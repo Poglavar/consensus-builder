@@ -118,6 +118,12 @@
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            // Street-level "walk through it" launcher shown in 3D mode (the yellow-guy button).
+            // Currently powered by the Zagreb transit planner's 3D walk overlay. Only cities
+            // that set `walk.url` show the button; everyone else hides it (see three-mode.js).
+            walk: {
+                url: 'https://zagreb.lol/prijevoz/'
             }
         },
         belgrade: {
@@ -1075,6 +1081,7 @@
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
         getParcelBuilderConfig,
+        getWalkConfig: () => getCurrentCityConfig().walk || null,
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,
