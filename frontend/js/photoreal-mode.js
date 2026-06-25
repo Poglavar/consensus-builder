@@ -111,11 +111,18 @@
         proposalEntities.length = 0;
     }
 
-    function outerRings(geometry) {
+    // Each entry is one polygon's full ring set: [outerRing, hole1, hole2, ...].
+    function polygonsOf(geometry) {
         if (!geometry) return [];
-        if (geometry.type === 'Polygon') return [geometry.coordinates[0]];
-        if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(function (p) { return p[0]; });
+        if (geometry.type === 'Polygon') return [geometry.coordinates];
+        if (geometry.type === 'MultiPolygon') return geometry.coordinates;
         return [];
+    }
+
+    function ringToCartesians(ring) {
+        const flat = [];
+        ring.forEach(function (c) { flat.push(c[0], c[1]); });
+        return Cesium.Cartesian3.fromDegreesArray(flat);
     }
 
     // Mirror three-mode.js estimateBuildingHeightMeters priority.
@@ -128,6 +135,29 @@
         return 10;
     }
 
+    // Uploaded buildings carry a glTF model URL — render the real mesh (legacy's
+    // placeUploadedModel branch) instead of an extruded box. Cesium is geographic, so the model
+    // goes at the footprint centroid clamped to ground at 1:1 real-metre scale — no Mercator
+    // inflation (that's a quirk of three-mode's local scene), and Cesium handles glTF Y-up→Z-up.
+    function addProposedModel(feat) {
+        if (!viewer) return;
+        let lng, lat;
+        try {
+            const c = turf.centroid(feat);
+            lng = c.geometry.coordinates[0];
+            lat = c.geometry.coordinates[1];
+        } catch (_) { return; }
+        if (!isFinite(lng) || !isFinite(lat)) return;
+        const ent = viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            model: {
+                uri: feat.properties.modelUrl,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+            }
+        });
+        proposalEntities.push(ent);
+    }
+
     async function renderProposedBuildings() {
         if (!viewer) return;
         clearProposal();
@@ -135,28 +165,40 @@
         for (let i = 0; i < arr.length; i++) {
             const feat = arr[i];
             if (!feat || !feat.geometry) continue;
-            const rings = outerRings(feat.geometry);
+            // Mirror legacy's two render paths: glTF model when modelUrl is present, else extrusion.
+            if (feat.properties && feat.properties.modelUrl) {
+                addProposedModel(feat);
+                continue;
+            }
+            const polys = polygonsOf(feat.geometry);
             const hM = buildingHeightM(feat.properties);
             const color = (feat.properties && feat.properties.color) || '#2f6df6';
-            for (let r = 0; r < rings.length; r++) {
-                const ring = rings[r];
-                if (!Array.isArray(ring) || ring.length < 3) continue;
+            for (let p = 0; p < polys.length; p++) {
+                const rings = polys[p];               // [outerRing, hole1, hole2, ...]
+                if (!rings || !Array.isArray(rings[0]) || rings[0].length < 3) continue;
+                const outer = rings[0];
                 // Footprints are EPSG:4326 [lng,lat] — fed straight to Cesium (it does geo->ECEF).
-                // Sample the photoreal mesh under the footprint so the massing sits on the ground.
+                // Sample the photoreal mesh under the outer ring so the massing sits on the ground.
                 let base = 0;
                 try {
-                    const cartos = ring.map(function (c) { return Cesium.Cartographic.fromDegrees(c[0], c[1]); });
+                    const cartos = outer.map(function (c) { return Cesium.Cartographic.fromDegrees(c[0], c[1]); });
                     const sampled = await viewer.scene.sampleHeightMostDetailed(cartos);
                     const hs = sampled.map(function (s) { return (s && isFinite(s.height)) ? s.height : null; })
                         .filter(function (v) { return v !== null; });
                     if (hs.length) base = Math.min.apply(null, hs);
                 } catch (_) { /* fall back to ellipsoid height 0 */ }
 
-                const flat = [];
-                ring.forEach(function (c) { flat.push(c[0], c[1]); });
+                // Inner rings become holes so courtyards (perimeter blocks) stay open — matching
+                // the legacy 3D extrusion, which honours shape.holes.
+                const holes = [];
+                for (let k = 1; k < rings.length; k++) {
+                    if (Array.isArray(rings[k]) && rings[k].length >= 3) {
+                        holes.push(new Cesium.PolygonHierarchy(ringToCartesians(rings[k])));
+                    }
+                }
                 const ent = viewer.entities.add({
                     polygon: {
-                        hierarchy: Cesium.Cartesian3.fromDegreesArray(flat),
+                        hierarchy: new Cesium.PolygonHierarchy(ringToCartesians(outer), holes),
                         perPositionHeight: false,
                         height: base,
                         extrudedHeight: base + hM,
