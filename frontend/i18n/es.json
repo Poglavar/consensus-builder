@@ -1951,7 +1951,14 @@
             "valueTitle": "Valor @ €{{p}}/m²",
             "priceLabel": "Precio por m²",
             "gain": "Ganancia de la propuesta",
-            "currentValue": "Valor actual"
+            "currentValue": "Valor actual",
+            "proposalLabel": "Propuesta",
+            "show": "ver"
+        },
+        "proposalPanel": {
+            "title": "Información de la propuesta",
+            "parcelsLabel": "Parcelas",
+            "avgPerParcel": "Media / parcela"
         }
     }
 }

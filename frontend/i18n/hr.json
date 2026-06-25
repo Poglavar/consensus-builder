@@ -1912,7 +1912,14 @@
             "valueTitle": "Vrijednost @ {{p}} €/m²",
             "priceLabel": "Cijena po m²",
             "gain": "Dobit prijedloga",
-            "currentValue": "Trenutna vrijednost"
+            "currentValue": "Trenutna vrijednost",
+            "proposalLabel": "Prijedlog",
+            "show": "prikaži"
+        },
+        "proposalPanel": {
+            "title": "Podaci o prijedlogu",
+            "parcelsLabel": "Čestice",
+            "avgPerParcel": "Prosjek / čestici"
         }
     }
 }

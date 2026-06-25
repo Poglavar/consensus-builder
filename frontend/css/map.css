@@ -157,6 +157,76 @@
     word-break: break-word;
 }
 
+/* "Proposal: <name> [show]" row in the parcel panel, and the proposal name in the
+   aggregate proposal panel. */
+#three-container .three-mode-parcel-panel .parcel-panel-proposal {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: -2px 0 8px;
+    font-size: 12px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-label {
+    color: #5a6472;
+    flex: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #2c6cb0;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show:hover {
+    text-decoration: underline;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show .show-tag {
+    color: #8a93a0;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-name {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #2c6cb0;
+    word-break: break-word;
+}
+
+/* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
+#three-container .three-mode-parcel-panel .parcel-panel-subnote {
+    font-size: 11px;
+    color: #8a93a0;
+    margin: 0 0 8px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg {
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg:empty {
+    display: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-positive {
+    color: #1c8a4a;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-negative {
+    color: #c0392b;
+}
+
 #three-container .three-mode-parcel-panel .parcel-panel-table {
     width: 100%;
     border-collapse: collapse;
@@ -229,6 +299,13 @@
         right: 64px;
         width: auto;
         max-width: 360px;
+    }
+
+    /* The bottom-docked parcel/proposal panel overlaps the floating status message
+       ("Applied building proposal …") on small screens. While an info box is open the box
+       takes over that corner, so hide the status to avoid the text bleeding through. */
+    body.three-mode-active.three-info-open .floating-status {
+        display: none !important;
     }
 }
 
