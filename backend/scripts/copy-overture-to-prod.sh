@@ -28,9 +28,12 @@ echo "[$(ts)] Dumping overture_feature from ${LOCAL_DB} (container ${LOCAL_CONTA
 
 # --clean --if-exists: DROP TABLE IF EXISTS then recreate + reload, so a re-run fully replaces the
 # table (and its indexes) on the target. --no-owner/--no-acl: don't carry local roles to prod.
+# The sed strips `SET transaction_timeout` — a PG17-only GUC the PG17 pg_dump emits that an older
+# (PG16) target rejects; harmless to drop. Remove the sed once the target is also >= PG17.
 docker exec -i "${LOCAL_CONTAINER}" \
     pg_dump -U "${LOCAL_USER}" -d "${LOCAL_DB}" \
     --table=overture_feature --clean --if-exists --no-owner --no-acl \
+  | sed '/^SET transaction_timeout/d' \
   | psql "${PROD_DATABASE_URL}"
 
 echo "[$(ts)] Done. Verify on the target:"
