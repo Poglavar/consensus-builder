@@ -1,11 +1,11 @@
 // Registry of cities whose 3D buildings are sourced from Overture Maps' `buildings` theme
-// (footprint + optional height/floor-count, ingested into the `overture_building` table and
+// (footprint + optional height/floor-count, ingested into the `overture_feature` table and
 // extruded server-side). This is the generic fallback for any city that lacks a bespoke local
 // 3D source like Zagreb's LOD2 mesh or NYC's live footprint feed.
 //
 // Adding a city is two steps:
 //   1. Add an entry here (bbox for ingestion + height-extrusion defaults).
-//   2. Run `node scripts/ingest-overture-buildings.js --city <id>` to populate the table.
+//   2. Run `node scripts/ingest-overture.js --city <id> --layer buildings` to populate the table.
 // The provider registry (buildings/index.js) wires every key here to the shared Overture provider
 // automatically, and the frontend just needs `buildings.source` set so the city is offered in 3D.
 

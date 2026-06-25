@@ -1,7 +1,7 @@
 // Ingests features from the Overture Maps open data into per-city Postgres tables, used as the
 // generic 3D source for cities with no bespoke local model. Layer-parameterized:
-//   --layer buildings  → footprints + heights from theme=buildings  → overture_building
-//   --layer trees      → individual trees (base/land subtype=tree)  → overture_tree
+//   --layer buildings  → footprints + heights from theme=buildings  → overture_feature (layer=buildings)
+//   --layer trees      → individual trees (base/land subtype=tree)  → overture_feature (layer=trees)
 // Both layers share one pipeline: DuckDB pulls the city's bbox from Overture's public S3 GeoParquet
 // into a newline-delimited JSON file (extract), then we stream it into Postgres in batches, upserting
 // on (city, overture_id) so a re-run refreshes the city in place and is safe to restart.
@@ -37,31 +37,30 @@ const DEFAULT_RELEASE = '2026-06-17.0';
 const S3_REGION = 'us-west-2';
 const BATCH_SIZE = 1000; // rows per UNNEST upsert — bounded so progress is visible and memory flat.
 
-// Per-layer definitions. Each layer maps an Overture theme/type to a Postgres table and declares the
-// per-row "extra" columns beyond the shared (city, overture_id, geom, overture_release). The extract
-// SELECT, the spatial WHERE filter, the DDL, and the UNNEST upsert are all derived from this.
+// All layers land in ONE table (overture_feature), discriminated by the `layer` column. Each layer
+// declares the Overture theme/type to pull, the extract SELECT, the spatial WHERE filter, and a
+// row→attrs mapping for the promoted columns (height_m, num_floors) + the catch-all `properties`
+// jsonb. Adding a layer is one entry here — no new table, no new DDL.
+const FEATURE_DDL = '../overture/overture-feature-ddl.sql';
 const LAYERS = {
     buildings: {
-        table: 'overture_building',
-        ddl: '../buildings/overture-building-ddl.sql',
         s3type: 'theme=buildings/type=building',
         select: 'id, height, num_floors, ST_AsGeoJSON(geometry) AS geom',
         whereExtra: '',
-        extra: [
-            { name: 'h', col: 'height_m', cast: 'float8', get: r => (Number.isFinite(r.height) ? r.height : null) },
-            { name: 'nf', col: 'num_floors', cast: 'int', get: r => (Number.isFinite(r.num_floors) ? r.num_floors : null) },
-        ],
+        attrs: r => ({
+            height_m: Number.isFinite(r.height) ? r.height : null,
+            num_floors: Number.isFinite(r.num_floors) ? r.num_floors : null,
+            properties: null,
+        }),
     },
     trees: {
-        table: 'overture_tree',
-        ddl: '../decor/overture-tree-ddl.sql',
         s3type: 'theme=base/type=land',
         // Overture's base/land carries individual trees as POINT features (subtype/class = tree),
         // derived+cleaned from OSM natural=tree. No height column exists here — the renderer assigns a
         // deterministic per-tree height — so we only need id + geometry.
         select: 'id, ST_AsGeoJSON(geometry) AS geom',
         whereExtra: "AND subtype = 'tree' AND class = 'tree'",
-        extra: [],
+        attrs: () => ({ height_m: null, num_floors: null, properties: null }),
     },
 };
 
@@ -167,38 +166,39 @@ COPY (
     log(`Extract: done → ${outPath}`);
 }
 
-async function ensureTable(pool, layer) {
-    const ddl = readFileSync(join(__dirname, layer.ddl), 'utf8');
+async function ensureTable(pool) {
+    const ddl = readFileSync(join(__dirname, FEATURE_DDL), 'utf8');
     await pool.query(ddl);
-    log(`Table ${layer.table} ensured.`);
+    log('Table overture_feature ensured.');
 }
 
-// Build the UNNEST upsert for a layer. Scalars (city, release) are repeated server-side; the per-row
-// fields travel as aligned arrays, matching the repo's bulk-insert convention.
-function buildUpsertSql(layer) {
-    const cols = layer.extra.map(e => e.col);
-    const colList = ['city', 'overture_id', 'geom', ...cols, 'overture_release'].join(', ');
-    const unnestParts = ['$3::text[]', '$4::text[]'];
-    const tNames = ['oid', 'gj'];
-    layer.extra.forEach((e, i) => { unnestParts.push(`$${5 + i}::${e.cast}[]`); tNames.push(e.name); });
-    const selectVals = ['$1', 't.oid', 'ST_SetSRID(ST_GeomFromGeoJSON(t.gj), 4326)', ...layer.extra.map(e => `t.${e.name}`), '$2'];
-    const updates = ['geom = EXCLUDED.geom', ...cols.map(c => `${c} = EXCLUDED.${c}`), 'overture_release = EXCLUDED.overture_release', 'updated_at = now()'];
-    return `
-        INSERT INTO ${layer.table} (${colList})
-        SELECT ${selectVals.join(', ')}
-        FROM UNNEST(${unnestParts.join(', ')}) AS t(${tNames.join(', ')})
-        WHERE t.gj IS NOT NULL
-        ON CONFLICT (city, overture_id) DO UPDATE SET ${updates.join(', ')}
-    `;
-}
+// Fixed UNNEST upsert into the single overture_feature table. Scalars (city, layer, release) repeat
+// server-side; the per-row fields travel as aligned arrays, matching the repo's bulk-insert convention.
+const UPSERT_SQL = `
+    INSERT INTO overture_feature
+        (city, layer, overture_id, geom, height_m, num_floors, properties, overture_release)
+    SELECT $1, $2, t.oid, ST_SetSRID(ST_GeomFromGeoJSON(t.gj), 4326), t.h, t.nf, t.props::jsonb, $3
+    FROM UNNEST($4::text[], $5::text[], $6::float8[], $7::int[], $8::text[]) AS t(oid, gj, h, nf, props)
+    WHERE t.gj IS NOT NULL
+    ON CONFLICT (city, layer, overture_id) DO UPDATE SET
+        geom = EXCLUDED.geom,
+        height_m = EXCLUDED.height_m,
+        num_floors = EXCLUDED.num_floors,
+        properties = EXCLUDED.properties,
+        overture_release = EXCLUDED.overture_release,
+        updated_at = now()
+`;
 
-async function upsertBatch(pool, sql, layer, city, release, batch) {
+async function upsertBatch(pool, layer, layerName, city, release, batch) {
     const ids = batch.map(r => r.id);
     // DuckDB's JSON COPY re-parses the ST_AsGeoJSON string into a nested object, so geom arrives as an
     // object here; ST_GeomFromGeoJSON wants text, so stringify when needed (string form too).
     const geoms = batch.map(r => (typeof r.geom === 'string' ? r.geom : JSON.stringify(r.geom)));
-    const extraArrays = layer.extra.map(e => batch.map(e.get));
-    await pool.query(sql, [city, release, ids, geoms, ...extraArrays]);
+    const attrs = batch.map(r => layer.attrs(r));
+    const heights = attrs.map(a => a.height_m);
+    const floors = attrs.map(a => a.num_floors);
+    const props = attrs.map(a => (a.properties == null ? null : JSON.stringify(a.properties)));
+    await pool.query(UPSERT_SQL, [city, layerName, release, ids, geoms, heights, floors, props]);
 }
 
 // Phase 2: stream the NDJSON into Postgres in batches. Upsert keying makes the whole phase
@@ -216,8 +216,7 @@ async function runLoad(args, layer, city, inPath) {
     log(`Load: connecting to ${process.env.PGDATABASE}@${process.env.PGHOST}:${process.env.PGPORT || 5432} as ${process.env.PGUSER}`);
 
     try {
-        await ensureTable(pool, layer);
-        const upsertSql = buildUpsertSql(layer);
+        await ensureTable(pool);
 
         const rl = createInterface({ input: createReadStream(inPath), crlfDelay: Infinity });
         let batch = [];
@@ -226,7 +225,7 @@ async function runLoad(args, layer, city, inPath) {
 
         const flush = async () => {
             if (batch.length === 0) return;
-            await upsertBatch(pool, upsertSql, layer, city, args.release, batch);
+            await upsertBatch(pool, layer, args.layer, city, args.release, batch);
             total += batch.length;
             const rate = total / Math.max(1, (Date.now() - start) / 1000);
             log(`Load: ${total} rows upserted (${rate.toFixed(0)}/s)`);

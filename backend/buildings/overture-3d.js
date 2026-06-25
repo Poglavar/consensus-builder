@@ -1,7 +1,7 @@
-// Generic Overture-Maps 3D building provider. Source: the `overture_building` table — footprints
-// (EPSG:4326) with an optional measured `height_m` and `num_floors`, ingested per city from the
-// Overture `buildings` theme (see scripts/ingest-overture-buildings.js). Each footprint is extruded
-// to a flat-top LOD1 block, the same face-mesh shape every city's provider yields, so the route and
+// Generic Overture-Maps 3D building provider. Source: the `overture_feature` table, layer='buildings'
+// — footprints (EPSG:4326) with an optional measured `height_m` and `num_floors`, ingested per city
+// from the Overture `buildings` theme (see scripts/ingest-overture.js). Each footprint is extruded to
+// a flat-top LOD1 block, the same face-mesh shape every city's provider yields, so the route and
 // renderer stay source-agnostic. This is the fallback for cities without a bespoke local 3D source.
 
 import { extrudeFootprint } from './extrude.js';
@@ -31,8 +31,9 @@ export function createOvertureProvider(pool, cityKey) {
                 b.height_m,
                 b.num_floors,
                 ST_AsGeoJSON(b.geom, 7)::json AS geometry
-            FROM overture_building b, q
+            FROM overture_feature b, q
             WHERE b.city = $2
+              AND b.layer = 'buildings'
               AND ST_DWithin(b.geom::geography, q.g::geography, $3)
             ORDER BY b.geom <-> q.g
             LIMIT ${MAX_BUILDINGS}

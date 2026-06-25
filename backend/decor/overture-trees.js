@@ -1,5 +1,6 @@
-// Generic Overture-Maps tree provider. Source: the `overture_tree` table — individual tree POINTs
-// (EPSG:4326) ingested per city from Overture's base/land theme (see scripts/ingest-overture.js).
+// Generic Overture-Maps tree provider. Source: the `overture_feature` table, layer='trees' —
+// individual tree POINTs (EPSG:4326) ingested per city from Overture's base/land theme (see
+// scripts/ingest-overture.js).
 // Returns the trees within a metres radius of a query geometry as a compact [lng, lat] list; the
 // frontend renders each as an instanced trunk+crown with a deterministic per-tree height (Overture
 // has no tree height). Toggleable scenery for cities without a bespoke local source.
@@ -22,8 +23,9 @@ export function createOvertureTreesProvider(pool, cityKey) {
                 SELECT ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) AS g
             )
             SELECT ST_X(t.geom) AS lng, ST_Y(t.geom) AS lat
-            FROM overture_tree t, q
+            FROM overture_feature t, q
             WHERE t.city = $2
+              AND t.layer = 'trees'
               AND ST_DWithin(t.geom::geography, q.g::geography, $3)
             ORDER BY t.geom <-> q.g
             LIMIT ${MAX_TREES}

@@ -82,6 +82,9 @@ describe('Overture 3D provider — near()', () => {
         expect(sql).toContain('ST_DWithin(b.geom::geography, q.g::geography, $3)');
         // City scoping precedes the spatial test so the cap counts only this city's buildings.
         expect(sql).toContain('b.city = $2');
+        // One shared table for all Overture layers, discriminated by the layer column.
+        expect(sql).toContain('overture_feature');
+        expect(sql).toContain("b.layer = 'buildings'");
         // Distance order must precede the cap, else the LIMIT keeps an arbitrary, shuffling subset.
         const orderIdx = sql.indexOf('b.geom <-> q.g');
         const limitIdx = sql.indexOf('LIMIT 4000');
@@ -134,6 +137,8 @@ describe('Overture trees provider — near()', () => {
         const { sql, params } = pool.getCalls()[0];
         expect(sql).toContain('ST_DWithin(t.geom::geography, q.g::geography, $3)');
         expect(sql).toContain('t.city = $2');
+        expect(sql).toContain('overture_feature');
+        expect(sql).toContain("t.layer = 'trees'");
         const orderIdx = sql.indexOf('t.geom <-> q.g');
         const limitIdx = sql.indexOf('LIMIT 8000');
         expect(orderIdx).toBeGreaterThan(-1);

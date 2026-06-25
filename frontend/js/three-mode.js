@@ -95,6 +95,7 @@
     let buildingModeControlsEl = null;
     let buildingModeButtons = { built: null, both: null, planned: null };
     let bothEmphasisRowEl = null;
+    let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
     let bothEmphasisButtons = { built: null, planned: null, neither: null };
 
     // Parcel isolation: clicking a parcel hides everything but that parcel and the
@@ -664,23 +665,12 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
-        // Trees toggle — real-world OSM trees (Overture) as ambient scenery. Independent of the
-        // Built/Planned mode; off-by-default cities (no ingested trees) simply render nothing.
-        const treesRow = document.createElement('div');
-        treesRow.className = 'three-mode-trees-row';
-        const treesToggleLabel = document.createElement('label');
-        treesToggleLabel.className = 'three-mode-trees-toggle';
-        const treesCheckbox = document.createElement('input');
-        treesCheckbox.type = 'checkbox';
-        treesCheckbox.checked = loadTreesEnabledPref();
-        treesCheckbox.addEventListener('change', () => setTreesEnabled(treesCheckbox.checked));
-        const treesText = document.createElement('span');
-        treesText.className = 'three-mode-emphasis-label';
-        treesText.textContent = 'Trees';
-        treesToggleLabel.appendChild(treesCheckbox);
-        treesToggleLabel.appendChild(treesText);
-        treesRow.appendChild(treesToggleLabel);
-        buildingModeControlsEl.appendChild(treesRow);
+        // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
+        // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
+        // Belgrade, nothing for cities without scenery). Independent of the Built/Planned mode.
+        decorTogglesEl = document.createElement('div');
+        decorTogglesEl.className = 'three-mode-decor-toggles';
+        buildingModeControlsEl.appendChild(decorTogglesEl);
 
         // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
         bothEmphasisRowEl = document.createElement('div');
@@ -1634,6 +1624,53 @@
         }
     }
 
+    // Registry of renderable scenery layers: maps an overture_feature layer key to its panel label and
+    // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
+    // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
+    // here and it shows up automatically wherever it's been ingested.
+    const DECOR_LAYERS = {
+        trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) }
+    };
+
+    // Render one checkbox per available scenery layer (intersection of DECOR_LAYERS and `available`).
+    function renderDecorToggles(available) {
+        if (!decorTogglesEl) return;
+        decorTogglesEl.innerHTML = '';
+        for (const key of available) {
+            const spec = DECOR_LAYERS[key];
+            if (!spec) continue; // ingested layer with no frontend renderer yet — skip silently
+            const row = document.createElement('div');
+            row.className = 'three-mode-trees-row';
+            const label = document.createElement('label');
+            label.className = 'three-mode-trees-toggle';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = spec.isEnabled();
+            cb.addEventListener('change', () => spec.setEnabled(cb.checked));
+            const text = document.createElement('span');
+            text.className = 'three-mode-emphasis-label';
+            text.textContent = spec.label;
+            label.appendChild(cb);
+            label.appendChild(text);
+            row.appendChild(label);
+            decorTogglesEl.appendChild(row);
+        }
+    }
+
+    // Ask the backend which scenery layers the active city has, then render toggles for them. Called
+    // on entering 3D (city may have changed); cities with no scenery get no toggles.
+    function refreshDecorToggles() {
+        if (!decorTogglesEl) return;
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+        if (!city) { decorTogglesEl.innerHTML = ''; return; }
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        fetch(`${base}/decor/layers?city=${encodeURIComponent(city)}`)
+            .then(r => (r.ok ? r.json() : { layers: [] }))
+            .then(payload => renderDecorToggles((payload && Array.isArray(payload.layers)) ? payload.layers : []))
+            .catch(() => { /* leave whatever's there; toggles are non-critical */ });
+    }
+
     function buildProposedBuildings3D(targetGroup, buildingMaterial) {
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return;
@@ -2076,6 +2113,8 @@
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
         ensureBuildingModeControls();
+        // Populate scenery toggles for the active city (which layers it has ingested).
+        refreshDecorToggles();
 
         // Lights
         const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6);

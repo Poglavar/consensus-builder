@@ -153,9 +153,9 @@
                 requiresBackend: true
             },
             buildings: {
-                // Overture-Maps footprints + heights, ingested into overture_building and extruded
-                // server-side (backend/buildings/overture-3d.js). Resolved by city id, not this
-                // string. Like NYC, the 3D buildings load automatically in 3D mode.
+                // Overture-Maps footprints + heights, ingested into overture_feature (layer=buildings)
+                // and extruded server-side (backend/buildings/overture-3d.js). Resolved by city id, not
+                // this string. Like NYC, the 3D buildings load automatically in 3D mode.
                 source: 'overture'
             },
             sidebar: {

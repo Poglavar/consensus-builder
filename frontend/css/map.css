@@ -340,6 +340,12 @@
     gap: 8px;
 }
 
+#three-container .three-mode-decor-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 #three-container .three-mode-trees-row {
     display: flex;
     align-items: center;
