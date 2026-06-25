@@ -92,7 +92,8 @@
                 'css/game.css',
                 'css/road-analysis.css',
                 'css/utilities.css',
-                'css/canton-mode.css'
+                'css/canton-mode.css',
+                'css/photoreal-mode.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -853,7 +854,11 @@
             <i class="fas fa-person-walking" aria-hidden="true"></i>
         </button>
         <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to 3D">3D</button>
+        <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Realistic context (Google Photorealistic 3D)" aria-label="Toggle realistic photorealistic context">
+            <i class="fas fa-globe" aria-hidden="true"></i>
+        </button>
         <div id="three-container" aria-hidden="true"></div>
+        <div id="cesium-container" aria-hidden="true"></div>
 
         <!-- Username Display -->
         <div id="username-display" class="username-display">
@@ -1337,6 +1342,7 @@
     <script>
         window.writeVersionedLocalScripts([
             'js/three-mode.js',
+            'js/photoreal-mode.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',
             'js/parcel-blocks.js',
