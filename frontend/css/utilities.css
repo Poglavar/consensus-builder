@@ -638,41 +638,114 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: none;
 }
 
-/* Persistent facet radio groups (Parcels / Ownership). They stay visible for the
-   whole dialog so the proposer always sees what happens to parcels and ownership. */
+/* Segmented-pill choice controls — one visual vocabulary for every single-select
+   (Land use / Parcels / Ownership / Acquisition / Urban Rule typology). The native
+   radio is hidden but kept for state + keyboard a11y; the label is the pill. */
 .proposal-radio-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 16px;
+    gap: 6px;
 }
 .proposal-radio {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: #333;
-    cursor: pointer;
     margin: 0;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.15;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
 }
 .proposal-radio input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.proposal-radio:hover { border-color: #9ca3af; background: #eaeef3; }
+.proposal-radio:has(input:checked) {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+.proposal-radio:has(input:disabled) { opacity: .4; cursor: not-allowed; }
+.proposal-radio:has(input:focus-visible) { outline: 2px solid #93c5fd; outline-offset: 2px; }
+
+/* A locked facet is shown as a quiet static line, not a row of dead/disabled pills. */
+.proposal-facet-static {
+    font-size: 13px;
+    color: #6b7280;
+    padding: 5px 0;
+}
+.proposal-facet-static .lock-ico { margin-right: 6px; opacity: .7; }
+
+/* Urban Rule typology: same pills (kept as buttons, restyled to match). */
+#proposalTypologyGroup .proposal-type-group { display: flex; flex-wrap: wrap; gap: 6px; }
+#proposalTypologyGroup .proposal-type-button {
+    width: auto;
+    min-height: 0;
     margin: 0;
-    cursor: pointer;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.15;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
 }
-/* A locked option (e.g. Merge forced by a Park, or Per slice forced by Readjust). */
-.proposal-radio:has(input:disabled) {
-    opacity: 0.45;
-    cursor: not-allowed;
+#proposalTypologyGroup .proposal-type-button.selected {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+    font-weight: 600;
 }
-.proposal-radio:has(input:disabled) input {
-    cursor: not-allowed;
+
+/* Inset sub-panel: things that "open" from a choice (geometry Edit/Upload, the Urban
+   Rule typology) sit visibly subordinate to it — indented, recessed, left accent. */
+.proposal-inset {
+    margin: 8px 0 4px 14px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 0 8px 8px 0;
 }
+.proposal-inset > label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #475569; }
+/* Inset action buttons (geometry Edit/Upload): outlined + auto-width so they read as
+   ACTIONS (do something), distinct from the filled-blue selected pills (which indicate
+   STATE), and sized to their label instead of stretching. */
+#proposalGeometryButtons { display: flex; flex-wrap: wrap; gap: 8px; }
+#proposalGeometryButtons .btn {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+#proposalGeometryButtons .btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+#proposalGeometryButtons .btn.selected { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
+#proposalGeometryButtons .btn:disabled { opacity: .5; }
+#proposalGeometryButtons .btn[data-geometry-action="edit"]::before { content: "✏️"; margin-right: 5px; }
+#proposalGeometryButtons .btn[data-geometry-action="upload"]::before { content: "⬆️"; margin-right: 5px; }
+
 .proposal-recipient-input {
-    margin-top: 8px;
+    margin: 8px 0 0 0;
     width: 100%;
     box-sizing: border-box;
     padding: 8px 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 14px;
 }
 

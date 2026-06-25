@@ -1284,12 +1284,19 @@
                 "perSlice": "Per slice"
             },
             "recipientPlaceholder": "Recipient name or 0x address",
+            "recipientScope": {
+                "specific": "Specific address",
+                "any": "Anyone"
+            },
             "ownershipTransfer": {
                 "label": "Transfer direction:",
                 "toMe": "To me",
                 "fromMe": "From me",
                 "nameToMe": "Ownership transfer to me",
-                "nameFromMe": "Ownership transfer from me"
+                "nameFromMe": "Ownership transfer from me",
+                "nameToCity": "Ownership transfer to city",
+                "nameThirdParty": "Ownership transfer to third party",
+                "nameOfferToSell": "Offer to sell"
             },
             "typologyOptions": {
                 "block": "Block",

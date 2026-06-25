@@ -1221,12 +1221,19 @@
                 "perSlice": "Po parceli"
             },
             "recipientPlaceholder": "Ime ili 0x adresa primaoca",
+            "recipientScope": {
+                "specific": "Određena adresa",
+                "any": "Bilo ko"
+            },
             "ownershipTransfer": {
                 "label": "Smer prenosa:",
                 "toMe": "Na mene",
                 "fromMe": "Od mene",
                 "nameToMe": "Prenos vlasništva na mene",
-                "nameFromMe": "Prenos vlasništva od mene"
+                "nameFromMe": "Prenos vlasništva od mene",
+                "nameToCity": "Prenos vlasništva gradu",
+                "nameThirdParty": "Prenos vlasništva trećoj strani",
+                "nameOfferToSell": "Ponuda za prodaju"
             },
             "typologyOptions": {
                 "block": "Blok",

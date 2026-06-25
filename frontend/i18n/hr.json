@@ -1222,12 +1222,19 @@
                 "perSlice": "Po čestici"
             },
             "recipientPlaceholder": "Ime ili 0x adresa primatelja",
+            "recipientScope": {
+                "specific": "Određena adresa",
+                "any": "Bilo tko"
+            },
             "ownershipTransfer": {
                 "label": "Smjer prijenosa:",
                 "toMe": "Na mene",
                 "fromMe": "Od mene",
                 "nameToMe": "Prijenos vlasništva na mene",
-                "nameFromMe": "Prijenos vlasništva od mene"
+                "nameFromMe": "Prijenos vlasništva od mene",
+                "nameToCity": "Prijenos vlasništva gradu",
+                "nameThirdParty": "Prijenos vlasništva trećoj strani",
+                "nameOfferToSell": "Ponuda za prodaju"
             },
             "typologyOptions": {
                 "block": "Blok",

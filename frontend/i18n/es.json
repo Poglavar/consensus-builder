@@ -1273,12 +1273,19 @@
                 "perSlice": "Por lote"
             },
             "recipientPlaceholder": "Nombre o dirección 0x del destinatario",
+            "recipientScope": {
+                "specific": "Dirección específica",
+                "any": "Cualquiera"
+            },
             "ownershipTransfer": {
                 "label": "Dirección de transferencia:",
                 "toMe": "A mí",
                 "fromMe": "De mí",
                 "nameToMe": "Transferencia de propiedad a mí",
-                "nameFromMe": "Transferencia de propiedad de mí"
+                "nameFromMe": "Transferencia de propiedad de mí",
+                "nameToCity": "Transferencia de propiedad a la ciudad",
+                "nameThirdParty": "Transferencia de propiedad a tercero",
+                "nameOfferToSell": "Oferta de venta"
             },
             "typologyOptions": {
                 "block": "Bloque",

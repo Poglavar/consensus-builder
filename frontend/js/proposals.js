@@ -9077,7 +9077,8 @@ function renderGeometrySection(goalKey) {
     currentGeometryGoal = goalKey;
     proposalGeometrySubmitted = false;
     buttonsRow.innerHTML = '';
-    buttonsRow.style.display = 'grid';
+    buttonsRow.style.display = 'flex';
+    buttonsRow.style.flexWrap = 'wrap';
     buttonsRow.style.gap = '8px';
 
     // Default hidden
@@ -10292,6 +10293,7 @@ function resetOwnershipTransferOptions() {
 // so the rest of the flow is unchanged. See feature-proposal-goals.md.
 const proposalFacetState = { landUse: 'as-is', parcels: 'as-is', ownership: 'no-change' };
 const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'road-track']);
+let proposalSingleParcelSelection = false; // Merge needs ≥2 parcels; set per dialog
 const PROPOSAL_GOAL_TYPE_LABELS = {
     'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'single': 'Building(s)',
     'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
@@ -10305,24 +10307,76 @@ function getProposalRecipientAddress() {
 
 // Set the Parcels radio + state. lock => disable the other options (intrinsic to
 // the land use); unlock => re-enable all (per-slice stays gated to Readjust).
-function setProposalParcelsMode(mode, { lock = false, unlock = false } = {}) {
-    proposalFacetState.parcels = mode;
-    document.querySelectorAll('input[name="proposalParcelsMode"]').forEach(r => {
-        r.checked = (r.value === mode);
-        if (lock) r.disabled = (r.value !== mode);
-        else if (unlock) r.disabled = false;
-    });
+// The localized pill label for a facet value (read from its rendered pill).
+function facetModeLabel(name, value) {
+    const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    const radio = input ? input.closest('.proposal-radio') : null;
+    const span = radio ? radio.querySelector('span') : null;
+    return span ? span.textContent.trim() : value;
 }
 
-function setProposalOwnershipMode(mode, { lock = false, unlock = false } = {}) {
-    proposalFacetState.ownership = mode;
-    document.querySelectorAll('input[name="proposalOwnership"]').forEach(r => {
+// Shared lock UI: when a facet is forced by another choice, hide its pill group and
+// show a quiet static line ("🔒 <value> · <reason>") instead of dead/disabled pills.
+function applyFacetLockUI(groupId, staticId, name, mode, lock, reason) {
+    const group = document.getElementById(groupId);
+    const staticEl = document.getElementById(staticId);
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
         r.checked = (r.value === mode);
-        if (lock) r.disabled = (r.value !== mode);
-        else if (unlock) r.disabled = (r.value === 'per-slice'); // per-slice only via Readjust
+        r.disabled = false; // locked facets are hidden, not disabled
     });
+    if (lock) {
+        if (group) group.style.display = 'none';
+        if (staticEl) {
+            staticEl.style.display = '';
+            staticEl.innerHTML = `<span class="lock-ico">🔒</span>${facetModeLabel(name, mode)}${reason ? ` · ${reason}` : ''}`;
+        }
+    } else {
+        if (group) group.style.display = '';
+        if (staticEl) staticEl.style.display = 'none';
+    }
+}
+
+function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
+    proposalFacetState.parcels = mode;
+    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', mode, lock, reason);
+    // Merge requires ≥2 parcels — disable it (greyed pill) for a single-parcel selection.
+    const mergeRadio = document.querySelector('input[name="proposalParcelsMode"][value="merge"]');
+    if (mergeRadio) mergeRadio.disabled = proposalSingleParcelSelection;
+}
+
+function setProposalOwnershipMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
+    proposalFacetState.ownership = mode;
+    applyFacetLockUI('proposalOwnershipGroup', 'proposalOwnershipStatic', 'proposalOwnership', mode, lock, reason);
+    // Third party reveals the Specific-address / Anyone sub-choice (Anyone = open sale offer).
+    const opts = document.getElementById('proposalRecipientOptions');
+    if (opts) opts.style.display = (!lock && mode === 'third-party') ? '' : 'none';
+    updateRecipientAddressVisibility();
+}
+
+// The address field only applies to a Specific third-party recipient (not Anyone).
+function updateRecipientAddressVisibility() {
     const addr = document.getElementById('proposalRecipientAddress');
-    if (addr) addr.style.display = (mode === 'third-party') ? '' : 'none';
+    if (!addr) return;
+    const opts = document.getElementById('proposalRecipientOptions');
+    const optsVisible = !!opts && opts.style.display !== 'none';
+    const scopeSel = document.querySelector('input[name="proposalRecipientScope"]:checked');
+    const scope = scopeSel ? scopeSel.value : 'any';
+    addr.style.display = (optsVisible && scope === 'specific') ? '' : 'none';
+}
+
+function onProposalRecipientScopeChange() {
+    updateRecipientAddressVisibility();
+    syncProposalFacets();
+}
+
+// Name/description "type" reflecting the chosen ownership recipient (so the auto title
+// isn't always "Ownership transfer to me"). Distinct from the to-me/from-me mechanic.
+function ownershipNameType() {
+    const o = proposalFacetState.ownership;
+    const scope = (window.proposalFacets && window.proposalFacets.recipientScope) || 'any';
+    if (o === 'to-city') return 'ownership-transfer-to-city';
+    if (o === 'third-party') return (scope === 'any') ? 'offer-to-sell' : 'ownership-transfer-third-party';
+    return 'ownership-transfer-to-me';
 }
 
 function showProposalPerSliceOption(show) {
@@ -10378,17 +10432,19 @@ function selectLandUse(key, { skipChecks = false } = {}) {
     }
     setProposalLandUseMode(key);
     showProposalPerSliceOption(false);
+    const luLabel = facetModeLabel('proposalLandUse', key);
     if (key === 'urban-rule') {
-        setProposalParcelsMode('as-is', { lock: true });   // a rule doesn't change parcels
-        setProposalOwnershipMode('no-change', { lock: true }); // or transfer ownership
+        setProposalParcelsMode('as-is', { lock: true, reason: luLabel });   // a rule doesn't change parcels
+        setProposalOwnershipMode('no-change', { lock: true, reason: luLabel }); // or transfer ownership
     } else if (PROPOSAL_PUBLIC_GOOD_USES.has(key)) {
-        setProposalParcelsMode('merge', { lock: true });   // public goods consolidate the footprint
+        // Public goods consolidate the footprint — but a single parcel has nothing to merge.
+        setProposalParcelsMode(proposalSingleParcelSelection ? 'as-is' : 'merge', { lock: true, reason: luLabel });
         setProposalOwnershipMode('to-city');               // default (overridable)
     } else if (key === 'single') {
         // Build on the parcels as they are: like Urban Rule, Building(s) neither merges
         // nor subdivides, so lock Parcels to No change. Ownership defaults to the proposer
         // but stays editable.
-        setProposalParcelsMode('as-is', { lock: true });
+        setProposalParcelsMode('as-is', { lock: true, reason: luLabel });
         setProposalOwnershipMode('to-me', { unlock: true });
     } else { // 'as-is'
         setProposalParcelsMode('as-is', { unlock: true });
@@ -10402,7 +10458,7 @@ function onProposalParcelsChange() {
     proposalFacetState.parcels = sel ? sel.value : 'as-is';
     if (proposalFacetState.parcels === 'readjust') {
         showProposalPerSliceOption(true);
-        setProposalOwnershipMode('per-slice', { lock: true }); // slices carry their owners
+        setProposalOwnershipMode('per-slice', { lock: true, reason: facetModeLabel('proposalParcelsMode', 'readjust') }); // slices carry their owners
     } else {
         showProposalPerSliceOption(false);
         const next = (proposalFacetState.ownership === 'per-slice') ? 'no-change' : proposalFacetState.ownership;
@@ -10413,9 +10469,9 @@ function onProposalParcelsChange() {
 
 function onProposalOwnershipChange() {
     const sel = document.querySelector('input[name="proposalOwnership"]:checked');
-    proposalFacetState.ownership = sel ? sel.value : 'no-change';
-    const addr = document.getElementById('proposalRecipientAddress');
-    if (addr) addr.style.display = (proposalFacetState.ownership === 'third-party') ? '' : 'none';
+    // Route through setProposalOwnershipMode so the Third-party inset (Specific/Anyone)
+    // and the address field show/hide correctly.
+    setProposalOwnershipMode(sel ? sel.value : 'no-change');
     syncProposalFacets();
 }
 
@@ -10436,10 +10492,12 @@ function syncProposalFacets() {
         r.checked = (r.value === proposalFacetState.landUse);
     });
 
+    const recipientScopeSel = document.querySelector('input[name="proposalRecipientScope"]:checked');
     window.proposalFacets = {
         landUse: proposalFacetState.landUse,
         parcels: proposalFacetState.parcels,
         ownership: proposalFacetState.ownership,
+        recipientScope: recipientScopeSel ? recipientScopeSel.value : 'any',
         recipientAddress: getProposalRecipientAddress()
     };
 
@@ -10448,7 +10506,10 @@ function syncProposalFacets() {
         currentProposalTool = null;
         const typeInput = document.getElementById('proposalType');
         if (typeInput) typeInput.value = '';
-        renderGeometrySection(null);
+        // Close every conditional/inset section (typology, acquisition, geometry) so
+        // none is left hanging after switching to the do-nothing state.
+        updateGoalDependentSections(null);
+        relocateProposalGeometryGroup(null);
         updateProposalScreenshotGoalIcon('as-is');
         const btn = document.getElementById('createProposalSubmitButton');
         const hint = document.getElementById('proposalGeometryRequirementHint');
@@ -10459,7 +10520,12 @@ function syncProposalFacets() {
 
     if (goalKey === 'ownership-transfer') {
         updateGoalDependentSections('ownership-transfer');
-        setOwnershipTransferDirection('to-me'); // sets currentProposalTool = 'ownership-transfer-to-me'
+        // Third party + Anyone = an open offer to sell → the from-me (accepted, unfunded,
+        // awaiting a buyer) mechanic. Everything else is an incoming/directed transfer.
+        const sell = (proposalFacetState.ownership === 'third-party'
+            && (window.proposalFacets && window.proposalFacets.recipientScope) === 'any');
+        setOwnershipTransferDirection(sell ? 'from-me' : 'to-me');
+        updateProposalNameAndDescription(ownershipNameType(), true); // recipient-aware title
         relocateProposalGeometryGroup(null); // ownership transfer has no geometry
     } else {
         currentProposalTool = goalKey;
@@ -11379,7 +11445,10 @@ function generateDefaultProposalName(proposalType) {
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
         'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
         'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
-        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe'
+        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe',
+        'ownership-transfer-to-city': 'modal.createProposal.ownershipTransfer.nameToCity',
+        'ownership-transfer-third-party': 'modal.createProposal.ownershipTransfer.nameThirdParty',
+        'offer-to-sell': 'modal.createProposal.ownershipTransfer.nameOfferToSell'
     };
     let localizedType = normalizedType;
     if (t && normalizedType) {
@@ -11422,7 +11491,10 @@ function generateDefaultProposalDescription(proposalType, proposalName) {
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
         'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
         'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
-        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe'
+        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe',
+        'ownership-transfer-to-city': 'modal.createProposal.ownershipTransfer.nameToCity',
+        'ownership-transfer-third-party': 'modal.createProposal.ownershipTransfer.nameThirdParty',
+        'offer-to-sell': 'modal.createProposal.ownershipTransfer.nameOfferToSell'
     };
     let localizedType = normalizedType;
     if (t && normalizedType) {
@@ -11983,6 +12055,10 @@ function showProposalDialog(overrides = null) {
         perSlice: t('modal.createProposal.ownershipRecipients.perSlice', 'Per slice')
     };
     const recipientPlaceholder = t('modal.createProposal.recipientPlaceholder', 'Recipient name or 0x address');
+    const recipientScopeLabels = {
+        specific: t('modal.createProposal.recipientScope.specific', 'Specific address'),
+        any: t('modal.createProposal.recipientScope.any', 'Anyone')
+    };
     const ownershipTransferLabels = {
         toMe: t('modal.createProposal.ownershipTransfer.toMe', 'To me'),
         fromMe: t('modal.createProposal.ownershipTransfer.fromMe', 'From me')
@@ -12061,6 +12137,7 @@ function showProposalDialog(overrides = null) {
     const totalOwners = ownershipStats.ownerCount || selectedParcels.length;
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;
+    proposalSingleParcelSelection = isSingleParcelSelection;
 
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
@@ -12139,6 +12216,7 @@ function showProposalDialog(overrides = null) {
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="merge" onchange="onProposalParcelsChange()"><span>🪡 ${parcelsOptions.merge}</span></label>
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><span>✂️ ${parcelsOptions.readjust}</span></label>
                         </div>
+                        <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
                     </div>
                     <div class="proposal-goal-section" data-goal-section="ownership">
                         <span class="proposal-goal-subhead">${goalSectionLabels.ownership}</span>
@@ -12149,7 +12227,14 @@ function showProposalDialog(overrides = null) {
                             <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
                             <label class="proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
                         </div>
-                        <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" style="display:none;" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
+                        <div class="proposal-facet-static" id="proposalOwnershipStatic" style="display:none;"></div>
+                        <div class="proposal-inset" id="proposalRecipientOptions" style="display:none;">
+                            <div class="proposal-radio-group">
+                                <label class="proposal-radio"><input type="radio" name="proposalRecipientScope" value="any" checked onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.any}</span></label>
+                                <label class="proposal-radio"><input type="radio" name="proposalRecipientScope" value="specific" onchange="onProposalRecipientScopeChange()"><span>${recipientScopeLabels.specific}</span></label>
+                            </div>
+                            <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group" id="proposalOwnershipTransferGroup" style="display:none;">
@@ -12166,7 +12251,7 @@ function showProposalDialog(overrides = null) {
                         <label class="proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
                     </div>
                 </div>
-                <div class="form-group" id="proposalTypologyGroup" style="display:none;">
+                <div class="form-group proposal-inset" id="proposalTypologyGroup" style="display:none;">
                     <label>${proposalTypologyLabel}</label>
                     <div class="proposal-type-group">
                         <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block', { skipLaunch: true })">${typologyOptions.block}</button>
@@ -12174,7 +12259,7 @@ function showProposalDialog(overrides = null) {
                         <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })">${typologyOptions.parcelBased}</button>
                     </div>
                 </div>
-                <div class="form-group" id="proposalGeometryGroup" style="display:none;">
+                <div class="form-group proposal-inset" id="proposalGeometryGroup" style="display:none;">
                     <div id="proposalGeometryStatus" class="proposal-geometry-status" style="font-size:12px; color:#4b5563; margin-bottom:6px;">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
                     <div class="proposal-type-group proposal-geometry-buttons" id="proposalGeometryButtons" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;"></div>
                 </div>
@@ -13559,6 +13644,7 @@ window.selectLandUse = selectLandUse;
 window.onProposalLandUseChange = onProposalLandUseChange;
 window.onProposalParcelsChange = onProposalParcelsChange;
 window.onProposalOwnershipChange = onProposalOwnershipChange;
+window.onProposalRecipientScopeChange = onProposalRecipientScopeChange;
 window.setProposalType = setProposalType;
 window.setProposalMainType = setProposalMainType;
 window.setProposalAcquisitionMode = setProposalAcquisitionMode;
@@ -14787,7 +14873,11 @@ async function createProposal() {
                 };
                 proposal.ownershipTransferProposal.recipient = recip;
                 if (recip === 'third-party') {
-                    proposal.ownershipTransferProposal.recipientAddress = chosenFacets.recipientAddress || '';
+                    // 'any' = open offer to sell (recipient unspecified); 'specific' = named address.
+                    proposal.ownershipTransferProposal.recipientScope = chosenFacets.recipientScope || 'specific';
+                    if (chosenFacets.recipientScope !== 'any') {
+                        proposal.ownershipTransferProposal.recipientAddress = chosenFacets.recipientAddress || '';
+                    }
                 }
             }
         }
