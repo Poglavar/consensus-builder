@@ -1191,17 +1191,36 @@
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
+                "asIs": "Bez promene",
                 "buildings": "Zgrade",
                 "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Put/Pruga",
-                "decideLater": "Odluci kasnije",
+                "decideLater": "Spoji",
                 "urbanRule": "Urbano pravilo",
-                "reparcellization": "Reparcelizacija",
+                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
             },
+            "goalSections": {
+                "landUse": "Namena",
+                "parcels": "Parcele",
+                "ownership": "Vlasništvo"
+            },
+            "parcelsOptions": {
+                "asIs": "Bez promene",
+                "merge": "Spoji",
+                "readjust": "Preraspodeli"
+            },
+            "ownershipRecipients": {
+                "noChange": "Bez promene",
+                "toMe": "Meni",
+                "toCity": "Gradu",
+                "thirdParty": "Treća strana",
+                "perSlice": "Po parceli"
+            },
+            "recipientPlaceholder": "Ime ili 0x adresa primaoca",
             "ownershipTransfer": {
                 "label": "Smer prenosa:",
                 "toMe": "Na mene",
@@ -1884,7 +1903,8 @@
             "floorNote": "@ {{h}} m/etaži",
             "valueTitle": "Vrednost @ {{p}} €/m²",
             "priceLabel": "Cena po m²",
-            "gain": "Dobit predloga"
+            "gain": "Dobit predloga",
+            "currentValue": "Trenutna vrednost"
         }
     }
 }

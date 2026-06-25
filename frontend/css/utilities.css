@@ -608,6 +608,82 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     font-size: 12px;
 }
 
+/* Proposal-goal sub-sections: Land use / Parcels / Ownership, so the three
+   facets read as separate clusters instead of one undifferentiated grid. */
+.proposal-goal-section + .proposal-goal-section {
+    margin-top: 12px;
+}
+.proposal-goal-subhead {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+}
+/* A cluster with a single goal (e.g. Ownership) spans the full width. */
+.proposal-goal-section .proposal-type-group:has(> .proposal-type-button:only-child) {
+    grid-template-columns: 1fr;
+}
+/* Collapsed: drop the subheads and any section without the selected goal so
+   only the chosen goal's chevron bar remains (matches the existing collapse). */
+#proposalGoalGroup.is-collapsed .proposal-goal-subhead {
+    display: none;
+}
+#proposalGoalGroup.is-collapsed .proposal-goal-section + .proposal-goal-section {
+    margin-top: 0;
+}
+#proposalGoalGroup.is-collapsed .proposal-goal-section:not(:has(.proposal-type-button.selected)) {
+    display: none;
+}
+
+/* Persistent facet radio groups (Parcels / Ownership). They stay visible for the
+   whole dialog so the proposer always sees what happens to parcels and ownership. */
+.proposal-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
+.proposal-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    margin: 0;
+}
+.proposal-radio input {
+    margin: 0;
+    cursor: pointer;
+}
+/* A locked option (e.g. Merge forced by a Park, or Per slice forced by Readjust). */
+.proposal-radio:has(input:disabled) {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.proposal-radio:has(input:disabled) input {
+    cursor: not-allowed;
+}
+.proposal-recipient-input {
+    margin-top: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Divides the proposal "intent" controls (Land use / Parcels / Ownership / …) from
+   the details below (Name, Description, Offer, Options). */
+.proposal-section-divider {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 18px 0;
+}
+
 .proposal-type-button {
     width: 100%;
     min-width: 0;
@@ -1690,6 +1766,24 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     border: 2px solid #007bff;
     object-fit: cover;
     display: none;
+}
+
+/* Author name shown as plain text next to the avatar (no input box / label). */
+.proposal-author-name {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+.proposal-author-name:disabled {
+    color: #1f2937;
+    opacity: 1;
+    -webkit-text-fill-color: #1f2937; /* Safari otherwise greys out disabled inputs */
+    cursor: default;
 }
 
 .btn.active {

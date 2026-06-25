@@ -218,10 +218,10 @@ function applyContiguityConstraints() {
     const blockButton = document.querySelector('.proposal-typology-button[data-proposal-typology="block"]');
     const rowButton = document.querySelector('.proposal-typology-button[data-proposal-typology="row"]');
 
-    // Purchase goal buttons (Park, Square, Lake)
-    const parkButton = document.querySelector('.proposal-type-button[data-proposal-tool="park"]');
-    const squareButton = document.querySelector('.proposal-type-button[data-proposal-tool="square"]');
-    const lakeButton = document.querySelector('.proposal-type-button[data-proposal-tool="lake"]');
+    // Land-use radios that need contiguous parcels (Park, Square, Lake)
+    const parkButton = document.querySelector('input[name="proposalLandUse"][value="park"]');
+    const squareButton = document.querySelector('input[name="proposalLandUse"][value="square"]');
+    const lakeButton = document.querySelector('input[name="proposalLandUse"][value="lake"]');
 
     const buttonsRequiringContiguity = [blockButton, rowButton, parkButton, squareButton, lakeButton];
 
@@ -8370,6 +8370,7 @@ function teardownProposalDetailsEscapeHandler() {
 
 const DEFAULT_PROPOSAL_TYPE = 'Square';
 const PROPOSAL_GOAL_ICON_MAP = {
+    'as-is': { icon: '🟰', label: 'No change' },
     'square': { icon: '⛲️', label: 'Square' },
     'park': { icon: '🌳', label: 'Park' },
     'lake': { icon: '🐟', label: 'Lake' },
@@ -8379,9 +8380,9 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'road/track': { icon: '🛣️🛤️', label: 'Road/Track' },
     'urban-rule': { icon: '📜📐', label: 'Urban rule' },
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
-    'decide-later': { icon: '🤔', label: 'Decide later' },
-    'decide later': { icon: '🤔', label: 'Decide later' },
-    'reparcellization': { icon: '✂️', label: 'Land readjustment' },
+    'decide-later': { icon: '🪡', label: 'Merge' },
+    'decide later': { icon: '🪡', label: 'Merge' },
+    'reparcellization': { icon: '✂️', label: 'Subdivide' },
     'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
     'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
@@ -9107,11 +9108,10 @@ function renderGeometrySection(goalKey) {
     }
 
     if (goalKey === 'square' || goalKey === 'park' || goalKey === 'lake') {
-        showGroup();
+        // Geometry is generated algorithmically and there are no actionable buttons,
+        // so hide the whole section rather than showing two disabled buttons.
+        group.style.display = 'none';
         setGeometryStatus(label.auto, { submitted: true });
-        buttonsRow.appendChild(makeButton('edit', label.edit, { disabled: true }));
-        buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -10055,14 +10055,8 @@ if (typeof window !== 'undefined') {
 
 function setProposalAcquisitionMode(mode = 'full', options = {}) {
     const normalized = mode === 'partial-preferred' ? 'partial' : (mode || 'full');
-    const buttons = document.querySelectorAll('.proposal-acquisition-button');
-    buttons.forEach(btn => {
-        const btnMode = btn.getAttribute('data-acquisition-mode');
-        if (btnMode === normalized) {
-            btn.classList.add('selected');
-        } else {
-            btn.classList.remove('selected');
-        }
+    document.querySelectorAll('input[name="proposalAcquisition"]').forEach(radio => {
+        radio.checked = (radio.value === normalized);
     });
     const input = document.getElementById('proposalAcquisitionMode');
     if (input) {
@@ -10152,7 +10146,7 @@ function updateGoalDependentSections(toolKey) {
     const typologyGroup = document.getElementById('proposalTypologyGroup');
     const boundaryGroup = document.getElementById('proposalBoundaryGroup');
     const ownershipTransferGroup = document.getElementById('proposalOwnershipTransferGroup');
-    const partialButton = document.querySelector('.proposal-acquisition-button[data-acquisition-mode="partial"]');
+    const partialButton = document.querySelector('.proposal-acquisition-partial-label');
 
     const isUrbanRule = toolKey === 'urban-rule';
     const isReparcellization = toolKey === 'reparcellization';
@@ -10172,7 +10166,10 @@ function updateGoalDependentSections(toolKey) {
         boundaryGroup.style.display = isReparcellization ? '' : 'none';
     }
     if (ownershipTransferGroup) {
-        ownershipTransferGroup.style.display = isOwnershipTransfer ? '' : 'none';
+        // Replaced by the persistent Ownership radio group. The legacy direction
+        // buttons stay in the DOM (still driven by setOwnershipTransferDirection for
+        // the to-me mechanic) but are kept hidden.
+        ownershipTransferGroup.style.display = 'none';
     }
 
     if (partialButton) {
@@ -10286,6 +10283,212 @@ function resetOwnershipTransferOptions() {
     if (lensFooterRow) {
         lensFooterRow.style.display = '';
     }
+}
+
+// ---- Proposal facets: Land use / Parcels / Ownership ----------------------
+// The create-proposal dialog exposes three persistent, independent facets, all
+// visible until "Create" is clicked. They are mapped onto the existing goal-key
+// machinery (setProposalType / updateGoalDependentSections / geometry / submit)
+// so the rest of the flow is unchanged. See feature-proposal-goals.md.
+const proposalFacetState = { landUse: 'as-is', parcels: 'as-is', ownership: 'no-change' };
+const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'road-track']);
+const PROPOSAL_GOAL_TYPE_LABELS = {
+    'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'single': 'Building(s)',
+    'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
+    'decide-later': 'Decide later', 'reparcellization': 'Reparcellization'
+};
+
+function getProposalRecipientAddress() {
+    const el = document.getElementById('proposalRecipientAddress');
+    return el && el.value ? el.value.trim() : '';
+}
+
+// Set the Parcels radio + state. lock => disable the other options (intrinsic to
+// the land use); unlock => re-enable all (per-slice stays gated to Readjust).
+function setProposalParcelsMode(mode, { lock = false, unlock = false } = {}) {
+    proposalFacetState.parcels = mode;
+    document.querySelectorAll('input[name="proposalParcelsMode"]').forEach(r => {
+        r.checked = (r.value === mode);
+        if (lock) r.disabled = (r.value !== mode);
+        else if (unlock) r.disabled = false;
+    });
+}
+
+function setProposalOwnershipMode(mode, { lock = false, unlock = false } = {}) {
+    proposalFacetState.ownership = mode;
+    document.querySelectorAll('input[name="proposalOwnership"]').forEach(r => {
+        r.checked = (r.value === mode);
+        if (lock) r.disabled = (r.value !== mode);
+        else if (unlock) r.disabled = (r.value === 'per-slice'); // per-slice only via Readjust
+    });
+    const addr = document.getElementById('proposalRecipientAddress');
+    if (addr) addr.style.display = (mode === 'third-party') ? '' : 'none';
+}
+
+function showProposalPerSliceOption(show) {
+    const el = document.querySelector('.proposal-ownership-perslice');
+    if (el) el.style.display = show ? '' : 'none';
+}
+
+function setProposalLandUseMode(key) {
+    proposalFacetState.landUse = key;
+    document.querySelectorAll('input[name="proposalLandUse"]').forEach(r => { r.checked = (r.value === key); });
+}
+
+function onProposalLandUseChange() {
+    const sel = document.querySelector('input[name="proposalLandUse"]:checked');
+    selectLandUse(sel ? sel.value : 'as-is');
+}
+
+// Move the geometry control (and, for Urban Rule, the typology selector) inline, right
+// after the section that requires it — so "Edit" appears next to Building/Road/Urban Rule
+// in Land use, or next to Readjust in Parcels — instead of far down the form.
+function relocateProposalGeometryGroup(goalKey) {
+    const geo = document.getElementById('proposalGeometryGroup');
+    const typology = document.getElementById('proposalTypologyGroup');
+    const landUse = document.querySelector('#proposalGoalGroup [data-goal-section="land-use"]');
+    const parcels = document.querySelector('#proposalGoalGroup [data-goal-section="parcels"]');
+
+    if (goalKey === 'urban-rule') {
+        // Typology (block/row/parcel-based) then the geometry Edit, both inline under Land use.
+        if (typology && landUse) landUse.insertAdjacentElement('afterend', typology);
+        if (geo && typology) typology.insertAdjacentElement('afterend', geo);
+        return;
+    }
+    if (goalKey === 'single' || goalKey === 'road-track') {
+        if (geo && landUse) landUse.insertAdjacentElement('afterend', geo);
+        return;
+    }
+    if (goalKey === 'reparcellization') {
+        if (geo && parcels) parcels.insertAdjacentElement('afterend', geo);
+        return;
+    }
+}
+
+// Land-use selection applies the constraint matrix (lock the hard ones, default
+// the soft ones), then resyncs the derived goal.
+function selectLandUse(key, { skipChecks = false } = {}) {
+    if (!skipChecks && key === 'lake') {
+        const selection = getCurrentParcelSelectionContext();
+        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+        if (!contiguity.contiguous) {
+            if (typeof showProposalAlertMessage === 'function') showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+            return;
+        }
+    }
+    setProposalLandUseMode(key);
+    showProposalPerSliceOption(false);
+    if (key === 'urban-rule') {
+        setProposalParcelsMode('as-is', { lock: true });   // a rule doesn't change parcels
+        setProposalOwnershipMode('no-change', { lock: true }); // or transfer ownership
+    } else if (PROPOSAL_PUBLIC_GOOD_USES.has(key)) {
+        setProposalParcelsMode('merge', { lock: true });   // public goods consolidate the footprint
+        setProposalOwnershipMode('to-city');               // default (overridable)
+    } else if (key === 'single') {
+        // Build on the parcels as they are: like Urban Rule, Building(s) neither merges
+        // nor subdivides, so lock Parcels to No change. Ownership defaults to the proposer
+        // but stays editable.
+        setProposalParcelsMode('as-is', { lock: true });
+        setProposalOwnershipMode('to-me', { unlock: true });
+    } else { // 'as-is'
+        setProposalParcelsMode('as-is', { unlock: true });
+        setProposalOwnershipMode('no-change', { unlock: true });
+    }
+    syncProposalFacets();
+}
+
+function onProposalParcelsChange() {
+    const sel = document.querySelector('input[name="proposalParcelsMode"]:checked');
+    proposalFacetState.parcels = sel ? sel.value : 'as-is';
+    if (proposalFacetState.parcels === 'readjust') {
+        showProposalPerSliceOption(true);
+        setProposalOwnershipMode('per-slice', { lock: true }); // slices carry their owners
+    } else {
+        showProposalPerSliceOption(false);
+        const next = (proposalFacetState.ownership === 'per-slice') ? 'no-change' : proposalFacetState.ownership;
+        setProposalOwnershipMode(next, { unlock: true });
+    }
+    syncProposalFacets();
+}
+
+function onProposalOwnershipChange() {
+    const sel = document.querySelector('input[name="proposalOwnership"]:checked');
+    proposalFacetState.ownership = sel ? sel.value : 'no-change';
+    const addr = document.getElementById('proposalRecipientAddress');
+    if (addr) addr.style.display = (proposalFacetState.ownership === 'third-party') ? '' : 'none';
+    syncProposalFacets();
+}
+
+// Collapse the three facets into the legacy goal key that drives geometry + submit.
+function deriveProposalGoalKey() {
+    const { landUse, parcels, ownership } = proposalFacetState;
+    if (landUse === 'urban-rule') return 'urban-rule';
+    if (parcels === 'readjust') return 'reparcellization';
+    if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
+    if (parcels === 'merge') return 'decide-later';
+    if (ownership && ownership !== 'no-change') return 'ownership-transfer';
+    return null; // as-is / as-is / no-change: nothing to propose yet
+}
+
+function syncProposalFacets() {
+    // Reflect the land-use selection on the radios.
+    document.querySelectorAll('input[name="proposalLandUse"]').forEach(r => {
+        r.checked = (r.value === proposalFacetState.landUse);
+    });
+
+    window.proposalFacets = {
+        landUse: proposalFacetState.landUse,
+        parcels: proposalFacetState.parcels,
+        ownership: proposalFacetState.ownership,
+        recipientAddress: getProposalRecipientAddress()
+    };
+
+    const goalKey = deriveProposalGoalKey();
+    if (!goalKey) {
+        currentProposalTool = null;
+        const typeInput = document.getElementById('proposalType');
+        if (typeInput) typeInput.value = '';
+        renderGeometrySection(null);
+        updateProposalScreenshotGoalIcon('as-is');
+        const btn = document.getElementById('createProposalSubmitButton');
+        const hint = document.getElementById('proposalGeometryRequirementHint');
+        if (btn) btn.disabled = true;
+        if (hint) hint.textContent = 'Choose a land use, parcel change, or ownership change.';
+        return;
+    }
+
+    if (goalKey === 'ownership-transfer') {
+        updateGoalDependentSections('ownership-transfer');
+        setOwnershipTransferDirection('to-me'); // sets currentProposalTool = 'ownership-transfer-to-me'
+        relocateProposalGeometryGroup(null); // ownership transfer has no geometry
+    } else {
+        currentProposalTool = goalKey;
+        const typeLabel = PROPOSAL_GOAL_TYPE_LABELS[goalKey] || goalKey;
+        const typeInput = document.getElementById('proposalType');
+        if (typeInput) typeInput.value = typeLabel;
+        updateGoalDependentSections(goalKey); // main type + geometry + typology/boundary visibility
+        relocateProposalGeometryGroup(goalKey); // move geometry inline next to its section
+        updateProposalNameAndDescription(typeLabel, true);
+    }
+    updateProposalScreenshotGoalIcon(currentProposalTool || goalKey);
+    updateCreateProposalSubmitState();
+}
+
+// Initialize the three facets, optionally from an override goal (e.g. a road draw).
+function initProposalFacets(overrideGoal) {
+    setProposalLandUseMode('as-is');
+    setProposalParcelsMode('as-is', { unlock: true });
+    setProposalOwnershipMode('no-change', { unlock: true });
+    showProposalPerSliceOption(false);
+
+    const g = overrideGoal ? (typeof normalizeGoalKey === 'function' ? normalizeGoalKey(overrideGoal) : overrideGoal) : null;
+    if (!g || g === 'as-is') { syncProposalFacets(); return; }
+    if (g === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
+    if (g === 'decide-later') { setProposalParcelsMode('merge'); onProposalParcelsChange(); return; }
+    if (g === 'ownership-transfer' || g === 'ownership-transfer-to-me' || g === 'ownership-transfer-from-me') {
+        setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
+    }
+    selectLandUse(g); // a land use
 }
 
 function setProposalCreateButtonState(isCreating) {
@@ -11171,7 +11374,7 @@ function generateDefaultProposalName(proposalType) {
         'lake': 'modal.createProposal.goalOptions.lake',
         'road/track': 'modal.createProposal.goalOptions.roadTrack',
         'decide later': 'modal.createProposal.goalOptions.decideLater',
-        'reparcellization': 'modal.createProposal.proposalTypeOptions.reparcellization',
+        'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
         'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
         'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
@@ -11214,7 +11417,7 @@ function generateDefaultProposalDescription(proposalType, proposalName) {
         'lake': 'modal.createProposal.goalOptions.lake',
         'road/track': 'modal.createProposal.goalOptions.roadTrack',
         'decide later': 'modal.createProposal.goalOptions.decideLater',
-        'reparcellization': 'modal.createProposal.proposalTypeOptions.reparcellization',
+        'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
         'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
         'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
@@ -11265,54 +11468,17 @@ function updateProposalDescription(proposalType, forceUpdate = false) {
 }
 
 function handleProposalToolButton(toolKey) {
-    if (toolKey === 'lake') {
-        const selection = getCurrentParcelSelectionContext();
-        if (!selection.layers.length) {
-            updateStatus('Select parcels before launching the structure tool.');
-            return;
-        }
-        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
-        if (!contiguity.contiguous) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-            } else if (typeof alert === 'function') {
-                alert('Parcels not contiguous');
-            }
-            return;
-        }
+    // The Land-use buttons call selectLandUse() directly. This remains as the entry
+    // point for external geometry tools (single-building, urban-rule, structures) that
+    // set the proposal goal programmatically — route every goal through the facet model
+    // so the three persistent sections (Land use / Parcels / Ownership) stay in sync.
+    const key = (typeof normalizeGoalKey === 'function' ? (normalizeGoalKey(toolKey) || toolKey) : toolKey);
+    if (key === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
+    if (key === 'decide-later') { setProposalParcelsMode('merge'); onProposalParcelsChange(); return; }
+    if (key === 'ownership-transfer' || key === 'ownership-transfer-to-me' || key === 'ownership-transfer-from-me') {
+        setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }
-    // Support both old .proposal-tool-button and new .proposal-type-button classes
-    const button = document.querySelector(`.proposal-tool-button[data-proposal-tool="${toolKey}"], .proposal-type-button[data-proposal-tool="${toolKey}"]`);
-    const mappedType = button ? button.getAttribute('data-proposal-type') : null;
-    const effectiveType = mappedType || DEFAULT_PROPOSAL_TYPE;
-    setProposalType(effectiveType);
-
-    // Update secondary sections (acquisition/typology/boundary) based on goal
-    updateGoalDependentSections(toolKey);
-
-    // Update name and description with default text (force update when button is clicked)
-    updateProposalNameAndDescription(effectiveType, true);
-
-    updateProposalScreenshotGoalIcon(toolKey);
-
-    switch (toolKey) {
-        case 'buildings':
-            break;
-        case 'single':
-            break;
-        case 'urban-rule':
-            // Typology defaults handled in updateGoalDependentSections; defer launching until typology click
-            break;
-        case 'reparcellization':
-            // Boundary adjustment handled in updateGoalDependentSections; avoid immediate launch
-            break;
-        default:
-            break;
-    }
-
-    // Once a goal is chosen, collapse the goal grid to just that goal so the
-    // sections below (typology/geometry/etc.) rise into view without scrolling.
-    collapseProposalGoalGroup();
+    selectLandUse(key, { skipChecks: true }); // land use (square/park/lake/single/road-track/urban-rule)
 }
 
 // Collapse the proposal-goal grid down to the selected goal (a chevron bar the
@@ -11798,6 +11964,25 @@ function showProposalDialog(overrides = null) {
         reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization'),
         ownershipTransfer: t('modal.createProposal.goalOptions.ownershipTransfer', 'Ownership transfer')
     };
+    const goalSectionLabels = {
+        landUse: t('modal.createProposal.goalSections.landUse', 'Land use'),
+        parcels: t('modal.createProposal.goalSections.parcels', 'Parcels'),
+        ownership: t('modal.createProposal.goalSections.ownership', 'Ownership')
+    };
+    const asIsLandUseLabel = t('modal.createProposal.goalOptions.asIs', 'As is');
+    const parcelsOptions = {
+        asIs: t('modal.createProposal.parcelsOptions.asIs', 'As is'),
+        merge: t('modal.createProposal.parcelsOptions.merge', 'Merge'),
+        readjust: t('modal.createProposal.parcelsOptions.readjust', 'Readjust')
+    };
+    const ownershipRecipients = {
+        noChange: t('modal.createProposal.ownershipRecipients.noChange', 'No change'),
+        toMe: t('modal.createProposal.ownershipRecipients.toMe', 'To me'),
+        toCity: t('modal.createProposal.ownershipRecipients.toCity', 'To city'),
+        thirdParty: t('modal.createProposal.ownershipRecipients.thirdParty', 'Third party'),
+        perSlice: t('modal.createProposal.ownershipRecipients.perSlice', 'Per slice')
+    };
+    const recipientPlaceholder = t('modal.createProposal.recipientPlaceholder', 'Recipient name or 0x address');
     const ownershipTransferLabels = {
         toMe: t('modal.createProposal.ownershipTransfer.toMe', 'To me'),
         fromMe: t('modal.createProposal.ownershipTransfer.fromMe', 'From me')
@@ -11920,12 +12105,9 @@ function showProposalDialog(overrides = null) {
             </div>
             <div class="proposal-modal-body">
                 ${screenshotContext ? '<div class="form-group" id="proposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
-                <div class="form-group">
-                    <div class="proposal-author-row">
-                        <label for="proposalAuthor">${authorLabel}</label>
-                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
-                        <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
-                    </div>
+                <div class="form-group proposal-author-row">
+                    <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
+                    <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
                 <div class="form-group" id="proposalMainTypeGroup" style="display:none;">
                     <label>${proposalTypeLabel}</label>
@@ -11938,17 +12120,36 @@ function showProposalDialog(overrides = null) {
                 </div>
                 <input type="hidden" id="proposalMainType" value="Purchase">
                 <div class="form-group" id="proposalGoalGroup">
-                    <label>${proposalGoalLabel}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">${goalLabels.square}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">${goalLabels.park}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="lake" data-proposal-type="Lake" onclick="handleProposalToolButton('lake')">${goalLabels.lake}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Building(s)" onclick="handleProposalToolButton('single')">${goalLabels.single}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="road-track" data-proposal-type="Road/Track" onclick="handleProposalToolButton('road-track')">${goalLabels.roadTrack}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="decide-later" data-proposal-type="Decide later" onclick="handleProposalToolButton('decide-later')">${goalLabels.decideLater}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="urban-rule" data-proposal-type="Urban Rule" onclick="handleProposalToolButton('urban-rule')">${goalLabels.urbanRule}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="reparcellization" data-proposal-type="Reparcellization" onclick="handleProposalToolButton('reparcellization')">${goalLabels.reparcellization}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="ownership-transfer" data-proposal-type="Ownership transfer" onclick="handleProposalToolButton('ownership-transfer')">${goalLabels.ownershipTransfer}</button>
+                    <div class="proposal-goal-section" data-goal-section="land-use">
+                        <span class="proposal-goal-subhead">${goalSectionLabels.landUse}</span>
+                        <div class="proposal-radio-group" id="proposalLandUseGroup">
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="as-is" checked onchange="onProposalLandUseChange()"><span>${asIsLandUseLabel}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="square" onchange="onProposalLandUseChange()"><span>⛲️ ${goalLabels.square}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="park" onchange="onProposalLandUseChange()"><span>🌳 ${goalLabels.park}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="lake" onchange="onProposalLandUseChange()"><span>🐟 ${goalLabels.lake}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="single" onchange="onProposalLandUseChange()"><span>🏠 ${goalLabels.single}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="road-track" onchange="onProposalLandUseChange()"><span>🛣️ ${goalLabels.roadTrack}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalLandUse" value="urban-rule" onchange="onProposalLandUseChange()"><span>📜 ${goalLabels.urbanRule}</span></label>
+                        </div>
+                    </div>
+                    <div class="proposal-goal-section" data-goal-section="parcels">
+                        <span class="proposal-goal-subhead">${goalSectionLabels.parcels}</span>
+                        <div class="proposal-radio-group" id="proposalParcelsGroup">
+                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="merge" onchange="onProposalParcelsChange()"><span>🪡 ${parcelsOptions.merge}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><span>✂️ ${parcelsOptions.readjust}</span></label>
+                        </div>
+                    </div>
+                    <div class="proposal-goal-section" data-goal-section="ownership">
+                        <span class="proposal-goal-subhead">${goalSectionLabels.ownership}</span>
+                        <div class="proposal-radio-group" id="proposalOwnershipGroup">
+                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="no-change" checked onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.noChange}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
+                            <label class="proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
+                            <label class="proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
+                        </div>
+                        <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" style="display:none;" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
                     </div>
                 </div>
                 <div class="form-group" id="proposalOwnershipTransferGroup" style="display:none;">
@@ -11959,10 +12160,10 @@ function showProposalDialog(overrides = null) {
                     </div>
                 </div>
                 <div class="form-group" id="proposalAcquisitionGroup">
-                    <label>${acquisitionLabel}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button proposal-acquisition-button" data-acquisition-mode="full" onclick="setProposalAcquisitionMode('full')">${acquisitionOptions.full}</button>
-                        <button type="button" class="btn proposal-type-button proposal-acquisition-button" data-acquisition-mode="partial" onclick="setProposalAcquisitionMode('partial')">${acquisitionOptions.partial}</button>
+                    <span class="proposal-goal-subhead">${acquisitionLabel}</span>
+                    <div class="proposal-radio-group">
+                        <label class="proposal-radio"><input type="radio" name="proposalAcquisition" value="full" checked onchange="setProposalAcquisitionMode('full')"><span>${acquisitionOptions.full}</span></label>
+                        <label class="proposal-radio"><input type="radio" name="proposalAcquisition" value="partial" onchange="setProposalAcquisitionMode('partial')"><span class="proposal-acquisition-partial-label">${acquisitionOptions.partial}</span></label>
                     </div>
                 </div>
                 <div class="form-group" id="proposalTypologyGroup" style="display:none;">
@@ -11973,21 +12174,14 @@ function showProposalDialog(overrides = null) {
                         <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased', { skipLaunch: true })">${typologyOptions.parcelBased}</button>
                     </div>
                 </div>
-                <div class="form-group" id="proposalBoundaryGroup" style="display:none;">
-                    <label>${ownershipLabel}</label>
-                    <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="single" onclick="setProposalBoundaryMode('single')">${ownershipOptions.single}</button>
-                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="multiple" onclick="setProposalBoundaryMode('multiple')">${ownershipOptions.multiple}</button>
-                    </div>
-                </div>
                 <div class="form-group" id="proposalGeometryGroup" style="display:none;">
-                    <label>${t('modal.createProposal.geometry.label', 'Geometry')}</label>
                     <div id="proposalGeometryStatus" class="proposal-geometry-status" style="font-size:12px; color:#4b5563; margin-bottom:6px;">${t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry')}</div>
                     <div class="proposal-type-group proposal-geometry-buttons" id="proposalGeometryButtons" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;"></div>
                 </div>
                 <input type="hidden" id="proposalType" value="">
                 <input type="hidden" id="proposalAcquisitionMode" value="full">
                 <input type="hidden" id="proposalBoundaryMode" value="multiple">
+                <hr class="proposal-section-divider">
                 <div class="form-group">
                     <label for="proposalName" style="display: flex; align-items: center; gap: 8px;">
                         <span>${nameLabel}</span>
@@ -12279,7 +12473,7 @@ function showProposalDialog(overrides = null) {
             const groupEl = modal.querySelector(`#${groupId}`);
             if (!groupEl) return;
             groupEl.classList.add('proposal-secondary-locked');
-            const buttons = groupEl.querySelectorAll('.proposal-type-button');
+            const buttons = groupEl.querySelectorAll('.proposal-type-button, input[type="radio"]');
             buttons.forEach(btn => {
                 btn.disabled = true;
                 btn.classList.add('proposal-selection-static');
@@ -12293,43 +12487,34 @@ function showProposalDialog(overrides = null) {
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }
-    const initialGoal = overrideGoal || 'square';
-    const goalButton = modal.querySelector(`.proposal-type-button[data-proposal-tool="${initialGoal}"]`);
-    const initialType = goalButton?.getAttribute('data-proposal-type') || DEFAULT_PROPOSAL_TYPE;
-
-    handleProposalToolButton(initialGoal);
-    setProposalType(initialType);
+    const initialGoal = overrideGoal || 'as-is';
+    // Initialize the three facets (Land use / Parcels / Ownership). Defaults to
+    // As is / As is / No change unless a goal was preset (e.g. from a road drawing).
+    // This drives the legacy goal-key machinery via syncProposalFacets().
+    initProposalFacets(overrideGoal);
     setProposalAcquisitionMode(overrideAcquisition || 'full', { force: true });
     setProposalBoundaryMode(ownershipMode || 'multiple', { lock: true });
 
     if (goalLocked) {
-        const goalButtons = modal.querySelectorAll('#proposalGoalGroup .proposal-type-button');
-        goalButtons.forEach(btn => {
-            const btnGoal = normalizeGoalKey(btn.getAttribute('data-proposal-tool'));
-            const isInitial = btnGoal === initialGoal;
-            if (!isInitial) {
-                btn.classList.remove('selected');
-            }
-            btn.disabled = true;
-            btn.classList.add('proposal-selection-static');
-            btn.setAttribute('aria-disabled', 'true');
+        // The three facets are now radio groups; lock them all to the preset selection.
+        modal.querySelectorAll('#proposalGoalGroup input[type="radio"]').forEach(r => {
+            r.disabled = true;
+            r.setAttribute('aria-disabled', 'true');
         });
     }
 
     if (acquisitionLocked) {
-        const acquisitionButtons = modal.querySelectorAll('#proposalAcquisitionGroup .proposal-type-button');
-        acquisitionButtons.forEach(btn => {
-            const isSelected = btn.classList.contains('selected');
-            if (overrideAcquisition === 'partial-preferred' && btn.getAttribute('data-acquisition-mode') === 'partial') {
-                btn.textContent = proposalAcquisitionLabels.partialPreferred || btn.textContent;
-                btn.classList.add('selected');
-            } else if (!isSelected && overrideAcquisition) {
-                btn.classList.remove('selected');
-            }
-            btn.disabled = true;
-            btn.classList.add('proposal-selection-static');
-            btn.setAttribute('aria-disabled', 'true');
+        const desired = overrideAcquisition === 'partial-preferred' ? 'partial' : (overrideAcquisition || null);
+        modal.querySelectorAll('#proposalAcquisitionGroup input[type="radio"]').forEach(radio => {
+            if (desired) radio.checked = (radio.value === desired);
+            radio.disabled = true;
+            radio.classList.add('proposal-selection-static');
+            radio.setAttribute('aria-disabled', 'true');
         });
+        if (overrideAcquisition === 'partial-preferred') {
+            const partialLabel = modal.querySelector('.proposal-acquisition-partial-label');
+            if (partialLabel) partialLabel.textContent = proposalAcquisitionLabels.partialPreferred || partialLabel.textContent;
+        }
         const acquisitionInput = document.getElementById('proposalAcquisitionMode');
         if (acquisitionInput) {
             acquisitionInput.value = overrideAcquisition || acquisitionInput.value || 'full';
@@ -12495,10 +12680,11 @@ function showProposalDialog(overrides = null) {
 
     attachProposalCurrencyHandlers();
 
-    // Focus the default Square goal button to avoid triggering mobile keyboards
-    const squareButton = modal.querySelector('.proposal-type-button[data-proposal-tool="square"]');
-    if (squareButton) {
-        squareButton.focus();
+    // Focus the default Land use radio (not a text input) to avoid triggering mobile keyboards
+    const defaultLandUseRadio = modal.querySelector('input[name="proposalLandUse"]:checked')
+        || modal.querySelector('input[name="proposalLandUse"]');
+    if (defaultLandUseRadio) {
+        defaultLandUseRadio.focus();
     }
 
     updateCreateProposalSubmitState();
@@ -13369,6 +13555,10 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
 // Expose helpers
 window.showStructureProposalDialog = showStructureProposalDialog;
 window.handleProposalToolButton = handleProposalToolButton;
+window.selectLandUse = selectLandUse;
+window.onProposalLandUseChange = onProposalLandUseChange;
+window.onProposalParcelsChange = onProposalParcelsChange;
+window.onProposalOwnershipChange = onProposalOwnershipChange;
 window.setProposalType = setProposalType;
 window.setProposalMainType = setProposalMainType;
 window.setProposalAcquisitionMode = setProposalAcquisitionMode;
@@ -14576,6 +14766,30 @@ async function createProposal() {
                 parentParcelIds: normalizedParentParcelIds.slice(),
                 status: 'pending'
             };
+        }
+
+        // Record the three facets, and the explicit recipient (to-me / to-city /
+        // third-party) so the proposal carries who receives the land beyond the
+        // legacy to-me/from-me direction. (Recipient-accept enforcement is a later phase.)
+        const chosenFacets = window.proposalFacets || null;
+        if (chosenFacets) {
+            proposal.facets = {
+                landUse: chosenFacets.landUse,
+                parcels: chosenFacets.parcels,
+                ownership: chosenFacets.ownership
+            };
+            const recip = chosenFacets.ownership;
+            if (recip === 'to-me' || recip === 'to-city' || recip === 'third-party') {
+                proposal.ownershipTransferProposal = proposal.ownershipTransferProposal || {
+                    direction: 'to-me',
+                    parentParcelIds: normalizedParentParcelIds.slice(),
+                    status: 'pending'
+                };
+                proposal.ownershipTransferProposal.recipient = recip;
+                if (recip === 'third-party') {
+                    proposal.ownershipTransferProposal.recipientAddress = chosenFacets.recipientAddress || '';
+                }
+            }
         }
 
         // Auto-tag structure proposals (park/square/lake) created from Purchase flow so they carry geometry and parent ids

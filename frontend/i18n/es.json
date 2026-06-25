@@ -1243,17 +1243,36 @@
                 "jointInvestment": "Inversión conjunta"
             },
             "goalOptions": {
+                "asIs": "Sin cambios",
                 "buildings": "Edificios",
                 "single": "Edificio(s)",
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
                 "roadTrack": "Camino/Tramo",
-                "decideLater": "Decidir después",
+                "decideLater": "Fusionar",
                 "urbanRule": "Regla urbana",
-                "reparcellization": "Reparcelación",
+                "reparcellization": "Subdividir",
                 "ownershipTransfer": "Transferencia de propiedad"
             },
+            "goalSections": {
+                "landUse": "Uso del suelo",
+                "parcels": "Parcelas",
+                "ownership": "Propiedad"
+            },
+            "parcelsOptions": {
+                "asIs": "Sin cambios",
+                "merge": "Fusionar",
+                "readjust": "Reajustar"
+            },
+            "ownershipRecipients": {
+                "noChange": "Sin cambios",
+                "toMe": "Para mí",
+                "toCity": "A la ciudad",
+                "thirdParty": "Tercero",
+                "perSlice": "Por lote"
+            },
+            "recipientPlaceholder": "Nombre o dirección 0x del destinatario",
             "ownershipTransfer": {
                 "label": "Dirección de transferencia:",
                 "toMe": "A mí",
@@ -1924,7 +1943,8 @@
             "floorNote": "@ {{h}} m/planta",
             "valueTitle": "Valor @ €{{p}}/m²",
             "priceLabel": "Precio por m²",
-            "gain": "Ganancia de la propuesta"
+            "gain": "Ganancia de la propuesta",
+            "currentValue": "Valor actual"
         }
     }
 }
