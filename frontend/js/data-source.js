@@ -65,7 +65,26 @@
         return stored || fallback;
     }
 
+    // Dev override: when launching a worktree on a custom backend port (see dev.sh at the repo
+    // root), the ?backend=<url> query param — persisted to localStorage — repoints every backend
+    // call. Localhost/file-only so it can never affect production.
+    function getDevBackendOverride() {
+        try {
+            const host = (window.location.hostname || '').toLowerCase();
+            const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || window.location.protocol === 'file:';
+            if (!isLocal) return null;
+            const param = new URLSearchParams(window.location.search).get('backend');
+            if (param) {
+                try { localStorage.setItem('cb_dev_backend_base', param); } catch (_) { }
+                return param;
+            }
+            try { return localStorage.getItem('cb_dev_backend_base') || null; } catch (_) { return null; }
+        } catch (_) { return null; }
+    }
+
     function getBackendBase() {
+        const devOverride = getDevBackendOverride();
+        if (devOverride) return devOverride.replace(/\/+$/, '');
         const dataSource = getDataSource();
         if (dataSource === 'localhost') {
             return LOCAL_BASE;
