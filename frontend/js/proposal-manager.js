@@ -1588,8 +1588,29 @@ const ProposalManager = {
 
             if (!applied.length) return;
 
+            // Only reapply proposals belonging to the active city. Applied proposals are
+            // stored globally (not per-city), so without this an NYC session would try to
+            // reapply Zagreb proposals — fetching HR-* ids from the NYC parcel endpoint (400)
+            // and poisoning the nearby-3D-buildings query with cross-city geometry (→ "loaded
+            // 0 nearby 3d buildings"). Mirrors the city filter in game.js.
+            const currentCityId = (typeof window !== 'undefined' && window.CityConfigManager
+                    && typeof window.CityConfigManager.getCurrentCityId === 'function')
+                ? window.CityConfigManager.getCurrentCityId()
+                : null;
+            const appliedInCity = (currentCityId && typeof isInCity === 'function')
+                ? applied.filter(p => {
+                    const ids = Array.isArray(p.parentParcelIds) && p.parentParcelIds.length
+                        ? p.parentParcelIds
+                        : (Array.isArray(p.childParcelIds) ? p.childParcelIds : []);
+                    if (!ids.length) return true;
+                    return ids.some(id => isInCity(id, currentCityId));
+                })
+                : applied;
+
+            if (!appliedInCity.length) return;
+
             // Process in stored order; dependencies intentionally ignored per request
-            for (const proposal of applied) {
+            for (const proposal of appliedInCity) {
                 await _reapplyAppliedProposal(proposal);
             }
         } finally {

@@ -1638,12 +1638,28 @@ function hydrateProposedBuildingsFromProposals() {
     const proposals = proposalStorage.getAllProposals();
     let added = 0;
 
+    // Active-city scope: applied proposals are stored globally, so without this a Zagreb
+    // building proposal would hydrate (and poison the nearby-3D-buildings query) in an NYC session.
+    const cityId = (typeof window !== 'undefined' && window.CityConfigManager
+            && typeof window.CityConfigManager.getCurrentCityId === 'function')
+        ? window.CityConfigManager.getCurrentCityId() : null;
+    const isInCityFn = (typeof isInCity === 'function') ? isInCity
+        : ((typeof window !== 'undefined' && typeof window.isInCity === 'function') ? window.isInCity : null);
+
     proposals.forEach(p => {
         if (!p || !p.buildingProposal) return;
 
         const status = (p.buildingProposal.status || p.status || '').toLowerCase();
         const isActive = status === 'applied' || status === 'executed';
         if (!isActive) return;
+
+        if (cityId && isInCityFn) {
+            const cityIds = (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
+                ? p.buildingProposal.parentParcelIds
+                : (Array.isArray(p.parcelIds) && p.parcelIds.length ? p.parcelIds
+                    : (Array.isArray(p.parentParcelIds) ? p.parentParcelIds : []));
+            if (cityIds.length && !cityIds.some(id => isInCityFn(id, cityId))) return;
+        }
 
         const proposalId = p.proposalId || p.id;
         if (!proposalId) return;

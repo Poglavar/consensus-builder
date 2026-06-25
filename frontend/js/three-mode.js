@@ -47,10 +47,17 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
 
-    // Walk-mode launcher state. Target is the transit planner at zagreb.lol/prijevoz/
-    // with `?st3d=walk` (per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
-    // /voznja on that host is a tram redirect — do not use it for the walk overlay.
-    const WALK_URL_BASE = 'https://zagreb.lol/prijevoz/';
+    // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
+    // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
+    // with `?st3d=walk`, per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
+    // Cities without a `walk.url` hide the button entirely — it is NOT generally available yet.
+    function getWalkUrlBase() {
+        try {
+            const cfg = window.CityConfigManager;
+            const walk = cfg && typeof cfg.getWalkConfig === 'function' ? cfg.getWalkConfig() : null;
+            return walk && walk.url ? walk.url : null;
+        } catch (_) { return null; }
+    }
     let walkPickActive = false;
     let walkPickClickHandler = null;
     let walkPickKeyHandler = null;
@@ -317,10 +324,18 @@
 
         const gainEl = panel.querySelector('[data-role="gain"]');
         if (gainEl) {
-            const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
-            gainEl.className = 'parcel-panel-gain ' + cls;
-            const sign = gain > 0 ? '+' : '';
-            gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            // No proposed massing on this parcel → there's no "gain", just the current
+            // built value. Show that as a positive figure instead of a negative delta.
+            if (proposed <= 0) {
+                const currentValue = built * priceEurPerM2;
+                gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: €${formatInt(currentValue)}`;
+            } else {
+                const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
+                gainEl.className = 'parcel-panel-gain ' + cls;
+                const sign = gain > 0 ? '+' : '';
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            }
         }
     }
 
@@ -1185,10 +1200,27 @@
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return null;
         if (typeof turf === 'undefined' || !turf) return null;
+        // Only consider proposal buildings in the active city. proposedBuildings is a global,
+        // cross-session list, so a stale Zagreb building must not define the NYC nearby-buildings
+        // query bbox (which would query Socrata around Zagreb → "loaded 0 nearby 3d buildings").
+        const cityId = (typeof window !== 'undefined' && window.CityConfigManager
+                && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId() : null;
+        const isInCityFn = (typeof isInCity === 'function') ? isInCity
+            : ((typeof window !== 'undefined' && typeof window.isInCity === 'function') ? window.isInCity : null);
+        const inActiveCity = (f) => {
+            if (!cityId || !isInCityFn) return true;
+            const props = (f && f.properties) || {};
+            const ids = Array.isArray(props.parentParcelIds) && props.parentParcelIds.length
+                ? props.parentParcelIds
+                : (props.parcelId ? [props.parcelId] : []);
+            if (!ids.length) return true;
+            return ids.some(id => isInCityFn(id, cityId));
+        };
         const features = [];
         for (let i = 0; i < arr.length; i++) {
             const f = arr[i];
-            if (f && f.geometry) features.push(f);
+            if (f && f.geometry && inActiveCity(f)) features.push(f);
         }
         if (features.length === 0) return null;
         try {
@@ -2196,7 +2228,8 @@
             toggleBtn.textContent = 'Rendering…';
             toggleBtn.title = 'Preparing 3D view';
         }
-        if (walkBtn) walkBtn.hidden = false;
+        // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
+        if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -2399,7 +2432,9 @@
         params.set('lat', lat.toFixed(6));
         params.set('lon', lng.toFixed(6));
         if (ids.length) params.set('proposals', ids.join(','));
-        return `${WALK_URL_BASE}?${params.toString()}`;
+        const base = getWalkUrlBase();
+        if (!base) return null;
+        return `${base}?${params.toString()}`;
     }
 
     // Raycast a click on the renderer canvas onto the z=0 ground plane and return the lat/lng.
@@ -2479,6 +2514,7 @@
             }
             try {
                 const url = buildWalkUrl(ll.lat, ll.lng);
+                if (!url) { console.warn('[walk] no walk overlay configured for this city'); return; }
                 window.open(url, '_blank', 'noopener,noreferrer');
             } catch (e) {
                 console.warn('[walk] failed to open walk URL:', e);
