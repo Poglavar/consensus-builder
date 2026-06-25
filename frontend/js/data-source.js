@@ -66,6 +66,20 @@
     }
 
     function getBackendBase() {
+        // TESTING-ONLY backend override: load any page with ?backend=<url> (e.g.
+        // ?backend=http://localhost:3001) to point the frontend at an alternate backend — handy for
+        // testing a feature-branch backend on a non-default port without touching the one on :3000.
+        // The value is persisted so it survives SPA navigation; pass ?backend= (empty) to clear it.
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('backend')) {
+                const v = (params.get('backend') || '').trim();
+                PersistentStorage.setItem('cb_backend_override', v);
+            }
+            const override = (PersistentStorage.getItem('cb_backend_override') || '').trim();
+            if (override) return override.replace(/\/$/, '');
+        } catch (_) { /* fall through to normal resolution */ }
+
         const dataSource = getDataSource();
         if (dataSource === 'localhost') {
             return LOCAL_BASE;

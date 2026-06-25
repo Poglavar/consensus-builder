@@ -5,6 +5,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createZagrebProvider } from '../buildings/zagreb-3d.js';
 import { createNycProvider } from '../buildings/nyc-footprints.js';
+import { createOvertureProvider } from '../buildings/overture-3d.js';
+import { createOvertureTreesProvider } from '../decor/overture-trees.js';
+import { effectiveHeight, OVERTURE_CITIES } from '../buildings/overture-cities.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
 describe('Zagreb 3D provider — near()', () => {
@@ -64,5 +67,89 @@ describe('NYC footprints provider — near()', () => {
         await provider.near(point, 500);
 
         expect(radii[1]).toBeGreaterThan(radii[0]);
+    });
+});
+
+describe('Overture 3D provider — near()', () => {
+    it('queries a geography-radius circle, filters by city, and caps after a distance order', async () => {
+        const pool = createMockPool();
+        const provider = createOvertureProvider(pool, 'belgrade');
+
+        await provider.near({ type: 'Point', coordinates: [20.4589, 44.8125] }, 300);
+
+        const { sql, params } = pool.getCalls()[0];
+        // True metres radius via geography — works at any latitude with no per-city projected CRS.
+        expect(sql).toContain('ST_DWithin(b.geom::geography, q.g::geography, $3)');
+        // City scoping precedes the spatial test so the cap counts only this city's buildings.
+        expect(sql).toContain('b.city = $2');
+        // Distance order must precede the cap, else the LIMIT keeps an arbitrary, shuffling subset.
+        const orderIdx = sql.indexOf('b.geom <-> q.g');
+        const limitIdx = sql.indexOf('LIMIT 4000');
+        expect(orderIdx).toBeGreaterThan(-1);
+        expect(limitIdx).toBeGreaterThan(orderIdx);
+        expect(params[1]).toBe('belgrade'); // city filter
+        expect(params[2]).toBe(300);        // buffer straight through to ST_DWithin
+    });
+
+    it('extrudes each footprint with the height fallback (measured → floors → default)', async () => {
+        const pool = createMockPool();
+        const square = {
+            type: 'Polygon',
+            coordinates: [[[20.45, 44.81], [20.4501, 44.81], [20.4501, 44.8101], [20.45, 44.8101], [20.45, 44.81]]]
+        };
+        pool.setResult({
+            rows: [
+                { overture_id: 'a', height_m: 24, num_floors: null, geometry: square }, // measured
+                { overture_id: 'b', height_m: null, num_floors: 5, geometry: square },   // floors
+                { overture_id: 'c', height_m: null, num_floors: null, geometry: square } // default
+            ]
+        });
+        const provider = createOvertureProvider(pool, 'belgrade');
+
+        const { buildings, count, source } = await provider.near({ type: 'Point', coordinates: [20.45, 44.81] }, 200);
+        const cfg = OVERTURE_CITIES.belgrade;
+
+        expect(source).toBe('overture-3d');
+        expect(count).toBe(3);
+        expect(buildings.find(b => b.object_id === 'a').z_max).toBeCloseTo(24);
+        expect(buildings.find(b => b.object_id === 'b').z_max).toBeCloseTo(5 * cfg.floorHeightM);
+        expect(buildings.find(b => b.object_id === 'c').z_max).toBeCloseTo(cfg.defaultHeightM);
+    });
+
+    it('effectiveHeight picks the right source in priority order', () => {
+        const cfg = { floorHeightM: 3.2, defaultHeightM: 9 };
+        expect(effectiveHeight(30, 99, cfg)).toEqual({ height: 30, source: 'overture' });
+        expect(effectiveHeight(0, 4, cfg)).toEqual({ height: 12.8, source: 'floors' });
+        expect(effectiveHeight(NaN, NaN, cfg)).toEqual({ height: 9, source: 'default' });
+    });
+});
+
+describe('Overture trees provider — near()', () => {
+    it('queries a geography-radius circle, filters by city, caps after a distance order', async () => {
+        const pool = createMockPool();
+        const provider = createOvertureTreesProvider(pool, 'belgrade');
+
+        await provider.near({ type: 'Point', coordinates: [20.4612, 44.8125] }, 300);
+
+        const { sql, params } = pool.getCalls()[0];
+        expect(sql).toContain('ST_DWithin(t.geom::geography, q.g::geography, $3)');
+        expect(sql).toContain('t.city = $2');
+        const orderIdx = sql.indexOf('t.geom <-> q.g');
+        const limitIdx = sql.indexOf('LIMIT 8000');
+        expect(orderIdx).toBeGreaterThan(-1);
+        expect(limitIdx).toBeGreaterThan(orderIdx);
+        expect(params[1]).toBe('belgrade');
+        expect(params[2]).toBe(300);
+    });
+
+    it('returns trees as [lng, lat] pairs', async () => {
+        const pool = createMockPool();
+        pool.setResult({ rows: [{ lng: 20.46, lat: 44.81 }, { lng: 20.47, lat: 44.82 }] });
+        const provider = createOvertureTreesProvider(pool, 'belgrade');
+
+        const { trees, count, source } = await provider.near({ type: 'Point', coordinates: [20.46, 44.81] }, 200);
+        expect(source).toBe('overture-trees');
+        expect(count).toBe(2);
+        expect(trees[0]).toEqual([20.46, 44.81]);
     });
 });

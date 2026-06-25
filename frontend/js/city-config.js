@@ -153,10 +153,15 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                // Overture-Maps footprints + heights, ingested into overture_building and extruded
+                // server-side (backend/buildings/overture-3d.js). Resolved by city id, not this
+                // string. Like NYC, the 3D buildings load automatically in 3D mode.
+                source: 'overture'
             },
             sidebar: {
-                // Disable unsupported sections for Belgrade
+                // 'buildings' stays disabled: that sidebar toggle is the Zagreb 2D WFS layer.
+                // Belgrade's 3D buildings load automatically in 3D mode (Built/Both/Planned), the
+                // same as NYC, independent of this section.
                 disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {

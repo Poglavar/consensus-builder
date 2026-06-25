@@ -38,6 +38,8 @@
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
     let lakeGroup = null; // lake decorations (fish)
+    let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
 
     // Checkbox listeners to sync 3D buildings with sidebar
     let onShowExistingBuildingsChange = null;
@@ -500,6 +502,24 @@
         radiusRow.appendChild(radiusHeader);
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
+
+        // Trees toggle — real-world OSM trees (Overture) as ambient scenery. Independent of the
+        // Built/Planned mode; off-by-default cities (no ingested trees) simply render nothing.
+        const treesRow = document.createElement('div');
+        treesRow.className = 'three-mode-trees-row';
+        const treesToggleLabel = document.createElement('label');
+        treesToggleLabel.className = 'three-mode-trees-toggle';
+        const treesCheckbox = document.createElement('input');
+        treesCheckbox.type = 'checkbox';
+        treesCheckbox.checked = loadTreesEnabledPref();
+        treesCheckbox.addEventListener('change', () => setTreesEnabled(treesCheckbox.checked));
+        const treesText = document.createElement('span');
+        treesText.className = 'three-mode-emphasis-label';
+        treesText.textContent = 'Trees';
+        treesToggleLabel.appendChild(treesCheckbox);
+        treesToggleLabel.appendChild(treesText);
+        treesRow.appendChild(treesToggleLabel);
+        buildingModeControlsEl.appendChild(treesRow);
 
         // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
         bothEmphasisRowEl = document.createElement('div');
@@ -1306,6 +1326,153 @@
             });
     }
 
+    // --- Real-world OSM trees (Overture base/land) ---
+    // Toggleable scenery fetched via POST /decor/near using the SAME query geometry + radius as the
+    // nearby buildings, then rendered as two InstancedMesh layers (trunk + crown) so a few thousand
+    // trees cost two draw calls. Cities without ingested trees just get an empty list (no-op).
+    const TREES_STORAGE_KEY = 'cb_3d_trees_enabled';
+    let nearbyTrees = [];               // [[lng, lat], ...] from the backend
+    let nearbyTreesKey = null;          // query key so we don't refetch the same band
+    let nearbyTreesFetching = false;
+
+    function loadTreesEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(TREES_STORAGE_KEY);
+                if (v === '0' || v === 'false') return false;
+                if (v === '1' || v === 'true') return true;
+            }
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    // Deterministic [0,1) hash from a tree's lng/lat so each tree's height/jitter is stable across
+    // rebuilds (no flicker) without storing per-tree attributes.
+    function treeRng(lng, lat) {
+        let h = Math.imul(((lng * 1e6) | 0) ^ 0x9e3779b9, 0x85ebca6b);
+        h ^= Math.imul(((lat * 1e6) | 0) ^ 0x165667b1, 0xc2b2ae35);
+        h = (h ^ (h >>> 15)) >>> 0;
+        return (h % 100000) / 100000;
+    }
+
+    // Shared base geometries (unit-sized; per-tree size comes from the instance matrix). The trunk
+    // cylinder is rotated so its length runs along +Z to match the Z-up scene.
+    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null;
+    function ensureTreeAssets() {
+        if (treeTrunkGeo) return;
+        treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.18, 1, 5);
+        treeTrunkGeo.rotateX(Math.PI / 2); // Y-length → Z-length (scene is Z-up)
+        treeCrownGeo = new THREE.SphereGeometry(1, 6, 5);
+        treeTrunkMat = new THREE.MeshLambertMaterial({ color: 0x5c3d1e });
+        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0x3a6b35 });
+    }
+
+    function disposeTreesGroup() {
+        if (!treesGroup) return;
+        for (let i = treesGroup.children.length - 1; i >= 0; i--) {
+            const c = treesGroup.children[i];
+            treesGroup.remove(c);
+            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo) c.geometry.dispose();
+        }
+    }
+
+    function buildTreesGroup() {
+        if (!treesGroup || !Array.isArray(nearbyTrees) || nearbyTrees.length === 0 || !origin3857) return;
+        ensureTreeAssets();
+        const n = nearbyTrees.length;
+        const trunkMesh = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, n);
+        const crownMesh = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, n);
+        const dummy = new THREE.Object3D();
+        let placed = 0;
+        for (let i = 0; i < n; i++) {
+            const t = nearbyTrees[i];
+            if (!t || t.length < 2) continue;
+            const [x, y] = latLngToXY(t[1], t[0]);
+            const r = treeRng(t[0], t[1]);
+            const totalH = 5 + r * 8;          // ~5–13 m, deterministic per tree
+            const trunkH = totalH * 0.48;
+            const crownR = totalH * 0.20 + 0.5;
+
+            dummy.position.set(x, y, trunkH / 2);
+            dummy.scale.set(1, 1, trunkH);
+            dummy.rotation.set(0, 0, 0);
+            dummy.updateMatrix();
+            trunkMesh.setMatrixAt(placed, dummy.matrix);
+
+            dummy.position.set(x, y, trunkH + crownR * 0.65);
+            dummy.scale.set(crownR, crownR, crownR * 1.15);
+            dummy.updateMatrix();
+            crownMesh.setMatrixAt(placed, dummy.matrix);
+            placed++;
+        }
+        trunkMesh.count = placed;
+        crownMesh.count = placed;
+        trunkMesh.instanceMatrix.needsUpdate = true;
+        crownMesh.instanceMatrix.needsUpdate = true;
+        treesGroup.add(trunkMesh);
+        treesGroup.add(crownMesh);
+    }
+
+    function rebuildTreesOnly() {
+        if (!isActive || !treesGroup) return;
+        disposeTreesGroup();
+        if (treesEnabled) buildTreesGroup();
+    }
+
+    function ensureNearbyTrees() {
+        if (!treesEnabled || nearbyTreesFetching) return;
+
+        const proposalGeom = computeProposalQueryGeometry();
+        let geometry, buffer, key;
+        if (proposalGeom) {
+            geometry = proposalGeom;
+            buffer = buildingLoadRadiusM;
+            const bb = proposalGeom.coordinates[0];
+            key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
+        } else {
+            const pt = computeCameraFocusGeometry();
+            if (!pt) return;
+            geometry = pt;
+            buffer = buildingLoadRadiusM;
+            const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
+            key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}|r${buildingLoadRadiusM}`;
+        }
+        if (key === nearbyTreesKey) return;
+
+        nearbyTreesFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+        fetch(`${base}/decor/near`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry, buffer_meters: buffer, city, kinds: ['trees'] })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                nearbyTrees = (payload && Array.isArray(payload.trees)) ? payload.trees : [];
+                nearbyTreesKey = key;
+                nearbyTreesFetching = false;
+                console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${proposalGeom ? 'proposal' : 'camera'}+${buffer}m)`);
+                if (isActive) rebuildTreesOnly();
+            })
+            .catch(err => {
+                console.warn('Failed to fetch nearby trees:', err);
+                nearbyTreesFetching = false;
+            });
+    }
+
+    // Flip the trees toggle: persist, show/hide the group, and fetch+build on first enable.
+    function setTreesEnabled(on) {
+        treesEnabled = !!on;
+        try { PersistentStorage.setItem(TREES_STORAGE_KEY, treesEnabled ? '1' : '0'); } catch (_) { }
+        if (treesGroup) treesGroup.visible = treesEnabled;
+        if (treesEnabled) {
+            ensureNearbyTrees();
+            rebuildTreesOnly();
+        }
+    }
+
     function buildProposedBuildings3D(targetGroup, buildingMaterial) {
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return;
@@ -1673,6 +1840,9 @@
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
         ensureNearbyProposalBuildings();
+        // Trees follow the same near-query; fetch if enabled, and rebuild from whatever we have.
+        ensureNearbyTrees();
+        rebuildTreesOnly();
 
         // Freshly rebuilt buildings default to visible; re-apply isolation if active.
         if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
@@ -1761,12 +1931,16 @@
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
+        treesGroup = new THREE.Group();
+        treesEnabled = loadTreesEnabledPref();
+        treesGroup.visible = treesEnabled;
         scene.add(flatGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
         scene.add(lakeGroup);
+        scene.add(treesGroup);
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);

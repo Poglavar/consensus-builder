@@ -263,6 +263,24 @@
     gap: 8px;
 }
 
+#three-container .three-mode-trees-row {
+    display: flex;
+    align-items: center;
+}
+
+#three-container .three-mode-trees-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+#three-container .three-mode-trees-toggle input[type="checkbox"] {
+    accent-color: #3a6b35;
+    cursor: pointer;
+    margin: 0;
+}
+
 #three-container .three-mode-emphasis-label {
     font-size: 12px;
     font-weight: 600;
