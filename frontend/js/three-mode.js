@@ -317,10 +317,18 @@
 
         const gainEl = panel.querySelector('[data-role="gain"]');
         if (gainEl) {
-            const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
-            gainEl.className = 'parcel-panel-gain ' + cls;
-            const sign = gain > 0 ? '+' : '';
-            gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            // No proposed massing on this parcel → there's no "gain", just the current
+            // built value. Show that as a positive figure instead of a negative delta.
+            if (proposed <= 0) {
+                const currentValue = built * priceEurPerM2;
+                gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: €${formatInt(currentValue)}`;
+            } else {
+                const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
+                gainEl.className = 'parcel-panel-gain ' + cls;
+                const sign = gain > 0 ? '+' : '';
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            }
         }
     }
 
@@ -1185,10 +1193,27 @@
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return null;
         if (typeof turf === 'undefined' || !turf) return null;
+        // Only consider proposal buildings in the active city. proposedBuildings is a global,
+        // cross-session list, so a stale Zagreb building must not define the NYC nearby-buildings
+        // query bbox (which would query Socrata around Zagreb → "loaded 0 nearby 3d buildings").
+        const cityId = (typeof window !== 'undefined' && window.CityConfigManager
+                && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId() : null;
+        const isInCityFn = (typeof isInCity === 'function') ? isInCity
+            : ((typeof window !== 'undefined' && typeof window.isInCity === 'function') ? window.isInCity : null);
+        const inActiveCity = (f) => {
+            if (!cityId || !isInCityFn) return true;
+            const props = (f && f.properties) || {};
+            const ids = Array.isArray(props.parentParcelIds) && props.parentParcelIds.length
+                ? props.parentParcelIds
+                : (props.parcelId ? [props.parcelId] : []);
+            if (!ids.length) return true;
+            return ids.some(id => isInCityFn(id, cityId));
+        };
         const features = [];
         for (let i = 0; i < arr.length; i++) {
             const f = arr[i];
-            if (f && f.geometry) features.push(f);
+            if (f && f.geometry && inActiveCity(f)) features.push(f);
         }
         if (features.length === 0) return null;
         try {
