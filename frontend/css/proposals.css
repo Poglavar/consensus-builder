@@ -1660,3 +1660,23 @@
         flex: 1;
     }
 }
+
+/* Buy button for open sale offers (Ownership: Third party · Anyone) — in proposal list rows
+   and the details dialog. claimSaleOffer() binds the buyer and transfers the parcels. */
+.proposal-buy-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: auto;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 1.1;
+    font-weight: 600;
+    color: #fff;
+    background: #16a34a;
+    border: 1px solid #15803d;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.proposal-buy-btn:hover { background: #15803d; }

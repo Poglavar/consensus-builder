@@ -344,6 +344,154 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
     }
 
     console.log(`Transferred parcel ${parcelId} from ${fromAgentId || 'nobody'} to ${toAgentId}`);
+
+    // Persist the transfer server-side so it survives reload and syncs across clients
+    // (parcel_<id>_owner is otherwise browser-local). Best-effort, non-blocking.
+    if (typeof persistParcelOwnership === 'function') {
+        try { persistParcelOwnership(parcelId, toAgentId); } catch (_) { }
+    }
+}
+
+// ---- Proposal ownership execution (Tiers 0–1) -----------------------------
+// A stable "City" agent so public-good / to-city transfers have a real owner id
+// (city ownership previously existed only as a display label).
+const CITY_AGENT_ID = 'agent_city';
+
+function getOrCreateCityAgent() {
+    if (!agentStorage.getAgent(CITY_AGENT_ID)) {
+        agentStorage.addAgent({
+            id: CITY_AGENT_ID, name: 'City', avatarIndex: 0, isCity: true,
+            ethBalance: 0, walletAddresses: [], ownedParcels: [],
+            proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
+            createdAt: new Date().toISOString(), lastActionAt: null,
+            aiControlled: false, userControlled: false
+        });
+    }
+    return CITY_AGENT_ID;
+}
+
+function findAgentByName(name) {
+    if (!name) return null;
+    const target = String(name).trim().toLowerCase();
+    if (!target) return null;
+    const match = agentStorage.getAllAgents().find(a => (a.name || '').trim().toLowerCase() === target);
+    return match ? match.id : null;
+}
+
+function _recipientHash(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+}
+
+// Find-or-create a lightweight agent for a third-party recipient (a name or 0x address).
+function getOrCreateAgentForRecipient(label) {
+    if (!label) return null;
+    const trimmed = String(label).trim();
+    if (!trimmed) return null;
+    const existing = agentStorage.getAllAgents().find(a =>
+        (a.name || '').trim().toLowerCase() === trimmed.toLowerCase()
+        || (Array.isArray(a.walletAddresses) && a.walletAddresses.some(w => (w || '').toLowerCase() === trimmed.toLowerCase())));
+    if (existing) return existing.id;
+    const id = 'agent_recipient_' + _recipientHash(trimmed.toLowerCase());
+    if (!agentStorage.getAgent(id)) {
+        agentStorage.addAgent({
+            id, name: trimmed, avatarIndex: 0, external: true,
+            ethBalance: 0, walletAddresses: trimmed.startsWith('0x') ? [trimmed] : [],
+            ownedParcels: [], proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
+            createdAt: new Date().toISOString(), lastActionAt: null,
+            aiControlled: false, userControlled: false
+        });
+    }
+    return id;
+}
+
+// Resolve the agent id that should RECEIVE the parcels for a proposal's ownership facet.
+// Returns null for no-transfer / open-sale (no fixed recipient yet).
+function resolveProposalRecipientAgentId(proposal) {
+    if (!proposal) return null;
+    const otp = proposal.ownershipTransferProposal || {};
+    const facets = proposal.facets || {};
+    const recipient = otp.recipient || facets.ownership || null;
+    switch (recipient) {
+        case 'to-me': {
+            const byAuthor = findAgentByName(proposal.author);
+            if (byAuthor) return byAuthor;
+            const cur = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+            return cur ? cur.id : null;
+        }
+        case 'to-city':
+            return getOrCreateCityAgent();
+        case 'third-party':
+            if (otp.recipientScope === 'any') return null; // open sale: buyer unknown until claimed
+            return getOrCreateAgentForRecipient(otp.recipientAddress || facets.recipientAddress);
+        default:
+            return null; // no-change / unknown
+    }
+}
+
+// ---- Ownership cache (Tier 2.3) -------------------------------------------
+// NOTE: canonical parcel ownership is on-chain (pulled on request). This backend store is a
+// NON-CANONICAL, best-effort cache for display / game mode only — we mirror local transfers to
+// it so they can survive reload / be shared, but it is NOT a source of truth and is deliberately
+// NOT auto-hydrated on load (that would override chain truth). All calls best-effort, non-blocking.
+function _ownershipBackendBase() {
+    try {
+        if (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') {
+            let b = window.getBackendBase();
+            if (b && b.endsWith('/')) b = b.slice(0, -1);
+            return b || '';
+        }
+    } catch (_) { }
+    return '';
+}
+
+function _ownershipCityId() {
+    try {
+        if (typeof window !== 'undefined' && window.CityConfigManager
+            && typeof window.CityConfigManager.getCurrentCityId === 'function') {
+            return window.CityConfigManager.getCurrentCityId();
+        }
+    } catch (_) { }
+    return null;
+}
+
+function persistParcelOwnership(parcelId, ownerId) {
+    const base = _ownershipBackendBase();
+    if (!base || typeof fetch !== 'function') return;
+    try {
+        fetch(`${base}/parcel-ownership`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ parcelId, owner: ownerId, city: _ownershipCityId() })
+        }).catch(() => { });
+    } catch (_) { }
+}
+
+// Load server-side ownership into PersistentStorage. Call once at startup (after agents load)
+// so transfers made elsewhere/last session are reflected. Exposed; wire into init as desired.
+async function hydrateParcelOwnershipFromServer() {
+    const base = _ownershipBackendBase();
+    if (!base || typeof fetch !== 'function') return;
+    try {
+        const city = _ownershipCityId();
+        const url = `${base}/parcel-ownership${city ? `?city=${encodeURIComponent(city)}` : ''}`;
+        const resp = await fetch(url);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const owners = (data && data.owners) || {};
+        Object.keys(owners).forEach(pid => {
+            PersistentStorage.setItem(`parcel_${pid}_owner`, owners[pid]);
+        });
+    } catch (_) { }
+}
+
+if (typeof window !== 'undefined') {
+    window.persistParcelOwnership = persistParcelOwnership;
+    window.hydrateParcelOwnershipFromServer = hydrateParcelOwnershipFromServer;
+    window.resolveProposalRecipientAgentId = resolveProposalRecipientAgentId;
+    window.getOrCreateCityAgent = getOrCreateCityAgent;
+    window.CITY_AGENT_ID = CITY_AGENT_ID;
 }
 
 /**

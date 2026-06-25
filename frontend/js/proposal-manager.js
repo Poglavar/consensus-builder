@@ -2560,12 +2560,14 @@ const ProposalManager = {
         const goalKey = this._normalizeGoalKey(proposalData.goal);
         let result = false;
 
-        // A "parcel" goal is a generic ownership-transfer proposal with no
-        // visual payload — there is nothing to render on the map, so treat
-        // apply as an idempotent no-op success. Without this branch every
-        // parcel load re-applies these executed proposals and logs
-        // "Unsupported proposal goal: parcel" once per proposal per pan.
-        if (goalKey === 'parcel') {
+        // Ownership-transfer proposals (generic "parcel", ownership-transfer-to-me/from-me,
+        // and the post-sale "to-buyer") have no visual map payload — ownership is moved at
+        // execute time by the chokepoint, not here — so apply is an idempotent no-op success.
+        // Without this, every parcel load re-applies these executed proposals and logs
+        // "Unsupported proposal goal" once per proposal per pan.
+        if (goalKey === 'parcel'
+            || goalKey === 'to-buyer'
+            || (typeof goalKey === 'string' && goalKey.startsWith('ownership-transfer'))) {
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
             return true;
         }
@@ -3255,6 +3257,14 @@ const ProposalManager = {
             return false;
         }
 
+        // Authoritative ownership of the merged parcel: transfer to the chosen recipient
+        // (to-me / to-city / third-party) when the proposal carries one; otherwise it stays
+        // with the author label assigned above.
+        if (typeof resolveProposalRecipientAgentId === 'function' && typeof transferParcelOwnership === 'function') {
+            const recipientAgentId = resolveProposalRecipientAgentId(proposalData);
+            if (recipientAgentId) transferParcelOwnership(childParcelId, null, recipientAgentId);
+        }
+
         // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
 
         if (typeof window !== 'undefined') {
@@ -3466,6 +3476,18 @@ const ProposalManager = {
             this._addProposalAsAncestor(parcelId, proposalId);
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));
+                // Authoritative per-slice ownership from the readjustment plan: an ownerKey
+                // that's a real agent id wins; otherwise find-or-create one for the slice label.
+                if (typeof transferParcelOwnership === 'function') {
+                    const ownerKey = feature.properties.ownerKey;
+                    let agentId = null;
+                    if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
+                        agentId = ownerKey;
+                    } else if (typeof getOrCreateAgentForRecipient === 'function' && feature.properties.displayName) {
+                        agentId = getOrCreateAgentForRecipient(feature.properties.displayName);
+                    }
+                    if (agentId) transferParcelOwnership(String(parcelId), null, agentId);
+                }
             }
         });
 
