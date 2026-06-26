@@ -1,8 +1,15 @@
 /*
-    Proposals functionality for the cadastre application.
-    This file contains the functionality for creating and managing proposals
-    including persistence helpers, map highlighting, UI interactions, and
-    dependency management between proposals.
+    proposals/bootstrap.js — initialization & wiring for the proposals subsystem.
+
+    The proposals code was split out of a single ~26k-line proposals.js into cohesive
+    classic-script modules under js/proposals/ (state, data, storage, server-sync, parcel-id,
+    geometry, chain, execution, layer-render, urban-rules, roads, reparcel, list-ui, lifecycle,
+    details-panel, create, dialog-create/upload/share, sharing-routes, core).
+
+    This file is loaded LAST and contains only the top-level init side-effects — event wiring,
+    URL share-route bootstrapping, and contiguity/UI guards — that must run after every module's
+    definitions are in place. All shared mutable state lives in state.js; data/config + the
+    proposalStorage / multiParcelSelection singletons live in data.js.
 */
 
 
