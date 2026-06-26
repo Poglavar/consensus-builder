@@ -67,7 +67,19 @@ trap; see ARCHITECTURE.md). Move one cohesive cluster at a time into a new file,
 
 ---
 
+## Modules extracted (Phase 2)
+| # | module | symbols | proposals.js after | gate |
+|---|--------|---------|--------------------|------|
+| 1 | `state.js` (91 L) | 42 mutable bindings | 26,330 | green |
+| 2 | `lifecycle.js` (326 L) | 16 expiry/decay/offer-value fns | 26,023 | green |
+| 3 | `parcel-id.js` (314 L) | 15 identity + record-cache fns | 25,727 | green |
+
+`allowed_red` handler-grep baseline (same on main): `algorithmicRoads`, `detectRoadsUsingAI`,
+`showMonitorListModal` are real but pre-existing (lazy/conditional road-AI + monitor handlers);
+`function`/`if`/`toggle` are regex artifacts. Handler gate = parity with main, not absolute.
+
 ## Log
-- **2026-06-26** — Phase 0 done: worktree + branch created; safety net stood up; baseline locked
-  (160/10/3). Phase 1 done: AST map, 124-global surface, shared-state + clustering. Architecture
-  proposed (ARCHITECTURE.md). **Awaiting sign-off on target module split before extraction.**
+- **2026-06-26** — Phase 0+1 done (safety net, AST map, architecture). Phase 2 started: extracted
+  state.js, lifecycle.js, parcel-id.js — each gate-green (failures == allowed_red), committed
+  per step. Mechanism validated end-to-end incl. cross-file shared state in a real browser.
+  **Paused for user nod after first 3 (per "verify first 3, then full-send"). Remaining ~18 modules.**
