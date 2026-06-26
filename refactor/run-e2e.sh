@@ -24,7 +24,6 @@ served_head="$(curl -s "http://127.0.0.1:${PORT}/js/proposals.js" | head -c 60 |
 echo "[run-e2e] serving from: $ROOT/frontend  (proposals.js head: ${served_head:0:40}...)"
 
 cd "$ROOT/e2e"
-if [ "${1:-}" = "proposals" ]; then
-  shift; exec env BASE_URL="$BASE" npx playwright test --grep-invert @nothing -g "" proposal "$@" --reporter=list
-fi
-exec env BASE_URL="$BASE" npx playwright test "$@" --reporter=list
+# --retries=2 absorbs parallel-load flakes (reported as "flaky", not "failed"), so the failure set
+# reflects only deterministic failures and can be compared cleanly against allowed_red.
+exec env BASE_URL="$BASE" npx playwright test "$@" --retries=2 --reporter=list

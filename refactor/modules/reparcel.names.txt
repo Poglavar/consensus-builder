@@ -1,0 +1,5 @@
+areParcelsContiguous
+ensureReparcellizationModuleLoaded
+handleReparcellizationAlgorithmClick
+launchBlockifyToolForSelection
+proposalAwareParcelClickHandler
