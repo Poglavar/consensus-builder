@@ -79,7 +79,8 @@ trap; see ARCHITECTURE.md). Move one cohesive cluster at a time into a new file,
 `function`/`if`/`toggle` are regex artifacts. Handler gate = parity with main, not absolute.
 
 ## Log
-- **2026-06-26** — Phase 0+1 done (safety net, AST map, architecture). Phase 2 started: extracted
-  state.js, lifecycle.js, parcel-id.js — each gate-green (failures == allowed_red), committed
-  per step. Mechanism validated end-to-end incl. cross-file shared state in a real browser.
-  **Paused for user nod after first 3 (per "verify first 3, then full-send"). Remaining ~18 modules.**
+- **2026-06-26** — Phase 0+1 done (safety net, AST map, architecture). Phase 2 done: extracted all
+  22 modules + slimmed proposals.js to bootstrap.js (1,320 L), gate-green per step, committed per
+  step/batch. Phase 3 done: final full regression green; **definitive main comparison proves every
+  failing spec fails identically on unmodified main (zero regressions)**. See REPORT.md.
+  **COMPLETE.** proposals.js 26,376 → bootstrap.js 1,320 + 22 cohesive modules. Pass-2 items in REPORT.md.
