@@ -868,7 +868,6 @@ function requirePersonalizedUser() {
 
 // PERFORMANCE: Write cache to batch localStorage operations
 // When enabled, writes go to cache instead of storage, then flush at once
-let _parcelRecordWriteCache = null; // Map<parcelId, record> when caching is enabled
 
 function _startParcelWriteCache() {
     _parcelRecordWriteCache = new Map();
@@ -2765,8 +2764,6 @@ const proposalHighlightState = {
     pendingBlink: false
 };
 
-let currentProposalPreviewId = null;
-let currentProposalDetailsContext = null;
 
 function getProposalKey(proposal) {
     if (!proposal) return null;
@@ -5290,7 +5287,6 @@ const multiParcelSelection = {
 };
 
 // Proposal layer management
-let proposalLayer = null;
 
 // --- Proposal Color Palette ---
 const PROPOSAL_COLORS = [
@@ -6234,7 +6230,6 @@ window.removeProposalFromMap = removeProposalFromMap;
 
 
 // Override the parcel click when proposals are shown
-let originalOnParcelClick = null;
 
 function collapseSidebarIfOpen() {
     const sidebar = document.getElementById('sidebar');
@@ -8512,7 +8507,6 @@ function toggleProposalDetailsPanelMinimized(forceMinimized = null) {
 // Make hideProposalDetailsPanel globally available
 window.hideProposalDetailsPanel = hideProposalDetailsPanel;
 window.toggleProposalDetailsPanelMinimized = toggleProposalDetailsPanelMinimized;
-let proposalDetailsEscapeHandler = null;
 
 function installProposalDetailsEscapeHandler() {
     if (proposalDetailsEscapeHandler) return;
@@ -8552,21 +8546,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
 };
 // Track ownership transfer direction: 'to-me' or 'from-me'
-let currentOwnershipTransferDirection = 'to-me';
-let currentProposalTool = null;
-let currentGeometryGoal = null;
-let proposalGeometrySubmitted = false;
-let proposalAcquisitionLabels = {
-    full: 'Full acquisition',
-    partial: 'Partial acquisition',
-    partialPreferred: 'Partial acquisition preferred'
-};
-let currentOwnershipMode = 'multiple';
 // Stored screenshot data URL captured when proposal modal opens
-let proposalModalScreenshotDataUrl = null;
-let proposalModalScreenshotPromise = null;
-let proposalDialogOverrides = null;
-let pendingRoadDrawingProposal = null;
 
 function getSelectedProposalTool() {
     return currentProposalTool;
@@ -9410,8 +9390,6 @@ const DEFAULT_CORRIDOR_WIDTHS = {
     track: 3.0
 };
 
-let pendingConstrainedCorridor = null;
-let constrainedCorridorState = null;
 
 function openConstrainedCorridorModal() {
     const selection = (typeof getCurrentParcelSelectionContext === 'function')
@@ -10457,7 +10435,6 @@ function resetOwnershipTransferOptions() {
 // so the rest of the flow is unchanged. See feature-proposal-goals.md.
 const proposalFacetState = { landUse: 'as-is', parcels: 'as-is', ownership: 'no-change' };
 const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'road-track']);
-let proposalSingleParcelSelection = false; // Merge needs ≥2 parcels; set per dialog
 const PROPOSAL_GOAL_TYPE_LABELS = {
     'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'single': 'Building(s)',
     'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
@@ -10874,7 +10851,6 @@ function setProposalType(type) {
     updateProposalDescription(effectiveType);
 }
 
-let reparcellizationModulePromise = null;
 
 function ensureReparcellizationModuleLoaded() {
     if (typeof openReparcellizationModal === 'function') {
@@ -11747,10 +11723,6 @@ if (typeof document !== 'undefined' && !window.__proposalGoalCollapseInstalled) 
     window.__proposalGoalCollapseInstalled = true;
 }
 
-let teardownProposalBalanceWatcher = null;
-let proposalBalanceRequestSeq = 0;
-let addressesJsonCache = null;
-let addressesJsonPromise = null;
 
 function clearProposalBalanceWatcher() {
     if (typeof teardownProposalBalanceWatcher === 'function') {
@@ -13154,7 +13126,6 @@ function checkAndUpdateProposalExpiry(proposal) {
 }
 
 // Store the interval ID for the expiry countdown so we can clear it
-let expiryCountdownInterval = null;
 
 // Format remaining time as XXh:YYm:ZZs
 function formatRemainingTime(ms) {
@@ -13257,7 +13228,6 @@ function initializeExpiryCountdown() {
 }
 
 // Interval for decay countdown
-let decayCountdownInterval = null;
 
 // Initialize decay countdown animation for the offer bar
 function initializeDecayCountdown() {
@@ -17476,7 +17446,6 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
 
 // Debounce filter input renders so typing doesn't drop input focus mid-keystroke.
 const PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS = 280;
-let _proposalListFilterInputDebounceTimer = null;
 function clearProposalListFilterInputDebounce() {
     if (_proposalListFilterInputDebounceTimer == null) return;
     try { clearTimeout(_proposalListFilterInputDebounceTimer); } catch (_) { }
@@ -22013,7 +21982,6 @@ function appendModalBody(container, content) {
 
 // URL-driven 3D mode (e.g. ?mode3d or ?3d=1). We keep it here (near share/deep-link handlers)
 // so proposal-loading flows can enter 3D after the map has been focused.
-let url3DModeHandled = false;
 
 function isTruthyUrlFlag(params, key) {
     try {
@@ -22145,8 +22113,6 @@ async function focusMapThenMaybeEnter3D(focusFn) {
     return entered;
 }
 
-let singleProposalShareHandled = false;
-let sharedProposalsHandled = false;
 
 function handleSingleProposalShareFromUrl(attempt = 0) {
     try {
@@ -23804,16 +23770,6 @@ window.selectAndHighlightProposal = selectAndHighlightProposal;
 window.calculateProposalBounds = calculateProposalBounds;
 window.shareAppliedProposals = shareAppliedProposals;
 
-let proposalLoadOverlay = null;
-let proposalLoadStatusEl = null;
-let proposalLoadTitleEl = null;
-let proposalLoadBytesEl = null;
-let proposalLoadBytes = 0;
-let proposalLoadProgressTextEl = null;
-let proposalLoadProgressBarEl = null;
-let proposalLoadProgressFillEl = null;
-let proposalLoadProgressDone = 0;
-let proposalLoadProgressTotal = 0;
 
 function ensureProposalLoadOverlay() {
     if (proposalLoadOverlay) return proposalLoadOverlay;
@@ -25296,7 +25252,6 @@ function cancelMultiParcelSelection() {
  * pan/zoom (moveend/zoomend), and parcel ingest completion (parcelDataLoaded). One handle
  * for all sources, so a burst of events causes one repaint, not N.
  */
-let _proposalHighlightRefreshHandle = null;
 const PROPOSAL_HIGHLIGHT_REFRESH_DEBOUNCE_MS = 120;
 
 function scheduleHighlightRefresh(reason) {
@@ -26003,7 +25958,6 @@ function isEditableElement(target) {
 }
 
 // Keyboard shortcut handler for 'C' key to open Create Proposal modal
-let createProposalHotkeyAttached = false;
 
 function handleCreateProposalHotkey(event) {
     if (!event) return;
