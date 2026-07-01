@@ -484,6 +484,7 @@
         parcelBased3D.controls = handle.controls;
         parcelBased3D.modelGroup = modelGroup;
         parcelBased3D.contextGroup = handle.contextGroup;
+        parcelBased3D.cameraFramed = false; // re-frame once on the first render of this fresh scene
     }
 
     function disposeParcelBased3D() {
@@ -602,8 +603,14 @@
             parcelBased3D.modelGroup.add(edges);
         });
 
-        // Fit camera
-        fitParcelBasedCamera(maxHeight);
+        // Fit the camera only on the first render of the scene. On slider-driven updates
+        // (max floors / min distance regenerate the buildings), preserve the user's current
+        // orbit/zoom instead of re-fitting — re-fitting every input made the 3D view jump and
+        // flicker and made height changes hard to see.
+        if (!parcelBased3D.cameraFramed) {
+            fitParcelBasedCamera(maxHeight);
+            parcelBased3D.cameraFramed = true;
+        }
     }
 
     function fitParcelBasedCamera(height = 20) {
