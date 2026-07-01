@@ -411,7 +411,14 @@ function setProposalType(type) {
             btn.classList.remove('selected');
         }
     });
-    currentProposalTool = resolvedTool;
+    // Only adopt a tool actually resolved from the (legacy) type buttons. The facets-based dialog
+    // has no such buttons, so resolvedTool is null there — in that case keep the tool the caller
+    // already set (e.g. setProposalMainType('Reparcellization') before setProposalType in the
+    // reparcellization "Done" path). Clobbering it to null nulled the goal and blocked Create with
+    // "Select a proposal goal before creating a proposal."
+    if (resolvedTool) {
+        currentProposalTool = resolvedTool;
+    }
 
     updateProposalScreenshotGoalIcon(currentProposalTool || effectiveType);
 
