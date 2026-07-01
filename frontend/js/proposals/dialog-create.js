@@ -1122,6 +1122,11 @@ function showProposalDialog(overrides = null) {
     // Stash overrides for this session
     proposalDialogOverrides = overrides || null;
 
+    // Remove any existing create-proposal modal so re-opening the dialog (e.g. after editing a
+    // proposal's geometry, which calls showProposalDialog() again) replaces it instead of stacking
+    // a second modal on top of the first.
+    document.querySelectorAll('.create-proposal-modal').forEach(m => m.remove());
+
     const t = getProposalI18nHelper();
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
     const noParcelsMessage = t(
