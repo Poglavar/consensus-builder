@@ -98,7 +98,7 @@ export function setupBuildingsRoute(app, pool) {
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number, city?: string }
     //
     // Source is per-city via the building-provider registry (see backend/buildings/): Zagreb
-    // serves pre-built LOD2 meshes from `building_3d`, NYC extrudes live Socrata footprints, etc.
+    // serves pre-built LOD2 meshes from `building_3d`, NYC extrudes live footprint sources, etc.
     // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
     // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
     //

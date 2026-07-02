@@ -3,8 +3,10 @@
 // of returning an arbitrary, shuffling subset (which made buildings flicker in/out and reshaped
 // the loaded footprint).
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createBuildingProviders } from '../buildings/index.js';
 import { createZagrebProvider } from '../buildings/zagreb-3d.js';
 import { createNycProvider } from '../buildings/nyc-footprints.js';
+import { createNycArcgisProvider } from '../buildings/nyc-arcgis.js';
 import { createOvertureProvider } from '../buildings/overture-3d.js';
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
 import { effectiveHeight, OVERTURE_CITIES } from '../buildings/overture-cities.js';
@@ -67,6 +69,83 @@ describe('NYC footprints provider — near()', () => {
         await provider.near(point, 500);
 
         expect(radii[1]).toBeGreaterThan(radii[0]);
+    });
+});
+
+describe('NYC ArcGIS provider — near()', () => {
+    afterEach(() => { vi.unstubAllGlobals(); });
+
+    it('queries the NYCMaps radius service and extrudes roof heights from feet to metres', async () => {
+        let capturedUrl = '';
+        vi.stubGlobal('fetch', vi.fn(async (url) => {
+            capturedUrl = url;
+            return {
+                ok: true,
+                json: async () => ({
+                    type: 'FeatureCollection',
+                    features: [{
+                        type: 'Feature',
+                        properties: {
+                            BIN: 1079147,
+                            DOITT_ID: 7602,
+                            HEIGHT_ROOF: 119.98858395,
+                            FEATURE_CODE: 2100,
+                            NAME: 'City Hall Park-CITY HALL',
+                            OBJECTID: 1079392
+                        },
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [[
+                                [-74.0061, 40.7129],
+                                [-74.0059, 40.7129],
+                                [-74.0059, 40.7127],
+                                [-74.0061, 40.7127],
+                                [-74.0061, 40.7129]
+                            ]]
+                        }
+                    }]
+                })
+            };
+        }));
+
+        const provider = createNycArcgisProvider();
+        const { buildings, count, source } = await provider.near({ type: 'Point', coordinates: [-74.006, 40.7128] }, 300);
+        const url = new URL(capturedUrl);
+
+        expect(url.hostname).toBe('services6.arcgis.com');
+        expect(url.pathname).toContain('/BUILDING_view/FeatureServer/0/query');
+        expect(url.searchParams.get('f')).toBe('geojson');
+        expect(url.searchParams.get('geometry')).toBe('-74.006,40.7128');
+        expect(url.searchParams.get('geometryType')).toBe('esriGeometryPoint');
+        expect(url.searchParams.get('distance')).toBe('300');
+        expect(url.searchParams.get('units')).toBe('esriSRUnit_Meter');
+        expect(url.searchParams.get('where')).toBe('HEIGHT_ROOF > 0 AND FEATURE_CODE = 2100');
+        expect(url.searchParams.get('resultRecordCount')).toBe('4000');
+
+        expect(source).toBe('nyc-arcgis');
+        expect(count).toBe(1);
+        expect(buildings[0].object_id).toBe(1079147);
+        expect(buildings[0].z_max).toBeCloseTo(119.98858395 * 0.3048);
+        expect(buildings[0].faces.length).toBeGreaterThan(0);
+    });
+});
+
+describe('Building provider registry', () => {
+    afterEach(() => { vi.unstubAllGlobals(); });
+
+    it('uses ArcGIS for NYC by default and keeps Socrata selectable by env flag', async () => {
+        const urls = [];
+        vi.stubGlobal('fetch', vi.fn(async (url) => {
+            urls.push(url);
+            return { ok: true, json: async () => ({ type: 'FeatureCollection', features: [] }) };
+        }));
+
+        const pool = createMockPool();
+        await createBuildingProviders(pool, {}).resolve('new_york').near({ type: 'Point', coordinates: [-74.01, 40.71] }, 310);
+        await createBuildingProviders(pool, { NYC_BUILDINGS_SOURCE: 'socrata' }).resolve('new_york').near({ type: 'Point', coordinates: [-74.02, 40.72] }, 320);
+
+        expect(urls[0]).toContain('services6.arcgis.com');
+        expect(urls[1]).toContain('data.cityofnewyork.us/resource/5zhs-2jue.geojson');
     });
 });
 
