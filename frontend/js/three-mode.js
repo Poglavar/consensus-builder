@@ -825,16 +825,33 @@
     function arrayOfLngLatRingsToShape(rings) {
         // rings: [ [ [lng, lat], ... ], hole1, hole2, ...]
         if (!rings || rings.length === 0) return null;
-        const toVec2 = (pt) => {
-            const xy = coordsToXY(pt);
-            return new THREE.Vector2(xy[0], xy[1]);
+        // Drop near-duplicate consecutive vertices (in the local metric XY frame) and the closing
+        // duplicate. turf.intersect emits sub-mm-apart points along buffer arcs and where a building
+        // crosses a parcel edge; those become zero-length edges that make THREE's earcut triangulation
+        // produce overlapping/degenerate faces — the frayed top + striped walls seen on some slices.
+        const EPS = 0.02; // metres
+        const toCleanVecs = (ring) => {
+            const out = [];
+            for (const pt of ring) {
+                const xy = coordsToXY(pt);
+                const v = new THREE.Vector2(xy[0], xy[1]);
+                const prev = out[out.length - 1];
+                if (prev && Math.hypot(v.x - prev.x, v.y - prev.y) < EPS) continue;
+                out.push(v);
+            }
+            if (out.length >= 2) {
+                const f = out[0], l = out[out.length - 1];
+                if (Math.hypot(f.x - l.x, f.y - l.y) < EPS) out.pop(); // THREE closes the ring itself
+            }
+            return out;
         };
 
-        const outer = rings[0].map(toVec2);
+        const outer = toCleanVecs(rings[0]);
+        if (outer.length < 3) return null;
         const shape = new THREE.Shape(outer);
         for (let i = 1; i < rings.length; i++) {
-            const holePath = new THREE.Path(rings[i].map(toVec2));
-            shape.holes.push(holePath);
+            const holePts = toCleanVecs(rings[i]);
+            if (holePts.length >= 3) shape.holes.push(new THREE.Path(holePts));
         }
         return shape;
     }
@@ -1974,7 +1991,17 @@
                 shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
                 sliceMaterial.color.set(shadedColor);
 
-                const sliceMeshes = polygonFeatureToMeshes(slice.intersection, sliceMaterial, 0, height);
+                // Clean the slice before extruding: cleanCoords drops redundant/duplicate points and
+                // rewind gives a consistent ring winding, so every slice triangulates cleanly (no
+                // frayed caps / striped walls from degenerate turf.intersect output).
+                let sliceGeom = slice.intersection;
+                try {
+                    let cleaned = turf.cleanCoords(sliceGeom);
+                    cleaned = turf.rewind(cleaned, { mutate: false });
+                    if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) sliceGeom = cleaned;
+                } catch (_) { }
+
+                const sliceMeshes = polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height);
 
                 // Tag the slice with its parcel so parcel-isolation can match the
                 // building footprint sitting on a clicked parcel.
