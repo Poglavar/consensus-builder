@@ -66,6 +66,14 @@
                 "unknown": "Ocurrió un error desconocido.",
                 "cancelled": "Se canceló la solicitud de conexión.",
                 "connectFailed": "No se pudo conectar a la billetera."
+            },
+            "walletChoice": {
+                "body": "No hay ninguna billetera conectada. Puedes conectar una para acuñar en cadena o continuar con una propuesta en memoria.",
+                "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar en cadena o crear una propuesta en memoria?",
+                "connect": "Conectar una billetera",
+                "memory": "Crear en memoria",
+                "title": "Elige cómo crear",
+                "useConnected": "Usar billetera conectada"
             }
         }
     },
@@ -276,7 +284,24 @@
             "analyzeOsmTooltip": "Analizar los anchos de las carreteras visibles de OSM",
             "analysisToggleTooltip": "Mostrar u ocultar el último análisis de anchura",
             "analysisToggle": "Mostrar resultados del análisis vial",
-            "legendTitle": "Leyenda de carreteras"
+            "legendTitle": "Leyenda de carreteras",
+            "detectAi": "Detectar vías con IA",
+            "detectAiTooltip": "Detectar vías con IA (función futura)",
+            "detectExisting": "Detectar vías existentes",
+            "detectExistingTooltip": "Detectar vías existentes usando todos los datos disponibles",
+            "detectGup": "Detectar vías desde GUP",
+            "detectGupTooltip": "Marcar parcelas como vías según datos del GUP",
+            "detectOsm": "Detectar vías desde OSM",
+            "detectOsmTooltip": "Dibujar y marcar vías según datos de OpenStreetMap",
+            "drawAlgorithmic": "Dibujar nuevas vías algorítmicamente",
+            "drawAlgorithmicTooltip": "Dibujar nuevas vías con algoritmos procedurales (función futura)",
+            "drawDgu": "Dibujar vías desde DGU",
+            "drawGup": "Dibujar vías desde GUP",
+            "drawGupTooltip": "Dibujar datos de calles del GUP como líneas",
+            "drawOsm": "Dibujar vías desde OSM",
+            "drawOsmTooltip": "Dibujar vías de OpenStreetMap como líneas",
+            "existingTitle": "Vías existentes",
+            "showLayer": "Mostrar vías"
         },
         "proposals": {
             "title": "Propuestas",
@@ -299,7 +324,12 @@
                 "areaPerInhabitantSuffix": "m² por habitante",
                 "closeAria": "Cerrar estadísticas del plan",
                 "currency": "EUR"
-            }
+            },
+            "newGame": "Nueva partida",
+            "showAgents": "Mostrar agentes",
+            "showAgentsCount": "Mostrar agentes ({{count}})",
+            "showGameLog": "Mostrar registro del juego",
+            "showGameLogCount": "Mostrar registro del juego ({{count}})"
         },
         "areaMonitor": {
             "title": "Monitor de zona",
@@ -728,7 +758,13 @@
             "createButton": "Crear (C)",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
-            "parcelsNone": "Ninguna"
+            "parcelsNone": "Ninguna",
+            "closeAriaLabel": "Cerrar información de la vía",
+            "ownedByCompaniesLabel": "Propiedad de empresas:",
+            "ownedByGovernmentLabel": "Propiedad del gobierno:",
+            "ownedByIndividualsLabel": "Propiedad de particulares:",
+            "parcelAreaLabel": "Área de parcela:",
+            "parcelCountLabel": "Número de parcelas:"
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -1194,7 +1230,12 @@
                     "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
                     "continueAdding": "Continuar agregando",
                     "startFresh": "Empezar de nuevo",
-                    "summary": "Resultado del plan compartido"
+                    "appliedCountDetailed": "Se aplicaron {{count}} propuesta(s):",
+                    "skippedCountDetailed": "Se omitieron {{count}} propuesta(s) duplicada(s) (ya presentes):",
+                    "failedCountDetailed": "No se pudieron aplicar {{count}} propuesta(s):",
+                    "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
+                    "summary": "Resultado del plan compartido",
+                    "appliedToast": "Se aplicaron {{count}} propuesta(s)."
                 }
             },
             "sharedInspector": {
@@ -1212,6 +1253,31 @@
                 "title": "Revisar propuestas compartidas",
                 "loading": "Parcelas aún cargando...",
                 "applySelected": "Aplicar seleccionadas"
+            },
+            "trackProposal": {
+                "authorLabel": "Autor:",
+                "authorPlaceholder": "Tu nombre",
+                "defaultDescription": "Propuesta de vía manual que afecta a {{count}} parcela(s).",
+                "descriptionLabel": "Descripción:",
+                "descriptionPlaceholder": "Describe tu propuesta de vía...",
+                "nameLabel": "Nombre de la vía:",
+                "namePlaceholder": "p. ej. Línea ferroviaria principal",
+                "offerLabel": "Oferta (EUR):",
+                "offerPlaceholder": "0",
+                "parcelArea": "({{area}} m²)",
+                "parcelLabel": "Parcela {{number}}",
+                "previewUnavailable": "Vista previa no disponible",
+                "submit": "Crear propuesta",
+                "summary": {
+                    "area": "Área total:",
+                    "curvature": "Radio mín. de curvatura:",
+                    "empty": "No se detectaron parcelas.",
+                    "heading": "Parcelas afectadas:",
+                    "parcels": "Parcelas afectadas:",
+                    "speed": "Velocidad de vía:",
+                    "width": "Ancho de vía:"
+                },
+                "title": "Crear propuesta de vía"
             }
         },
         "coverage": {
@@ -1301,7 +1367,6 @@
                 "partial": "Adquisición parcial",
                 "partialPreferred": "Adquisición parcial preferida"
             },
-            "ownershipLabel": "Propiedad",
             "ownershipOptions": {
                 "single": "Un solo propietario",
                 "multiple": "Varios propietarios"
@@ -1596,8 +1661,46 @@
                 "lineHint": "Haz clic para añadir puntos, arrastra para ajustar y pulsa Terminar para dividir.",
                 "lineTooFew": "Añade al menos 2 puntos para crear una línea de división.",
                 "lineNoSplit": "La línea no cruzó ninguna parcela para dividir.",
-                "lineSuccess": "Parcela dividida. Haz clic en cada parte para asignar propietarios."
-            }
+                "lineSuccess": "Parcela dividida. Haz clic en cada parte para asignar propietarios.",
+                "uploadEmpty": "El archivo subido no contiene polígonos.",
+                "uploadNoOverlap": "Los polígonos subidos no se solapan con las parcelas seleccionadas.",
+                "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
+                "uploadSuccess": "Se cargaron {{count}} polígonos del archivo."
+            },
+            "assignOwners": "Asignar propietarios",
+            "colNewArea": "Nueva",
+            "colOrigArea": "Original",
+            "colOwner": "Propietario",
+            "colOwners": "Propietarios",
+            "colPlot": "Lote",
+            "newPlots": "Nuevos lotes",
+            "originalOwners": "Propietarios originales",
+            "shuffle": "Mezclar propiedad",
+            "single": {
+                "distribution": {
+                    "equal": "Igual",
+                    "manual": "Manual",
+                    "random": "Aleatorio"
+                },
+                "distributionLabel": "Distribución",
+                "length": {
+                    "full": "Completo",
+                    "split": "Dividir"
+                },
+                "lengthLabel": "Longitud",
+                "lotLabel": "Parcela {{index}}",
+                "lotShareAria": "Proporción para la parcela {{index}}",
+                "noParcels": "No hay parcelas seleccionadas",
+                "orientationHint": "Arrastra la línea en el mapa para fijar la dirección de división.",
+                "parcelCountLabel": "Número de parcelas",
+                "parcelLabel": "Parcela",
+                "parcelListTitle": "Parcelas seleccionadas",
+                "superParcelLabel": "Área de la superparcela",
+                "totalParcelsLabel": "Número total de parcelas: {{count}}"
+            },
+            "subtitleSingleOwner": "{{count}} parcela(s) · un solo propietario",
+            "unassigned": "Sin asignar",
+            "uploadGeojson": "Subir GeoJSON"
         }
     },
     "status": {
@@ -1807,7 +1910,17 @@
             "using_cached_osm_road_data": "Usando datos viales de OSM en caché",
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Esperando a que termine la fusión de parcelas antes de aplicar el plan vial gubernamental…",
             "parcel_data_still_merging_before_government_plan": "Los datos de las parcelas aún se están combinando. Aplicaremos el plan vial gubernamental en cuanto el mapa termine de actualizarse.",
-            "zoom_in_further_to_apply_the_government_road_plan": "Acerca más el zoom para aplicar el plan vial gubernamental."
+            "zoom_in_further_to_apply_the_government_road_plan": "Acerca más el zoom para aplicar el plan vial gubernamental.",
+            "analyzing_parcels_against_gup": "Analizando {{count}} parcelas contra las calles del GUP...",
+            "analyzing_parcels_generic": "Analizando {{count}} parcelas...",
+            "drew_dgu_road_usage_polygons": "Se dibujaron {{count}} polígonos de uso vial del DGU",
+            "error_drawing_osm_roads_with_reason": "Error al dibujar vías de OSM: {{reason}}",
+            "error_fetching_osm_data_with_reason": "Error al obtener datos de OSM: {{reason}}",
+            "error_in_road_detection_with_reason": "Error en la detección de vías: {{reason}}",
+            "fetched_roads_from_openstreetmap": "Se obtuvieron {{count}} vías de OpenStreetMap",
+            "geometry_based_dgu_detection_complete": "Detección DGU basada en geometría completada. Se marcaron {{count}} parcelas como vías.",
+            "gup_detection_complete": "Detección GUP completada. Se marcaron {{count}} parcelas como vías.",
+            "road_detection_complete_with_names": "Detección de vías completada. Se encontraron {{count}} parcelas viales y se asignaron nombres."
         }
     },
     "city": {

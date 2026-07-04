@@ -1951,9 +1951,14 @@
                 const shadedColor = baseColor.clone();
                 const hsl = {};
                 shadedColor.getHSL(hsl);
-                // Alternate lighter/darker per parcel so adjacent slices read as distinct parcels.
-                const lightnessShift = (shade[i] === 0) ? 0.14 : -0.14;
-                hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
+                // Alternate two shades per parcel so adjacent slices read as distinct parcels.
+                // Anchor BOTH shades to a saturated mid-tone band (instead of shifting relative to
+                // the base lightness): a light base (light blue/pink) previously shifted up to ~0.8
+                // and washed out to white under lighting/specular at grazing angles. Clamping the
+                // centre keeps both shades clearly coloured whatever the base colour's lightness.
+                hsl.s = Math.max(hsl.s, 0.6);
+                const centerL = Math.min(Math.max(hsl.l, 0.34), 0.46);
+                hsl.l = centerL + (shade[i] === 0 ? 0.10 : -0.10);
                 shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
                 sliceMaterial.color.set(shadedColor);
 

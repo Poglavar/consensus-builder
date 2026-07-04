@@ -2421,8 +2421,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
+        // Only make the user read/dismiss the summary when there is something worth reading —
+        // failures or skipped duplicates. A clean apply on a 3D link goes straight to 3D (with a
+        // brief toast) instead of a modal that would just get auto-closed by the 3D transition.
+        const summaryHasIssues = failed.length > 0 || skipped.length > 0;
+        const showSummaryModal = bodyLines.length > 0 && (summaryHasIssues || !wants3DFromUrl);
+
         let planSummaryModal = null;
-        if (bodyLines.length > 0) {
+        if (showSummaryModal) {
             planSummaryModal = showSimpleShareModal({
                 title: tShare('plan.summary', 'Shared Plan Result'),
                 body: bodyLines.join(''),
@@ -2439,6 +2445,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { }
                 }
             });
+        } else if (applied.length > 0 && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
+            // Clean apply, auto-advancing into 3D: give lightweight feedback that it worked.
+            showEphemeralMessage(tShare('plan.appliedToast', 'Applied {{count}} proposal{{suffix}}.', {
+                count: applied.length,
+                suffix: applied.length === 1 ? '' : 's'
+            }));
         }
 
         // No dialog shown -> honor URL-driven 3D immediately after focusing.

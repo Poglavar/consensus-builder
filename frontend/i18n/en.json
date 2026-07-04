@@ -1205,6 +1205,11 @@
                     "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",
                     "continueAdding": "Continue adding",
                     "startFresh": "Start fresh",
+                    "appliedCountDetailed": "Applied {{count}} proposal{{suffix}}:",
+                    "appliedToast": "Applied {{count}} proposal{{suffix}}.",
+                    "skippedCountDetailed": "Skipped {{count}} duplicate proposal{{suffix}} (already present):",
+                    "failedCountDetailed": "Failed to apply {{count}} proposal{{suffix}}:",
+                    "applyBlockedByDependencies": "Blocked: dependencies not satisfied after retries.",
                     "summary": "Shared Plan Result"
                 }
             },
