@@ -621,6 +621,9 @@ const proposalStorage = {
 
     _persist() {
         if (typeof PersistentStorage === 'undefined') return;
+        // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
+        // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return;
         try {
             const serialisable = Array.from(this.proposals.values());
             PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));

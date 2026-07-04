@@ -1657,33 +1657,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         };
 
-        // Helper: unapply all applied proposals
-        const unapplyAllProposals = async () => {
-            if (allAppliedProposals.length === 0) return;
-            console.log('[handleSharedPlanRoute] Unapplying all', allAppliedProposals.length, 'applied proposals...');
-            if (typeof ProposalManager !== 'undefined') {
-                for (const p of allAppliedProposals) {
-                    const pid = p.proposalId || p.serverProposalId;
-                    if (!pid) continue;
-                    try {
-                        console.info('[handleSharedPlanRoute] Unapplying proposal', pid);
-                        if (typeof ProposalManager.unapplyWholeFamily === 'function') {
-                            await ProposalManager.unapplyWholeFamily(pid);
-                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true });
-                        }
-                        console.info('[handleSharedPlanRoute] Unapplied proposal', pid);
-                    } catch (err) {
-                        console.warn('[handleSharedPlanRoute] Failed to unapply proposal:', pid, err);
-                    }
-                }
-                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
-                    ProposalManager._refreshUIAfterProposalChange(null);
-                }
-            }
-            console.log('[handleSharedPlanRoute] Finished unapplying all proposals');
-        };
-
         // Scenario 1: Plan already fully applied, no other proposals
         // → "Plan Already Applied [Show me] [OK]"
         if (allIncomingApplied && !hasOtherApplied) {
@@ -1714,73 +1687,72 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return;
         }
 
-        // Scenario 2: Some incoming proposals are already applied OR other proposals exist
-        // → Show dialog with scrollable list and ask user what to do
-        const someIncomingApplied = incomingAlreadyApplied.length > 0 && incomingAlreadyApplied.length < totalProposals;
-        if (someIncomingApplied || hasOtherApplied) {
-            hideProposalLoadOverlay();
-
-            // Build scrollable list of already-applied proposals
-            const appliedListItems = [...incomingAlreadyApplied, ...otherAppliedProposals].map(p => {
-                const title = escapeHtml(p.title || p.proposalId || p.serverProposalId || 'Untitled');
-                const serverId = p.serverProposalId || (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null);
-                const idSuffix = serverId ? ` (#${escapeHtml(String(serverId))})` : '';
-                return `<li>${title}${idSuffix}</li>`;
-            }).join('');
-
-            const listHtml = `
-                <p>${tShare('plan.someAlreadyAppliedMessage', 'Some proposals are already applied on the map:')}</p>
-                <ul class="applied-proposals-list" style="max-height: 120px; overflow-y: auto; margin: 8px 0; padding-left: 20px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; background: var(--bg-secondary, #f5f5f5);">
-                    ${appliedListItems}
-                </ul>
-                <p>${tShare('plan.whatToDo', 'What would you like to do?')}</p>
-            `;
-
-            // autoCloseActions is off so each action can resolve before closing; closing the
-            // modal any other way (×, Escape, overlay click) resolves as a cancel instead of
-            // leaving the promise hanging.
-            const userChoice = await new Promise(resolve => {
-                showSimpleShareModal({
-                    title: tShare('plan.someAlreadyAppliedTitle', 'Some Proposals Already Applied'),
-                    body: listHtml,
-                    autoCloseActions: false,
-                    actions: [
-                        {
-                            label: tShare('plan.applyRemaining', 'Apply remaining'),
-                            primary: true,
-                            onClick: (modal) => {
-                                resolve('apply-remaining');
-                                if (modal && typeof modal.close === 'function') modal.close();
-                            }
-                        },
-                        {
-                            label: tShare('plan.unapplyThenApply', 'Unapply existing, then apply'),
-                            primary: false,
-                            onClick: (modal) => {
-                                resolve('unapply');
-                                if (modal && typeof modal.close === 'function') modal.close();
-                            }
-                        }
-                    ],
-                    onClose: () => resolve('cancel')
-                });
-            });
-
-            if (userChoice === 'cancel') {
-                cleanPlanUrl();
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(tShare('importCancelled', 'Shared proposal import cancelled.'));
+        // Scenario 2: other proposals are already on the map. Instead of prompting, auto-unapply only
+        // the CONFLICTING ones — proposals that consume the same base parcels as an incoming proposal
+        // (e.g. an alternative form for the same block). Non-conflicting proposals on other parcels
+        // are left applied, so unrelated proposals stack rather than being cleared.
+        if (hasOtherApplied) {
+            // Learn the incoming proposals' ancestor parcels. Pre-fetching caches each payload in
+            // loadedById so the apply loop below reuses it instead of fetching a second time.
+            const incomingAncestors = new Set();
+            for (const rawId of queue) {
+                const id = normalizeId(rawId);
+                if (!id) continue;
+                let proposal = loadedById.get(id);
+                if (!proposal) {
+                    try {
+                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
+                        if (resp.ok) { proposal = await resp.json(); loadedById.set(id, proposal); }
+                    } catch (err) {
+                        console.warn('[handleSharedPlanRoute] Conflict pre-fetch failed for', id, err);
+                    }
                 }
-                return;
+                getPrerequisiteParcelIdsForProposal(proposal).forEach(pid => incomingAncestors.add(pid));
             }
 
-            if (userChoice === 'unapply') {
-                await unapplyAllProposals();
-                // After unapply, reset the already-applied tracking since we cleared them
-                incomingAlreadyApplied = [];
+            // A currently-applied proposal conflicts when its ancestor parcels overlap the incoming
+            // ones (both consume the same base parcels, so they are mutually exclusive).
+            const proposalKey = (p) => String(p.proposalId || p.serverProposalId || '');
+            const conflicting = otherAppliedProposals.filter(p =>
+                getPrerequisiteParcelIdsForProposal(p).some(pid => incomingAncestors.has(pid))
+            );
+
+            if (conflicting.length > 0 && typeof ProposalManager !== 'undefined') {
+                console.log('[handleSharedPlanRoute] Auto-unapplying', conflicting.length, 'conflicting proposal(s)');
+                for (const p of conflicting) {
+                    const pid = p.proposalId || p.serverProposalId;
+                    if (!pid) continue;
+                    try {
+                        if (typeof ProposalManager.unapplyWholeFamily === 'function') {
+                            await ProposalManager.unapplyWholeFamily(pid);
+                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
+                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true });
+                        }
+                    } catch (err) {
+                        console.warn('[handleSharedPlanRoute] Failed to unapply conflicting proposal', pid, err);
+                    }
+                }
+                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
+                    ProposalManager._refreshUIAfterProposalChange(null);
+                }
+                // Drop the unapplied ones from the applied-tracking so later logic stays consistent.
+                const conflictingKeys = new Set(conflicting.map(proposalKey));
+                otherAppliedProposals = otherAppliedProposals.filter(p => !conflictingKeys.has(proposalKey(p)));
+                allAppliedProposals = allAppliedProposals.filter(p => !conflictingKeys.has(proposalKey(p)));
+
+                if (typeof showEphemeralMessage === 'function') {
+                    const names = conflicting.map(p => {
+                        const sid = p.serverProposalId || (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null);
+                        return sid ? `#${sid}` : (p.title || p.proposalId);
+                    }).filter(Boolean);
+                    showEphemeralMessage(tShare('plan.replacedConflicting', 'Replaced {{count}} proposal(s) on the same parcels: {{list}}', {
+                        count: conflicting.length,
+                        list: names.join(', ')
+                    }));
+                }
             }
 
-            // Re-show loading overlay and continue with applying
+            // Re-show the loading overlay and continue applying the incoming proposals.
             showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
                 total: totalProposals,
                 title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')

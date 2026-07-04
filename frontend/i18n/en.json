@@ -1,4 +1,7 @@
 {
+    "multitab": {
+        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit."
+    },
     "languages": {
         "en": "English",
         "es": "Spanish",
@@ -1196,6 +1199,7 @@
                     "someAlreadyAppliedMessage": "Some proposals are already applied on the map:",
                     "whatToDo": "What would you like to do?",
                     "applyRemaining": "Apply remaining",
+                    "replacedConflicting": "Replaced {{count}} proposal(s) on the same parcels: {{list}}",
                     "notFoundOnServer": "Not found on server",
                     "partiallyAppliedTitle": "Partially Applied",
                     "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",

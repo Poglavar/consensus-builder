@@ -1,4 +1,7 @@
 {
+    "multitab": {
+        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje."
+    },
     "languages": {
         "en": "Engleski",
         "es": "Španski",
@@ -1133,6 +1136,7 @@
                     "someAlreadyAppliedMessage": "Neki predlozi su već primenjeni na mapi:",
                     "whatToDo": "Šta želite da uradite?",
                     "applyRemaining": "Primeni preostale",
+                    "replacedConflicting": "Zamenjeno {{count}} predloga na istim parcelama: {{list}}",
                     "notFoundOnServer": "Nije pronađeno na serveru",
                     "partiallyAppliedTitle": "Delimično primenjeno",
                     "partiallyAppliedMessage": "{{applied}} od {{total}} predloga u ovom planu je već primenjeno. Želite li dodati preostalih {{remaining}}?",

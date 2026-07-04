@@ -1,4 +1,7 @@
 {
+    "multitab": {
+        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar."
+    },
     "languages": {
         "en": "Inglés",
         "es": "Español",
@@ -1185,6 +1188,7 @@
                     "someAlreadyAppliedMessage": "Algunas propuestas ya están aplicadas en el mapa:",
                     "whatToDo": "¿Qué te gustaría hacer?",
                     "applyRemaining": "Aplicar restantes",
+                    "replacedConflicting": "Se reemplazaron {{count}} propuesta(s) en las mismas parcelas: {{list}}",
                     "notFoundOnServer": "No encontrado en el servidor",
                     "partiallyAppliedTitle": "Parcialmente aplicado",
                     "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
