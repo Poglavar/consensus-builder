@@ -1578,14 +1578,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         if (typeof proposalStorage !== 'undefined' && proposalStorage) {
             const allProposals = proposalStorage.getAllProposals() || [];
-            // Only treat as "applied" for conflict analysis if descendants are actually on the map.
-            // A proposal marked status=applied but with no descendants on parcelLayerById (e.g. a
-            // fresh page reload before any apply has run) must NOT be skipped — we need to reach
-            // the apply path so _applyRoadProposal can rebuild children from the definition.
-            allAppliedProposals = allProposals.filter(p => isProposalAppliedAndMaterialized(p));
 
-            // Categorize applied proposals
-            allAppliedProposals.forEach(p => {
+            allProposals.forEach(p => {
+                if (!isProposalCurrentlyApplied(p)) return;
+
                 const serverId = p.serverProposalId ? String(p.serverProposalId) : null;
                 const hashId = p.proposalId ? String(p.proposalId) : null;
                 // Also check using getServerProposalId helper which may extract from nested structures
@@ -1595,19 +1591,22 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     || (hashId && incomingIds.has(hashId))
                     || (extractedServerId && incomingIds.has(String(extractedServerId)));
 
-                console.log('[handleSharedPlanRoute] Checking applied proposal:',
-                    'serverId=' + serverId,
-                    'hashId=' + hashId,
-                    'extractedServerId=' + extractedServerId,
-                    'isIncoming=' + isIncoming
-                );
-
                 if (isIncoming) {
-                    incomingAlreadyApplied.push(p);
+                    // Incoming already-applied: gate on actual materialization. A proposal marked
+                    // status=applied but not yet drawn (fresh reload) must NOT be treated as done —
+                    // we still need to reach the apply path so children rebuild from the definition.
+                    if (isProposalAppliedAndMaterialized(p)) incomingAlreadyApplied.push(p);
                 } else {
+                    // Other applied proposals (conflict candidates): status is enough. Building /
+                    // urban-rule proposals create no child parcels, so they fail the materialization
+                    // check — yet two urban rules on the same parcels are mutually exclusive and the
+                    // applied one MUST be unapplied before the incoming one applies. Missing them here
+                    // was why an applied building proposal (e.g. 50) was left drawn under a new one.
                     otherAppliedProposals.push(p);
                 }
             });
+
+            allAppliedProposals = [...incomingAlreadyApplied, ...otherAppliedProposals];
         }
 
         const linkOrderForProposal = (p) => {
