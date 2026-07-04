@@ -1576,6 +1576,23 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         console.log('[handleSharedPlanRoute] Incoming IDs from URL:', Array.from(incomingIds));
 
+        // proposalIds identifying THIS link's proposals, so 3D entry frames only them (not a big
+        // cached proposal elsewhere). Read lazily — loadedById fills in during apply. Include the
+        // server id and the payload's proposalId/serverProposalId to match whatever the proposed
+        // building features carry; if none match, computeProposalQueryGeometry falls back to all.
+        const getFocusProposalIds = () => {
+            const ids = [];
+            for (const serverId of incomingIds) {
+                if (serverId) ids.push(String(serverId));
+                const payload = loadedById.get(serverId);
+                if (payload) {
+                    if (payload.proposalId) ids.push(String(payload.proposalId));
+                    if (payload.serverProposalId) ids.push(String(payload.serverProposalId));
+                }
+            }
+            return ids;
+        };
+
         if (typeof proposalStorage !== 'undefined' && proposalStorage) {
             const allProposals = proposalStorage.getAllProposals() || [];
 
@@ -1674,7 +1691,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
             }
             if (urlRequests3D) {
-                try { tryEnterThreeMode({ fromUrl: true }); } catch (_) { }
+                try { tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() }); } catch (_) { }
             }
         };
 
@@ -2460,7 +2477,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // URL-driven 3D mode: only enter after the user dismisses the results dialog.
                     try {
                         if (wants3DFromUrl && !url3DModeHandled) {
-                            const entered = tryEnterThreeMode({ fromUrl: true });
+                            const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() });
                             if (entered) url3DModeHandled = true;
                         }
                     } catch (_) { }
@@ -2478,7 +2495,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (!planSummaryModal) {
             try {
                 if (wants3DFromUrl && !url3DModeHandled) {
-                    const entered = tryEnterThreeMode({ fromUrl: true });
+                    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() });
                     if (entered) url3DModeHandled = true;
                 }
             } catch (_) { }

@@ -17,6 +17,7 @@
     let controls = null;
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
+    let focusProposalIds = null; // Set of proposalIds to frame on 3D entry (shared-link focus), or null for all
     let renderingOverlayEl = null; // transient overlay while 3D initializes
     let isTransitioning3D = false; // avoid double-activation
     let buildingsLoaderEl = null; // in-view "loading buildings" badge
@@ -1449,8 +1450,19 @@
             if (f && f.geometry && inActiveCity(f)) features.push(f);
         }
         if (features.length === 0) return null;
+        // When a shared link asks to focus specific proposals, frame ONLY those so the camera lands
+        // on the just-loaded proposal rather than the union bbox of every applied proposal — a big
+        // cached proposal on another block would otherwise drag the centre away from the new one.
+        let framed = features;
+        if (focusProposalIds && focusProposalIds.size) {
+            const subset = features.filter(f => {
+                const pid = (f.properties && f.properties.proposalId != null) ? String(f.properties.proposalId) : null;
+                return pid && focusProposalIds.has(pid);
+            });
+            if (subset.length) framed = subset;
+        }
         try {
-            const bbox = turf.bbox(turf.featureCollection(features));
+            const bbox = turf.bbox(turf.featureCollection(framed));
             if (!bbox || bbox.some(v => !isFinite(v))) return null;
             const [minX, minY, maxX, maxY] = bbox;
             return {
@@ -2655,6 +2667,11 @@
     function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        // Optional focus: frame only these proposals (by proposalId) instead of all applied ones.
+        // Used by shared-link entry so the camera lands on the just-loaded proposal.
+        focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
+            ? new Set(options.focusProposalIds.map(String))
+            : null;
         pendingIntroAutoRotate = !!(options && options.fromUrl);
         if (pendingIntroAutoRotate) {
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
@@ -2679,6 +2696,7 @@
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         if (!isActive) return;
         isActive = false;
+        focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
