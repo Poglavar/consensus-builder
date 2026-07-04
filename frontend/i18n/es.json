@@ -1947,6 +1947,28 @@
         }
     },
     "threeMode": {
+        "controls": {
+            "buildingRenderingAria": "Representación de edificios",
+            "built": "Construido",
+            "both": "Ambos",
+            "planned": "Planificado",
+            "radius": "Radio",
+            "solid": "Sólido:",
+            "neither": "Ninguno",
+            "showAllParcels": "Mostrar todas las parcelas",
+            "trees": "Árboles"
+        },
+        "overlay": {
+            "rendering": "Renderizando…",
+            "loadingBuildings": "Cargando edificios…"
+        },
+        "toggle": {
+            "switchTo2d": "Cambiar a 2D",
+            "switchTo3d": "Cambiar a 3D",
+            "preparing3d": "Preparando la vista 3D",
+            "walk": "Camina por tus cambios",
+            "realistic": "Contexto realista (Google 3D fotorrealista)"
+        },
         "parcelPanel": {
             "title": "Parcela",
             "built": "Construido",

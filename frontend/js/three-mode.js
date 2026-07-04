@@ -661,24 +661,24 @@
         buildingModeControlsEl = document.createElement('div');
         buildingModeControlsEl.className = 'three-mode-ui-panel';
         buildingModeControlsEl.setAttribute('role', 'group');
-        buildingModeControlsEl.setAttribute('aria-label', 'Building rendering');
+        buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
 
         const builtBtn = document.createElement('button');
         builtBtn.type = 'button';
         builtBtn.className = 'three-mode-segment';
-        builtBtn.textContent = 'Built';
+        builtBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
         builtBtn.addEventListener('click', () => setBuildingRenderMode('built'));
 
         const bothBtn = document.createElement('button');
         bothBtn.type = 'button';
         bothBtn.className = 'three-mode-segment';
-        bothBtn.textContent = 'Both';
+        bothBtn.textContent = threeI18n('threeMode.controls.both', 'Both');
         bothBtn.addEventListener('click', () => setBuildingRenderMode('both'));
 
         const plannedBtn = document.createElement('button');
         plannedBtn.type = 'button';
         plannedBtn.className = 'three-mode-segment';
-        plannedBtn.textContent = 'Planned';
+        plannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
         plannedBtn.addEventListener('click', () => setBuildingRenderMode('planned'));
 
         buildingModeButtons = { built: builtBtn, both: bothBtn, planned: plannedBtn };
@@ -698,7 +698,7 @@
         radiusHeader.className = 'three-mode-radius-header';
         const radiusLabel = document.createElement('span');
         radiusLabel.className = 'three-mode-emphasis-label';
-        radiusLabel.textContent = 'Radius';
+        radiusLabel.textContent = threeI18n('threeMode.controls.radius', 'Radius');
         const radiusValue = document.createElement('span');
         radiusValue.className = 'three-mode-radius-value';
         radiusValue.textContent = `${buildingLoadRadiusM} m`;
@@ -733,25 +733,25 @@
 
         const emphasisLabel = document.createElement('span');
         emphasisLabel.className = 'three-mode-emphasis-label';
-        emphasisLabel.textContent = 'Solid:';
+        emphasisLabel.textContent = threeI18n('threeMode.controls.solid', 'Solid:');
         bothEmphasisRowEl.appendChild(emphasisLabel);
 
         const emBuiltBtn = document.createElement('button');
         emBuiltBtn.type = 'button';
         emBuiltBtn.className = 'three-mode-segment';
-        emBuiltBtn.textContent = 'Built';
+        emBuiltBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
         emBuiltBtn.addEventListener('click', () => setBothEmphasis('built'));
 
         const emPlannedBtn = document.createElement('button');
         emPlannedBtn.type = 'button';
         emPlannedBtn.className = 'three-mode-segment';
-        emPlannedBtn.textContent = 'Planned';
+        emPlannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
         emPlannedBtn.addEventListener('click', () => setBothEmphasis('planned'));
 
         const emNeitherBtn = document.createElement('button');
         emNeitherBtn.type = 'button';
         emNeitherBtn.className = 'three-mode-segment';
-        emNeitherBtn.textContent = 'Neither';
+        emNeitherBtn.textContent = threeI18n('threeMode.controls.neither', 'Neither');
         emNeitherBtn.addEventListener('click', () => setBothEmphasis('neither'));
 
         bothEmphasisButtons = { built: emBuiltBtn, planned: emPlannedBtn, neither: emNeitherBtn };
@@ -770,7 +770,7 @@
         const showAllBtn = document.createElement('button');
         showAllBtn.type = 'button';
         showAllBtn.className = 'three-mode-reset-btn';
-        showAllBtn.textContent = 'Show all parcels';
+        showAllBtn.textContent = threeI18n('threeMode.controls.showAllParcels', 'Show all parcels');
         showAllBtn.addEventListener('click', () => clearIsolation());
         isolationResetEl.appendChild(showAllBtn);
         buildingModeControlsEl.appendChild(isolationResetEl);
@@ -1706,7 +1706,8 @@
             cb.addEventListener('change', () => spec.setEnabled(cb.checked));
             const text = document.createElement('span');
             text.className = 'three-mode-emphasis-label';
-            text.textContent = spec.label;
+            // Resolve at render time (after i18n loads); falls back to the DECOR_LAYERS label.
+            text.textContent = threeI18n('threeMode.controls.' + key, spec.label);
             label.appendChild(cb);
             label.appendChild(text);
             row.appendChild(label);
@@ -2315,7 +2316,7 @@
             if (renderingOverlayEl) return;
             const el = document.createElement('div');
             el.id = 'three-rendering-overlay';
-            el.textContent = 'Rendering…';
+            el.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
             el.style.position = 'fixed';
             el.style.left = '50%';
             el.style.top = '50%';
@@ -2352,7 +2353,7 @@
         const spinner = document.createElement('span');
         spinner.className = 'three-mode-loader-spinner';
         const label = document.createElement('span');
-        label.textContent = 'Loading buildings…';
+        label.textContent = threeI18n('threeMode.overlay.loadingBuildings', 'Loading buildings…');
         el.appendChild(spinner);
         el.appendChild(label);
         threeContainer.appendChild(el);
@@ -2460,7 +2461,7 @@
         isTransitioning3D = false;
         if (toggleBtn && isActive) {
             toggleBtn.textContent = '2D';
-            toggleBtn.title = 'Switch to 2D';
+            toggleBtn.title = threeI18n('threeMode.toggle.switchTo2d', 'Switch to 2D');
         }
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
         if (pendingIntroAutoRotate) {
@@ -2657,8 +2658,8 @@
         if (threeContainer) threeContainer.classList.add('active');
         if (toggleBtn) {
             toggleBtn.classList.add('active');
-            toggleBtn.textContent = 'Rendering…';
-            toggleBtn.title = 'Preparing 3D view';
+            toggleBtn.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
+            toggleBtn.title = threeI18n('threeMode.toggle.preparing3d', 'Preparing 3D view');
         }
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
@@ -2680,7 +2681,7 @@
         if (toggleBtn) {
             toggleBtn.classList.remove('active');
             toggleBtn.textContent = '3D';
-            toggleBtn.title = 'Switch to 3D';
+            toggleBtn.title = threeI18n('threeMode.toggle.switchTo3d', 'Switch to 3D');
         }
         enableLeafletInteractions();
         enableSidebarAfter3D();
@@ -2788,8 +2789,8 @@
             // Show immediate feedback in 2D before heavy work starts
             if (toggleBtn) {
                 toggleBtn.classList.add('active');
-                toggleBtn.textContent = 'Rendering…';
-                toggleBtn.title = 'Preparing 3D view';
+                toggleBtn.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
+                toggleBtn.title = threeI18n('threeMode.toggle.preparing3d', 'Preparing 3D view');
             }
             showRenderingOverlay();
             // Defer heavy initialization to allow the overlay/button to paint first

@@ -2005,6 +2005,28 @@
         }
     },
     "threeMode": {
+        "controls": {
+            "buildingRenderingAria": "Building rendering",
+            "built": "Built",
+            "both": "Both",
+            "planned": "Planned",
+            "radius": "Radius",
+            "solid": "Solid:",
+            "neither": "Neither",
+            "showAllParcels": "Show all parcels",
+            "trees": "Trees"
+        },
+        "overlay": {
+            "rendering": "Rendering…",
+            "loadingBuildings": "Loading buildings…"
+        },
+        "toggle": {
+            "switchTo2d": "Switch to 2D",
+            "switchTo3d": "Switch to 3D",
+            "preparing3d": "Preparing 3D view",
+            "walk": "Take a walk through your changes",
+            "realistic": "Realistic context (Google Photorealistic 3D)"
+        },
         "parcelPanel": {
             "title": "Parcel",
             "built": "Built",
