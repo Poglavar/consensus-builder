@@ -1541,6 +1541,15 @@
             "handles": {
                 "gap": "Arrastra para mover el hueco",
                 "wing": "Arrastra para mover el ala"
+            },
+            "manual": {
+                "edit": "Editar forma manualmente",
+                "back": "Volver a los controles",
+                "hint": "Modo manual: arrastra los vértices para remodelar el contorno. La altura sigue ajustable.",
+                "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
+                "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
+                "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
+                "vertex": "Arrastra para remodelar"
             }
         }
     },

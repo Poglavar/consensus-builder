@@ -1521,6 +1521,15 @@
             "handles": {
                 "gap": "Povucite za pomicanje otvora",
                 "wing": "Povucite za pomicanje krila"
+            },
+            "manual": {
+                "edit": "Ručno uredi oblik",
+                "back": "Natrag na klizače",
+                "hint": "Ručni način: povucite vrhove za promjenu obrisa. Visina se i dalje može podešavati.",
+                "needShape": "Prvo generirajte oblik klizačima, zatim ga uredite ručno.",
+                "confirmReset": "Odbaciti ručne izmjene i vratiti se na klizače?",
+                "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte vratiti vrh.",
+                "vertex": "Povucite za oblikovanje"
             }
         }
     },

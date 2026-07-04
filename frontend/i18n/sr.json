@@ -1521,6 +1521,15 @@
             "handles": {
                 "gap": "Prevucite da pomerite otvor",
                 "wing": "Prevucite da pomerite krilo"
+            },
+            "manual": {
+                "edit": "Ručno uredi oblik",
+                "back": "Nazad na klizače",
+                "hint": "Ručni režim: prevucite temena da promenite obris. Visina se i dalje može podešavati.",
+                "needShape": "Prvo generišite oblik klizačima, pa ga uredite ručno.",
+                "confirmReset": "Odbaciti ručne izmene i vratiti se na klizače?",
+                "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte da vratite teme.",
+                "vertex": "Prevucite za oblikovanje"
             }
         }
     },

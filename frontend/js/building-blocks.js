@@ -36,6 +36,12 @@ let gapPositions = [];
 let wingPositions = [];
 let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
 let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
+// Manual (freeform) footprint mode: a one-way branch from the parametric sliders. In manual mode the
+// outer ring's vertices are draggable, the footprint sliders are inert, and the courtyard is still
+// re-inset by the (frozen) building width. Height stays live. "Back to sliders" regenerates
+// parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
+let blockifyMode = 'parametric';  // 'parametric' | 'manual'
+let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
@@ -1722,6 +1728,9 @@ function showBlockifyModal() {
                     </label>
                     <input type="range" id="wing-length-slider" min="10" max="200" value="10" step="1" disabled>
                 </div>
+                <div class="parameter-group">
+                    <button type="button" id="blockify-manual-toggle" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
+                </div>
                 <div class="parameter-info">
                     <p data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
                     <p data-i18n-key="blockify.modal.helper.setback">Setback is the distance from the parcel boundary to the outer building edge.</p>
@@ -1837,6 +1846,14 @@ function showBlockifyModal() {
             });
         }
 
+        const manualToggle = document.getElementById('blockify-manual-toggle');
+        if (manualToggle) {
+            manualToggle.addEventListener('click', function () {
+                if (blockifyMode === 'manual') exitToParametricMode();
+                else enterManualMode();
+            });
+        }
+
         // Close modal when clicking outside the container
         modalDiv.addEventListener('click', (e) => {
             if (e.target === modalDiv) {
@@ -1877,6 +1894,8 @@ function showBlockifyModal() {
     currentSimplifyM = DEFAULT_SIMPLIFY_M;
     gapPositions = [];
     wingPositions = [];
+    blockifyMode = 'parametric';
+    manualOuterRing = [];
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -2154,6 +2173,8 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
 }
 
 function generateBuildingInModal() {
+    // In manual mode the outline is user-edited, not slider-derived — route to the manual builder.
+    if (blockifyMode === 'manual') { generateManualBuilding(); return; }
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
         return;
@@ -2743,6 +2764,133 @@ function renderGapWingHandles() {
 
     for (let i = 0; i < gapPositions.length; i++) addHandle(gapPositions, i, 'gap');
     for (let i = 0; i < wingPositions.length; i++) addHandle(wingPositions, i, 'wing');
+}
+
+// --- Manual (freeform) footprint mode ---
+
+const FOOTPRINT_SLIDER_IDS = ['setback-slider', 'chamfer-slider', 'simplify-slider', 'width-slider', 'gaps-slider', 'gap-width-slider', 'wings-slider', 'wing-length-slider'];
+
+function setFootprintSlidersEnabled(enabled) {
+    FOOTPRINT_SLIDER_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = !enabled;
+    });
+}
+
+function updateManualToggleLabel() {
+    const btn = document.getElementById('blockify-manual-toggle');
+    if (!btn) return;
+    if (blockifyMode === 'manual') {
+        btn.textContent = translateBuildingText('blockify.modal.manual.back', 'Back to sliders');
+        btn.classList.add('active');
+    } else {
+        btn.textContent = translateBuildingText('blockify.modal.manual.edit', 'Edit shape manually');
+        btn.classList.remove('active');
+    }
+}
+
+function enterManualMode() {
+    if (!Array.isArray(lastOuterRing) || lastOuterRing.length < 4) {
+        showBuildingAlert('blockify.modal.manual.needShape', 'Generate a shape with the sliders first, then edit it manually.');
+        return;
+    }
+    blockifyMode = 'manual';
+    // Seed the editable ring from the last clean outer ring (drop the closing duplicate vertex).
+    const ring = lastOuterRing.slice();
+    if (ring.length >= 2) {
+        const f = ring[0], l = ring[ring.length - 1];
+        if (l && f[0] === l[0] && f[1] === l[1]) ring.pop();
+    }
+    manualOuterRing = ring.map(c => [c[0], c[1]]);
+    setFootprintSlidersEnabled(false);
+    updateManualToggleLabel();
+    setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+    generateManualBuilding();
+}
+
+function exitToParametricMode() {
+    const proceed = (typeof window !== 'undefined' && typeof window.confirm === 'function')
+        ? window.confirm(translateBuildingText('blockify.modal.manual.confirmReset', 'Discard manual edits and go back to the sliders?'))
+        : true;
+    if (!proceed) return;
+    blockifyMode = 'parametric';
+    manualOuterRing = [];
+    setFootprintSlidersEnabled(true);
+    updateManualToggleLabel();
+    generateBuildingInModal();
+}
+
+// Build the block from the user-edited outer ring: re-inset by the (frozen) building width so it
+// stays a ring-with-hole (or a solid building if the courtyard collapses).
+function generateManualBuilding() {
+    if (blockifyMode !== 'manual') return;
+    if (!Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
+    try {
+        const ensureClosed = (coords) => {
+            const a = coords.slice();
+            const f = a[0], l = a[a.length - 1];
+            if (!l || f[0] !== l[0] || f[1] !== l[1]) a.push([f[0], f[1]]);
+            return a;
+        };
+        let outerBuilding = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ensureClosed(manualOuterRing)] } };
+        outerBuilding = sanitizePolygonFeature(outerBuilding) || outerBuilding;
+        outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
+        if (!outerBuilding || !outerBuilding.geometry) throw new Error('Invalid manual outline');
+
+        const cleanOuter = ensureClosed(outerBuilding.geometry.coordinates[0]);
+        const width = Number(currentBuildingWidth) || DEFAULT_BUILDING_WIDTH;
+        const baseProps = {
+            type: 'proposedBuilding',
+            block: getBlockifyDisplayName(),
+            height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
+            manual: true
+        };
+
+        let buildingFeature;
+        const inc = incrementalInsetPolygon(outerBuilding, width, 0);
+        if (inc && inc.feature && inc.feature.geometry) {
+            const innerCoords = ensureClosed(inc.feature.geometry.coordinates[0]).reverse();
+            buildingFeature = { type: 'Feature', properties: Object.assign({ width }, baseProps), geometry: { type: 'Polygon', coordinates: [cleanOuter, innerCoords] } };
+        } else {
+            // courtyard collapsed → solid footprint
+            buildingFeature = { type: 'Feature', properties: Object.assign({ width: 0 }, baseProps), geometry: { type: 'Polygon', coordinates: [cleanOuter] } };
+        }
+
+        generatedBuildingFeature = buildingFeature;
+        displayBuildingInModal(buildingFeature);
+        renderManualVertexHandles();
+
+        const doneButton = document.getElementById('btn-blockify-done');
+        if (doneButton) doneButton.disabled = false;
+    } catch (err) {
+        console.error('Manual building generation failed:', err);
+        setBlockifyInfo('blockify.modal.manual.error', 'Could not build from the manual outline. Try moving the vertex back.');
+    }
+}
+
+// Draggable handle at each outer-ring vertex; drag reshapes the manual outline.
+function renderManualVertexHandles() {
+    clearGapWingHandles();
+    if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
+    blockifyHandleLayer = L.layerGroup().addTo(blockifyMap);
+    manualOuterRing.forEach((coord, idx) => {
+        const marker = L.marker([coord[1], coord[0]], {
+            draggable: true,
+            title: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
+            icon: L.divIcon({
+                className: 'blockify-handle blockify-handle--vertex',
+                html: '<span></span>',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            })
+        });
+        marker.on('dragend', () => {
+            const ll = marker.getLatLng();
+            manualOuterRing[idx] = [ll.lng, ll.lat];
+            generateManualBuilding();
+        });
+        marker.addTo(blockifyHandleLayer);
+    });
 }
 
 // Function to apply the building to the main map

@@ -1491,6 +1491,15 @@
             "handles": {
                 "gap": "Drag to move gap",
                 "wing": "Drag to move wing"
+            },
+            "manual": {
+                "edit": "Edit shape manually",
+                "back": "Back to sliders",
+                "hint": "Manual mode: drag the vertices to reshape the outline. Height stays adjustable.",
+                "needShape": "Generate a shape with the sliders first, then edit it manually.",
+                "confirmReset": "Discard manual edits and go back to the sliders?",
+                "error": "Could not build from the manual outline. Try moving the vertex back.",
+                "vertex": "Drag to reshape"
             }
         }
     },

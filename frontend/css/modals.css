@@ -4814,3 +4814,15 @@
 .blockify-handle--wing span {
     background: #1e88e5; /* blue = wing (protrusion into the courtyard) */
 }
+.blockify-handle--vertex span {
+    background: #fb8c00; /* orange = draggable outline vertex (manual footprint mode) */
+    border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
+}
+#blockify-manual-toggle {
+    width: 100%;
+}
+#blockify-manual-toggle.active {
+    background: #fb8c00;
+    border-color: #fb8c00;
+    color: #fff;
+}
