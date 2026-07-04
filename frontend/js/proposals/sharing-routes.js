@@ -1544,6 +1544,28 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             await new Promise(resolve => PersistentStorage.ensureReady(resolve));
         }
 
+        // Ensure previously-applied proposals have finished re-materializing before we analyse
+        // conflicts. reapplyAppliedProposals() runs independently on window 'load'; if it hasn't
+        // completed, the materialization check below misses those proposals, so a conflicting
+        // incoming proposal is applied WITHOUT first unapplying them — and then fails because its
+        // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
+        // to a whole-block building proposal). Waiting here makes that detection deterministic.
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
+            // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
+            // stall the whole route.
+            await Promise.race([
+                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
+                new Promise(resolve => setTimeout(resolve, 10000))
+            ]);
+            // If a reapply was already in flight, the call above returned immediately without
+            // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
+            let waitedForReapply = 0;
+            while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                waitedForReapply += 100;
+            }
+        }
+
         const urlRequests3D = is3DModeRequestedFromUrl();
 
         // Analyze what's currently applied vs what's incoming
