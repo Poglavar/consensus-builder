@@ -59,6 +59,11 @@ fi
 cd "$REMOTE_REPO"
 git remote set-url origin "$REPO_URL"
 git fetch --prune origin
+# Discard any local working-tree changes FIRST. Each deploy stamps a cache-bust token into
+# index.html / build-info.js, leaving the tree dirty; if the incoming commit also touches those
+# files, `git checkout -B` would abort with "local changes would be overwritten". Resetting to
+# origin/BRANCH up front drops the stamps and moves HEAD, so the checkout below is a clean no-op.
+git reset --hard "origin/$BRANCH"
 git checkout -B "$BRANCH" "origin/$BRANCH" >/dev/null 2>&1
 git reset --hard "origin/$BRANCH"
 COMMIT=$(git rev-parse --short HEAD)
