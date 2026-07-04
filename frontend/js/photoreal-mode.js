@@ -19,6 +19,8 @@
     let googleTileset = null;
     let active = false;
     let statusEl = null;
+    let lastGroundHeight = 0;     // elevation of the last camera target (for the auto-orbit)
+    let autoRotateRemove = null;  // remover fn for the preRender auto-orbit listener
     const proposalEntities = [];
 
     const containerEl = () => document.getElementById('cesium-container');
@@ -261,17 +263,58 @@
             const s = await viewer.scene.sampleHeightMostDetailed([Cesium.Cartographic.fromDegrees(v.targetLng, v.targetLat)]);
             if (s[0] && isFinite(s[0].height)) gElev = s[0].height;
         } catch (_) { /* ellipsoid */ }
+        lastGroundHeight = gElev;
         setCameraToView(v, gElev);
     }
 
+    // Gentle auto-orbit around the proposal for URL-driven entries. Re-aims the camera each frame with
+    // a slowly incrementing heading, and stops the instant the user grabs the camera.
+    function stopAutoRotate() {
+        if (autoRotateRemove) { try { autoRotateRemove(); } catch (_) { } autoRotateRemove = null; }
+    }
+    function startAutoRotate(v) {
+        stopAutoRotate();
+        if (!viewer || !v) return;
+        let heading = v.headingDeg || 0;
+        const target = Cesium.Cartesian3.fromDegrees(v.targetLng, v.targetLat, lastGroundHeight || 0);
+        autoRotateRemove = viewer.scene.preRender.addEventListener(function () {
+            heading = (heading + 0.08) % 360; // ~gentle spin
+            viewer.camera.lookAt(target, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(heading), v.pitchRad, v.range));
+            viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+        });
+        try {
+            const canvas = viewer.canvas;
+            ['pointerdown', 'wheel', 'touchstart'].forEach(function (e) {
+                canvas.addEventListener(e, stopAutoRotate, { once: true, passive: true });
+            });
+        } catch (_) { }
+    }
+
     // ---- activate / deactivate ----
-    async function activate() {
+    // Frame the whole proposal from a top-down-ish angle (used for URL-driven realistic entry, so the
+    // camera encompasses the entire proposal and then tilts to show the 3D — independent of wherever
+    // the abstract-3D camera happened to be).
+    function getProposalBboxView(pitchDeg) {
+        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        const feats = arr.filter(function (f) { return f && f.geometry; });
+        if (!feats.length || typeof turf === 'undefined' || !turf) return null;
+        try {
+            const bbox = turf.bbox(turf.featureCollection(feats));
+            const cx = (bbox[0] + bbox[2]) / 2, cy = (bbox[1] + bbox[3]) / 2;
+            const diag = (turf.distance([bbox[0], bbox[1]], [bbox[2], bbox[3]]) || 0.2) * 1000;
+            return { targetLng: cx, targetLat: cy, headingDeg: 0, pitchRad: Cesium.Math.toRadians(pitchDeg || -45), range: Math.max(180, diag * 1.6) };
+        } catch (_) { return null; }
+    }
+
+    async function activate(options) {
+        options = options || {};
         const btn = toggleBtn();
         if (btn) { btn.classList.add('active'); btn.disabled = true; }
         document.body.classList.add('realistic-mode-active');
         const el = containerEl();
         if (el) el.classList.add('active'); // give the container size before creating the viewer
-        const entryView = getEntryView();   // capture the legacy-3D camera before anything changes
+        // URL-driven entry frames the whole proposal; otherwise start from the abstract-3D vantage.
+        const entryView = (options.frameProposal ? getProposalBboxView(options.pitchDeg) : null) || getEntryView();
         try {
             await ensureViewer();
             active = true;
@@ -286,6 +329,7 @@
             await ensureTileset();
             await renderProposedBuildings();
             if (entryView) await applyEntryView(entryView); // fine-tune once the photoreal mesh is present
+            if (options.autoRotate && entryView) startAutoRotate(entryView);
         } catch (err) {
             console.error('[photoreal] activation failed:', err);
             setStatus('Failed to load photorealistic 3D.');
@@ -296,6 +340,7 @@
 
     function deactivate() {
         active = false;
+        stopAutoRotate();
         const el = containerEl();
         if (el) el.classList.remove('active');
         document.body.classList.remove('realistic-mode-active');

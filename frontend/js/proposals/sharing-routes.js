@@ -1131,7 +1131,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                     await createLeafletViewSettlePromise(null, null);
                 }
                 // Enter 3D mode - camera will rotate around the current map center (which is the center of proposals)
-                const entered = tryEnterThreeMode({ fromUrl: true });
+                const entered = enterUrlDrivenView();
                 if (entered) url3DModeHandled = true;
             }
         } catch (_) { }
@@ -1691,7 +1691,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
             }
             if (urlRequests3D) {
-                try { tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() }); } catch (_) { }
+                try { enterUrlDrivenView(getFocusProposalIds()); } catch (_) { }
             }
         };
 
@@ -2477,7 +2477,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // URL-driven 3D mode: only enter after the user dismisses the results dialog.
                     try {
                         if (wants3DFromUrl && !url3DModeHandled) {
-                            const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() });
+                            const entered = enterUrlDrivenView(getFocusProposalIds());
                             if (entered) url3DModeHandled = true;
                         }
                     } catch (_) { }
@@ -2495,7 +2495,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (!planSummaryModal) {
             try {
                 if (wants3DFromUrl && !url3DModeHandled) {
-                    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: getFocusProposalIds() });
+                    const entered = enterUrlDrivenView(getFocusProposalIds());
                     if (entered) url3DModeHandled = true;
                 }
             } catch (_) { }
@@ -2535,7 +2535,7 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
         // Wait a short moment to ensure map is fully initialized
         setTimeout(() => {
             if (!url3DModeHandled && is3DModeRequestedFromUrl()) {
-                const entered = tryEnterThreeMode({ fromUrl: true });
+                const entered = enterUrlDrivenView();
                 if (entered) url3DModeHandled = true;
             }
         }, 300);

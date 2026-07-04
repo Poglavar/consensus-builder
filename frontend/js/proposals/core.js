@@ -872,10 +872,43 @@ function resolveFrontendBaseUrl() {
 function is3DModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        return isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d');
+        // Realistic (photoreal) mode is a sub-mode of 3D, so any realistic request also requests 3D.
+        return isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d') || isRealisticModeRequestedFromUrl(p);
     } catch (_) {
         return false;
     }
+}
+
+// Realistic (Google Photorealistic 3D Tiles) mode. Aliases: ?real / ?rl / ?rw.
+function isRealisticModeRequestedFromUrl(params) {
+    try {
+        const p = params || new URLSearchParams(window.location.search || '');
+        return isTruthyUrlFlag(p, 'real') || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
+    } catch (_) {
+        return false;
+    }
+}
+
+function tryEnterRealisticMode(options) {
+    try {
+        if (typeof window !== 'undefined' && window.PhotorealMode && typeof window.PhotorealMode.activate === 'function') {
+            window.PhotorealMode.activate(options || {});
+            return true;
+        }
+    } catch (err) {
+        console.warn('[realistic] failed to enter realistic mode', err);
+    }
+    return false;
+}
+
+// URL-driven view entry: enter 3D (framing the just-loaded proposal), then overlay realistic mode
+// when requested — framing the whole proposal from the top, tilted ~45°, with a gentle auto-rotate.
+function enterUrlDrivenView(focusProposalIds) {
+    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds });
+    if (entered && isRealisticModeRequestedFromUrl()) {
+        tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
+    }
+    return entered;
 }
 
 function roughlyEqualLatLng(a, b, eps = 1e-12) {
