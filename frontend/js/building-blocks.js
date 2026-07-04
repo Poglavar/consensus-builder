@@ -29,6 +29,13 @@ let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
 let currentChamferM = DEFAULT_CHAMFER_M;
 let currentSimplifyM = DEFAULT_SIMPLIFY_M;
+// Gap/wing placement: each is a fraction (0..1) along the outer ring. The count sliders manage how
+// many there are (adding new ones in the largest free span, removing the last); dragging a handle on
+// the modal map fine-tunes an individual position. This keeps the block fully parametric/shareable.
+let gapPositions = [];
+let wingPositions = [];
+let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
+let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
@@ -1797,6 +1804,7 @@ function showBlockifyModal() {
             document.getElementById('gaps-value').textContent = '0';
             gapsSlider.addEventListener('input', function (e) {
                 document.getElementById('gaps-value').textContent = e.target.value;
+                gapPositions = syncPositions(gapPositions, parseInt(e.target.value) || 0);
                 generateBuildingInModal();
             });
         }
@@ -1817,6 +1825,7 @@ function showBlockifyModal() {
             document.getElementById('wings-value').textContent = '0';
             wingsSlider.addEventListener('input', function (e) {
                 document.getElementById('wings-value').textContent = e.target.value;
+                wingPositions = syncPositions(wingPositions, parseInt(e.target.value) || 0);
                 generateBuildingInModal();
             });
         }
@@ -1866,6 +1875,8 @@ function showBlockifyModal() {
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
     currentChamferM = DEFAULT_CHAMFER_M;
     currentSimplifyM = DEFAULT_SIMPLIFY_M;
+    gapPositions = [];
+    wingPositions = [];
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -2001,11 +2012,33 @@ function displayBlockOnMap(block) {
 }
 
 // Function to generate building in the modal only
+// Resize a positions array (fractions 0..1 along the ring) to `count`, preserving existing entries:
+// remove from the end when shrinking, and when growing insert each new one at the middle of the
+// currently-largest free span so additions spread out. Used to keep gap/wing placement in sync with
+// the count sliders while never discarding positions the user has dragged.
+function syncPositions(positions, count) {
+    const out = Array.isArray(positions) ? positions.map(v => ((v % 1) + 1) % 1) : [];
+    while (out.length > count) out.pop();
+    while (out.length < count) {
+        if (out.length === 0) { out.push(0); continue; }
+        const sorted = out.slice().sort((a, b) => a - b);
+        let bestGap = -1, bestMid = 0;
+        for (let i = 0; i < sorted.length; i++) {
+            const a = sorted[i];
+            const b = (i + 1 < sorted.length) ? sorted[i + 1] : sorted[0] + 1; // wrap past 1
+            const gap = b - a;
+            if (gap > bestGap) { bestGap = gap; bestMid = ((a + b) / 2) % 1; }
+        }
+        out.push(bestMid);
+    }
+    return out;
+}
+
 // Union N rectangular wings (protrusions) onto the building, each extending inward toward the
-// courtyard. Wings are distributed evenly along the outer ring, point toward the block centroid,
-// and are capped so they never cross the opposite parcel border. Wings may overlap the building
-// and each other; the result is unioned into a single footprint.
-function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWidth, buildingWidth, numWings, wingLength }) {
+// courtyard. Wing bases sit at `positions` (fractions 0..1 along the outer ring, draggable), point
+// toward the block centroid, and are capped so they never cross the opposite parcel border. Wings may
+// overlap the building and each other; the result is unioned into a single footprint.
+function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWidth, buildingWidth, numWings, wingLength, positions }) {
     if (!buildingFeature || !Array.isArray(outerCoords) || outerCoords.length < 2) return buildingFeature;
 
     const ringLength = (coords) => {
@@ -2067,15 +2100,17 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
         return Number.isFinite(closestPositive) ? closestPositive : wingLength;
     };
 
-    // Distribute wings evenly around the ring (offset so a single wing doesn't land on a corner)
-    const stride = perimeter / numWings;
-    const startOffset = numWings === 1 ? (perimeter * 0.37) % perimeter : stride / 2;
+    // Wing bases come from the draggable position array (fractions along the ring); fall back to even
+    // spacing if positions weren't supplied.
+    const fracs = (Array.isArray(positions) && positions.length === numWings)
+        ? positions.map(f => (((f % 1) + 1) % 1))
+        : Array.from({ length: numWings }, (_, w) => (numWings ? w / numWings : 0));
     const halfWidth = Math.max(wingWidth, 1) / 2;
     const borderMargin = 1; // keep the wing tip just short of the opposite parcel border
 
     let result = buildingFeature;
     for (let w = 0; w < numWings; w++) {
-        const centerDist = (startOffset + w * stride) % perimeter;
+        const centerDist = fracs[w] * perimeter;
         const info = pointAtDistance(outerCoords, centerDist);
         const base = info.point;
         const tan = getTangentAt(outerCoords, info.segmentIndex);
@@ -2259,6 +2294,7 @@ function generateBuildingInModal() {
             const chamfered = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
             generatedBuildingFeature = chamfered;
             displayBuildingInModal(chamfered);
+            clearGapWingHandles(); // solid fallback: no courtyard, so no gap/wing handles
             setBlockifyInfo(
                 'blockify.modal.messages.generatedSolidNoCourtyard',
                 'Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width.',
@@ -2292,6 +2328,7 @@ function generateBuildingInModal() {
 
         const outerCoords = ensureClosedRing(outerBuilding.geometry.coordinates[0]);
         const innerCoords = ensureClosedRing(innerBuilding.geometry.coordinates[0]).reverse();
+        lastOuterRing = outerCoords; // remembered so the draggable gap/wing handles project onto it
         let buildingFeature;
 
         // Start with the closed ring polygon (outer with inner hole)
@@ -2400,18 +2437,11 @@ function generateBuildingInModal() {
             let effectiveGapWidth = Math.min(gapWidth, stride * 0.9);
             if (!Number.isFinite(effectiveGapWidth) || effectiveGapWidth < 1) effectiveGapWidth = 1;
 
-            // Step 1: Determine gap center positions along the circumference
-            // If 1 gap: random position; if 2+: evenly spaced
-            let gapCenterDistances = [];
-            if (numGaps === 1) {
-                // Pick a random point (use a fixed seed based on perimeter for consistency)
-                const randomOffset = (outerPerimeter * 0.37) % outerPerimeter; // pseudo-random but deterministic
-                gapCenterDistances.push(randomOffset);
-            } else {
-                for (let g = 0; g < numGaps; g++) {
-                    gapCenterDistances.push(g * stride);
-                }
-            }
+            // Step 1: Gap centres come from the draggable position array (fractions along the ring).
+            // Self-heal if it drifted out of sync with the count (e.g. generation triggered by another
+            // slider, or a freshly loaded modal).
+            if (gapPositions.length !== numGaps) gapPositions = syncPositions(gapPositions, numGaps);
+            const gapCenterDistances = gapPositions.map(f => (((f % 1) + 1) % 1) * outerPerimeter);
 
             // Step 2: For each gap, create perpendicular cuts
             let resultGeom = closedRingFeature;
@@ -2536,6 +2566,7 @@ function generateBuildingInModal() {
         const wingLengthSlider = document.getElementById('wing-length-slider');
         const numWings = wingsSlider ? parseInt(wingsSlider.value) : 0;
         const wingLength = wingLengthSlider ? parseFloat(wingLengthSlider.value) : 0;
+        if (wingPositions.length !== numWings) wingPositions = syncPositions(wingPositions, numWings);
         if (numWings > 0 && wingLength > 0) {
             buildingFeature = addWingsToBuilding(buildingFeature, {
                 outerCoords,
@@ -2543,7 +2574,8 @@ function generateBuildingInModal() {
                 wingWidth: currentWidth,
                 buildingWidth: currentWidth,
                 numWings,
-                wingLength
+                wingLength,
+                positions: wingPositions
             });
         }
 
@@ -2551,6 +2583,7 @@ function generateBuildingInModal() {
         buildingFeature = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
         generatedBuildingFeature = buildingFeature;
         displayBuildingInModal(buildingFeature);
+        renderGapWingHandles();
 
         // Update the sliders to reflect the actual values used
         const setbackSlider = document.getElementById('setback-slider');
@@ -2651,6 +2684,65 @@ function displayBuildingInModal(buildingFeature) {
         }).addTo(blockifyMap);
         try { updateBlockify3DScene(buildingFeature); } catch (e) { console.warn('3D update failed', e); }
     }
+}
+
+// Draw a draggable handle on the modal map at each gap/wing position. Dragging one snaps it back onto
+// the outer ring, updates its fraction (0..1 along the ring), and regenerates the block.
+function clearGapWingHandles() {
+    if (blockifyHandleLayer && blockifyMap) {
+        try { blockifyMap.removeLayer(blockifyHandleLayer); } catch (_) { }
+    }
+    blockifyHandleLayer = null;
+}
+
+function renderGapWingHandles() {
+    clearGapWingHandles();
+    if (!blockifyMap || typeof turf === 'undefined') return;
+    if (!Array.isArray(lastOuterRing) || lastOuterRing.length < 2) return;
+    if (!gapPositions.length && !wingPositions.length) return;
+
+    let ringLine, ringLenM;
+    try {
+        ringLine = turf.lineString(lastOuterRing);
+        ringLenM = turf.length(ringLine, { units: 'meters' });
+    } catch (_) { return; }
+    if (!(ringLenM > 0)) return;
+
+    blockifyHandleLayer = L.layerGroup().addTo(blockifyMap);
+
+    const addHandle = (posArray, idx, kind) => {
+        const frac = (((posArray[idx] % 1) + 1) % 1);
+        let coord;
+        try { coord = turf.along(ringLine, frac * ringLenM, { units: 'meters' }).geometry.coordinates; }
+        catch (_) { return; }
+        const marker = L.marker([coord[1], coord[0]], {
+            draggable: true,
+            title: kind === 'gap'
+                ? translateBuildingText('blockify.modal.handles.gap', 'Drag to move gap')
+                : translateBuildingText('blockify.modal.handles.wing', 'Drag to move wing'),
+            icon: L.divIcon({
+                className: `blockify-handle blockify-handle--${kind}`,
+                html: '<span></span>',
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            })
+        });
+        marker.on('dragend', () => {
+            try {
+                const ll = marker.getLatLng();
+                const snapped = turf.nearestPointOnLine(ringLine, turf.point([ll.lng, ll.lat]), { units: 'meters' });
+                const loc = snapped && snapped.properties ? snapped.properties.location : null;
+                if (Number.isFinite(loc) && ringLenM > 0) {
+                    posArray[idx] = (((loc / ringLenM) % 1) + 1) % 1;
+                }
+            } catch (_) { }
+            generateBuildingInModal();
+        });
+        marker.addTo(blockifyHandleLayer);
+    };
+
+    for (let i = 0; i < gapPositions.length; i++) addHandle(gapPositions, i, 'gap');
+    for (let i = 0; i < wingPositions.length; i++) addHandle(wingPositions, i, 'wing');
 }
 
 // Function to apply the building to the main map

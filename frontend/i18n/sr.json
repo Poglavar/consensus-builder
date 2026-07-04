@@ -1517,6 +1517,10 @@
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela"
+            },
+            "handles": {
+                "gap": "Prevucite da pomerite otvor",
+                "wing": "Prevucite da pomerite krilo"
             }
         }
     },

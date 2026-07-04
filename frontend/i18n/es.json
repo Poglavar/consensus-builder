@@ -1537,6 +1537,10 @@
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas"
+            },
+            "handles": {
+                "gap": "Arrastra para mover el hueco",
+                "wing": "Arrastra para mover el ala"
             }
         }
     },

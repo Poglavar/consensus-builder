@@ -4794,3 +4794,23 @@
     font-size: 14px;
     text-shadow: 0 0 2px #fff;
 }
+
+/* Draggable gap/wing handles on the Urban Rule modal map (see building-blocks.js renderGapWingHandles). */
+.blockify-handle span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    cursor: grab;
+}
+.blockify-handle:active span {
+    cursor: grabbing;
+}
+.blockify-handle--gap span {
+    background: #e53935; /* red = gap (opening cut from the ring) */
+}
+.blockify-handle--wing span {
+    background: #1e88e5; /* blue = wing (protrusion into the courtyard) */
+}

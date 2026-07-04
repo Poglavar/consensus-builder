@@ -1487,6 +1487,10 @@
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} Parcels"
+            },
+            "handles": {
+                "gap": "Drag to move gap",
+                "wing": "Drag to move wing"
             }
         }
     },
