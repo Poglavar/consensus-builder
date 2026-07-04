@@ -1510,6 +1510,7 @@
             "labels": {
                 "setback": "Retiro (m):",
                 "chamfer": "Chaflán (m):",
+                "simplify": "Simplificar (m):",
                 "width": "Ancho del edificio (m):",
                 "height": "Altura del edificio (m):",
                 "gaps": "Número de huecos:",

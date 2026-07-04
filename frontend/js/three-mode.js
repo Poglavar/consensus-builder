@@ -2953,6 +2953,45 @@
         if (evt.key === 'Escape' && (isolatedParcelId !== null || isolatedProposalId !== null)) clearIsolation();
     }
 
+    // Ground lat/lng at the centre of the viewport (NDC 0,0), or null if the ray misses the ground.
+    function groundLatLngAtScreenCenter() {
+        if (!renderer || !camera) return null;
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const hit = new THREE.Vector3();
+        if (!raycaster.ray.intersectPlane(groundPlane, hit)) return null;
+        return xyToLatLng(hit.x, hit.y);
+    }
+
+    // Build + open the walk URL for a given ground point (new tab).
+    function openWalkAt(ll) {
+        if (!ll) { console.warn('[walk] no ground point for walk'); return; }
+        try {
+            const url = buildWalkUrl(ll.lat, ll.lng);
+            if (!url) { console.warn('[walk] no walk overlay configured for this city'); return; }
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (e) {
+            console.warn('[walk] failed to open walk URL:', e);
+        }
+    }
+
+    // Touch devices have no cursor, so a "tap the ground to place yourself" step is confusing —
+    // the user doesn't know a second tap is needed. On a coarse pointer, walk from screen centre
+    // immediately; on a mouse, keep the click-to-place pick.
+    const isCoarsePointer = () => {
+        try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); }
+        catch (_) { return false; }
+    };
+    function startWalk() {
+        if (!isActive) return;
+        if (isCoarsePointer()) {
+            openWalkAt(groundLatLngAtScreenCenter());
+        } else {
+            startWalkPick();
+        }
+    }
+
     function startWalkPick() {
         if (!isActive || walkPickActive) return;
         walkPickActive = true;
@@ -2964,17 +3003,7 @@
             if (evt.button !== 0) return;
             const ll = pickGroundLatLngFromEvent(evt);
             cancelWalkPick();
-            if (!ll) {
-                console.warn('[walk] click missed the ground plane');
-                return;
-            }
-            try {
-                const url = buildWalkUrl(ll.lat, ll.lng);
-                if (!url) { console.warn('[walk] no walk overlay configured for this city'); return; }
-                window.open(url, '_blank', 'noopener,noreferrer');
-            } catch (e) {
-                console.warn('[walk] failed to open walk URL:', e);
-            }
+            openWalkAt(ll);
         };
         walkPickKeyHandler = (evt) => {
             if (evt.key === 'Escape') cancelWalkPick();
@@ -3009,7 +3038,7 @@
 
             const nonUploaded = getNonUploadedAppliedProposals();
             if (nonUploaded.length === 0) {
-                startWalkPick();
+                startWalk();
                 return;
             }
 
@@ -3020,7 +3049,7 @@
                 window.showWalkUploadGateModal({
                     onComplete: () => {
                         if (!isActive) return;
-                        if (getNonUploadedAppliedProposals().length === 0) startWalkPick();
+                        if (getNonUploadedAppliedProposals().length === 0) startWalk();
                     }
                 });
             } else {

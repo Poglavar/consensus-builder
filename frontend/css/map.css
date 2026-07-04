@@ -89,11 +89,12 @@
     z-index: 10;
 }
 
-/* Top-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
-   glTF models) are still loading. Sits clear of the top-left parcel panel and top-right controls. */
+/* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
+   glTF models) are still loading. Kept at the bottom so it doesn't collide with the top-centre
+   ephemeral-message toasts (which would otherwise cover it until they fade). */
 #three-container .three-mode-buildings-loader {
     position: absolute;
-    top: 12px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;

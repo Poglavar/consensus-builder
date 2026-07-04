@@ -1460,6 +1460,7 @@
             "labels": {
                 "setback": "Setback (m):",
                 "chamfer": "Chamfer (m):",
+                "simplify": "Simplify (m):",
                 "width": "Building Width (m):",
                 "height": "Building Height (m):",
                 "gaps": "Number of gaps:",

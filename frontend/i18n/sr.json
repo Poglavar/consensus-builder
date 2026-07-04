@@ -1490,6 +1490,7 @@
             "labels": {
                 "setback": "Povlačenje (m):",
                 "chamfer": "Skošenje (m):",
+                "simplify": "Pojednostavi (m):",
                 "width": "Širina zgrade (m):",
                 "height": "Visina zgrade (m):",
                 "gaps": "Broj otvora:",

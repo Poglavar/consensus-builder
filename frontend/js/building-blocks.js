@@ -23,10 +23,12 @@ const DEFAULT_SETBACK = 2; // meters
 const DEFAULT_BUILDING_WIDTH = 15; // meters
 const DEFAULT_BUILDING_HEIGHT = 17.5; // meters (5 floors x 3.5 m)
 const DEFAULT_CHAMFER_M = 0; // meters (corner cut distance along each adjacent edge)
+const DEFAULT_SIMPLIFY_M = 0; // meters (0 = follow parcels exactly; higher smooths jagged outlines)
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
 let currentChamferM = DEFAULT_CHAMFER_M;
+let currentSimplifyM = DEFAULT_SIMPLIFY_M;
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
@@ -1665,6 +1667,13 @@ function showBlockifyModal() {
                     <input type="range" id="chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER_M}" step="0.5">
                 </div>
                 <div class="parameter-group">
+                    <label for="simplify-slider">
+                        <span data-i18n-key="blockify.modal.labels.simplify" data-i18n-attr="text">Simplify (m):</span>
+                        <span id="simplify-value">${currentSimplifyM.toFixed(1)}</span>
+                    </label>
+                    <input type="range" id="simplify-slider" min="0" max="20" value="${DEFAULT_SIMPLIFY_M}" step="0.5">
+                </div>
+                <div class="parameter-group">
                     <label for="width-slider">
                         <span data-i18n-key="blockify.modal.labels.width" data-i18n-attr="text">Building Width (m):</span>
                         <span id="width-value">${DEFAULT_BUILDING_WIDTH.toFixed(1)}</span>
@@ -1748,6 +1757,15 @@ function showBlockifyModal() {
             chamferSlider.addEventListener('input', function (e) {
                 currentChamferM = parseFloat(e.target.value);
                 document.getElementById('chamfer-value').textContent = currentChamferM.toFixed(1);
+                generateBuildingInModal();
+            });
+        }
+
+        const simplifySlider = document.getElementById('simplify-slider');
+        if (simplifySlider) {
+            simplifySlider.addEventListener('input', function (e) {
+                currentSimplifyM = parseFloat(e.target.value);
+                document.getElementById('simplify-value').textContent = currentSimplifyM.toFixed(1);
                 generateBuildingInModal();
             });
         }
@@ -1847,6 +1865,7 @@ function showBlockifyModal() {
     currentSetback = DEFAULT_SETBACK;
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
     currentChamferM = DEFAULT_CHAMFER_M;
+    currentSimplifyM = DEFAULT_SIMPLIFY_M;
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -2133,6 +2152,23 @@ function generateBuildingInModal() {
             throw new Error('Failed to process superparcel');
         }
 
+        // Optional shape simplification: smooth the block outline BEFORE the setback so the building
+        // doesn't inherit every little jag/notch of the merged parcel boundary (equal setbacks around
+        // an irregular parcel otherwise produce shapes a human wouldn't draw). Tolerance is in metres,
+        // converted to degrees for turf.simplify (Douglas–Peucker). 0 = follow the parcels exactly.
+        if (currentSimplifyM > 0) {
+            try {
+                const toleranceDeg = currentSimplifyM / 111320; // ~metres → degrees of latitude
+                const simplified = turf.simplify(superparcel, { tolerance: toleranceDeg, highQuality: true, mutate: false });
+                const cleaned = toSingleLargestPolygon(sanitizePolygonFeature(simplified) || simplified) || simplified;
+                if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) {
+                    superparcel = cleaned;
+                }
+            } catch (err) {
+                console.warn('Superparcel simplification failed; using original outline', err);
+            }
+        }
+
         // Calculate the maximum possible setback
         const area = turf.area(superparcel);
         let perimeter = turf.length(superparcel);
@@ -2207,6 +2243,7 @@ function generateBuildingInModal() {
                     width: 0,
                     setback: SETBACK,
                     chamfer: Number(currentChamferM) || 0,
+                    simplify: currentSimplifyM,
                     block: getBlockifyDisplayName(),
                     minSideLength: 0,
                     height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
@@ -2276,6 +2313,7 @@ function generateBuildingInModal() {
                     width: currentWidth,
                     setback: SETBACK,
                     chamfer: Number(currentChamferM) || 0,
+                    simplify: currentSimplifyM,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
@@ -2482,6 +2520,7 @@ function generateBuildingInModal() {
                     width: currentWidth,
                     setback: SETBACK,
                     chamfer: Number(currentChamferM) || 0,
+                    simplify: currentSimplifyM,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
