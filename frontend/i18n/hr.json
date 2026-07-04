@@ -1529,7 +1529,10 @@
                 "needShape": "Prvo generirajte oblik klizačima, zatim ga uredite ručno.",
                 "confirmReset": "Odbaciti ručne izmjene i vratiti se na klizače?",
                 "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte vratiti vrh.",
-                "vertex": "Povucite za oblikovanje"
+                "vertex": "Povucite za oblikovanje",
+                "uploadGeojson": "Učitaj GeoJSON",
+                "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+                "uploadError": "Nije moguće pročitati datoteku."
             }
         }
     },

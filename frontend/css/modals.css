@@ -4818,7 +4818,8 @@
     background: #fb8c00; /* orange = draggable outline vertex (manual footprint mode) */
     border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
 }
-#blockify-manual-toggle {
+#blockify-manual-toggle,
+#blockify-geojson-upload {
     width: 100%;
 }
 #blockify-manual-toggle.active {

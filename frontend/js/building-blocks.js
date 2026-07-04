@@ -35,7 +35,9 @@ let currentSimplifyM = DEFAULT_SIMPLIFY_M;
 let gapPositions = [];
 let wingPositions = [];
 let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
+let lastSuperparcel = null;      // the exact parcel outline, to clip the building so nothing pokes out
 let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
+let blockifyLiveLayer = null;    // transient dashed outline shown while dragging a manual vertex
 // Manual (freeform) footprint mode: a one-way branch from the parametric sliders. In manual mode the
 // outer ring's vertices are draggable, the footprint sliders are inert, and the courtyard is still
 // re-inset by the (frozen) building width. Height stays live. "Back to sliders" regenerates
@@ -1730,6 +1732,8 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group">
                     <button type="button" id="blockify-manual-toggle" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
+                    <button type="button" id="blockify-geojson-upload" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                    <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
                 </div>
                 <div class="parameter-info">
                     <p data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
@@ -1851,6 +1855,17 @@ function showBlockifyModal() {
             manualToggle.addEventListener('click', function () {
                 if (blockifyMode === 'manual') exitToParametricMode();
                 else enterManualMode();
+            });
+        }
+
+        const geojsonBtn = document.getElementById('blockify-geojson-upload');
+        const geojsonInput = document.getElementById('blockify-geojson-input');
+        if (geojsonBtn && geojsonInput) {
+            geojsonBtn.addEventListener('click', () => geojsonInput.click());
+            geojsonInput.addEventListener('change', function (e) {
+                const file = e.target.files && e.target.files[0];
+                if (file) loadGeojsonFootprint(file);
+                e.target.value = ''; // allow re-selecting the same file
             });
         }
 
@@ -2031,6 +2046,39 @@ function displayBlockOnMap(block) {
 }
 
 // Function to generate building in the modal only
+// Reduce an outline's vertex count (turf.simplify / Douglas–Peucker, tolerance in metres) and clip it
+// inside `parcel` so no edge ends up outside the parcel. The clip only runs when the outline actually
+// pokes out, so a fully-inside simplified outline keeps its low vertex count. Used by both the
+// parametric builder and the manual (freeform) builder.
+function simplifyAndClipOutline(feature, simplifyM, parcel) {
+    let outline = feature;
+    if (simplifyM > 0 && outline && outline.geometry) {
+        try {
+            const tolDeg = simplifyM / 111320; // ~metres → degrees of latitude
+            const s = turf.simplify(outline, { tolerance: tolDeg, highQuality: true, mutate: false });
+            const cleaned = toSingleLargestPolygon(sanitizePolygonFeature(s) || s) || s;
+            if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) outline = cleaned;
+        } catch (err) {
+            console.warn('Outline simplification failed', err);
+        }
+    }
+    if (parcel && parcel.geometry && outline && outline.geometry) {
+        try {
+            let inside = false;
+            try { inside = turf.booleanWithin(outline, parcel); } catch (_) { inside = false; }
+            if (!inside) {
+                const clipped = turf.intersect(outline, parcel);
+                if (clipped && clipped.geometry && turf.area(clipped) > 0) {
+                    outline = toSingleLargestPolygon(clipped) || outline;
+                }
+            }
+        } catch (err) {
+            console.warn('Clip-to-parcel failed', err);
+        }
+    }
+    return outline;
+}
+
 // Resize a positions array (fractions 0..1 along the ring) to `count`, preserving existing entries:
 // remove from the end when shrinking, and when growing insert each new one at the middle of the
 // currently-largest free span so additions spread out. Used to keep gap/wing placement in sync with
@@ -2207,23 +2255,11 @@ function generateBuildingInModal() {
         if (!superparcel || !superparcel.geometry) {
             throw new Error('Failed to process superparcel');
         }
-
-        // Optional shape simplification: smooth the block outline BEFORE the setback so the building
-        // doesn't inherit every little jag/notch of the merged parcel boundary (equal setbacks around
-        // an irregular parcel otherwise produce shapes a human wouldn't draw). Tolerance is in metres,
-        // converted to degrees for turf.simplify (Douglas–Peucker). 0 = follow the parcels exactly.
-        if (currentSimplifyM > 0) {
-            try {
-                const toleranceDeg = currentSimplifyM / 111320; // ~metres → degrees of latitude
-                const simplified = turf.simplify(superparcel, { tolerance: toleranceDeg, highQuality: true, mutate: false });
-                const cleaned = toSingleLargestPolygon(sanitizePolygonFeature(simplified) || simplified) || simplified;
-                if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) {
-                    superparcel = cleaned;
-                }
-            } catch (err) {
-                console.warn('Superparcel simplification failed; using original outline', err);
-            }
-        }
+        // Keep the exact parcel outline to clip the building against — no edge should ever end up
+        // outside the parcel (whether from simplification chords or, in manual mode, dragging a vertex
+        // out). Remembered on the module so the manual builder can reuse it.
+        const originalSuperparcel = superparcel;
+        lastSuperparcel = originalSuperparcel;
 
         // Calculate the maximum possible setback
         const area = turf.area(superparcel);
@@ -2246,6 +2282,19 @@ function generateBuildingInModal() {
         // Create the outer building polygon (setback from superparcel) with robust negative buffer
         let outerBuilding = robustNegativeBuffer(superparcel, SETBACK);
         outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
+        if (!outerBuilding || !outerBuilding.geometry) {
+            throw new Error('Failed to create outer building polygon');
+        }
+
+        // Reduce the OUTLINE's vertex count, then clip it inside the parcel:
+        //  - the negative buffer rounds every corner into up to GEOM_BUFFER_STEPS segments, and curved
+        //    parcel edges are densely digitised, so the raw outline can carry hundreds of vertices —
+        //    unusable for manual editing. turf.simplify (Douglas–Peucker) collapses those to a handful;
+        //    higher "Simplify (m)" = fewer vertices. (Applied here, AFTER the buffer, is why it now
+        //    actually reduces the visible outline — simplifying the parcel earlier was undone by the
+        //    buffer re-rounding the corners.)
+        //  - a simplification chord can bow slightly past the boundary, so clip to the parcel after.
+        outerBuilding = simplifyAndClipOutline(outerBuilding, currentSimplifyM, originalSuperparcel);
         if (!outerBuilding || !outerBuilding.geometry) {
             throw new Error('Failed to create outer building polygon');
         }
@@ -2714,6 +2763,7 @@ function clearGapWingHandles() {
         try { blockifyMap.removeLayer(blockifyHandleLayer); } catch (_) { }
     }
     blockifyHandleLayer = null;
+    clearManualLiveOutline();
 }
 
 function renderGapWingHandles() {
@@ -2836,6 +2886,9 @@ function generateManualBuilding() {
         outerBuilding = sanitizePolygonFeature(outerBuilding) || outerBuilding;
         outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
         if (!outerBuilding || !outerBuilding.geometry) throw new Error('Invalid manual outline');
+        // Guarantee the outline stays inside the parcel (an edge between two inside-vertices can still
+        // cross outside a concave parcel). No auto-simplify here — the user controls the vertices.
+        outerBuilding = simplifyAndClipOutline(outerBuilding, 0, lastSuperparcel);
 
         const cleanOuter = ensureClosed(outerBuilding.geometry.coordinates[0]);
         const width = Number(currentBuildingWidth) || DEFAULT_BUILDING_WIDTH;
@@ -2884,13 +2937,100 @@ function renderManualVertexHandles() {
                 iconAnchor: [8, 8]
             })
         });
-        marker.on('dragend', () => {
+        // Live: the outline follows the vertex as it moves (a cheap dashed polygon, no re-inset).
+        marker.on('drag', () => {
             const ll = marker.getLatLng();
             manualOuterRing[idx] = [ll.lng, ll.lat];
+            drawManualLiveOutline();
+        });
+        // Release: constrain the vertex to the parcel, then do the full rebuild (inset + clip).
+        marker.on('dragend', () => {
+            const ll = marker.getLatLng();
+            let pt = [ll.lng, ll.lat];
+            if (lastSuperparcel && lastSuperparcel.geometry) {
+                try {
+                    if (!turf.booleanPointInPolygon(turf.point(pt), lastSuperparcel)) {
+                        const line = turf.polygonToLine(lastSuperparcel);
+                        const snapped = turf.nearestPointOnLine(line, turf.point(pt));
+                        if (snapped && snapped.geometry) pt = snapped.geometry.coordinates;
+                    }
+                } catch (_) { }
+            }
+            manualOuterRing[idx] = pt;
+            marker.setLatLng([pt[1], pt[0]]);
+            clearManualLiveOutline();
             generateManualBuilding();
         });
         marker.addTo(blockifyHandleLayer);
     });
+}
+
+// Lightweight dashed outline of the manual ring, redrawn while a vertex is being dragged so the shape
+// visibly follows the cursor without paying for the full inset/clip rebuild on every mouse move.
+function clearManualLiveOutline() {
+    if (blockifyLiveLayer && blockifyMap) {
+        try { blockifyMap.removeLayer(blockifyLiveLayer); } catch (_) { }
+    }
+    blockifyLiveLayer = null;
+}
+
+function drawManualLiveOutline() {
+    clearManualLiveOutline();
+    if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
+    const latlngs = manualOuterRing.map(c => [c[1], c[0]]);
+    blockifyLiveLayer = L.polygon(latlngs, {
+        color: '#fb8c00', weight: 2, dashArray: '5,5', fill: false, interactive: false
+    }).addTo(blockifyMap);
+}
+
+// Pull the largest Polygon out of an uploaded GeoJSON (Feature / FeatureCollection / geometry) and
+// return its outer ring as [lng,lat] vertices (closing duplicate stripped), or null if none.
+function extractOuterRingFromGeojson(data) {
+    const geoms = [];
+    const collect = (g) => {
+        if (!g || typeof g !== 'object') return;
+        if (g.type === 'FeatureCollection' && Array.isArray(g.features)) g.features.forEach(collect);
+        else if (g.type === 'Feature') collect(g.geometry);
+        else if (g.type === 'GeometryCollection' && Array.isArray(g.geometries)) g.geometries.forEach(collect);
+        else if (g.type === 'Polygon') geoms.push(g);
+        else if (g.type === 'MultiPolygon' && Array.isArray(g.coordinates)) g.coordinates.forEach(poly => geoms.push({ type: 'Polygon', coordinates: poly }));
+    };
+    collect(data);
+    if (!geoms.length) return null;
+    let best = null, bestArea = -1;
+    for (const g of geoms) {
+        try { const a = turf.area(turf.feature(g)); if (a > bestArea) { bestArea = a; best = g; } } catch (_) { }
+    }
+    const outer = best && best.coordinates && best.coordinates[0];
+    if (!Array.isArray(outer) || outer.length < 3) return null;
+    const ring = outer.filter(c => Array.isArray(c) && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])).map(c => [c[0], c[1]]);
+    if (ring.length >= 2) {
+        const f = ring[0], l = ring[ring.length - 1];
+        if (l && f[0] === l[0] && f[1] === l[1]) ring.pop();
+    }
+    return ring.length >= 3 ? ring : null;
+}
+
+// Load an uploaded GeoJSON footprint straight into manual mode (it's clipped to the parcel on build).
+function loadGeojsonFootprint(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        let ring = null;
+        try { ring = extractOuterRingFromGeojson(JSON.parse(reader.result)); }
+        catch (err) { console.error('GeoJSON parse failed', err); }
+        if (!ring) {
+            showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'No usable polygon found in that file.');
+            return;
+        }
+        blockifyMode = 'manual';
+        manualOuterRing = ring;
+        setFootprintSlidersEnabled(false);
+        updateManualToggleLabel();
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+        generateManualBuilding();
+    };
+    reader.onerror = () => showBuildingAlert('blockify.modal.manual.uploadError', 'Could not read that file.');
+    reader.readAsText(file);
 }
 
 // Function to apply the building to the main map

@@ -1499,7 +1499,10 @@
                 "needShape": "Generate a shape with the sliders first, then edit it manually.",
                 "confirmReset": "Discard manual edits and go back to the sliders?",
                 "error": "Could not build from the manual outline. Try moving the vertex back.",
-                "vertex": "Drag to reshape"
+                "vertex": "Drag to reshape",
+                "uploadGeojson": "Upload GeoJSON",
+                "uploadNoPolygon": "No usable polygon found in that file.",
+                "uploadError": "Could not read that file."
             }
         }
     },

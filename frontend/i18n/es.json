@@ -1549,7 +1549,10 @@
                 "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
                 "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
                 "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
-                "vertex": "Arrastra para remodelar"
+                "vertex": "Arrastra para remodelar",
+                "uploadGeojson": "Subir GeoJSON",
+                "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+                "uploadError": "No se pudo leer el archivo."
             }
         }
     },
