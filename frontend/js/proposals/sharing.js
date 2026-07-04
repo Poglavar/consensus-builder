@@ -318,6 +318,19 @@ function buildCityQueryParam() {
     return `?city=${encodeURIComponent(code)}`;
 }
 
+// Language flag for share URLs. Encodes the language the app is currently displayed in, so a
+// first-time recipient (one with no saved language preference) opens the proposal in that language.
+// Returning visitors who have explicitly picked a language keep it (see i18n.js precedence).
+// Always emitted with a leading '&' — callers append it after an existing query param (e.g. 3d).
+function shareLangParam() {
+    try {
+        const api = (typeof window !== 'undefined') ? window.i18n : null;
+        const lang = api && typeof api.getLanguage === 'function' ? api.getLanguage() : null;
+        if (lang) return `&lang=${encodeURIComponent(lang)}`;
+    } catch (_) { }
+    return '';
+}
+
 // ============================================================================
 // Parcel Collection/Validation for Sharing
 // ============================================================================

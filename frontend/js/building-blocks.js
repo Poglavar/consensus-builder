@@ -20,8 +20,8 @@ let generatedBuildingFeature = null;
 let blockifyBlockNameOverride = null;
 // Default parameter values
 const DEFAULT_SETBACK = 2; // meters
-const DEFAULT_BUILDING_WIDTH = 10; // meters
-const DEFAULT_BUILDING_HEIGHT = 12; // meters
+const DEFAULT_BUILDING_WIDTH = 15; // meters
+const DEFAULT_BUILDING_HEIGHT = 17.5; // meters (5 floors x 3.5 m)
 const DEFAULT_CHAMFER_M = 0; // meters (corner cut distance along each adjacent edge)
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
@@ -1674,9 +1674,9 @@ function showBlockifyModal() {
                 <div class="parameter-group">
                     <label for="height-slider">
                         <span data-i18n-key="blockify.modal.labels.height" data-i18n-attr="text">Building Height (m):</span>
-                        <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(0)}</span>
+                        <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(1)}</span>
                     </label>
-                    <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
+                    <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="0.5">
                 </div>
                 <div class="parameter-group">
                     <label for="gaps-slider">
@@ -1691,6 +1691,20 @@ function showBlockifyModal() {
                         <span id="gap-width-value">5</span>
                     </label>
                     <input type="range" id="gap-width-slider" min="1" max="20" value="5" step="1" disabled>
+                </div>
+                <div class="parameter-group">
+                    <label for="wings-slider">
+                        <span data-i18n-key="blockify.modal.labels.wings" data-i18n-attr="text">Number of wings:</span>
+                        <span id="wings-value">0</span>
+                    </label>
+                    <input type="range" id="wings-slider" min="0" max="10" value="0" step="1" disabled>
+                </div>
+                <div class="parameter-group">
+                    <label for="wing-length-slider">
+                        <span data-i18n-key="blockify.modal.labels.wingLength" data-i18n-attr="text">Wing length (m):</span>
+                        <span id="wing-length-value">10</span>
+                    </label>
+                    <input type="range" id="wing-length-slider" min="10" max="200" value="10" step="1" disabled>
                 </div>
                 <div class="parameter-info">
                     <p data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
@@ -1748,7 +1762,7 @@ function showBlockifyModal() {
         if (heightSlider) {
             heightSlider.addEventListener('input', function (e) {
                 currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('height-value').textContent = currentBuildingHeight.toFixed(0);
+                document.getElementById('height-value').textContent = currentBuildingHeight.toFixed(1);
                 // Only affects 3D extrusion; regenerate 3D using the current geometry
                 if (generatedBuildingFeature) {
                     updateBlockify3DScene(generatedBuildingFeature);
@@ -1772,6 +1786,26 @@ function showBlockifyModal() {
             gapWidthSlider.disabled = false;
             gapWidthSlider.addEventListener('input', function (e) {
                 document.getElementById('gap-width-value').textContent = e.target.value;
+                generateBuildingInModal();
+            });
+        }
+
+        // Enable wing sliders
+        const wingsSlider = document.getElementById('wings-slider');
+        const wingLengthSlider = document.getElementById('wing-length-slider');
+        if (wingsSlider) {
+            wingsSlider.disabled = false;
+            wingsSlider.value = 0;
+            document.getElementById('wings-value').textContent = '0';
+            wingsSlider.addEventListener('input', function (e) {
+                document.getElementById('wings-value').textContent = e.target.value;
+                generateBuildingInModal();
+            });
+        }
+        if (wingLengthSlider) {
+            wingLengthSlider.disabled = false;
+            wingLengthSlider.addEventListener('input', function (e) {
+                document.getElementById('wing-length-value').textContent = e.target.value;
                 generateBuildingInModal();
             });
         }
@@ -1948,6 +1982,123 @@ function displayBlockOnMap(block) {
 }
 
 // Function to generate building in the modal only
+// Union N rectangular wings (protrusions) onto the building, each extending inward toward the
+// courtyard. Wings are distributed evenly along the outer ring, point toward the block centroid,
+// and are capped so they never cross the opposite parcel border. Wings may overlap the building
+// and each other; the result is unioned into a single footprint.
+function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWidth, buildingWidth, numWings, wingLength }) {
+    if (!buildingFeature || !Array.isArray(outerCoords) || outerCoords.length < 2) return buildingFeature;
+
+    const ringLength = (coords) => {
+        let len = 0;
+        for (let i = 0; i < coords.length - 1; i++) {
+            len += turf.distance(turf.point(coords[i]), turf.point(coords[i + 1]), { units: 'meters' });
+        }
+        return len;
+    };
+    const pointAtDistance = (coords, targetDist) => {
+        let accum = 0;
+        for (let i = 0; i < coords.length - 1; i++) {
+            const segLen = turf.distance(turf.point(coords[i]), turf.point(coords[i + 1]), { units: 'meters' });
+            if (accum + segLen >= targetDist) {
+                const t = (targetDist - accum) / segLen;
+                return {
+                    point: [
+                        coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
+                        coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
+                    ],
+                    segmentIndex: i
+                };
+            }
+            accum += segLen;
+        }
+        return { point: coords[coords.length - 1], segmentIndex: coords.length - 2 };
+    };
+    const getTangentAt = (coords, segIndex) => {
+        const p1 = coords[segIndex];
+        const p2 = coords[segIndex + 1] || coords[0];
+        const dx = p2[0] - p1[0];
+        const dy = p2[1] - p1[1];
+        const mag = Math.sqrt(dx * dx + dy * dy) || 0.0001;
+        return { tx: dx / mag, ty: dy / mag };
+    };
+
+    const perimeter = ringLength(outerCoords);
+    if (!Number.isFinite(perimeter) || perimeter <= 0) return buildingFeature;
+
+    const centroid = turf.centroid(buildingFeature);
+    const [cx, cy] = centroid.geometry.coordinates;
+
+    // Ray-cast inward to find how far the parcel border is on the opposite side; caps wing length
+    const polygonBoundary = (superparcel && turf.polygonToLine) ? turf.polygonToLine(superparcel) : null;
+    const distanceToOppositeBorder = (startPoint, bearingDeg) => {
+        if (!polygonBoundary) return wingLength;
+        const rayEnd = turf.destination(turf.point(startPoint), 5000, bearingDeg, { units: 'meters' });
+        const ray = turf.lineString([startPoint, rayEnd.geometry.coordinates]);
+        const intersections = turf.lineIntersect(ray, polygonBoundary);
+        let closestPositive = Infinity;
+        if (intersections && intersections.features) {
+            for (const feat of intersections.features) {
+                const pt = feat.geometry && feat.geometry.coordinates;
+                if (!pt) continue;
+                const dist = turf.distance(turf.point(startPoint), turf.point(pt), { units: 'meters' });
+                if (dist > 0.5 && dist < closestPositive) closestPositive = dist;
+            }
+        }
+        return Number.isFinite(closestPositive) ? closestPositive : wingLength;
+    };
+
+    // Distribute wings evenly around the ring (offset so a single wing doesn't land on a corner)
+    const stride = perimeter / numWings;
+    const startOffset = numWings === 1 ? (perimeter * 0.37) % perimeter : stride / 2;
+    const halfWidth = Math.max(wingWidth, 1) / 2;
+    const borderMargin = 1; // keep the wing tip just short of the opposite parcel border
+
+    let result = buildingFeature;
+    for (let w = 0; w < numWings; w++) {
+        const centerDist = (startOffset + w * stride) % perimeter;
+        const info = pointAtDistance(outerCoords, centerDist);
+        const base = info.point;
+        const tan = getTangentAt(outerCoords, info.segmentIndex);
+
+        // Inward normal (toward the block centroid)
+        let nx = -tan.ty, ny = tan.tx;
+        if (nx * (cx - base[0]) + ny * (cy - base[1]) < 0) { nx = -nx; ny = -ny; }
+
+        const inwardBearingDeg = (Math.atan2(nx, ny) * 180) / Math.PI;
+        const tangentBearingDeg = (Math.atan2(tan.tx, tan.ty) * 180) / Math.PI;
+
+        // The rectangle starts on the outer ring, so the first `buildingWidth` metres overlap the
+        // building wall (watertight union) and `wingLength` is the protrusion past the inner edge
+        // into the courtyard. Cap the total so the wing never crosses the opposite parcel border.
+        const wallBridge = Math.max(buildingWidth, 0);
+        const maxLen = distanceToOppositeBorder(base, inwardBearingDeg) - borderMargin;
+        const len = Math.min(wallBridge + wingLength, maxLen);
+        if (len <= 0) continue;
+
+        // Rectangle spanning the wing width (along the ring tangent) and its length (inward).
+        const baseLeft = turf.destination(turf.point(base), halfWidth, tangentBearingDeg, { units: 'meters' }).geometry.coordinates;
+        const baseRight = turf.destination(turf.point(base), halfWidth, (tangentBearingDeg + 180) % 360, { units: 'meters' }).geometry.coordinates;
+        const tipLeft = turf.destination(turf.point(baseLeft), len, inwardBearingDeg, { units: 'meters' }).geometry.coordinates;
+        const tipRight = turf.destination(turf.point(baseRight), len, inwardBearingDeg, { units: 'meters' }).geometry.coordinates;
+
+        let wingPoly;
+        try { wingPoly = turf.polygon([[baseLeft, baseRight, tipRight, tipLeft, baseLeft]]); } catch (_) { continue; }
+        if (!wingPoly || !wingPoly.geometry) continue;
+
+        try {
+            const unioned = turf.union(result, wingPoly);
+            if (unioned && unioned.geometry) result = unioned;
+        } catch (e) {
+            console.warn('Wing union failed for wing', w, e);
+        }
+    }
+
+    // turf.union drops properties; restore the building's and record the wing params
+    result.properties = Object.assign({}, buildingFeature.properties, { numWings, wingLength });
+    return result;
+}
+
 function generateBuildingInModal() {
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
@@ -2058,7 +2209,7 @@ function generateBuildingInModal() {
                     chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: 0,
-                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+                    height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
                     numGaps: 0,
                     gapWidth: 0,
                     note: 'Inner courtyard omitted due to narrow geometry'
@@ -2127,7 +2278,7 @@ function generateBuildingInModal() {
                     chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
-                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+                    height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
                     numGaps,
                     gapWidth
                 },
@@ -2333,12 +2484,28 @@ function generateBuildingInModal() {
                     chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
-                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+                    height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT),
                     numGaps,
                     gapWidth: effectiveGapWidth
                 },
                 geometry: finalGeom
             };
+        }
+
+        // Add wings (protrusions toward the courtyard), unioned onto the building
+        const wingsSlider = document.getElementById('wings-slider');
+        const wingLengthSlider = document.getElementById('wing-length-slider');
+        const numWings = wingsSlider ? parseInt(wingsSlider.value) : 0;
+        const wingLength = wingLengthSlider ? parseFloat(wingLengthSlider.value) : 0;
+        if (numWings > 0 && wingLength > 0) {
+            buildingFeature = addWingsToBuilding(buildingFeature, {
+                outerCoords,
+                superparcel,
+                wingWidth: currentWidth,
+                buildingWidth: currentWidth,
+                numWings,
+                wingLength
+            });
         }
 
         // Apply row-house-style chamfer to sharp-ish vertices (internal angle <= 100°)
@@ -2392,7 +2559,7 @@ function generateBuildingInModal() {
             'Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)',
             {
                 width: currentWidth.toFixed(1),
-                height: Math.round(currentBuildingHeight).toFixed(0),
+                height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT).toFixed(1),
                 setback: SETBACK.toFixed(1)
             }
         );

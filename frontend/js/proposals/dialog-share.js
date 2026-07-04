@@ -904,7 +904,7 @@ function showSharePlanModal() {
             const sortedIds = sortProposalIdsForShare(uploadedIds);
             const cityParam = buildCityQueryParam();
             const queryJoiner = cityParam ? '&' : '?';
-            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${sortedIds.join(',')}${cityParam}${queryJoiner}3d`;
+            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${sortedIds.join(',')}${cityParam}${queryJoiner}3d${shareLangParam()}`;
             linkInput.value = shareUrl;
             linkRow.style.display = 'flex';
             setStatus('');

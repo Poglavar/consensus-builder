@@ -1454,7 +1454,9 @@
                 "width": "Building Width (m):",
                 "height": "Building Height (m):",
                 "gaps": "Number of gaps:",
-                "gapWidth": "Gap width (m):"
+                "gapWidth": "Gap width (m):",
+                "wings": "Number of wings:",
+                "wingLength": "Wing length (m):"
             },
             "helper": {
                 "adjust": "Adjust parameters using the sliders to modify the building shape.",

@@ -1444,7 +1444,9 @@
                 "width": "Ancho del edificio (m):",
                 "height": "Altura del edificio (m):",
                 "gaps": "Número de huecos:",
-                "gapWidth": "Ancho de hueco (m):"
+                "gapWidth": "Ancho de hueco (m):",
+                "wings": "Número de alas:",
+                "wingLength": "Longitud de ala (m):"
             },
             "helper": {
                 "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma del edificio.",

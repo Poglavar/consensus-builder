@@ -1383,7 +1383,9 @@
                 "width": "Širina zgrade (m):",
                 "height": "Visina zgrade (m):",
                 "gaps": "Broj otvora:",
-                "gapWidth": "Širina otvora (m):"
+                "gapWidth": "Širina otvora (m):",
+                "wings": "Broj krila:",
+                "wingLength": "Dužina krila (m):"
             },
             "helper": {
                 "adjust": "Podesite parametre klizačima da izmenite oblik zgrade.",

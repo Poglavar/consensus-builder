@@ -1080,7 +1080,8 @@ function showUploadProposalModal(proposal) {
                 ? getServerProposalId(proposal)
                 : (proposal && (proposal.serverProposalId || proposal.id));
             if (serverId && /^\d+$/.test(String(serverId))) {
-                return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}`;
+                const joiner = cityQueryParam ? '&' : '?';
+                return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}${joiner}3d${shareLangParam()}`;
             }
             return null;
         } catch (err) {
@@ -1203,7 +1204,8 @@ function showUploadProposalModal(proposal) {
             }
             uploadStatus.textContent = uploadSuccessText;
             uploadStatus.style.color = '#2b3954'; // Success: dark text instead of red
-            shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}`;
+            const shareUrlJoiner = cityQueryParam ? '&' : '?';
+            shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}${shareUrlJoiner}3d${shareLangParam()}`;
             proposal.serverProposalId = uploadedId;
 
             if (typeof proposalStorage !== 'undefined') {

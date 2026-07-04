@@ -891,11 +891,28 @@ const proposalStorage = {
         // Descendants are always re-derived deterministically from (ancestors, rule) on apply.
         // Inbound payloads from server / chain / share links may still include these blobs;
         // strip them at the storage boundary so they cannot leak into local proposal records.
+        //
+        // EXCEPTION: government road-plan proposals. Their definition holds no geometry
+        // (kind: 'government_plan', no polygon/points) and childParcelIds is empty, so the
+        // descendant road geometry cannot be re-derived — it lives solely in childFeatures.
+        // Preserve it, otherwise apply reads back an empty child set and returns false.
+        const isGovernmentPlan = proposal?.tags?.governmentPlan === true
+            || proposal?.roadProposal?.definition?.kind === 'government_plan'
+            || proposal?.geometry?.roadPlan?.kind === 'government_plan';
+        const preservedChildFeatures = isGovernmentPlan
+            ? (Array.isArray(proposal.childFeatures) && proposal.childFeatures.length
+                ? proposal.childFeatures
+                : (Array.isArray(proposal.roadProposal?.childFeatures) ? proposal.roadProposal.childFeatures : null))
+            : null;
+
         delete proposal.parentFeatures;
         delete proposal.childFeatures;
         if (proposal.geometry && typeof proposal.geometry === 'object') {
             delete proposal.geometry.parentFeatures;
             delete proposal.geometry.childFeatures;
+        }
+        if (preservedChildFeatures && preservedChildFeatures.length) {
+            proposal.childFeatures = preservedChildFeatures;
         }
         const normalizedParentParcelIds = normalizeParcelIdList(
             (proposal.parentParcelIds && proposal.parentParcelIds.length ? proposal.parentParcelIds : proposal.parcelIds) || []

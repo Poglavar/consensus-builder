@@ -252,6 +252,59 @@
         return hull;
     }
 
+    // Drop coincident duplicate meshes from a nearby-buildings response. Some city 3D models
+    // (notably Zagreb building_3d) store a building twice under different object_ids with the same
+    // footprint — this causes z-fighting in the 3D view and double-counts existing volume in the
+    // gain calc. Deduping once at fetch intake gives every consumer a clean list. Two buildings are
+    // treated as the same when their vertex-mean centroids are within ~2 m and their vertical
+    // extents (z_min/z_max) match within 1 m. A ~5 m spatial grid with a 3x3 neighbour scan keeps
+    // this O(vertices) — no convex hulls — so even a multi-thousand-building response costs a few ms.
+    function dedupeCoincidentBuildings(buildings) {
+        if (!Array.isArray(buildings) || buildings.length < 2) return buildings || [];
+        const CELL_M = 5, MERGE_DIST_M = 2;
+        const grid = new Map();
+        const keep = [];
+        for (const bld of buildings) {
+            let sx = 0, sy = 0, n = 0;
+            if (Array.isArray(bld.faces)) {
+                for (const face of bld.faces) {
+                    const coords = face && face.coordinates;
+                    if (!Array.isArray(coords)) continue;
+                    for (const ring of coords) {
+                        if (!Array.isArray(ring)) continue;
+                        for (const c of ring) {
+                            if (c && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])) { sx += c[0]; sy += c[1]; n++; }
+                        }
+                    }
+                }
+            }
+            if (!n) { keep.push(bld); continue; }
+            const lng = sx / n, lat = sy / n;
+            const x = lng * 111320 * Math.cos(lat * Math.PI / 180);
+            const y = lat * 110540;
+            const ci = Math.floor(x / CELL_M), cj = Math.floor(y / CELL_M);
+            const zmin = Number(bld.z_min), zmax = Number(bld.z_max);
+            let dup = false;
+            for (let di = -1; di <= 1 && !dup; di++) {
+                for (let dj = -1; dj <= 1 && !dup; dj++) {
+                    const arr = grid.get((ci + di) + ':' + (cj + dj));
+                    if (!arr) continue;
+                    for (const e of arr) {
+                        if (Math.hypot(e.x - x, e.y - y) < MERGE_DIST_M
+                            && Math.abs(e.zmax - zmax) < 1 && Math.abs(e.zmin - zmin) < 1) { dup = true; break; }
+                    }
+                }
+            }
+            if (dup) continue;
+            const key = ci + ':' + cj;
+            let cell = grid.get(key);
+            if (!cell) { cell = []; grid.set(key, cell); }
+            cell.push({ x, y, zmin, zmax });
+            keep.push(bld);
+        }
+        return keep;
+    }
+
     // Built/proposed volume (m³), derived floor area (m²) and the € value gain for one parcel.
     // Built volume comes from the existing 3D buildings (footprint ∩ parcel × their height);
     // proposed volume from window.proposedBuildings the same way. Floor area = volume / storey
@@ -261,6 +314,8 @@
         if (!parcel) return null;
 
         let builtVolume = 0;
+        // nearbyProposalBuildings is deduped at fetch intake (dedupeCoincidentBuildings), so twin
+        // meshes no longer double-count here.
         const builtList = Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [];
         for (const bld of builtList) {
             const h = (Number.isFinite(bld.z_max) && Number.isFinite(bld.z_min)) ? (bld.z_max - bld.z_min) : 0;
@@ -1463,10 +1518,12 @@
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
-                nearbyProposalBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
+                const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
+                nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'})`);
+                const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
+                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'}${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly();
                 updateBuildingsLoader();
             })
