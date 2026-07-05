@@ -160,17 +160,23 @@
         proposalEntities.push(ent);
     }
 
-    // Sampling the Google mesh for the exact ground height under a footprint is what used to make
-    // entering realistic mode feel stalled (~10s waiting on tiles to stream). Instead we draw each
-    // box immediately on a provisional base, then refine its base in the background once the mesh
-    // under it has streamed in — so the proposal appears instantly and settles onto the ground after.
+    // Sampling the ground height under a footprint is what used to make entering realistic mode feel
+    // stalled (~10s). Instead we draw each box immediately on a provisional base, then refine its base
+    // in the background — so the proposal appears instantly and settles onto the ground after.
+    //
+    // We sample the world-terrain DEM (light, loads fully on any device) rather than the Google
+    // photoreal mesh: on mobile the heavy mesh only streams to a coarse LOD, so mesh sampling returned
+    // wildly wrong heights and flung the box out of view ("briefly draws then disappears"). Terrain
+    // sampling is deterministic across mobile/desktop and gives bare-ground height (no rooftop hits).
     function refineBase(ent, outer, hM) {
         if (!viewer) return;
+        // No real terrain (world-terrain load failed) -> provisional base is already ellipsoid 0; skip.
+        if (!viewer.terrainProvider || viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) return;
         let cartos;
         try {
             cartos = outer.map(function (c) { return Cesium.Cartographic.fromDegrees(c[0], c[1]); });
         } catch (_) { return; }
-        viewer.scene.sampleHeightMostDetailed(cartos).then(function (sampled) {
+        Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartos).then(function (sampled) {
             const hs = sampled.map(function (s) { return (s && isFinite(s.height)) ? s.height : null; })
                 .filter(function (v) { return v !== null; });
             if (!hs.length) return;
