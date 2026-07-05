@@ -24,6 +24,9 @@ const DEFAULT_BUILDING_WIDTH = 15; // meters
 const DEFAULT_BUILDING_HEIGHT = 17.5; // meters (5 floors x 3.5 m)
 const DEFAULT_CHAMFER_M = 0; // meters (corner cut distance along each adjacent edge)
 const DEFAULT_SIMPLIFY_M = 0; // meters (0 = follow parcels exactly; higher smooths jagged outlines)
+// Chamfer every convex corner up to this internal angle. High enough to catch obtuse corners on
+// irregular blocks, low enough to skip near-straight arc segments (~174° from the negative buffer).
+const CHAMFER_MAX_INTERNAL_ANGLE_DEG = 165;
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
@@ -2361,7 +2364,7 @@ function generateBuildingInModal() {
                     coordinates: [outerCoordsOnly]
                 }
             };
-            const chamfered = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
+            const chamfered = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, CHAMFER_MAX_INTERNAL_ANGLE_DEG);
             generatedBuildingFeature = chamfered;
             displayBuildingInModal(chamfered);
             clearGapWingHandles(); // solid fallback: no courtyard, so no gap/wing handles
@@ -2649,8 +2652,12 @@ function generateBuildingInModal() {
             });
         }
 
-        // Apply row-house-style chamfer to sharp-ish vertices (internal angle <= 100°)
-        buildingFeature = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
+        // Chamfer every real convex corner (internal angle up to CHAMFER_MAX_INTERNAL_ANGLE_DEG). The
+        // old 100° cap only cut near-right-angle corners, so obtuse corners on irregular blocks were
+        // skipped — chamfering looked arbitrary ("2 of 4", outer-but-not-inner). Corners rounded into
+        // arcs by the negative buffer sit at ~174° and are still skipped (nothing sharp to cut), as
+        // are reflex/notch corners (>180°).
+        buildingFeature = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, CHAMFER_MAX_INTERNAL_ANGLE_DEG);
         generatedBuildingFeature = buildingFeature;
         displayBuildingInModal(buildingFeature);
         renderGapWingHandles();
