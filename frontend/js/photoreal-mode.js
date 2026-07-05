@@ -160,10 +160,35 @@
         proposalEntities.push(ent);
     }
 
-    async function renderProposedBuildings() {
+    // Sampling the Google mesh for the exact ground height under a footprint is what used to make
+    // entering realistic mode feel stalled (~10s waiting on tiles to stream). Instead we draw each
+    // box immediately on a provisional base, then refine its base in the background once the mesh
+    // under it has streamed in — so the proposal appears instantly and settles onto the ground after.
+    function refineBase(ent, outer, hM) {
+        if (!viewer) return;
+        let cartos;
+        try {
+            cartos = outer.map(function (c) { return Cesium.Cartographic.fromDegrees(c[0], c[1]); });
+        } catch (_) { return; }
+        viewer.scene.sampleHeightMostDetailed(cartos).then(function (sampled) {
+            const hs = sampled.map(function (s) { return (s && isFinite(s.height)) ? s.height : null; })
+                .filter(function (v) { return v !== null; });
+            if (!hs.length) return;
+            const base = Math.min.apply(null, hs);
+            // The entity may have been cleared/replaced by a re-render in the meantime — patching a
+            // removed entity is harmless, so no guard needed.
+            ent.polygon.height = base;
+            ent.polygon.extrudedHeight = base + hM;
+        }).catch(function () { /* keep the provisional base */ });
+    }
+
+    function renderProposedBuildings() {
         if (!viewer) return;
         clearProposal();
         const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        // Provisional base for every box: the entry target's ground height (sampled from world
+        // terrain, already loaded) — good enough to appear on the ground before per-box mesh refine.
+        const provisionalBase = lastGroundHeight || 0;
         for (let i = 0; i < arr.length; i++) {
             const feat = arr[i];
             if (!feat || !feat.geometry) continue;
@@ -180,15 +205,6 @@
                 if (!rings || !Array.isArray(rings[0]) || rings[0].length < 3) continue;
                 const outer = rings[0];
                 // Footprints are EPSG:4326 [lng,lat] — fed straight to Cesium (it does geo->ECEF).
-                // Sample the photoreal mesh under the outer ring so the massing sits on the ground.
-                let base = 0;
-                try {
-                    const cartos = outer.map(function (c) { return Cesium.Cartographic.fromDegrees(c[0], c[1]); });
-                    const sampled = await viewer.scene.sampleHeightMostDetailed(cartos);
-                    const hs = sampled.map(function (s) { return (s && isFinite(s.height)) ? s.height : null; })
-                        .filter(function (v) { return v !== null; });
-                    if (hs.length) base = Math.min.apply(null, hs);
-                } catch (_) { /* fall back to ellipsoid height 0 */ }
 
                 // Inner rings become holes so courtyards (perimeter blocks) stay open — matching
                 // the legacy 3D extrusion, which honours shape.holes.
@@ -202,14 +218,16 @@
                     polygon: {
                         hierarchy: new Cesium.PolygonHierarchy(ringToCartesians(outer), holes),
                         perPositionHeight: false,
-                        height: base,
-                        extrudedHeight: base + hM,
+                        height: provisionalBase,
+                        extrudedHeight: provisionalBase + hM,
                         material: Cesium.Color.fromCssColorString(color).withAlpha(0.85),
                         outline: true,
                         outlineColor: Cesium.Color.WHITE
                     }
                 });
                 proposalEntities.push(ent);
+                // Settle the box onto the real mesh once the tiles under it stream in (non-blocking).
+                refineBase(ent, outer, hM);
             }
         }
     }
@@ -326,8 +344,11 @@
                 setCameraToView(entryView, 0);
                 await applyEntryView(entryView);
             }
+            // Draw the proposal right away on a provisional (terrain) base — don't wait on the mesh.
+            // Each box then settles onto the real ground in the background as tiles stream in, so the
+            // proposal is visible immediately instead of after the ~10s mesh-height sampling.
+            renderProposedBuildings();
             await ensureTileset();
-            await renderProposedBuildings();
             if (entryView) await applyEntryView(entryView); // fine-tune once the photoreal mesh is present
             if (options.autoRotate && entryView) startAutoRotate(entryView);
         } catch (err) {
