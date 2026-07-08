@@ -22,7 +22,7 @@ describe('Zagreb 3D provider — near()', () => {
         const { sql, params } = pool.getCalls()[0];
         // The distance ordering must precede the cap — without it the LIMIT keeps an arbitrary
         // subset. (Match the clause tokens, not bare ORDER BY/LIMIT, which also appear in comments.)
-        const orderIdx = sql.indexOf('b.shape <-> q.g');
+        const orderIdx = sql.indexOf('b.geom2d_3765 <-> q.g');
         const limitIdx = sql.indexOf('LIMIT 4000');
         expect(orderIdx).toBeGreaterThan(-1);
         // Cap is well above the densest 500m-radius query so the radius is the real limiter.
