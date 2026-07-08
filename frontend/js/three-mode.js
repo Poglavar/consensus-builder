@@ -48,7 +48,25 @@
 
     const threeContainer = document.getElementById('three-container');
     const toggleBtn = document.getElementById('mode-3d-toggle');
+    const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
+
+    // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
+    // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
+    // realistic when the photoreal globe is up. Called on every mode transition (here and
+    // from photoreal-mode.js). Exposed globally so photoreal can reuse it.
+    function updateModeButtonStates() {
+        try {
+            const rw = !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
+            const btn2d = document.getElementById('mode-2d-toggle');
+            const btn3d = document.getElementById('mode-3d-toggle');
+            const btnRw = document.getElementById('mode-realistic-toggle');
+            if (btn2d) btn2d.classList.toggle('active', !isActive);
+            if (btn3d) btn3d.classList.toggle('active', isActive && !rw);
+            if (btnRw) btnRw.classList.toggle('active', rw);
+        } catch (_) { }
+    }
+    window.updateModeButtonStates = updateModeButtonStates;
 
     // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
     // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
@@ -2500,13 +2518,13 @@
 
     function startLoop() {
         cancelLoop();
-        // We are ready: hide overlay and set the button label to 2D
+        // We are ready: hide overlay and settle the mode buttons.
         hideRenderingOverlay();
         isTransitioning3D = false;
-        if (toggleBtn && isActive) {
-            toggleBtn.textContent = '2D';
-            toggleBtn.title = threeI18n('threeMode.toggle.switchTo2d', 'Switch to 2D');
-        }
+        updateModeButtonStates();
+        // Signal readiness so callers that entered 3D just to stack another mode on top
+        // (e.g. realistic-from-2D) can proceed once the abstract scene is actually up.
+        try { window.dispatchEvent(new Event('threeModeReady')); } catch (_) { }
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
         if (pendingIntroAutoRotate) {
             pendingIntroAutoRotate = false;
@@ -2705,11 +2723,7 @@
         }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
         if (threeContainer) threeContainer.classList.add('active');
-        if (toggleBtn) {
-            toggleBtn.classList.add('active');
-            toggleBtn.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
-            toggleBtn.title = threeI18n('threeMode.toggle.preparing3d', 'Preparing 3D view');
-        }
+        updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
         showRenderingOverlay();
@@ -2728,11 +2742,11 @@
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
         if (threeContainer) threeContainer.classList.remove('active');
-        if (toggleBtn) {
-            toggleBtn.classList.remove('active');
-            toggleBtn.textContent = '3D';
-            toggleBtn.title = threeI18n('threeMode.toggle.switchTo3d', 'Switch to 3D');
-        }
+        // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
+        // and the transition guard would otherwise leak and jam future entries.
+        isTransitioning3D = false;
+        hideRenderingOverlay();
+        updateModeButtonStates();
         enableLeafletInteractions();
         enableSidebarAfter3D();
         pendingModelLoads = 0;
@@ -2740,9 +2754,6 @@
         disposeScene();
     }
 
-    function toggle3D() {
-        if (isActive) exit3D(); else enter3D();
-    }
 
     // Optional: rebuild content if parcel data reloads while in 3D
     window.addEventListener('parcelDataLoaded', () => {
@@ -2826,29 +2837,39 @@
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
     });
 
-    // Wire button
+    function realisticActive() {
+        return !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
+    }
+
+    // Wire the 3D button. It always means "abstract 3D": from realistic it drops the globe,
+    // from 2D it enters 3D, and while already in abstract 3D it does nothing.
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function () {
-            if (isActive) {
-                // Exit immediately
-                toggle3D();
+            if (realisticActive()) {
+                try { window.PhotorealMode.deactivate(); } catch (_) { }
+                updateModeButtonStates();
                 return;
             }
+            if (isActive) return; // already in abstract 3D
             if (isTransitioning3D) return;
             isTransitioning3D = true;
-            // Show immediate feedback in 2D before heavy work starts
-            if (toggleBtn) {
-                toggleBtn.classList.add('active');
-                toggleBtn.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
-                toggleBtn.title = threeI18n('threeMode.toggle.preparing3d', 'Preparing 3D view');
-            }
+            updateModeButtonStates();
             showRenderingOverlay();
-            // Defer heavy initialization to allow the overlay/button to paint first
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    enter3D();
-                });
-            });
+            // Yield once so the overlay/button paints before the heavy scene init. setTimeout
+            // (not rAF) so it still fires when the tab is throttled and rAF would stall.
+            setTimeout(enter3D, 0);
+        });
+    }
+
+    // Wire the 2D button. It always returns to the flat Leaflet map, dropping the globe first
+    // if realistic is up, then exiting 3D.
+    if (toggle2dBtn) {
+        toggle2dBtn.addEventListener('click', function () {
+            if (realisticActive()) {
+                try { window.PhotorealMode.deactivate(); } catch (_) { }
+            }
+            if (isActive) exit3D();
+            updateModeButtonStates();
         });
     }
 
@@ -3114,6 +3135,9 @@
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
+
+    // Initial paint: mark 2D as the active mode on load.
+    updateModeButtonStates();
 })();
 
 

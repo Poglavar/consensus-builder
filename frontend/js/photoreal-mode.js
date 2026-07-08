@@ -334,6 +334,12 @@
         options = options || {};
         const btn = toggleBtn();
         if (btn) { btn.classList.add('active'); btn.disabled = true; }
+        // Select the globe (and deselect 2D/3D) immediately, before the async tile load —
+        // updateModeButtonStates keys off `active`, which only flips true once the viewer is up.
+        try {
+            const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.classList.remove('active');
+            const b3 = document.getElementById('mode-3d-toggle'); if (b3) b3.classList.remove('active');
+        } catch (_) { }
         document.body.classList.add('realistic-mode-active');
         const el = containerEl();
         if (el) el.classList.add('active'); // give the container size before creating the viewer
@@ -362,6 +368,9 @@
             setStatus('Failed to load photorealistic 3D.');
         } finally {
             if (btn) btn.disabled = false;
+            // Re-sync the mode buttons to the settled state — if activation failed, `active`
+            // is still false and this drops the globe's selection back onto 3D.
+            if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
         }
     }
 
@@ -373,10 +382,38 @@
         document.body.classList.remove('realistic-mode-active');
         const btn = toggleBtn();
         if (btn) btn.classList.remove('active');
+        if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
+        // The abstract-3D canvas was display:none while the globe covered it, so its renderer
+        // size may be stale if the window changed meanwhile. Nudge three-mode to re-fit.
+        try { window.dispatchEvent(new Event('resize')); } catch (_) { }
     }
 
     function toggle() {
         if (active) deactivate(); else activate();
+    }
+
+    // Globe-button click: go to real-world. It's a no-op when already realistic (use the
+    // 2D / 3D buttons to leave). From 2D it first enters abstract 3D so the realistic globe
+    // sits on top of a live 3D scene, matching the 3D → realistic path; we wait for the 3D
+    // scene to actually be up (threeModeReady) before overlaying Cesium, so the two don't
+    // race and leave the 3D entry half-initialised.
+    function goRealistic() {
+        if (active) return;
+        if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
+            activate();
+            return;
+        }
+        if (typeof window.enterThreeMode !== 'function') { activate(); return; }
+        // Select the globe immediately for responsive feedback, then wait for 3D readiness.
+        const btn = toggleBtn();
+        if (btn) btn.classList.add('active');
+        try {
+            const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.classList.remove('active');
+            const b3 = document.getElementById('mode-3d-toggle'); if (b3) b3.classList.remove('active');
+        } catch (_) { }
+        const onReady = function () { window.removeEventListener('threeModeReady', onReady); activate(); };
+        window.addEventListener('threeModeReady', onReady);
+        try { window.enterThreeMode(); } catch (_) { window.removeEventListener('threeModeReady', onReady); }
     }
 
     // Re-render when the proposal changes while we're showing the globe.
@@ -394,7 +431,8 @@
 
     function init() {
         const btn = toggleBtn();
-        if (btn) btn.addEventListener('click', toggle);
+        if (btn) btn.addEventListener('click', goRealistic);
+        if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

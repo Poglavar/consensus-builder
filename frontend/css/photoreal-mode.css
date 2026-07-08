@@ -28,13 +28,13 @@ body.realistic-mode-active #mode-walk-toggle {
     display: none !important;
 }
 
-/* Toggle button — stacked above the walk button, visible only while in 3D mode. */
+/* Realistic (real-world globe) button — top of the 2D / 3D / globe mode stack, always visible. */
 #mode-realistic-toggle.map-mode-realistic-btn {
     position: absolute;
     right: 10px;
     bottom: 144px;
     z-index: 1001;
-    display: none;
+    display: inline-flex;
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 4px;
@@ -50,10 +50,6 @@ body.realistic-mode-active #mode-walk-toggle {
     cursor: pointer;
     align-items: center;
     justify-content: center;
-}
-
-body.three-mode-active #mode-realistic-toggle.map-mode-realistic-btn {
-    display: inline-flex;
 }
 
 #mode-realistic-toggle.map-mode-realistic-btn:hover {

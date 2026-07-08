@@ -599,10 +599,12 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     cursor: not-allowed;
 }
 
+#mode-2d-toggle.map-mode-toggle:hover,
 #mode-3d-toggle.map-mode-toggle:hover {
     background: #f5f5f5;
 }
 
+#mode-2d-toggle.map-mode-toggle.active,
 #mode-3d-toggle.map-mode-toggle.active {
     background: #333;
     color: #fff;

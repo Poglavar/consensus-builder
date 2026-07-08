@@ -1,10 +1,13 @@
 /* ========== Map ========== */
 
-/* Map 3D toggle button */
+/* Map 2D / 3D mode buttons.
+   Stacked, always-visible radio-style controls (bottom → top): 2D, 3D, then the
+   realistic globe (styled in photoreal-mode.css). The active mode's button gets the
+   .active "pressed" look (see sidebar.css). */
+#mode-2d-toggle.map-mode-toggle,
 #mode-3d-toggle.map-mode-toggle {
     position: absolute;
     right: 10px;
-    bottom: 48px;
     z-index: 1000;
     background: white;
     border: 1px solid rgba(0,0,0,0.2);
@@ -19,14 +22,16 @@
     cursor: pointer;
 }
 
-/* Walk-through button — appears just above the 3D toggle while in 3D mode.
-   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
-   Matches the 3D toggle's box dimensions and uses a yellow fill so it stands out from the
-   3D / 2D mode-toggle pair. */
+#mode-2d-toggle.map-mode-toggle { bottom: 48px; }
+#mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+
+/* Walk-through button — stacked above the mode buttons (2D / 3D / globe) and only
+   visible while in 3D mode. Hidden by default via the [hidden] attribute; three-mode.js
+   toggles visibility on enter/exit. Yellow fill so it stands out from the mode buttons. */
 #mode-walk-toggle.map-mode-walk-btn {
     position: absolute;
     right: 10px;
-    bottom: 96px;
+    bottom: 192px;
     z-index: 1000;
     background: #fdd835;
     border: 1px solid rgba(0, 0, 0, 0.2);
