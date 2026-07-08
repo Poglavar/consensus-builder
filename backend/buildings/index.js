@@ -36,5 +36,12 @@ export function createBuildingProviders(pool, env = process.env) {
         return providers[cityId] || providers[DEFAULT_CITY] || null;
     }
 
-    return { resolve };
+    // Like resolve(), but an unknown city yields null instead of the Zagreb fallback. Used for
+    // capability checks (e.g. "does this city have footprint data?") where falling back to
+    // another city's provider would give a wrong answer.
+    function resolveExact(cityId) {
+        return providers[cityId || DEFAULT_CITY] || null;
+    }
+
+    return { resolve, resolveExact };
 }

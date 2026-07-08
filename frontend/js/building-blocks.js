@@ -45,8 +45,26 @@ let blockifyLiveLayer = null;    // transient dashed outline shown while draggin
 // outer ring's vertices are draggable, the footprint sliders are inert, and the courtyard is still
 // re-inset by the (frozen) building width. Height stays live. "Back to sliders" regenerates
 // parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
-let blockifyMode = 'parametric';  // 'parametric' | 'manual'
+let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
+// "Based on existing buildings" mode: the proposal is derived from the existing building
+// footprints on the selected parcels instead of a freeform slider shape. Two independent rules,
+// picked by radio (moving a slider also activates its rule): "proposed height" extrudes EVERY
+// footprint to exactly that height; "additional floors" adds floors on top of each building's
+// current height (uncapped, so it needs known heights). Footprints (+ per-building heights where
+// the city's data knows them) come from POST /buildings/footprints — an optional per-city backend
+// capability, so cities without a footprint source simply report unsupported and the toggle reverts.
+const DEFAULT_FLOOR_HEIGHT_M = 3.5;     // one storey, matches DEFAULT_BUILDING_HEIGHT (5 floors x 3.5 m)
+const DEFAULT_PROPOSED_HEIGHT_FLOORS = 6;
+const DEFAULT_ADDITIONAL_FLOORS = 1;
+let existingRule = 'exact';             // 'exact' (proposed height) | 'additional' (added floors)
+let currentProposedHeightFloors = DEFAULT_PROPOSED_HEIGHT_FLOORS;
+let currentAdditionalFloors = DEFAULT_ADDITIONAL_FLOORS;
+let currentFloorHeightM = DEFAULT_FLOOR_HEIGHT_M;
+let existingFootprints = null;          // [{ id, geometry, height_m, floors }] for the current block
+let existingFootprintsPromise = null;   // in-flight/settled fetch; one per modal open
+let generatedBuildingFeatures = null;   // existing-mode result: one Feature per raised building
+let blockifyFootprintLayer = null;      // Leaflet layer outlining the fetched footprints
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
@@ -1202,8 +1220,13 @@ function initBlockify3DSimple() {
     blockify3D.resizeHandler = handleResize;
 }
 
-function updateBlockify3DScene(buildingFeature) {
-    if (!buildingFeature || !buildingFeature.geometry) return;
+function updateBlockify3DScene(buildingFeatureOrFeatures) {
+    // Accepts a single Feature (freeform/manual mode) or an array of Features with per-building
+    // properties.height (existing-buildings mode). An empty array clears the proposal meshes.
+    const features = Array.isArray(buildingFeatureOrFeatures)
+        ? buildingFeatureOrFeatures.filter(f => f && f.geometry)
+        : (buildingFeatureOrFeatures && buildingFeatureOrFeatures.geometry ? [buildingFeatureOrFeatures] : []);
+    if (!Array.isArray(buildingFeatureOrFeatures) && !features.length) return;
     if (typeof THREE === 'undefined') return;
     if (!blockify3D || !blockify3D.renderer) {
         initBlockify3DSimple();
@@ -1222,8 +1245,10 @@ function updateBlockify3DScene(buildingFeature) {
         group.remove(ch);
     }
 
-    let heightMeters = Number.isFinite(currentBuildingHeight) ? currentBuildingHeight : DEFAULT_BUILDING_HEIGHT;
-    heightMeters = Math.max(3, Math.min(80, Math.round(heightMeters))) || 20;
+    if (!features.length) return; // scene stays cleared (e.g. no buildings left to raise)
+
+    let fallbackHeightMeters = Number.isFinite(currentBuildingHeight) ? currentBuildingHeight : DEFAULT_BUILDING_HEIGHT;
+    fallbackHeightMeters = Math.max(3, Math.min(80, Math.round(fallbackHeightMeters))) || 20;
 
     // Compute anchor from active block parcels or building footprint
     let anchor = blockify3D.anchorLngLat;
@@ -1252,7 +1277,7 @@ function updateBlockify3DScene(buildingFeature) {
         } else {
             // Fallback: compute anchor from building feature coordinates
             // Handle both Polygon and MultiPolygon
-            const geom = buildingFeature.geometry;
+            const geom = features[0].geometry;
             let firstCoord = null;
             if (geom.type === 'Polygon' && geom.coordinates?.[0]?.[0]) {
                 firstCoord = geom.coordinates[0][0];
@@ -1266,7 +1291,7 @@ function updateBlockify3DScene(buildingFeature) {
         setBlockify3DAnchor(anchor.lng, anchor.lat);
     } catch (_) { }
 
-    loadBlockifyContextBuildings(buildingFeature, anchor);
+    loadBlockifyContextBuildings(features[0], anchor);
 
     const mat = new THREE.MeshPhongMaterial({
         color: 0x1e3a8a, // deeper blue
@@ -1287,9 +1312,19 @@ function updateBlockify3DScene(buildingFeature) {
         side: THREE.DoubleSide
     });
 
-    const meshes = buildExtrudedMeshes(buildingFeature.geometry, heightMeters, mat, roofMat, anchor);
+    const meshes = [];
+    features.forEach(feature => {
+        // Per-building heights only apply in existing-buildings mode. In freeform mode the height
+        // slider updates currentBuildingHeight without regenerating the feature, so its
+        // properties.height can be stale — the fallback keeps the slider live there.
+        const propH = Number(feature.properties && feature.properties.height);
+        const heightMeters = (feature.properties && feature.properties.basedOnExisting && Number.isFinite(propH) && propH > 0)
+            ? Math.min(propH, 400)
+            : fallbackHeightMeters;
+        meshes.push(...buildExtrudedMeshes(feature.geometry, heightMeters, mat, roofMat, anchor));
+    });
     if (!meshes.length) {
-        console.warn('[3D] No meshes built for buildingFeature');
+        console.warn('[3D] No meshes built for building features');
         return;
     }
     meshes.forEach(mesh => {
@@ -1660,7 +1695,7 @@ function showBlockifyModal() {
                 </div>
             </div>
             <div id="blockify-sidebar">
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="algorithm-select" data-i18n-key="blockify.modal.algorithmLabel">Algorithm:</label>
                     <select id="algorithm-select" disabled>
                         ${algorithmOptions}
@@ -1671,77 +1706,107 @@ function showBlockifyModal() {
                 </div>
                 <h3 data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
                 <div class="parameter-group">
+                    <label class="blockify-existing-toggle" for="blockify-existing-toggle">
+                        <input type="checkbox" id="blockify-existing-toggle">
+                        <span data-i18n-key="blockify.modal.existing.toggle" data-i18n-attr="text">Based on existing buildings</span>
+                    </label>
+                </div>
+                <div class="parameter-group blockify-existing-only" style="display:none">
+                    <label class="blockify-rule-label" for="proposed-height-slider">
+                        <input type="radio" id="blockify-rule-exact" name="blockify-existing-rule" value="exact" checked>
+                        <span data-i18n-key="blockify.modal.existing.proposedHeight" data-i18n-attr="text">Proposed height (floors):</span>
+                        <span id="proposed-height-value">${DEFAULT_PROPOSED_HEIGHT_FLOORS} (${(DEFAULT_PROPOSED_HEIGHT_FLOORS * DEFAULT_FLOOR_HEIGHT_M).toFixed(1)} m)</span>
+                    </label>
+                    <input type="range" id="proposed-height-slider" min="1" max="20" value="${DEFAULT_PROPOSED_HEIGHT_FLOORS}" step="1">
+                </div>
+                <div class="parameter-group blockify-existing-only" style="display:none">
+                    <label class="blockify-rule-label" for="additional-floors-slider">
+                        <input type="radio" id="blockify-rule-additional" name="blockify-existing-rule" value="additional">
+                        <span data-i18n-key="blockify.modal.existing.additionalFloors" data-i18n-attr="text">Additional floors:</span>
+                        <span id="additional-floors-value">${DEFAULT_ADDITIONAL_FLOORS}</span>
+                    </label>
+                    <input type="range" id="additional-floors-slider" min="1" max="20" value="${DEFAULT_ADDITIONAL_FLOORS}" step="1" disabled>
+                </div>
+                <div class="parameter-group blockify-existing-only" style="display:none">
+                    <label for="floor-height-slider">
+                        <span data-i18n-key="blockify.modal.existing.floorHeight" data-i18n-attr="text">Floor height (m):</span>
+                        <span id="floor-height-value">${DEFAULT_FLOOR_HEIGHT_M.toFixed(1)}</span>
+                    </label>
+                    <input type="range" id="floor-height-slider" min="2.5" max="5" value="${DEFAULT_FLOOR_HEIGHT_M}" step="0.1">
+                </div>
+                <div class="parameter-group blockify-freeform-only">
                     <label for="setback-slider">
                         <span data-i18n-key="blockify.modal.labels.setback" data-i18n-attr="text">Setback (m):</span>
                         <span id="setback-value">${DEFAULT_SETBACK.toFixed(1)}</span>
                     </label>
                     <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="chamfer-slider">
                         <span data-i18n-key="blockify.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
                         <span id="chamfer-value">${currentChamferM.toFixed(1)}</span>
                     </label>
                     <input type="range" id="chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER_M}" step="0.5">
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="simplify-slider">
                         <span data-i18n-key="blockify.modal.labels.simplify" data-i18n-attr="text">Simplify (m):</span>
                         <span id="simplify-value">${currentSimplifyM.toFixed(1)}</span>
                     </label>
                     <input type="range" id="simplify-slider" min="0" max="20" value="${DEFAULT_SIMPLIFY_M}" step="0.5">
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="width-slider">
                         <span data-i18n-key="blockify.modal.labels.width" data-i18n-attr="text">Building Width (m):</span>
                         <span id="width-value">${DEFAULT_BUILDING_WIDTH.toFixed(1)}</span>
                     </label>
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="height-slider">
                         <span data-i18n-key="blockify.modal.labels.height" data-i18n-attr="text">Building Height (m):</span>
                         <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(1)}</span>
                     </label>
                     <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="0.5">
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="gaps-slider">
                         <span data-i18n-key="blockify.modal.labels.gaps" data-i18n-attr="text">Number of gaps:</span>
                         <span id="gaps-value">0</span>
                     </label>
                     <input type="range" id="gaps-slider" min="0" max="10" value="0" step="1" disabled>
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="gap-width-slider">
                         <span data-i18n-key="blockify.modal.labels.gapWidth" data-i18n-attr="text">Gap width (m):</span>
                         <span id="gap-width-value">5</span>
                     </label>
                     <input type="range" id="gap-width-slider" min="1" max="20" value="5" step="1" disabled>
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="wings-slider">
                         <span data-i18n-key="blockify.modal.labels.wings" data-i18n-attr="text">Number of wings:</span>
                         <span id="wings-value">0</span>
                     </label>
                     <input type="range" id="wings-slider" min="0" max="10" value="0" step="1" disabled>
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <label for="wing-length-slider">
                         <span data-i18n-key="blockify.modal.labels.wingLength" data-i18n-attr="text">Wing length (m):</span>
                         <span id="wing-length-value">10</span>
                     </label>
                     <input type="range" id="wing-length-slider" min="10" max="200" value="10" step="1" disabled>
                 </div>
-                <div class="parameter-group">
+                <div class="parameter-group blockify-freeform-only">
                     <button type="button" id="blockify-manual-toggle" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
                     <button type="button" id="blockify-geojson-upload" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
                     <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
                 </div>
                 <div class="parameter-info">
-                    <p data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
-                    <p data-i18n-key="blockify.modal.helper.setback">Setback is the distance from the parcel boundary to the outer building edge.</p>
-                    <p data-i18n-key="blockify.modal.helper.width">Building width is the thickness of the building from outer to inner edge.</p>
+                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
+                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.setback">Setback is the distance from the parcel boundary to the outer building edge.</p>
+                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.width">Building width is the thickness of the building from outer to inner edge.</p>
+                    <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
                 </div>
             </div>
         `;
@@ -1872,6 +1937,52 @@ function showBlockifyModal() {
             });
         }
 
+        const existingToggle = document.getElementById('blockify-existing-toggle');
+        if (existingToggle) {
+            existingToggle.addEventListener('change', function (e) {
+                if (e.target.checked) enterExistingMode();
+                else exitExistingMode();
+            });
+        }
+
+        // The two rules are exclusive: the radios pick one, and moving a slider activates its rule.
+        document.querySelectorAll('input[name="blockify-existing-rule"]').forEach(radio => {
+            radio.addEventListener('change', function (e) {
+                if (!e.target.checked) return;
+                existingRule = e.target.value === 'additional' ? 'additional' : 'exact';
+                generateExistingBuildingsInModal();
+            });
+        });
+
+        const proposedHeightSlider = document.getElementById('proposed-height-slider');
+        if (proposedHeightSlider) {
+            proposedHeightSlider.addEventListener('input', function (e) {
+                currentProposedHeightFloors = parseInt(e.target.value) || DEFAULT_PROPOSED_HEIGHT_FLOORS;
+                setExistingRule('exact');
+                updateExistingValueLabels();
+                generateExistingBuildingsInModal();
+            });
+        }
+
+        const additionalFloorsSlider = document.getElementById('additional-floors-slider');
+        if (additionalFloorsSlider) {
+            additionalFloorsSlider.addEventListener('input', function (e) {
+                currentAdditionalFloors = parseInt(e.target.value) || DEFAULT_ADDITIONAL_FLOORS;
+                setExistingRule('additional');
+                updateExistingValueLabels();
+                generateExistingBuildingsInModal();
+            });
+        }
+
+        const floorHeightSlider = document.getElementById('floor-height-slider');
+        if (floorHeightSlider) {
+            floorHeightSlider.addEventListener('input', function (e) {
+                currentFloorHeightM = parseFloat(e.target.value) || DEFAULT_FLOOR_HEIGHT_M;
+                updateExistingValueLabels();
+                generateExistingBuildingsInModal();
+            });
+        }
+
         // Close modal when clicking outside the container
         modalDiv.addEventListener('click', (e) => {
             if (e.target === modalDiv) {
@@ -1914,6 +2025,13 @@ function showBlockifyModal() {
     wingPositions = [];
     blockifyMode = 'parametric';
     manualOuterRing = [];
+    existingRule = 'exact';
+    currentProposedHeightFloors = DEFAULT_PROPOSED_HEIGHT_FLOORS;
+    currentAdditionalFloors = DEFAULT_ADDITIONAL_FLOORS;
+    currentFloorHeightM = DEFAULT_FLOOR_HEIGHT_M;
+    existingFootprints = null;
+    existingFootprintsPromise = null;
+    generatedBuildingFeatures = null;
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -1952,12 +2070,19 @@ function closeBlockifyModal(options = {}) {
             blockifyMap.removeLayer(blockifyBuildingLayer);
             blockifyBuildingLayer = null;
         }
+        if (blockifyFootprintLayer) {
+            blockifyMap.removeLayer(blockifyFootprintLayer);
+            blockifyFootprintLayer = null;
+        }
         blockifyMap.remove();
         blockifyMap = null;
     }
 
     // Clear the generated building
     generatedBuildingFeature = null;
+    generatedBuildingFeatures = null;
+    existingFootprints = null;
+    existingFootprintsPromise = null;
     blockifyBlock = null;
     blockifyBlockNameOverride = null;
 
@@ -2224,6 +2349,8 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
 }
 
 function generateBuildingInModal() {
+    // Existing-buildings mode derives geometry from fetched footprints, not the sliders.
+    if (blockifyMode === 'existing') { generateExistingBuildingsInModal(); return; }
     // In manual mode the outline is user-edited, not slider-derived — route to the manual builder.
     if (blockifyMode === 'manual') { generateManualBuilding(); return; }
     const block = getActiveBlockifyBlock();
@@ -2877,6 +3004,263 @@ function exitToParametricMode() {
     generateBuildingInModal();
 }
 
+// --- "Based on existing buildings" mode ---
+// The proposal is derived from the existing footprints on the selected parcels under one of two
+// exclusive rules (see proposedHeightForFootprint): 'exact' extrudes every footprint to the
+// proposed height, 'additional' adds floors on top of each building's current height. Each
+// building becomes its own Feature with its own properties.height, so a proposal is naturally
+// multiple 3D objects.
+
+function getBackendBaseForBlockify() {
+    try { return (typeof window.getBackendBase === 'function') ? window.getBackendBase() : ''; }
+    catch (_) { return ''; }
+}
+
+// Union of ALL block parcels as the footprint query area. Deliberately not lastSuperparcel —
+// that one is reduced to the single largest polygon for ring generation, which would drop
+// buildings on disjoint parcels.
+function getBlockQueryGeometry() {
+    const block = getActiveBlockifyBlock();
+    if (!block || !Array.isArray(block.parcels) || !block.parcels.length) return null;
+    try {
+        const union = robustUnion(block.parcels.map(p => p && p.feature).filter(Boolean));
+        return union && union.geometry ? union.geometry : null;
+    } catch (_) { return null; }
+}
+
+// Fetch the block's existing footprints once per modal open. Resolves to null when the city has
+// no footprint source (supported: false), or to the (possibly empty) footprint array otherwise.
+function ensureExistingFootprints() {
+    if (existingFootprintsPromise) return existingFootprintsPromise;
+    const geometry = getBlockQueryGeometry();
+    if (!geometry) return Promise.resolve(null);
+    let city;
+    try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+    existingFootprintsPromise = fetch(`${getBackendBaseForBlockify()}/buildings/footprints`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ geometry, city })
+    }).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+    }).then(payload => {
+        if (!payload || payload.supported === false) return null;
+        existingFootprints = (payload.footprints || []).filter(f => f && f.geometry);
+        return existingFootprints;
+    }).catch(err => {
+        existingFootprintsPromise = null; // let the next toggle retry
+        throw err;
+    });
+    return existingFootprintsPromise;
+}
+
+function setExistingToggleChecked(checked) {
+    const cb = document.getElementById('blockify-existing-toggle');
+    if (cb) cb.checked = !!checked;
+}
+
+// Swap the sidebar between the freeform sliders and the existing-buildings sliders.
+function updateBlockifyModeUI() {
+    const existing = blockifyMode === 'existing';
+    document.querySelectorAll('#blockify-sidebar .blockify-freeform-only').forEach(el => {
+        el.style.display = existing ? 'none' : '';
+    });
+    document.querySelectorAll('#blockify-sidebar .blockify-existing-only').forEach(el => {
+        el.style.display = existing ? '' : 'none';
+    });
+    updateAdditionalFloorsAvailability();
+}
+
+// "Additional floors" only means something when the source data knows current heights (or floor
+// counts) — otherwise there is nothing to add to and the slider + its radio stay greyed out.
+function updateAdditionalFloorsAvailability() {
+    const slider = document.getElementById('additional-floors-slider');
+    const radio = document.getElementById('blockify-rule-additional');
+    if (!slider) return;
+    const known = Array.isArray(existingFootprints) && existingFootprints.some(f =>
+        f && (Number(f.height_m) > 0 || Number(f.floors) > 0));
+    const available = blockifyMode === 'existing' && known;
+    slider.disabled = !available;
+    if (radio) radio.disabled = !available;
+    if (!available && existingRule === 'additional') setExistingRule('exact');
+}
+
+function setExistingRule(rule) {
+    existingRule = rule === 'additional' ? 'additional' : 'exact';
+    const radio = document.getElementById(existingRule === 'additional' ? 'blockify-rule-additional' : 'blockify-rule-exact');
+    if (radio) radio.checked = true;
+}
+
+function updateExistingValueLabels() {
+    const proposedValue = document.getElementById('proposed-height-value');
+    if (proposedValue) {
+        proposedValue.textContent = `${currentProposedHeightFloors} (${(currentProposedHeightFloors * currentFloorHeightM).toFixed(1)} m)`;
+    }
+    const additionalValue = document.getElementById('additional-floors-value');
+    if (additionalValue) additionalValue.textContent = String(currentAdditionalFloors);
+    const floorHeightValue = document.getElementById('floor-height-value');
+    if (floorHeightValue) floorHeightValue.textContent = currentFloorHeightM.toFixed(1);
+}
+
+async function enterExistingMode() {
+    blockifyMode = 'existing';
+    generatedBuildingFeatures = null;
+    clearGapWingHandles();
+    updateBlockifyModeUI();
+    setBlockifyInfo('blockify.modal.existing.loading', 'Loading existing buildings...');
+
+    let footprints = null;
+    try {
+        footprints = await ensureExistingFootprints();
+    } catch (err) {
+        console.warn('[Blockify] existing footprints fetch failed:', err);
+        exitExistingMode({ infoKey: 'blockify.modal.existing.loadFailed', infoFallback: 'Could not load existing buildings. Try again.' });
+        return;
+    }
+    if (blockifyMode !== 'existing') return; // user toggled away while loading
+
+    if (footprints === null) {
+        exitExistingMode({ infoKey: 'blockify.modal.existing.notAvailable', infoFallback: 'Existing building data is not available for this city yet.' });
+        return;
+    }
+    if (!footprints.length) {
+        exitExistingMode({ infoKey: 'blockify.modal.existing.noneFound', infoFallback: 'No existing buildings found on the selected parcels.' });
+        return;
+    }
+
+    renderExistingFootprintsLayer();
+    updateAdditionalFloorsAvailability();
+    generateExistingBuildingsInModal();
+}
+
+// Back to the freeform sliders. `revertInfo` carries the reason when the mode is being reverted
+// automatically (unsupported city, no footprints, fetch failure) so the user sees why.
+function exitExistingMode(revertInfo = null) {
+    blockifyMode = 'parametric';
+    generatedBuildingFeatures = null;
+    setExistingToggleChecked(false);
+    // Entering existing mode from manual mode leaves manual state behind — always land back on a
+    // clean parametric state (sliders live, manual toggle label reset).
+    manualOuterRing = [];
+    setFootprintSlidersEnabled(true);
+    updateManualToggleLabel();
+    if (blockifyFootprintLayer && blockifyMap) {
+        try { blockifyMap.removeLayer(blockifyFootprintLayer); } catch (_) { }
+    }
+    blockifyFootprintLayer = null;
+    updateBlockifyModeUI();
+    generateBuildingInModal();
+    if (revertInfo && revertInfo.infoKey) setBlockifyInfo(revertInfo.infoKey, revertInfo.infoFallback);
+}
+
+// Grey dashed outlines of all fetched footprints, under the blue proposal shapes — shows what the
+// proposal is based on, including buildings left unchanged.
+function renderExistingFootprintsLayer() {
+    if (!blockifyMap) return;
+    if (blockifyFootprintLayer) {
+        try { blockifyMap.removeLayer(blockifyFootprintLayer); } catch (_) { }
+        blockifyFootprintLayer = null;
+    }
+    const list = Array.isArray(existingFootprints) ? existingFootprints : [];
+    if (!list.length) return;
+    blockifyFootprintLayer = L.geoJSON({
+        type: 'FeatureCollection',
+        features: list.map(f => ({ type: 'Feature', properties: {}, geometry: f.geometry }))
+    }, {
+        style: { color: '#555555', weight: 1.5, dashArray: '4 3', fillOpacity: 0.08 },
+        interactive: false
+    }).addTo(blockifyMap);
+}
+
+// The building's current height as far as the data knows it: measured height wins, floor count
+// times the floor-height slider as fallback, null when neither is known.
+function existingHeightForFootprint(fp) {
+    const measured = Number(fp && fp.height_m);
+    if (Number.isFinite(measured) && measured > 0) return measured;
+    const floors = Number(fp && fp.floors);
+    if (Number.isFinite(floors) && floors > 0) return floors * currentFloorHeightM;
+    return null;
+}
+
+// Per-building proposed height under the active rule, or null to leave the building out.
+// 'exact': every footprint is drawn at exactly the proposed height (even below its current one —
+// the proposal states the intended height, it doesn't demolish anything).
+// 'additional': current height + N floors, uncapped; buildings with unknown height are skipped
+// because there is nothing to add to.
+function proposedHeightForFootprint(fp) {
+    const existingH = existingHeightForFootprint(fp);
+    if (existingRule === 'additional') {
+        if (existingH === null) return { existingH, proposedH: null };
+        return { existingH, proposedH: existingH + currentAdditionalFloors * currentFloorHeightM };
+    }
+    return { existingH, proposedH: currentProposedHeightFloors * currentFloorHeightM };
+}
+
+function generateExistingBuildingsInModal() {
+    if (blockifyMode !== 'existing') return;
+    const list = Array.isArray(existingFootprints) ? existingFootprints : [];
+    const blockName = getBlockifyDisplayName();
+
+    const features = [];
+    list.forEach(fp => {
+        const { existingH, proposedH } = proposedHeightForFootprint(fp);
+        if (proposedH === null) return;
+        let geometry;
+        try { geometry = JSON.parse(JSON.stringify(fp.geometry)); } catch (_) { return; }
+        features.push({
+            type: 'Feature',
+            properties: {
+                type: 'proposedBuilding',
+                block: blockName,
+                basedOnExisting: true,
+                sourceBuildingId: fp.id != null ? fp.id : null,
+                existingHeight: existingH,
+                height: Math.round(proposedH * 100) / 100,
+                buildingIndex: features.length
+            },
+            geometry
+        });
+    });
+
+    generatedBuildingFeatures = features;
+    generatedBuildingFeature = null;
+    displayBuildingsInModal(features);
+    if (existingRule === 'additional') {
+        setBlockifyInfo('blockify.modal.existing.summary', 'Raising {{count}} of {{total}} existing buildings.', {
+            count: features.length,
+            total: list.length
+        });
+    } else {
+        setBlockifyInfo('blockify.modal.existing.summaryExact', 'Proposing {{count}} buildings at {{height}} m.', {
+            count: features.length,
+            height: (currentProposedHeightFloors * currentFloorHeightM).toFixed(1)
+        });
+    }
+    const doneButton = document.getElementById('btn-blockify-done');
+    if (doneButton) doneButton.disabled = features.length === 0;
+}
+
+// Array flavour of displayBuildingInModal: draw all proposed buildings at once (existing mode).
+function displayBuildingsInModal(features) {
+    if (blockifyBuildingLayer) {
+        blockifyMap.removeLayer(blockifyBuildingLayer);
+        blockifyBuildingLayer = null;
+    }
+    if (!Array.isArray(features) || !features.length) {
+        try { updateBlockify3DScene([]); } catch (_) { } // clear the 3D proposal meshes
+        return;
+    }
+    blockifyBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+        style: {
+            color: '#007bff',
+            weight: 4,
+            opacity: 1,
+            fillOpacity: 0.2
+        }
+    }).addTo(blockifyMap);
+    try { updateBlockify3DScene(features); } catch (e) { console.warn('3D update failed', e); }
+}
+
 // Build the block from the user-edited outer ring: re-inset by the (frozen) building width so it
 // stays a ring-with-hole (or a solid building if the courtyard collapses).
 function generateManualBuilding() {
@@ -3133,7 +3517,10 @@ window.openBlockifyForParcels = openBlockifyForParcels;
 
 // Function to capture current blockify configuration for later proposal creation
 function saveBlockifyDesignForProposal() {
-    if (!generatedBuildingFeature) {
+    const existingModeFeatures = (blockifyMode === 'existing' && Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length)
+        ? generatedBuildingFeatures
+        : null;
+    if (!generatedBuildingFeature && !existingModeFeatures) {
         const info = document.getElementById('blockify-info');
         if (info) setBlockifyInfo('blockify.modal.messages.generateBeforeFinishing', 'Generate a building before finishing.');
         return;
@@ -3186,21 +3573,37 @@ function saveBlockifyDesignForProposal() {
     }
 
     const algorithmSelect = document.getElementById('algorithm-select');
-    const clonedFeature = JSON.parse(JSON.stringify(generatedBuildingFeature));
+    // Existing-buildings mode saves one feature per raised building (each with its own height);
+    // freeform/manual modes keep the single-feature shape. createProposal() consumes either via
+    // `buildings` (array) with `buildingFeature` as the single/primary fallback.
+    const clonedBuildings = existingModeFeatures ? JSON.parse(JSON.stringify(existingModeFeatures)) : null;
+    const clonedFeature = clonedBuildings ? clonedBuildings[0] : JSON.parse(JSON.stringify(generatedBuildingFeature));
 
-    const context = {
-        parcelIds: normalizedParcelIds.slice(),
-        parentDetails: parentDetails.slice(),
-        blockName: getBlockifyDisplayName(),
-        parameters: {
+    const parameters = clonedBuildings
+        ? {
+            mode: 'existing',
+            rule: existingRule,
+            proposedHeightFloors: currentProposedHeightFloors,
+            additionalFloors: currentAdditionalFloors,
+            floorHeightM: currentFloorHeightM,
+            algorithm: null
+        }
+        : {
             width: Number.isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : null,
             height: Number.isFinite(Number(currentBuildingHeight)) ? Number(currentBuildingHeight) : null,
             setback: Number.isFinite(Number(currentSetback)) ? Number(currentSetback) : null,
             chamfer: Number.isFinite(Number(currentChamferM)) ? Number(currentChamferM) : null,
             algorithm: algorithmSelect ? algorithmSelect.value : null
-        },
+        };
+
+    const context = {
+        parcelIds: normalizedParcelIds.slice(),
+        parentDetails: parentDetails.slice(),
+        blockName: getBlockifyDisplayName(),
+        parameters,
         buildingFeature: clonedFeature
     };
+    if (clonedBuildings) context.buildings = clonedBuildings;
 
     window.pendingBuildingFromBlockify = clonedFeature;
     setPendingBuildingProposalContext(context);

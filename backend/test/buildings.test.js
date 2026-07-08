@@ -130,3 +130,67 @@ describe('GET /buildings', () => {
         });
     });
 });
+describe('POST /buildings/footprints', () => {
+    const geometry = { type: 'Polygon', coordinates: [[[15.975, 45.812], [15.979, 45.812], [15.979, 45.814], [15.975, 45.814], [15.975, 45.812]]] };
+
+    it('rejects a missing geometry', async () => {
+        const res = await request(app).post('/buildings/footprints').send({ city: 'zagreb' });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/geometry/);
+    });
+
+    it('returns footprints with heights for Zagreb (default city)', async () => {
+        pool.setResult({
+            rows: [
+                { id: 101, height_m: 12.5, geometry: { type: 'MultiPolygon', coordinates: [[[[15.976, 45.813], [15.977, 45.813], [15.977, 45.8135], [15.976, 45.813]]]] } },
+                { id: 102, height_m: null, geometry: { type: 'MultiPolygon', coordinates: [[[[15.978, 45.813], [15.9785, 45.813], [15.9785, 45.8135], [15.978, 45.813]]]] } }
+            ],
+            rowCount: 2
+        });
+
+        const res = await request(app).post('/buildings/footprints').send({ geometry });
+
+        expect(res.status).toBe(200);
+        expect(res.body.supported).toBe(true);
+        expect(res.body.source).toBe('zagreb-cadastre');
+        expect(res.body.count).toBe(2);
+        expect(res.body.footprints[0]).toEqual(expect.objectContaining({ id: 101, height_m: 12.5, floors: null }));
+        expect(res.body.footprints[1].height_m).toBe(null);
+
+        // The provider query filters to mostly-inside current buildings and joins measured heights.
+        const { sql, params } = pool.getCalls()[0];
+        expect(sql).toContain('ST_Intersects(b.geom, q.g)');
+        expect(sql).toContain('0.5 * ST_Area(b.geom)');
+        expect(sql).toContain('b.current');
+        expect(sql).toContain('LEFT JOIN building_3d_match');
+        expect(params[0]).toBe(JSON.stringify(geometry));
+    });
+
+    it('reports unsupported for a city whose provider has no footprint source', async () => {
+        const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'new_york' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ supported: false, footprints: [], count: 0, source: null });
+        expect(pool.getCalls().length).toBe(0);
+    });
+
+    it('reports unsupported for an unknown city instead of falling back to Zagreb', async () => {
+        const res = await request(app).post('/buildings/footprints').send({ geometry, city: 'atlantis' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.supported).toBe(false);
+        expect(pool.getCalls().length).toBe(0);
+    });
+
+    it('returns 500 when the footprint query fails', async () => {
+        pool.query = async () => {
+            throw new Error('footprints unavailable');
+        };
+
+        const res = await request(app).post('/buildings/footprints').send({ geometry });
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({ error: 'Internal server error' });
+    });
+});

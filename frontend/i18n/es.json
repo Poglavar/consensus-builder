@@ -1542,6 +1542,19 @@
                 "gap": "Arrastra para mover el hueco",
                 "wing": "Arrastra para mover el ala"
             },
+            "existing": {
+                "toggle": "Basado en edificios existentes",
+                "proposedHeight": "Altura propuesta (plantas):",
+                "additionalFloors": "Plantas adicionales:",
+                "floorHeight": "Altura de planta (m):",
+                "helper": "Elige una regla: la altura propuesta dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
+                "summaryExact": "Se proponen {{count}} edificios de {{height}} m.",
+                "loading": "Cargando edificios existentes...",
+                "notAvailable": "Los datos de edificios existentes aún no están disponibles para esta ciudad.",
+                "noneFound": "No se encontraron edificios existentes en las parcelas seleccionadas.",
+                "loadFailed": "No se pudieron cargar los edificios existentes. Inténtalo de nuevo.",
+                "summary": "Se elevan {{count}} de {{total}} edificios existentes."
+            },
             "manual": {
                 "edit": "Editar forma manualmente",
                 "back": "Volver a los controles",

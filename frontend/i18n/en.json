@@ -1492,6 +1492,19 @@
                 "gap": "Drag to move gap",
                 "wing": "Drag to move wing"
             },
+            "existing": {
+                "toggle": "Based on existing buildings",
+                "proposedHeight": "Proposed height (floors):",
+                "additionalFloors": "Additional floors:",
+                "floorHeight": "Floor height (m):",
+                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
+                "summaryExact": "Proposing {{count}} buildings at {{height}} m.",
+                "loading": "Loading existing buildings...",
+                "notAvailable": "Existing building data is not available for this city yet.",
+                "noneFound": "No existing buildings found on the selected parcels.",
+                "loadFailed": "Could not load existing buildings. Try again.",
+                "summary": "Raising {{count}} of {{total}} existing buildings."
+            },
             "manual": {
                 "edit": "Edit shape manually",
                 "back": "Back to sliders",

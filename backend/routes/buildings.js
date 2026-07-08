@@ -139,4 +139,43 @@ export function setupBuildingsRoute(app, pool) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // POST /buildings/footprints - 2D footprints (+ known heights) of existing buildings mostly
+    // inside a GeoJSON polygon. Backs the urban-rule "based on existing buildings" mode.
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, city?: string }
+    //
+    // Footprints are an OPTIONAL per-city provider capability: a provider that implements
+    // `footprints(geometry)` supports it, everything else reports `supported: false` (the
+    // frontend hides/reverts the mode). Unknown cities resolve to no provider on purpose —
+    // the Zagreb fallback used by /buildings/near would falsely claim support here.
+    //
+    // Response shape:
+    //   {
+    //     supported: true|false,
+    //     footprints: [ { id, geometry: <GeoJSON Polygon/MultiPolygon>, height_m|null, floors|null }, ... ],
+    //     count: N,
+    //     source: '<provider id>'
+    //   }
+    app.post('/buildings/footprints', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+            const city = typeof body.city === 'string' ? body.city : undefined;
+
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+
+            const provider = buildingProviders.resolveExact(city);
+            if (!provider || typeof provider.footprints !== 'function') {
+                return res.json({ supported: false, footprints: [], count: 0, source: null });
+            }
+
+            const result = await provider.footprints(geometry);
+            res.json({ supported: true, footprints: result.footprints, count: result.count, source: result.source });
+        } catch (err) {
+            console.error('Error in POST /buildings/footprints:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 }

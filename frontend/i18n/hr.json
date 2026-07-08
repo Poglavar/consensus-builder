@@ -1522,6 +1522,19 @@
                 "gap": "Povucite za pomicanje otvora",
                 "wing": "Povucite za pomicanje krila"
             },
+            "existing": {
+                "toggle": "Na temelju postojećih zgrada",
+                "proposedHeight": "Predložena visina (katova):",
+                "additionalFloors": "Dodatni katovi:",
+                "floorHeight": "Visina kata (m):",
+                "helper": "Odaberite pravilo: predložena visina crta svaku zgradu točno na toj visini; dodatni katovi dodaju katove na trenutnu visinu svake zgrade (zahtijeva poznate visine).",
+                "summaryExact": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                "loading": "Učitavanje postojećih zgrada...",
+                "notAvailable": "Podaci o postojećim zgradama još nisu dostupni za ovaj grad.",
+                "noneFound": "Na odabranim česticama nisu pronađene postojeće zgrade.",
+                "loadFailed": "Učitavanje postojećih zgrada nije uspjelo. Pokušajte ponovno.",
+                "summary": "Povisuje se {{count}} od {{total}} postojećih zgrada."
+            },
             "manual": {
                 "edit": "Ručno uredi oblik",
                 "back": "Natrag na klizače",

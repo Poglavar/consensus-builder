@@ -31,5 +31,38 @@ export function createZagrebProvider(pool) {
         return { buildings, count: buildings.length, source: 'zagreb-3d' };
     }
 
-    return { near };
+    // 2D footprints (with measured heights) of existing buildings mostly inside a GeoJSON polygon.
+    // Source: current cadastre footprints (`building`) + per-building ridge height from the LOD2
+    // match (`building_3d_match.height_m`). Height is null when no 3D match exists or the matched
+    // value is implausible (outside 2..250 m). Floors are unknown for Zagreb, always null.
+    // "Mostly inside" = >=50% of the footprint area, so neighbours merely touching the parcel
+    // boundary don't get swept into "raise all existing buildings" proposals.
+    async function footprints(geometry) {
+        const sql = `
+            WITH q AS (
+                SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
+            )
+            SELECT b.zgrada_id AS id,
+                   CASE WHEN m.height_m BETWEEN 2 AND 250 THEN m.height_m::float END AS height_m,
+                   ST_AsGeoJSON(ST_Transform(b.geom, 4326), 7)::json AS geometry
+            FROM building b
+            JOIN q ON ST_Intersects(b.geom, q.g)
+            LEFT JOIN building_3d_match m ON m.zgrada_id = b.zgrada_id
+            WHERE b.current
+              AND ST_Area(ST_Intersection(b.geom, q.g)) >= 0.5 * ST_Area(b.geom)
+            ORDER BY b.zgrada_id
+            LIMIT 500
+        `;
+
+        const { rows } = await pool.query(sql, [JSON.stringify(geometry)]);
+        const footprints = rows.map(row => ({
+            id: row.id,
+            geometry: row.geometry,
+            height_m: row.height_m,
+            floors: null
+        }));
+        return { footprints, count: footprints.length, source: 'zagreb-cadastre' };
+    }
+
+    return { near, footprints };
 }

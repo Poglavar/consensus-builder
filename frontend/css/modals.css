@@ -4827,3 +4827,21 @@
     border-color: #fb8c00;
     color: #fff;
 }
+/* "Based on existing buildings" mode toggle (urban-rule modal) */
+.blockify-existing-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.blockify-existing-toggle input[type="checkbox"] {
+    margin: 0;
+}
+/* Rule labels: radio picks which slider drives the proposal (exact height vs added floors) */
+.blockify-rule-label {
+    cursor: pointer;
+}
+.blockify-rule-label input[type="radio"] {
+    margin: 0 6px 0 0;
+    vertical-align: middle;
+}
