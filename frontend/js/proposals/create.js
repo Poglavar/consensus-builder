@@ -296,6 +296,9 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
     try { if (typeof enableShowProposalsMode === 'function') enableShowProposalsMode(); } catch (_) { }
 
+    // Open the details panel collapsed on first appearance (see showProposalInfo).
+    if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
+
     let applied = false;
     if (typeof applyProposalToMap === 'function') {
         applied = (await applyProposalToMap(proposalId, { parcelId: primaryParcelId, centerOnProposal: true })) !== false;
@@ -1697,6 +1700,8 @@ async function createProposal() {
                 waitingPopupVisible = true;
                 setProposalModalDimmed(true);
             }
+            // Open the details panel collapsed on first appearance (see showProposalInfo).
+            if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
             if (typeof selectAndHighlightProposal === 'function') {
                 // Do not refocus map when opening details immediately after creation
                 selectAndHighlightProposal(proposalId, focusParcelId, false, true);

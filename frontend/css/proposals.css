@@ -29,10 +29,14 @@
     flex-direction: column;
 }
 
+/* Desktop create-proposal dialog: ~20% wider than the old effective 400px (the base
+   .proposal-modal-content max-width:400px was capping the width below, so it must be raised
+   here too), and taller — 95vh trims the top/bottom gap so less of the form needs scrolling. */
 .create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal):not(.wallet-choice-modal) .proposal-modal-content {
-    width: min(540px, 96%);
+    width: min(480px, 96%);
+    max-width: 480px;
     height: auto;
-    max-height: 90vh;
+    max-height: 95vh;
     border-radius: 12px;
     margin: 0;
 }
@@ -569,11 +573,20 @@
     background-color: rgba(107, 114, 128, 0.08);
 }
 
-.proposal-description-input {
+/* The structure-proposal dialog's description is a 2-row <textarea>: keep it at a fixed height
+   so it scrolls instead of growing. The main create dialog's description is a single-line
+   <input>, which takes the normal input height and therefore matches Name and Offer exactly —
+   that is how those three boxes stay equalized (and compact). */
+textarea.proposal-description-input {
     line-height: 1.4;
     height: 4.2em;
     min-height: 4.2em;
     max-height: 4.2em;
+    overflow-y: auto;
+    resize: none;
+}
+
+.proposal-description-input {
     overflow-y: auto;
     resize: none;
 }
@@ -846,16 +859,18 @@
     align-items: stretch;
 }
 
+/* 34px matches the natural height of the Name and Description inputs, so the three
+   create-proposal boxes read as one compact, uniform block. */
 #proposalOffer {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
-    line-height: 44px;
+    line-height: 32px;
 }
 
 #proposalOffer::-webkit-outer-spin-button,
@@ -865,9 +880,9 @@
 }
 
 #proposalCurrency {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
     border: 1px solid #ddd;

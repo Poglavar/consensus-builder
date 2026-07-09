@@ -1217,6 +1217,8 @@ function showProposalDialog(overrides = null) {
     const offerLabel = t('modal.createProposal.offerLabel', 'Offer:');
     const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
     const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
+    // Title for the collapsible "Options" section that hides Offer + advanced settings by default.
+    const optionsSectionTitle = t('modal.createProposal.optionsSectionTitle', 'Options');
     const conditionalLabel = t('modal.createProposal.options.conditional', 'Conditional');
     const conditionalHelperOnText = t('modal.createProposal.options.conditionalHelperOn', 'Pay reward only if/when all owners accept');
     const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Payout only when all parcels accept');
@@ -1416,6 +1418,28 @@ function showProposalDialog(overrides = null) {
                     <label for="proposalDescription">${descriptionLabel}</label>
                     <input type="text" id="proposalDescription" class="proposal-description-input" placeholder="${descriptionPlaceholder}">
                 </div>
+                <div class="proposal-options-collapsible collapsible collapsed" id="proposalOptionsSection" style="margin-top:8px;">
+                    <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalOptionsContent" onclick="(function(){
+                        var section = document.getElementById('proposalOptionsSection');
+                        var content = document.getElementById('proposalOptionsContent');
+                        var icon = document.getElementById('proposalOptionsChevron');
+                        section.classList.toggle('collapsed');
+                        if (section.classList.contains('collapsed')) {
+                            content.style.display = 'none';
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                            section.setAttribute('aria-expanded', 'false');
+                        } else {
+                            content.style.display = '';
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                            section.setAttribute('aria-expanded', 'true');
+                        }
+                    })()">
+                        <h3 style="display:inline; font-size: 1.1em; font-weight: 600; margin:0;">${optionsSectionTitle}</h3>
+                        <i id="proposalOptionsChevron" class="fas fa-chevron-down" style="margin-left: 8px;"></i>
+                    </div>
+                    <div id="proposalOptionsContent" style="display:none;">
                 <div class="form-group">
                     <label for="proposalOffer">${offerLabel}</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
@@ -1431,7 +1455,6 @@ function showProposalDialog(overrides = null) {
                     </div>
                 </div>
                 <div class="form-group proposal-options-section">
-                    <label>${optionsLabel}</label>
                     <div class="proposal-option-row" id="proposalOptionConditional" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalConditionalCheckbox" checked>
@@ -1519,6 +1542,8 @@ function showProposalDialog(overrides = null) {
                 <div class="proposal-similar-section" id="proposalSimilarSection" style="margin-top:12px; display:none;">
                     <h4 style="margin-bottom:6px;">${similarTitle}</h4>
                     <div id="proposalSimilarList" class="proposal-similar-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+                </div>
+                    </div>
                 </div>
             </div>
             <div class="proposal-modal-footer lens-footer-layout">

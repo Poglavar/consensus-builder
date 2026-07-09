@@ -395,13 +395,22 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const tProposalUI = getProposalI18nHelper();
     const ownerAcceptanceSummaryFast = buildProposalOwnerAcceptanceSummaryFast(proposal);
 
-    // Update the proposal details panel title
+    const proposalDisplayTitle = getProposalDisplayTitle(fullProposal, proposal);
+
+    // Panel header shows the proposal's own name so the collapsed card still says which proposal
+    // it is. Read the name fields directly rather than getProposalDisplayTitle() — that helper
+    // scores candidates by length and happily returns a parcel label instead of the name.
     const proposalPanelTitle = document.getElementById('proposal-details-title');
     if (proposalPanelTitle) {
-        proposalPanelTitle.textContent = tProposal('panel.proposal.title', 'Proposal Details');
+        const nameSource = fullProposal || proposal || {};
+        const proposalOwnName = [nameSource.title, nameSource.name, nameSource.proposalName]
+            .find(candidate => typeof candidate === 'string' && candidate.trim());
+        const headerTitle = proposalOwnName
+            ? proposalOwnName.trim()
+            : tProposal('panel.proposal.title', 'Proposal Details');
+        proposalPanelTitle.textContent = headerTitle;
+        proposalPanelTitle.title = headerTitle; // tooltip when the name is truncated
     }
-
-    const proposalDisplayTitle = getProposalDisplayTitle(fullProposal, proposal);
     const proposalDisplayTypeRaw = getProposalDisplayTypeLabel(fullProposal, proposal);
     const proposalDisplayType = proposalDisplayTypeRaw
         && proposalDisplayTypeRaw.trim().toLowerCase() !== proposalDisplayTitle.trim().toLowerCase()
@@ -1462,7 +1471,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     console.debug('[showProposalInfo] Making proposal details panel visible...');
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) {
-        setProposalDetailsPanelMinimized(detailsPanel, false, getProposalDetailsPanelLabels());
+        // Normally opening details expands the panel. Right after creating a proposal we open it
+        // collapsed instead (one-shot flag set by the create flow) — the collapsed card still shows
+        // the Apply/Share actions, so the freshly-made proposal isn't a wall of detail on arrival.
+        const startCollapsed = (typeof window !== 'undefined' && window.__openProposalDetailsCollapsed === true);
+        if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = false;
+        setProposalDetailsPanelMinimized(detailsPanel, startCollapsed, getProposalDetailsPanelLabels());
         detailsPanel.classList.add('visible');
         console.debug('[showProposalInfo] Panel made visible');
     } else {
@@ -1926,7 +1940,9 @@ function setProposalDetailsPanelMinimized(panel, minimized, labels = null) {
 
     const footer = panel.querySelector('.panel-footer');
     if (footer) {
-        footer.hidden = minimized;
+        // Keep the footer (Apply to map / Share) visible even when collapsed — the collapsed
+        // card is meant to still expose those two primary actions.
+        footer.hidden = false;
     }
 
     const toggleButton = panel.querySelector('#proposal-details-minimize');
