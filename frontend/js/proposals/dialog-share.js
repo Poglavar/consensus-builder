@@ -173,8 +173,10 @@ function renderProposalListModal() {
     if (serverProposalCache.lastCity && serverProposalCache.lastCity !== normalizedCity) {
         resetServerProposalCache(normalizedCity);
     }
-    // Always fetch count/summaries once per city so the server tab badge is populated immediately
-    const needsFetch = serverProposalCache.lastCity !== normalizedCity || serverProposalCache.count === null;
+    // Always fetch count/summaries once per city so the server tab badge is populated immediately.
+    // Keyed on "did we ask?" rather than "is count null?": a failed fetch leaves count null, and
+    // this function is re-entered from that fetch's own finally block.
+    const needsFetch = serverProposalCache.lastCity !== normalizedCity || !serverProposalCache.lastFetchedAt;
     if (!serverProposalCache.loading && needsFetch) {
         fetchServerProposalSummaries(normalizedCity);
     } else if (source === 'server') {

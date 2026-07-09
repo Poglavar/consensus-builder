@@ -64,6 +64,9 @@ function resetServerProposalCache(cityCode) {
     serverProposalCache.error = null;
     serverProposalCache.loading = false;
     serverProposalCache.lastCity = cityCode || null;
+    // The "have we asked the server yet?" sentinel must be cleared with the rest, or the new city
+    // would inherit the previous one's answer and never fetch.
+    serverProposalCache.lastFetchedAt = 0;
 }
 
 async function fetchServerProposalSummaries(cityCode) {
@@ -106,11 +109,15 @@ async function fetchServerProposalSummaries(cityCode) {
         serverProposalCache.count = Number.isFinite(countPayload?.count)
             ? Number(countPayload.count)
             : (Number.isFinite(summaryPayload?.count) ? Number(summaryPayload.count) : serverProposalCache.proposals.length);
-        serverProposalCache.lastFetchedAt = Date.now();
     } catch (error) {
         serverProposalCache.error = error?.message || 'Unable to load server proposals';
     } finally {
         serverProposalCache.loading = false;
+        // Record the attempt, not just the success. This is what stops the re-render below from
+        // being mistaken for "we have never asked" — renderProposalListModal() calls back into
+        // ensureServerProposals(), so a city with no server proposals (or an unreachable backend)
+        // would otherwise refetch forever and sit on "Loading server proposals…".
+        serverProposalCache.lastFetchedAt = Date.now();
         renderProposalListModal();
     }
 }
@@ -125,8 +132,10 @@ function ensureServerProposals(cityCode) {
     }
 
     if (serverProposalCache.loading) return;
-    const hasData = serverProposalCache.proposals && serverProposalCache.proposals.length > 0;
-    if (!hasData || cityChanged) {
+    // "No proposals" is an answer, not a missing one — testing proposals.length here made a city
+    // with an empty server list refetch on every render, forever.
+    const alreadyAsked = serverProposalCache.lastFetchedAt > 0;
+    if (!alreadyAsked || cityChanged) {
         fetchServerProposalSummaries(city);
     }
 }
