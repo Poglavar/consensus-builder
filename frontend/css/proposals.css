@@ -154,6 +154,26 @@
     max-height: 40px;
 }
 
+/* "Based on <name>" lineage line, shown on proposals made via "Copy into new proposal". */
+.proposal-based-on-row {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.proposal-based-on-row .proposal-based-on-link {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.proposal-based-on-row .proposal-based-on-link:hover {
+    text-decoration: underline;
+}
+
+.proposal-based-on-row .proposal-based-on-link i {
+    font-size: 10px;
+}
+
 .proposal-id-row {
     display: inline-flex;
     align-items: center;

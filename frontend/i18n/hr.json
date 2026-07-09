@@ -582,7 +582,8 @@
                 "apply": "Primijeni na kartu",
                 "applying": "Primjenjivanje...",
                 "remove": "Ukloni s karte",
-                "share": "Podijeli prijedlog"
+                "share": "Podijeli prijedlog",
+                "copy": "Kopiraj u novi prijedlog"
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -668,7 +669,8 @@
                 "ownerTooltip": "Vlasnik: {{name}}"
             },
             "descendantRoadSuffix": " • Cesta",
-            "descendantRoadNamedSuffix": " • Cesta: {{name}}"
+            "descendantRoadNamedSuffix": " • Cesta: {{name}}",
+            "basedOn": "Temeljeno na"
         },
         "block": {
             "title": "Informacije o bloku",
@@ -1335,7 +1337,8 @@
                 "status": {
                     "noGeometry": "Nema geometrije: definiraj geometriju",
                     "submitted": "✔️ geometrija predana",
-                    "auto": "Algoritamska geometrija će se generirati"
+                    "auto": "Algoritamska geometrija će se generirati",
+                    "copied": "Geometrija kopirana iz \"{name}\""
                 }
             },
             "reparcellization": {
@@ -1432,7 +1435,8 @@
                 "createInMemory": "Stvori u memoriji",
                 "message": "Kovanje na lancu nije uspjelo iz razloga:",
                 "unknown": "Nepoznata pogreška"
-            }
+            },
+            "optionsSectionTitle": "Opcije"
         },
         "mintedProposals": {
             "acceptancePossible": "Prihvaćanje moguće",
@@ -2015,7 +2019,8 @@
             "proposal_boost_not_minted": "Ovaj prijedlog još nije na lancu. Iskujte ga prije pojačanja.",
             "proposal_boost_success": "Uspjeh! Hvala što ste pojačali ovaj prijedlog s {{amount}} {{currency}}. To bi moglo pomoći da se ostvari 🤞 Pogledajte transakciju {{txLink}}",
             "proposal_boost_switch_network": "Prebacite svoj novčanik na lanac {{chainId}} da biste pojačali ovaj prijedlog.",
-            "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj prijedlog."
+            "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj prijedlog.",
+            "copy_proposal_parcels_unavailable": "Nije moguće učitati čestice ovog prijedloga. Prebacite se na grad u kojem je stvoren i pokušajte ponovno."
         }
     },
     "gameDialogs": {

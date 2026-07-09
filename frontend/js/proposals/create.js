@@ -599,6 +599,15 @@ async function createProposal() {
             disbursementMode: isConditional ? 'conditional' : 'partial' // conditional = all must accept; partial = per-acceptance payouts
         };
 
+        // Lineage for "Copy into new proposal". The source is never mutated — the fork just
+        // records where it came from. Set by showProposalDialog() from its `copySource` override,
+        // and re-cleared on every dialog open, so a plain create leaves this undefined.
+        const proposalCopySource = (typeof window !== 'undefined') ? window.pendingProposalCopySource : null;
+        if (proposalCopySource && proposalCopySource.proposalId) {
+            proposal.copiedFromProposalId = String(proposalCopySource.proposalId);
+            proposal.copiedFromName = proposalCopySource.name || null;
+        }
+
         if (selectedTool === 'decide-later') {
             proposal.decideLaterProposal = {
                 parentParcelIds: normalizedParentParcelIds.slice(),

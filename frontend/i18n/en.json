@@ -557,7 +557,8 @@
                 "apply": "Apply to map",
                 "applying": "Applying...",
                 "remove": "Remove from map",
-                "share": "Share Proposal"
+                "share": "Share Proposal",
+                "copy": "Copy into new proposal"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -643,7 +644,8 @@
                 "ownerTooltip": "Owner: {{name}}"
             },
             "descendantRoadSuffix": " • Road",
-            "descendantRoadNamedSuffix": " • Road: {{name}}"
+            "descendantRoadNamedSuffix": " • Road: {{name}}",
+            "basedOn": "Based on"
         },
         "block": {
             "title": "Block Info",
@@ -1331,7 +1333,8 @@
                 "status": {
                     "noGeometry": "No geometry: please define a geometry",
                     "submitted": "✔️ geometry submitted",
-                    "auto": "Algorithmic geometry will be generated"
+                    "auto": "Algorithmic geometry will be generated",
+                    "copied": "Geometry copied from \"{name}\""
                 }
             },
             "reparcellization": {
@@ -1428,7 +1431,8 @@
                 "unknown": "Unknown error",
                 "cancel": "Cancel",
                 "createInMemory": "Create in memory"
-            }
+            },
+            "optionsSectionTitle": "Options"
         }
     },
     "blockify": {
@@ -1985,7 +1989,8 @@
             "please_enter_a_description": "Please enter a description.",
             "please_enter_a_valid_offer_amount_eur": "Please enter a valid offer amount (EUR).",
             "please_enter_a_valid_offer_amount": "Please enter a valid offer amount.",
-            "please_enter_an_author_name": "Please enter an author name."
+            "please_enter_an_author_name": "Please enter an author name.",
+            "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again."
         }
     },
     "gameDialogs": {

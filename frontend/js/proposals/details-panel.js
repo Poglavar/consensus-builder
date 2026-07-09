@@ -523,6 +523,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
+    // Proposals are immutable, so there is no "edit" — you fork into a new, editable draft that
+    // points back at this one.
+    const copyButtonHtml = proposalKey
+        ? `
+        <button class="btn btn-outline-secondary btn-copy-proposal" onclick="copyProposalIntoNewProposal('${proposalKey}')">
+            <i class="fas fa-clone"></i> ${tProposal('panel.proposal.actions.copy', 'Copy into new proposal')}
+        </button>
+    `
+        : '';
+
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
         ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer('${buyOfferProposal.proposalId || ''}')">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
@@ -533,12 +543,37 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${buyButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
+            ${copyButtonHtml}
         </div>
     `;
 
     const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
+
+    // "Based on <name>" — set when this proposal was forked via "Copy into new proposal". The
+    // link jumps to the source; fall back to the stored name if the source is no longer local.
+    const copiedFromId = (fullProposal && fullProposal.copiedFromProposalId) || proposal.copiedFromProposalId || null;
+    let copiedFromHtml = '';
+    if (copiedFromId) {
+        const storedName = (fullProposal && fullProposal.copiedFromName) || proposal.copiedFromName || null;
+        let sourceLabel = storedName || copiedFromId;
+        let sourceExists = false;
+        try {
+            const sourceProposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(copiedFromId) : null;
+            if (sourceProposal) {
+                sourceExists = true;
+                sourceLabel = sourceProposal.title || sourceProposal.name || sourceLabel;
+            }
+        } catch (_) { }
+        const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
+        const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
+        const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
+        const inner = sourceExists
+            ? `<a href="#" class="proposal-based-on-link" onclick="event.preventDefault(); focusProposalDetails('${safeId}');">${safeLabel} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`
+            : `<span class="proposal-based-on-name">${safeLabel}</span>`;
+        copiedFromHtml = `<div class="proposal-based-on-row">${basedOnLabel}: ${inner}</div>`;
+    }
 
     const proposalDisplayId = proposal.proposalId ? String(proposal.proposalId) : null;
 
@@ -663,6 +698,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             <div class="proposal-description-row" style="text-align: center; margin: 6px 0 10px; padding: 0 10px;">
                 ${escapedProposalDescription ? `<div class="proposal-description-text" style="margin-bottom: 6px;">${escapedProposalDescription}</div>` : ''}
+                ${copiedFromHtml}
                 ${escapedProposalDisplayId ? `<div class="proposal-id-row">
                     <div class="proposal-id-label" style="font-size: 12px; color: #666;">ID: ${escapedProposalDisplayId}</div>
                     ${lensButtonHtml}

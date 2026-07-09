@@ -1122,6 +1122,12 @@ function showProposalDialog(overrides = null) {
     // Stash overrides for this session
     proposalDialogOverrides = overrides || null;
 
+    // Lineage for "Copy into new proposal". Set (or cleared) on every dialog open, so a plain
+    // create can never inherit a stale source from an earlier copy.
+    if (typeof window !== 'undefined') {
+        window.pendingProposalCopySource = (overrides && overrides.copySource) ? overrides.copySource : null;
+    }
+
     // Remove any existing create-proposal modal so re-opening the dialog (e.g. after editing a
     // proposal's geometry, which calls showProposalDialog() again) replaces it instead of stacking
     // a second modal on top of the first.
@@ -1917,6 +1923,64 @@ function showProposalDialog(overrides = null) {
         offerInput.value = window.formatProposalOfferValue ? window.formatProposalOfferValue(overridePrefill.offer) : overridePrefill.offer;
     }
 
+    // Restore the currency + the advanced Options toggles. Used by "Copy into new proposal" so a
+    // fork starts from the source's terms, not the defaults. Each toggle drives its own enable
+    // handler, so flip the checkbox first and then let that handler unlock the inputs.
+    const currencySelectEl = document.getElementById('proposalCurrency');
+    if (currencySelectEl && overridePrefill.offerCurrency) {
+        currencySelectEl.value = overridePrefill.offerCurrency;
+    }
+    if (typeof overridePrefill.isConditional === 'boolean') {
+        const conditionalCb = document.getElementById('proposalConditionalCheckbox');
+        if (conditionalCb) {
+            conditionalCb.checked = overridePrefill.isConditional;
+            updateConditionalHelper();
+        }
+    }
+    if (overridePrefill.expiryTime) {
+        const expireCb = document.getElementById('proposalExpireCheckbox');
+        const expiryInput = document.getElementById('proposalExpiryTime');
+        if (expireCb && expiryInput) {
+            expireCb.checked = true;
+            if (typeof toggleExpiryInput === 'function') toggleExpiryInput();
+            expiryInput.value = overridePrefill.expiryTime;
+        }
+    }
+    if (overridePrefill.decayEnabled) {
+        const decayCb = document.getElementById('proposalDecayCheckbox');
+        if (decayCb) {
+            decayCb.checked = true;
+            if (typeof toggleDecayInput === 'function') toggleDecayInput();
+            const decayPercentInput = document.getElementById('proposalDecayPercent');
+            const decayTimeInput = document.getElementById('proposalDecayTime');
+            if (decayPercentInput && Number.isFinite(overridePrefill.decayPercent)) decayPercentInput.value = overridePrefill.decayPercent;
+            if (decayTimeInput && overridePrefill.decayTime) decayTimeInput.value = overridePrefill.decayTime;
+        }
+    }
+    if (overridePrefill.depositEnabled) {
+        const depositCb = document.getElementById('proposalDepositCheckbox');
+        if (depositCb) {
+            depositCb.checked = true;
+            if (typeof toggleDepositInput === 'function') toggleDepositInput();
+            const depositPercentInput = document.getElementById('proposalDepositPercent');
+            if (depositPercentInput && Number.isFinite(overridePrefill.depositPercent)) depositPercentInput.value = overridePrefill.depositPercent;
+        }
+    }
+
+    // If the prefill restored anything the user wouldn't otherwise see, open the collapsed
+    // Options section — silently carrying non-default terms would be a nasty surprise.
+    const restoredNonDefaultOptions = !!overridePrefill.expiryTime
+        || !!overridePrefill.decayEnabled
+        || !!overridePrefill.depositEnabled
+        || overridePrefill.isConditional === false;
+    if (restoredNonDefaultOptions) {
+        const optionsHeader = document.querySelector('#proposalOptionsSection .collapsible-header');
+        const optionsSection = document.getElementById('proposalOptionsSection');
+        if (optionsHeader && optionsSection && optionsSection.classList.contains('collapsed')) {
+            optionsHeader.click();
+        }
+    }
+
     // Update description when name changes
     const nameInputField = document.getElementById('proposalName');
     const descriptionInputField = document.getElementById('proposalDescription');
@@ -1991,6 +2055,11 @@ function closeProposalDialog() {
     currentProposalTool = null;
     proposalModalScreenshotDataUrl = null; // Clear stored screenshot
     proposalModalScreenshotPromise = null;
+    // Drop the "Copy into new proposal" lineage once the dialog is gone. createProposal() has
+    // already stamped it by this point (it closes the dialog only after building the proposal).
+    if (typeof window !== 'undefined') {
+        window.pendingProposalCopySource = null;
+    }
 
     // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;
     // disable it now so we don't leave the UI stuck in multi-select mode.

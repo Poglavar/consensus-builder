@@ -605,7 +605,8 @@
                 "apply": "Aplicar al mapa",
                 "applying": "Aplicando...",
                 "remove": "Quitar del mapa",
-                "share": "Compartir propuesta"
+                "share": "Compartir propuesta",
+                "copy": "Copiar en una nueva propuesta"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -691,7 +692,8 @@
                 "ownerTooltip": "Propietario: {{name}}"
             },
             "descendantRoadSuffix": " • Carretera",
-            "descendantRoadNamedSuffix": " • Carretera: {{name}}"
+            "descendantRoadNamedSuffix": " • Carretera: {{name}}",
+            "basedOn": "Basado en"
         },
         "block": {
             "title": "Información del bloque",
@@ -1381,7 +1383,8 @@
                 "status": {
                     "noGeometry": "Sin geometría: por favor define una geometría",
                     "submitted": "✔️ geometría enviada",
-                    "auto": "La geometría se generará algorítmicamente"
+                    "auto": "La geometría se generará algorítmicamente",
+                    "copied": "Geometría copiada de \"{name}\""
                 }
             },
             "reparcellization": {
@@ -1478,7 +1481,8 @@
                 "unknown": "Error desconocido",
                 "cancel": "Cancelar",
                 "createInMemory": "Crear en memoria"
-            }
+            },
+            "optionsSectionTitle": "Opciones"
         }
     },
     "blockify": {
@@ -2035,7 +2039,8 @@
             "please_enter_a_description": "Ingresa una descripción.",
             "please_enter_a_valid_offer_amount_eur": "Ingresa una oferta válida (EUR).",
             "please_enter_a_valid_offer_amount": "Ingresa una oferta válida.",
-            "please_enter_an_author_name": "Ingresa un nombre de autor."
+            "please_enter_an_author_name": "Ingresa un nombre de autor.",
+            "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de esta propuesta. Cambia a la ciudad en la que se creó e inténtalo de nuevo."
         }
     },
     "gameDialogs": {
