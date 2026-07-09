@@ -12,6 +12,9 @@
 // Goals whose geometry lives in a pending global (the rest derive geometry from the parcel
 // selection, so simply re-selecting the source's parcels reproduces it).
 const COPY_BUILDING_GOALS = ['buildings', 'row', 'parcelBased', 'single'];
+// Goals whose editor can reopen on an existing design, so a copy stays fully editable.
+// road-track is deliberately absent: its drawing tool cannot yet be seeded.
+const COPY_EDITABLE_GOALS = [...COPY_BUILDING_GOALS, 'reparcellization'];
 
 function copyDeepClone(value) {
     if (value === null || value === undefined) return value;
@@ -258,6 +261,18 @@ function buildBlockifySeed(context) {
     return seed;
 }
 
+// Same idea as getPendingBuildingSeedFor, for the reparcellization plan: the pending global is the
+// one place a plan lives before it becomes a proposal, so reading it back covers both a copied
+// proposal and reopening the editor mid-draft. Guarded on the parcel set.
+function getPendingReparcellizationSeedFor(parcelIds) {
+    const plan = (typeof window !== 'undefined') ? window.pendingReparcellizationPlan : null;
+    if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return null;
+    if (!Array.isArray(plan.parcelIds) || !plan.parcelIds.length) return null;
+    const key = (ids) => (ids || []).map(String).slice().sort().join('|');
+    if (key(plan.parcelIds) !== key(parcelIds)) return null;
+    return plan;
+}
+
 function copyProposalI18n(key, fallback, params) {
     try {
         if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
@@ -330,11 +345,11 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     };
 
     if (seededGeometry) {
-        // The building editors can reopen on the copied design (they read the pending context we
-        // just seeded), so leave their buttons live — "Edit" reopens the original, fully editable.
-        // Road and reparcellization have no seed-from-existing path yet: their geometry rides along
+        // The building and reparcellization editors reopen on the copied design (they read the
+        // pending state we just seeded), so leave their buttons live — "Edit" reopens the original,
+        // fully editable. Road drawing has no seed-from-existing path yet: its geometry rides along
         // verbatim and the buttons stay locked rather than silently starting from a blank canvas.
-        const editable = COPY_BUILDING_GOALS.includes(goalKey);
+        const editable = COPY_EDITABLE_GOALS.includes(goalKey);
         overrides.geometryPreset = {
             statusText: copyProposalI18n(
                 editable ? 'modal.createProposal.geometry.status.copiedEditable' : 'modal.createProposal.geometry.status.copied',
@@ -371,4 +386,5 @@ if (typeof window !== 'undefined') {
     window.getPendingBuildingSeedFor = getPendingBuildingSeedFor;
     window.pendingBuildingSeedFeatures = pendingBuildingSeedFeatures;
     window.buildBlockifySeed = buildBlockifySeed;
+    window.getPendingReparcellizationSeedFor = getPendingReparcellizationSeedFor;
 }

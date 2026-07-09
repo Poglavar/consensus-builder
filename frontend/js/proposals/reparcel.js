@@ -41,11 +41,25 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
         typeInput.value = 'Reparcellization';
     }
 
+    // Reopen on an existing plan (a copied proposal, or your own in-progress edits) when the
+    // pending plan matches this selection, rather than re-running the algorithm over it.
+    const buildOpenOptions = () => {
+        const selection = (typeof getCurrentParcelSelectionContext === 'function')
+            ? getCurrentParcelSelectionContext()
+            : { ids: [] };
+        const plan = (typeof getPendingReparcellizationSeedFor === 'function')
+            ? getPendingReparcellizationSeedFor(selection.ids)
+            : null;
+        return plan
+            ? { algorithm: plan.algorithm || normalizedKey, ownershipMode, initialPolygons: plan.polygons }
+            : { algorithm: normalizedKey, ownershipMode };
+    };
+
     // One unified land-readjustment method for both single- and multiple-owner
     // selections (ownershipMode is kept only as informational metadata).
     const openModal = async () => {
         if (typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode });
+            openReparcellizationModal(buildOpenOptions());
             return true;
         }
         if (typeof updateStatus === 'function') {
@@ -53,7 +67,7 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
         }
         const loaded = await ensureReparcellizationModuleLoaded();
         if (loaded && typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode });
+            openReparcellizationModal(buildOpenOptions());
             return true;
         }
         console.warn('Reparcellization modal is not yet available.');

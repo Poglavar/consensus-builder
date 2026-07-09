@@ -27,6 +27,10 @@
         subtitleData: null,
         ownershipMode: 'multiple',
         uploadedGeometry: null,
+        // A saved plan's polygons[] to restore instead of re-running the algorithm. Set by
+        // openReparcellizationModal({ initialPolygons }) — used by "Copy into new proposal" and by
+        // reopening the editor mid-draft. Consumed once by refreshPreview().
+        initialPolygons: null,
         selectedSliceIndex: null,
         ownerAssignmentPopup: null,
         newPlotsListEl: null,
@@ -955,6 +959,29 @@
 
     function createUnassignedPlot(geometry, source) {
         return makePlotFromOwners(geometry, [], source || 'base');
+    }
+
+    // Rebuild plan slices from a saved plan's polygons[] — the exact inverse of persistResult().
+    // Fields are restored verbatim rather than re-derived, so owner assignments, blended colours
+    // and hand-drawn plots survive a copy untouched.
+    function hydrateSlicesFromPolygons(polygons) {
+        if (!Array.isArray(polygons)) return [];
+        return polygons
+            .filter(polygon => polygon && polygon.geometry)
+            .map(polygon => ({
+                ownerKey: polygon.ownerKey || '',
+                displayName: polygon.displayName || t('reparcellization.modal.unassigned', 'Unassigned'),
+                percent: Number.isFinite(Number(polygon.percent)) ? Number(polygon.percent) : 0,
+                color: polygon.color || '#cccccc',
+                geometry: JSON.parse(JSON.stringify(polygon.geometry)),
+                owners: (Array.isArray(polygon.owners) ? polygon.owners : []).map(owner => ({
+                    ownerKey: owner.ownerKey,
+                    displayName: owner.displayName,
+                    color: owner.color,
+                    share: owner.share || 0
+                })),
+                source: polygon.source || 'manual'
+            }));
     }
 
     // Carve a polygon into the current plan: clip to the pool, subtract it from
@@ -2625,6 +2652,25 @@
             state.totalArea = computeFeatureArea(state.superParcel);
         }
 
+        // Restore a saved plan instead of re-running the algorithm, which would throw away its
+        // hand-drawn plots and owner assignments. Consumed once: switching algorithm inside the
+        // modal still recomputes from scratch, as it should.
+        const seededPolygons = state.initialPolygons;
+        state.initialPolygons = null;
+        if (seededPolygons && seededPolygons.length) {
+            // The sweep handle drives the orientation UI, so it still has to exist for a
+            // sweep-line plan the user may want to re-cut.
+            if (state.algorithm === 'sweep-line') initSweepOrientation();
+            state.slices = hydrateSlicesFromPolygons(seededPolygons);
+            if (state.slices.length) {
+                setStatus('', 'info');
+                updateLegend(state.ownerShares);
+                drawPreview();
+                updateCommitState();
+                return;
+            }
+        }
+
         if (state.algorithm === 'sweep-line') {
             initSweepOrientation();
             state.slices = computeSweepSlices();
@@ -2684,6 +2730,8 @@
         };
     }
 
+    // `initialPolygons` (optional) reopens the editor on a saved plan's polygons[] instead of
+    // re-running the algorithm — used by "Copy into new proposal" and by reopening a draft.
     async function openReparcellizationModal(options = {}) {
         const selection = (typeof getCurrentParcelSelectionContext === 'function')
             ? getCurrentParcelSelectionContext()
@@ -2716,6 +2764,9 @@
         state.ownershipMode = 'multiple';
         state.cashOfferOverrides = {};
         state.algorithm = options.algorithm || 'sweep-line';
+        state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
+            ? JSON.parse(JSON.stringify(options.initialPolygons))
+            : null;
         state.totalArea = computeFeatureArea(superParcel);
         buildModalStructure();
         initMap();
