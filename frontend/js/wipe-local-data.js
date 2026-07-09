@@ -1,12 +1,12 @@
 (function (global) {
     'use strict';
 
-    // Provide a minimal, dependency-free wipeLocalData early in the load order.
-    if (typeof global.wipeLocalData === 'function') {
-        return;
-    }
-
-    global.wipeLocalData = async function wipeLocalData(options = {}) {
+    // The one function that actually erases local data. Dependency-free and defined early, so any
+    // caller can rely on it. Deliberately NOT named `wipeLocalData`: sidebar-management.js declares
+    // a global function of that name, which used to shadow this one after load — leaving the sidebar
+    // button and the city switch quietly clearing less (no localStorage, no IndexedDB drop) than the
+    // boot path did. That wrapper now delegates here, so there is exactly one eraser.
+    global.wipeAllLocalData = async function wipeAllLocalData(options = {}) {
         const { skipReload = false } = options || {};
 
         // Synchronous in-memory clears first so anything reading from cache

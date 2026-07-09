@@ -366,6 +366,35 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     gap: 12px;
 }
 
+/* Cross-city link prompt: three outcomes, so stack them rather than squeezing a 3-column grid. */
+.city-switch-dialog {
+    width: min(520px, calc(100% - 40px));
+}
+
+.city-switch-dialog .city-switch-title {
+    margin: 0 0 12px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.35;
+}
+
+.city-switch-dialog .city-switch-hint {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.45;
+}
+
+.cb-confirm-buttons.city-switch-buttons {
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.cb-confirm-buttons.city-switch-buttons .btn {
+    width: 100%;
+}
+
 .header-avatars {
     display: flex;
     align-items: center;

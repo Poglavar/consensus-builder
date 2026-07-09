@@ -987,10 +987,15 @@ window.shareAppliedProposals = shareAppliedProposals;
 
 
 window.addEventListener('load', () => {
-    setTimeout(() => handleProposalRouteFromUrl(), 100);
-    setTimeout(() => handleSingleProposalShareFromUrl(), 200);
-    setTimeout(() => handleSharedProposalsFromUrl(), 250);
-    setTimeout(() => handleStandalone3DModeFromUrl(), 500);
+    // A link for another city is still awaiting the user's answer (see js/city-switch-prompt.js).
+    // Don't apply its proposals to the city currently on screen — whichever way they answer, the
+    // page either reloads into the right city or drops the route entirely.
+    const cityDecisionPending = () => (typeof hasPendingCitySwitch === 'function' && hasPendingCitySwitch());
+
+    setTimeout(() => { if (!cityDecisionPending()) handleProposalRouteFromUrl(); }, 100);
+    setTimeout(() => { if (!cityDecisionPending()) handleSingleProposalShareFromUrl(); }, 200);
+    setTimeout(() => { if (!cityDecisionPending()) handleSharedProposalsFromUrl(); }, 250);
+    setTimeout(() => { if (!cityDecisionPending()) handleStandalone3DModeFromUrl(); }, 500);
     // Initialize proposals indicator at startup
     setTimeout(() => { try { syncProposalsIndicator(); } catch (_) { } }, 300);
 });

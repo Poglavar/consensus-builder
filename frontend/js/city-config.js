@@ -387,17 +387,17 @@
             return false;
         }
 
-        const wipeFn = (typeof window !== 'undefined' && typeof window.wipeLocalData === 'function')
-            ? window.wipeLocalData
+        const wipeFn = (typeof window !== 'undefined' && typeof window.wipeAllLocalData === 'function')
+            ? window.wipeAllLocalData
             : null;
 
         if (typeof wipeFn !== 'function') {
-            console.warn('[CityConfig] wipeLocalData is not available; skipping city data wipe.');
+            console.warn('[CityConfig] wipeAllLocalData is not available; skipping city data wipe.');
             return false;
         }
 
         try {
-            wipeFn({ skipConfirm: true, skipReload });
+            wipeFn({ skipReload });
             return true;
         } catch (error) {
             console.error('[CityConfig] Failed to wipe local data on city change:', error);
@@ -405,14 +405,24 @@
         }
     }
 
+    // A ?city= in the URL that disagrees with the city this browser already holds data for.
+    // Recorded, never acted on here — see js/city-switch-prompt.js.
+    let pendingCitySwitchRequest = null;
+
     function determineCurrentCityId() {
         const storedCityId = getStoredCityId();
         const queryCityId = getCityIdFromQuery();
 
         if (queryCityId && CITY_CONFIGS[queryCityId]) {
+            // Adopting the query city means wiping everything this browser has stored, because
+            // local data is not city-scoped. That is far too destructive to do silently at boot
+            // (a shared proposal link stamps the sharer's city, so merely *opening* a link would
+            // erase the recipient's proposals). Stay in the stored city and let the user decide.
             if (storedCityId && queryCityId !== storedCityId) {
-                clearLocalCityDataOnCityChange(storedCityId, queryCityId, { skipReload: true });
+                pendingCitySwitchRequest = { requestedCityId: queryCityId, currentCityId: storedCityId };
+                return storedCityId;
             }
+            // Nothing to lose: no stored city yet (fresh profile / private window), or it matches.
             try {
                 if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
                     PersistentStorage.setItem(STORAGE_KEY, queryCityId);
@@ -422,6 +432,19 @@
         }
 
         return storedCityId || DEFAULT_CITY_ID;
+    }
+
+    function getPendingCitySwitch() {
+        return pendingCitySwitchRequest;
+    }
+
+    function clearPendingCitySwitch() {
+        pendingCitySwitchRequest = null;
+    }
+
+    function getCityLabel(cityId) {
+        const config = CITY_CONFIGS[cityId];
+        return (config && config.label) ? config.label : (cityId || '');
     }
 
     let currentCityId = determineCurrentCityId();
@@ -734,8 +757,10 @@
 
     async function wipeDataForCitySwitch() {
         try {
-            if (typeof wipeLocalData === 'function') {
-                await wipeLocalData({ skipConfirm: true, skipReload: true });
+            // The canonical eraser, not the sidebar's confirming wrapper: the caller has already
+            // asked, and the wrapper used to clear strictly less than this needs to.
+            if (typeof window !== 'undefined' && typeof window.wipeAllLocalData === 'function') {
+                await window.wipeAllLocalData({ skipReload: true });
                 return;
             }
 
@@ -1071,6 +1096,9 @@
         setCurrentCityId: setStoredCityId,
         switchCity,
         navigateToCity,
+        getPendingCitySwitch,
+        clearPendingCitySwitch,
+        getCityLabel,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
         getCityCodeForCityId,

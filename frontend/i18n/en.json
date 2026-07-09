@@ -1918,6 +1918,16 @@
         },
         "switch": {
             "confirm": "Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?"
+        },
+        "switchPrompt": {
+            "title": "This link is for {requested} — you are viewing {current}",
+            "body": "Switching cities erases everything stored in this browser: your local proposals, settings and profile. Proposals you have already uploaded are safe and will come back.",
+            "hint": "To keep your current work, open the link in a private window or another browser profile. A new tab is not enough — it shares the same storage.",
+            "stay": "Stay in {current}",
+            "switch": "Switch to {requested} and clear",
+            "privateWindow": "Copy link for a private window",
+            "privateWindowCopied": "Link copied — paste it into a private window",
+            "privateWindowManual": "Copy this page's address into a private window"
         }
     },
     "alerts": {
