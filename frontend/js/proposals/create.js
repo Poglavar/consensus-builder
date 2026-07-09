@@ -1,5 +1,19 @@
 // proposals/create.js — extracted from proposals.js (behavior-preserving relocation).
 
+// The city a proposal belongs to, as a city id ('zagreb', 'new_york', …) — the same form the
+// backend's `proposal.city` column stores. Recorded on the proposal itself so its origin survives
+// being uploaded from elsewhere, opened from a link, or copied.
+function getProposalCityId() {
+    try {
+        if (typeof window !== 'undefined' && window.CityConfigManager
+            && typeof window.CityConfigManager.getCurrentCityId === 'function') {
+            return window.CityConfigManager.getCurrentCityId() || null;
+        }
+        if (typeof getCurrentCityId === 'function') return getCurrentCityId() || null;
+    } catch (_) { }
+    return null;
+}
+
 function updateCreateProposalSubmitState() {
     const btn = document.getElementById('createProposalSubmitButton');
     const hint = document.getElementById('proposalGeometryRequirementHint');
@@ -259,6 +273,7 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         budget: offer,
         budgetCurrency: offerCurrency,
         parentParcelIds,
+        city: getProposalCityId(),
         type: 'structure',
         structureProposal: {
             kind: (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square',
@@ -596,7 +611,11 @@ async function createProposal() {
             depositEnabled: depositEnabled, // Whether deposit is enabled
             depositPercent: depositPercent, // Percentage of offer deposited (10-200%)
             isConditional: isConditional,
-            disbursementMode: isConditional ? 'conditional' : 'partial' // conditional = all must accept; partial = per-acceptance payouts
+            disbursementMode: isConditional ? 'conditional' : 'partial', // conditional = all must accept; partial = per-acceptance payouts
+            // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
+            // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
+            // and so a shared link can be recognised as cross-city even without a ?city= param.
+            city: getProposalCityId()
         };
 
         // Lineage for "Copy into new proposal". The source is never mutated — the fork just
@@ -1762,10 +1781,9 @@ function buildUploadReadyProposal(proposal) {
     const derivedType = mapGoalToBackendType(goalKey);
     uploadProposal.type = derivedType || rawType || 'parcel';
 
-    const currentCityId = typeof getCurrentCityId === 'function'
-        ? getCurrentCityId()
-        : (typeof window !== 'undefined' && window.getCurrentCityId && typeof window.getCurrentCityId === 'function' ? window.getCurrentCityId() : 'city');
-    uploadProposal.city = uploadProposal.city || currentCityId;
+    // Proposals created since the `city` stamp carry their own origin; older ones fall back to the
+    // current city, which is only right if you upload from where you created it.
+    uploadProposal.city = uploadProposal.city || getProposalCityId() || 'city';
 
     // Remove parentFeatures - we only upload IDs, not full geometries
     if (uploadProposal.parentFeatures) {

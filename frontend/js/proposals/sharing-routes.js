@@ -1337,6 +1337,27 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     return { applied: false, skipped: false, proposalId, reason: 'Proposal did not apply' };
 }
 
+// Reads the shared proposal's own `city` and, when it disagrees with the city on screen, hands the
+// decision to the user. Returns true when the caller must stop: either we are reloading into the
+// other city, or the user chose to stay and the route was dropped. Never blocks on legacy proposals
+// that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
+// existing behaviour rather than stranding the user on a dialog.
+async function sharedProposalCityBlocksLoad(firstProposalId) {
+    if (!firstProposalId || typeof promptCityMismatchForProposal !== 'function') return false;
+    try {
+        const backendBase = resolveBackendBaseUrl();
+        const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
+        if (!response.ok) return false;
+        const payload = await response.json();
+        const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
+        if (!proposalCityId) return false;
+        return await promptCityMismatchForProposal(String(proposalCityId));
+    } catch (error) {
+        console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
+        return false;
+    }
+}
+
 async function handleSharedPlanRoute(idParts, attempt = 0) {
     try {
         const t = getProposalI18nHelper();
@@ -1396,6 +1417,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
+
+        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
+        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
+        // map happens to be on screen.
+        if (await sharedProposalCityBlocksLoad(idParts.map(normalizeId).filter(Boolean)[0])) {
+            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
+            return;
+        }
 
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
         showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {

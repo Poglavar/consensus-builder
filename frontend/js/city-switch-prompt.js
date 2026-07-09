@@ -162,6 +162,26 @@
         stripSharedRouteFromUrl();
     }
 
+    // Same dialog, driven by a proposal's own `city` rather than a ?city= param. Covers links that
+    // never carried the param (older shares, or one stripped in transit). Resolves to true when the
+    // caller must abort — either the page is reloading into the other city, or the user stayed put.
+    async function promptCityMismatchForProposal(requestedCityId) {
+        const manager = global.CityConfigManager;
+        if (!manager || !requestedCityId) return false;
+        const currentCityId = manager.getCurrentCityId();
+        if (requestedCityId === currentCityId) return false;
+
+        const choice = await askUser(manager.getCityLabel(currentCityId), manager.getCityLabel(requestedCityId));
+        if (choice === 'switch') {
+            await manager.switchCity(requestedCityId);
+            return true;
+        }
+        stripSharedRouteFromUrl();
+        return true;
+    }
+
+    global.promptCityMismatchForProposal = promptCityMismatchForProposal;
+
     global.hasPendingCitySwitch = function hasPendingCitySwitch() {
         const manager = global.CityConfigManager;
         return !!(manager && typeof manager.getPendingCitySwitch === 'function' && manager.getPendingCitySwitch());
