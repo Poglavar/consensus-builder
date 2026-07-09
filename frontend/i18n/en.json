@@ -1334,7 +1334,8 @@
                     "noGeometry": "No geometry: please define a geometry",
                     "submitted": "✔️ geometry submitted",
                     "auto": "Algorithmic geometry will be generated",
-                    "copied": "Geometry copied from \"{name}\""
+                    "copied": "Geometry copied from \"{name}\"",
+                    "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it"
                 }
             },
             "reparcellization": {

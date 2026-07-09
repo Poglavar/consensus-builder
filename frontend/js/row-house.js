@@ -37,6 +37,10 @@
     let currentRotation = 0; // radians, rotation around the building center
     let baseRotation = 0; // radians, initial rotation based on longest side
 
+    // Parameters to restore when the modal next opens, instead of the defaults. Set by
+    // openRowHouseForParcels({ initialParameters }); consumed once by showRowHouseModal().
+    let rowHouseSeedParameters = null;
+
     // Interaction state
     let isDragging = false;
     let isRotating = false;
@@ -1688,6 +1692,22 @@
         currentOffsetX = 0;
         currentOffsetY = 0;
         currentRotation = 0;
+
+        // Restore a saved design over the defaults (e.g. a copied proposal). The row house is fully
+        // parametric — offsetX/offsetY/rotation encode its position — so the stored parameters
+        // regenerate the exact same building while leaving every slider live.
+        const seed = rowHouseSeedParameters;
+        rowHouseSeedParameters = null;
+        if (seed) {
+            const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
+            if (num(seed.length) !== null) currentBuildingLength = num(seed.length);
+            if (num(seed.width) !== null) currentBuildingWidth = num(seed.width);
+            if (num(seed.height) !== null) currentBuildingHeight = num(seed.height);
+            if (num(seed.chamfer) !== null) currentChamfer = num(seed.chamfer);
+            if (num(seed.offsetX) !== null) currentOffsetX = num(seed.offsetX);
+            if (num(seed.offsetY) !== null) currentOffsetY = num(seed.offsetY);
+            if (num(seed.rotation) !== null) currentRotation = num(seed.rotation);
+        }
         // Note: baseRotation is intentionally NOT reset here - it's set by calculateMaxBuildingDimensions
         // based on the longest side of the superparcel for consistent boundary checking
 
@@ -1935,7 +1955,9 @@
     }
 
     // Entry point for opening row house modal from parcels
-    function openRowHouseForParcels({ blockName, parcels }) {
+    // `initialParameters` (optional) reopens the editor on a previously-saved design instead of the
+    // defaults — used by "Copy into new proposal".
+    function openRowHouseForParcels({ blockName, parcels, initialParameters = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             if (typeof updateStatus === 'function') {
@@ -1943,6 +1965,7 @@
             }
             return;
         }
+        rowHouseSeedParameters = initialParameters || null;
 
         const seenIds = new Set();
         const normalizedParcels = [];

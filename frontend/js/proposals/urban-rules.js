@@ -484,9 +484,13 @@ function launchUrbanRuleToolForSelection() {
         return;
     }
     const opener = (typeof openUrbanRuleForParcels === 'function') ? openUrbanRuleForParcels : openBlockifyForParcels;
+    // Reopen on the existing design (a copied proposal, or your own in-progress edits) rather than
+    // resetting to the defaults. The saved parameters carry mode/gaps/wings/manual outline too.
+    const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     opener({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers
+        parcels: selection.layers,
+        initialState: (seed && typeof buildBlockifySeed === 'function') ? buildBlockifySeed(seed) : null
     });
 }
 

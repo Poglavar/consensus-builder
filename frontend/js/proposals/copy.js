@@ -200,6 +200,64 @@ function typologyForCopy(source, goalKey) {
     return null;
 }
 
+// The seed a building editor should open with, or null to start blank. Read straight off the
+// pending context, which is the single place a building design lives before it becomes a proposal.
+// That covers two cases with one mechanism:
+//   - a freshly copied proposal (copyProposalIntoNewProposal seeds the pending context), and
+//   - reopening the editor mid-draft, which used to reset to defaults and lose your design.
+// Guarded on the parcel set so a stale context from a different selection can never leak in.
+function getPendingBuildingSeedFor(parcelIds) {
+    const context = (typeof window !== 'undefined') ? window.pendingBuildingProposalContext : null;
+    if (!context || !Array.isArray(context.parcelIds) || !context.parcelIds.length) return null;
+    const key = (ids) => (ids || []).map(String).slice().sort().join('|');
+    if (key(context.parcelIds) !== key(parcelIds)) return null;
+    return context;
+}
+
+// Building features held by a pending context (single-building keeps position in the geometry).
+function pendingBuildingSeedFeatures(context) {
+    if (!context) return null;
+    if (Array.isArray(context.buildings) && context.buildings.length) return context.buildings;
+    if (context.buildingFeature) return [context.buildingFeature];
+    return null;
+}
+
+// Outer ring of a building footprint, open (no closing duplicate) — the shape blockify's manual
+// mode edits. Handles both Polygon and MultiPolygon.
+function outerRingOfFeature(feature) {
+    const geometry = feature && feature.geometry;
+    if (!geometry) return null;
+    let ring = null;
+    if (geometry.type === 'Polygon') ring = geometry.coordinates && geometry.coordinates[0];
+    else if (geometry.type === 'MultiPolygon') ring = geometry.coordinates && geometry.coordinates[0] && geometry.coordinates[0][0];
+    if (!Array.isArray(ring) || ring.length < 4) return null;
+    const open = ring.map(c => [c[0], c[1]]);
+    const first = open[0], last = open[open.length - 1];
+    if (first && last && first[0] === last[0] && first[1] === last[1]) open.pop();
+    return open.length >= 3 ? open : null;
+}
+
+// The blockify seed: the saved parameters, plus a manual outline recovered from the geometry when
+// needed. A hand-dragged outline is not slider-derived, so regenerating from width/setback/chamfer
+// would silently reshape it. Proposals saved before the editor persisted `mode`/`manualOuterRing`
+// can still be detected via the feature's own `properties.manual` flag.
+function buildBlockifySeed(context) {
+    if (!context || !context.parameters) return null;
+    const seed = { ...context.parameters };
+    const feature = context.buildingFeature || (Array.isArray(context.buildings) ? context.buildings[0] : null);
+    const looksManual = seed.mode === 'manual' || !!(feature && feature.properties && feature.properties.manual);
+    if (looksManual) {
+        const ring = (Array.isArray(seed.manualOuterRing) && seed.manualOuterRing.length >= 3)
+            ? seed.manualOuterRing
+            : outerRingOfFeature(feature);
+        if (ring) {
+            seed.mode = 'manual';
+            seed.manualOuterRing = ring;
+        }
+    }
+    return seed;
+}
+
 function copyProposalI18n(key, fallback, params) {
     try {
         if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
@@ -272,17 +330,20 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     };
 
     if (seededGeometry) {
-        // V1: the copied geometry rides along verbatim and is not re-drawable in place. Say so
-        // plainly rather than presenting an editor that would silently start from scratch.
+        // The building editors can reopen on the copied design (they read the pending context we
+        // just seeded), so leave their buttons live — "Edit" reopens the original, fully editable.
+        // Road and reparcellization have no seed-from-existing path yet: their geometry rides along
+        // verbatim and the buttons stay locked rather than silently starting from a blank canvas.
+        const editable = COPY_BUILDING_GOALS.includes(goalKey);
         overrides.geometryPreset = {
             statusText: copyProposalI18n(
-                'modal.createProposal.geometry.status.copied',
-                'Geometry copied from "{name}"',
+                editable ? 'modal.createProposal.geometry.status.copiedEditable' : 'modal.createProposal.geometry.status.copied',
+                editable ? 'Geometry copied from "{name}" — press Edit to adjust it' : 'Geometry copied from "{name}"',
                 { name: sourceName }
             ),
             submitted: true,
-            selectedAction: 'upload',
-            disableButtons: true
+            selectedAction: 'edit',
+            disableButtons: !editable
         };
     }
 
@@ -295,7 +356,10 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
         handleUrbanRuleTypologyClick(typology, { skipLaunch: true });
         // skipLaunch returns before setting the tool (it normally launches an editor), so set it
         // here; otherwise createProposal()'s goal gate sees "urban-rule" and demands geometry.
-        currentProposalTool = goalKey;
+        // Every typology is stored under goal 'buildings', so derive the tool from the typology.
+        currentProposalTool = (typology === 'row') ? 'row'
+            : (typology === 'parcelBased') ? 'parcelBased'
+                : 'buildings';
         const typeInput = document.getElementById('proposalType');
         if (typeInput && !typeInput.value) typeInput.value = 'Residences';
         try { if (typeof updateCreateProposalSubmitState === 'function') updateCreateProposalSubmitState(); } catch (_) { }
@@ -304,4 +368,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
 
 if (typeof window !== 'undefined') {
     window.copyProposalIntoNewProposal = copyProposalIntoNewProposal;
+    window.getPendingBuildingSeedFor = getPendingBuildingSeedFor;
+    window.pendingBuildingSeedFeatures = pendingBuildingSeedFeatures;
+    window.buildBlockifySeed = buildBlockifySeed;
 }

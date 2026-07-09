@@ -28,6 +28,10 @@
     let currentMaxFloors = DEFAULT_MAX_FLOORS;
     let currentMinDistance = DEFAULT_MIN_DISTANCE;
 
+    // Parameters to restore when the modal next opens, instead of the defaults. Set by
+    // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
+    let parcelBasedSeedParameters = null;
+
     // 3D preview state
     let parcelBased3D = {
         handle: null,
@@ -793,6 +797,15 @@
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
 
+        // Restore a saved design over the defaults (e.g. a copied proposal). Buildings here are a
+        // pure function of these two parameters, so seeding them reproduces the exact geometry.
+        const seed = parcelBasedSeedParameters;
+        parcelBasedSeedParameters = null;
+        if (seed) {
+            if (Number.isFinite(Number(seed.maxFloors))) currentMaxFloors = Number(seed.maxFloors);
+            if (Number.isFinite(Number(seed.minDistance))) currentMinDistance = Number(seed.minDistance);
+        }
+
         // Update sliders
         const maxFloorsSlider = document.getElementById('parcelbased-maxfloors-slider');
         const minDistanceSlider = document.getElementById('parcelbased-mindistance-slider');
@@ -994,8 +1007,10 @@
         }
     }
 
-    // Entry point for opening parcel-based modal from parcels
-    function openParcelBasedForParcels({ blockName, parcels }) {
+    // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
+    // reopens the editor on a previously-saved design — used by "Copy into new proposal".
+    function openParcelBasedForParcels({ blockName, parcels, initialParameters = null }) {
+        parcelBasedSeedParameters = initialParameters || null;
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             if (typeof updateStatus === 'function') {

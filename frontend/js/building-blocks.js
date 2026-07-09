@@ -47,6 +47,10 @@ let blockifyLiveLayer = null;    // transient dashed outline shown while draggin
 // parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
 let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
+// Design to restore when the modal next opens, instead of starting from the defaults. Set by
+// openUrbanRuleForParcels({ initialState }) — used by "Copy into new proposal" so a fork reopens
+// the editor showing the original design, with every control live. Consumed once, then cleared.
+let blockifySeedState = null;
 // "Based on existing buildings" mode: the proposal is derived from the existing building
 // footprints on the selected parcels instead of a freeform slider shape. Two independent rules,
 // picked by radio (moving a slider also activates its rule): "proposed height" extrudes EVERY
@@ -1871,6 +1875,13 @@ function showBlockifyModal() {
                 document.getElementById('height-value').textContent = currentBuildingHeight.toFixed(1);
                 // Only affects 3D extrusion; regenerate 3D using the current geometry
                 if (generatedBuildingFeature) {
+                    // Keep the feature's own height in step with the slider. The footprint doesn't
+                    // change, so nothing regenerates it — without this the saved building carries
+                    // the height from the last full generate, and the 3D view (which reads
+                    // properties.height) renders the proposal at the wrong height.
+                    if (generatedBuildingFeature.properties) {
+                        generatedBuildingFeature.properties.height = currentBuildingHeight;
+                    }
                     updateBlockify3DScene(generatedBuildingFeature);
                 }
             });
@@ -2033,28 +2044,99 @@ function showBlockifyModal() {
     existingFootprintsPromise = null;
     generatedBuildingFeatures = null;
 
-    // Update sliders if they exist
-    const setbackSlider = document.getElementById('setback-slider');
-    const widthSlider = document.getElementById('width-slider');
+    // Restore a saved design (e.g. a copied proposal) over the freshly-reset defaults, so the
+    // editor opens on the original shape with every control still live.
+    const seed = blockifySeedState;
+    blockifySeedState = null;
+    if (seed) applyBlockifySeedState(seed);
 
-    if (setbackSlider) {
-        setbackSlider.value = currentSetback;
-        document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
-    }
-    const chamferSlider = document.getElementById('chamfer-slider');
-    if (chamferSlider) {
-        chamferSlider.value = currentChamferM;
-        document.getElementById('chamfer-value').textContent = currentChamferM.toFixed(1);
-    }
-    if (widthSlider) {
-        widthSlider.value = currentBuildingWidth;
-        document.getElementById('width-value').textContent = currentBuildingWidth.toFixed(1);
-    }
+    syncBlockifyControlsFromState();
 
     // Generate building immediately
     setTimeout(() => {
+        if (seed && seed.mode === 'existing') {
+            // Existing-buildings mode refetches footprints; entering the mode does the drawing.
+            enterExistingMode();
+            return;
+        }
+        if (seed && seed.mode === 'manual' && Array.isArray(manualOuterRing) && manualOuterRing.length >= 3) {
+            // Manual outlines are not slider-derived, so restore the ring rather than regenerate.
+            setFootprintSlidersEnabled(false);
+            updateManualToggleLabel();
+            generateManualBuilding();
+            return;
+        }
         generateBuildingInModal();
     }, 500); // Small delay to ensure the map is fully initialized
+}
+
+// Push a saved blockify design back into the editor's module state. Anything the seed omits keeps
+// the default that showBlockifyModal() just reset it to, so older proposals (which only stored
+// width/height/setback/chamfer/algorithm) still restore cleanly.
+function applyBlockifySeedState(seed) {
+    if (!seed || typeof seed !== 'object') return;
+    const num = (value) => (Number.isFinite(Number(value)) ? Number(value) : null);
+
+    const setback = num(seed.setback);
+    if (setback !== null) currentSetback = setback;
+    const width = num(seed.width);
+    if (width !== null) currentBuildingWidth = width;
+    const height = num(seed.height);
+    if (height !== null) currentBuildingHeight = height;
+    const chamfer = num(seed.chamfer);
+    if (chamfer !== null) currentChamferM = chamfer;
+    const simplify = num(seed.simplify);
+    if (simplify !== null) currentSimplifyM = simplify;
+
+    if (Array.isArray(seed.gaps)) gapPositions = JSON.parse(JSON.stringify(seed.gaps));
+    if (Array.isArray(seed.wings)) wingPositions = JSON.parse(JSON.stringify(seed.wings));
+
+    if (seed.mode === 'manual' && Array.isArray(seed.manualOuterRing) && seed.manualOuterRing.length >= 3) {
+        blockifyMode = 'manual';
+        manualOuterRing = seed.manualOuterRing.map(c => [c[0], c[1]]);
+    } else if (seed.mode === 'existing') {
+        blockifyMode = 'existing';
+        if (seed.rule === 'exact' || seed.rule === 'additional') existingRule = seed.rule;
+        const proposedFloors = num(seed.proposedHeightFloors);
+        if (proposedFloors !== null) currentProposedHeightFloors = proposedFloors;
+        const additionalFloors = num(seed.additionalFloors);
+        if (additionalFloors !== null) currentAdditionalFloors = additionalFloors;
+        const floorHeight = num(seed.floorHeightM);
+        if (floorHeight !== null) currentFloorHeightM = floorHeight;
+    }
+
+    if (seed.algorithm) {
+        const algorithmSelect = document.getElementById('algorithm-select');
+        if (algorithmSelect) algorithmSelect.value = seed.algorithm;
+    }
+}
+
+// Mirror the module state onto every modal control. Replaces the old partial sync (which only
+// touched setback/chamfer/width) so a seeded design shows the values it was actually built with.
+function syncBlockifyControlsFromState() {
+    const setSlider = (sliderId, valueId, value, digits = 1) => {
+        const slider = document.getElementById(sliderId);
+        if (slider) slider.value = value;
+        const label = document.getElementById(valueId);
+        if (label) label.textContent = digits === 0 ? String(value) : Number(value).toFixed(digits);
+    };
+
+    setSlider('setback-slider', 'setback-value', currentSetback);
+    setSlider('chamfer-slider', 'chamfer-value', currentChamferM);
+    setSlider('simplify-slider', 'simplify-value', currentSimplifyM);
+    setSlider('width-slider', 'width-value', currentBuildingWidth);
+    setSlider('height-slider', 'height-value', currentBuildingHeight);
+    setSlider('gaps-slider', 'gaps-value', Array.isArray(gapPositions) ? gapPositions.length : 0, 0);
+    setSlider('wings-slider', 'wings-value', Array.isArray(wingPositions) ? wingPositions.length : 0, 0);
+
+    const exactRadio = document.getElementById('blockify-rule-exact');
+    const additionalRadio = document.getElementById('blockify-rule-additional');
+    if (exactRadio) exactRadio.checked = existingRule === 'exact';
+    if (additionalRadio) additionalRadio.checked = existingRule === 'additional';
+    setSlider('proposed-height-slider', 'proposed-height-value', currentProposedHeightFloors, 0);
+    setSlider('additional-floors-slider', 'additional-floors-value', currentAdditionalFloors, 0);
+    setSlider('floor-height-slider', 'floor-height-value', currentFloorHeightM);
+    if (typeof updateExistingValueLabels === 'function') updateExistingValueLabels();
 }
 
 // Function to close the blockify modal
@@ -3469,12 +3551,15 @@ function blockifySelectedBlock() {
     redirectBlockifyToCreateProposal();
 }
 
-function openUrbanRuleForParcels({ blockName, parcels }) {
+// `initialState` (optional) restores a previously-saved design instead of the defaults — see
+// applyBlockifySeedState. Used by "Copy into new proposal" to reopen a fork's original building.
+function openUrbanRuleForParcels({ blockName, parcels, initialState = null }) {
     const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
     if (!rawParcels.length) {
         updateStatus('Select parcels before launching the buildings tool.');
         return;
     }
+    blockifySeedState = initialState || null;
 
     const seenIds = new Set();
     const normalizedParcels = [];
@@ -3579,6 +3664,9 @@ function saveBlockifyDesignForProposal() {
     const clonedBuildings = existingModeFeatures ? JSON.parse(JSON.stringify(existingModeFeatures)) : null;
     const clonedFeature = clonedBuildings ? clonedBuildings[0] : JSON.parse(JSON.stringify(generatedBuildingFeature));
 
+    // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
+    // setback/chamfer/algorithm alone are lossy: a manual outline isn't slider-derived at all, and
+    // gaps/wings/simplify silently disappear on regeneration. Copies would otherwise change shape.
     const parameters = clonedBuildings
         ? {
             mode: 'existing',
@@ -3589,6 +3677,13 @@ function saveBlockifyDesignForProposal() {
             algorithm: null
         }
         : {
+            mode: blockifyMode,
+            simplify: Number.isFinite(Number(currentSimplifyM)) ? Number(currentSimplifyM) : null,
+            gaps: Array.isArray(gapPositions) ? JSON.parse(JSON.stringify(gapPositions)) : [],
+            wings: Array.isArray(wingPositions) ? JSON.parse(JSON.stringify(wingPositions)) : [],
+            manualOuterRing: (blockifyMode === 'manual' && Array.isArray(manualOuterRing))
+                ? manualOuterRing.map(c => [c[0], c[1]])
+                : null,
             width: Number.isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : null,
             height: Number.isFinite(Number(currentBuildingHeight)) ? Number(currentBuildingHeight) : null,
             setback: Number.isFinite(Number(currentSetback)) ? Number(currentSetback) : null,

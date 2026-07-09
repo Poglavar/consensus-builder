@@ -1338,7 +1338,8 @@
                     "noGeometry": "Nema geometrije: definiši geometriju",
                     "submitted": "✔️ geometrija poslata",
                     "auto": "Algoritamska geometrija će biti generisana",
-                    "copied": "Geometrija kopirana iz \"{name}\""
+                    "copied": "Geometrija kopirana iz \"{name}\"",
+                    "copiedEditable": "Geometrija kopirana iz \"{name}\" — pritisnite Uredi za prilagođavanje"
                 }
             },
             "reparcellization": {

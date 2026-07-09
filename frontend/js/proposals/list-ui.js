@@ -319,9 +319,13 @@ function launchSingleBuildingToolForSelection() {
         updateStatus('Single building tool is unavailable.');
         return;
     }
+    // Reopen on the existing design (a copied proposal, or your own in-progress edits) when the
+    // pending context matches this selection. Position lives in the geometry, so pass features.
+    const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openSingleBuildingForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers
+        parcels: selection.layers,
+        initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null
     });
 }
 
@@ -335,9 +339,11 @@ function launchRowHouseToolForSelection() {
         updateStatus('Row house tool is unavailable.');
         return;
     }
+    const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openRowHouseForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers
+        parcels: selection.layers,
+        initialParameters: seed ? seed.parameters : null
     });
 }
 
@@ -351,9 +357,11 @@ function launchParcelBasedToolForSelection() {
         updateStatus('Parcel-based tool is unavailable.');
         return;
     }
+    const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openParcelBasedForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers
+        parcels: selection.layers,
+        initialParameters: seed ? seed.parameters : null
     });
 }
 
