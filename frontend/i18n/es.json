@@ -1967,17 +1967,13 @@
             "success": "Ubicación detectada: {{label}}"
         },
         "switch": {
-            "confirm": "Cambiar de ciudad borrará los datos en caché local (parcelas, propuestas, configuraciones) y recargará la aplicación.\n\n¿Quieres continuar?"
+            "confirm": "Cambiar de ciudad recargará la aplicación. Tu trabajo en esta ciudad se conserva y seguirá aquí cuando vuelvas.\n\n¿Quieres continuar?"
         },
         "switchPrompt": {
-            "title": "Este enlace es de {requested}: estás viendo {current}",
-            "body": "Cambiar de ciudad borra todo lo guardado en este navegador: tus propuestas locales, ajustes y perfil. Las propuestas que ya subiste están a salvo y volverán.",
-            "hint": "Para conservar tu trabajo actual, abre el enlace en una ventana privada u otro perfil del navegador. Una pestaña nueva no basta: comparte el mismo almacenamiento.",
+            "title": "Esta propuesta es de {requested}: estás viendo {current}",
+            "body": "Abrirla cambia el mapa a {requested} y recarga. Tu trabajo en {current} se conserva y seguirá aquí cuando vuelvas.",
             "stay": "Quedarme en {current}",
-            "switch": "Cambiar a {requested} y borrar",
-            "privateWindow": "Copiar enlace para una ventana privada",
-            "privateWindowCopied": "Enlace copiado: pégalo en una ventana privada",
-            "privateWindowManual": "Copia la dirección de esta página en una ventana privada"
+            "switch": "Abrir en {requested}"
         }
     },
     "alerts": {

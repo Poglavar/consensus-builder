@@ -1947,17 +1947,13 @@
             "success": "Lokacija otkrivena: {{label}}"
         },
         "switch": {
-            "confirm": "Promena grada će obrisati lokalno keširane podatke (parcele, predloge, podešavanja) i ponovo učitati aplikaciju.\n\nDa li želiš da nastaviš?"
+            "confirm": "Promena grada će ponovo učitati aplikaciju. Vaš rad u ovom gradu je sačuvan i biće tu kad se vratite.\n\nŽelite li da nastavite?"
         },
         "switchPrompt": {
-            "title": "Ovaj link vodi u {requested} — trenutno gledate {current}",
-            "body": "Promena grada briše sve sačuvano u ovom pregledaču: vaše lokalne predloge, podešavanja i profil. Predlozi koje ste već poslali na server su bezbedni i vratiće se.",
-            "hint": "Da biste sačuvali trenutni rad, otvorite link u anonimnom prozoru ili drugom profilu pregledača. Novi tab nije dovoljan — deli istu memoriju.",
+            "title": "Ovaj predlog je u gradu {requested} — trenutno gledate {current}",
+            "body": "Otvaranje prebacuje mapu na {requested} i ponovo učitava aplikaciju. Vaš rad u gradu {current} je sačuvan i biće tu kad se vratite.",
             "stay": "Ostani u {current}",
-            "switch": "Pređi na {requested} i obriši",
-            "privateWindow": "Kopiraj link za anonimni prozor",
-            "privateWindowCopied": "Link kopiran — nalepite ga u anonimni prozor",
-            "privateWindowManual": "Kopirajte adresu ove stranice u anonimni prozor"
+            "switch": "Otvori u {requested}"
         }
     },
     "alerts": {

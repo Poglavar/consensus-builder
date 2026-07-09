@@ -366,7 +366,7 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     gap: 12px;
 }
 
-/* Cross-city link prompt: three outcomes, so stack them rather than squeezing a 3-column grid. */
+/* Cross-city proposal prompt: a headline above the usual confirm body. */
 .city-switch-dialog {
     width: min(520px, calc(100% - 40px));
 }
@@ -377,22 +377,6 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     font-weight: 700;
     color: #111827;
     line-height: 1.35;
-}
-
-.city-switch-dialog .city-switch-hint {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #6b7280;
-    line-height: 1.45;
-}
-
-.cb-confirm-buttons.city-switch-buttons {
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.cb-confirm-buttons.city-switch-buttons .btn {
-    width: 100%;
 }
 
 .header-avatars {

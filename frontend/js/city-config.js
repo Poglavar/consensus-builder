@@ -369,7 +369,20 @@
         }
     }
 
+    // The city pointer lives in localStorage because it must be readable *synchronously*, before
+    // anything else: it decides which IndexedDB database PersistentStorage opens. (It used to live
+    // only in PersistentStorage, whose cache primes asynchronously — so this read was racing the
+    // very store it was reading from.) PersistentStorage keeps a copy for backwards compatibility
+    // and so the legacy-database migration can tell whose data it is looking at.
     function getStoredCityId() {
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage) {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored && CITY_CONFIGS[stored]) {
+                    return stored;
+                }
+            }
+        } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
                 const stored = PersistentStorage.getItem(STORAGE_KEY);
@@ -381,65 +394,25 @@
         return null;
     }
 
-    function clearLocalCityDataOnCityChange(previousCityId, nextCityId, options = {}) {
-        const { skipReload = true } = options;
-        if (!previousCityId || previousCityId === nextCityId) {
-            return false;
-        }
-
-        const wipeFn = (typeof window !== 'undefined' && typeof window.wipeAllLocalData === 'function')
-            ? window.wipeAllLocalData
-            : null;
-
-        if (typeof wipeFn !== 'function') {
-            console.warn('[CityConfig] wipeAllLocalData is not available; skipping city data wipe.');
-            return false;
-        }
-
-        try {
-            wipeFn({ skipReload });
-            return true;
-        } catch (error) {
-            console.error('[CityConfig] Failed to wipe local data on city change:', error);
-            return false;
-        }
-    }
-
-    // A ?city= in the URL that disagrees with the city this browser already holds data for.
-    // Recorded, never acted on here — see js/city-switch-prompt.js.
-    let pendingCitySwitchRequest = null;
-
+    // Each city has its own database (see js/persistent-storage.js), so adopting the city named in
+    // a link takes nothing away: the city you were in keeps its parcels, proposals and settings, and
+    // they are all still there when you go back. Nothing is wiped here, and nothing needs asking.
     function determineCurrentCityId() {
         const storedCityId = getStoredCityId();
         const queryCityId = getCityIdFromQuery();
 
         if (queryCityId && CITY_CONFIGS[queryCityId]) {
-            // Adopting the query city means wiping everything this browser has stored, because
-            // local data is not city-scoped. That is far too destructive to do silently at boot
-            // (a shared proposal link stamps the sharer's city, so merely *opening* a link would
-            // erase the recipient's proposals). Stay in the stored city and let the user decide.
-            if (storedCityId && queryCityId !== storedCityId) {
-                pendingCitySwitchRequest = { requestedCityId: queryCityId, currentCityId: storedCityId };
-                return storedCityId;
+            if (queryCityId !== storedCityId) {
+                try {
+                    if (typeof localStorage !== 'undefined' && localStorage) {
+                        localStorage.setItem(STORAGE_KEY, queryCityId);
+                    }
+                } catch (_) { /* ignore */ }
             }
-            // Nothing to lose: no stored city yet (fresh profile / private window), or it matches.
-            try {
-                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
-                    PersistentStorage.setItem(STORAGE_KEY, queryCityId);
-                }
-            } catch (_) { /* ignore */ }
             return queryCityId;
         }
 
         return storedCityId || DEFAULT_CITY_ID;
-    }
-
-    function getPendingCitySwitch() {
-        return pendingCitySwitchRequest;
-    }
-
-    function clearPendingCitySwitch() {
-        pendingCitySwitchRequest = null;
     }
 
     function getCityLabel(cityId) {
@@ -447,7 +420,19 @@
         return (config && config.label) ? config.label : (cityId || '');
     }
 
+    // Did the user actually choose this city, or did we fall back to the default? Only a defaulted
+    // city may be overridden by the one recovered from a pre-upgrade database. Read before
+    // setScope, since determineCurrentCityId writes the pointer as a side effect.
+    const cityWasExplicitlyChosen = !!(getCityIdFromQuery() || getStoredCityId());
+
     let currentCityId = determineCurrentCityId();
+    // Bind persistent storage to this city's database before anything reads from it. Nothing has
+    // been read yet: PersistentStorage deliberately does not open a database until told which one.
+    try {
+        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setScope === 'function') {
+            PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen });
+        }
+    } catch (_) { /* ignore */ }
     applyCityLanguagePreference(getCurrentCityConfig());
 
     function maybeApplyGeoDefaultCity() {
@@ -476,11 +461,6 @@
                 const previousCityId = currentCityId;
                 const cityChanged = nextId !== previousCityId;
 
-                if (cityChanged) {
-                    // Switching cities can invalidate cached local datasets; keep behaviour consistent.
-                    clearLocalCityDataOnCityChange(previousCityId, nextId, { skipReload: true });
-                }
-
                 setStoredCityId(nextId);
 
                 if (cityChanged) {
@@ -504,6 +484,11 @@
 
     function setStoredCityId(id) {
         currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage) {
+                localStorage.setItem(STORAGE_KEY, currentCityId);
+            }
+        } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
                 PersistentStorage.setItem(STORAGE_KEY, currentCityId);
@@ -755,27 +740,6 @@
         }
     }
 
-    async function wipeDataForCitySwitch() {
-        try {
-            // The canonical eraser, not the sidebar's confirming wrapper: the caller has already
-            // asked, and the wrapper used to clear strictly less than this needs to.
-            if (typeof window !== 'undefined' && typeof window.wipeAllLocalData === 'function') {
-                await window.wipeAllLocalData({ skipReload: true });
-                return;
-            }
-
-            if (typeof clearLocalParcelData === 'function') {
-                clearLocalParcelData();
-            }
-            try { if (typeof clearLocalProposalData === 'function') { clearLocalProposalData(); } } catch (_) { /* ignore */ }
-            try {
-                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
-                    PersistentStorage.clear();
-                }
-            } catch (_) { /* ignore */ }
-            try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { /* ignore */ }
-        } catch (_) { /* ignore */ }
-    }
 
     function navigateToCity(nextId) {
         try {
@@ -803,9 +767,11 @@
 
         if (requireConfirmation) {
             const confirmFn = window.showStyledConfirm || showStyledConfirm;
+            // Each city keeps its own local store, so switching costs nothing but a reload — the
+            // city you leave is exactly as you left it when you return.
             const confirmMessage = confirmationMessage || translateCityText(
                 'city.switch.confirm',
-                'Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?'
+                'Switching city will reload the app. Your work in this city is kept and will be here when you come back.\n\nDo you want to continue?'
             );
             const proceed = await confirmFn(confirmMessage, confirmationOptions || undefined);
             if (!proceed) {
@@ -816,7 +782,6 @@
             }
         }
 
-        await wipeDataForCitySwitch();
         return navigateToCity(nextId);
     }
 
@@ -1096,8 +1061,6 @@
         setCurrentCityId: setStoredCityId,
         switchCity,
         navigateToCity,
-        getPendingCitySwitch,
-        clearPendingCitySwitch,
         getCityLabel,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
