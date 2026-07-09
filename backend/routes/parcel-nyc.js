@@ -1,5 +1,7 @@
 import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
 import { fetchNycOwners, isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
+import { fetchPluto } from '../zoning/pluto.js';
+import { computeEnvelope } from '../zoning/envelope.js';
 
 const MAX_LIMIT = 5000;
 const SRID_WGS84 = 4326;
@@ -366,6 +368,37 @@ export function setupParcelNycRoute(app, pool) {
         } catch (error) {
             console.error(`Error in /parcel-nyc/${parcelId}/ownership:`, error);
             res.status(500).json({ error: 'Failed to fetch New York ownership data.' });
+        }
+    });
+
+    // As-of-right buildable-envelope estimate for a lot. Resolves the BBL from the
+    // parcel id, fetches PLUTO live (no DB), and combines it with the contextual
+    // district rules table. Returns FAR-only for lots we don't model (see envelope.js).
+    app.get('/parcel-nyc/:parcelId/envelope', async (req, res) => {
+        const parcelId = normalizeParcelValue((req.params.parcelId || '').trim());
+        if (!parcelId) {
+            return res.status(400).json({ error: 'parcelId is required.' });
+        }
+        if (!isValidParcelValue(parcelId)) {
+            return res.status(400).json({
+                error: 'Invalid parcelId format. Expected US-NY-<parcel_id> or <parcel_id>.'
+            });
+        }
+
+        try {
+            const pluto = await fetchPluto(parcelId);
+            if (!pluto) {
+                return res.status(404).json({ error: 'No PLUTO zoning record found for the requested parcelId.' });
+            }
+            res.json({
+                parcelId: buildParcelId(parcelId),
+                bbl: pluto.bbl,
+                address: pluto.address,
+                envelope: computeEnvelope(pluto),
+            });
+        } catch (error) {
+            console.error(`Error in /parcel-nyc/${parcelId}/envelope:`, error);
+            res.status(502).json({ error: 'Failed to fetch zoning data from PLUTO.' });
         }
     });
 }
