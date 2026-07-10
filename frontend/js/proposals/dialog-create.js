@@ -1263,10 +1263,11 @@ function showProposalDialog(overrides = null) {
     const roadScreenshotContext = ((typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
         ? window.pendingRoadDrawingProposal
         : pendingRoadDrawingProposal) || null;
-    const screenshotContext = buildProposalScreenshotContext(selectedParcels, {
-        goal: overrideGoal,
-        roadContext: roadScreenshotContext
-    });
+    // The preview context is expensive to build (it walks the parcel cache for neighbour outlines), and
+    // it is only needed to draw a thumbnail. Building it here would hold the dialog closed while the
+    // user waits, so it is deferred until after the modal has painted; the container is reserved now and
+    // removed later if there turns out to be nothing to preview.
+    const hasScreenshotCandidate = selectedParcels.length > 0 || !!roadScreenshotContext;
 
     currentProposalTool = null;
 
@@ -1328,7 +1329,7 @@ function showProposalDialog(overrides = null) {
                 <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
-                ${screenshotContext ? '<div class="form-group" id="proposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
+                ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer" style="margin-bottom: 15px;"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
                 <div class="form-group proposal-author-row">
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
@@ -1570,9 +1571,29 @@ function showProposalDialog(overrides = null) {
     proposalModalScreenshotDataUrl = null;
     proposalModalScreenshotPromise = null;
 
-    if (screenshotContext && screenshotContext.polygon && window.MapScreenshot && typeof window.MapScreenshot.renderPolygonPreview === 'function') {
+    // Deliberately a timeout rather than requestAnimationFrame: rAF does not fire while the tab is not
+    // rendering, and the preview would then never appear.
+    if (hasScreenshotCandidate) setTimeout(() => renderProposalScreenshotPreview(modal, selectedParcels, overrideGoal, roadScreenshotContext), 0);
+
+    function renderProposalScreenshotPreview(modal, selectedParcels, overrideGoal, roadScreenshotContext) {
         const screenshotContainer = modal.querySelector('#proposalScreenshotContainer');
-        if (screenshotContainer) {
+        if (!screenshotContainer) return;
+
+        const screenshotContext = buildProposalScreenshotContext(selectedParcels, {
+            goal: overrideGoal,
+            roadContext: roadScreenshotContext
+        });
+
+        if (!screenshotContext || !screenshotContext.polygon
+            || !window.MapScreenshot || typeof window.MapScreenshot.renderPolygonPreview !== 'function') {
+            screenshotContainer.remove(); // nothing to preview after all
+            return;
+        }
+
+        screenshotContainer.classList.remove('proposal-screenshot-loading');
+        screenshotContainer.innerHTML = '';
+
+        {
             (async () => {
                 try {
                     const previewWrapper = document.createElement('div');

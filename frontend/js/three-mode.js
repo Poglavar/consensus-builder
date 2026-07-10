@@ -820,11 +820,32 @@
         return null;
     }
 
+    // Entering 3D has two meanings, and they want different cameras.
+    //
+    // Arriving on a shared proposal link means "show me this proposal": the scene anchors on it, frames
+    // it, and rotates. Pressing the 3D button while looking at the map means "show me *this*, in 3D" —
+    // so the camera stays exactly where the 2D map was. It used to anchor on whatever proposal happened
+    // to be applied, which could be anywhere, and the view would jump away from what the user was
+    // looking at.
+    //
+    // `focusProposalIds` is set only by the URL-driven entry, so it is the honest signal for which of
+    // the two this is.
+    function isProposalFocusedEntry() {
+        return !!(focusProposalIds && focusProposalIds.size);
+    }
+
+    // The geometry the scene should anchor, frame and load context around: the focused proposal on a
+    // shared-link entry, and nothing on a free entry — which makes every consumer fall through to the
+    // camera-focus path, so the built context loads around where the user actually is.
+    function proposalFramingGeometry() {
+        return isProposalFocusedEntry() ? computeProposalQueryGeometry() : null;
+    }
+
     function getOrigin3857() {
-        // Anchor the local XY frame on the proposal being viewed so it sits at the scene
-        // origin and the built context loads around it. Fall back to the 2D map center when
-        // there is no proposal (free 3D browsing) — keeps entry deterministic either way.
-        const center = getProposalCenterLatLng()
+        // Anchor the local XY frame on the proposal when one was asked for, so it sits at the scene
+        // origin and the built context loads around it; otherwise on the 2D map center, so a free
+        // entry lands exactly where the user was already looking.
+        const center = (isProposalFocusedEntry() ? getProposalCenterLatLng() : null)
             || ((typeof map !== 'undefined' && map) ? map.getCenter() : { lat: 0, lng: 0 });
         const p = L.CRS.EPSG3857.project(L.latLng(center.lat, center.lng));
         return p; // {x,y}
@@ -1596,7 +1617,7 @@
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
 
-        const proposalGeom = computeProposalQueryGeometry();
+        const proposalGeom = proposalFramingGeometry();
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -1741,7 +1762,7 @@
     function ensureNearbyTrees() {
         if (!treesEnabled || nearbyTreesFetching) return;
 
-        const proposalGeom = computeProposalQueryGeometry();
+        const proposalGeom = proposalFramingGeometry();
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -2232,10 +2253,11 @@
     }
 
     function computeContentBoundsXY() {
-        // When a proposal is in view, frame the proposal plus a margin for its built
-        // surroundings, centred on the origin (= proposal centre). This makes entering 3D
-        // always land on the proposal, regardless of where the 2D map was panned/zoomed.
-        const proposalGeom = computeProposalQueryGeometry();
+        // When the entry asked for a proposal (a shared link), frame the proposal plus a margin for its
+        // built surroundings, centred on the origin (= proposal centre), regardless of where the 2D map
+        // was panned. A free entry from the 3D button falls through to the viewport below, so it frames
+        // what the user was looking at rather than a proposal that may be kilometres away.
+        const proposalGeom = proposalFramingGeometry();
         if (proposalGeom && proposalGeom.coordinates && proposalGeom.coordinates[0]) {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             for (const pt of proposalGeom.coordinates[0]) {
@@ -2338,7 +2360,7 @@
             // In the camera-focus fallback mode (no proposal), also refetch on pan end.
             try {
                 controls.addEventListener('end', () => {
-                    if (!computeProposalQueryGeometry()) ensureNearbyProposalBuildings();
+                    if (!proposalFramingGeometry()) ensureNearbyProposalBuildings();
                 });
             } catch (_) { }
         }

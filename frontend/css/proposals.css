@@ -1715,3 +1715,27 @@ textarea.proposal-description-input {
     cursor: pointer;
 }
 .proposal-buy-btn:hover { background: #15803d; }
+
+/* The create dialog opens immediately; its map preview is built a tick later and lands here. The
+   placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */
+.proposal-screenshot-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    background: #f4f4f4;
+    border-radius: 4px;
+}
+
+.proposal-screenshot-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #ddd;
+    border-top-color: #888;
+    border-radius: 50%;
+    animation: proposal-screenshot-spin 0.8s linear infinite;
+}
+
+@keyframes proposal-screenshot-spin {
+    to { transform: rotate(360deg); }
+}
