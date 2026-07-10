@@ -30,7 +30,7 @@ const main = async () => {
   const [cert] = await activeContracts(cfg, lens, `${PKG}:Proposal:OwnershipCertificate`);
   await createContract(cfg, {
     templateId: `${PKG}:Proposal:PurchaseProposal`,
-    args: { buyer, owner, lens, parcelId, price, certCid: cert.contractId }, actAs: buyer,
+    args: { buyer, owner, lens, parcelId, price, certCid: cert.contractId, imageUri: process.env.IMAGE_URI || null }, actAs: buyer,
   });
 
   console.log(JSON.stringify({ parcelId, price, lens, owner, buyer }, null, 2));

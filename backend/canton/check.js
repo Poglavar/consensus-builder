@@ -46,9 +46,10 @@ const main = async () => {
   log(`   cert ${cert.contractId}`);
 
   log('2) buyer creates PurchaseProposal (owner as observer) ...');
+  const IMAGE_URI = env.IMAGE_URI || 'ipfs://bafyCheckScriptMetadata';
   await createContract(cfg, {
     templateId: `${PKG}:Proposal:PurchaseProposal`,
-    args: { buyer, owner, lens, parcelId: PARCEL_ID, price: PRICE, certCid: cert.contractId },
+    args: { buyer, owner, lens, parcelId: PARCEL_ID, price: PRICE, certCid: cert.contractId, imageUri: IMAGE_URI },
     actAs: buyer,
   });
 
@@ -56,6 +57,9 @@ const main = async () => {
   const [proposal] = await activeContracts(cfg, owner, `${PKG}:Proposal:PurchaseProposal`);
   if (!proposal) throw new Error('proposal NOT visible to owner');
   log(`   ✓ owner sees proposal ${proposal.contractId}`);
+  const seenUri = proposal.createArgument?.imageUri;
+  if (seenUri !== IMAGE_URI) throw new Error(`imageUri not on the ledger: ${JSON.stringify(seenUri)}`);
+  log(`   ✓ imageUri round-tripped: ${seenUri}`);
 
   log('4) owner exercises Accept ...');
   await exerciseChoice(cfg, {
