@@ -1,6 +1,6 @@
 # Tables used by this repo
 
-Synced from prod with `sync-tables postgres` (prod DB "postgres" on `do`).
+Synced from prod with `sync-tables` (single prod DB "geodata" on `do`).
 Mark big tables `(schema-only)` if you don't need their data locally.
 
 - ads.ad
@@ -13,7 +13,7 @@ Mark big tables `(schema-only)` if you don't need their data locally.
 - public.cadastral_municipality
 - public.dgu_road_usage
 - public.ens_plan
-- public.numbeo_city
+- stats.numbeo_city
 - public.overture_feature
 - public.parcel
 - public.parcel_ba
@@ -26,9 +26,9 @@ Mark big tables `(schema-only)` if you don't need their data locally.
 - public.parcel_ownership
 - public.planned_land_use
 - public.planned_road
-- public.proposal
+- consensus.proposal
 - public.road_parcel_classification
 - public.street
-- public.urban_rule
-- public.urban_rule_text
-- public.urban_rule_variable
+- consensus.urban_rule
+- consensus.urban_rule_text
+- consensus.urban_rule_variable
