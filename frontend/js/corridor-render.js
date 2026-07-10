@@ -54,8 +54,31 @@ function renderCorridorStrips(strips, options = {}) {
 let appliedCorridorLayer = null;
 let corridorRefreshHandle = null;
 
+// While the cross-section editor is open it overrides one proposal's profile, so the map shows the edit
+// as it is made. Nothing is written to the proposal — an applied road on the map is still the road that
+// was proposed until the edit is saved as a new proposal of its own.
+let corridorProfilePreview = null;
+
+function setCorridorProfilePreview(proposalKey, profile) {
+    corridorProfilePreview = (proposalKey && profile) ? { proposalKey: String(proposalKey), profile } : null;
+    refreshAppliedCorridorStrips();
+}
+
+function clearCorridorProfilePreview() {
+    setCorridorProfilePreview(null, null);
+}
+
 function corridorProposalDefinition(proposal) {
     return (proposal && ((proposal.roadProposal && proposal.roadProposal.definition) || proposal.definition)) || null;
+}
+
+// The profile to draw for a proposal: the editor's working copy when it is the one being edited.
+function corridorProfileForRender(proposal, definition) {
+    if (corridorProfilePreview) {
+        const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+        if (String(key) === corridorProfilePreview.proposalKey) return corridorProfilePreview.profile;
+    }
+    return corridorProfileOf(definition);
 }
 
 function isAppliedCorridorProposal(proposal) {
@@ -87,7 +110,7 @@ function refreshAppliedCorridorStrips() {
 
     proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
-        const profile = corridorProfileOf(definition);
+        const profile = corridorProfileForRender(proposal, definition);
         const centerline = corridorCenterlineOf(definition);
         if (!profile || !centerline.length) return;
 
@@ -121,6 +144,8 @@ function scheduleCorridorStripRefresh() {
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
+    window.setCorridorProfilePreview = setCorridorProfilePreview;
+    window.clearCorridorProfilePreview = clearCorridorProfilePreview;
     window.corridorProposalDefinition = corridorProposalDefinition;
     window.refreshAppliedCorridorStrips = refreshAppliedCorridorStrips;
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;

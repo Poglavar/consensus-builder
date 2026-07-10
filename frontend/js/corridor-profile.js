@@ -134,9 +134,129 @@ function roundStripWidth(width) {
     return Math.round(width * 1000) / 1000;
 }
 
+// ---------------------------------------------------------------------------
+// Editing
+//
+// Every edit here preserves the corridor's total width, and that is the whole point: the footprint is a
+// function of the total alone, so a profile-only edit cannot move the corridor, cannot change the parcel
+// split, and cannot invalidate a proposal derived from it. Whatever a lane gains or gives up is taken
+// from or handed to the traffic lanes, which are the only lanes with slack.
+//
+// An edit that the traffic lanes cannot absorb returns null. That is a refusal, not a rounding problem:
+// the caller must reject the change rather than quietly widening the road.
+// ---------------------------------------------------------------------------
+
+// A traffic lane narrower than this is not a traffic lane.
+const CORRIDOR_MIN_DRIVING_WIDTH = 2.5;
+
+// Take `delta` metres out of the driving lanes (negative gives metres back), in proportion to their
+// widths. `exceptIndex` holds one lane out of the redistribution — the lane being resized cannot pay
+// for its own change. Returns new strips, or null when the lanes have no room.
+function redistributeToDriving(strips, delta, exceptIndex = -1) {
+    if (Math.abs(delta) < 1e-9) return strips.map(strip => ({ ...strip }));
+
+    const isPayer = (strip, index) => strip.type === 'driving' && index !== exceptIndex;
+    const driving = strips.filter(isPayer);
+    if (!driving.length) return null;
+
+    const drivingTotal = driving.reduce((sum, strip) => sum + strip.width, 0);
+    const remaining = drivingTotal - delta;
+    if (remaining < driving.length * CORRIDOR_MIN_DRIVING_WIDTH) return null;
+
+    // Round every lane but the last, then give the last whatever is left. Scaling and rounding each lane
+    // independently would drift the total by a fraction of a millimetre per edit — and the total is the
+    // footprint, so it has to come back exact however many times the profile is edited.
+    const scale = remaining / drivingTotal;
+    let assigned = 0;
+    let seen = 0;
+    return strips.map((strip, index) => {
+        if (!isPayer(strip, index)) return { ...strip };
+        seen += 1;
+        if (seen === driving.length) return { ...strip, width: roundStripWidth(remaining - assigned) };
+        const width = roundStripWidth(strip.width * scale);
+        assigned += width;
+        return { ...strip, width };
+    });
+}
+
+// Set one lane's width, paying for it out of the traffic lanes.
+function withLaneWidth(profile, index, width) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index]) return null;
+    const target = Number(width);
+    if (!Number.isFinite(target) || target <= 0) return null;
+
+    const lane = normalized.strips[index];
+    if (lane.type === 'driving' && target < CORRIDOR_MIN_DRIVING_WIDTH) return null;
+
+    const resized = normalized.strips.map((strip, i) => (i === index ? { ...strip, width: roundStripWidth(target) } : { ...strip }));
+    // A traffic lane cannot pay for its own widening, so it is held out of the redistribution.
+    const strips = redistributeToDriving(resized, target - lane.width, index);
+    return strips ? { strips } : null;
+}
+
+// Change what a lane *is* without changing how wide it is — parking becomes trees, a lane becomes a
+// cycleway. The total cannot move, so this never fails on width.
+function withLaneType(profile, index, type) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !isCorridorLaneType(type)) return null;
+
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => {
+        if (i !== index) return strip;
+        const lane = { type, width: strip.width };
+        if (CORRIDOR_LANE_TYPES[type].directional) lane.direction = strip.direction || 'forward';
+        return lane;
+    }));
+}
+
+// Insert a lane at `index`, taking its width out of the traffic lanes.
+function withLaneInserted(profile, index, lane) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !lane || !isCorridorLaneType(lane.type)) return null;
+    const width = Number(lane.width);
+    if (!Number.isFinite(width) || width <= 0) return null;
+
+    const at = Math.max(0, Math.min(index, normalized.strips.length));
+    const strips = redistributeToDriving(normalized.strips, width);
+    if (!strips) return null;
+    strips.splice(at, 0, { ...lane, width: roundStripWidth(width) });
+    return normalizeCorridorProfile(strips);
+}
+
+// Remove a lane and hand its width back to the traffic lanes.
+function withLaneRemoved(profile, index) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index]) return null;
+    if (normalized.strips.length < 2) return null;
+
+    const removed = normalized.strips[index];
+    const remaining = normalized.strips.filter((strip, i) => i !== index);
+    // Removing the last traffic lane leaves nothing to hand the width to; widen the neighbours instead.
+    const hasDriving = remaining.some(strip => strip.type === 'driving');
+    if (!hasDriving) {
+        const share = removed.width / remaining.length;
+        return normalizeCorridorProfile(remaining.map(strip => ({ ...strip, width: roundStripWidth(strip.width + share) })));
+    }
+    const strips = redistributeToDriving(remaining, -removed.width);
+    return strips ? normalizeCorridorProfile(strips) : null;
+}
+
+// Reorder: move the lane at `from` to `to`. Pure permutation, so the total is untouched.
+function withLaneMoved(profile, from, to) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[from]) return null;
+    const target = Math.max(0, Math.min(to, normalized.strips.length - 1));
+    if (target === from) return normalized;
+
+    const strips = normalized.strips.map(strip => ({ ...strip }));
+    const [lane] = strips.splice(from, 1);
+    strips.splice(target, 0, lane);
+    return normalizeCorridorProfile(strips);
+}
+
 // Set every sidewalk to `sidewalkWidth`, taking the difference out of (or giving it to) the traffic
-// lanes so the corridor's total width — and therefore its footprint — does not move. Returns null when
-// the lanes cannot absorb the change, which is the caller's cue to reject the slider value.
+// lanes. Returns null when the lanes cannot absorb the change, which is the caller's cue to reject the
+// slider value.
 function withSidewalkWidth(profile, sidewalkWidth) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return null;
@@ -144,22 +264,14 @@ function withSidewalkWidth(profile, sidewalkWidth) {
     if (!Number.isFinite(target) || target < 0) return normalized;
 
     const sidewalks = normalized.strips.filter(s => s.type === 'sidewalk');
-    const lanes = normalized.strips.filter(s => s.type === 'driving');
-    if (!sidewalks.length || !lanes.length) return normalized;
+    if (!sidewalks.length || !normalized.strips.some(s => s.type === 'driving')) return normalized;
 
     const delta = sidewalks.reduce((sum, s) => sum + (target - s.width), 0);
-    const laneTotal = lanes.reduce((sum, s) => sum + s.width, 0);
-    const MIN_LANE = 2.5;
-    if (laneTotal - delta < lanes.length * MIN_LANE) return null;
-
-    const scale = (laneTotal - delta) / laneTotal;
-    return {
-        strips: normalized.strips.map(strip => {
-            if (strip.type === 'sidewalk') return { ...strip, width: roundStripWidth(target) };
-            if (strip.type === 'driving') return { ...strip, width: roundStripWidth(strip.width * scale) };
-            return { ...strip };
-        })
-    };
+    const resized = normalized.strips.map(strip => (strip.type === 'sidewalk'
+        ? { ...strip, width: roundStripWidth(target) }
+        : strip));
+    const strips = redistributeToDriving(resized, delta);
+    return strips ? { strips } : null;
 }
 
 // The profile a corridor should have when it predates this model (or was drawn by the older picker,
@@ -328,8 +440,13 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
     return normalizeCorridorProfile([...left, ...carriagewayLanes, ...right.reverse()]);
 }
 
-// The inverse: describe a profile as OSM way tags. Lossy in the same way OSM itself is — a cross-section
-// with two different sidewalk widths becomes `sidewalk:left:width` and `sidewalk:right:width`.
+// The inverse: describe a profile as OSM way tags.
+//
+// Lossy in the way OSM itself is. The per-side schemes record a lane's *presence and width*, never its
+// position in the sequence: `cycleway:left` and `verge:left` cannot say which of the two is nearer the
+// kerb. So a profile survives the round trip with its lanes intact and its total exact, but reordered
+// into the canonical outside-in order corridorProfileFromOsmTags reads back (sidewalk, verge, cycleway,
+// parking). Reordering lanes within one side is expressible in a stored profile and not in OSM tags.
 function corridorProfileToOsmTags(profile) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return null;
@@ -603,8 +720,14 @@ if (typeof window !== 'undefined') {
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
-    window.corridorCenterlineOf = corridorCenterlineOf;
     window.withSidewalkWidth = withSidewalkWidth;
+    window.withLaneWidth = withLaneWidth;
+    window.withLaneType = withLaneType;
+    window.withLaneInserted = withLaneInserted;
+    window.withLaneRemoved = withLaneRemoved;
+    window.withLaneMoved = withLaneMoved;
+    window.corridorCenterlineOf = corridorCenterlineOf;
+
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
     window.corridorStripRingPlanar = corridorStripRingPlanar;
@@ -625,6 +748,12 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorStripSpans,
         corridorCenterlineOf,
         withSidewalkWidth,
+        withLaneWidth,
+        withLaneType,
+        withLaneInserted,
+        withLaneRemoved,
+        withLaneMoved,
+        CORRIDOR_MIN_DRIVING_WIDTH,
         offsetPolylinePlanar,
         corridorStripRingPlanar
     };

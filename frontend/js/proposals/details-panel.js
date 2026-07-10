@@ -533,6 +533,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // A road's cross-section can be reshuffled without moving the road, so it gets its own editor. The
+    // result is still a new proposal — the button just skips the drawing tool, since the geometry is
+    // already exactly right.
+    const corridorProposal = fullProposal || proposal;
+    const corridorButtonHtml = (proposalKey && typeof proposalHasEditableCorridor === 'function' && proposalHasEditableCorridor(corridorProposal))
+        ? `
+        <button class="btn btn-outline-secondary btn-corridor-profile" onclick="openCorridorProfileEditor('${proposalKey}')">
+            <i class="fas fa-road"></i> ${tProposal('panel.proposal.actions.crossSection', 'Cross-section')}
+        </button>
+    `
+        : '';
+
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
         ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer('${buyOfferProposal.proposalId || ''}')">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
@@ -543,6 +555,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${buyButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
+            ${corridorButtonHtml}
             ${copyButtonHtml}
         </div>
     `;
