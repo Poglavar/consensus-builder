@@ -5,10 +5,23 @@
 (function (global) {
     'use strict';
 
+    // The backend base. data-source.js already resolves this for every environment — including the
+    // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.
+    // Rolling our own here is how Canton ended up unreachable in dev: same-origin meant the static
+    // frontend port, which serves no /canton routes.
     function apiBase() {
         try {
             const override = new URLSearchParams(global.location.search).get('api');
             if (override) return override.replace(/\/$/, '');
+        } catch (_) { }
+        try {
+            if (typeof global.getBackendBase === 'function') {
+                const base = global.getBackendBase();
+                if (base) return String(base).replace(/\/+$/, '');
+            }
+        } catch (_) { }
+        // Standalone pages (canton.html) may not load data-source.js.
+        try {
             if (global.location.protocol === 'file:') return 'http://localhost:3000';
             const h = (global.location.hostname || '').toLowerCase();
             if (h.endsWith('urbangametheory.xyz') && !h.startsWith('api.')) return 'https://api.urbangametheory.xyz';
@@ -20,6 +33,12 @@
     let lastFetch = 0;
     let inflight = null;
     const TTL_MS = 30000;
+
+    // 'unknown' until the first fetch settles, then 'ok' or 'unavailable'. Without it, a backend with no
+    // CANTON_* config (which 502s) and a ledger with no proposals both render as zero everywhere, so the
+    // feature looks empty rather than broken — which is exactly how a misconfigured backend hid.
+    let status = 'unknown';
+    let lastError = null;
 
     const norm = (id) => (typeof global.normalizeParcelId === 'function' ? global.normalizeParcelId(id) : String(id));
 
@@ -41,9 +60,19 @@
                 const data = await res.json();
                 counts = indexCounts(data.counts || {});
                 lastFetch = Date.now();
+                status = 'ok';
+                lastError = null;
                 global.dispatchEvent(new Event('canton-counts-updated'));
-            } catch (_) {
-                // Backend may not expose /canton (e.g. Canton not deployed here) — stay silent.
+            } catch (error) {
+                // A backend without Canton configured is a legitimate deployment, so this is not fatal —
+                // but it is not "no proposals" either. Say so once, and let callers ask.
+                if (status !== 'unavailable') {
+                    console.warn('[CantonCounts] /canton/parcel-counts unavailable — proposal badges will not render.', error.message);
+                }
+                status = 'unavailable';
+                lastError = error.message || String(error);
+                lastFetch = Date.now(); // don't hammer a backend that has no Canton
+                global.dispatchEvent(new Event('canton-counts-updated'));
             } finally {
                 inflight = null;
             }
@@ -59,7 +88,12 @@
         return counts[norm(parcelId)] || 0;
     }
 
-    global.CantonCounts = { refresh, ensureFresh, getCount, raw: () => counts };
+    // 'unknown' | 'ok' | 'unavailable'. Callers that render a count should ask before showing a zero.
+    function getStatus() { return status; }
+    function isAvailable() { return status === 'ok'; }
+    function getError() { return lastError; }
+
+    global.CantonCounts = { refresh, ensureFresh, getCount, getStatus, isAvailable, getError, raw: () => counts };
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', refresh, { once: true });

@@ -11,10 +11,23 @@
     const PARTIES_KEY = 'canton.parties'; // shared with canton-read.js (test parties)
 
     // Backend base URL — same precedence as canton-read.js.
+    // The backend base. data-source.js already resolves this for every environment — including the
+    // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.
+    // Rolling our own here is how Canton ended up unreachable in dev: same-origin meant the static
+    // frontend port, which serves no /canton routes.
     function apiBase() {
         try {
             const override = new URLSearchParams(window.location.search).get('api');
             if (override) return override.replace(/\/$/, '');
+        } catch (_) { }
+        try {
+            if (typeof window.getBackendBase === 'function') {
+                const base = window.getBackendBase();
+                if (base) return String(base).replace(/\/+$/, '');
+            }
+        } catch (_) { }
+        // Standalone pages (canton.html) may not load data-source.js.
+        try {
             if (window.location.protocol === 'file:') return 'http://localhost:3000';
             const h = (window.location.hostname || '').toLowerCase();
             if (h.endsWith('urbangametheory.xyz') && !h.startsWith('api.')) return 'https://api.urbangametheory.xyz';
@@ -197,9 +210,13 @@
             const price = String(options.price != null ? options.price : '');
             if (!(parseFloat(price) > 0)) throw new Error('Canton purchase proposals need a positive offer amount.');
 
+            // The IPFS metadata the create flow uploads for every chain. It used to be accepted here
+            // and dropped at the fetch, so Canton paid for an upload nothing ever read.
+            const imageUri = options.imageURI || null;
+
             const res = await fetch(`${apiBase()}/canton/proposals`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ parcelId, price, buyer }),
+                body: JSON.stringify({ parcelId, price, buyer, imageUri }),
             });
             const j = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
