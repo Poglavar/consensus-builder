@@ -323,9 +323,8 @@ function redrawRoadVertexMarkers() {
     });
 }
 
-// The corridor's cross-section, drawn inside the corridor outline while the road is being drawn: each
-// strip (sidewalk, cycle, parking, lane, ...) as its own polygon in its own surface colour. Rebuilt on
-// commit only — never on mousemove, where the rubber-band preview stays a plain corridor outline.
+// The corridor's cross-section, drawn inside the corridor outline while the road is being drawn.
+// Rebuilt on commit only — never on mousemove, where the rubber-band preview stays a plain outline.
 let roadStripLayer = null;
 
 function clearRoadStripLayer() {
@@ -347,21 +346,11 @@ function redrawRoadStrips() {
 
     const strips = buildCorridorStrips(segments, roadProfile);
     if (!strips.length) return restoreCorridorFill();
-    if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
 
-    roadStripLayer = L.layerGroup();
-    strips.forEach(strip => {
-        const style = CORRIDOR_LANE_TYPES[strip.type] || {};
-        strip.polygons.forEach(polygon => {
-            L.polygon(polygon, {
-                color: style.surface || '#2b2b2b',
-                weight: 0.5,
-                fillColor: style.surface || '#2b2b2b',
-                fillOpacity: 0.85,
-                interactive: false
-            }).addTo(roadStripLayer);
-        });
-    });
+    // Same renderer as applied corridors and OSM streets — see js/corridor-render.js.
+    roadStripLayer = renderCorridorStrips(strips);
+    if (!roadStripLayer) return restoreCorridorFill();
+    if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
     roadStripLayer.addTo(map);
 }
 

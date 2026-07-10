@@ -1256,6 +1256,9 @@ window.addEventListener('parcelDataLoaded', async () => {
                 console.debug(`[parcelDataLoaded] Skipped ${skippedForMissingPrereqs} proposal(s) — parent parcels not (yet) on the map.`);
             }
 
+            // Restored roads are corridor parcels again; redraw their cross-sections over them.
+            if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh();
+
             if (appliedCount > 0) {
                 setTimeout(() => {
                     if (typeof parcelLayer !== 'undefined' && parcelLayer) {

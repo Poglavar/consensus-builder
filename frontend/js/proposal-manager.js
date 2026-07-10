@@ -4746,6 +4746,10 @@ const ProposalManager = {
      */
     _refreshUIAfterProposalChange(proposalData) {
         // Core proposal UI
+        // The corridor parcel a road proposal creates has just appeared or vanished; its cross-section
+        // has to follow. This is the one place both unapply paths meet — the direct one and the one
+        // that runs later, inside the descendants-confirmation modal's callback.
+        try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
         try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }

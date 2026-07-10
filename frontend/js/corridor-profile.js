@@ -409,6 +409,29 @@ function corridorProfileOf(definition) {
     return corridorProfileFromLegacy(definition.width, definition.sidewalkWidth, isTrack);
 }
 
+// The centerline of a stored corridor, as segments of {lat,lng}. A definition holds either one flat
+// list of points (older single-segment corridors) or a list of segments; both live under `points`.
+function corridorCenterlineOf(definition) {
+    const raw = definition && (
+        (Array.isArray(definition.points) && definition.points.length && definition.points)
+        || (Array.isArray(definition.segments) && definition.segments)
+    );
+    if (!raw || !raw.length) return [];
+
+    const toPoint = (point) => {
+        if (!point) return null;
+        const lat = Number(point.lat !== undefined ? point.lat : (Array.isArray(point) ? point[1] : NaN));
+        const lng = Number(point.lng !== undefined ? point.lng : (Array.isArray(point) ? point[0] : NaN));
+        return (Number.isFinite(lat) && Number.isFinite(lng)) ? { lat, lng } : null;
+    };
+
+    const isFlat = !Array.isArray(raw[0]);
+    const segments = isFlat ? [raw] : raw;
+    return segments
+        .map(segment => (Array.isArray(segment) ? segment.map(toPoint).filter(Boolean) : []))
+        .filter(segment => segment.length >= 2);
+}
+
 // Signed offsets of each strip from the centerline, positive to the left of the direction of travel.
 // `left` is always the larger value, so a strip spans [right, left].
 function corridorStripSpans(profile) {
@@ -580,6 +603,7 @@ if (typeof window !== 'undefined') {
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
+    window.corridorCenterlineOf = corridorCenterlineOf;
     window.withSidewalkWidth = withSidewalkWidth;
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
@@ -599,6 +623,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorProfileFromLegacy,
         corridorProfileOf,
         corridorStripSpans,
+        corridorCenterlineOf,
         withSidewalkWidth,
         offsetPolylinePlanar,
         corridorStripRingPlanar
