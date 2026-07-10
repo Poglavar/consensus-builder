@@ -160,10 +160,10 @@
                                     return convertedCoord;
                                 }
 
-                                // Fallback to htrs96ToWGS84
-                                if (typeof global.htrs96ToWGS84 === 'function') {
+                                // Fallback: parcel coords are in the dataset CRS
+                                if (typeof global.datasetToWgs84 === 'function') {
                                     try {
-                                        const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
+                                        const [lat, lon] = global.datasetToWgs84(coord[0], coord[1]);
                                         if (Number.isFinite(lat) && Number.isFinite(lon)) {
                                             conversionSuccessCount++;
                                             return [lon, lat];
