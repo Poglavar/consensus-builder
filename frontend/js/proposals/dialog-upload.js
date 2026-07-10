@@ -1076,9 +1076,13 @@ function showUploadProposalModal(proposal) {
 
     const computeShareUrlFromProposal = () => {
         try {
-            const serverId = typeof getServerProposalId === 'function'
+            // Prefer the serial (numeric) id: getServerProposalId returns the first non-local
+            // candidate, which for a downloaded proposal can be the uploader's local id. Falling
+            // back to it would hide the share link and offer to re-upload something already there.
+            const serialId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
+            const serverId = serialId || (typeof getServerProposalId === 'function'
                 ? getServerProposalId(proposal)
-                : (proposal && (proposal.serverProposalId || proposal.id));
+                : (proposal && (proposal.serverProposalId || proposal.id)));
             if (serverId && /^\d+$/.test(String(serverId))) {
                 const joiner = cityQueryParam ? '&' : '?';
                 return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}${joiner}3d${shareLangParam()}`;

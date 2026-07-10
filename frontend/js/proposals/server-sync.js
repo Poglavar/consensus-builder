@@ -155,8 +155,14 @@ async function fetchServerProposalById(serverId, cityCode) {
     }
     const payload = await resp.json();
     const normalized = { ...payload };
-    normalized.serverProposalId = normalized.serverProposalId || normalized.proposalId || serverId;
-    normalized.proposalId = normalized.proposalId || normalized.serverProposalId || serverId;
+    // `serverProposalId` must be the server's serial id — the numeric `id` column. The payload's
+    // `proposalId` is the uploader's *local* id (e.g. "p-1lo0n6ope6h"), and using it here left the
+    // downloaded proposal without a shareable id: share links require /^\d+$/, so the share dialog
+    // decided the proposal had never been uploaded and offered to upload it again.
+    const serialId = (payload && payload.id !== undefined && payload.id !== null) ? String(payload.id) : null;
+    const numericFallback = /^\d+$/.test(String(serverId || '')) ? String(serverId) : null;
+    normalized.serverProposalId = serialId || numericFallback || normalized.serverProposalId || serverId;
+    normalized.proposalId = payload.proposalId || payload.proposal_id || serverId;
     return normalized;
 }
 
