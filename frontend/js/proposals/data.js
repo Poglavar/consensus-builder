@@ -806,12 +806,21 @@ const proposalStorage = {
 
         if (!preserveStatus) {
             normalized.status = normalized.status === 'Executed' ? 'Executed' : 'Active';
-            if (normalized.roadProposal) {
-                normalized.roadProposal.status = 'unapplied';
-            }
-            if (normalized.buildingProposal) {
-                normalized.buildingProposal.status = normalized.buildingProposal.status === 'executed' ? 'executed' : 'unapplied';
-            }
+            // Every kind of nested proposal has to be reset, not just roads and buildings.
+            // Downloading a server proposal never applies it to this map, so a nested status left
+            // saying "applied" makes the details panel claim it is on the map while no geometry was
+            // ever drawn — the parcels are untouched and nothing shows in 2D or 3D.
+            ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                .forEach(key => {
+                    const nested = normalized[key];
+                    if (!nested || typeof nested !== 'object') return;
+                    nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
+                    if (nested.appliedAt) delete nested.appliedAt;
+                    if (Array.isArray(nested.childParcelIds)) nested.childParcelIds = [];
+                });
+            // Child parcels only exist once a proposal has been applied to a map. Carrying the
+            // uploader's ids over would leave this browser pointing at parcels it never created.
+            normalized.childParcelIds = [];
         }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
