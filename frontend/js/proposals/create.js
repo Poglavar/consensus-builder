@@ -762,6 +762,11 @@ async function createProposal() {
                 const roadDefinition = {
                     points: centerlinePoints,
                     segments: centerlinePoints,
+                    // Index-aligned with `segments`: identity survives a copy, so continuing a road in a
+                    // later session extends the same segment instead of minting a new one.
+                    segmentIds: Array.isArray(roadDrawingContext.segmentIds)
+                        ? roadDrawingContext.segmentIds.slice(0, centerlinePoints.length)
+                        : [],
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
@@ -1784,6 +1789,27 @@ function buildUploadReadyProposal(proposal) {
     // Proposals created since the `city` stamp carry their own origin; older ones fall back to the
     // current city, which is only right if you upload from where you created it.
     uploadProposal.city = uploadProposal.city || getProposalCityId() || 'city';
+
+    // "Applied" describes *this browser's* map, not the proposal: it says the geometry has been
+    // drawn onto the local cadastre. It is meaningless on the server, where every client has its
+    // own map — publishing it is what made a downloaded proposal claim to be applied when nothing
+    // had been drawn. Strip it. "Executed" is different: that is a global, on-chain fact and stays.
+    //
+    // Nested proposals are replaced with copies rather than mutated: uploadProposal is a shallow
+    // copy of the caller's stored proposal, so writing through them would un-apply the user's own
+    // proposal on their own map.
+    if (uploadProposal.status === 'Applied') {
+        uploadProposal.status = 'Active';
+    }
+    ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        .forEach(key => {
+            const nested = uploadProposal[key];
+            if (!nested || typeof nested !== 'object') return;
+            const sanitized = { ...nested };
+            if (sanitized.status !== 'executed') sanitized.status = 'unapplied';
+            delete sanitized.appliedAt;
+            uploadProposal[key] = sanitized;
+        });
 
     // Remove parentFeatures - we only upload IDs, not full geometries
     if (uploadProposal.parentFeatures) {

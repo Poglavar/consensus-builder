@@ -847,6 +847,7 @@ async function handleProposalListItemClick(event) {
     // Check local storage first, even when browsing the server tab
     let proposal = getProposalByIdOrHash(proposalIdAttr);
 
+    let justDownloaded = false;
     if (!proposal && source === 'server') {
         const confirmed = await showProposalDownloadConfirm();
         if (!confirmed) return;
@@ -855,11 +856,16 @@ async function handleProposalListItemClick(event) {
         try {
             updateStatus('Downloading proposal…');
             const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
-            proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: true });
+            // preserveStatus:false — downloading does not apply the proposal to this map, so its
+            // status must not survive the trip. Keeping the uploader's "applied" made the details
+            // panel announce a proposal as on the map while no geometry had been drawn, and offer
+            // "Remove from map" where "Apply to map" belonged.
+            proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: false });
             if (!proposal) {
                 updateStatus('Failed to import proposal');
                 return;
             }
+            justDownloaded = true;
             updateShowProposalsButton();
         } catch (error) {
             console.error('Failed to download server proposal on click', serverId, error);
@@ -869,6 +875,12 @@ async function handleProposalListItemClick(event) {
     }
 
     if (!proposal) return;
+
+    // A freshly downloaded proposal opens collapsed, the same way a freshly created one does:
+    // the collapsed card still exposes Apply to map and Share (see showProposalInfo).
+    if (justDownloaded && typeof window !== 'undefined') {
+        window.__openProposalDetailsCollapsed = true;
+    }
 
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
     proposalListState.selectedId = resolvedId;

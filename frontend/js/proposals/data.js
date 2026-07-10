@@ -816,11 +816,10 @@ const proposalStorage = {
                     if (!nested || typeof nested !== 'object') return;
                     nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
                     if (nested.appliedAt) delete nested.appliedAt;
-                    if (Array.isArray(nested.childParcelIds)) nested.childParcelIds = [];
                 });
-            // Child parcels only exist once a proposal has been applied to a map. Carrying the
-            // uploader's ids over would leave this browser pointing at parcels it never created.
-            normalized.childParcelIds = [];
+            // childParcelIds are deliberately kept: they are canonical across clients
+            // (_applyCanonicalChildParcelIds), so applying here reproduces the same descendant
+            // parcel ids the uploader had, and dependent proposals still line up.
         }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();

@@ -13,7 +13,7 @@
 // selection, so simply re-selecting the source's parcels reproduces it).
 const COPY_BUILDING_GOALS = ['buildings', 'row', 'parcelBased', 'single'];
 // Goals whose editor can reopen on an existing design, so a copy stays fully editable.
-// road-track is deliberately absent: its drawing tool cannot yet be seeded.
+// road-track has its own path (it reopens the drawing tool directly, see copyCorridorIntoNewProposal).
 const COPY_EDITABLE_GOALS = [...COPY_BUILDING_GOALS, 'reparcellization'];
 
 function copyDeepClone(value) {
@@ -94,6 +94,65 @@ function reselectParcelsForCopy(parcelIds) {
     return resolved;
 }
 
+function roadDefinitionOf(source) {
+    return (source && ((source.roadProposal && source.roadProposal.definition) || source.definition)) || null;
+}
+
+// A road centerline is stored either as one flat list of points (older roads) or as a list of
+// segments; both live under `points`, with `segments` as an alias.
+function roadCenterlineOf(definition) {
+    if (!definition) return [];
+    if (Array.isArray(definition.points) && definition.points.length) return definition.points;
+    return Array.isArray(definition.segments) ? definition.segments : [];
+}
+
+function isTrackProposal(source) {
+    const definition = roadDefinitionOf(source);
+    if (definition && definition.metadata && definition.metadata.isTrack === true) return true;
+    return source && source.primaryType === 'Track';
+}
+
+// Copying a corridor reopens its drawing tool on the existing centerline rather than the create dialog:
+// the whole point of copying a road or a track is to keep drawing it — extend it from either end, or
+// (for roads) branch off it. The dialog comes later, when the user presses C, prefilled by
+// finishRoadDrawing()/finishTrackDrawing() from the copy source we stash here.
+function copyCorridorIntoNewProposal(source, sourceKey, sourceName) {
+    const definition = roadDefinitionOf(source);
+    const centerline = roadCenterlineOf(definition);
+    if (!centerline.length) return false;
+
+    const isTrack = isTrackProposal(source);
+    const toggleTool = isTrack ? toggleTrackDrawTool : toggleRoadDrawTool;
+    if (typeof toggleTool !== 'function') return false;
+
+    const metadata = definition.metadata || {};
+    const seed = {
+        centerline: copyDeepClone(centerline),
+        width: definition.width
+    };
+    if (isTrack) {
+        seed.trackSpeed = metadata.trackSpeed;
+        seed.trackMinRadius = metadata.trackMinRadius;
+        window.pendingTrackDrawingSeed = seed;
+    } else {
+        seed.sidewalkWidth = definition.sidewalkWidth;
+        seed.segmentIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [];
+        window.pendingRoadDrawingSeed = seed;
+    }
+
+    window.pendingRoadCopySource = {
+        proposalId: String(sourceKey),
+        name: sourceName,
+        prefill: buildCopyPrefill(source)
+    };
+
+    // The tools are toggles: if one is somehow already on, turn it off first so it reopens on the seed.
+    if (typeof roadDrawingMode !== 'undefined' && roadDrawingMode) toggleRoadDrawTool();
+    if (typeof trackDrawingMode !== 'undefined' && trackDrawingMode) toggleTrackDrawTool();
+    toggleTool();
+    return true;
+}
+
 // Put the source proposal's geometry back into the pending globals that createProposal() reads.
 // Returns true when geometry was seeded (i.e. the dialog should show it as already submitted).
 function seedPendingGeometryFromProposal(source, goalKey) {
@@ -124,14 +183,13 @@ function seedPendingGeometryFromProposal(source, goalKey) {
     }
 
     if (goalKey === 'road-track') {
-        const definition = (source.roadProposal && source.roadProposal.definition) || source.definition || null;
+        const definition = roadDefinitionOf(source);
         if (!definition) return false;
-        const centerline = Array.isArray(definition.points) && definition.points.length
-            ? definition.points
-            : (Array.isArray(definition.segments) ? definition.segments : []);
+        const centerline = roadCenterlineOf(definition);
         if (!centerline.length) return false;
         window.pendingRoadDrawingProposal = {
             centerline: copyDeepClone(centerline),
+            segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
             width: definition.width,
             sidewalkWidth: definition.sidewalkWidth,
             polygon: copyDeepClone(definition.polygon),
@@ -335,6 +393,12 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
 
     reselectParcelsForCopy(parcelIds);
+
+    // Roads and tracks reopen in their drawing tool instead of the dialog, so the copy can be continued.
+    if (goalKey === 'road-track' && copyCorridorIntoNewProposal(source, sourceKey, sourceName)) {
+        return;
+    }
+
     const seededGeometry = seedPendingGeometryFromProposal(source, goalKey);
 
     const overrides = {

@@ -708,37 +708,10 @@ function mapGoalToBackendType(goalKey) {
     }
 }
 
-function buildUploadReadyProposal(proposal) {
-    if (!proposal) return null;
-    const uploadProposal = { ...proposal };
-
-    const rawType = uploadProposal.type ? String(uploadProposal.type).trim().toLowerCase() : '';
-    const goalKey = typeof resolveProposalGoalKey === 'function' ? resolveProposalGoalKey(uploadProposal, null) : null;
-    const derivedType = mapGoalToBackendType(goalKey);
-    uploadProposal.type = derivedType || rawType || 'parcel';
-
-    const currentCityId = typeof getCurrentCityId === 'function'
-        ? getCurrentCityId()
-        : (typeof window !== 'undefined' && window.getCurrentCityId && typeof window.getCurrentCityId === 'function' ? window.getCurrentCityId() : 'city');
-    uploadProposal.city = uploadProposal.city || currentCityId;
-
-    if (uploadProposal.parentFeatures) {
-        delete uploadProposal.parentFeatures;
-    }
-    if (uploadProposal.roadProposal) {
-        if (uploadProposal.roadProposal.parentFeatures) {
-            delete uploadProposal.roadProposal.parentFeatures;
-        }
-        if (uploadProposal.roadProposal.childFeatures) {
-            delete uploadProposal.roadProposal.childFeatures;
-        }
-        if (!uploadProposal.roadProposal.parentParcelIds || uploadProposal.roadProposal.parentParcelIds.length === 0) {
-            const parentIds = uploadProposal.parentParcelIds || [];
-            uploadProposal.roadProposal.parentParcelIds = ensureArrayOfStrings(parentIds);
-        }
-    }
-    return uploadProposal;
-}
+// buildUploadReadyProposal lives in js/proposals/create.js. A near-identical copy used to sit here,
+// and because sharing.js loads after create.js it was the one that actually ran — so every edit to
+// the create.js version silently did nothing. One definition now, in the file that owns the shape
+// of a proposal.
 
 function syncProposalWithServerId(proposal, serverProposalId) {
     if (!serverProposalId || typeof proposalStorage === 'undefined') return null;

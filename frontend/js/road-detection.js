@@ -563,6 +563,10 @@ function osmToGeoJSON(osmData) {
                 highway: element.tags.highway,
                 railway: element.tags.railway,
                 width: element.tags.width,
+                // The node ids ARE the topology in OSM: two ways are connected exactly when they
+                // share a node. Dropping them (as this used to) turns a connected street network
+                // into a heap of unrelated lines, which is why OSM roads look "disconnected".
+                osmNodes: Array.isArray(element.nodes) ? element.nodes : null,
                 osmTags: element.tags
             },
             geometry: {
