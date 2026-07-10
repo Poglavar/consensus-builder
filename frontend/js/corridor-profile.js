@@ -695,6 +695,68 @@ function buildCorridorStrips(segments, profile) {
     })).filter(strip => strip.polygons.length);
 }
 
+// ---------------------------------------------------------------------------
+// Lane markings
+//
+// A separator sits on the boundary two adjacent traffic lanes share. Between lanes running the same way
+// it is a dashed line; where the flow reverses — the boundary between a forward and a backward lane — it
+// is the solid centerline. No marking is drawn against parking, cycleways or the kerb: those are lane
+// *edges*, a different thing, and the eye reads the surface change instead.
+// ---------------------------------------------------------------------------
+
+// The signed offsets, from the centerline, where a lane-separator line belongs. Same geometry the strips
+// use (a strip boundary is `strip.right`), so a marking lands exactly on the seam between two strips.
+function isMarkedTrafficLane(strip) {
+    return strip && (strip.type === 'driving' || strip.type === 'bus');
+}
+
+function corridorLaneSeparators(profile) {
+    const spans = corridorStripSpans(profile);
+    const separators = [];
+    for (let i = 0; i < spans.length - 1; i++) {
+        const a = spans[i];
+        const b = spans[i + 1];
+        if (!isMarkedTrafficLane(a) || !isMarkedTrafficLane(b)) continue;
+        separators.push({
+            offset: a.right, // == b.left, the shared boundary
+            kind: (a.direction && b.direction && a.direction !== b.direction) ? 'centerline' : 'lane'
+        });
+    }
+    return separators;
+}
+
+// One offset polyline of the centerline as Leaflet LatLngs — a lane marking is a line, not a band.
+function buildCorridorOffsetLine(points, offset) {
+    if (!corridorProjectionAvailable() || !Array.isArray(points) || points.length < 2) return null;
+    const planar = points
+        .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? wgs84ToHTRS96(point.lat, point.lng) : null)
+        .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+    if (planar.length < 2) return null;
+    const line = offsetPolylinePlanar(planar, offset);
+    if (!line) return null;
+    return line.map(([x, y]) => {
+        const [lat, lng] = htrs96ToWGS84(x, y);
+        return { lat, lng };
+    });
+}
+
+// Every lane-separator line of a whole corridor: `[{ kind, lines }]`, one line per centerline segment.
+function buildCorridorLaneMarkings(segments, profile) {
+    const separators = corridorLaneSeparators(profile);
+    if (!separators.length) return [];
+
+    const isLatLng = (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
+    const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
+        ? [segments]
+        : (Array.isArray(segments) ? segments.filter(seg => Array.isArray(seg) && seg.length >= 2) : []);
+    if (!centerlines.length) return [];
+
+    return separators.map(sep => ({
+        kind: sep.kind,
+        lines: centerlines.map(centerline => buildCorridorOffsetLine(centerline, sep.offset)).filter(Boolean)
+    })).filter(marking => marking.lines.length);
+}
+
 // The cross-section of an OSM road, ready to draw — the same `{type, polygons}` the drawing tool and
 // applied proposals produce, from the same geometry code. This is the point of the whole tag bridge:
 // an imported street and a proposed street are one object by the time anything renders them.
@@ -711,6 +773,8 @@ function buildCorridorStripsForOsmFeature(feature) {
 if (typeof window !== 'undefined') {
     window.CORRIDOR_LANE_TYPES = CORRIDOR_LANE_TYPES;
     window.buildCorridorStripsForOsmFeature = buildCorridorStripsForOsmFeature;
+    window.buildCorridorLaneMarkings = buildCorridorLaneMarkings;
+    window.corridorLaneSeparators = corridorLaneSeparators;
     window.corridorProfileFromOsmTags = corridorProfileFromOsmTags;
     window.corridorProfileToOsmTags = corridorProfileToOsmTags;
     window.corridorProfileFromOsmFeature = corridorProfileFromOsmFeature;
@@ -755,6 +819,7 @@ if (typeof module !== 'undefined' && module.exports) {
         withLaneMoved,
         CORRIDOR_MIN_DRIVING_WIDTH,
         offsetPolylinePlanar,
-        corridorStripRingPlanar
+        corridorStripRingPlanar,
+        corridorLaneSeparators
     };
 }

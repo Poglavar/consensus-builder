@@ -19,7 +19,29 @@ function ensureCorridorStripsPane() {
     return pane;
 }
 
-// Turn `[{type, polygons}]` into a LayerGroup. The only place a lane becomes pixels.
+// White lane-marking lines drawn on top of the surface: dashed between same-direction lanes, solid at
+// the centerline where the flow reverses. Same weights/patterns for a drawn road, an applied one and an
+// OSM street, so they read alike.
+function renderCorridorLaneMarkings(markings, group, pane) {
+    if (!Array.isArray(markings)) return;
+    markings.forEach(marking => {
+        const dashed = marking.kind !== 'centerline';
+        marking.lines.forEach(line => {
+            L.polyline(line, {
+                color: '#f4f4f4',
+                weight: dashed ? 1.5 : 2,
+                opacity: 0.9,
+                dashArray: dashed ? '6, 9' : null,
+                interactive: false,
+                pane: pane || undefined,
+                className: `corridor-lane-marking corridor-lane-marking--${marking.kind}`
+            }).addTo(group);
+        });
+    });
+}
+
+// Turn `[{type, polygons}]` into a LayerGroup. The only place a lane becomes pixels. `options.markings`
+// (from buildCorridorLaneMarkings) are drawn on top of the surface.
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
@@ -40,6 +62,8 @@ function renderCorridorStrips(strips, options = {}) {
             }).addTo(group);
         });
     });
+
+    renderCorridorLaneMarkings(options.markings, group, options.pane);
     return group;
 }
 
@@ -115,7 +139,8 @@ function refreshAppliedCorridorStrips() {
         if (!profile || !centerline.length) return;
 
         const strips = buildCorridorStrips(centerline, profile);
-        const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE });
+        const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(centerline, profile) : [];
+        const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings });
         if (group) {
             group.addTo(layer);
             drawn += 1;

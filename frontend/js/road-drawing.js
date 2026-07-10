@@ -348,7 +348,8 @@ function redrawRoadStrips() {
     if (!strips.length) return restoreCorridorFill();
 
     // Same renderer as applied corridors and OSM streets — see js/corridor-render.js.
-    roadStripLayer = renderCorridorStrips(strips);
+    const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(segments, roadProfile) : [];
+    roadStripLayer = renderCorridorStrips(strips, { markings });
     if (!roadStripLayer) return restoreCorridorFill();
     if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
     roadStripLayer.addTo(map);

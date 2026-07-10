@@ -23,7 +23,8 @@ const {
     corridorStripRingPlanar,
     corridorProfileFromOsmTags,
     corridorProfileToOsmTags,
-    corridorProfileFromOsmFeature
+    corridorProfileFromOsmFeature,
+    corridorLaneSeparators
 } = require('../../frontend/js/corridor-profile.js');
 
 const close = (a, b, tolerance = 1e-6) => Math.abs(a - b) < tolerance;
@@ -164,6 +165,50 @@ describe('corridorStripSpans', () => {
         expect(close(spans[0].left, 13)).toBe(true);
         expect(close(spans[spans.length - 1].right, -13)).toBe(true);
         for (let i = 1; i < spans.length; i++) expect(close(spans[i].left, spans[i - 1].right)).toBe(true);
+    });
+});
+
+describe('corridorLaneSeparators', () => {
+    it('places a dashed separator on the shared boundary of same-direction traffic lanes', () => {
+        expect(corridorLaneSeparators({ strips: [
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'driving', width: 3, direction: 'forward' }
+        ] })).toEqual([{ offset: 0, kind: 'lane' }]);
+    });
+
+    it('uses a solid centerline where adjacent traffic lanes reverse direction', () => {
+        expect(corridorLaneSeparators({ strips: [
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'driving', width: 3, direction: 'backward' }
+        ] })).toEqual([{ offset: 0, kind: 'centerline' }]);
+    });
+
+    it('marks bus-lane boundaries as traffic-lane separators', () => {
+        expect(corridorLaneSeparators({ strips: [
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'bus', width: 3, direction: 'forward' }
+        ] })).toEqual([{ offset: 0, kind: 'lane' }]);
+    });
+
+    it('does not draw a traffic marking across a median or against roadside furniture', () => {
+        expect(corridorLaneSeparators({ strips: [
+            { type: 'sidewalk', width: 2 },
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'median', width: 2 },
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'parking', width: 2 }
+        ] })).toEqual([]);
+    });
+
+    it('gives every preset the expected number and kind of markings', () => {
+        const expected = {
+            7.5: ['centerline'], 10: ['centerline'], 18: ['centerline'], 26: [],
+            40: ['lane', 'lane'], 80: ['lane', 'lane', 'lane', 'lane']
+        };
+        for (const [width, kinds] of Object.entries(expected)) {
+            const separators = corridorLaneSeparators({ strips: CORRIDOR_PROFILE_PRESETS[width] });
+            expect(separators.map(separator => separator.kind), `preset ${width}`).toEqual(kinds);
+        }
     });
 });
 
