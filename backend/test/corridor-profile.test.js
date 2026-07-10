@@ -256,6 +256,20 @@ describe('corridor decorations and junction topology', () => {
         delete global.wgs84ToHTRS96;
         delete global.htrs96ToWGS84;
     });
+
+    it('spaces tree-grove planting at six metres', () => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        const profile = { strips: [{ type: 'verge', width: 3, landscape: 'trees' }] };
+        const decorations = buildCorridorDecorations(
+            [{ lat: 0, lng: 0 }, { lat: 0, lng: 60 }],
+            profile
+        );
+        expect(decorations).toHaveLength(10);
+        expect(decorations.map(item => item.lng)).toEqual([3, 9, 15, 21, 27, 33, 39, 45, 51, 57]);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
+    });
 });
 
 // Shoelace area of a planar ring; negative means clockwise.

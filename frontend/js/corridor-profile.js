@@ -32,7 +32,7 @@ const CORRIDOR_LANE_TYPES = {
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
-const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 12 };
+const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
 
 // Presets keyed by the total widths the width picker already offers, so an existing road keeps its
 // footprint exactly and only gains an interior. Every preset sums to its key.
