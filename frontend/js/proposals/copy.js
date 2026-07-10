@@ -137,6 +137,7 @@ function copyCorridorIntoNewProposal(source, sourceKey, sourceName) {
     } else {
         seed.sidewalkWidth = definition.sidewalkWidth;
         seed.segmentIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [];
+        seed.profile = copyDeepClone(definition.profile) || null;
         window.pendingRoadDrawingSeed = seed;
     }
 
@@ -190,6 +191,7 @@ function seedPendingGeometryFromProposal(source, goalKey) {
         window.pendingRoadDrawingProposal = {
             centerline: copyDeepClone(centerline),
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
+            profile: copyDeepClone(definition.profile) || null,
             width: definition.width,
             sidewalkWidth: definition.sidewalkWidth,
             polygon: copyDeepClone(definition.polygon),

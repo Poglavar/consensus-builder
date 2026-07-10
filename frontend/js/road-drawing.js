@@ -67,6 +67,9 @@ function pushRoadSegment(points, segmentId) {
 // Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
 let roadWidth = 7.5;
 let roadSidewalkWidth = 1;
+// The corridor's cross-section. `roadWidth` is the sum of its strips — the profile is the truth, the
+// width a cache the rest of the pipeline still reads. See js/corridor-profile.js.
+let roadProfile = null;
 if (typeof window !== 'undefined') {
     window.roadSidewalkWidth = roadSidewalkWidth;
 }
@@ -320,6 +323,48 @@ function redrawRoadVertexMarkers() {
     });
 }
 
+// The corridor's cross-section, drawn inside the corridor outline while the road is being drawn: each
+// strip (sidewalk, cycle, parking, lane, ...) as its own polygon in its own surface colour. Rebuilt on
+// commit only — never on mousemove, where the rubber-band preview stays a plain corridor outline.
+let roadStripLayer = null;
+
+function clearRoadStripLayer() {
+    if (roadStripLayer && map.hasLayer(roadStripLayer)) map.removeLayer(roadStripLayer);
+    roadStripLayer = null;
+}
+
+function redrawRoadStrips() {
+    clearRoadStripLayer();
+    // Without a cross-section the corridor keeps its plain green fill; with one, the fill would hide
+    // the strips, so the corridor becomes an outline around them.
+    const restoreCorridorFill = () => {
+        if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0.3 });
+    };
+    if (!roadProfile || typeof buildCorridorStrips !== 'function') return restoreCorridorFill();
+
+    const segments = getAllRoadSegments(true).filter(segment => segment.length >= 2);
+    if (!segments.length) return restoreCorridorFill();
+
+    const strips = buildCorridorStrips(segments, roadProfile);
+    if (!strips.length) return restoreCorridorFill();
+    if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
+
+    roadStripLayer = L.layerGroup();
+    strips.forEach(strip => {
+        const style = CORRIDOR_LANE_TYPES[strip.type] || {};
+        strip.polygons.forEach(polygon => {
+            L.polygon(polygon, {
+                color: style.surface || '#2b2b2b',
+                weight: 0.5,
+                fillColor: style.surface || '#2b2b2b',
+                fillOpacity: 0.85,
+                interactive: false
+            }).addTo(roadStripLayer);
+        });
+    });
+    roadStripLayer.addTo(map);
+}
+
 // Rebuild centerline + committed polygon from `roadSegments` (the source of truth) and refresh the
 // cache the per-click incremental union relies on. Used whenever segments change wholesale: undo,
 // mid-segment node insertion, and seeding an existing road for editing.
@@ -363,6 +408,7 @@ function rebuildRoadGeometryFromSegments() {
         }
         roadPolygon = null;
     }
+    redrawRoadStrips();
     return updatedPolygon;
 }
 
@@ -397,6 +443,10 @@ function seedRoadDrawing(seed) {
         roadSidewalkWidth = Number(seed.sidewalkWidth);
         if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
     }
+    // A road drawn before profiles existed gets one synthesised from its width, so reopening it never
+    // silently changes its footprint: the profile always sums back to the width it was drawn with.
+    roadProfile = normalizeCorridorProfile(seed.profile) || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, false);
+    if (roadProfile) roadWidth = corridorProfileWidth(roadProfile);
 
     roadSegments = [];
     roadSegmentIds = [];
@@ -1125,6 +1175,8 @@ function toggleRoadDrawTool() {
                 if (typeof window !== 'undefined') {
                     window.roadSidewalkWidth = roadSidewalkWidth;
                 }
+                // The picker chooses a total width and a sidewalk width; that pair names a cross-section.
+                roadProfile = corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, false);
                 activateRoadDrawing('Click on the map to start drawing a road');
             }).catch(() => {
                 // If picker was cancelled, turn off drawing mode gracefully
@@ -1709,6 +1761,9 @@ function handleRoadClick(e) {
                 if (segmentPolygon) {
                     lockParcelsFromSegment(segmentPolygon);
                 }
+
+                // Redraw the cross-section over the committed corridor (commit only, never on preview).
+                redrawRoadStrips();
             } else {
                 console.warn("Failed to calculate committed road polygon after click.");
             }
@@ -3982,6 +4037,7 @@ async function finishRoadDrawing() {
         parentParcelIds: parentParcelIds.slice(),
         centerline: centerlineSegments,
         segmentIds: centerlineSegmentIds,
+        profile: roadProfile ? { strips: roadProfile.strips.map(strip => ({ ...strip })) } : null,
         polygon: geoPolygon,
         polygonOrder: 'lnglat', // Explicit: geoPolygon is GeoJSON format [lng, lat]
         latLngPairs,
@@ -4068,8 +4124,10 @@ function resetRoadDrawing(hidePanel = true) {
     roadSegmentIds = [];
     roadPoints = [];
     roadWidth = 2;
+    roadProfile = null;
     roadHasStarted = false;
     clearRoadSnapMarker();
+    clearRoadStripLayer();
     // Clear affected parcels highlighting BEFORE clearing the array
     clearAffectedParcels();
     roadOwnershipTypeCache.clear();

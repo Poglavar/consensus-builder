@@ -767,11 +767,19 @@ async function createProposal() {
                     segmentIds: Array.isArray(roadDrawingContext.segmentIds)
                         ? roadDrawingContext.segmentIds.slice(0, centerlinePoints.length)
                         : [],
+                    // The cross-section. `width` below is its total, kept as a cache for the many
+                    // consumers that only need the corridor's footprint.
+                    profile: safeClone(roadDrawingContext.profile) || null,
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
                 };
+
+                // The profile is the truth; if one is present the stored width must be its sum, or the
+                // corridor polygon and its cross-section would disagree about the footprint.
+                const profileWidth = (typeof corridorProfileWidth === 'function') ? corridorProfileWidth(roadDefinition.profile) : 0;
+                if (profileWidth > 0) roadDefinition.width = profileWidth;
 
                 if (roadDrawingContext.stats) {
                     const statsClone = safeClone(roadDrawingContext.stats);
