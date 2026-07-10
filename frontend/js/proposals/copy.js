@@ -333,6 +333,22 @@ function getPendingReparcellizationSeedFor(parcelIds) {
     return plan;
 }
 
+// An applied proposal has already rewritten the map: its parents are gone, its children are there.
+function isProposalAppliedToMap(proposal) {
+    const statuses = [
+        proposal.status,
+        proposal.roadProposal && proposal.roadProposal.status,
+        proposal.buildingProposal && proposal.buildingProposal.status,
+        proposal.structureProposal && proposal.structureProposal.status,
+        proposal.reparcellization && proposal.reparcellization.status,
+        proposal.decideLaterProposal && proposal.decideLaterProposal.status
+    ];
+    return statuses.some(status => {
+        const value = String(status || '').toLowerCase();
+        return value === 'applied' || value === 'executed';
+    });
+}
+
 function copyProposalI18n(key, fallback, params) {
     try {
         if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
@@ -375,20 +391,57 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
         .map(id => (id === null || id === undefined) ? null : String(id))
         .filter(Boolean);
 
-    // Validate everything BEFORE mutating the parcel selection or opening the dialog. A proposal
-    // from another city won't resolve here, and a half-applied copy would leave the map dirty.
-    // Require every parent parcel — copying a subset would silently drop land from the proposal.
-    await hydrateParcelsForCopy(parcelIds);
-    const resolvedCount = parcelIds.filter(id => !!resolveCopyParcelLayer(id)).length;
-    if (!parcelIds.length || resolvedCount !== parcelIds.length) {
-        console.warn(`[copyProposal] ${resolvedCount}/${parcelIds.length} parent parcels resolved; aborting copy.`);
+    // Validate everything BEFORE mutating the parcel selection or opening the dialog: a half-applied
+    // copy would leave the map dirty.
+    //
+    // "Its parcels aren't on the map" used to mean all three of these at once, and answered every one of
+    // them with "switch to the city it was created in":
+    //
+    //   - the proposal belongs to another city    → true, and the proposal itself records which one
+    //   - the proposal consumed its own parents   → it is applied; unapplying restores them
+    //   - the parcels genuinely could not load    → the only case the old message described
+    //
+    // A corridor needs no parcels at all: its copy reopens the drawing tool from the stored centerline.
+    if (!parcelIds.length) {
+        console.warn('[copyProposal] proposal has no parent parcels; aborting copy.');
+        return;
+    }
+
+    const sourceCity = source.city ? String(source.city) : null;
+    const currentCity = (typeof getProposalCityId === 'function') ? getProposalCityId() : null;
+    if (sourceCity && currentCity && sourceCity !== currentCity) {
+        console.warn(`[copyProposal] proposal is from ${sourceCity}, current city is ${currentCity}; aborting copy.`);
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage(
-                'copy_proposal_parcels_unavailable',
-                "Could not load this proposal's parcels. Switch to the city it was created in, then try again."
+                'copy_proposal_wrong_city',
+                copyProposalI18n(
+                    'proposals.copy.wrongCity',
+                    'This proposal was created in another city. Switch to that city, then try again.'
+                )
             );
         }
         return;
+    }
+
+    const needsParcelsOnMap = goalKey !== 'road-track';
+    if (needsParcelsOnMap) {
+        await hydrateParcelsForCopy(parcelIds);
+        const resolvedCount = parcelIds.filter(id => !!resolveCopyParcelLayer(id)).length;
+        if (resolvedCount !== parcelIds.length) {
+            // An applied proposal has replaced its parents with its own children. Re-fetching them would
+            // draw the pre-proposal cadastre over the proposal; unapplying is what puts them back.
+            const applied = isProposalAppliedToMap(source);
+            console.warn(`[copyProposal] ${resolvedCount}/${parcelIds.length} parent parcels resolved (applied: ${applied}); aborting copy.`);
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage(
+                    applied ? 'copy_proposal_applied' : 'copy_proposal_parcels_unavailable',
+                    applied
+                        ? copyProposalI18n('proposals.copy.appliedFirst', 'Remove this proposal from the map first, then copy it.')
+                        : copyProposalI18n('proposals.copy.parcelsUnavailable', "Could not load this proposal's parcels. Try again once they are on the map.")
+                );
+            }
+            return;
+        }
     }
 
     // Leave the details panel: the copy opens the create dialog over the map.
