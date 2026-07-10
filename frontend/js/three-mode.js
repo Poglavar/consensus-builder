@@ -822,21 +822,29 @@
 
     // Entering 3D has two meanings, and they want different cameras.
     //
-    // Arriving on a shared proposal link means "show me this proposal": the scene anchors on it, frames
-    // it, and rotates. Pressing the 3D button while looking at the map means "show me *this*, in 3D" —
-    // so the camera stays exactly where the 2D map was. It used to anchor on whatever proposal happened
-    // to be applied, which could be anywhere, and the view would jump away from what the user was
-    // looking at.
+    // "Show me this proposal" — arriving on a shared link, or pressing 3D with a proposal selected on the
+    // map — anchors the scene on that proposal, frames it, and loads its surroundings. "Show me this, in
+    // 3D" — pressing 3D while looking at the map with nothing selected — keeps the camera exactly where
+    // the 2D map was. It used to anchor on whatever proposal happened to be *applied*, which could be
+    // kilometres from what the user was looking at.
     //
-    // `focusProposalIds` is set only by the URL-driven entry, so it is the honest signal for which of
-    // the two this is.
-    function isProposalFocusedEntry() {
-        return !!(focusProposalIds && focusProposalIds.size);
+    // Which of the two it is comes from the selection: a shared link selects the proposal it opened, and
+    // a click on the map selects the proposal it hit. `focusProposalIds` narrows a shared link to the
+    // proposals it named, and is empty otherwise.
+    function focusedProposalIds() {
+        if (focusProposalIds && focusProposalIds.size) return focusProposalIds;
+        const selection = window.ProposalSelection;
+        const key = (selection && typeof selection.getKey === 'function') ? selection.getKey() : null;
+        return key ? new Set([String(key)]) : null;
     }
 
-    // The geometry the scene should anchor, frame and load context around: the focused proposal on a
-    // shared-link entry, and nothing on a free entry — which makes every consumer fall through to the
-    // camera-focus path, so the built context loads around where the user actually is.
+    function isProposalFocusedEntry() {
+        return !!focusedProposalIds();
+    }
+
+    // The geometry the scene should anchor, frame and load context around: the selected proposal, and
+    // nothing when nothing is selected — which makes every consumer fall through to the camera-focus
+    // path, so the built context loads around where the user actually is.
     function proposalFramingGeometry() {
         return isProposalFocusedEntry() ? computeProposalQueryGeometry() : null;
     }
@@ -1570,14 +1578,15 @@
             if (f && f.geometry && inActiveCity(f)) features.push(f);
         }
         if (features.length === 0) return null;
-        // When a shared link asks to focus specific proposals, frame ONLY those so the camera lands
-        // on the just-loaded proposal rather than the union bbox of every applied proposal — a big
-        // cached proposal on another block would otherwise drag the centre away from the new one.
+        // Frame ONLY the proposals in focus — the ones a shared link named, or the one selected on the
+        // map — so the camera lands on them rather than on the union bbox of every applied proposal. A
+        // big cached proposal on another block would otherwise drag the centre away.
         let framed = features;
-        if (focusProposalIds && focusProposalIds.size) {
+        const focusIds = focusedProposalIds();
+        if (focusIds && focusIds.size) {
             const subset = features.filter(f => {
                 const pid = (f.properties && f.properties.proposalId != null) ? String(f.properties.proposalId) : null;
-                return pid && focusProposalIds.has(pid);
+                return pid && focusIds.has(pid);
             });
             if (subset.length) framed = subset;
         }
