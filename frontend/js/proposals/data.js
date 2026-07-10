@@ -126,6 +126,21 @@ const proposalStorage = {
         return !!(bucket && bucket.size > 0);
     },
 
+    /**
+     * Which already-applied proposals currently occupy this parcel (i.e. their rule replaced it
+     * with children). Returns an array of proposalId strings (empty if none). Used by the apply
+     * flow to detect geography conflicts: a new proposal wanting a parcel that another applied
+     * proposal already consumed.
+     */
+    getAppliedProposalsForAncestor(parcelId) {
+        if (!parcelId) return [];
+        if (this._ancestorIndexDirty || !this._ancestorIndex) {
+            this._rebuildAncestorIndex();
+        }
+        const bucket = this._ancestorIndex.get(String(parcelId));
+        return bucket ? Array.from(bucket) : [];
+    },
+
     _ensureIndexes() {
         if (!this.proposals || typeof this.proposals.clear !== 'function') {
             this.proposals = new Map();
@@ -817,9 +832,11 @@ const proposalStorage = {
                     nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
                     if (nested.appliedAt) delete nested.appliedAt;
                 });
-            // childParcelIds are deliberately kept: they are canonical across clients
-            // (_applyCanonicalChildParcelIds), so applying here reproduces the same descendant
-            // parcel ids the uploader had, and dependent proposals still line up.
+            // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
+            // cache; they are NOT reproduced. On apply, children are re-derived from (parents +
+            // rule) and get freshly minted ids from the id subsystem. Child-id identity is a local
+            // concern of each apply — the consensus layer is parent-keyed — so we do not try to
+            // match the uploader's ids.
         }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
