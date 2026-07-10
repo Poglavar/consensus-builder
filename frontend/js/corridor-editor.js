@@ -178,19 +178,21 @@ function corridorEditorBindBody(body) {
 }
 
 // showProposalDialog() refuses to open on an empty parcel selection, and the drawing tool normally seeds
-// it from the parcels the road crosses. A road that is *applied* has already consumed its parents — they
-// are off the map, replaced by the corridor and the remainders — so select whichever of the two exist.
-// Either way the new proposal's parents come from the stored definition, not from this selection.
+// it from the parcels the road crosses; forking from this panel has to do the same.
+//
+// An applied road has consumed its parents: they are off the map, replaced by the corridor and the
+// remainders, and after a reload they are not even in the layer index — so they cannot be selected. Its
+// children can. Which parcels the dialog happens to have selected does not matter here: the new
+// proposal's parents are read from the stored definition, not from the selection.
 async function corridorEditorSelectParcels(source) {
+    if (typeof reselectParcelsForCopy !== 'function' || typeof resolveCopyParcelLayer !== 'function') return false;
     const parents = (source.parentParcelIds || []).map(String);
     const children = (source.childParcelIds || []).map(String);
 
-    if (typeof hydrateParcelsForCopy === 'function') await hydrateParcelsForCopy(parents);
-    const resolvable = (ids) => ids.filter(id => (typeof resolveCopyParcelLayer === 'function') && resolveCopyParcelLayer(id));
+    if (parents.length && typeof hydrateParcelsForCopy === 'function') await hydrateParcelsForCopy(parents);
+    const onMap = parents.filter(id => resolveCopyParcelLayer(id)).length ? parents : children;
 
-    const onMap = resolvable(parents).length ? parents : children;
-    if (!onMap.length || typeof reselectParcelsForCopy !== 'function') return false;
-    return reselectParcelsForCopy(onMap) > 0;
+    return onMap.length ? reselectParcelsForCopy(onMap) > 0 : false;
 }
 
 // Saving forks. The geometry is untouched — same centerline, same segment ids, same polygon, same
