@@ -49,6 +49,16 @@
     color: #555;
 }
 
+.corridor-editor-total-width {
+    width: 86px;
+    height: 32px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 0 8px;
+    text-align: right;
+    font-weight: 600;
+}
+
 /* The total is fixed by construction; flash it when an edit is refused for want of room. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
@@ -109,13 +119,20 @@
 }
 
 .corridor-lane-type,
-.corridor-lane-width {
+.corridor-lane-width,
+.corridor-lane-landscape {
     height: 32px;
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 0 6px;
     font-size: 0.85rem;
     min-width: 0;
+}
+
+.corridor-lane-landscape {
+    grid-column: 2 / 8;
+    width: 100%;
+    margin-bottom: 3px;
 }
 
 .corridor-lane-unit {

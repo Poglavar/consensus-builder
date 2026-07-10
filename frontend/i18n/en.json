@@ -709,6 +709,7 @@
             "closeAriaLabel": "Close road info",
             "finishButtonShort": "Finish segment (F)",
             "createButton": "Create (C)",
+            "crossSectionButton": "Edit cross-section",
             "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
@@ -883,6 +884,18 @@
         },
         "dataManagement": {
             "wipeWarning": "This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?"
+        },
+        "corridor": {
+            "title": "Cross-section",
+            "subtitle": "The corridor keeps its width, so the road does not move",
+            "drawingSubtitle": "Changes update the road on the map before you create the proposal",
+            "totalWidth": "Total width",
+            "cancel": "Cancel",
+            "save": "Save as new proposal",
+            "applyDrawing": "Apply to drawing",
+            "addLane": "Add lane",
+            "grass": "Grass only",
+            "trees": "Tree grove"
         },
         "roadWidth": {
             "title": "Choose Road Width",

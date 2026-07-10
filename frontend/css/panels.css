@@ -146,6 +146,11 @@ with a width of 400px, and a height of half of the map height minus 5px.
     min-width: 0; /* allow shrinking in tight containers */
 }
 
+#road-drawing-controls .road-cross-section-button {
+    width: 100%;
+    min-height: 36px;
+}
+
 /* Parcel info panel now uses .panel-header structure */
 
 #parcel-info-panel .metric-group {

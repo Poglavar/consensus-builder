@@ -758,6 +758,7 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar segmento (F)",
             "createButton": "Crear (C)",
+            "crossSectionButton": "Editar sección transversal",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna",
@@ -933,6 +934,18 @@
         },
         "dataManagement": {
             "wipeWarning": "Esto borrará TODOS los datos almacenados localmente (parcelas, carreteras, propuestas, ajustes). ¿Deseas continuar?"
+        },
+        "corridor": {
+            "title": "Sección transversal",
+            "subtitle": "El corredor conserva su ancho, por lo que la carretera no se mueve",
+            "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
+            "totalWidth": "Ancho total",
+            "cancel": "Cancelar",
+            "save": "Guardar como nueva propuesta",
+            "applyDrawing": "Aplicar al dibujo",
+            "addLane": "Añadir carril",
+            "grass": "Solo césped",
+            "trees": "Arboleda"
         },
         "roadWidth": {
             "title": "Elige el ancho de la carretera",

@@ -28,10 +28,18 @@ function corridorEditorClose() {
     corridorEditorState = null;
 }
 
+function corridorEditorCancel() {
+    if (corridorEditorState && corridorEditorState.mode === 'drawing' && corridorEditorState.originalProfile
+        && typeof setRoadDrawingProfile === 'function') {
+        setRoadDrawingProfile(corridorEditorState.originalProfile);
+    }
+    corridorEditorClose();
+}
+
 function corridorEditorKeydown(event) {
     if (event.key === 'Escape') {
         event.preventDefault();
-        corridorEditorClose();
+        corridorEditorCancel();
     }
 }
 
@@ -48,7 +56,9 @@ function corridorEditorApply(edit) {
     }
     corridorEditorState.profile = next;
     corridorEditorState.dirty = true;
-    if (typeof setCorridorProfilePreview === 'function') {
+    if (corridorEditorState.mode === 'drawing' && typeof setRoadDrawingProfile === 'function') {
+        setRoadDrawingProfile(next);
+    } else if (typeof setCorridorProfilePreview === 'function') {
         setCorridorProfilePreview(corridorEditorState.proposalKey, next);
     }
     corridorEditorRender();
@@ -84,6 +94,12 @@ function corridorEditorRowsHtml(profile) {
         const laneType = CORRIDOR_LANE_TYPES[lane.type] || {};
         const selected = index === corridorEditorState.selected ? ' corridor-lane-row--selected' : '';
         const typeOptions = options.map(type => `<option value="${type}"${type === lane.type ? ' selected' : ''}>${CORRIDOR_LANE_TYPES[type].label}</option>`).join('');
+        const landscape = (lane.type === 'verge' || lane.type === 'median') ? corridorLandscapeOf(lane) : null;
+        const landscapeSelect = landscape ? `
+            <select class="corridor-lane-landscape" data-lane-index="${index}" aria-label="Green strip planting">
+                <option value="grass"${landscape === 'grass' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.grass', 'Grass only')}</option>
+                <option value="trees"${landscape === 'trees' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.trees', 'Tree grove')}</option>
+            </select>` : '';
         return `
         <div class="corridor-lane-row${selected}" data-lane-index="${index}">
             <span class="corridor-lane-swatch" style="background:${laneType.surface}"></span>
@@ -94,6 +110,7 @@ function corridorEditorRowsHtml(profile) {
             <button type="button" class="corridor-lane-btn" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}>↑</button>
             <button type="button" class="corridor-lane-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
             <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
+            ${landscapeSelect}
         </div>`;
     }).join('');
 }
@@ -112,10 +129,18 @@ function corridorEditorRender() {
     `;
 
     const total = document.querySelector('.corridor-editor-total');
-    if (total) total.textContent = `${corridorProfileWidth(profile)} m`;
+    if (total) {
+        if (total.tagName === 'INPUT') total.value = corridorProfileWidth(profile);
+        else total.textContent = `${corridorProfileWidth(profile)} m`;
+    }
 
     const saveButton = document.querySelector('.corridor-editor-save');
-    if (saveButton) saveButton.disabled = !corridorEditorState.dirty;
+    if (saveButton) saveButton.disabled = corridorEditorState.mode !== 'drawing' && !corridorEditorState.dirty;
+
+    const totalInput = document.querySelector('.corridor-editor-total-width');
+    if (totalInput) {
+        totalInput.onchange = () => corridorEditorApply(profileValue => withCorridorWidth(profileValue, Number(totalInput.value)));
+    }
 
     corridorEditorBindBody(body);
 }
@@ -141,6 +166,14 @@ function corridorEditorBindBody(body) {
             const index = Number(input.dataset.laneIndex);
             corridorEditorState.selected = index;
             corridorEditorApply(profile => withLaneWidth(profile, index, Number(input.value)));
+        });
+    });
+
+    body.querySelectorAll('.corridor-lane-landscape').forEach(select => {
+        select.addEventListener('change', () => {
+            const index = Number(select.dataset.laneIndex);
+            corridorEditorState.selected = index;
+            corridorEditorApply(profile => withLaneLandscape(profile, index, select.value));
         });
     });
 
@@ -199,6 +232,13 @@ async function corridorEditorSelectParcels(source) {
 // parents — so createProposal() sees exactly the road that was drawn, wearing a different cross-section.
 async function corridorEditorSave() {
     if (!corridorEditorState) return;
+    if (corridorEditorState.mode === 'drawing') {
+        corridorEditorClose();
+        if (typeof updateStatus === 'function') {
+            updateStatus('Cross-section applied. Keep drawing or press C to create the proposal.');
+        }
+        return;
+    }
     const { source, profile, definition } = corridorEditorState;
     const clone = (value) => { try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; } };
 
@@ -248,10 +288,55 @@ async function corridorEditorSave() {
     });
 }
 
+function corridorEditorOpenOverlay() {
+    if (!corridorEditorState) return;
+    const profile = corridorEditorState.profile;
+    const drawing = corridorEditorState.mode === 'drawing';
+    const totalControl = drawing
+        ? `<input class="corridor-editor-total corridor-editor-total-width" type="number" min="5" step="0.5" value="${corridorProfileWidth(profile)}" aria-label="Total corridor width in metres">`
+        : `<strong class="corridor-editor-total">${corridorProfileWidth(profile)} m</strong>`;
+    const overlay = document.createElement('div');
+    overlay.id = 'corridor-editor-overlay';
+    overlay.className = 'corridor-editor-overlay';
+    overlay.innerHTML = `
+        <div class="corridor-editor" role="dialog" aria-modal="true" aria-label="Cross-section">
+            <div class="corridor-editor-header">
+                <div>
+                    <div class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</div>
+                    <div class="corridor-editor-subtitle">${drawing
+                        ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
+                        : corridorEditorI18n('modal.corridor.subtitle', 'The corridor keeps its width, so the road does not move')}</div>
+                </div>
+                <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="corridor-editor-meta">
+                <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
+                ${totalControl}
+            </div>
+            <div class="corridor-editor-body"></div>
+            <div class="corridor-editor-footer">
+                <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
+                <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
+                    ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
+                    : corridorEditorI18n('modal.corridor.save', 'Save as new proposal')}</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
+    overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
+    overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) corridorEditorCancel(); });
+    document.addEventListener('keydown', corridorEditorKeydown);
+
+    corridorEditorRender();
+}
+
 // Entry point, wired to the "Cross-section" button in a road proposal's details panel.
 function openCorridorProfileEditor(proposalIdOrHash) {
     if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) return;
-    corridorEditorClose();
+    corridorEditorCancel();
 
     const source = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalIdOrHash) : null;
     const definition = source ? corridorProposalDefinition(source) : null;
@@ -262,6 +347,7 @@ function openCorridorProfileEditor(proposalIdOrHash) {
     }
 
     corridorEditorState = {
+        mode: 'proposal',
         source,
         definition,
         proposalKey: String((typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId),
@@ -269,39 +355,28 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         selected: 0,
         dirty: false
     };
+    corridorEditorOpenOverlay();
+}
 
-    const overlay = document.createElement('div');
-    overlay.id = 'corridor-editor-overlay';
-    overlay.className = 'corridor-editor-overlay';
-    overlay.innerHTML = `
-        <div class="corridor-editor" role="dialog" aria-modal="true" aria-label="Cross-section">
-            <div class="corridor-editor-header">
-                <div>
-                    <div class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</div>
-                    <div class="corridor-editor-subtitle">${corridorEditorI18n('modal.corridor.subtitle', 'The corridor keeps its width, so the road does not move')}</div>
-                </div>
-                <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
-            </div>
-            <div class="corridor-editor-meta">
-                <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
-                <strong class="corridor-editor-total">${corridorProfileWidth(profile)} m</strong>
-            </div>
-            <div class="corridor-editor-body"></div>
-            <div class="corridor-editor-footer">
-                <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
-                <button type="button" class="btn btn-primary corridor-editor-save" disabled>${corridorEditorI18n('modal.corridor.save', 'Save as new proposal')}</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(overlay);
-
-    overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorClose);
-    overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorClose);
-    overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
-    overlay.addEventListener('click', (event) => { if (event.target === overlay) corridorEditorClose(); });
-    document.addEventListener('keydown', corridorEditorKeydown);
-
-    corridorEditorRender();
+// The same editor while the road is still geometry-in-progress. Every change is previewed immediately;
+// Cancel restores the opening profile, while Apply keeps the live profile and returns to drawing.
+function openRoadDrawingCrossSectionEditor() {
+    if (!window.roadDrawingMode || typeof getRoadDrawingProfile !== 'function') return;
+    corridorEditorCancel();
+    const profile = getRoadDrawingProfile();
+    if (!profile) return;
+    const clone = value => JSON.parse(JSON.stringify(value));
+    corridorEditorState = {
+        mode: 'drawing',
+        source: null,
+        definition: null,
+        proposalKey: null,
+        profile: clone(profile),
+        originalProfile: clone(profile),
+        selected: 0,
+        dirty: false
+    };
+    corridorEditorOpenOverlay();
 }
 
 // Only a road with a cross-section can be edited this way; a track has no lanes to shuffle.
@@ -313,5 +388,6 @@ function proposalHasEditableCorridor(proposal) {
 
 if (typeof window !== 'undefined') {
     window.openCorridorProfileEditor = openCorridorProfileEditor;
+    window.openRoadDrawingCrossSectionEditor = openRoadDrawingCrossSectionEditor;
     window.proposalHasEditableCorridor = proposalHasEditableCorridor;
 }

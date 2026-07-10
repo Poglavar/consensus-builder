@@ -24,7 +24,14 @@ const {
     corridorProfileFromOsmTags,
     corridorProfileToOsmTags,
     corridorProfileFromOsmFeature,
-    corridorLaneSeparators
+    corridorLaneSeparators,
+    corridorLandscapeOf,
+    withCorridorWidth,
+    withLaneLandscape,
+    samplePolylinePlanar,
+    findCorridorJunctionsPlanar,
+    buildCorridorDecorations,
+    buildCorridorJunctionTreatments
 } = require('../../frontend/js/corridor-profile.js');
 
 const close = (a, b, tolerance = 1e-6) => Math.abs(a - b) < tolerance;
@@ -209,6 +216,45 @@ describe('corridorLaneSeparators', () => {
             const separators = corridorLaneSeparators({ strips: CORRIDOR_PROFILE_PRESETS[width] });
             expect(separators.map(separator => separator.kind), `preset ${width}`).toEqual(kinds);
         }
+    });
+});
+
+describe('corridor decorations and junction topology', () => {
+    it('samples long lines at half-spacing intervals and short lines once at their midpoint', () => {
+        expect(samplePolylinePlanar([[0, 0], [100, 0]], 50).map(sample => sample.point)).toEqual([[25, 0], [75, 0]]);
+        expect(samplePolylinePlanar([[0, 0], [20, 0]], 50).map(sample => sample.point)).toEqual([[10, 0]]);
+        expect(samplePolylinePlanar([[0, 0], [0, 100]], 50).every(sample => close(sample.angle, Math.PI / 2))).toBe(true);
+    });
+
+    it('recognises a T junction at a shared interior node, but not an ordinary bend', () => {
+        const t = findCorridorJunctionsPlanar([
+            [[-20, 0], [0, 0], [20, 0]],
+            [[0, 0], [0, 20]]
+        ]);
+        expect(t).toHaveLength(1);
+        expect(t[0].point).toEqual([0, 0]);
+        expect(t[0].degree).toBe(3);
+        expect(findCorridorJunctionsPlanar([[[0, 0], [10, 0], [10, 10]]])).toEqual([]);
+    });
+
+    it('builds repeated symbols and a crossing treatment from the same profile', () => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
+        const main = [{ lat: 0, lng: -50 }, { lat: 0, lng: 0 }, { lat: 0, lng: 50 }];
+        const branch = [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }];
+        const decorations = buildCorridorDecorations([main, branch], profile);
+        expect(decorations.some(item => item.kind === 'bike')).toBe(true);
+        expect(decorations.some(item => item.kind === 'pedestrian')).toBe(true);
+        expect(decorations.some(item => item.kind === 'tree')).toBe(true);
+        expect(decorations.every(item => Math.hypot(item.lng, item.lat) >= 24)).toBe(true);
+        const junctions = buildCorridorJunctionTreatments([main, branch], profile);
+        expect(junctions).toHaveLength(1);
+        expect(junctions[0].degree).toBe(3);
+        expect(junctions[0].surfacePolygons).toHaveLength(3);
+        expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
     });
 });
 
@@ -523,6 +569,25 @@ describe('profile edits preserve the total width', () => {
         expect(close(edited.strips.filter(s => s.type === 'driving').reduce((t, s) => t + s.width, 0), 7 - 1.5)).toBe(true);
     });
 
+    it('changes the total footprint while drawing by resizing only the traffic lanes', () => {
+        const wider = withCorridorWidth(preset(), 20);
+        expect(close(corridorProfileWidth(wider), 20)).toBe(true);
+        expect(wider.strips.filter(strip => strip.type !== 'driving').map(strip => strip.width))
+            .toEqual(preset().strips.filter(strip => strip.type !== 'driving').map(strip => strip.width));
+        expect(close(corridorProfileWidth(withCorridorWidth(preset(), 16)), 16)).toBe(true);
+        expect(withCorridorWidth(preset(), 15)).toBe(null); // the two traffic lanes would fall below 2.5 m
+    });
+
+    it('keeps a green strip planting choice through other edits', () => {
+        const green = { strips: CORRIDOR_PROFILE_PRESETS[26].map(strip => ({ ...strip })) };
+        const vergeIndex = green.strips.findIndex(strip => strip.type === 'verge');
+        const grass = withLaneLandscape(green, vergeIndex, 'grass');
+        expect(corridorLandscapeOf(grass.strips[vergeIndex])).toBe('grass');
+        const moved = withLaneMoved(grass, vergeIndex, vergeIndex + 1);
+        expect(moved.strips.some(strip => strip.type === 'verge' && strip.landscape === 'grass')).toBe(true);
+        expect(withLaneLandscape(green, green.strips.findIndex(strip => strip.type === 'driving'), 'trees')).toBe(null);
+    });
+
     it('narrowing a lane gives the metres back', () => {
         const edited = withLaneWidth(preset(), 2, 1);
         expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
@@ -552,7 +617,7 @@ describe('profile edits preserve the total width', () => {
     it('changing a lane type keeps its width, so the total cannot move', () => {
         const edited = withLaneType(preset(), 2, 'verge'); // parking becomes trees
         expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
-        expect(edited.strips[2]).toEqual({ type: 'verge', width: 2 });
+        expect(edited.strips[2]).toEqual({ type: 'verge', width: 2, landscape: 'grass' });
     });
 
     it('a lane that becomes directional gains a direction', () => {

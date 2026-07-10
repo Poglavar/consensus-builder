@@ -735,6 +735,7 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Završi segment (F)",
             "createButton": "Kreiraj (C)",
+            "crossSectionButton": "Uredi poprečni presjek",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna",
@@ -884,6 +885,18 @@
         },
         "dataManagement": {
             "wipeWarning": "Ovo će izbrisati SVE lokalno spremljene podatke (parcele, ceste, prijedlozi, postavke). Nastaviti?"
+        },
+        "corridor": {
+            "title": "Poprečni presjek",
+            "subtitle": "Koridor zadržava širinu pa se cesta ne pomiče",
+            "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
+            "totalWidth": "Ukupna širina",
+            "cancel": "Odustani",
+            "save": "Spremi kao novi prijedlog",
+            "applyDrawing": "Primijeni na crtež",
+            "addLane": "Dodaj traku",
+            "grass": "Samo trava",
+            "trees": "Drvored"
         },
         "roadWidth": {
             "title": "Odaberi širinu ceste",

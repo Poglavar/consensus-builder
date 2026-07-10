@@ -349,10 +349,43 @@ function redrawRoadStrips() {
 
     // Same renderer as applied corridors and OSM streets — see js/corridor-render.js.
     const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(segments, roadProfile) : [];
-    roadStripLayer = renderCorridorStrips(strips, { markings });
+    const decorations = (typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(segments, roadProfile) : [];
+    const junctions = (typeof buildCorridorJunctionTreatments === 'function') ? buildCorridorJunctionTreatments(segments, roadProfile) : [];
+    roadStripLayer = renderCorridorStrips(strips, { markings, decorations, junctions });
     if (!roadStripLayer) return restoreCorridorFill();
     if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
     roadStripLayer.addTo(map);
+}
+
+function getRoadDrawingProfile() {
+    const normalized = normalizeCorridorProfile(roadProfile);
+    return normalized ? { strips: normalized.strips.map(strip => ({ ...strip })) } : null;
+}
+
+// Apply a live editor profile to the drawing. A total-width change rebuilds the footprint and derives
+// affected parcels/stats again; a profile-only change follows the same path but leaves the footprint.
+function setRoadDrawingProfile(profile) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized) return false;
+    roadProfile = { strips: normalized.strips.map(strip => ({ ...strip })) };
+    roadWidth = corridorProfileWidth(roadProfile);
+    const sidewalks = roadProfile.strips.filter(strip => strip.type === 'sidewalk');
+    roadSidewalkWidth = sidewalks.length
+        ? sidewalks.reduce((sum, strip) => sum + strip.width, 0) / sidewalks.length
+        : 0;
+    window.roadSidewalkWidth = roadSidewalkWidth;
+    const polygon = rebuildRoadGeometryFromSegments();
+    recomputeLockedParcelsFromPolygon(polygon, false);
+    updateRoadInfoPanel();
+    updateRoadCrossSectionButton();
+    return true;
+}
+
+function updateRoadCrossSectionButton() {
+    const button = document.getElementById('editRoadCrossSectionButton');
+    if (!button) return;
+    const width = button.querySelector('.road-cross-section-width');
+    if (width) width.textContent = roadProfile ? ` · ${corridorProfileWidth(roadProfile)} m` : '';
 }
 
 // Rebuild centerline + committed polygon from `roadSegments` (the source of truth) and refresh the
@@ -505,6 +538,8 @@ function seedTrackDrawing(seed) {
 if (typeof window !== 'undefined') {
     window.seedRoadDrawing = seedRoadDrawing;
     window.seedTrackDrawing = seedTrackDrawing;
+    window.getRoadDrawingProfile = getRoadDrawingProfile;
+    window.setRoadDrawingProfile = setRoadDrawingProfile;
 }
 
 // Continue an existing segment from one of its two ends. Drawing always appends to the end of the
@@ -1038,6 +1073,7 @@ function setRoadPanelLabelsForMode(mode = 'road') {
     const createBtn = document.getElementById('createRoadButton');
     const lengthLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.lengthLabel"]');
     const areaLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.areaLabel"]');
+    const crossSectionButton = document.getElementById('editRoadCrossSectionButton');
     const isTrack = mode === 'track';
 
     if (titleEl) {
@@ -1055,6 +1091,7 @@ function setRoadPanelLabelsForMode(mode = 'road') {
     if (areaLabel) {
         areaLabel.textContent = isTrack ? 'Track area:' : 'Road area:';
     }
+    if (crossSectionButton) crossSectionButton.style.display = isTrack ? 'none' : '';
 }
 
 // Toggle road drawing tool
@@ -1129,6 +1166,7 @@ function toggleRoadDrawTool() {
             if (statusElement) updateStatus(statusText);
             const roadDrawingControls = document.getElementById('road-drawing-controls');
             if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+            updateRoadCrossSectionButton();
             updateUndoButtonState();
             map.on('click', handleRoadClick);
             map.on('mousemove', handleRoadMouseMove);
@@ -7648,4 +7686,3 @@ function showAcquiringDifficultyDialog() {
 if (typeof window !== 'undefined') {
     window.showAcquiringDifficultyDialog = showAcquiringDifficultyDialog;
 }
-

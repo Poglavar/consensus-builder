@@ -40,8 +40,50 @@ function renderCorridorLaneMarkings(markings, group, pane) {
     });
 }
 
-// Turn `[{type, polygons}]` into a LayerGroup. The only place a lane becomes pixels. `options.markings`
-// (from buildCorridorLaneMarkings) are drawn on top of the surface.
+function renderCorridorJunctions(junctions, group, pane) {
+    if (!Array.isArray(junctions)) return;
+    junctions.forEach(junction => {
+        (junction.surfacePolygons || []).forEach(polygon => {
+            L.polygon(polygon, {
+                color: '#2b2b2b', weight: 0, fillColor: '#2b2b2b', fillOpacity: 1,
+                interactive: false, pane: pane || undefined,
+                className: 'corridor-junction-surface'
+            }).addTo(group);
+        });
+        (junction.crosswalkPolygons || []).forEach(polygon => {
+            L.polygon(polygon, {
+                color: '#ffffff', weight: 0, fillColor: '#ffffff', fillOpacity: 0.92,
+                interactive: false, pane: pane || undefined,
+                className: 'corridor-crosswalk-stripe'
+            }).addTo(group);
+        });
+    });
+}
+
+function corridorDecorationHtml(decoration) {
+    if (decoration.kind === 'tree') return '<i class="fas fa-tree" aria-hidden="true"></i>';
+    if (decoration.kind === 'bike') return '<i class="fas fa-bicycle" aria-hidden="true"></i>';
+    return '<span class="corridor-pedestrian-pair"><i class="fas fa-person-dress" aria-hidden="true"></i><i class="fas fa-child" aria-hidden="true"></i></span>';
+}
+
+function renderCorridorDecorations(decorations, group, pane) {
+    if (!Array.isArray(decorations)) return;
+    decorations.forEach(decoration => {
+        const rotation = decoration.kind === 'tree' ? 0 : (Number(decoration.angle) * 180 / Math.PI);
+        const icon = L.divIcon({
+            className: `corridor-decoration corridor-decoration--${decoration.kind}`,
+            html: `<span class="corridor-decoration-inner" style="transform:rotate(${rotation}deg)">${corridorDecorationHtml(decoration)}</span>`,
+            iconSize: decoration.kind === 'tree' ? [18, 18] : [26, 26],
+            iconAnchor: decoration.kind === 'tree' ? [9, 9] : [13, 13]
+        });
+        const markerOptions = { icon, interactive: false, keyboard: false };
+        if (pane) markerOptions.pane = pane;
+        L.marker([decoration.lat, decoration.lng], markerOptions).addTo(group);
+    });
+}
+
+// Turn `[{type, polygons}]` into a LayerGroup. Surface, markings, junction treatment and repeated
+// symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
@@ -64,6 +106,8 @@ function renderCorridorStrips(strips, options = {}) {
     });
 
     renderCorridorLaneMarkings(options.markings, group, options.pane);
+    renderCorridorJunctions(options.junctions, group, options.pane);
+    renderCorridorDecorations(options.decorations, group, options.pane);
     return group;
 }
 
@@ -140,7 +184,9 @@ function refreshAppliedCorridorStrips() {
 
         const strips = buildCorridorStrips(centerline, profile);
         const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(centerline, profile) : [];
-        const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings });
+        const decorations = (typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(centerline, profile) : [];
+        const junctions = (typeof buildCorridorJunctionTreatments === 'function') ? buildCorridorJunctionTreatments(centerline, profile) : [];
+        const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions });
         if (group) {
             group.addTo(layer);
             drawn += 1;

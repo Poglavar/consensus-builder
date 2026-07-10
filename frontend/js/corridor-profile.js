@@ -25,10 +25,14 @@ const CORRIDOR_LANE_TYPES = {
     parking: { label: 'Parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' } },
     cycleway: { label: 'Cycle path', surface: '#7d3b34', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
-    verge: { label: 'Verge / trees', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
+    verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
     rail: { label: 'Rail bed', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
+
+const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
+const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
+const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 12 };
 
 // Presets keyed by the total widths the width picker already offers, so an existing road keeps its
 // footprint exactly and only gains an interior. Every preset sums to its key.
@@ -47,25 +51,25 @@ const CORRIDOR_PROFILE_PRESETS = {
         { type: 'parking', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'backward' }, { type: 'sidewalk', width: 2 }
     ],
     26: [
-        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5 }, { type: 'cycleway', width: 1.5, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'median', width: 2.5 },
+        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'cycleway', width: 1.5, direction: 'forward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'median', width: 2.5, landscape: 'grass' },
         { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 1.5, direction: 'backward' },
-        { type: 'verge', width: 1.5 }, { type: 'sidewalk', width: 3 }
+        { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'sidewalk', width: 3 }
     ],
     40: [
-        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2 }, { type: 'cycleway', width: 2, direction: 'forward' },
+        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'cycleway', width: 2, direction: 'forward' },
         { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'driving', width: 3.25, direction: 'forward' },
-        { type: 'median', width: 6 },
+        { type: 'median', width: 6, landscape: 'grass' },
         { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 },
-        { type: 'cycleway', width: 2, direction: 'backward' }, { type: 'verge', width: 2 }, { type: 'sidewalk', width: 4 }
+        { type: 'cycleway', width: 2, direction: 'backward' }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'sidewalk', width: 4 }
     ],
     80: [
-        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5 }, { type: 'cycleway', width: 3, direction: 'forward' },
+        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5, landscape: 'trees' }, { type: 'cycleway', width: 3, direction: 'forward' },
         { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' },
         { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'median', width: 24 },
+        { type: 'median', width: 24, landscape: 'grass' },
         { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'backward' }, { type: 'verge', width: 5 },
+        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'backward' }, { type: 'verge', width: 5, landscape: 'trees' },
         { type: 'sidewalk', width: 7 }
     ]
 };
@@ -104,6 +108,10 @@ function isCorridorLaneType(type) {
     return Object.prototype.hasOwnProperty.call(CORRIDOR_LANE_TYPES, type);
 }
 
+function corridorLandscapeOf(strip) {
+    return strip && CORRIDOR_GREEN_TYPES.has(strip.type) && strip.landscape === 'trees' ? 'trees' : 'grass';
+}
+
 const CORRIDOR_DIRECTIONS = ['forward', 'backward', 'both'];
 
 // Drop anything unrecognisable rather than letting a bad lane silently swallow width. A direction is
@@ -117,6 +125,9 @@ function normalizeCorridorProfile(profile) {
         const direction = strip && strip.direction;
         if (isCorridorLaneType(type) && CORRIDOR_LANE_TYPES[type].directional && CORRIDOR_DIRECTIONS.includes(direction)) {
             lane.direction = direction;
+        }
+        if (CORRIDOR_GREEN_TYPES.has(type) && CORRIDOR_LANDSCAPES.includes(strip && strip.landscape)) {
+            lane.landscape = strip.landscape;
         }
         return lane;
     }).filter(strip => isCorridorLaneType(strip.type) && Number.isFinite(strip.width) && strip.width > 0);
@@ -195,6 +206,17 @@ function withLaneWidth(profile, index, width) {
     return strips ? { strips } : null;
 }
 
+// Change the whole footprint while drawing. Roadside furniture keeps its real-world width; the traffic
+// lanes absorb the difference, just as they do for an individual strip edit.
+function withCorridorWidth(profile, width) {
+    const normalized = normalizeCorridorProfile(profile);
+    const target = Number(width);
+    if (!normalized || !Number.isFinite(target) || target <= 0) return null;
+    const current = corridorProfileWidth(normalized);
+    const strips = redistributeToDriving(normalized.strips, current - target);
+    return strips ? normalizeCorridorProfile(strips) : null;
+}
+
 // Change what a lane *is* without changing how wide it is — parking becomes trees, a lane becomes a
 // cycleway. The total cannot move, so this never fails on width.
 function withLaneType(profile, index, type) {
@@ -205,8 +227,20 @@ function withLaneType(profile, index, type) {
         if (i !== index) return strip;
         const lane = { type, width: strip.width };
         if (CORRIDOR_LANE_TYPES[type].directional) lane.direction = strip.direction || 'forward';
+        if (CORRIDOR_GREEN_TYPES.has(type)) {
+            lane.landscape = CORRIDOR_GREEN_TYPES.has(strip.type) ? corridorLandscapeOf(strip) : 'grass';
+        }
         return lane;
     }));
+}
+
+function withLaneLandscape(profile, index, landscape) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !CORRIDOR_GREEN_TYPES.has(normalized.strips[index].type)) return null;
+    if (!CORRIDOR_LANDSCAPES.includes(landscape)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, landscape } : { ...strip }
+    )));
 }
 
 // Insert a lane at `index`, taking its width out of the traffic lanes.
@@ -695,6 +729,178 @@ function buildCorridorStrips(segments, profile) {
     })).filter(strip => strip.polygons.length);
 }
 
+// Sample a planar polyline at a fixed interval. Short lines still get one mark at their midpoint so a
+// cycle path or sidewalk remains identifiable before it reaches a full spacing interval.
+function samplePolylinePlanar(pointsXY, spacing, phase = null) {
+    if (!Array.isArray(pointsXY) || pointsXY.length < 2) return [];
+    const step = Number(spacing);
+    if (!Number.isFinite(step) || step <= 0) return [];
+
+    const edges = [];
+    let total = 0;
+    for (let i = 0; i < pointsXY.length - 1; i++) {
+        const a = pointsXY[i];
+        const b = pointsXY[i + 1];
+        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (length < 1e-9) continue;
+        edges.push({ a, b, start: total, length });
+        total += length;
+    }
+    if (!edges.length) return [];
+
+    const hasPhase = phase !== null && phase !== undefined && Number.isFinite(Number(phase));
+    const first = total < step ? total / 2 : (hasPhase ? Number(phase) : step / 2);
+    const samples = [];
+    for (let distance = Math.max(0, first); distance < total - 1e-9; distance += step) {
+        const edge = edges.find(candidate => distance <= candidate.start + candidate.length + 1e-9) || edges[edges.length - 1];
+        const local = Math.max(0, Math.min(1, (distance - edge.start) / edge.length));
+        const dx = edge.b[0] - edge.a[0];
+        const dy = edge.b[1] - edge.a[1];
+        samples.push({
+            point: [edge.a[0] + dx * local, edge.a[1] + dy * local],
+            angle: Math.atan2(dy, dx),
+            distance
+        });
+    }
+    return samples;
+}
+
+// Painted bike/pedestrian symbols and planted verge trees all come from the same strip centerlines.
+// The result is view-agnostic: Leaflet and Three.js only decide how each point becomes pixels/meshes.
+function buildCorridorDecorations(segments, profile) {
+    if (!corridorProjectionAvailable()) return [];
+    const spans = corridorStripSpans(profile);
+    if (!spans.length) return [];
+    const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
+    const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
+        ? [segments]
+        : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
+    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
+    const junctionClearance = corridorProfileWidth(profile) / 2 + 4;
+    const decorations = [];
+
+    spans.forEach(strip => {
+        let kind = null;
+        if (strip.type === 'cycleway') kind = 'bike';
+        if (strip.type === 'sidewalk') kind = 'pedestrian';
+        if (CORRIDOR_GREEN_TYPES.has(strip.type) && corridorLandscapeOf(strip) === 'trees') kind = 'tree';
+        if (!kind) return;
+
+        const spacing = CORRIDOR_DECORATION_SPACING[kind];
+        const offset = (strip.left + strip.right) / 2;
+        centerlines.forEach((centerline, segmentIndex) => {
+            const offsetLine = buildCorridorOffsetLine(centerline, offset);
+            if (!offsetLine) return;
+            const planar = offsetLine.map(point => wgs84ToHTRS96(point.lat, point.lng));
+            samplePolylinePlanar(planar, spacing).forEach(sample => {
+                if (junctionPoints.some(point => Math.hypot(sample.point[0] - point[0], sample.point[1] - point[1]) < junctionClearance)) {
+                    return;
+                }
+                const [lat, lng] = htrs96ToWGS84(sample.point[0], sample.point[1]);
+                decorations.push({
+                    kind,
+                    lat,
+                    lng,
+                    angle: sample.angle,
+                    stripIndex: strip.index,
+                    stripWidth: strip.width,
+                    segmentIndex
+                });
+            });
+        });
+    });
+    return decorations;
+}
+
+// A junction is any shared centerline node with at least three distinct incident arms. This is OSM's
+// topology directly: the node is the intersection, and the arms are the way edges that meet there.
+function findCorridorJunctionsPlanar(segmentsXY) {
+    const nodes = new Map();
+    const keyOf = point => `${Math.round(point[0] * 100) / 100},${Math.round(point[1] * 100) / 100}`;
+    const addArm = (point, other) => {
+        const dx = other[0] - point[0];
+        const dy = other[1] - point[1];
+        const length = Math.hypot(dx, dy);
+        if (length < 1e-9) return;
+        const key = keyOf(point);
+        if (!nodes.has(key)) nodes.set(key, { point: [point[0], point[1]], arms: [] });
+        const arm = [dx / length, dy / length];
+        const entry = nodes.get(key);
+        if (!entry.arms.some(existing => existing[0] * arm[0] + existing[1] * arm[1] > 0.9999)) {
+            entry.arms.push(arm);
+        }
+    };
+
+    (segmentsXY || []).forEach(segment => {
+        if (!Array.isArray(segment)) return;
+        segment.forEach((point, index) => {
+            if (index > 0) addArm(point, segment[index - 1]);
+            if (index < segment.length - 1) addArm(point, segment[index + 1]);
+        });
+    });
+    return [...nodes.values()].filter(node => node.arms.length >= 3).map(node => ({ ...node, degree: node.arms.length }));
+}
+
+function planarRingToLatLng(ring) {
+    return ring.map(([x, y]) => {
+        const [lat, lng] = htrs96ToWGS84(x, y);
+        return { lat, lng };
+    });
+}
+
+// Local treatment for every junction. A plain asphalt arm patch hides lane/median lines through the
+// conflict area while leaving the outer sidewalk bands visible as corners; zebra bars then bridge the
+// roadway on every approach that belongs to a profile with sidewalks.
+function buildCorridorJunctionTreatments(segments, profile) {
+    if (!corridorProjectionAvailable()) return [];
+    const spans = corridorStripSpans(profile);
+    if (!spans.length) return [];
+    const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
+    const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
+        ? [segments]
+        : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
+    const planarSegments = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const junctions = findCorridorJunctionsPlanar(planarSegments);
+    if (!junctions.length) return [];
+
+    const roadway = spans.filter(strip => strip.type !== 'sidewalk' && strip.type !== 'verge');
+    const roadwayLeft = roadway.length ? Math.max(...roadway.map(strip => strip.left)) : corridorProfileWidth(profile) / 2;
+    const roadwayRight = roadway.length ? Math.min(...roadway.map(strip => strip.right)) : -corridorProfileWidth(profile) / 2;
+    const hasSidewalk = spans.some(strip => strip.type === 'sidewalk');
+    const totalWidth = corridorProfileWidth(profile);
+    const setback = Math.max(3, Math.min(8, totalWidth * 0.12));
+    const crossingDepth = 3;
+    const armLength = setback + crossingDepth + 1;
+
+    return junctions.map(junction => {
+        const surfacePolygons = [];
+        const crosswalkPolygons = [];
+        junction.arms.forEach(direction => {
+            const end = [junction.point[0] + direction[0] * armLength, junction.point[1] + direction[1] * armLength];
+            const surface = corridorStripRingPlanar([junction.point, end], roadwayLeft, roadwayRight);
+            if (surface) surfacePolygons.push(planarRingToLatLng(surface));
+            if (!hasSidewalk) return;
+
+            const normal = [-direction[1], direction[0]];
+            const stripeWidth = 0.8;
+            const stripeGap = 0.8;
+            for (let across = roadwayRight + 0.25; across + stripeWidth <= roadwayLeft - 0.25; across += stripeWidth + stripeGap) {
+                const corners = [
+                    [setback, across], [setback + crossingDepth, across],
+                    [setback + crossingDepth, across + stripeWidth], [setback, across + stripeWidth]
+                ].map(([along, lateral]) => [
+                    junction.point[0] + direction[0] * along + normal[0] * lateral,
+                    junction.point[1] + direction[1] * along + normal[1] * lateral
+                ]);
+                crosswalkPolygons.push(planarRingToLatLng(corners));
+            }
+        });
+        const [lat, lng] = htrs96ToWGS84(junction.point[0], junction.point[1]);
+        return { lat, lng, degree: junction.degree, surfacePolygons, crosswalkPolygons };
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Lane markings
 //
@@ -785,16 +991,21 @@ if (typeof window !== 'undefined') {
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
     window.withSidewalkWidth = withSidewalkWidth;
+    window.withCorridorWidth = withCorridorWidth;
     window.withLaneWidth = withLaneWidth;
     window.withLaneType = withLaneType;
+    window.withLaneLandscape = withLaneLandscape;
     window.withLaneInserted = withLaneInserted;
     window.withLaneRemoved = withLaneRemoved;
     window.withLaneMoved = withLaneMoved;
     window.corridorCenterlineOf = corridorCenterlineOf;
+    window.corridorLandscapeOf = corridorLandscapeOf;
 
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
     window.corridorStripRingPlanar = corridorStripRingPlanar;
+    window.buildCorridorDecorations = buildCorridorDecorations;
+    window.buildCorridorJunctionTreatments = buildCorridorJunctionTreatments;
 }
 
 // Node-visible for unit tests; the browser loads this file as a classic script.
@@ -811,15 +1022,22 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorProfileOf,
         corridorStripSpans,
         corridorCenterlineOf,
+        corridorLandscapeOf,
         withSidewalkWidth,
+        withCorridorWidth,
         withLaneWidth,
         withLaneType,
+        withLaneLandscape,
         withLaneInserted,
         withLaneRemoved,
         withLaneMoved,
         CORRIDOR_MIN_DRIVING_WIDTH,
         offsetPolylinePlanar,
         corridorStripRingPlanar,
-        corridorLaneSeparators
+        corridorLaneSeparators,
+        samplePolylinePlanar,
+        findCorridorJunctionsPlanar,
+        buildCorridorDecorations,
+        buildCorridorJunctionTreatments
     };
 }

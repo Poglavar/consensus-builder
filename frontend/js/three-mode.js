@@ -1366,6 +1366,7 @@
     // and medians raised to their kerb height. Colours and kerb heights come from CORRIDOR_LANE_TYPES,
     // the same table the 2D map reads, so a lane is retextured for both views in one edit.
     const corridorLaneMaterials = {};
+    const corridorSymbolMaterials = {};
     const CORRIDOR_STRIP_Z = 0.05; // clear of the corridor parcel's own slab at z=0
 
     function corridorLaneMaterial(type) {
@@ -1385,6 +1386,117 @@
         const last = ring[ring.length - 1];
         if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
         return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+    }
+
+    function corridorSymbolMaterial(kind) {
+        if (corridorSymbolMaterials[kind]) return corridorSymbolMaterials[kind];
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 128, 128);
+        ctx.strokeStyle = '#ffffff';
+        ctx.fillStyle = '#ffffff';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (kind === 'bike') {
+            ctx.beginPath(); ctx.arc(32, 83, 22, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(96, 83, 22, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(32, 83); ctx.lineTo(53, 50); ctx.lineTo(69, 83); ctx.lineTo(32, 83);
+            ctx.moveTo(53, 50); ctx.lineTo(84, 50); ctx.lineTo(96, 83);
+            ctx.moveTo(47, 39); ctx.lineTo(61, 39);
+            ctx.stroke();
+        } else {
+            const person = (x, scale) => {
+                ctx.beginPath(); ctx.arc(x, 30 + (1 - scale) * 20, 10 * scale, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(x, 43); ctx.lineTo(x, 82);
+                ctx.moveTo(x, 57); ctx.lineTo(x - 15 * scale, 70);
+                ctx.moveTo(x, 57); ctx.lineTo(x + 15 * scale, 70);
+                ctx.moveTo(x, 82); ctx.lineTo(x - 13 * scale, 111);
+                ctx.moveTo(x, 82); ctx.lineTo(x + 13 * scale, 111);
+                ctx.stroke();
+            };
+            person(45, 1);
+            person(88, 0.68);
+            ctx.beginPath(); ctx.moveTo(60, 67); ctx.lineTo(77, 69); ctx.stroke();
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        corridorSymbolMaterials[kind] = new THREE.MeshBasicMaterial({
+            map: texture, transparent: true, depthWrite: false, side: THREE.DoubleSide
+        });
+        return corridorSymbolMaterials[kind];
+    }
+
+    function addCorridorDecorations3D(targetGroup, decorations) {
+        const treePoints = decorations.filter(item => item.kind === 'tree');
+        const signs = decorations.filter(item => item.kind !== 'tree');
+        signs.forEach(item => {
+            const [x, y] = latLngToXY(item.lat, item.lng);
+            const size = Math.max(1.2, Math.min(3, Number(item.stripWidth) * 0.85));
+            const geometry = new THREE.PlaneGeometry(size, size);
+            const mesh = new THREE.Mesh(geometry, corridorSymbolMaterial(item.kind));
+            mesh.position.set(x, y, CORRIDOR_STRIP_Z + 0.18);
+            mesh.rotation.z = Number(item.angle) || 0;
+            mesh.userData.isCorridorDecoration = true;
+            mesh.userData.decorationKind = item.kind;
+            targetGroup.add(mesh);
+        });
+
+        if (!treePoints.length) return;
+        ensureTreeAssets();
+        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, treePoints.length);
+        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, treePoints.length);
+        const dummy = new THREE.Object3D();
+        treePoints.forEach((item, index) => {
+            const [x, y] = latLngToXY(item.lat, item.lng);
+            const random = treeRng(item.lng, item.lat);
+            const totalHeight = 5 + random * 3;
+            const trunkHeight = totalHeight * 0.48;
+            const crownRadius = totalHeight * 0.2 + 0.4;
+            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
+            dummy.scale.set(1, 1, trunkHeight);
+            dummy.rotation.set(0, 0, 0);
+            dummy.updateMatrix();
+            trunks.setMatrixAt(index, dummy.matrix);
+            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
+            dummy.scale.set(crownRadius, crownRadius, crownRadius * 1.15);
+            dummy.updateMatrix();
+            crowns.setMatrixAt(index, dummy.matrix);
+        });
+        trunks.instanceMatrix.needsUpdate = true;
+        crowns.instanceMatrix.needsUpdate = true;
+        trunks.userData.isCorridorDecoration = true;
+        trunks.userData.decorationKind = 'tree';
+        crowns.userData.isCorridorDecoration = true;
+        crowns.userData.decorationKind = 'tree';
+        targetGroup.add(trunks, crowns);
+    }
+
+    function addCorridorJunctions3D(targetGroup, junctions) {
+        const asphalt = corridorLaneMaterial('driving');
+        const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        junctions.forEach(junction => {
+            (junction.surfacePolygons || []).forEach(polygon => {
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), asphalt, CORRIDOR_STRIP_Z + 0.16, 0)
+                    .forEach(mesh => {
+                        mesh.userData.isCorridorJunction = true;
+                        targetGroup.add(mesh);
+                    });
+            });
+            (junction.crosswalkPolygons || []).forEach(polygon => {
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), white, CORRIDOR_STRIP_Z + 0.17, 0)
+                    .forEach(mesh => {
+                        mesh.userData.isCorridorCrosswalk = true;
+                        targetGroup.add(mesh);
+                    });
+            });
+        });
     }
 
     function buildCorridorStrips3D(targetGroup) {
@@ -1414,6 +1526,12 @@
                     });
                 });
             });
+            const junctions = (typeof buildCorridorJunctionTreatments === 'function')
+                ? buildCorridorJunctionTreatments(centerline, profile) : [];
+            addCorridorJunctions3D(targetGroup, junctions);
+            const decorations = (typeof buildCorridorDecorations === 'function')
+                ? buildCorridorDecorations(centerline, profile) : [];
+            addCorridorDecorations3D(targetGroup, decorations);
         });
     }
 
@@ -3266,5 +3384,4 @@
     // Initial paint: mark 2D as the active mode on load.
     updateModeButtonStates();
 })();
-
 

@@ -90,6 +90,7 @@
                 'css/modals.css',
                 'css/proposals.css',
                 'css/corridor-editor.css',
+                'css/corridor-render.css',
                 'css/game.css',
                 'css/road-analysis.css',
                 'css/utilities.css',
@@ -1047,6 +1048,11 @@
                     <button id="createRoadButton" class="btn btn-primary" onclick="createRoadOrTrackProposal()"
                         data-i18n-key="panel.road.createButton">Create (C)</button>
                 </div>
+                <button id="editRoadCrossSectionButton" type="button" class="btn btn-outline-secondary road-cross-section-button"
+                    onclick="openRoadDrawingCrossSectionEditor()">
+                    <i class="fas fa-road" aria-hidden="true"></i>
+                    <span data-i18n-key="panel.road.crossSectionButton">Edit cross-section</span><span class="road-cross-section-width"></span>
+                </button>
             </div>
 
             <!-- Road width selector (shown when drawing) -->
