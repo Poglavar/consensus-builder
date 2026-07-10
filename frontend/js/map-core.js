@@ -216,6 +216,37 @@ function wgs84ToHTRS96(lat, lon) {
     }
 }
 
+// The DATASET pair, distinct from the metric pair above since the split.
+//
+// Parcels arrive in the city's dataset CRS, and the grid cache buckets them by `gridSize` expressed in
+// *that* CRS's units (metres for Zagreb, degrees for New York). Feeding those consumers metric metres
+// made a New York grid cell 1/0.005 ≈ 200× too small, so a single viewport asked for ~10^8 cells and
+// the Set that collects them threw "maximum size exceeded" before any parcel was fetched. Anything that
+// touches parcel storage coordinates or grid cells uses this pair; anything that measures uses the
+// metric one.
+function datasetToWgs84(easting, northing) {
+    if (!Number.isFinite(easting) || !Number.isFinite(northing)) return DEFAULT_FALLBACK_LATLNG;
+    if (Math.abs(easting) <= 180 && Math.abs(northing) <= 90) return [northing, easting];
+    try {
+        const converter = MapCityConfigManager ? MapCityConfigManager.datasetToLatLng : null;
+        const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
+        return (Number.isFinite(lat) && Number.isFinite(lon)) ? [lat, lon] : DEFAULT_FALLBACK_LATLNG;
+    } catch (_) {
+        return DEFAULT_FALLBACK_LATLNG;
+    }
+}
+
+function wgs84ToDataset(lat, lon) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return DEFAULT_FALLBACK_DATASET;
+    try {
+        const converter = MapCityConfigManager ? MapCityConfigManager.latLngToDataset : null;
+        const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
+        return (Number.isFinite(easting) && Number.isFinite(northing)) ? [easting, northing] : DEFAULT_FALLBACK_DATASET;
+    } catch (_) {
+        return DEFAULT_FALLBACK_DATASET;
+    }
+}
+
 // Convert map bounds to HTRS96/TM bbox string
 function getBboxFromBounds(bounds) {
     const sw = bounds.getSouthWest();
@@ -515,6 +546,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make functions globally available
 window.htrs96ToWGS84 = htrs96ToWGS84;
 window.wgs84ToHTRS96 = wgs84ToHTRS96;
+window.datasetToWgs84 = datasetToWgs84;
+window.wgs84ToDataset = wgs84ToDataset;
 window.getBboxFromBounds = getBboxFromBounds;
 window.clearRoadVisualization = clearRoadVisualization;
 window.drawRoadVisualization = drawRoadVisualization;
