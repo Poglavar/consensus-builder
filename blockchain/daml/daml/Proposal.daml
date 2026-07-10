@@ -29,6 +29,8 @@ template Sale
     parcelId : Text
     price : Decimal
     lens : Optional Party
+    -- Carried over from the proposal. See PurchaseProposal.imageUri.
+    imageUri : Optional Text
   where
     signatory buyer, owner
     observer (case lens of None -> []; Some l -> [l])
@@ -42,6 +44,11 @@ template PurchaseProposal
     parcelId : Text
     price : Decimal
     certCid : ContractId OwnershipCertificate
+    -- The proposal's metadata on IPFS (the same `metadataUri` the EVM and Solana paths mint with).
+    -- The app uploaded it for every chain and Canton alone dropped it on the floor, so a Canton
+    -- proposal could not be rendered from the ledger. Optional, and last in the record, because
+    -- smart-contract upgrades require both: contracts created by 0.3.0 read back with None.
+    imageUri : Optional Text
   where
     signatory buyer
     observer owner, lens
@@ -55,7 +62,7 @@ template PurchaseProposal
         cert <- fetch certCid
         assertMsg "certificate owner does not match" (cert.owner == owner)
         assertMsg "certificate parcel does not match" (cert.parcelId == parcelId)
-        create Sale with buyer, owner, parcelId, price, lens = Some lens
+        create Sale with buyer, owner, parcelId, price, lens = Some lens, imageUri
 
     -- Buyer pulls the offer before it is accepted.
     choice Withdraw : ()

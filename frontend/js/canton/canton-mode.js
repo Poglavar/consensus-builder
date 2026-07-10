@@ -210,9 +210,13 @@
             const price = String(options.price != null ? options.price : '');
             if (!(parseFloat(price) > 0)) throw new Error('Canton purchase proposals need a positive offer amount.');
 
+            // The IPFS metadata the create flow uploads for every chain. It used to be accepted here
+            // and dropped at the fetch, so Canton paid for an upload nothing ever read.
+            const imageUri = options.imageURI || null;
+
             const res = await fetch(`${apiBase()}/canton/proposals`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ parcelId, price, buyer }),
+                body: JSON.stringify({ parcelId, price, buyer, imageUri }),
             });
             const j = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);

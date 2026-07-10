@@ -39,10 +39,10 @@ export function setupCantonRoute(app) {
   // Create a proposal. Body: { parcelId, price, buyer?, owner?, lens? }.
   // Blank parties are auto-allocated (demo). Relies on app-level express.json().
   app.post('/canton/proposals', async (req, res) => {
-    const { parcelId, price, buyer, owner, lens } = req.body || {};
+    const { parcelId, price, buyer, owner, lens, imageUri } = req.body || {};
     if (!parcelId || price == null) return res.status(400).json({ error: 'parcelId and price are required' });
     try {
-      res.json(await createProposal({ parcelId, price, buyer, owner, lens }));
+      res.json(await createProposal({ parcelId, price, buyer, owner, lens, imageUri }));
     } catch (e) {
       res.status(502).json({ error: String(e.message || e) });
     }
