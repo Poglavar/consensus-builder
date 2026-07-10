@@ -5,10 +5,23 @@
 (function (global) {
     'use strict';
 
+    // The backend base. data-source.js already resolves this for every environment — including the
+    // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.
+    // Rolling our own here is how Canton ended up unreachable in dev: same-origin meant the static
+    // frontend port, which serves no /canton routes.
     function apiBase() {
         try {
             const override = new URLSearchParams(global.location.search).get('api');
             if (override) return override.replace(/\/$/, '');
+        } catch (_) { }
+        try {
+            if (typeof global.getBackendBase === 'function') {
+                const base = global.getBackendBase();
+                if (base) return String(base).replace(/\/+$/, '');
+            }
+        } catch (_) { }
+        // Standalone pages (canton.html) may not load data-source.js.
+        try {
             if (global.location.protocol === 'file:') return 'http://localhost:3000';
             const h = (global.location.hostname || '').toLowerCase();
             if (h.endsWith('urbangametheory.xyz') && !h.startsWith('api.')) return 'https://api.urbangametheory.xyz';

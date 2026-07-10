@@ -1739,3 +1739,25 @@ textarea.proposal-description-input {
 @keyframes proposal-screenshot-spin {
     to { transform: rotate(360deg); }
 }
+
+/* "Mints on <chain>" — minting follows whichever wallet is connected, or Canton mode, and the user
+   otherwise has no way to know where a proposal is about to go. */
+.proposal-mint-target {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.proposal-mint-target--onchain {
+    background: #eef6ee;
+    color: #2f6b34;
+}
+
+.proposal-mint-target--offchain {
+    background: #f4f4f4;
+    color: #666;
+}

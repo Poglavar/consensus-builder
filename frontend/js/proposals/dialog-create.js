@@ -1269,6 +1269,18 @@ function showProposalDialog(overrides = null) {
     // removed later if there turns out to be nothing to preview.
     const hasScreenshotCandidate = selectedParcels.length > 0 || !!roadScreenshotContext;
 
+    // Which chain this proposal will be minted on, if any. Minting is implicit — it follows whichever
+    // wallet is connected or whether Canton mode is on — so the dialog has to say so out loud.
+    const mintTarget = (typeof getActiveMintTarget === 'function')
+        ? getActiveMintTarget()
+        : { chain: null, label: 'Off-chain (this browser only)', onchain: false };
+    const mintChainHtml = `
+        <div class="proposal-mint-target ${mintTarget.onchain ? 'proposal-mint-target--onchain' : 'proposal-mint-target--offchain'}"
+             title="${mintTarget.identity ? String(mintTarget.identity) : 'No wallet connected; the proposal stays in this browser.'}">
+            <i class="fas ${mintTarget.onchain ? 'fa-link' : 'fa-link-slash'}" aria-hidden="true"></i>
+            <span>${mintTarget.onchain ? 'Mints on' : ''} <b>${mintTarget.label}</b></span>
+        </div>`;
+
     currentProposalTool = null;
 
     if (!selectedParcels.length) {
@@ -1329,6 +1341,7 @@ function showProposalDialog(overrides = null) {
                 <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
+                ${mintChainHtml}
                 ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer" style="margin-bottom: 15px;"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
                 <div class="form-group proposal-author-row">
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />

@@ -2299,3 +2299,40 @@ window.openTakeoverAgentDialog = openTakeoverAgentDialog;
 window.isProposalDeepLink = isProposalDeepLinkPath;
 window.ensureGuestUserAgentForDeepLink = ensureGuestUserAgentForDeepLink;
 window.shouldSkipWelcomeForProposalLink = isProposalDeepLinkPath;
+// Where a proposal created right now would be minted.
+//
+// createProposal() decides this implicitly, from three independent globals checked in a fixed order
+// (Canton mode, then a Solana wallet, then an EVM wallet). Nothing told the user, so a proposal could
+// go to a chain they had forgotten they selected. This is that same decision, named once, so the create
+// dialog and the mint dispatch cannot disagree — keep the order in step with createProposal().
+function getActiveMintTarget() {
+    try {
+        if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
+            const party = (typeof window.CantonMode.getParty === 'function') ? window.CantonMode.getParty() : '';
+            return { chain: 'canton', label: 'Canton (DevNet)', onchain: true, identity: party || null };
+        }
+    } catch (_) { }
+
+    try {
+        const solana = window.solanaWalletManager;
+        const state = solana && typeof solana.getState === 'function' ? solana.getState() : null;
+        if (state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length) {
+            const cluster = (typeof window.getSolanaChainId === 'function') ? window.getSolanaChainId() : 'solana';
+            const info = NETWORK_LABELS[cluster];
+            return { chain: cluster, label: (info && info.label) || 'Solana', onchain: true, identity: state.accounts[0] };
+        }
+    } catch (_) { }
+
+    try {
+        const wallet = window.walletManager;
+        const state = wallet && typeof wallet.getState === 'function' ? wallet.getState() : null;
+        if (state && state.status === 'connected' && state.chainId) {
+            const info = getNetworkDisplayInfo(state.chainId, state.status);
+            return { chain: info.chainId, label: info.text, onchain: true, identity: (state.accounts && state.accounts[0]) || null };
+        }
+    } catch (_) { }
+
+    return { chain: null, label: 'Off-chain (this browser only)', onchain: false, identity: null };
+}
+
+window.getActiveMintTarget = getActiveMintTarget;
