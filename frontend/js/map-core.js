@@ -140,7 +140,13 @@ function tryWebMercatorMetersToLatLng(easting, northing) {
     }
 }
 
-// Convert HTRS96/TM coordinates to WGS84
+// Convert the city's METRIC working coordinates (metres) to WGS84.
+//
+// Named for Croatia's HTRS96/TM because Zagreb came first, but the projection is per-city and, since
+// the metric split, no longer the city's *dataset* CRS: New York's parcels arrive in degrees while its
+// geometry works in UTM 18N metres. Everything that offsets, buffers, measures or unions in "metres"
+// goes through this pair. See city-config.js `metricCrs`.
+//
 // If the input already looks like WGS84 (lng/lat range), return it directly.
 function htrs96ToWGS84(easting, northing) {
     if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
@@ -175,7 +181,9 @@ function htrs96ToWGS84(easting, northing) {
         }
     }
     try {
-        const converter = MapCityConfigManager ? MapCityConfigManager.datasetToLatLng : null;
+        const converter = MapCityConfigManager
+            ? (MapCityConfigManager.metricToLatLng || MapCityConfigManager.datasetToLatLng)
+            : null;
         const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
             throw new Error('Conversion returned invalid numbers');
@@ -187,14 +195,16 @@ function htrs96ToWGS84(easting, northing) {
     }
 }
 
-// Convert WGS84 coordinates to HTRS96/TM
+// Convert WGS84 coordinates to the city's METRIC working coordinates (metres). See htrs96ToWGS84.
 function wgs84ToHTRS96(lat, lon) {
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
         console.error('Invalid WGS84 coordinates:', lat, lon);
         return DEFAULT_FALLBACK_DATASET;
     }
     try {
-        const converter = MapCityConfigManager ? MapCityConfigManager.latLngToDataset : null;
+        const converter = MapCityConfigManager
+            ? (MapCityConfigManager.latLngToMetric || MapCityConfigManager.latLngToDataset)
+            : null;
         const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
         if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
             throw new Error('Conversion returned invalid numbers');
