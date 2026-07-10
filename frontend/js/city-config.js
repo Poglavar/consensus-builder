@@ -143,6 +143,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 34N covers Belgrade.
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.810918, 20.438859],
                 fallbackDataset: [20.438859, 44.810918]
             },
@@ -265,6 +268,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 13N covers Colorado.
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.7392, -104.9903],
                 fallbackDataset: [-104.9903, 39.7392]
             },
@@ -302,6 +308,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 18N covers New York City.
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.7128, -74.0060],
                 fallbackDataset: [-74.0060, 40.7128]
             },
@@ -334,6 +343,15 @@
         }
         Object.values(CITY_CONFIGS).forEach(config => {
             const dataset = config.projection;
+            if (dataset && dataset.metricCrs && dataset.metricDefinition) {
+                try {
+                    if (!proj4.defs(dataset.metricCrs)) {
+                        proj4.defs(dataset.metricCrs, dataset.metricDefinition);
+                    }
+                } catch (error) {
+                    console.warn('[CityConfig] Failed to register metric projection', dataset.metricCrs, error);
+                }
+            }
             if (dataset && dataset.datasetCrs && dataset.definition) {
                 try {
                     if (!proj4.defs(dataset.datasetCrs)) {
@@ -525,6 +543,49 @@
             return [lat, lon];
         } catch (_) {
             return projection.fallbackLatLng || [northing, easting];
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // The metric working projection.
+    //
+    // A city's *dataset* CRS is whatever its parcels arrive in — for Zagreb a metric one (EPSG:3765),
+    // for New York and Belgrade plain WGS84 degrees. Geometry code (road corridors, buffers, areas,
+    // lengths) needs METRES, and using the dataset CRS for that silently treats degrees as metres:
+    // a 10 m road in New York came out 1113 km wide.
+    //
+    // So every city also declares a metric CRS. Where the dataset CRS is already metric it is the same
+    // projection, and nothing changes.
+    // ---------------------------------------------------------------------
+    function getMetricCrs() {
+        const projection = getProjectionConfig();
+        if (!projection) return null;
+        const crs = projection.metricCrs || projection.datasetCrs;
+        if (!crs || typeof proj4 === 'undefined' || !proj4.defs(crs)) return null;
+        return crs;
+    }
+
+    function latLngToMetric(lat, lon) {
+        const crs = getMetricCrs();
+        if (!crs) return [lon, lat];
+        try {
+            const [x, y] = proj4('EPSG:4326', crs, [lon, lat]);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('invalid conversion');
+            return [x, y];
+        } catch (_) {
+            return [lon, lat];
+        }
+    }
+
+    function metricToLatLng(x, y) {
+        const crs = getMetricCrs();
+        if (!crs) return [y, x];
+        try {
+            const [lon, lat] = proj4(crs, 'EPSG:4326', [x, y]);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('invalid conversion');
+            return [lat, lon];
+        } catch (_) {
+            return [y, x];
         }
     }
 
@@ -1067,6 +1128,9 @@
         getCityCodeForCityId,
         datasetToLatLng,
         latLngToDataset,
+        latLngToMetric,
+        metricToLatLng,
+        getMetricCrs,
         formatCurrency,
         getParcelStrategy,
         getParcelGridSize,
