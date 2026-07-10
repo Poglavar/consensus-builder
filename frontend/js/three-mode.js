@@ -1203,6 +1203,70 @@
         return 10; // default 3 stories ~10 meters
     }
 
+    // Reparcellization plans that have NOT been applied to the map. An applied plan has already
+    // replaced its parent parcels inside parcelLayer, so buildParcels3D draws the new parcels and
+    // there is nothing to add here. An unapplied one exists only on the proposal — without this the
+    // 3D view showed the untouched original parcel and the proposed subdivision was invisible.
+    function getPlannedReparcellizationProposals() {
+        try {
+            const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
+            if (!storage || typeof storage.getAllProposals !== 'function') return [];
+            const isAppliedLike = (status) => {
+                const s = (status || '').toString().toLowerCase();
+                return s === 'applied' || s === 'executed';
+            };
+            return storage.getAllProposals().filter(p => {
+                if (!p || !p.reparcellization) return false;
+                if (!Array.isArray(p.reparcellization.polygons) || !p.reparcellization.polygons.length) return false;
+                if (isAppliedLike(p.status) || isAppliedLike(p.reparcellization.status)) return false;
+                return true;
+            });
+        } catch (error) {
+            console.warn('[3D] Failed to enumerate planned reparcellization proposals:', error);
+            return [];
+        }
+    }
+
+    // Draw each planned plot as a flat slab just above the parcel plane, tinted with the owner
+    // colour the reparcellization editor assigned it, and outline it so the new boundaries read
+    // clearly against the parcel underneath.
+    function buildPlannedReparcellization3D(targetGroup) {
+        if (!targetGroup) return;
+        const proposals = getPlannedReparcellizationProposals();
+        if (!proposals.length) return;
+
+        proposals.forEach(proposal => {
+            proposal.reparcellization.polygons.forEach(slice => {
+                if (!slice || !slice.geometry) return;
+                try {
+                    const feature = { type: 'Feature', geometry: slice.geometry, properties: {} };
+                    let color = 0xcccccc;
+                    try {
+                        if (typeof slice.color === 'string' && slice.color.startsWith('#')) {
+                            color = parseInt(slice.color.slice(1), 16);
+                        }
+                    } catch (_) { }
+
+                    const fillMat = new THREE.MeshLambertMaterial({
+                        color,
+                        transparent: true,
+                        opacity: 0.75,
+                        polygonOffset: true,
+                        polygonOffsetFactor: -2,
+                        polygonOffsetUnits: -2
+                    });
+                    const meshes = polygonFeatureToMeshes(feature, fillMat, 0.08, 0);
+                    meshes.forEach(m => { m.userData.isPlannedReparcelPlot = true; targetGroup.add(m); });
+
+                    const borders = polygonFeatureToBorderLines(feature, materials.sliceEdges, 0.12);
+                    borders.forEach(line => { line.userData.isPlannedReparcelPlot = true; targetGroup.add(line); });
+                } catch (error) {
+                    console.warn('[3D] Failed to draw a planned reparcellization plot:', error);
+                }
+            });
+        });
+    }
+
     function buildParcels3D(targetGroup) {
         if (typeof parcelLayer === 'undefined' || !parcelLayer) return;
         // parcels at z=0
@@ -2286,6 +2350,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         // Apply initial visibility based on current mode (default is 'both').
         const showPlanned = buildingRenderMode !== 'built';
         if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
@@ -2778,6 +2843,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
     });
@@ -2811,6 +2877,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
     window.addEventListener('squaresUpdated', () => {
@@ -2823,6 +2890,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
     window.addEventListener('lakesUpdated', () => {
@@ -2835,6 +2903,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
     function realisticActive() {
