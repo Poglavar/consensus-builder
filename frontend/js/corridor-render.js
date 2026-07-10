@@ -120,6 +120,8 @@ function scheduleCorridorStripRefresh() {
 
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
+    window.isAppliedCorridorProposal = isAppliedCorridorProposal;
+    window.corridorProposalDefinition = corridorProposalDefinition;
     window.refreshAppliedCorridorStrips = refreshAppliedCorridorStrips;
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;

@@ -1361,6 +1361,62 @@
         }
     }
 
+    // Corridor cross-sections in 3D. An applied road is a corridor parcel — one flat grey slab — and
+    // this lays its lanes over it: carriageway and cycle paths flush with the road, sidewalks, verges
+    // and medians raised to their kerb height. Colours and kerb heights come from CORRIDOR_LANE_TYPES,
+    // the same table the 2D map reads, so a lane is retextured for both views in one edit.
+    const corridorLaneMaterials = {};
+    const CORRIDOR_STRIP_Z = 0.05; // clear of the corridor parcel's own slab at z=0
+
+    function corridorLaneMaterial(type) {
+        if (!corridorLaneMaterials[type]) {
+            const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[type]) || {};
+            corridorLaneMaterials[type] = new THREE.MeshLambertMaterial({
+                color: new THREE.Color(lane.surface || '#2b2b2b'),
+                emissive: 0x000000
+            });
+        }
+        return corridorLaneMaterials[type];
+    }
+
+    function corridorStripToFeature(polygon) {
+        const ring = polygon.map(point => [point.lng, point.lat]);
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
+        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+    }
+
+    function buildCorridorStrips3D(targetGroup) {
+        if (typeof buildCorridorStrips !== 'function' || typeof isAppliedCorridorProposal !== 'function') return;
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+
+        proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            const profile = corridorProfileOf(definition);
+            const centerline = corridorCenterlineOf(definition);
+            if (!profile || !centerline.length) return;
+
+            buildCorridorStrips(centerline, profile).forEach(strip => {
+                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                const kerb = Number(lane.height) || 0;
+                strip.polygons.forEach(polygon => {
+                    const meshes = polygonFeatureToMeshes(
+                        corridorStripToFeature(polygon),
+                        corridorLaneMaterial(strip.type),
+                        CORRIDOR_STRIP_Z,
+                        kerb
+                    );
+                    meshes.forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.laneType = strip.type;
+                        targetGroup.add(mesh);
+                    });
+                });
+            });
+        });
+    }
+
     function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial) {
         // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
         // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
@@ -2347,6 +2403,7 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -2840,6 +2897,7 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
