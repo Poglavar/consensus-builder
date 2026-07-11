@@ -1528,6 +1528,55 @@
         });
     }
 
+    function addBuildingTunnelLiners3D(targetGroup, definition) {
+        const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels : [];
+        if (!tunnels.length) return;
+        const isTrack = definition?.metadata?.isTrack === true;
+        const clearHeight = isTrack ? 6 : 4.5;
+        const clearWidth = Math.max(3, Number(definition?.width) || (isTrack ? 3 : 7.5)) + 0.8;
+        const thickness = 0.25;
+        const linerMaterial = new THREE.MeshLambertMaterial({
+            color: 0x2e2340, transparent: true, opacity: 0.82, side: THREE.DoubleSide
+        });
+        const portalMaterial = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
+
+        tunnels.forEach(tunnel => {
+            if (tunnel?.kind !== 'building' || !tunnel.from || !tunnel.to) return;
+            const [x1, y1] = latLngToXY(Number(tunnel.from.lat), Number(tunnel.from.lng));
+            const [x2, y2] = latLngToXY(Number(tunnel.to.lat), Number(tunnel.to.lng));
+            const length = Math.hypot(x2 - x1, y2 - y1);
+            if (!Number.isFinite(length) || length < 0.5) return;
+            const assembly = new THREE.Group();
+            assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2, CORRIDOR_STRIP_Z + 0.05);
+            assembly.rotation.z = Math.atan2(y2 - y1, x2 - x1);
+
+            const addBox = (geometry, material, x, y, z) => {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                mesh.userData.isBuildingTunnel = true;
+                mesh.userData.tunnelId = tunnel.id || tunnel.edgeKey;
+                assembly.add(mesh);
+            };
+
+            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+                0, -clearWidth / 2, clearHeight / 2);
+            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+                0, clearWidth / 2, clearHeight / 2);
+            addBox(new THREE.BoxGeometry(length, clearWidth, thickness), linerMaterial,
+                0, 0, clearHeight);
+
+            [-length / 2, length / 2].forEach(x => {
+                addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
+                    x, -clearWidth / 2, clearHeight / 2);
+                addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
+                    x, clearWidth / 2, clearHeight / 2);
+                addBox(new THREE.BoxGeometry(thickness * 1.5, clearWidth, thickness * 1.5), portalMaterial,
+                    x, 0, clearHeight);
+            });
+            targetGroup.add(assembly);
+        });
+    }
+
     function buildCorridorStrips3D(targetGroup) {
         if (typeof buildCorridorStrips !== 'function' || typeof isAppliedCorridorProposal !== 'function') return;
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
@@ -1561,6 +1610,17 @@
             const decorations = (typeof buildCorridorDecorations === 'function')
                 ? buildCorridorDecorations(centerline, profile) : [];
             addCorridorDecorations3D(targetGroup, decorations);
+        });
+
+        // Track surfaces use a different renderer, but building-tunnel metadata is common to both
+        // corridor kinds, so liners are added in a second pass over every applied corridor proposal.
+        proposalStorage.getAllProposals().forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
+            const status = String(proposal.status || '').toLowerCase();
+            const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
+            if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
+            addBuildingTunnelLiners3D(targetGroup, definition);
         });
     }
 

@@ -20,7 +20,8 @@
             width: definition.width,
             sidewalkWidth: definition.sidewalkWidth,
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
-            profile: cloneDraftValue(profileOverride || definition.profile) || null
+            profile: cloneDraftValue(profileOverride || definition.profile) || null,
+            tunnels: cloneDraftValue(definition.tunnels) || []
         };
     }
 

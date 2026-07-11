@@ -917,6 +917,13 @@
             "discardAndWipe": "Odbaci i izbriši",
             "keep": "Zadrži nacrt"
         },
+        "corridorTunnel": {
+            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Napraviti tunel kroz zgradu?",
+            "road": "put",
+            "track": "pruga",
+            "confirm": "Tunel kroz zgradu",
+            "cancel": "Izaberi drugu trasu"
+        },
         "roadWidth": {
             "title": "Izaberi širinu puta",
             "subtitle": "Izaberi poprečni presek za ručno crtanje puta. Pritisni Enter da kreneš sa podrazumevanim izborom.",

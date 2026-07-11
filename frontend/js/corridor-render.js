@@ -96,6 +96,24 @@ function renderCorridorDecorations(decorations, group, pane) {
     });
 }
 
+function renderCorridorBuildingTunnels(tunnels, group, pane) {
+    if (!Array.isArray(tunnels) || !group) return;
+    tunnels.forEach(tunnel => {
+        if (tunnel?.kind !== 'building' || !tunnel.from || !tunnel.to) return;
+        const points = [tunnel.from, tunnel.to];
+        L.polyline(points, {
+            color: '#6d28d9', weight: 9, opacity: 0.85, dashArray: '8 7',
+            interactive: false, pane: pane || undefined,
+            className: 'corridor-building-tunnel'
+        }).addTo(group);
+        points.forEach(point => L.circleMarker(point, {
+            radius: 5, color: '#8b5cf6', weight: 2, fillColor: '#15121f', fillOpacity: 1,
+            interactive: false, pane: pane || undefined,
+            className: 'corridor-building-tunnel-portal'
+        }).addTo(group));
+    });
+}
+
 // Turn `[{type, polygons}]` into a LayerGroup. Surface, markings, junction treatment and repeated
 // symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
 function renderCorridorStrips(strips, options = {}) {
@@ -241,7 +259,8 @@ function refreshAppliedCorridorStrips() {
     const layer = L.layerGroup();
     let drawn = 0;
 
-    proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+    const proposals = proposalStorage.getAllProposals();
+    proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
         const profile = corridorProfileForRender(proposal, definition);
         const centerline = corridorCenterlineOf(definition);
@@ -257,6 +276,18 @@ function refreshAppliedCorridorStrips() {
             renderAppliedCorridorHitTargets(strips, proposal, layer);
             drawn += 1;
         }
+    });
+
+    // Tracks have their own rail renderer and therefore do not enter the road-strip loop above, but
+    // their building passages use the same applied overlay and proposal definition.
+    proposals.forEach(proposal => {
+        const definition = corridorProposalDefinition(proposal);
+        if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
+        const status = String(proposal.status || '').toLowerCase();
+        const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
+        if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
+        renderCorridorBuildingTunnels(definition.tunnels, layer, CORRIDOR_STRIPS_PANE);
+        drawn += 1;
     });
 
     if (!drawn) return;
@@ -280,6 +311,7 @@ function scheduleCorridorStripRefresh() {
 
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
+    window.renderCorridorBuildingTunnels = renderCorridorBuildingTunnels;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
     window.setCorridorProfilePreview = setCorridorProfilePreview;
     window.clearCorridorProfilePreview = clearCorridorProfilePreview;

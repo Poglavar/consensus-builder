@@ -772,6 +772,7 @@ async function createProposal() {
                     profile: safeClone(roadDrawingContext.profile) || null,
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
+                    tunnels: safeClone(roadDrawingContext.tunnels) || [],
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
                 };

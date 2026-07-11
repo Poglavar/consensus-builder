@@ -124,7 +124,7 @@ async function copyCorridorIntoNewProposal(source, sourceKey, sourceName, option
     const isTrack = isTrackProposal(source);
     const metadata = definition.metadata || {};
     const seed = isTrack
-        ? { centerline: copyDeepClone(centerline), width: definition.width }
+        ? { centerline: copyDeepClone(centerline), width: definition.width, tunnels: copyDeepClone(definition.tunnels || []) }
         : buildCorridorDrawingSeed(definition, options.profile);
     if (!seed) return false;
     if (isTrack) {

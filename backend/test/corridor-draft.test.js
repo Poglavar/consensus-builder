@@ -27,6 +27,7 @@ describe('corridor drawing drafts', () => {
         segmentIds: ['s1'],
         width: 10,
         sidewalkWidth: 1,
+        tunnels: [{ id: 'building-tunnel:a', kind: 'building', edgeKey: 'a', buildingIds: ['b1'] }],
         profile: { strips: [{ type: 'sidewalk', width: 1 }, { type: 'driving', width: 9 }] }
     };
 
@@ -38,6 +39,7 @@ describe('corridor drawing drafts', () => {
         expect(seed.centerline).toEqual(definition.points);
         expect(seed.segmentIds).toEqual(['s1']);
         expect(seed.width).toBe(10);
+        expect(seed.tunnels).toEqual(definition.tunnels);
     });
 
     it('clones proposal geometry and profile instead of mutating immutable source data', () => {
@@ -45,10 +47,12 @@ describe('corridor drawing drafts', () => {
         seed.centerline[0].lat = 0;
         seed.profile.strips[0].type = 'parking';
         seed.segmentIds.push('s2');
+        seed.tunnels[0].buildingIds.push('b2');
 
         expect(definition.points[0].lat).toBe(40.7);
         expect(definition.profile.strips[0].type).toBe('sidewalk');
         expect(definition.segmentIds).toEqual(['s1']);
+        expect(definition.tunnels[0].buildingIds).toEqual(['b1']);
     });
 
     it('rejects definitions without a centerline', () => {

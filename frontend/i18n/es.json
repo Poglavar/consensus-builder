@@ -966,6 +966,13 @@
             "discardAndWipe": "Descartar y borrar",
             "keep": "Conservar borrador"
         },
+        "corridorTunnel": {
+            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Crear un túnel a través del edificio?",
+            "road": "camino",
+            "track": "vía férrea",
+            "confirm": "Atravesar con túnel",
+            "cancel": "Elegir otra ruta"
+        },
         "roadWidth": {
             "title": "Elige el ancho de la carretera",
             "subtitle": "Selecciona una sección para dibujar manualmente. Pulsa Enter para iniciar con la opción predeterminada.",

@@ -84,9 +84,82 @@ let roadPreviewPolygonLayer = null;
 let roadCenterlineLayer = null;
 let roadPolygonLayer = null;
 let roadMarkers = [];
+let roadBuildingTunnels = [];
+let roadBuildingTunnelLayer = null;
 let lastRoadMoveUpdate = 0;
 let throttleDelay = 150; // milliseconds between updates
 let roadPreviewAffectedParcels = []; // Stores parcels affected by the preview segment
+
+function buildDrawingTunnelLayer(records, color) {
+    if (typeof L === 'undefined' || !Array.isArray(records) || !records.length) return null;
+    const tunnelPane = (typeof ensureCorridorStripsPane === 'function' && ensureCorridorStripsPane())
+        ? 'corridorStripsPane' : undefined;
+    const group = L.layerGroup();
+    records.forEach(record => {
+        if (!record?.from || !record?.to) return;
+        const points = [record.from, record.to];
+        L.polyline(points, {
+            color, weight: 8, opacity: 0.8, dashArray: '8 7',
+            pane: tunnelPane, interactive: false
+        }).addTo(group);
+        points.forEach(point => L.circleMarker(point, {
+            radius: 5, color, weight: 2, fillColor: '#15121f', fillOpacity: 1,
+            pane: tunnelPane, interactive: false
+        }).addTo(group));
+    });
+    return group;
+}
+
+function refreshRoadBuildingTunnelLayer() {
+    if (roadBuildingTunnelLayer && map.hasLayer(roadBuildingTunnelLayer)) map.removeLayer(roadBuildingTunnelLayer);
+    roadBuildingTunnelLayer = buildDrawingTunnelLayer(roadBuildingTunnels, '#7c3aed');
+    if (roadBuildingTunnelLayer) roadBuildingTunnelLayer.addTo(map);
+}
+
+function refreshTrackBuildingTunnelLayer() {
+    if (trackBuildingTunnelLayer && map.hasLayer(trackBuildingTunnelLayer)) map.removeLayer(trackBuildingTunnelLayer);
+    trackBuildingTunnelLayer = buildDrawingTunnelLayer(trackBuildingTunnels, '#4c1d95');
+    if (trackBuildingTunnelLayer) trackBuildingTunnelLayer.addTo(map);
+}
+
+// Width/profile edits can make a previously clear edge touch a building. Recheck every committed edge
+// before proposal creation and offer one combined decision for all newly discovered passages.
+async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = []) {
+    const list = Array.isArray(records) ? records.slice() : [];
+    if (typeof detectLoadedBuildingTunnelIntersections !== 'function'
+        || typeof corridorTunnelEdgeKey !== 'function') return { accepted: true, records: list };
+    const missing = [];
+    const combinedHits = new Map();
+    (segments || []).forEach((segment, segmentIndex) => {
+        for (let pointIndex = 0; pointIndex < segment.length - 1; pointIndex++) {
+            const from = segment[pointIndex];
+            const to = segment[pointIndex + 1];
+            const edgeKey = corridorTunnelEdgeKey(from, to);
+            if (!edgeKey) continue;
+            const existing = list.find(record => record?.edgeKey === edgeKey) || null;
+            const polygon = calculateRoadPolygon([from, to], width);
+            const hits = polygon ? detectLoadedBuildingTunnelIntersections(polygon) : [];
+            const existingIds = new Set((existing?.buildingIds || []).map(String));
+            const newHits = hits.filter(hit => !existingIds.has(String(hit.id)));
+            if (!newHits.length) continue;
+            newHits.forEach(hit => combinedHits.set(hit.id, hit));
+            const mergedHits = [
+                ...(existing?.buildingIds || []).map(id => ({ id })),
+                ...hits
+            ];
+            missing.push({ from, to, hits: mergedHits, segmentId: segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null) });
+        }
+    });
+    if (!missing.length) return { accepted: true, records: list };
+    const accepted = typeof offerBuildingTunnel === 'function'
+        ? await offerBuildingTunnel(Array.from(combinedHits.values()), kind) : false;
+    if (!accepted) return { accepted: false, records: list };
+    missing.forEach(edge => {
+        const record = makeBuildingTunnelRecord(edge.from, edge.to, edge.hits, { segmentId: edge.segmentId });
+        if (record) addBuildingTunnelRecord(list, record);
+    });
+    return { accepted: true, records: list };
+}
 
 // Locked parcels tracking - these are parcels confirmed by clicking (not just preview)
 let lockedParcelIds = new Set(); // Set of parcel IDs that are locked (confirmed)
@@ -394,7 +467,8 @@ function saveCurrentCorridorDrawingDraft(kind) {
             centerline,
             width: trackWidth,
             trackSpeed,
-            trackMinRadius: trackMinCurvatureRadius
+            trackMinRadius: trackMinCurvatureRadius,
+            tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || []))
         };
     } else {
         const entries = getAllRoadSegments(true)
@@ -409,7 +483,8 @@ function saveCurrentCorridorDrawingDraft(kind) {
             segmentIds: entries.map(entry => entry.id),
             profile: getRoadDrawingProfile(),
             width: roadWidth,
-            sidewalkWidth: roadSidewalkWidth
+            sidewalkWidth: roadSidewalkWidth,
+            tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || []))
         };
     }
 
@@ -547,6 +622,7 @@ function seedRoadDrawing(seed) {
     roadSegmentIds = [];
     roadPoints = [];
     roadHasStarted = false;
+    roadBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
     cachedCommittedPolygon = null;
 
     const seededIds = Array.isArray(seed.segmentIds) ? seed.segmentIds : [];
@@ -560,6 +636,7 @@ function seedRoadDrawing(seed) {
 
     const polygon = rebuildRoadGeometryFromSegments();
     redrawRoadVertexMarkers();
+    refreshRoadBuildingTunnelLayer();
     recomputeLockedParcelsFromPolygon(polygon, false);
     updateRoadInfoPanel();
     updateUndoButtonState();
@@ -583,6 +660,7 @@ function seedTrackDrawing(seed) {
 
     trackPoints = segments[0].slice();
     trackHasStarted = true; // lockParcelsFromSegment routes to the track bookkeeping only once this is set
+    trackBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
 
     if (trackCenterline) map.removeLayer(trackCenterline);
     trackCenterline = L.polyline(trackPoints, { color: 'transparent', weight: 0, opacity: 0 }).addTo(map);
@@ -601,6 +679,7 @@ function seedTrackDrawing(seed) {
     if (trackRailsLayer) map.removeLayer(trackRailsLayer);
     trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth });
     if (trackRailsLayer) trackRailsLayer.addTo(map);
+    refreshTrackBuildingTunnelLayer();
 
     recomputeLockedParcelsFromPolygon(trackPolygon, true);
     updateRoadInfoPanel();
@@ -634,7 +713,19 @@ function resumeRoadSegment(segmentIndex, atStart) {
 function insertRoadNodeOnEdge(segmentIndex, insertAfter, latlng) {
     const segment = roadSegments[segmentIndex];
     if (!Array.isArray(segment) || insertAfter < 0 || insertAfter >= segment.length - 1) return false;
+    const from = segment[insertAfter];
+    const to = segment[insertAfter + 1];
+    const edgeKey = typeof corridorTunnelEdgeKey === 'function' ? corridorTunnelEdgeKey(from, to) : '';
+    const tunnel = edgeKey ? roadBuildingTunnels.find(record => record?.edgeKey === edgeKey) : null;
     segment.splice(insertAfter + 1, 0, L.latLng(latlng.lat, latlng.lng));
+    if (tunnel && typeof removeBuildingTunnelEdge === 'function' && typeof makeBuildingTunnelRecord === 'function') {
+        roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
+        const hits = (tunnel.buildingIds || []).map(id => ({ id }));
+        const segmentId = roadSegmentIds[segmentIndex] || tunnel.segmentId || null;
+        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(from, latlng, hits, { segmentId }));
+        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(latlng, to, hits, { segmentId }));
+        refreshRoadBuildingTunnelLayer();
+    }
     return true;
 }
 
@@ -1178,6 +1269,9 @@ async function requestCorridorDrawingTool(kind) {
         if (roadDrawingMode) exitRoadDrawingMode();
         if (trackDrawingMode) exitTrackDrawingMode();
         restoreCorridorDraftIntoPending(draft);
+        if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
+            await ensureCorridorBuildingFootprintsLoaded();
+        }
         if (kind === 'track') toggleTrackDrawTool();
         else toggleRoadDrawTool();
         return true;
@@ -1189,6 +1283,9 @@ async function requestCorridorDrawingTool(kind) {
     }
     if (roadDrawingMode) exitRoadDrawingMode();
     if (trackDrawingMode) exitTrackDrawingMode();
+    if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
+        await ensureCorridorBuildingFootprintsLoaded();
+    }
     if (kind === 'track') toggleTrackDrawTool();
     else toggleRoadDrawTool();
     return true;
@@ -1203,6 +1300,9 @@ async function startSeededCorridorDrawing(kind, seed, copySource) {
     }
     if (roadDrawingMode) exitRoadDrawingMode();
     if (trackDrawingMode) exitTrackDrawingMode();
+    if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
+        await ensureCorridorBuildingFootprintsLoaded();
+    }
     window.pendingRoadCopySource = copySource || null;
     if (kind === 'track') {
         window.pendingTrackDrawingSeed = seed;
@@ -1566,7 +1666,12 @@ function undoLastRoadSegment() {
         return; // Can't undo if there's only one point or none
     }
 
-    // Remove last point
+    // Remove tunnel metadata paired with this edge before its endpoint disappears.
+    const removedPoint = roadPoints[roadPoints.length - 1];
+    const previousPoint = roadPoints[roadPoints.length - 2];
+    if (typeof removeBuildingTunnelEdge === 'function') {
+        roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
+    }
     roadPoints.pop();
 
     if (roadPoints.length === 0) {
@@ -1587,6 +1692,7 @@ function undoLastRoadSegment() {
     // parcels from the resulting corridor.
     const updatedPolygon = rebuildRoadGeometryFromSegments();
     redrawRoadVertexMarkers();
+    refreshRoadBuildingTunnelLayer();
     recomputeLockedParcelsFromPolygon(updatedPolygon, false);
 
     // Update UI
@@ -1784,7 +1890,7 @@ function getRoadWidthThumbDataURI(id) {
 }
 
 // Handle road drawing clicks
-function handleRoadClick(e) {
+async function handleRoadClick(e) {
     // Stop event propagation to prevent parcel selection or other click handlers
     L.DomEvent.stopPropagation(e);
 
@@ -1839,8 +1945,29 @@ function handleRoadClick(e) {
         // Show status for next point
         updateStatus('Click to add road points, press F to finish a segment, press C to create when ready');
     } else {
+        const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
+        const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
+        let buildingTunnel = null;
+        if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
+            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon);
+            if (hits.length) {
+                const accepted = typeof offerBuildingTunnel === 'function'
+                    ? await offerBuildingTunnel(hits, 'road') : false;
+                if (!accepted) return;
+                const segmentIndex = roadSegments.indexOf(roadPoints);
+                buildingTunnel = typeof makeBuildingTunnelRecord === 'function'
+                    ? makeBuildingTunnelRecord(segmentPoints[0], segmentPoints[1], hits, {
+                        segmentId: roadSegmentIds[segmentIndex] || null
+                    }) : null;
+            }
+        }
+
         // Add another point to the road (the polygon for the new edge is built below, once)
         roadPoints.push(clickPoint);
+        if (buildingTunnel && typeof addBuildingTunnelRecord === 'function') {
+            roadBuildingTunnels = addBuildingTunnelRecord(roadBuildingTunnels, buildingTunnel);
+            refreshRoadBuildingTunnelLayer();
+        }
 
         // Add marker for this point
         const pointMarker = createRoadVertexMarker(clickPoint);
@@ -1874,9 +2001,6 @@ function handleRoadClick(e) {
             }
 
             // Calculate the segment polygon for just the NEW segment (last two points)
-            const segmentPoints = [roadPoints[roadPoints.length - 2], roadPoints[roadPoints.length - 1]];
-            const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
-
             // PERFORMANCE: Incrementally union the new segment polygon with cached polygon
             // instead of rebuilding the entire road polygon from scratch
             let newCommittedPolygon;
@@ -4072,6 +4196,13 @@ async function finishRoadDrawing() {
     const segmentIds = drawnSegments.map(entry => entry.id);
     if (!segments.length) return;
 
+    const tunnelCheck = await ensureBuildingTunnelsForSegments(
+        segments, roadWidth, 'road', roadBuildingTunnels, segmentIds
+    );
+    if (!tunnelCheck.accepted) return;
+    roadBuildingTunnels = tunnelCheck.records;
+    refreshRoadBuildingTunnelLayer();
+
     // Immediately stop interactions and preview while finishing
     suspendRoadDrawingInteractivity();
     stopRoadPreviewTracking();
@@ -4204,6 +4335,7 @@ async function finishRoadDrawing() {
         latLngPairs,
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,
+        tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
         stats: ownershipAndAcquisitionStats,
         metadata: {
             mode: 'draw',
@@ -4274,6 +4406,7 @@ function resetRoadDrawing(hidePanel = true) {
     roadSegments = [];
     roadSegmentIds = [];
     roadPoints = [];
+    roadBuildingTunnels = [];
     roadWidth = 2;
     roadProfile = null;
     roadHasStarted = false;
@@ -4325,6 +4458,10 @@ function resetRoadDrawing(hidePanel = true) {
         }
     }
     roadMarkers = [];
+    if (roadBuildingTunnelLayer && map.hasLayer(roadBuildingTunnelLayer)) {
+        map.removeLayer(roadBuildingTunnelLayer);
+    }
+    roadBuildingTunnelLayer = null;
 
     // Hide road info panel if requested
     if (hidePanel) {
@@ -5980,6 +6117,8 @@ let committedTrackMetrics = {
     area: 0
 };
 let trackMarkers = [];
+let trackBuildingTunnels = [];
+let trackBuildingTunnelLayer = null;
 let trackPreviewAffectedParcels = [];
 let trackRailsLayer = null; // Layer group for track rails and sleepers
 let trackPreviewRailsLayer = null; // Preview rails and sleepers
@@ -6719,8 +6858,14 @@ function undoLastTrackSegment() {
         return; // Can't undo if there's only one point or none
     }
 
-    // Remove last point and its marker
+    // Remove tunnel metadata paired with this edge before its endpoint disappears.
+    const removedPoint = trackPoints[trackPoints.length - 1];
+    const previousPoint = trackPoints[trackPoints.length - 2];
+    if (typeof removeBuildingTunnelEdge === 'function') {
+        trackBuildingTunnels = removeBuildingTunnelEdge(trackBuildingTunnels, previousPoint, removedPoint);
+    }
     trackPoints.pop();
+    refreshTrackBuildingTunnelLayer();
     const lastMarker = trackMarkers.pop();
     if (lastMarker && map.hasLayer(lastMarker)) {
         map.removeLayer(lastMarker);
@@ -6801,7 +6946,7 @@ function reverseTrackDirection() {
     saveCurrentCorridorDrawingDraft('track');
 }
 
-function handleTrackClick(e) {
+async function handleTrackClick(e) {
     L.DomEvent.stopPropagation(e);
 
     const clickPoint = e.latlng;
@@ -6876,9 +7021,25 @@ function handleTrackClick(e) {
         // Build the segment polygon for this click
         const segmentPoints = [trackPoints[trackPoints.length - 1], pointToAdd];
         const segmentPolygon = calculateRoadPolygon(segmentPoints, trackWidth);
+        let buildingTunnel = null;
+        if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
+            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon);
+            if (hits.length) {
+                const accepted = typeof offerBuildingTunnel === 'function'
+                    ? await offerBuildingTunnel(hits, 'track') : false;
+                if (!accepted) return;
+                buildingTunnel = typeof makeBuildingTunnelRecord === 'function'
+                    ? makeBuildingTunnelRecord(segmentPoints[0], segmentPoints[1], hits, { segmentId: 'track' })
+                    : null;
+            }
+        }
 
         // Add point to track
         trackPoints.push(pointToAdd);
+        if (buildingTunnel && typeof addBuildingTunnelRecord === 'function') {
+            trackBuildingTunnels = addBuildingTunnelRecord(trackBuildingTunnels, buildingTunnel);
+            refreshTrackBuildingTunnelLayer();
+        }
 
         // Play feedback sound for the committed segment
         playTrackSegmentSound();
@@ -7406,6 +7567,13 @@ function clearTrackPreviewAffectedParcels() {
 async function finishTrackDrawing() {
     if (!trackHasStarted || trackPoints.length < 2) return;
 
+    const tunnelCheck = await ensureBuildingTunnelsForSegments(
+        [trackPoints], trackWidth, 'track', trackBuildingTunnels, ['track']
+    );
+    if (!tunnelCheck.accepted) return;
+    trackBuildingTunnels = tunnelCheck.records;
+    refreshTrackBuildingTunnelLayer();
+
     // Immediately stop interactions and preview while finishing
     map.off('click', handleTrackClick);
     map.off('mousemove', handleTrackMouseMove);
@@ -7511,6 +7679,7 @@ async function finishTrackDrawing() {
         latLngPairs,
         width: trackWidth,
         sidewalkWidth: null,
+        tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || [])),
         stats: ownershipAndAcquisitionStats,
         metadata: {
             mode: 'draw',
@@ -7641,6 +7810,7 @@ function resetTrackDrawing(hidePanel = true) {
     clearTrackPreviewAffectedParcels();
 
     trackPoints = [];
+    trackBuildingTunnels = [];
     trackHasStarted = false;
     trackAffectedParcels = [];
     trackIds.forEach(id => {
@@ -7699,6 +7869,10 @@ function resetTrackDrawing(hidePanel = true) {
         }
     }
     trackMarkers = [];
+    if (trackBuildingTunnelLayer && map.hasLayer(trackBuildingTunnelLayer)) {
+        map.removeLayer(trackBuildingTunnelLayer);
+    }
+    trackBuildingTunnelLayer = null;
 
     if (hidePanel) {
         const roadInfoPanel = document.getElementById('road-info-panel');

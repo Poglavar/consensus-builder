@@ -916,6 +916,13 @@
             "discardAndWipe": "Discard and wipe",
             "keep": "Keep draft"
         },
+        "corridorTunnel": {
+            "offer": "This {{kind}} would pass through {{count}} building(s). Create a tunnel through the building?",
+            "road": "road",
+            "track": "track",
+            "confirm": "Tunnel through",
+            "cancel": "Choose another route"
+        },
         "roadWidth": {
             "title": "Choose Road Width",
             "subtitle": "Pick a cross-section for manual road drawing. Press Enter to start with the default selection.",
