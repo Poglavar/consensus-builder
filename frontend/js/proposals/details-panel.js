@@ -538,10 +538,34 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer('${buyOfferProposal.proposalId || ''}')">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
         : '';
 
+    // "Drive this track" — opens the external 3D tram sim in a new tab with the
+    // cab riding on this proposal's drawn centerline. Shown for uploaded (serial
+    // id) track proposals in every city; outside Zagreb the surroundings are
+    // empty until the sim's world data goes multi-city, but the ride itself works.
+    const driveProposal = fullProposal || proposal;
+    const driveWalkConfig = (typeof CityConfigManager !== 'undefined' && typeof CityConfigManager.getDriveConfig === 'function')
+        ? CityConfigManager.getDriveConfig()
+        : null;
+    const driveSerialId = (typeof window !== 'undefined' && typeof window.getSerialProposalId === 'function')
+        ? window.getSerialProposalId(driveProposal)
+        : null;
+    // The drawn plan lives at geometry.roadPlan on newer proposals and only at
+    // roadProposal.definition on older ones — both shapes exist in stored data.
+    const drivePlan = driveProposal?.geometry?.roadPlan || driveProposal?.roadProposal?.definition;
+    const isDrivableTrack = drivePlan?.metadata?.isTrack === true;
+    const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
+        ? `
+        <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim('${proposalKey}')">
+            🚋 ${tProposal('panel.proposal.actions.drive', 'Drive this track')}
+        </button>
+    `
+        : '';
+
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${buyButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
+            ${driveButtonHtml}
             ${shareButtonHtml}
             ${copyButtonHtml}
         </div>
@@ -2076,6 +2100,67 @@ function restoreProposalDetailsScroll(preserveState) {
     setTimeout(apply, 0);
     setTimeout(apply, 30);
     setTimeout(apply, 120);
+}
+
+// Opens the external 3D tram sim (city-config walk.url) in a new tab with the
+// cab riding on this track proposal's drawn centerline. URL contract consumed
+// by zagreb-isochrone's transit.js: ?st3d=cab&track=<serial>&proposals=<serials>.
+// The proposals param carries every APPLIED proposal that has a serial id so
+// the sim shows the same scene the user built (same filter as the walk
+// launcher in three-mode.js, which is closure-private to 3D mode).
+function driveTrackProposalIn3DSim(proposalKey) {
+    const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalKey) : null;
+    const serialId = (proposal && typeof window.getSerialProposalId === 'function')
+        ? window.getSerialProposalId(proposal)
+        : null;
+    const driveConfig = (typeof CityConfigManager !== 'undefined' && typeof CityConfigManager.getDriveConfig === 'function')
+        ? CityConfigManager.getDriveConfig()
+        : null;
+    if (!serialId || !driveConfig || !driveConfig.url) {
+        console.warn('[drive] cannot open 3D sim: missing serial id or sim url', { proposalKey, serialId, driveConfig });
+        return;
+    }
+
+    const isAppliedLike = (status) => {
+        const s = (status || '').toString().toLowerCase();
+        return s === 'applied' || s === 'executed';
+    };
+    const appliedSerialIds = [];
+    const seenSerialIds = new Set();
+    try {
+        const storage = window.proposalStorage;
+        const all = (storage && typeof storage.getAllProposals === 'function') ? storage.getAllProposals() : [];
+        for (const p of all) {
+            if (!p) continue;
+            const applied = isAppliedLike(p.status)
+                || (p.roadProposal && isAppliedLike(p.roadProposal.status))
+                || (p.buildingProposal && isAppliedLike(p.buildingProposal.status))
+                || (p.structureProposal && isAppliedLike(p.structureProposal.status))
+                || (p.reparcellization && isAppliedLike(p.reparcellization.status))
+                || (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status));
+            if (!applied) continue;
+            const sid = window.getSerialProposalId(p);
+            if (sid && !seenSerialIds.has(sid)) {
+                seenSerialIds.add(sid);
+                appliedSerialIds.push(sid);
+            }
+        }
+    } catch (error) {
+        console.warn('[drive] failed to enumerate applied proposals:', error);
+    }
+    appliedSerialIds.sort((a, b) => Number(a) - Number(b));
+
+    const params = new URLSearchParams();
+    params.set('st3d', 'cab');
+    params.set('track', serialId);
+    if (appliedSerialIds.length) params.set('proposals', appliedSerialIds.join(','));
+    const url = `${driveConfig.url}?${params.toString()}`;
+    console.log('[drive] opening 3D cab on track proposal:', url);
+    window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+if (typeof window !== 'undefined') {
+    window.driveTrackProposalIn3DSim = driveTrackProposalIn3DSim;
 }
 
 function showProposalInfoHoverOverlay(parcelId) {
