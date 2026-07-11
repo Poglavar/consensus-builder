@@ -2435,19 +2435,19 @@ const ProposalManager = {
                 return await this._applyRoadProposal(safeId, proposalData, applyOptions);
             }
             if (goalKey === 'reparcellization') {
-                return this._applyReparcellizationProposal(safeId, proposalData);
+                return await this._applyReparcellizationProposal(safeId, proposalData, applyOptions);
             }
             if (goalKey === 'decide-later') {
                 return await this._applyDecideLaterProposal(safeId, proposalData);
             }
             if (this._isBuildingProposal(proposalData)) {
-                return this._applyBuildingProposal(safeId, proposalData, applyOptions);
+                return await this._applyBuildingProposal(safeId, proposalData, applyOptions);
             }
             if (!proposalData.structureProposal) {
                 this._bootstrapStructureProposalFromMetadata(proposalData);
                 console.debug(`[ProposalManager.applyProposal] Bootstrapped structure proposal metadata for ${safeId}`);
             }
-            return this._applyStructureProposal(safeId, proposalData);
+            return await this._applyStructureProposal(safeId, proposalData, applyOptions);
         });
 
         if (result) {
@@ -2456,7 +2456,7 @@ const ProposalManager = {
         return result;
     },
 
-    _applyStructureProposal(proposalId, proposalData) {
+    async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
         console.debug(`[_applyStructureProposal] Starting application for ${idLabel}...`);
@@ -2560,6 +2560,18 @@ const ProposalManager = {
                 } catch (e) { }
             }
             console.debug(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
+
+            // Cross-type conflict / availability check. A structure OVERLAYS its parents (never hides
+            // them), so "apply anyway" just renders it. Same-block structures were already
+            // auto-unapplied above; this catches parcels occupied by OTHER proposal types
+            // (road/building/reparcellization) and offers unapply-or-apply-anyway.
+            {
+                const parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
+                const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds: parentIds, parentFeatures, options });
+                if (decision.defer) {
+                    return false;
+                }
+            }
 
             const step4Time = performance.now();
             // Add to appropriate collection and layer
@@ -3213,7 +3225,7 @@ const ProposalManager = {
         return true;
     },
 
-    _applyReparcellizationProposal(proposalId, proposalData) {
+    async _applyReparcellizationProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
         console.debug(`[_applyReparcellizationProposal] Starting application for ${idLabel}...`);
@@ -3235,9 +3247,21 @@ const ProposalManager = {
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
         const parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-        const parentFeatures = parentIds.length
+        let parentFeatures = parentIds.length
             ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
             : [];
+
+        // Parent availability + conflict decision (this only runs on a fresh apply — already-applied
+        // reparcellizations short-circuit in the dispatcher). Like road, this replaces parents with
+        // child slices, so a parent occupied by another applied proposal is a real conflict.
+        {
+            const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds: parentIds, parentFeatures, options });
+            if (decision.defer) {
+                if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+                return false;
+            }
+            parentFeatures = decision.parentFeatures;
+        }
 
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
         const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : (parentIds[0] || null);
@@ -3465,74 +3489,17 @@ const ProposalManager = {
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
 
-        // ── Parent availability decision (new applications only) ──────────────────────────────
-        // Runs BEFORE ownership enrichment and child-building so that whatever we settle on for the
-        // parent set feeds those steps. Two ways a declared parent is unavailable: (A) it never
-        // resolved to a feature, or (B) it resolved without geometry / off the map. Separately, a
-        // parent may be OCCUPIED by another APPLIED proposal whose rule already replaced it — a
-        // geography conflict, checked over ALL declared parents (occupied parcels can still resolve).
-        // We only auto-fetch the genuinely not-loaded (unoccupied) ones; re-fetching an occupied
-        // parcel would re-draw something another proposal has consumed. Then one decision: proceed if
-        // clear; if the caller opted in (applyAnyway) proceed with the parents present; otherwise
-        // hand off to the conflict/apply-anyway modal.
+        // Parent availability + conflict decision (new applications only). Runs BEFORE ownership
+        // enrichment and child-building so the settled parent set feeds those steps. See
+        // _resolveParentAvailabilityOrDefer for the full rationale.
         if (!isRestoring) {
-            const applyAnyway = options && options.applyAnyway === true;
             const declaredParentIds = Array.from(new Set(this._collectParentParcelIds(roadProposal, proposalData).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-            const computeUnresolvable = () => {
-                const resolvedIds = new Set(parentFeatures.map(f => { const id = _getParcelIdFromFeature(f); return id ? id.toString() : null; }).filter(Boolean));
-                const absent = declaredParentIds.filter(id => !resolvedIds.has(id)); // (A)
-                const noGeom = this._getMissingParentParcels(parentFeatures).map(info => info && info.id ? info.id.toString() : '').filter(Boolean); // (B)
-                return Array.from(new Set([...absent, ...noGeom]));
-            };
-
-            let analysis = this._analyzeParentAvailability(declaredParentIds, computeUnresolvable(), idLabel);
-            // Auto-fetch only the not-loaded (unoccupied) parcels, then re-analyze.
-            if (analysis.notLoaded.length && typeof fetchParcelsForIds === 'function') {
-                try {
-                    await fetchParcelsForIds(analysis.notLoaded, { forceRefresh: true });
-                    const reloaded = this._resolveParcelFeaturesByIds(declaredParentIds, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
-                    if (Array.isArray(reloaded) && reloaded.length >= parentFeatures.length) {
-                        parentFeatures = reloaded;
-                    }
-                    analysis = this._analyzeParentAvailability(declaredParentIds, computeUnresolvable(), idLabel);
-                } catch (err) {
-                    console.warn('[_applyRoadProposal] Failed to fetch not-loaded parent parcels before apply', err);
-                }
-            }
-
-            const needsDecision = analysis.conflicts.length > 0 || analysis.notLoaded.length > 0;
-            if (needsDecision && !applyAnyway) {
-                console.warn(`[_applyRoadProposal] Parent availability requires a decision for ${idLabel}`, analysis);
-                try {
-                    this._setLastApplyFailure(idLabel, { code: 'dependency-missing', message: 'Prerequisite parcels unavailable or in conflict', missingIds: analysis.notLoaded });
-                } catch (_) { }
+            const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds, parentFeatures, options });
+            if (decision.defer) {
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
-                if (!suppressMissingParentAlerts) {
-                    this._showParentConflictModal({
-                        proposalId: idLabel,
-                        proposalTitle: proposalData.title || proposalData.name || idLabel,
-                        analysis,
-                        onApplyAnyway: () => this.applyProposal(idLabel, { ...options, applyAnyway: true }),
-                        onUnapplyAndRetry: async (conflictProposalId) => {
-                            await this.unapplyProposal(conflictProposalId, { skipConfirm: true });
-                            return this.applyProposal(idLabel, { ...options, applyAnyway: true });
-                        }
-                    });
-                }
                 return false;
             }
-
-            if (needsDecision && applyAnyway) {
-                const skipped = analysis.notLoaded.length;
-                const overlapped = analysis.conflicts.reduce((n, c) => n + c.parcelIds.length, 0);
-                console.debug(`[_applyRoadProposal] Applying ${idLabel} anyway`, { skipped, overlapped });
-                if (typeof showEphemeralMessage === 'function' && !suppressMissingParentAlerts && (skipped || overlapped)) {
-                    const bits = [];
-                    if (skipped) bits.push(`${skipped} unavailable parcel${skipped === 1 ? '' : 's'}`);
-                    if (overlapped) bits.push(`overlapping ${overlapped} occupied parcel${overlapped === 1 ? '' : 's'}`);
-                    showEphemeralMessage(`Applied ${bits.join(', ')}.`, 4000, 'info');
-                }
-            }
+            parentFeatures = decision.parentFeatures;
         }
 
         // Enrich parent features with any locally-known ownership data BEFORE building children.
@@ -4175,10 +4142,9 @@ const ProposalManager = {
         return Array.from(new Set(ids.map(id => id.toString()))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
     },
 
-    _applyBuildingProposal(proposalId, proposalData, options = {}) {
+    async _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        const suppressMissingParentAlerts = options && options.suppressMissingParentAlerts === true;
         console.debug(`[_applyBuildingProposal] Starting application for ${idLabel}...`);
 
         if (!proposalData) {
@@ -4203,54 +4169,18 @@ const ProposalManager = {
         }
 
         const step2Time = performance.now();
-        const missing = [];
-        const missingIds = [];
-        uniqueParentIds.forEach(id => {
-            let exists = false;
-            try {
-                // Check if parcel exists using multiParcelSelection.findParcelById
-                if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
-                    const parcel = multiParcelSelection.findParcelById(id);
-                    exists = !!parcel;
-                }
-                // Fallback: check using resolveParcelLayerById if available
-                if (!exists && typeof resolveParcelLayerById === 'function') {
-                    const layer = resolveParcelLayerById(id);
-                    exists = !!layer;
-                }
-            } catch (err) {
-                console.debug(`[_applyBuildingProposal] Error checking parcel ${id}:`, err);
-                exists = false;
+        // Parent availability + conflict decision. A building OVERLAYS its parents (it never hides or
+        // splits them), so "apply anyway" simply renders the building over whatever parents are
+        // present; but if another applied proposal already sits on / consumed these parcels, that's a
+        // conflict the user should resolve first (e.g. two buildings on the same parcel).
+        {
+            const parentFeatures = this._resolveParcelFeaturesByIds(uniqueParentIds, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
+            const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds: uniqueParentIds, parentFeatures, options });
+            if (decision.defer) {
+                return false;
             }
-            if (!exists) {
-                missingIds.push(id);
-                const label = Array.isArray(buildingProposal.parentParcelNumbers)
-                    ? buildingProposal.parentParcelNumbers.find(info => String(info.id) === String(id))
-                    : null;
-                missing.push(label && label.number ? `${label.number} [${id}]` : id);
-            }
-        });
-
-        if (missing.length > 0) {
-            const i18nApi = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') ? window.i18n : null;
-            const message = i18nApi
-                ? i18nApi.t('ephemeral.messages.cannot_apply_building_proposal_missing_parents', { missing: missing.join(', ') })
-                : `Can't apply building proposal, prerequisite parcels are missing: ${missing.join(', ')}`;
-            console.warn(message);
-            try {
-                this._setLastApplyFailure(idLabel, {
-                    code: 'dependency-missing',
-                    message,
-                    missingIds
-                });
-            } catch (_) { }
-            if (!suppressMissingParentAlerts) {
-                if (typeof updateStatus === 'function') updateStatus(message);
-                if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
-            }
-            return false;
         }
-        console.debug(`[_applyBuildingProposal] Step 2: Checked for missing parents (${(performance.now() - step2Time).toFixed(2)}ms)`);
+        console.debug(`[_applyBuildingProposal] Step 2: Parent availability OK (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
         const step3Time = performance.now();
         const ancestorKey = uniqueParentIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
@@ -7072,8 +7002,8 @@ const ProposalManager = {
         const occupiedIds = new Set();
 
         declared.forEach(pid => {
-            const occ = (store && typeof store.getAppliedProposalsForAncestor === 'function')
-                ? store.getAppliedProposalsForAncestor(pid).filter(x => String(x) !== self)
+            const occ = (store && typeof store.getAppliedProposalsOccupyingParcel === 'function')
+                ? store.getAppliedProposalsOccupyingParcel(pid).filter(x => String(x) !== self)
                 : [];
             if (occ.length) {
                 occupiedIds.add(pid);
@@ -7111,6 +7041,84 @@ const ProposalManager = {
         });
 
         return { conflicts, notLoaded };
+    },
+
+    /**
+     * Shared parent-availability gate for every apply path (road, reparcellization, building,
+     * structure). Given the declared parent ids and the currently-resolved parent features, it:
+     *   1. computes which declared parents are unresolvable — (A) never resolved, (B) resolved
+     *      without geometry / off the map;
+     *   2. classifies each unavailable/occupied parent (via _analyzeParentAvailability) into
+     *      CONFLICT (occupied by another applied proposal — checked over ALL declared parents, since
+     *      an occupied parcel can still resolve) vs NOT-LOADED;
+     *   3. auto-fetches only the genuinely not-loaded (unoccupied) parcels and re-analyzes — we never
+     *      re-fetch an occupied parcel, which would redraw something another proposal owns;
+     *   4. decides: if clear, proceed; if the caller opted in (options.applyAnyway) proceed with the
+     *      parents present; otherwise show the conflict/apply-anyway modal and defer.
+     * Returns { defer, parentFeatures, analysis }. The caller discards its write cache and returns
+     * false when defer is true. Callers with no split (overlays) can ignore the returned features.
+     */
+    async _resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds, parentFeatures, options, allowFetch = true }) {
+        const applyAnyway = options && options.applyAnyway === true;
+        const suppress = options && options.suppressMissingParentAlerts === true;
+        let features = Array.isArray(parentFeatures) ? parentFeatures.slice() : [];
+        const declared = Array.isArray(declaredParentIds) ? declaredParentIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean) : [];
+
+        const computeUnresolvable = () => {
+            const resolvedIds = new Set(features.map(f => { const id = _getParcelIdFromFeature(f); return id ? id.toString() : null; }).filter(Boolean));
+            const absent = declared.filter(id => !resolvedIds.has(id)); // (A)
+            const noGeom = this._getMissingParentParcels(features).map(info => info && info.id ? info.id.toString() : '').filter(Boolean); // (B)
+            return Array.from(new Set([...absent, ...noGeom]));
+        };
+
+        let analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+        if (allowFetch && analysis.notLoaded.length && typeof fetchParcelsForIds === 'function') {
+            try {
+                await fetchParcelsForIds(analysis.notLoaded, { forceRefresh: true });
+                const reloaded = this._resolveParcelFeaturesByIds(declared, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
+                if (Array.isArray(reloaded) && reloaded.length >= features.length) {
+                    features = reloaded;
+                }
+                analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+            } catch (err) {
+                console.warn(`[${idLabel}] Failed to fetch not-loaded parent parcels before apply`, err);
+            }
+        }
+
+        const needsDecision = analysis.conflicts.length > 0 || analysis.notLoaded.length > 0;
+        if (needsDecision && !applyAnyway) {
+            console.warn(`[${idLabel}] Parent availability requires a decision`, analysis);
+            try {
+                this._setLastApplyFailure(idLabel, { code: 'dependency-missing', message: 'Prerequisite parcels unavailable or in conflict', missingIds: analysis.notLoaded });
+            } catch (_) { }
+            if (!suppress) {
+                this._showParentConflictModal({
+                    proposalId: idLabel,
+                    proposalTitle: proposalData.title || proposalData.name || idLabel,
+                    analysis,
+                    onApplyAnyway: () => this.applyProposal(idLabel, { ...options, applyAnyway: true }),
+                    onUnapplyAndRetry: async (conflictProposalId) => {
+                        await this.unapplyProposal(conflictProposalId, { skipConfirm: true });
+                        return this.applyProposal(idLabel, { ...options, applyAnyway: true });
+                    }
+                });
+            }
+            return { defer: true, parentFeatures: features, analysis };
+        }
+
+        if (needsDecision && applyAnyway) {
+            const skipped = analysis.notLoaded.length;
+            const overlapped = analysis.conflicts.reduce((n, c) => n + c.parcelIds.length, 0);
+            console.debug(`[${idLabel}] Applying anyway`, { skipped, overlapped });
+            if (typeof showEphemeralMessage === 'function' && !suppress && (skipped || overlapped)) {
+                const bits = [];
+                if (skipped) bits.push(`${skipped} unavailable parcel${skipped === 1 ? '' : 's'}`);
+                if (overlapped) bits.push(`overlapping ${overlapped} occupied parcel${overlapped === 1 ? '' : 's'}`);
+                showEphemeralMessage(`Applied ${bits.join(', ')}.`, 4000, 'info');
+            }
+        }
+
+        return { defer: false, parentFeatures: features, analysis };
     },
 
     /**
