@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!-- Vodič (na hrvatskom) za izradu prijedloga ceste/pruge, korak po korak, sa
+     slotovima za snimke zaslona. Statična stranica po uzoru na roadmap.html. -->
+<html lang="hr">
+
+<head>
+    <title>Kako izraditi prijedlog ceste/pruge — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Cesta / Pruga</h1>
+        <div class="sidebar-links">
+            <a href="kako-koristiti.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Sve upute
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-map"></i>
+                Natrag na aplikaciju
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Prijedlog ceste ili pruge</h2>
+                <p>
+                    Prijedlogom ceste/pruge crtaš koridor nove prometnice kroz parcele. Time se postojeće parcele
+                    presijecaju i nastaju novi blokovi parcela. Postupak ide kroz prozor <em>Kreiraj prijedlog</em>, a
+                    sam koridor crtaš u zasebnom prozoru <em>Ograničeni koridor</em>.
+                </p>
+            </div>
+
+            <ol class="steps">
+                <li class="step">
+                    <h3>Odaberi parcele na karti</h3>
+                    <p>
+                        Na karti odaberi parcele kroz koje će ići cesta. Za koridor parcele moraju biti
+                        <strong>susjedne</strong> — ako nisu, sustav će javiti
+                        <em>„Parcele moraju biti susjedne za crtanje ograničenog koridora.”</em>
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-01-odabir.png"
+                                alt="Odabrane parcele na karti" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Odabir susjednih parcela na karti.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Otvori prozor za izradu prijedloga</h3>
+                    <p>
+                        Klikni gumb <span class="ui-label">Kreiraj prijedlog</span>. Otvara se prozor naslova
+                        <span class="ui-label">Kreiraj prijedlog</span> u kojem je već prikazan tvoj autor
+                        (<span class="ui-label">Autor:</span>).
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-02-modal.png"
+                                alt="Prozor Kreiraj prijedlog" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Prozor „Kreiraj prijedlog”.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Odaberi cilj: Cesta/Pruga</h3>
+                    <p>
+                        Pod <span class="ui-label">Cilj prijedloga:</span> klikni
+                        <span class="ui-label">Cesta/Pruga</span>. Sustav automatski postavlja način stjecanja na
+                        <span class="ui-label">Preferirano djelomično stjecanje</span>.
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-03-cilj.png"
+                                alt="Odabir cilja Cesta/Pruga" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Odabir cilja „Cesta/Pruga”.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Otvori uređivanje geometrije</h3>
+                    <p>
+                        Pojavljuje se odjeljak <span class="ui-label">Geometrija</span> sa statusom
+                        <em>„Nema geometrije: definiraj geometriju”</em>. Klikni <span class="ui-label">Uredi</span> da
+                        otvoriš prozor za crtanje koridora.
+                    </p>
+                </li>
+
+                <li class="step">
+                    <h3>Prozor „Ograničeni koridor”</h3>
+                    <p>
+                        Otvara se prozor <span class="ui-label">Ograničeni koridor</span> s kartom i obrisom odabranih
+                        parcela. Na vrhu su dva prekidača:
+                    </p>
+                    <p>
+                        <strong>Način:</strong> <span class="ui-label">Cijela parcela</span> ili
+                        <span class="ui-label">Crtaj</span>. &nbsp;
+                        <strong>Tip:</strong> <span class="ui-label">Cesta</span> ili
+                        <span class="ui-label">Staza</span>.
+                    </p>
+                    <p>
+                        U načinu <span class="ui-label">Cijela parcela</span> koridor je cijeli obris odabranih
+                        parcela — ne moraš ništa crtati. Za precizniji koridor prebaci na
+                        <span class="ui-label">Crtaj</span>.
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-05-koridor.png"
+                                alt="Prozor Ograničeni koridor" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Prozor „Ograničeni koridor” s prekidačima načina i tipa.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Odaberi tip i (po želji) nacrtaj koridor</h3>
+                    <p>
+                        Odaberi <span class="ui-label">Cesta</span> ili <span class="ui-label">Staza</span>. Ako si u
+                        načinu <span class="ui-label">Crtaj</span>, pojavljuju se izbor širine i alati za crtanje:
+                    </p>
+                    <p>
+                        Klikaj po karti da postaviš točke koridora, a zatim klikni
+                        <span class="ui-label">Dovrši (F)</span>. Pogrešnu točku poništi s
+                        <span class="ui-label">Poništi (U)</span>. Uživo se prikazuju
+                        <span class="ui-label">Duljina</span> i <span class="ui-label">Površina</span>.
+                    </p>
+                    <div class="callout warn">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        U ovom prozoru neke su oznake još uvijek na engleskom: izbor širine
+                        (<em>Choose road width / Choose track width</em>) s gotovim širinama
+                        (<em>Alley ~7.5 m</em>, <em>Local ~10 m</em>, <em>Collector ~18 m</em>,
+                        <em>Main street ~26 m</em>, <em>Avenue ~40 m</em>, <em>Boulevard ~80 m</em>), širina nogostupa
+                        (<em>Sidewalk width</em>) i širina staze (<em>Track width</em>).
+                    </div>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-06-crtanje.png"
+                                alt="Crtanje koridora i izbor širine" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Izbor širine ceste i crtanje koridora na karti.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Potvrdi geometriju</h3>
+                    <p>
+                        Klikni <span class="ui-label">Gotovo</span>. Koridor se sprema i vraćaš se u prozor
+                        <em>Kreiraj prijedlog</em>, gdje status sad pokazuje
+                        <span class="ui-label">✔️ geometrija predana</span>.
+                    </p>
+                </li>
+
+                <li class="step">
+                    <h3>Popuni preostala polja</h3>
+                    <p>
+                        Dodaj <span class="ui-label">Opis:</span> prijedloga i, po želji,
+                        <span class="ui-label">Ponuda:</span> (iznos). Pod <span class="ui-label">Opcije:</span> možeš
+                        prijedlog učiniti uvjetnim, dati mu rok isteka, opadanje ponude ili depozit. U
+                        <span class="ui-label">Sažetak prijedloga</span> vidiš pogođene parcele, površinu i vlasnike.
+                    </p>
+                </li>
+
+                <li class="step">
+                    <h3>Pošalji prijedlog</h3>
+                    <p>
+                        Klikni <span class="ui-label">Kreiraj prijedlog</span>. Tijekom izrade gumb pokazuje
+                        <span class="ui-label">Kreiram...</span>. Gotovo — tvoj prijedlog ceste je stvoren.
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/cesta-09-gotovo.png"
+                                alt="Stvoreni prijedlog ceste na karti" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                        </div>
+                        <figcaption>Stvoreni prijedlog ceste prikazan na karti.</figcaption>
+                    </figure>
+                </li>
+            </ol>
+
+            <div class="callout tip">
+                <i class="fas fa-lightbulb"></i>
+                Nova cesta dijeli postojeće parcele i tako stvara nove <strong>blokove parcela</strong> s obje svoje
+                strane — to je temelj za daljnje prijedloge (zgrade, parkovi, reparcelacija).
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
