@@ -161,6 +161,11 @@
                 source: 'oss-wfs',
                 requiresBackend: true
             },
+            buildings: {
+                // Overture-Maps footprints + heights (overture_feature table, extruded
+                // server-side like Belgrade). 3D buildings load automatically in 3D mode.
+                source: 'overture'
+            },
             sidebar: {
                 // Zagreb-only datasets (city blocks, GUP roads, area monitor,
                 // 2D buildings WFS layer) stay off until ingested for Split.

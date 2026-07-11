@@ -18,6 +18,13 @@ export const OVERTURE_CITIES = {
         // heights come only from OSM tags, so most buildings fall back to floors×storey or default.
         floorHeightM: 3.2,   // assumed storey height when only num_floors is known
         defaultHeightM: 9    // last-resort height (~3 storeys) when neither height nor floors exist
+    },
+    split: {
+        // Same bbox the shared geodata ingests use (roads/buildings/water for the 3D sim).
+        bbox: [16.35, 43.46, 16.55, 43.56],
+        // Dalmatian stock is mostly 2–3 storey stone/masonry with ~3 m storeys.
+        floorHeightM: 3.0,
+        defaultHeightM: 8
     }
 };
 
