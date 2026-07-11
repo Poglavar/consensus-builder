@@ -583,7 +583,8 @@
                 "applying": "Primjenjivanje...",
                 "remove": "Ukloni s karte",
                 "share": "Podijeli prijedlog",
-                "copy": "Kopiraj u novi prijedlog"
+                "copy": "Kopiraj u novi prijedlog",
+                "drive": "Vozi ovom prugom"
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -2053,6 +2054,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primijeniti prijedlog zgrade, nedostaju prethodnici: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Nije moguće primijeniti prijedlog, nedostaju prethodnici: {{missing}}",
+            "proposal_conflict_title": "Sukob prijedloga — ista geografija",
+            "proposal_conflict_missing_title": "Nedostaju neke čestice",
+            "proposal_conflict_intro": "Za primjenu prijedloga \"{{title}}\" potrebne su čestice koje nisu dostupne:",
+            "proposal_conflict_overlaps": "Preklapa se s primijenjenim prijedlogom \"{{title}}\"",
+            "proposal_conflict_shares": "Dijeli {{count}} čestica s ovim prijedlogom.",
+            "proposal_conflict_shares_blocked": "Dijeli {{count}} čestica, ali se ne može samostalno poništiti — na njemu se temelje:",
+            "proposal_conflict_unapply_those_first": "Prvo poništite njih.",
+            "proposal_conflict_not_loaded": "{{count}} nadređenih čestica nije učitano. Primjena unatoč tome nastavit će se s dostupnim česticama.",
+            "proposal_conflict_unapply_continue": "Poništi i nastavi",
+            "proposal_conflict_unapplying": "Poništavanje…",
+            "proposal_conflict_apply_anyway": "Ipak primijeni",
+            "proposal_conflict_cancel": "Odustani",
+            "proposal_conflict_close": "Zatvori",
             "cannot_share_this_proposal_right_now": "Trenutačno nije moguće podijeliti ovaj prijedlog.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Primjena prijedloga ceste nije uspjela. Pregledaj prijedloge za detalje.",
             "failed_to_apply_shared_proposals": "Primjena podijeljenih prijedloga nije uspjela.",

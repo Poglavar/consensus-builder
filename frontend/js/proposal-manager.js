@@ -7135,53 +7135,66 @@ const ProposalManager = {
             const notLoaded = (analysis && Array.isArray(analysis.notLoaded)) ? analysis.notLoaded : [];
             const hasConflicts = conflicts.length > 0;
 
+            const t = (typeof getProposalI18nHelper === 'function')
+                ? getProposalI18nHelper()
+                : ((key, fallback) => fallback);
+            const plural = (n) => (n === 1 ? '' : 's');
             const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-            const conflictHtml = conflicts.map((c, i) => {
+            const conflictHtml = conflicts.map(c => {
                 const count = c.parcelIds.length;
-                const where = `${count} parcel${count === 1 ? '' : 's'}`;
+                const overlaps = esc(t('ephemeral.messages.proposal_conflict_overlaps', 'Overlaps applied proposal "{{title}}"', { title: c.title }));
                 if (c.canUnapplyCleanly) {
+                    const shares = esc(t('ephemeral.messages.proposal_conflict_shares', 'Shares {{count}} parcel{{suffix}} with this proposal.', { count, suffix: plural(count) }));
+                    const btnLabel = esc(t('ephemeral.messages.proposal_conflict_unapply_continue', 'Unapply it & continue'));
                     return `
-                        <div class="pc-item" style="border:1px solid #ffe0b2;background:#fff8f0;border-radius:8px;padding:12px;margin-bottom:8px;">
-                            <div style="font-weight:600;color:#333;margin-bottom:4px;">Overlaps applied proposal "${esc(c.title)}"</div>
-                            <div style="color:#666;font-size:13px;margin-bottom:10px;">Shares ${where} with this proposal.</div>
-                            <button class="pc-unapply" data-conflict-id="${esc(c.proposalId)}" data-idx="${i}" style="padding:7px 12px;border:1px solid #ef6c00;background:#fb8c00;color:#fff;border-radius:6px;cursor:pointer;font-size:13px;">Unapply it &amp; continue</button>
+                        <div class="parent-conflict-item">
+                            <div class="parent-conflict-item-title">${overlaps}</div>
+                            <div class="parent-conflict-item-detail">${shares}</div>
+                            <button type="button" class="btn btn-warning pc-unapply" data-conflict-id="${esc(c.proposalId)}">${btnLabel}</button>
                         </div>`;
                 }
+                const sharesBlocked = esc(t('ephemeral.messages.proposal_conflict_shares_blocked', "Shares {{count}} parcel{{suffix}}, but it can't be unapplied on its own — these are built on top of it:", { count, suffix: plural(count) }));
+                const hint = esc(t('ephemeral.messages.proposal_conflict_unapply_those_first', 'Unapply those first.'));
                 return `
-                    <div class="pc-item" style="border:1px solid #ffcdd2;background:#fff5f5;border-radius:8px;padding:12px;margin-bottom:8px;">
-                        <div style="font-weight:600;color:#333;margin-bottom:4px;">Overlaps applied proposal "${esc(c.title)}"</div>
-                        <div style="color:#666;font-size:13px;margin-bottom:6px;">Shares ${where}, but it can't be unapplied on its own — these are built on top of it:</div>
-                        <div style="color:#b71c1c;font-size:13px;">${c.blockedByTitles.map(t => `• ${esc(t)}`).join('<br>')}</div>
-                        <div style="color:#888;font-size:12px;margin-top:6px;">Unapply those first.</div>
+                    <div class="parent-conflict-item parent-conflict-item--blocked">
+                        <div class="parent-conflict-item-title">${overlaps}</div>
+                        <div class="parent-conflict-item-detail">${sharesBlocked}</div>
+                        <div class="parent-conflict-item-blocked-list">${c.blockedByTitles.map(bt => `• ${esc(bt)}`).join('<br>')}</div>
+                        <div class="parent-conflict-item-hint">${hint}</div>
                     </div>`;
             }).join('');
 
             const notLoadedHtml = notLoaded.length
-                ? `<div class="pc-item" style="border:1px solid #e0e0e0;background:#fafafa;border-radius:8px;padding:12px;margin-bottom:8px;color:#555;font-size:13px;">
-                        ${notLoaded.length} ancestor parcel${notLoaded.length === 1 ? ' is' : 's are'} not loaded. Applying anyway will proceed with the parcels that are present.
-                   </div>`
+                ? `<div class="parent-conflict-item parent-conflict-item--info">${esc(t('ephemeral.messages.proposal_conflict_not_loaded', '{{count}} ancestor parcel{{suffix}} not loaded. Applying anyway will proceed with the parcels that are present.', { count: notLoaded.length, suffix: plural(notLoaded.length) }))}</div>`
                 : '';
 
-            const title = hasConflicts ? 'Proposal conflict — same geography' : 'Some parcels are missing';
+            const title = hasConflicts
+                ? esc(t('ephemeral.messages.proposal_conflict_title', 'Proposal conflict — same geography'))
+                : esc(t('ephemeral.messages.proposal_conflict_missing_title', 'Some parcels are missing'));
+            const intro = esc(t('ephemeral.messages.proposal_conflict_intro', 'Applying "{{title}}" needs parcels that aren\'t available:', { title: proposalTitle }));
+            const closeLabel = esc(t('ephemeral.messages.proposal_conflict_close', 'Close'));
+            const cancelLabel = esc(t('ephemeral.messages.proposal_conflict_cancel', 'Cancel'));
+            const applyAnywayLabel = esc(t('ephemeral.messages.proposal_conflict_apply_anyway', 'Apply anyway'));
 
             const modal = document.createElement('div');
-            modal.className = 'parent-conflict-modal';
-            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:15000;';
+            // Reuse the shared modal shell (.create-proposal-modal + .proposal-modal-*); the extra
+            // .parent-conflict-modal class only scopes the body list-item styling.
+            modal.className = 'create-proposal-modal parent-conflict-modal';
             modal.innerHTML = `
-                <div style="background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.25);width:min(560px,92vw);max-height:82vh;display:flex;flex-direction:column;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #eee;">
-                        <h3 style="margin:0;font-size:17px;color:#333;">${esc(title)}</h3>
-                        <button type="button" class="pc-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                <div class="proposal-modal-content">
+                    <div class="proposal-modal-header">
+                        <h2>${title}</h2>
+                        <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg pc-close" aria-label="${closeLabel}">&times;</button>
                     </div>
-                    <div style="padding:16px 20px;overflow:auto;">
-                        <p style="margin:0 0 12px;color:#444;font-size:14px;">Applying "<strong>${esc(proposalTitle)}</strong>" needs parcels that aren't available:</p>
+                    <div class="proposal-modal-body">
+                        <p class="parent-conflict-intro">${intro}</p>
                         ${conflictHtml}
                         ${notLoadedHtml}
                     </div>
-                    <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;border-top:1px solid #eee;background:#fafafa;">
-                        <button class="pc-cancel" style="padding:8px 14px;border:1px solid #ccc;background:#fff;border-radius:6px;color:#333;cursor:pointer;">Cancel</button>
-                        <button class="pc-apply-anyway" style="padding:8px 14px;border:1px solid #1565c0;background:#1976d2;color:#fff;border-radius:6px;cursor:pointer;">Apply anyway</button>
+                    <div class="proposal-modal-footer">
+                        <button type="button" class="btn btn-secondary pc-cancel">${cancelLabel}</button>
+                        <button type="button" class="btn pc-apply-anyway">${applyAnywayLabel}</button>
                     </div>
                 </div>`;
 
@@ -7201,7 +7214,7 @@ const ProposalManager = {
                 btn.addEventListener('click', async () => {
                     const conflictId = btn.getAttribute('data-conflict-id');
                     btn.disabled = true;
-                    btn.textContent = 'Unapplying…';
+                    btn.textContent = t('ephemeral.messages.proposal_conflict_unapplying', 'Unapplying…');
                     close();
                     if (typeof onUnapplyAndRetry === 'function') {
                         try { await onUnapplyAndRetry(conflictId); } catch (err) { console.error('[parent-conflict] unapplyAndRetry failed', err); }
