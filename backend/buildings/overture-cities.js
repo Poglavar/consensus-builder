@@ -20,8 +20,9 @@ export const OVERTURE_CITIES = {
         defaultHeightM: 9    // last-resort height (~3 storeys) when neither height nor floors exist
     },
     split: {
-        // Same bbox the shared geodata ingests use (roads/buildings/water for the 3D sim).
-        bbox: [16.35, 43.46, 16.55, 43.56],
+        // Same bbox the shared geodata ingests use (roads/buildings/water for the 3D sim):
+        // the whole Trogir → Kaštela bay → Split/Solin conurbation, incl. Čiovo.
+        bbox: [16.20, 43.45, 16.55, 43.60],
         // Dalmatian stock is mostly 2–3 storey stone/masonry with ~3 m storeys.
         floorHeightM: 3.0,
         defaultHeightM: 8
