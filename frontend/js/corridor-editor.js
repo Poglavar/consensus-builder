@@ -5,8 +5,8 @@
 // road, change the parcel split, or invalidate a proposal derived from it. The total is shown, fixed,
 // and an edit the traffic lanes cannot absorb is refused rather than quietly widening the road.
 //
-// Proposals are immutable, so saving forks: the geometry rides across verbatim and only the cross-section
-// differs, recorded against the source with `copiedFromProposalId`.
+// Proposals are immutable. Editing a placed road therefore reopens its geometry as a drawing draft;
+// the user can keep editing it and explicitly create a replacement proposal later.
 
 let corridorEditorState = null;
 
@@ -210,26 +210,8 @@ function corridorEditorBindBody(body) {
     }
 }
 
-// showProposalDialog() refuses to open on an empty parcel selection, and the drawing tool normally seeds
-// it from the parcels the road crosses; forking from this panel has to do the same.
-//
-// An applied road has consumed its parents: they are off the map, replaced by the corridor and the
-// remainders, and after a reload they are not even in the layer index — so they cannot be selected. Its
-// children can. Which parcels the dialog happens to have selected does not matter here: the new
-// proposal's parents are read from the stored definition, not from the selection.
-async function corridorEditorSelectParcels(source) {
-    if (typeof reselectParcelsForCopy !== 'function' || typeof resolveCopyParcelLayer !== 'function') return false;
-    const parents = (source.parentParcelIds || []).map(String);
-    const children = (source.childParcelIds || []).map(String);
-
-    if (parents.length && typeof hydrateParcelsForCopy === 'function') await hydrateParcelsForCopy(parents);
-    const onMap = parents.filter(id => resolveCopyParcelLayer(id)).length ? parents : children;
-
-    return onMap.length ? reselectParcelsForCopy(onMap) > 0 : false;
-}
-
-// Saving forks. The geometry is untouched — same centerline, same segment ids, same polygon, same
-// parents — so createProposal() sees exactly the road that was drawn, wearing a different cross-section.
+// Apply returns a placed road to the normal drawing tool with its edited profile. No proposal exists
+// until the user explicitly presses Create there; cancelling the drawing leaves the source untouched.
 async function corridorEditorSave() {
     if (!corridorEditorState) return;
     if (corridorEditorState.mode === 'drawing') {
@@ -239,53 +221,18 @@ async function corridorEditorSave() {
         }
         return;
     }
-    const { source, profile, definition } = corridorEditorState;
-    const clone = (value) => { try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; } };
-
+    const { source, profile } = corridorEditorState;
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
-
-    if (!await corridorEditorSelectParcels(source)) {
-        console.warn('[corridorEditor] no parcels of the source road are on the map; cannot open the create dialog');
-        if (typeof showProposalAlertMessage === 'function') {
-            showProposalAlertMessage('corridor_parcels_unavailable', "Could not load this road's parcels. Switch to the city it was created in, then try again.");
-        }
-        return;
-    }
-
-    window.pendingRoadDrawingProposal = {
-        parentParcelIds: (source.parentParcelIds || []).map(String),
-        centerline: clone(corridorCenterlineOf(definition)),
-        segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
-        profile: clone(profile),
-        polygon: clone(definition.polygon),
-        polygonOrder: 'lnglat',
-        width: corridorProfileWidth(profile),
-        sidewalkWidth: definition.sidewalkWidth,
-        stats: clone(source.ownershipAndAcquisitionStats) || null,
-        metadata: { ...(definition.metadata || {}), mode: 'draw', type: 'road', isTrack: false, isRoad: true, isCorridor: true, source: 'corridor-editor' }
-    };
-
     corridorEditorClose();
-
-    showProposalDialog({
-        goal: 'road-track',
-        lockGoal: true,
-        acquisitionMode: source.acquisitionMode || 'partial-preferred',
-        lockAcquisition: true,
-        copySource: { proposalId: String(sourceKey), name: sourceName },
-        geometryPreset: {
-            statusText: `Same corridor as "${sourceName}", new cross-section`,
-            submitted: true,
-            selectedAction: 'upload',
-            disableButtons: true
-        },
-        prefill: {
-            name: `${sourceName} — new cross-section`,
-            description: source.description || '',
-            offer: Number(source.offer) > 0 ? Number(source.offer) : undefined
+    const reopened = typeof copyCorridorIntoNewProposal === 'function'
+        && await copyCorridorIntoNewProposal(source, sourceKey, sourceName, { profile });
+    if (!reopened) {
+        console.warn('[corridorEditor] could not reopen the placed road as a drawing', sourceKey);
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('corridor_drawing_unavailable', "Could not reopen this road's drawing. Switch to the city it was created in, then try again.");
         }
-    });
+    }
 }
 
 function corridorEditorOpenOverlay() {
@@ -305,7 +252,7 @@ function corridorEditorOpenOverlay() {
                     <div class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</div>
                     <div class="corridor-editor-subtitle">${drawing
                         ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
-                        : corridorEditorI18n('modal.corridor.subtitle', 'The corridor keeps its width, so the road does not move')}</div>
+                        : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then apply them to an editable road drawing')}</div>
                 </div>
                 <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
             </div>
@@ -318,7 +265,7 @@ function corridorEditorOpenOverlay() {
                 <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
                     ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
-                    : corridorEditorI18n('modal.corridor.save', 'Save as new proposal')}</button>
+                    : corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')}</button>
             </div>
         </div>
     `;

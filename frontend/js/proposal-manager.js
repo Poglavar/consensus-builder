@@ -946,7 +946,7 @@ function _seedSyntheticCountersFromExisting(counters, proposalId, token) {
             props.rootParcelNumber = rootNumber;
         }
 
-        const key = `${rootNumber || ''}__${rootId || ''}`;
+        const key = syntheticParcelAllocatorKey(rootId, rootNumber);
 
         let nextValue = 1;
         const storedIndex = Number(props.syntheticIndex || props.synthetic_index);
@@ -1030,7 +1030,7 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         }
 
         if (index === null) {
-            const key = `${rootNumber || ''}__${rootId || ''}`;
+            const key = syntheticParcelAllocatorKey(rootId, rootNumber);
             let state = counters.get(key);
             if (!state) {
                 state = { nextIndex: 1 };
@@ -1122,7 +1122,7 @@ class Proposal {
             };
         };
 
-        const getAllocatorKey = (rootNumber, rootParcelId) => `${rootNumber}__${rootParcelId}`;
+        const getAllocatorKey = (rootNumber, rootParcelId) => syntheticParcelAllocatorKey(rootParcelId, rootNumber);
 
         const getNextIdentity = (rootNumber, rootParcelId) => {
             if (!rootNumber || !rootParcelId) {
@@ -2003,7 +2003,7 @@ const ProposalManager = {
                 };
             };
 
-            const getAllocatorKey = (rootNumber, rootParcelId) => `${rootNumber}__${rootParcelId}`;
+            const getAllocatorKey = (rootNumber, rootParcelId) => syntheticParcelAllocatorKey(rootParcelId, rootNumber);
 
             const getNextIdentity = (rootNumber, rootParcelId) => {
                 if (!rootNumber || !rootParcelId) {
@@ -2446,6 +2446,30 @@ const ProposalManager = {
         return { ok: true, missing: [] };
     },
 
+    _supersedeCopiedRoadSource(proposalId, proposalData) {
+        if (typeof supersedeCopiedRoadSource !== 'function') return null;
+        const source = supersedeCopiedRoadSource(proposalData, proposalId, id => _getProposalRecord(id));
+        if (!source) return null;
+        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+        const sourceName = source.title || source.name || source.proposalName || source.proposalId || 'the previous road';
+        const message = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+            ? window.i18n.t('ephemeral.messages.road_source_incorporated', { name: sourceName })
+            : `Applied the combined road and removed “${sourceName}” from the map.`;
+        try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'success'); } catch (_) { }
+        console.info('[ProposalManager] Incorporated copied road source into replacement', {
+            sourceProposalId: source.proposalId,
+            replacementProposalId: proposalId
+        });
+        return source;
+    },
+
+    _restoreSupersededRoadSources(proposalId, proposalData) {
+        if (typeof restoreSupersededRoadSources !== 'function') return [];
+        const restored = restoreSupersededRoadSources(proposalData, proposalId, id => _getProposalRecord(id));
+        if (restored.length && typeof proposalStorage.save === 'function') proposalStorage.save();
+        return restored;
+    },
+
     async applyProposal(proposalId, options = {}) {
         const safeId = _normalizeProposalId(proposalId) || '';
         const applyOptions = options || {};
@@ -2461,6 +2485,22 @@ const ProposalManager = {
         if (!proposalData) {
             console.warn(`[ProposalManager.applyProposal] Proposal not found: ${safeId}`);
             return false;
+        }
+
+        // A copied road that has been incorporated into an applied replacement is deliberately parked:
+        // applying it as well would paint the same corridor twice. Removing the replacement restores it.
+        if (typeof activeRoadSuperseder === 'function') {
+            const superseder = activeRoadSuperseder(proposalData, id => _getProposalRecord(id));
+            if (superseder) {
+                const replacementName = superseder.title || superseder.name || superseder.proposalName || superseder.proposalId || 'the combined road';
+                const message = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+                    ? window.i18n.t('ephemeral.messages.road_source_included_in_replacement', { name: replacementName })
+                    : `This road is included in “${replacementName}”. Remove the combined road from the map before applying this one.`;
+                try { this._setLastApplyFailure(safeId, message); } catch (_) { }
+                try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+                try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'warning'); } catch (_) { }
+                return false;
+            }
         }
 
         // Check if already applied to prevent duplicate applies
@@ -2607,6 +2647,7 @@ const ProposalManager = {
         });
 
         if (result) {
+            if (goalKey === 'road-track') this._supersedeCopiedRoadSource(safeId, proposalData);
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
         }
         return result;
@@ -4902,6 +4943,7 @@ const ProposalManager = {
         if (allChildIds.length === 0) {
             roadProposal.status = 'unapplied';
             proposalData.status = 'Active';
+            this._restoreSupersededRoadSources(proposalId, proposalData);
             proposalStorage.save();
             console.warn('[_unapplyProposalConfirmed] No child parcel ids resolved; skipping removal', { proposalId, proposalHasChildIds: Array.isArray(proposalData.childParcelIds) && proposalData.childParcelIds.length });
             return;
@@ -4994,6 +5036,7 @@ const ProposalManager = {
 
         roadProposal.status = 'unapplied';
         proposalData.status = 'Active'; // Update overall proposal status
+        this._restoreSupersededRoadSources(proposalId, proposalData);
         proposalStorage.save();
 
         const removedParcels = allChildIds.length;
@@ -6168,6 +6211,9 @@ const ProposalManager = {
 
             const styleFn = (feat) => {
                 const isRoad = feat?.properties?.isRoad;
+                if (isRoad && feat?.properties?.isCorridor === true && window.corridorParcelStyle) {
+                    return window.corridorParcelStyle;
+                }
                 return isRoad ? window.roadStyle : window.normalStyle;
             };
 
@@ -6458,7 +6504,9 @@ const ProposalManager = {
                 // Regular road or parcel - use normal styling
                 let style;
                 if (useNormalStyle) {
-                    style = feature.properties.isRoad ? window.roadStyle : window.normalStyle;
+                    style = feature.properties.isRoad
+                        ? ((feature.properties.isCorridor === true && window.corridorParcelStyle) ? window.corridorParcelStyle : window.roadStyle)
+                        : window.normalStyle;
                 } else {
                     // Use different styles for roads vs parcels in proposals
                     style = feature.properties.isRoad ? proposalRoadStyle : proposalParcelStyle;

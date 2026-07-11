@@ -24,6 +24,14 @@
         if (!parcelId) return;
         const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
 
+        // Applied corridor parcels are both parcels and proposal surfaces. Remember the proposal now;
+        // after the ordinary parcel-selection flow finishes, open its details compactly as well.
+        const appliedRoadProposal = (typeof global.appliedRoadProposalForFeature === 'function')
+            ? global.appliedRoadProposalForFeature(feature, id => (
+                typeof global.getProposalByIdOrHash === 'function' ? global.getProposalByIdOrHash(id) : null
+            ))
+            : null;
+
         const proposalDetailsPanel = global.document.getElementById('proposal-details-panel');
         if (proposalDetailsPanel && proposalDetailsPanel.classList.contains('visible')) {
             if (typeof global.hideProposalDetailsPanel === 'function') {
@@ -217,6 +225,15 @@
         }
 
         global.document.getElementById('parcel-info-panel').classList.add('visible');
+
+        if (appliedRoadProposal && typeof global.selectAndHighlightProposal === 'function') {
+            const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedRoadProposal))
+                || appliedRoadProposal.proposalId
+                || feature.properties.ancestorProposal
+                || feature.properties.proposalId;
+            global.__openProposalDetailsCollapsed = true;
+            global.selectAndHighlightProposal(proposalKey, parcelId, false, true);
+        }
         L.DomEvent.stopPropagation(e);
 
         try { if (typeof global.updateBlockButtonStates === 'function') global.updateBlockButtonStates(); } catch (_) { }

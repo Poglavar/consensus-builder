@@ -5,16 +5,30 @@
 // appearance comes from CORRIDOR_LANE_TYPES, so retexturing a lane type retextures all three at once.
 
 const CORRIDOR_STRIPS_PANE = 'corridorStripsPane';
+const CORRIDOR_HIT_PANE = 'corridorHitPane';
 
 function ensureCorridorStripsPane() {
     if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
     let pane = map.getPane(CORRIDOR_STRIPS_PANE);
     if (!pane && typeof map.createPane === 'function') {
         pane = map.createPane(CORRIDOR_STRIPS_PANE);
-        if (pane && pane.style) {
-            pane.style.zIndex = '620'; // above parcels, below parks and proposal highlights
-            pane.style.pointerEvents = 'none'; // the corridor parcel underneath stays clickable
-        }
+    }
+    if (pane && pane.style) {
+        // Proposal/parcel shading lives at 650. The designed road surface must remain legible above
+        // that translucent fill, while proposal hover outlines and labels (660/670) stay on top.
+        pane.style.zIndex = '655';
+        pane.style.pointerEvents = 'none'; // enforce this even when another renderer created the pane first
+    }
+    return pane;
+}
+
+function ensureCorridorHitPane() {
+    if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+    let pane = map.getPane(CORRIDOR_HIT_PANE);
+    if (!pane && typeof map.createPane === 'function') pane = map.createPane(CORRIDOR_HIT_PANE);
+    if (pane && pane.style) {
+        pane.style.zIndex = '656'; // immediately above the visual strips; transparent paths only
+        pane.style.pointerEvents = 'auto';
     }
     return pane;
 }
@@ -149,6 +163,57 @@ function corridorProfileForRender(proposal, definition) {
     return corridorProfileOf(definition);
 }
 
+function forwardAppliedCorridorClick(proposal, event) {
+    if (!proposal) return;
+    const childIds = Array.from(new Set([
+        ...(Array.isArray(proposal.roadProposal && proposal.roadProposal.childParcelIds) ? proposal.roadProposal.childParcelIds : []),
+        ...(Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [])
+    ].map(String).filter(Boolean)));
+    const roadLayer = childIds
+        .map(id => (typeof resolveParcelLayerById === 'function' ? resolveParcelLayerById(id) : null))
+        .find(layer => layer && layer.feature && layer.feature.properties
+            && layer.feature.properties.isRoad === true && layer.feature.properties.isCorridor === true);
+
+    if (roadLayer && typeof window.onParcelClick === 'function') {
+        window.onParcelClick({
+            target: roadLayer,
+            latlng: event && event.latlng,
+            layerPoint: event && event.layerPoint,
+            containerPoint: event && event.containerPoint,
+            originalEvent: event && event.originalEvent
+        });
+        return;
+    }
+
+    // A restored/server proposal may be visible before its child parcel has hydrated. Proposal details
+    // are still useful; the full parcel click path takes over as soon as the child layer exists.
+    const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
+    if (proposalKey && typeof selectAndHighlightProposal === 'function') {
+        window.__openProposalDetailsCollapsed = true;
+        selectAndHighlightProposal(proposalKey, childIds[0] || null, false, true);
+    }
+}
+
+function renderAppliedCorridorHitTargets(strips, proposal, group) {
+    if (!Array.isArray(strips) || !proposal || !group) return;
+    ensureCorridorHitPane();
+    strips.forEach(strip => {
+        (strip.polygons || []).forEach(polygon => {
+            L.polygon(polygon, {
+                color: '#000000',
+                weight: 0,
+                opacity: 0,
+                fillColor: '#000000',
+                fillOpacity: 0.001,
+                interactive: true,
+                bubblingMouseEvents: false,
+                pane: CORRIDOR_HIT_PANE,
+                className: 'corridor-applied-hit-target'
+            }).on('click', event => forwardAppliedCorridorClick(proposal, event)).addTo(group);
+        });
+    });
+}
+
 function isAppliedCorridorProposal(proposal) {
     if (!proposal) return false;
     const definition = corridorProposalDefinition(proposal);
@@ -189,6 +254,7 @@ function refreshAppliedCorridorStrips() {
         const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions });
         if (group) {
             group.addTo(layer);
+            renderAppliedCorridorHitTargets(strips, proposal, layer);
             drawn += 1;
         }
     });

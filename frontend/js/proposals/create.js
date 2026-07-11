@@ -1301,6 +1301,13 @@ async function createProposal() {
                         };
 
                         const screenshotBounds = buildBoundsFromParcelPolygons(parcelPolygons, bounds);
+                        // A road proposal's image is about the designed corridor, not the much larger
+                        // set of cadastral parents it crosses. The modal preview already uses this
+                        // geometry; keep the final stored/minted capture on the same source of truth.
+                        const screenshotGeometry = resolveCorridorScreenshotGeometry(proposal, combinedPolygon);
+                        const screenshotPolygon = screenshotGeometry.polygon;
+                        const screenshotPolygonOrder = screenshotGeometry.polygonOrder;
+                        const screenshotFitToPolygonOnly = screenshotGeometry.fitToPolygonOnly;
 
                         console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
 
@@ -1329,12 +1336,15 @@ async function createProposal() {
                             if (!window.MapScreenshot?.captureViaTileStitch) return null;
                             try {
                                 const dataUrl = await window.MapScreenshot.captureViaTileStitch({
-                                    polygon: combinedPolygon,
+                                    polygon: screenshotPolygon,
                                     parcelPolygons: parcelPolygons,
                                     padding: 0.12,
                                     bounds: screenshotBounds,
                                     zoom: 19,
-                                    badge: goalBadge
+                                    badge: goalBadge,
+                                    polygonOrder: screenshotPolygonOrder,
+                                    parcelPolygonOrder: 'auto',
+                                    fitToPolygonOnly: screenshotFitToPolygonOnly
                                 });
                                 const bytes = computeByteSize(dataUrl);
                                 console.debug('[createProposal] Tile stitch capture size:', bytes, 'bytes');
@@ -1654,6 +1664,11 @@ async function createProposal() {
         }
         const storedForOnchain = proposalStorage.getProposal(proposalId);
         const storedProposalId = storedForOnchain?.proposalId || proposal.proposalId || proposalId;
+        // A geometry draft survives modal closes and failed saves. Only a successfully persisted
+        // corridor proposal consumes it.
+        if (proposal.goal === 'road-track' && typeof clearActiveCorridorDraft === 'function') {
+            clearActiveCorridorDraft();
+        }
 
         // Update stored proposal with on-chain data if available
         if (onchainResult) {

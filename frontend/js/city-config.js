@@ -826,7 +826,24 @@
             return false;
         }
 
-        if (requireConfirmation) {
+        let draftDecisionHandled = false;
+        const activeDraft = typeof window.getActiveCorridorDraft === 'function'
+            ? window.getActiveCorridorDraft()
+            : null;
+        if (activeDraft && String(activeDraft.cityId || '') === String(currentCityId || '')
+            && typeof window.guardActiveCorridorDraft === 'function') {
+            const guarded = await window.guardActiveCorridorDraft('city', { allowKeep: true });
+            if (!guarded.proceed) {
+                if (typeof updateStatus === 'function') updateStatus('City change cancelled');
+                return false;
+            }
+            draftDecisionHandled = true;
+            if (typeof window.allowCorridorDraftUnloadOnce === 'function') {
+                window.allowCorridorDraftUnloadOnce();
+            }
+        }
+
+        if (requireConfirmation && !draftDecisionHandled) {
             const confirmFn = window.showStyledConfirm || showStyledConfirm;
             // Each city keeps its own local store, so switching costs nothing but a reload — the
             // city you leave is exactly as you left it when you return.
@@ -1148,4 +1165,3 @@
         applyFeatureVisibility
     };
 })();
-

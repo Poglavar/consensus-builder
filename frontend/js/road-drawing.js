@@ -362,6 +362,77 @@ function getRoadDrawingProfile() {
     return normalized ? { strips: normalized.strips.map(strip => ({ ...strip })) } : null;
 }
 
+function currentCorridorDraftCityId() {
+    try {
+        return window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function'
+            ? window.CityConfigManager.getCurrentCityId()
+            : null;
+    } catch (_) { return null; }
+}
+
+function updateRoadDraftStatus(saved) {
+    const status = document.getElementById('roadDraftStatus');
+    if (status) status.hidden = saved !== true;
+}
+
+function draftLatLng(point) {
+    if (!point) return null;
+    const lat = Number(point.lat !== undefined ? point.lat : point[1]);
+    const lng = Number(point.lng !== undefined ? point.lng : point[0]);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+}
+
+// Geometry tools own their live mutable state; this is the single snapshot boundary that turns it
+// into a small, reload-safe draft. Preview cursor geometry is deliberately excluded.
+function saveCurrentCorridorDrawingDraft(kind) {
+    if (typeof saveActiveCorridorDraft !== 'function') return null;
+    let seed = null;
+    if (kind === 'track') {
+        const centerline = (trackPoints || []).map(draftLatLng).filter(Boolean);
+        if (centerline.length < 2) return null;
+        seed = {
+            centerline,
+            width: trackWidth,
+            trackSpeed,
+            trackMinRadius: trackMinCurvatureRadius
+        };
+    } else {
+        const entries = getAllRoadSegments(true)
+            .map((segment, index) => ({
+                points: (segment || []).map(draftLatLng).filter(Boolean),
+                id: roadSegmentIds[index] || null
+            }))
+            .filter(entry => entry.points.length >= 2);
+        if (!entries.length) return null;
+        seed = {
+            centerline: entries.map(entry => entry.points),
+            segmentIds: entries.map(entry => entry.id),
+            profile: getRoadDrawingProfile(),
+            width: roadWidth,
+            sidewalkWidth: roadSidewalkWidth
+        };
+    }
+
+    const copySource = window.pendingRoadCopySource || null;
+    const saved = saveActiveCorridorDraft({
+        kind,
+        cityId: currentCorridorDraftCityId(),
+        seed,
+        copySource,
+        sourceProposalId: copySource && copySource.proposalId ? String(copySource.proposalId) : null
+    });
+    updateRoadDraftStatus(!!saved);
+    return saved;
+}
+
+function restoreCorridorDraftIntoPending(draft) {
+    if (!draft || !draft.seed) return false;
+    if (draft.kind === 'track') window.pendingTrackDrawingSeed = draft.seed;
+    else window.pendingRoadDrawingSeed = draft.seed;
+    window.pendingRoadCopySource = draft.copySource || null;
+    return true;
+}
+
 // Apply a live editor profile to the drawing. A total-width change rebuilds the footprint and derives
 // affected parcels/stats again; a profile-only change follows the same path but leaves the footprint.
 function setRoadDrawingProfile(profile) {
@@ -378,6 +449,7 @@ function setRoadDrawingProfile(profile) {
     recomputeLockedParcelsFromPolygon(polygon, false);
     updateRoadInfoPanel();
     updateRoadCrossSectionButton();
+    saveCurrentCorridorDrawingDraft('road');
     return true;
 }
 
@@ -491,6 +563,7 @@ function seedRoadDrawing(seed) {
     recomputeLockedParcelsFromPolygon(polygon, false);
     updateRoadInfoPanel();
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('road');
     return true;
 }
 
@@ -532,6 +605,7 @@ function seedTrackDrawing(seed) {
     recomputeLockedParcelsFromPolygon(trackPolygon, true);
     updateRoadInfoPanel();
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('track');
     return true;
 }
 
@@ -1094,7 +1168,60 @@ function setRoadPanelLabelsForMode(mode = 'road') {
     if (crossSectionButton) crossSectionButton.style.display = isTrack ? 'none' : '';
 }
 
-// Toggle road drawing tool
+async function requestCorridorDrawingTool(kind) {
+    if (kind === 'road' && roadDrawingMode) return cancelRoadDrawing();
+    if (kind === 'track' && trackDrawingMode) return cancelTrackDrawing();
+
+    const draft = typeof getActiveCorridorDraft === 'function' ? getActiveCorridorDraft() : null;
+    const sameCity = draft && String(draft.cityId || '') === String(currentCorridorDraftCityId() || '');
+    if (draft && sameCity && draft.kind === kind) {
+        if (roadDrawingMode) exitRoadDrawingMode();
+        if (trackDrawingMode) exitTrackDrawingMode();
+        restoreCorridorDraftIntoPending(draft);
+        if (kind === 'track') toggleTrackDrawTool();
+        else toggleRoadDrawTool();
+        return true;
+    }
+
+    if (draft) {
+        const guarded = await guardActiveCorridorDraft('replace', { allowKeep: false });
+        if (!guarded.proceed) return false;
+    }
+    if (roadDrawingMode) exitRoadDrawingMode();
+    if (trackDrawingMode) exitTrackDrawingMode();
+    if (kind === 'track') toggleTrackDrawTool();
+    else toggleRoadDrawTool();
+    return true;
+}
+
+async function startSeededCorridorDrawing(kind, seed, copySource) {
+    if (!seed) return false;
+    const draft = typeof getActiveCorridorDraft === 'function' ? getActiveCorridorDraft() : null;
+    if (draft) {
+        const guarded = await guardActiveCorridorDraft('replace', { allowKeep: false });
+        if (!guarded.proceed) return false;
+    }
+    if (roadDrawingMode) exitRoadDrawingMode();
+    if (trackDrawingMode) exitTrackDrawingMode();
+    window.pendingRoadCopySource = copySource || null;
+    if (kind === 'track') {
+        window.pendingTrackDrawingSeed = seed;
+        toggleTrackDrawTool();
+    } else {
+        window.pendingRoadDrawingSeed = seed;
+        toggleRoadDrawTool();
+    }
+    return true;
+}
+
+if (typeof window !== 'undefined') {
+    window.requestRoadDrawTool = () => requestCorridorDrawingTool('road');
+    window.requestTrackDrawTool = () => requestCorridorDrawingTool('track');
+    window.startSeededCorridorDrawing = startSeededCorridorDrawing;
+}
+
+// Toggle road drawing tool. User-facing entry points go through requestRoadDrawTool(), which restores
+// or guards the active draft; this function remains the synchronous low-level activator.
 function toggleRoadDrawTool() {
     // Gate: require personalized profile to draw roads (which create proposals)
     if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
@@ -1388,7 +1515,7 @@ function handleRoadDrawHotkey(event) {
 
     if (typeof toggleRoadDrawTool !== 'function') return;
     event.preventDefault();
-    toggleRoadDrawTool();
+    requestRoadDrawTool();
 }
 
 function attachRoadDrawHotkey() {
@@ -1485,6 +1612,7 @@ function undoLastRoadSegment() {
 
     // Update undo button state
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('road');
 }
 
 // Handle road width selection change
@@ -1674,6 +1802,7 @@ function handleRoadClick(e) {
             updateStatus('Continuing this segment — click to add points, press F to finish, C to create');
             updateRoadInfoPanel();
             updateUndoButtonState();
+            saveCurrentCorridorDrawingDraft('road');
             return;
         }
     }
@@ -1806,6 +1935,7 @@ function handleRoadClick(e) {
 
     // Update undo button state
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('road');
 }
 
 // Handle road mouse movement for preview
@@ -1976,6 +2106,7 @@ function exitRoadDrawingMode() {
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');
+    updateRoadDraftStatus(false);
 }
 
 // Legacy road polygon builder using per-segment rectangles and wedges
@@ -3917,15 +4048,17 @@ function finishRoadSegment() {
     if (statusElement) {
         updateStatus('Segment finished. Click to start another segment or press C to create.');
     }
+    saveCurrentCorridorDrawingDraft('road');
 }
 
 // Unified cancel function for road or track drawing
-function cancelRoadOrTrackDrawing() {
+async function cancelRoadOrTrackDrawing() {
     if (trackDrawingMode) {
-        cancelTrackDrawing();
+        return cancelTrackDrawing();
     } else if (roadDrawingMode) {
-        cancelRoadDrawing();
+        return cancelRoadDrawing();
     }
+    return false;
 }
 
 // Function to finish road drawing
@@ -4127,23 +4260,13 @@ async function finishRoadDrawing() {
 }
 
 // Cancel road drawing
-function cancelRoadDrawing() {
-    // Re-enable buttons if they were disabled
-    const finishRoadButton = document.getElementById('finishRoadButton');
-    if (finishRoadButton) finishRoadButton.disabled = false;
-
-    // Clean up road name input and create button if they exist
-    const roadInfoPanel = document.getElementById('road-info-panel');
-    if (roadInfoPanel) {
-        const roadNameSection = document.getElementById('road-name-section');
-        const createButtonSection = document.getElementById('road-create-button-section');
-
-        if (roadNameSection) roadInfoPanel.removeChild(roadNameSection);
-        if (createButtonSection) roadInfoPanel.removeChild(createButtonSection);
-    }
-
-    resetRoadDrawing();
-    toggleRoadDrawTool();
+async function cancelRoadDrawing() {
+    const guarded = typeof guardActiveCorridorDraft === 'function'
+        ? await guardActiveCorridorDraft('cancel', { allowKeep: true })
+        : { proceed: true };
+    if (!guarded.proceed) return false;
+    exitRoadDrawingMode();
+    return true;
 }
 
 // Reset road drawing variables and state
@@ -6412,7 +6535,7 @@ function toggleTrackDrawTool() {
         setRoadPanelLabelsForMode('track');
         // Deactivate road drawing if active
         if (roadDrawingMode) {
-            toggleRoadDrawTool();
+            exitRoadDrawingMode();
         }
 
         closeProposalDetailsForDrawing();
@@ -6663,6 +6786,7 @@ function undoLastTrackSegment() {
     updateRoadAcquiringDifficulty(trackAffectedParcels);
     updateRoadInfoPanel();
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('track');
 }
 
 // Handle track drawing clicks
@@ -6674,6 +6798,7 @@ function reverseTrackDirection() {
     trackMarkers.reverse();
     if (trackCenterline) trackCenterline.setLatLngs(trackPoints);
     updateStatus('Continuing the track from its other end');
+    saveCurrentCorridorDrawingDraft('track');
 }
 
 function handleTrackClick(e) {
@@ -6844,6 +6969,7 @@ function handleTrackClick(e) {
 
     // Enable undo once we have at least one segment
     updateUndoButtonState();
+    saveCurrentCorridorDrawingDraft('track');
 }
 
 // Handle track mouse movement for preview
@@ -7447,9 +7573,13 @@ async function finishTrackDrawing() {
 }
 
 // Cancel track drawing
-function cancelTrackDrawing() {
-    resetTrackDrawing();
-    toggleTrackDrawTool();
+async function cancelTrackDrawing() {
+    const guarded = typeof guardActiveCorridorDraft === 'function'
+        ? await guardActiveCorridorDraft('cancel', { allowKeep: true })
+        : { proceed: true };
+    if (!guarded.proceed) return false;
+    exitTrackDrawingMode();
+    return true;
 }
 
 // Exit track drawing mode
@@ -7498,6 +7628,7 @@ function exitTrackDrawingMode() {
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');
+    updateRoadDraftStatus(false);
 }
 
 // Reset track drawing variables

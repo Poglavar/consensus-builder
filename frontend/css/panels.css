@@ -151,6 +151,20 @@ with a width of 400px, and a height of half of the map height minus 5px.
     min-height: 36px;
 }
 
+#road-drawing-controls .road-draft-status {
+    align-items: center;
+    color: #52606d;
+    display: flex;
+    font-size: 12px;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+#road-drawing-controls .road-draft-status[hidden] {
+    display: none;
+}
+
 /* Parcel info panel now uses .panel-header structure */
 
 #parcel-info-panel .metric-group {

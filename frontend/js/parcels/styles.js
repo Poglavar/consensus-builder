@@ -45,6 +45,16 @@
         weight: 1,
         dashArray: null
     };
+    const corridorParcelStyle = {
+        // The cross-section renderer supplies the visible asphalt, paths and verges. This underlying
+        // structural parcel only needs a quiet footprint for edges the lane geometry does not cover.
+        fillColor: '#94a3b8',
+        fillOpacity: 0.12,
+        color: '#64748b',
+        opacity: 0.55,
+        weight: 1,
+        dashArray: null
+    };
     const trackStyle = {
         color: '#000000',
         weight: 2,
@@ -121,6 +131,13 @@
                 return { ...layer._trackStyle };
             }
             return { ...trackStyle };
+        }
+
+        const corridorRoadFlag = !!(layer && layer.feature && layer.feature.properties
+            && layer.feature.properties.isCorridor === true
+            && layer.feature.properties.isRoad === true);
+        if (corridorRoadFlag) {
+            return { ...corridorParcelStyle };
         }
 
         // Check for road (tracks have isRoad=false, so no conflict)
@@ -396,6 +413,7 @@
     global.translateParcelText = translateParcelText;
     global.showParcelAlert = showParcelAlert;
     global.roadStyle = roadStyle;
+    global.corridorParcelStyle = corridorParcelStyle;
     global.trackStyle = trackStyle;
     global.normalStyle = normalStyle;
     global.adParcelStyle = adParcelStyle;
@@ -409,4 +427,3 @@
     global.refreshParcelStylesForAppliedProposals = refreshParcelStylesForAppliedProposals;
     global.parcelsWithAppliedSpatialProposals = parcelsWithAppliedSpatialProposals;
 })(typeof window !== 'undefined' ? window : globalThis);
-

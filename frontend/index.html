@@ -1053,6 +1053,10 @@
                     <i class="fas fa-road" aria-hidden="true"></i>
                     <span data-i18n-key="panel.road.crossSectionButton">Edit cross-section</span><span class="road-cross-section-width"></span>
                 </button>
+                <div id="roadDraftStatus" class="road-draft-status" hidden>
+                    <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
+                    <span data-i18n-key="panel.road.draftAutosaved">Draft autosaved locally</span>
+                </div>
             </div>
 
             <!-- Road width selector (shown when drawing) -->
@@ -1296,6 +1300,7 @@
             'js/proposals/layer-render.js',
             'js/proposals/details-panel.js',
             'js/proposals/create.js',
+            'js/corridor-draft.js',
             'js/proposals/copy.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
@@ -1309,6 +1314,8 @@
             'js/parcel-coverage-debug.js',
             'js/ui-helpers.js',
             'js/lens.js',
+            'js/road-supersession.js',
+            'js/synthetic-parcel-identity.js',
             'js/proposal-manager.js',
             'js/reparcellization.js',
             'js/financials.js',

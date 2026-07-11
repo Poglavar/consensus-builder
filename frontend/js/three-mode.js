@@ -2957,7 +2957,15 @@
     }
 
     function closeAllPanelsAndModalsFor3D() {
-        try { typeof hideParcelInfoPanel === 'function' && hideParcelInfoPanel(); } catch (_) { }
+        // `hideParcelInfoPanel` in this module belongs to the Three.js overlay. Explicitly call the
+        // 2D parcel-panel owner as well; otherwise its identically named local function shadows the
+        // global closer and the Leaflet Parcel Info panel remains visible over 3D.
+        try {
+            const hideLeafletParcelInfo = window.Parcels?.uiParcelPanel?.hideParcelInfoPanel
+                || window.hideParcelInfoPanel;
+            if (typeof hideLeafletParcelInfo === 'function') hideLeafletParcelInfo();
+        } catch (_) { }
+        try { hideParcelInfoPanel(); } catch (_) { }
         try { typeof hideProposalDetailsPanel === 'function' && hideProposalDetailsPanel(); } catch (_) { }
         try { typeof hideBlockInfo === 'function' && hideBlockInfo(); } catch (_) { }
         try { typeof hideRoadInfoPanel === 'function' && hideRoadInfoPanel(); } catch (_) { }
@@ -3415,4 +3423,3 @@
     // Initial paint: mark 2D as the active mode on load.
     updateModeButtonStates();
 })();
-

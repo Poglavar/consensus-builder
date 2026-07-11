@@ -158,6 +158,16 @@ function isCantonModeActive() {
 }
 const CANTON_CHAIN_OPTION = { chainIdHex: 'canton', chainIdDec: null, label: 'Canton (DevNet)', tooltip: 'Canton DevNet — custodial, no wallet needed', isKnownNetwork: true };
 
+function getNoNetworkChainOption() {
+    return {
+        chainIdHex: 'none',
+        chainIdDec: null,
+        label: translateUM('wallet.noNetwork', 'No network'),
+        tooltip: translateUM('wallet.noNetworkHint', 'Disconnect wallets and leave the active chain mode.'),
+        isKnownNetwork: true
+    };
+}
+
 function isSolanaWalletActive() {
     const wm = window.solanaWalletManager;
     if (!wm || typeof wm.getState !== 'function') return false;
@@ -277,6 +287,9 @@ function getChainIconMarkup(chainId) {
     const normalized = normalizeChainId(chainId);
     if (!normalized) {
         return '<i class="fas fa-link"></i>';
+    }
+    if (normalized === 'none') {
+        return '<i class="fas fa-unlink"></i>';
     }
     if (typeof normalized === 'string' && normalized.startsWith('solana')) {
         return '<svg width="16" height="16" viewBox="0 0 128 128" style="vertical-align:middle;display:inline-block"><defs><linearGradient id="sol-g" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#9945FF"/><stop offset="100%" stop-color="#14F195"/></linearGradient></defs><rect width="128" height="128" rx="24" fill="url(#sol-g)"/><path d="M36 82h42l14-14H50L36 82zm0-22h56l14-14H50L36 60zm56 30H50L36 106h56l14-14z" fill="#fff"/></svg>';
@@ -1821,7 +1834,7 @@ async function getAvailableChainOptions() {
             { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
             { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
         ];
-        return [...solanaOptions, CANTON_CHAIN_OPTION];
+        return [getNoNetworkChainOption(), ...solanaOptions, CANTON_CHAIN_OPTION];
     }
 
     const options = new Map();
@@ -1880,6 +1893,7 @@ async function getAvailableChainOptions() {
     }
 
     const sorted = Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
+    sorted.unshift(getNoNetworkChainOption()); // Leaving every network must always be possible.
     sorted.push(CANTON_CHAIN_OPTION); // Canton is always available (no wallet needed)
     return sorted;
 }
@@ -1896,9 +1910,29 @@ async function requestChainSwitch(chainIdHex, overlay) {
     const buttons = overlay ? overlay.querySelectorAll('[data-chain-id]') : [];
     buttons.forEach(btn => { btn.disabled = true; });
     if (errorNode) {
-        errorNode.textContent = 'Requesting network change...';
+        errorNode.textContent = chainIdHex === 'none'
+            ? translateUM('wallet.disconnectingNetworks', 'Disconnecting from networks...')
+            : 'Requesting network change...';
         errorNode.classList.add('visible');
         errorNode.classList.remove('error');
+    }
+
+    // "No network" is app-level escape from every connector. It never asks an EVM wallet to switch,
+    // so it also works while Canton is active and there is no browser wallet/provider at all.
+    if (chainIdHex === 'none') {
+        if (window.CantonMode && window.CantonMode.isActive()) window.CantonMode.deactivate();
+        const disconnects = [];
+        if (window.solanaWalletManager && typeof window.solanaWalletManager.disconnect === 'function') {
+            disconnects.push(Promise.resolve().then(() => window.solanaWalletManager.disconnect()));
+        }
+        if (window.walletManager && typeof window.walletManager.disconnect === 'function') {
+            disconnects.push(Promise.resolve().then(() => window.walletManager.disconnect()));
+        }
+        await Promise.allSettled(disconnects);
+        closeChainSelectionModal();
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        return;
     }
 
     // Canton: a custodial network switch — no wallet, just flip the mode and pick
@@ -1977,7 +2011,7 @@ async function openChainSelectionModal() {
         ? 'canton'
         : (hasSolanaWallet
             ? getSolanaChainId()
-            : normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null));
+            : (normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null) || 'none'));
 
     const overlay = document.createElement('div');
     overlay.className = 'wallet-modal-overlay chain-modal-overlay';
@@ -1992,9 +2026,13 @@ async function openChainSelectionModal() {
                 <div class="wallet-modal-description">Choose a network and we will ask your wallet to switch.</div>
                 <div class="wallet-options chain-options-list">
                     ${chainOptions.map(option => {
-        const isCurrent = currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex;
+        const isCurrent = option.chainIdHex === 'none'
+            ? currentChainHex === 'none'
+            : (currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex);
         const isSolana = typeof option.chainIdHex === 'string' && option.chainIdHex.startsWith('solana');
-        const subtitle = isSolana ? 'Solana' : (option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`);
+        const subtitle = option.chainIdHex === 'none'
+            ? option.tooltip
+            : (isSolana ? 'Solana' : (option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`));
         return `
                             <button type="button" class="wallet-option chain-option${isCurrent ? ' chain-option--current' : ''}" data-chain-id="${option.chainIdHex}">
                                 <div class="wallet-option-placeholder chain-option-icon">${getChainIconMarkup(option.chainIdHex)}</div>

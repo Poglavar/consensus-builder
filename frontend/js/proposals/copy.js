@@ -116,42 +116,30 @@ function isTrackProposal(source) {
 // the whole point of copying a road or a track is to keep drawing it — extend it from either end, or
 // (for roads) branch off it. The dialog comes later, when the user presses C, prefilled by
 // finishRoadDrawing()/finishTrackDrawing() from the copy source we stash here.
-function copyCorridorIntoNewProposal(source, sourceKey, sourceName) {
+async function copyCorridorIntoNewProposal(source, sourceKey, sourceName, options = {}) {
     const definition = roadDefinitionOf(source);
     const centerline = roadCenterlineOf(definition);
     if (!centerline.length) return false;
 
     const isTrack = isTrackProposal(source);
-    const toggleTool = isTrack ? toggleTrackDrawTool : toggleRoadDrawTool;
-    if (typeof toggleTool !== 'function') return false;
-
     const metadata = definition.metadata || {};
-    const seed = {
-        centerline: copyDeepClone(centerline),
-        width: definition.width
-    };
+    const seed = isTrack
+        ? { centerline: copyDeepClone(centerline), width: definition.width }
+        : buildCorridorDrawingSeed(definition, options.profile);
+    if (!seed) return false;
     if (isTrack) {
         seed.trackSpeed = metadata.trackSpeed;
         seed.trackMinRadius = metadata.trackMinRadius;
-        window.pendingTrackDrawingSeed = seed;
-    } else {
-        seed.sidewalkWidth = definition.sidewalkWidth;
-        seed.segmentIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [];
-        seed.profile = copyDeepClone(definition.profile) || null;
-        window.pendingRoadDrawingSeed = seed;
     }
 
-    window.pendingRoadCopySource = {
+    const copySource = {
         proposalId: String(sourceKey),
         name: sourceName,
         prefill: buildCopyPrefill(source)
     };
-
-    // The tools are toggles: if one is somehow already on, turn it off first so it reopens on the seed.
-    if (typeof roadDrawingMode !== 'undefined' && roadDrawingMode) toggleRoadDrawTool();
-    if (typeof trackDrawingMode !== 'undefined' && trackDrawingMode) toggleTrackDrawTool();
-    toggleTool();
-    return true;
+    return typeof startSeededCorridorDrawing === 'function'
+        ? startSeededCorridorDrawing(isTrack ? 'track' : 'road', seed, copySource)
+        : false;
 }
 
 // Put the source proposal's geometry back into the pending globals that createProposal() reads.
@@ -450,7 +438,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     reselectParcelsForCopy(parcelIds);
 
     // Roads and tracks reopen in their drawing tool instead of the dialog, so the copy can be continued.
-    if (goalKey === 'road-track' && copyCorridorIntoNewProposal(source, sourceKey, sourceName)) {
+    if (goalKey === 'road-track' && await copyCorridorIntoNewProposal(source, sourceKey, sourceName)) {
         return;
     }
 
@@ -502,6 +490,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
 
 if (typeof window !== 'undefined') {
     window.copyProposalIntoNewProposal = copyProposalIntoNewProposal;
+    window.copyCorridorIntoNewProposal = copyCorridorIntoNewProposal;
     window.getPendingBuildingSeedFor = getPendingBuildingSeedFor;
     window.pendingBuildingSeedFeatures = pendingBuildingSeedFeatures;
     window.buildBlockifySeed = buildBlockifySeed;

@@ -47,6 +47,9 @@
         "connect": "Connect Wallet",
         "connectedTitle": "Connected wallet: {{account}}",
         "disconnectHint": "Click to disconnect.",
+        "noNetwork": "No network",
+        "noNetworkHint": "Disconnect wallets and leave the active chain mode.",
+        "disconnectingNetworks": "Disconnecting from networks...",
         "connectTitle": "Connect an Ethereum wallet",
         "modal": {
             "title": "Connect a Wallet",
@@ -545,7 +548,8 @@
             "roadSuffix": " (Road)",
             "mapStatus": {
                 "applied": "Applied",
-                "notApplied": "Not Applied"
+                "notApplied": "Not Applied",
+                "includedIn": "Included in {{name}}"
             },
             "disbursement": {
                 "conditional": "Conditional",
@@ -557,6 +561,8 @@
                 "apply": "Apply to map",
                 "applying": "Applying...",
                 "remove": "Remove from map",
+                "includedInRoad": "Included in combined road",
+                "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
                 "share": "Share Proposal",
                 "copy": "Copy into new proposal"
             },
@@ -710,6 +716,7 @@
             "finishButtonShort": "Finish segment (F)",
             "createButton": "Create (C)",
             "crossSectionButton": "Edit cross-section",
+            "draftAutosaved": "Draft autosaved locally",
             "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
@@ -889,6 +896,7 @@
             "title": "Cross-section",
             "subtitle": "The corridor keeps its width, so the road does not move",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
+            "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
             "totalWidth": "Total width",
             "cancel": "Cancel",
             "save": "Save as new proposal",
@@ -896,6 +904,17 @@
             "addLane": "Add lane",
             "grass": "Grass only",
             "trees": "Tree grove"
+        },
+        "corridorDraft": {
+            "title": "Unsaved drawing draft",
+            "cancelBody": "This drawing has changes that are not in a proposal yet.",
+            "cityBody": "Switching cities will close this drawing. You can keep it and resume it when you return.",
+            "replaceBody": "Starting another drawing will replace the current draft.",
+            "wipeBody": "Wiping local data will permanently delete this drawing draft.",
+            "continueEditing": "Continue editing",
+            "discard": "Discard draft",
+            "discardAndWipe": "Discard and wipe",
+            "keep": "Keep draft"
         },
         "roadWidth": {
             "title": "Choose Road Width",
@@ -2010,7 +2029,9 @@
             "please_enter_a_valid_offer_amount_eur": "Please enter a valid offer amount (EUR).",
             "please_enter_a_valid_offer_amount": "Please enter a valid offer amount.",
             "please_enter_an_author_name": "Please enter an author name.",
-            "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again."
+            "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again.",
+            "road_source_incorporated": "Applied the combined road and removed ‘{{name}}’ from the map.",
+            "road_source_included_in_replacement": "This road is included in ‘{{name}}’. Remove the combined road from the map before applying this one."
         }
     },
     "gameDialogs": {
