@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-SSHKRPA='ssh root@207.154.200.141 -i ~/.ssh/id_ed25519'
+SSHDO='ssh root@67.205.138.129 -i ~/.ssh/id_ed25519'
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'
 
@@ -27,7 +27,7 @@ fi
 
 # Test SSH connection
 echo -e "${YELLOW}🔍 Testing SSH connection...${NC}"
-if ! $SSHKRPA "echo 'SSH connection successful'" > /dev/null 2>&1; then
+if ! $SSHDO "echo 'SSH connection successful'" > /dev/null 2>&1; then
     echo -e "${RED}❌ Error: Cannot connect to server. Check your SSH key and server details.${NC}"
     exit 1
 fi
@@ -38,10 +38,10 @@ echo -e "${GREEN}✅ SSH connection successful${NC}"
 echo -e "${YELLOW}📋 Searching for backups in $BACKUP_BASE...${NC}"
 
 # Get list of backup directories (format: /var/www/urbangametheory.xyz_backup_YYYYMMDD_HHMMSS)
-BACKUP_DIRS=$($SSHKRPA "ls -1d $BACKUP_BASE/urbangametheory.xyz_backup_* 2>/dev/null" || echo "")
+BACKUP_DIRS=$($SSHDO "ls -1d $BACKUP_BASE/urbangametheory.xyz_backup_* 2>/dev/null" || echo "")
  
 # Get list of backup zip/tar files
-BACKUP_ZIPS=$($SSHKRPA "ls -1 $BACKUP_BASE/*.zip $BACKUP_BASE/*.tar.gz $BACKUP_BASE/*.tar 2>/dev/null" || echo "")
+BACKUP_ZIPS=$($SSHDO "ls -1 $BACKUP_BASE/*.zip $BACKUP_BASE/*.tar.gz $BACKUP_BASE/*.tar 2>/dev/null" || echo "")
 
 # Combine, sort newest-first, and keep latest 10 entries
 BACKUPS=$(echo -e "$BACKUP_DIRS\n$BACKUP_ZIPS" | grep -v '^$' | sort -r | head -10)
@@ -65,10 +65,10 @@ while IFS= read -r backup; do
         BACKUP_NAME=$(basename "$backup")
         # Get file size or directory info
         if [[ "$backup" == *.zip ]] || [[ "$backup" == *.tar.gz ]] || [[ "$backup" == *.tar ]]; then
-            SIZE=$($SSHKRPA "du -h '$backup' | cut -f1" 2>/dev/null || echo "unknown")
+            SIZE=$($SSHDO "du -h '$backup' | cut -f1" 2>/dev/null || echo "unknown")
             echo -e "${YELLOW}  [$INDEX]${NC} ${GREEN}$BACKUP_NAME${NC} (${SIZE})"
         else
-            SIZE=$($SSHKRPA "du -sh '$backup' | cut -f1" 2>/dev/null || echo "unknown")
+            SIZE=$($SSHDO "du -sh '$backup' | cut -f1" 2>/dev/null || echo "unknown")
             echo -e "${YELLOW}  [$INDEX]${NC} ${GREEN}$BACKUP_NAME${NC} (${SIZE})"
         fi
         ((INDEX++))
@@ -94,7 +94,7 @@ echo -e "${YELLOW}📦 Selected backup: ${GREEN}$SELECTED_NAME${NC}"
 # Create backup of current deployment before rollback
 echo -e "${YELLOW}💾 Creating backup of current deployment before rollback...${NC}"
 CURRENT_BACKUP_NAME="backup_$(date +%Y%m%d_%H%M%S)"
-$SSHKRPA "if [ -d '$REMOTE_PATH' ] && [ \"\$(ls -A $REMOTE_PATH)\" ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$CURRENT_BACKUP_NAME; echo 'Pre-rollback backup created: ${REMOTE_PATH}_$CURRENT_BACKUP_NAME'; fi"
+$SSHDO "if [ -d '$REMOTE_PATH' ] && [ \"\$(ls -A $REMOTE_PATH)\" ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$CURRENT_BACKUP_NAME; echo 'Pre-rollback backup created: ${REMOTE_PATH}_$CURRENT_BACKUP_NAME'; fi"
 
 # Determine backup type and handle accordingly
 if [[ "$SELECTED_BACKUP" == *.zip ]] || [[ "$SELECTED_BACKUP" == *.tar.gz ]] || [[ "$SELECTED_BACKUP" == *.tar ]]; then
@@ -103,31 +103,31 @@ if [[ "$SELECTED_BACKUP" == *.zip ]] || [[ "$SELECTED_BACKUP" == *.tar.gz ]] || 
     
     # Create temporary extraction directory
     TEMP_DIR="/tmp/rollback_extract_$$"
-    $SSHKRPA "mkdir -p $TEMP_DIR"
+    $SSHDO "mkdir -p $TEMP_DIR"
     
     # Extract based on file type
     if [[ "$SELECTED_BACKUP" == *.zip ]]; then
-        $SSHKRPA "cd $TEMP_DIR && unzip -q '$SELECTED_BACKUP'"
+        $SSHDO "cd $TEMP_DIR && unzip -q '$SELECTED_BACKUP'"
     elif [[ "$SELECTED_BACKUP" == *.tar.gz ]]; then
-        $SSHKRPA "cd $TEMP_DIR && tar -xzf '$SELECTED_BACKUP'"
+        $SSHDO "cd $TEMP_DIR && tar -xzf '$SELECTED_BACKUP'"
     elif [[ "$SELECTED_BACKUP" == *.tar ]]; then
-        $SSHKRPA "cd $TEMP_DIR && tar -xf '$SELECTED_BACKUP'"
+        $SSHDO "cd $TEMP_DIR && tar -xf '$SELECTED_BACKUP'"
     fi
     
     # Find the extracted directory (could be in root or nested)
     # First, try to find urbangametheory.xyz directory
-    EXTRACTED_DIR=$($SSHKRPA "find $TEMP_DIR -type d -name 'urbangametheory.xyz*' | head -1" || echo "")
+    EXTRACTED_DIR=$($SSHDO "find $TEMP_DIR -type d -name 'urbangametheory.xyz*' | head -1" || echo "")
     
     if [ -z "$EXTRACTED_DIR" ]; then
         # If no specific directory found, check if files are directly in temp dir
-        if $SSHKRPA "test -f $TEMP_DIR/index.html"; then
+        if $SSHDO "test -f $TEMP_DIR/index.html"; then
             EXTRACTED_DIR="$TEMP_DIR"
         else
             # Look for first subdirectory with index.html
-            EXTRACTED_DIR=$($SSHKRPA "find $TEMP_DIR -type f -name 'index.html' | head -1 | xargs dirname" || echo "")
+            EXTRACTED_DIR=$($SSHDO "find $TEMP_DIR -type f -name 'index.html' | head -1 | xargs dirname" || echo "")
             if [ -z "$EXTRACTED_DIR" ]; then
                 # Fallback to first subdirectory
-                EXTRACTED_DIR=$($SSHKRPA "ls -1d $TEMP_DIR/*/ 2>/dev/null | head -1" || echo "$TEMP_DIR")
+                EXTRACTED_DIR=$($SSHDO "ls -1d $TEMP_DIR/*/ 2>/dev/null | head -1" || echo "$TEMP_DIR")
             fi
         fi
     fi
@@ -147,16 +147,16 @@ fi
 
 # Verify source path exists and has content
 echo -e "${YELLOW}🔍 Verifying backup contents...${NC}"
-if ! $SSHKRPA "test -d '$SOURCE_PATH' && [ \"\$(ls -A $SOURCE_PATH)\" ]"; then
+if ! $SSHDO "test -d '$SOURCE_PATH' && [ \"\$(ls -A $SOURCE_PATH)\" ]"; then
     echo -e "${RED}❌ Error: Backup directory is empty or doesn't exist: $SOURCE_PATH${NC}"
     if [ -n "$CLEANUP_TEMP" ]; then
-        $SSHKRPA "$CLEANUP_TEMP"
+        $SSHDO "$CLEANUP_TEMP"
     fi
     exit 1
 fi
 
 # Check if index.html exists in backup
-if ! $SSHKRPA "test -f '$SOURCE_PATH/index.html'"; then
+if ! $SSHDO "test -f '$SOURCE_PATH/index.html'"; then
     echo -e "${YELLOW}⚠️  Warning: index.html not found in backup. Continuing anyway...${NC}"
 fi
 
@@ -164,25 +164,25 @@ fi
 echo -e "${YELLOW}🔄 Rolling back to selected backup...${NC}"
 
 # Remove current deployment (but keep it backed up)
-$SSHKRPA "find $REMOTE_PATH -mindepth 1 -delete 2>/dev/null || rm -rf $REMOTE_PATH/* $REMOTE_PATH/.[^.]* $REMOTE_PATH/..?* 2>/dev/null || true"
+$SSHDO "find $REMOTE_PATH -mindepth 1 -delete 2>/dev/null || rm -rf $REMOTE_PATH/* $REMOTE_PATH/.[^.]* $REMOTE_PATH/..?* 2>/dev/null || true"
 
 # Copy backup contents to live site
 # Copy all files including hidden ones
-$SSHKRPA "cp -a $SOURCE_PATH/. $REMOTE_PATH/ 2>/dev/null || cp -r $SOURCE_PATH/* $REMOTE_PATH/ 2>/dev/null || true"
+$SSHDO "cp -a $SOURCE_PATH/. $REMOTE_PATH/ 2>/dev/null || cp -r $SOURCE_PATH/* $REMOTE_PATH/ 2>/dev/null || true"
 
 # Cleanup temp directory if we created one
 if [ -n "$CLEANUP_TEMP" ]; then
     echo -e "${YELLOW}🧹 Cleaning up temporary files...${NC}"
-    $SSHKRPA "$CLEANUP_TEMP"
+    $SSHDO "$CLEANUP_TEMP"
 fi
 
 # Set proper permissions
 echo -e "${YELLOW}🔐 Setting proper permissions...${NC}"
-$SSHKRPA "chown -R www-data:www-data $REMOTE_PATH && chmod -R 755 $REMOTE_PATH"
+$SSHDO "chown -R www-data:www-data $REMOTE_PATH && chmod -R 755 $REMOTE_PATH"
 
 # Verify rollback
 echo -e "${YELLOW}🧪 Verifying rollback...${NC}"
-if $SSHKRPA "test -f $REMOTE_PATH/index.html"; then
+if $SSHDO "test -f $REMOTE_PATH/index.html"; then
     echo -e "${GREEN}✅ index.html found on server${NC}"
 else
     echo -e "${RED}❌ Warning: index.html not found on server after rollback${NC}"
@@ -190,8 +190,8 @@ fi
 
 # Reload nginx
 echo -e "${YELLOW}🌐 Reloading web server...${NC}"
-if $SSHKRPA "systemctl is-active --quiet nginx"; then
-    if $SSHKRPA "nginx -t && systemctl reload nginx"; then
+if $SSHDO "systemctl is-active --quiet nginx"; then
+    if $SSHDO "nginx -t && systemctl reload nginx"; then
         echo -e "${GREEN}✅ Nginx reloaded successfully${NC}"
     else
         echo -e "${YELLOW}⚠️  Warning: Nginx reload failed, but rollback completed${NC}"
@@ -206,4 +206,4 @@ echo -e "\n${YELLOW}📊 Rollback Summary:${NC}"
 echo -e "  • Rolled back to: $SELECTED_NAME"
 echo -e "  • Pre-rollback backup: ${REMOTE_PATH}_$CURRENT_BACKUP_NAME"
 echo -e "  • Remote path: $REMOTE_PATH"
-echo -e "  • Server: 207.154.200.141"
+echo -e "  • Server: 67.205.138.129"
