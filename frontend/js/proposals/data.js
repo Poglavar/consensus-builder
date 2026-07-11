@@ -44,6 +44,12 @@ const proposalStorage = {
     // after invalidation. Lets isParcelReplacedByChildren stay O(1) per pan/ingest.
     _ancestorIndex: null,
     _ancestorIndexDirty: true,
+    // Cached map: parcelId -> Set<proposalId> for ALL applied proposals that claim the parcel as a
+    // parent, INCLUDING overlays (building, park/square/lake) that don't hide it. Used for apply-time
+    // conflict detection ("is anything already applied on this parcel?"), which must catch overlays
+    // that the ancestor index deliberately excludes.
+    _occupancyIndex: null,
+    _occupancyIndexDirty: true,
     _roadAssetSuffixes: {
         parents: 'roadParents',
         children: 'roadChildren',
@@ -52,6 +58,7 @@ const proposalStorage = {
 
     _invalidateAncestorIndex() {
         this._ancestorIndexDirty = true;
+        this._occupancyIndexDirty = true;
     },
 
     /**
@@ -124,6 +131,45 @@ const proposalStorage = {
         }
         const bucket = this._ancestorIndex.get(String(parcelId));
         return !!(bucket && bucket.size > 0);
+    },
+
+    // Same as _rebuildAncestorIndex but WITHOUT the "replaces parents" filter, so overlays
+    // (building, park/square/lake) are included. This is the occupancy view: every applied
+    // proposal that claims a parcel, whether it consumes or overlays it.
+    _rebuildOccupancyIndex() {
+        const idx = new Map();
+        for (const proposal of this.proposals.values()) {
+            if (!proposal) continue;
+            if (typeof isProposalApplied !== 'function' || !isProposalApplied(proposal)) continue;
+            const proposalKey = String(proposal.proposalId || '');
+            if (!proposalKey) continue;
+            const ancestorIds = this._collectProposalAncestorIds(proposal);
+            for (const ancestorId of ancestorIds) {
+                let bucket = idx.get(ancestorId);
+                if (!bucket) {
+                    bucket = new Set();
+                    idx.set(ancestorId, bucket);
+                }
+                bucket.add(proposalKey);
+            }
+        }
+        this._occupancyIndex = idx;
+        this._occupancyIndexDirty = false;
+    },
+
+    /**
+     * Which already-applied proposals currently occupy this parcel — INCLUDING overlays. Returns an
+     * array of proposalId strings (empty if none). Used by the apply flow to detect geography
+     * conflicts: a new proposal wanting a parcel that another applied proposal (of any kind) already
+     * consumed or sits on.
+     */
+    getAppliedProposalsOccupyingParcel(parcelId) {
+        if (!parcelId) return [];
+        if (this._occupancyIndexDirty || !this._occupancyIndex) {
+            this._rebuildOccupancyIndex();
+        }
+        const bucket = this._occupancyIndex.get(String(parcelId));
+        return bucket ? Array.from(bucket) : [];
     },
 
     _ensureIndexes() {
@@ -817,9 +863,11 @@ const proposalStorage = {
                     nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
                     if (nested.appliedAt) delete nested.appliedAt;
                 });
-            // childParcelIds are deliberately kept: they are canonical across clients
-            // (_applyCanonicalChildParcelIds), so applying here reproduces the same descendant
-            // parcel ids the uploader had, and dependent proposals still line up.
+            // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
+            // cache; they are NOT reproduced. On apply, children are re-derived from (parents +
+            // rule) and get freshly minted ids from the id subsystem. Child-id identity is a local
+            // concern of each apply — the consensus layer is parent-keyed — so we do not try to
+            // match the uploader's ids.
         }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();

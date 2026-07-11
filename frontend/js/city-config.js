@@ -1159,6 +1159,11 @@
         getSidebarConfig,
         getParcelBuilderConfig,
         getWalkConfig: () => getCurrentCityConfig().walk || null,
+        // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
+        // city because it depends on city street data), driving a drawn track works at any
+        // location — the track, rails and corridor come from the proposal itself — so every
+        // city falls back to the shared sim deployment. Cities may still override via `walk`.
+        getDriveConfig: () => getCurrentCityConfig().walk || { url: 'https://zagreb.lol/prijevoz/' },
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,

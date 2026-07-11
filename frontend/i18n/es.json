@@ -612,7 +612,8 @@
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
                 "share": "Compartir propuesta",
-                "copy": "Copiar en una nueva propuesta"
+                "copy": "Copiar en una nueva propuesta",
+                "drive": "Conducir por esta vía"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -2114,6 +2115,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "No se puede aplicar la propuesta de edificio, faltan parcelas requisito: {{missing}}",
             "cannot_apply_proposal_missing_parents": "No se puede aplicar la propuesta, faltan parcelas requisito: {{missing}}",
+            "proposal_conflict_title": "Conflicto de propuestas — misma geografía",
+            "proposal_conflict_missing_title": "Faltan algunas parcelas",
+            "proposal_conflict_intro": "Para aplicar la propuesta \"{{title}}\" se necesitan parcelas que no están disponibles:",
+            "proposal_conflict_overlaps": "Se superpone con la propuesta aplicada \"{{title}}\"",
+            "proposal_conflict_shares": "Comparte {{count}} parcela(s) con esta propuesta.",
+            "proposal_conflict_shares_blocked": "Comparte {{count}} parcela(s), pero no se puede deshacer por sí sola — estas se construyen sobre ella:",
+            "proposal_conflict_unapply_those_first": "Deshaga esas primero.",
+            "proposal_conflict_not_loaded": "{{count}} parcela(s) antecesora(s) no cargada(s). Aplicar de todos modos continuará con las parcelas presentes.",
+            "proposal_conflict_unapply_continue": "Deshacer y continuar",
+            "proposal_conflict_unapplying": "Deshaciendo…",
+            "proposal_conflict_apply_anyway": "Aplicar de todos modos",
+            "proposal_conflict_cancel": "Cancelar",
+            "proposal_conflict_close": "Cerrar",
             "cannot_share_this_proposal_right_now": "No se puede compartir esta propuesta en este momento.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "No se pudo aplicar la propuesta vial. Revisa las propuestas para más detalles.",
             "failed_to_apply_shared_proposals": "No se pudieron aplicar las propuestas compartidas.",

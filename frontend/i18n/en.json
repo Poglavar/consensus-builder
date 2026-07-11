@@ -564,7 +564,8 @@
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
                 "share": "Share Proposal",
-                "copy": "Copy into new proposal"
+                "copy": "Copy into new proposal",
+                "drive": "Drive this track"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -2064,6 +2065,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Can't apply proposal, prerequisite parcels are missing: {{missing}}",
+            "proposal_conflict_title": "Proposal conflict — same geography",
+            "proposal_conflict_missing_title": "Some parcels are missing",
+            "proposal_conflict_intro": "Applying \"{{title}}\" needs parcels that aren't available:",
+            "proposal_conflict_overlaps": "Overlaps applied proposal \"{{title}}\"",
+            "proposal_conflict_shares": "Shares {{count}} parcel{{suffix}} with this proposal.",
+            "proposal_conflict_shares_blocked": "Shares {{count}} parcel{{suffix}}, but it can't be unapplied on its own — these are built on top of it:",
+            "proposal_conflict_unapply_those_first": "Unapply those first.",
+            "proposal_conflict_not_loaded": "{{count}} ancestor parcel{{suffix}} not loaded. Applying anyway will proceed with the parcels that are present.",
+            "proposal_conflict_unapply_continue": "Unapply it & continue",
+            "proposal_conflict_unapplying": "Unapplying…",
+            "proposal_conflict_apply_anyway": "Apply anyway",
+            "proposal_conflict_cancel": "Cancel",
+            "proposal_conflict_close": "Close",
             "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
             "failed_to_apply_shared_proposals": "Failed to apply shared proposals.",

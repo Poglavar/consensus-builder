@@ -104,6 +104,73 @@
     margin-left: auto;
 }
 
+/* Parent-conflict / apply-anyway modal. Reuses the shared .proposal-modal-* shell and .btn family;
+   these rules only style the per-conflict list items in the body. */
+.parent-conflict-modal {
+    /* Sit above other modals (share-modal-overlay is 13000) — this is the actionable dialog that
+       lets the user resolve a blocked apply, so it must not be hidden behind a summary. */
+    z-index: 15000 !important;
+}
+
+.parent-conflict-modal .proposal-modal-footer {
+    justify-content: flex-end;
+}
+
+.parent-conflict-intro {
+    margin: 0 0 12px;
+    color: #444;
+    font-size: 14px;
+}
+
+.parent-conflict-item {
+    border: 1px solid #ffe0b2;
+    background: #fff8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.parent-conflict-item--blocked {
+    border-color: #ffcdd2;
+    background: #fff5f5;
+}
+
+.parent-conflict-item--info {
+    border-color: #e0e0e0;
+    background: #fafafa;
+    color: #555;
+    font-size: 13px;
+}
+
+.parent-conflict-item-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.parent-conflict-item-detail {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.parent-conflict-item-blocked-list {
+    color: #b71c1c;
+    font-size: 13px;
+}
+
+.parent-conflict-item-hint {
+    color: #888;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.parent-conflict-item .btn {
+    font-size: 13px;
+    min-height: 32px;
+    padding: 6px 12px;
+}
+
 .proposal-modal-footer.lens-footer-layout {
     display: grid;
     grid-template-columns: auto 1fr;

@@ -589,7 +589,8 @@
                 "includedInRoad": "Uključeno u spojeni put",
                 "includedInRoadHint": "Uklonite {{name}} sa mape da biste vratili ovaj put.",
                 "share": "Podeli predlog",
-                "copy": "Kopiraj u novi predlog"
+                "copy": "Kopiraj u novi predlog",
+                "drive": "Vozi ovom prugom"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -2094,6 +2095,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primeniti predlog zgrade, nedostaju pretci: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Nije moguće primeniti predlog, nedostaju pretci: {{missing}}",
+            "proposal_conflict_title": "Sukob predloga — ista geografija",
+            "proposal_conflict_missing_title": "Nedostaju neke parcele",
+            "proposal_conflict_intro": "Za primenu predloga \"{{title}}\" potrebne su parcele koje nisu dostupne:",
+            "proposal_conflict_overlaps": "Preklapa se sa primenjenim predlogom \"{{title}}\"",
+            "proposal_conflict_shares": "Deli {{count}} parcela sa ovim predlogom.",
+            "proposal_conflict_shares_blocked": "Deli {{count}} parcela, ali se ne može samostalno poništiti — na njemu se zasnivaju:",
+            "proposal_conflict_unapply_those_first": "Prvo poništite njih.",
+            "proposal_conflict_not_loaded": "{{count}} nadređenih parcela nije učitano. Primena uprkos tome nastaviće se sa dostupnim parcelama.",
+            "proposal_conflict_unapply_continue": "Poništi i nastavi",
+            "proposal_conflict_unapplying": "Poništavanje…",
+            "proposal_conflict_apply_anyway": "Ipak primeni",
+            "proposal_conflict_cancel": "Odustani",
+            "proposal_conflict_close": "Zatvori",
             "cannot_share_this_proposal_right_now": "Trenutno nije moguće podeliti ovaj predlog.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Primena predloga puta nije uspela. Pregledaj predloge za detalje.",
             "failed_to_apply_shared_proposals": "Primena podeljenih predloga nije uspela.",
