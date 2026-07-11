@@ -140,7 +140,13 @@ function tryWebMercatorMetersToLatLng(easting, northing) {
     }
 }
 
-// Convert HTRS96/TM coordinates to WGS84
+// Convert the city's METRIC working coordinates (metres) to WGS84.
+//
+// Named for Croatia's HTRS96/TM because Zagreb came first, but the projection is per-city and, since
+// the metric split, no longer the city's *dataset* CRS: New York's parcels arrive in degrees while its
+// geometry works in UTM 18N metres. Everything that offsets, buffers, measures or unions in "metres"
+// goes through this pair. See city-config.js `metricCrs`.
+//
 // If the input already looks like WGS84 (lng/lat range), return it directly.
 function htrs96ToWGS84(easting, northing) {
     if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
@@ -175,7 +181,9 @@ function htrs96ToWGS84(easting, northing) {
         }
     }
     try {
-        const converter = MapCityConfigManager ? MapCityConfigManager.datasetToLatLng : null;
+        const converter = MapCityConfigManager
+            ? (MapCityConfigManager.metricToLatLng || MapCityConfigManager.datasetToLatLng)
+            : null;
         const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
             throw new Error('Conversion returned invalid numbers');
@@ -187,14 +195,16 @@ function htrs96ToWGS84(easting, northing) {
     }
 }
 
-// Convert WGS84 coordinates to HTRS96/TM
+// Convert WGS84 coordinates to the city's METRIC working coordinates (metres). See htrs96ToWGS84.
 function wgs84ToHTRS96(lat, lon) {
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
         console.error('Invalid WGS84 coordinates:', lat, lon);
         return DEFAULT_FALLBACK_DATASET;
     }
     try {
-        const converter = MapCityConfigManager ? MapCityConfigManager.latLngToDataset : null;
+        const converter = MapCityConfigManager
+            ? (MapCityConfigManager.latLngToMetric || MapCityConfigManager.latLngToDataset)
+            : null;
         const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
         if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
             throw new Error('Conversion returned invalid numbers');
@@ -202,6 +212,37 @@ function wgs84ToHTRS96(lat, lon) {
         return [easting, northing];
     } catch (error) {
         console.error('Error in coordinate conversion:', error);
+        return DEFAULT_FALLBACK_DATASET;
+    }
+}
+
+// The DATASET pair, distinct from the metric pair above since the split.
+//
+// Parcels arrive in the city's dataset CRS, and the grid cache buckets them by `gridSize` expressed in
+// *that* CRS's units (metres for Zagreb, degrees for New York). Feeding those consumers metric metres
+// made a New York grid cell 1/0.005 ≈ 200× too small, so a single viewport asked for ~10^8 cells and
+// the Set that collects them threw "maximum size exceeded" before any parcel was fetched. Anything that
+// touches parcel storage coordinates or grid cells uses this pair; anything that measures uses the
+// metric one.
+function datasetToWgs84(easting, northing) {
+    if (!Number.isFinite(easting) || !Number.isFinite(northing)) return DEFAULT_FALLBACK_LATLNG;
+    if (Math.abs(easting) <= 180 && Math.abs(northing) <= 90) return [northing, easting];
+    try {
+        const converter = MapCityConfigManager ? MapCityConfigManager.datasetToLatLng : null;
+        const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
+        return (Number.isFinite(lat) && Number.isFinite(lon)) ? [lat, lon] : DEFAULT_FALLBACK_LATLNG;
+    } catch (_) {
+        return DEFAULT_FALLBACK_LATLNG;
+    }
+}
+
+function wgs84ToDataset(lat, lon) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return DEFAULT_FALLBACK_DATASET;
+    try {
+        const converter = MapCityConfigManager ? MapCityConfigManager.latLngToDataset : null;
+        const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
+        return (Number.isFinite(easting) && Number.isFinite(northing)) ? [easting, northing] : DEFAULT_FALLBACK_DATASET;
+    } catch (_) {
         return DEFAULT_FALLBACK_DATASET;
     }
 }
@@ -505,6 +546,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make functions globally available
 window.htrs96ToWGS84 = htrs96ToWGS84;
 window.wgs84ToHTRS96 = wgs84ToHTRS96;
+window.datasetToWgs84 = datasetToWgs84;
+window.wgs84ToDataset = wgs84ToDataset;
 window.getBboxFromBounds = getBboxFromBounds;
 window.clearRoadVisualization = clearRoadVisualization;
 window.drawRoadVisualization = drawRoadVisualization;

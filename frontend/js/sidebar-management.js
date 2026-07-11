@@ -524,8 +524,14 @@ async function wipeLocalData(options = {}) {
             : 'This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?';
         const confirmed = skipConfirm ? true : await window.showStyledConfirm(confirmMessage);
         if (!confirmed) return;
-        try { PersistentStorage.clear(); } catch (_) { }
-        try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
+        // Delegate to the single canonical eraser (js/wipe-local-data.js) rather than re-clearing a
+        // subset here — this wrapper only adds the confirmation, the status line and the reload.
+        if (typeof window.wipeAllLocalData === 'function') {
+            await window.wipeAllLocalData({ skipReload: true });
+        } else {
+            try { PersistentStorage.clear(); } catch (_) { }
+            try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
+        }
         if (typeof updateStatus === 'function') {
             const clearedMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
                 ? window.i18n.t('status.messages.all_local_data_cleared_reloading')

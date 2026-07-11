@@ -17,8 +17,11 @@
     let controls = null;
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
+    let focusProposalIds = null; // Set of proposalIds to frame on 3D entry (shared-link focus), or null for all
     let renderingOverlayEl = null; // transient overlay while 3D initializes
     let isTransitioning3D = false; // avoid double-activation
+    let buildingsLoaderEl = null; // in-view "loading buildings" badge
+    let pendingModelLoads = 0; // count of uploaded glTF models still downloading
 
     // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
     const INTRO_AUTO_ROTATE_SPEED = 0.7; // OrbitControls: ~86s per revolution (1.0 ≈ 60s)
@@ -36,6 +39,8 @@
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
     let lakeGroup = null; // lake decorations (fish)
+    let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
 
     // Checkbox listeners to sync 3D buildings with sidebar
     let onShowExistingBuildingsChange = null;
@@ -43,12 +48,37 @@
 
     const threeContainer = document.getElementById('three-container');
     const toggleBtn = document.getElementById('mode-3d-toggle');
+    const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
 
-    // Walk-mode launcher state. Target is the transit planner at zagreb.lol/prijevoz/
-    // with `?st3d=walk` (per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
-    // /voznja on that host is a tram redirect — do not use it for the walk overlay.
-    const WALK_URL_BASE = 'https://zagreb.lol/prijevoz/';
+    // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
+    // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
+    // realistic when the photoreal globe is up. Called on every mode transition (here and
+    // from photoreal-mode.js). Exposed globally so photoreal can reuse it.
+    function updateModeButtonStates() {
+        try {
+            const rw = !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
+            const btn2d = document.getElementById('mode-2d-toggle');
+            const btn3d = document.getElementById('mode-3d-toggle');
+            const btnRw = document.getElementById('mode-realistic-toggle');
+            if (btn2d) btn2d.classList.toggle('active', !isActive);
+            if (btn3d) btn3d.classList.toggle('active', isActive && !rw);
+            if (btnRw) btnRw.classList.toggle('active', rw);
+        } catch (_) { }
+    }
+    window.updateModeButtonStates = updateModeButtonStates;
+
+    // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
+    // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
+    // with `?st3d=walk`, per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
+    // Cities without a `walk.url` hide the button entirely — it is NOT generally available yet.
+    function getWalkUrlBase() {
+        try {
+            const cfg = window.CityConfigManager;
+            const walk = cfg && typeof cfg.getWalkConfig === 'function' ? cfg.getWalkConfig() : null;
+            return walk && walk.url ? walk.url : null;
+        } catch (_) { return null; }
+    }
     let walkPickActive = false;
     let walkPickClickHandler = null;
     let walkPickKeyHandler = null;
@@ -84,16 +114,23 @@
     let buildingModeControlsEl = null;
     let buildingModeButtons = { built: null, both: null, planned: null };
     let bothEmphasisRowEl = null;
+    let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
     let bothEmphasisButtons = { built: null, planned: null, neither: null };
 
     // Parcel isolation: clicking a parcel hides everything but that parcel and the
     // building(s) sitting on it. null = not isolated (full scene).
     let isolatedParcelId = null;
+    // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
+    // reached via the [show] button in the parcel panel. null = not isolating a proposal.
+    let isolatedProposalId = null;
     let isolationResetEl = null;
     let parcelInfoPanelEl = null;
     // Floor areas of the currently-shown parcel, kept so the price slider can recompute the
     // value gain without re-running the (price-independent) volume maths on every tick.
     let lastFloorAreas = null;
+    // Parcel count behind the currently-shown panel (proposal panel only; null for single parcel),
+    // so the price slider can recompute the average gain/loss per parcel live.
+    let lastParcelCount = null;
 
     // Assumptions for the parcel value panel. GFA (floor area) is derived from built/proposed
     // volume by dividing out a typical storey height; value uses a €/m² rate the user can slide.
@@ -234,6 +271,59 @@
         return hull;
     }
 
+    // Drop coincident duplicate meshes from a nearby-buildings response. Some city 3D models
+    // (notably Zagreb building_3d) store a building twice under different object_ids with the same
+    // footprint — this causes z-fighting in the 3D view and double-counts existing volume in the
+    // gain calc. Deduping once at fetch intake gives every consumer a clean list. Two buildings are
+    // treated as the same when their vertex-mean centroids are within ~2 m and their vertical
+    // extents (z_min/z_max) match within 1 m. A ~5 m spatial grid with a 3x3 neighbour scan keeps
+    // this O(vertices) — no convex hulls — so even a multi-thousand-building response costs a few ms.
+    function dedupeCoincidentBuildings(buildings) {
+        if (!Array.isArray(buildings) || buildings.length < 2) return buildings || [];
+        const CELL_M = 5, MERGE_DIST_M = 2;
+        const grid = new Map();
+        const keep = [];
+        for (const bld of buildings) {
+            let sx = 0, sy = 0, n = 0;
+            if (Array.isArray(bld.faces)) {
+                for (const face of bld.faces) {
+                    const coords = face && face.coordinates;
+                    if (!Array.isArray(coords)) continue;
+                    for (const ring of coords) {
+                        if (!Array.isArray(ring)) continue;
+                        for (const c of ring) {
+                            if (c && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])) { sx += c[0]; sy += c[1]; n++; }
+                        }
+                    }
+                }
+            }
+            if (!n) { keep.push(bld); continue; }
+            const lng = sx / n, lat = sy / n;
+            const x = lng * 111320 * Math.cos(lat * Math.PI / 180);
+            const y = lat * 110540;
+            const ci = Math.floor(x / CELL_M), cj = Math.floor(y / CELL_M);
+            const zmin = Number(bld.z_min), zmax = Number(bld.z_max);
+            let dup = false;
+            for (let di = -1; di <= 1 && !dup; di++) {
+                for (let dj = -1; dj <= 1 && !dup; dj++) {
+                    const arr = grid.get((ci + di) + ':' + (cj + dj));
+                    if (!arr) continue;
+                    for (const e of arr) {
+                        if (Math.hypot(e.x - x, e.y - y) < MERGE_DIST_M
+                            && Math.abs(e.zmax - zmax) < 1 && Math.abs(e.zmin - zmin) < 1) { dup = true; break; }
+                    }
+                }
+            }
+            if (dup) continue;
+            const key = ci + ':' + cj;
+            let cell = grid.get(key);
+            if (!cell) { cell = []; grid.set(key, cell); }
+            cell.push({ x, y, zmin, zmax });
+            keep.push(bld);
+        }
+        return keep;
+    }
+
     // Built/proposed volume (m³), derived floor area (m²) and the € value gain for one parcel.
     // Built volume comes from the existing 3D buildings (footprint ∩ parcel × their height);
     // proposed volume from window.proposedBuildings the same way. Floor area = volume / storey
@@ -243,6 +333,8 @@
         if (!parcel) return null;
 
         let builtVolume = 0;
+        // nearbyProposalBuildings is deduped at fetch intake (dedupeCoincidentBuildings), so twin
+        // meshes no longer double-count here.
         const builtList = Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [];
         for (const bld of builtList) {
             const h = (Number.isFinite(bld.z_max) && Number.isFinite(bld.z_min)) ? (bld.z_max - bld.z_min) : 0;
@@ -289,6 +381,49 @@
         try { return v.toLocaleString('en-US'); } catch (_) { return String(v); }
     }
 
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    // --- Proposal lookup helpers (for the "Proposal info" view) ---
+    function getProposalForParcel(parcelId) {
+        try {
+            const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
+            if (!store || typeof store.getProposalsForParcel !== 'function') return null;
+            const list = store.getProposalsForParcel(parcelId) || [];
+            if (!list.length) return null;
+            // Prefer an applied/executed proposal; else the first match.
+            const applied = list.find(p => {
+                const s = ((p && p.status) || '').toString().toLowerCase();
+                return s === 'applied' || s === 'executed';
+            });
+            return applied || list[0];
+        } catch (_) { return null; }
+    }
+
+    function proposalDisplayTitle(p) {
+        if (!p) return '';
+        return p.title || p.name || p.proposalName || ('Proposal ' + (p.proposalId || p.id || ''));
+    }
+
+    function proposalIdOf(p) {
+        return p ? (p.proposalId || p.id || null) : null;
+    }
+
+    // Union of every parcel id a proposal touches (before + after, across its sub-proposals).
+    function getProposalParcelIdSet(proposal) {
+        const ids = new Set();
+        if (!proposal) return ids;
+        const add = (arr) => { if (Array.isArray(arr)) arr.forEach(id => { if (id != null) ids.add(String(id)); }); };
+        add(proposal.parentParcelIds);
+        add(proposal.childParcelIds);
+        ['roadProposal', 'decideLaterProposal', 'reparcellization', 'buildingProposal', 'structureProposal'].forEach(k => {
+            const sp = proposal[k];
+            if (sp) { add(sp.parentParcelIds); add(sp.childParcelIds); }
+        });
+        return ids;
+    }
+
     function ensureParcelInfoPanel() {
         if (!threeContainer) return null;
         if (parcelInfoPanelEl && parcelInfoPanelEl.parentElement === threeContainer) return parcelInfoPanelEl;
@@ -301,6 +436,8 @@
 
     function hideParcelInfoPanel() {
         if (parcelInfoPanelEl) parcelInfoPanelEl.style.display = 'none';
+        // The open info box covers the floating status message (mobile); clear that when it closes.
+        try { document.body.classList.remove('three-info-open'); } catch (_) { }
     }
 
     // Refresh the price label and the value-gain line from the current slider price and the
@@ -315,45 +452,39 @@
 
         const gainEl = panel.querySelector('[data-role="gain"]');
         if (gainEl) {
-            const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
-            gainEl.className = 'parcel-panel-gain ' + cls;
-            const sign = gain > 0 ? '+' : '';
-            gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            // No proposed massing on this parcel → there's no "gain", just the current
+            // built value. Show that as a positive figure instead of a negative delta.
+            if (proposed <= 0) {
+                const currentValue = built * priceEurPerM2;
+                gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: €${formatInt(currentValue)}`;
+            } else {
+                const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
+                gainEl.className = 'parcel-panel-gain ' + cls;
+                const sign = gain > 0 ? '+' : '';
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+            }
+        }
+
+        // Proposal panel only: average gain/loss per parcel (total gain ÷ parcel count).
+        const avgEl = panel.querySelector('[data-role="avg-gain"]');
+        if (avgEl) {
+            if (lastParcelCount && lastParcelCount > 0 && proposed > 0) {
+                const avg = gain / lastParcelCount;
+                const cls = avg > 0 ? 'gain-positive' : (avg < 0 ? 'gain-negative' : '');
+                const sign = avg > 0 ? '+' : '';
+                avgEl.className = 'parcel-panel-avg ' + cls;
+                avgEl.textContent = `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${sign}€${formatInt(avg)}`;
+            } else {
+                avgEl.className = 'parcel-panel-avg';
+                avgEl.textContent = '';
+            }
         }
     }
 
-    function updateParcelInfoPanel(parcelId) {
-        const panel = ensureParcelInfoPanel();
-        if (!panel) return;
-        const m = computeParcelMetrics(parcelId);
-        if (!m) { panel.style.display = 'none'; return; }
-        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
-
-        const L = {
-            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
-            built: threeI18n('threeMode.parcelPanel.built', 'Built'),
-            proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
-            volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
-            floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
-            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
-            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²')
-        };
-
-        panel.innerHTML = `
-            <div class="parcel-panel-title">${L.title} ${parcelId}</div>
-            <table class="parcel-panel-table">
-                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
-                <tr><td>${L.volume}</td><td>${formatInt(m.builtVolume)} m³</td><td>${formatInt(m.proposedVolume)} m³</td></tr>
-                <tr><td>${L.floorArea}</td><td>${formatInt(m.builtFloorArea)} m²</td><td>${formatInt(m.proposedFloorArea)} m²</td></tr>
-            </table>
-            <div class="parcel-panel-note">${L.floorNote}</div>
-            <div class="parcel-panel-value-title" data-role="value-title"></div>
-            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
-                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
-                aria-label="${L.priceLabel}">
-            <div class="parcel-panel-gain" data-role="gain"></div>
-        `;
-
+    // Shared by the parcel and proposal panels: wire the price slider and render the value/gain
+    // line from the current priceEurPerM2 and lastFloorAreas, then reveal the panel.
+    function wireSliderAndGain(panel) {
         const slider = panel.querySelector('[data-role="price-slider"]');
         if (slider) {
             slider.addEventListener('input', () => {
@@ -364,28 +495,124 @@
         }
         renderValueAndGain(panel);
         panel.style.display = '';
+        // Mark an info box as open so CSS can cover the overlapping floating status on mobile.
+        try { document.body.classList.add('three-info-open'); } catch (_) { }
     }
 
-    // Hide everything except the given parcel and the building footprint(s) on it.
-    function isolateParcel(parcelId) {
-        if (!parcelId) return;
-        isolatedParcelId = parcelId;
-        updateIsolationButton();
-        updateParcelInfoPanel(parcelId);
-        // flatGroup holds parcels (tagged) and roads (untagged) — show only the match.
-        if (flatGroup) flatGroup.children.forEach(c => {
-            c.visible = !!(c.userData && c.userData.parcelId === parcelId);
+    // The Built/Proposed volume + floor-area rows shared by both panels.
+    function metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea) {
+        return `
+            <table class="parcel-panel-table">
+                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
+                <tr><td>${L.volume}</td><td>${formatInt(builtVolume)} m³</td><td>${formatInt(proposedVolume)} m³</td></tr>
+                <tr><td>${L.floorArea}</td><td>${formatInt(builtFloorArea)} m²</td><td>${formatInt(proposedFloorArea)} m²</td></tr>
+            </table>
+            <div class="parcel-panel-note">${L.floorNote}</div>
+            <div class="parcel-panel-value-title" data-role="value-title"></div>
+            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
+                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
+                aria-label="${L.priceLabel}">
+            <div class="parcel-panel-gain" data-role="gain"></div>`;
+    }
+
+    function panelLabels() {
+        return {
+            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
+            built: threeI18n('threeMode.parcelPanel.built', 'Built'),
+            proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
+            volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
+            floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
+            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
+            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²'),
+            proposalLabel: threeI18n('threeMode.parcelPanel.proposalLabel', 'Proposal'),
+            show: threeI18n('threeMode.parcelPanel.show', 'show'),
+            proposalHeading: threeI18n('threeMode.proposalPanel.title', 'Proposal info'),
+            parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
+        };
+    }
+
+    function updateParcelInfoPanel(parcelId) {
+        const panel = ensureParcelInfoPanel();
+        if (!panel) return;
+        const m = computeParcelMetrics(parcelId);
+        if (!m) { panel.style.display = 'none'; try { document.body.classList.remove('three-info-open'); } catch (_) { } return; }
+        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
+        lastParcelCount = null; // single parcel — no per-parcel average
+
+        const L = panelLabels();
+        // If the parcel belongs to a proposal, offer a [show] button that opens the proposal view.
+        const proposal = getProposalForParcel(parcelId);
+        const proposalRow = proposal ? `
+            <div class="parcel-panel-proposal">
+                <span class="parcel-panel-proposal-label">${L.proposalLabel}:</span>
+                <button type="button" class="parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
+            </div>` : '';
+
+        panel.innerHTML = `
+            <div class="parcel-panel-title">${L.title} ${escapeHtml(String(parcelId))}</div>
+            ${proposalRow}
+            ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
+        `;
+
+        const showBtn = panel.querySelector('[data-role="show-proposal"]');
+        if (showBtn && proposal) {
+            const pid = proposalIdOf(proposal);
+            showBtn.addEventListener('click', () => { if (pid != null) isolateProposal(pid); });
+        }
+        wireSliderAndGain(panel);
+    }
+
+    // Aggregate panel for a whole proposal: totals across all its parcels, total gain/loss.
+    function updateProposalInfoPanel(proposal, idSet) {
+        const panel = ensureParcelInfoPanel();
+        if (!panel) return;
+        let builtVolume = 0, proposedVolume = 0, builtFloorArea = 0, proposedFloorArea = 0, parcelCount = 0;
+        idSet.forEach(id => {
+            const m = computeParcelMetrics(id);
+            if (!m) return;
+            parcelCount++;
+            builtVolume += m.builtVolume;
+            proposedVolume += m.proposedVolume;
+            builtFloorArea += m.builtFloorArea;
+            proposedFloorArea += m.proposedFloorArea;
         });
-        // buildingGroup holds proposed slices (tagged with their parcelId) and existing
-        // context buildings (untagged). Show proposed slices on this parcel, plus existing
-        // buildings whose footprint center falls inside the parcel polygon.
-        const parcelFeature = getParcelFeatureById(parcelId);
+        lastFloorAreas = { built: builtFloorArea, proposed: proposedFloorArea };
+        lastParcelCount = parcelCount;
+
+        const L = panelLabels();
+        panel.innerHTML = `
+            <div class="parcel-panel-title">${L.proposalHeading}</div>
+            <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
+            <div class="parcel-panel-subnote">${L.parcelsLabel}: ${parcelCount}</div>
+            ${metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea)}
+            <div class="parcel-panel-avg" data-role="avg-gain"></div>
+        `;
+        wireSliderAndGain(panel);
+    }
+
+    // Show only the given set of parcels (and the buildings on them). Used by both single-parcel
+    // and whole-proposal isolation. parcelFeatures are the polygons for testing existing
+    // (untagged) context buildings by footprint centre.
+    function applyIsolationVisibility(parcelIdSet, parcelFeatures) {
+        // flatGroup holds parcels (tagged) and roads (untagged) — show only members of the set.
+        if (flatGroup) flatGroup.children.forEach(c => {
+            const pid = c.userData && c.userData.parcelId;
+            c.visible = (pid != null) && parcelIdSet.has(String(pid));
+        });
+        // buildingGroup holds proposed slices (tagged with their parcelId) and existing context
+        // buildings (untagged). Show proposed slices on member parcels, plus existing buildings
+        // whose footprint centre falls inside any member parcel polygon.
         if (buildingGroup) buildingGroup.children.forEach(c => {
             const ud = c.userData || {};
-            if (ud.parcelId) { c.visible = (ud.parcelId === parcelId); return; }
-            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeature) {
+            if (ud.parcelId != null) { c.visible = parcelIdSet.has(String(ud.parcelId)); return; }
+            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeatures.length) {
                 let inside = false;
-                try { inside = turf.booleanPointInPolygon(turf.point(ud.footprintLatLng), parcelFeature); } catch (_) { }
+                try {
+                    const pt = turf.point(ud.footprintLatLng);
+                    for (let i = 0; i < parcelFeatures.length; i++) {
+                        if (turf.booleanPointInPolygon(pt, parcelFeatures[i])) { inside = true; break; }
+                    }
+                } catch (_) { }
                 c.visible = inside;
                 return;
             }
@@ -395,9 +622,37 @@
         [plannedFlatGroup, parkGroup, squareGroup, lakeGroup].forEach(g => { if (g) g.visible = false; });
     }
 
-    function clearIsolation() {
-        if (isolatedParcelId === null) return;
+    // Hide everything except the given parcel and the building footprint(s) on it.
+    function isolateParcel(parcelId) {
+        if (!parcelId) return;
+        isolatedParcelId = parcelId;
+        isolatedProposalId = null;
+        updateIsolationButton();
+        updateParcelInfoPanel(parcelId);
+        const pf = getParcelFeatureById(parcelId);
+        applyIsolationVisibility(new Set([String(parcelId)]), pf ? [pf] : []);
+    }
+
+    // Hide everything except the parcels (and their buildings) belonging to a whole proposal.
+    function isolateProposal(proposalId) {
+        const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
+        const proposal = (store && typeof store.getProposal === 'function') ? store.getProposal(proposalId) : null;
+        if (!proposal) return;
+        const idSet = getProposalParcelIdSet(proposal);
+        if (!idSet.size) return;
+        isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
+        updateIsolationButton();
+        updateProposalInfoPanel(proposal, idSet);
+        const feats = [];
+        idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
+        applyIsolationVisibility(idSet, feats);
+    }
+
+    function clearIsolation() {
+        if (isolatedParcelId === null && isolatedProposalId === null) return;
+        isolatedParcelId = null;
+        isolatedProposalId = null;
         updateIsolationButton();
         hideParcelInfoPanel();
         // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
@@ -410,7 +665,7 @@
 
     function updateIsolationButton() {
         try {
-            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null) ? 'none' : '';
+            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null && isolatedProposalId === null) ? 'none' : '';
         } catch (_) { }
     }
 
@@ -425,24 +680,24 @@
         buildingModeControlsEl = document.createElement('div');
         buildingModeControlsEl.className = 'three-mode-ui-panel';
         buildingModeControlsEl.setAttribute('role', 'group');
-        buildingModeControlsEl.setAttribute('aria-label', 'Building rendering');
+        buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
 
         const builtBtn = document.createElement('button');
         builtBtn.type = 'button';
         builtBtn.className = 'three-mode-segment';
-        builtBtn.textContent = 'Built';
+        builtBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
         builtBtn.addEventListener('click', () => setBuildingRenderMode('built'));
 
         const bothBtn = document.createElement('button');
         bothBtn.type = 'button';
         bothBtn.className = 'three-mode-segment';
-        bothBtn.textContent = 'Both';
+        bothBtn.textContent = threeI18n('threeMode.controls.both', 'Both');
         bothBtn.addEventListener('click', () => setBuildingRenderMode('both'));
 
         const plannedBtn = document.createElement('button');
         plannedBtn.type = 'button';
         plannedBtn.className = 'three-mode-segment';
-        plannedBtn.textContent = 'Planned';
+        plannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
         plannedBtn.addEventListener('click', () => setBuildingRenderMode('planned'));
 
         buildingModeButtons = { built: builtBtn, both: bothBtn, planned: plannedBtn };
@@ -462,7 +717,7 @@
         radiusHeader.className = 'three-mode-radius-header';
         const radiusLabel = document.createElement('span');
         radiusLabel.className = 'three-mode-emphasis-label';
-        radiusLabel.textContent = 'Radius';
+        radiusLabel.textContent = threeI18n('threeMode.controls.radius', 'Radius');
         const radiusValue = document.createElement('span');
         radiusValue.className = 'three-mode-radius-value';
         radiusValue.textContent = `${buildingLoadRadiusM} m`;
@@ -484,31 +739,38 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
+        // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
+        // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
+        // Belgrade, nothing for cities without scenery). Independent of the Built/Planned mode.
+        decorTogglesEl = document.createElement('div');
+        decorTogglesEl.className = 'three-mode-decor-toggles';
+        buildingModeControlsEl.appendChild(decorTogglesEl);
+
         // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
         bothEmphasisRowEl = document.createElement('div');
         bothEmphasisRowEl.className = 'three-mode-emphasis-row';
 
         const emphasisLabel = document.createElement('span');
         emphasisLabel.className = 'three-mode-emphasis-label';
-        emphasisLabel.textContent = 'Solid:';
+        emphasisLabel.textContent = threeI18n('threeMode.controls.solid', 'Solid:');
         bothEmphasisRowEl.appendChild(emphasisLabel);
 
         const emBuiltBtn = document.createElement('button');
         emBuiltBtn.type = 'button';
         emBuiltBtn.className = 'three-mode-segment';
-        emBuiltBtn.textContent = 'Built';
+        emBuiltBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
         emBuiltBtn.addEventListener('click', () => setBothEmphasis('built'));
 
         const emPlannedBtn = document.createElement('button');
         emPlannedBtn.type = 'button';
         emPlannedBtn.className = 'three-mode-segment';
-        emPlannedBtn.textContent = 'Planned';
+        emPlannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
         emPlannedBtn.addEventListener('click', () => setBothEmphasis('planned'));
 
         const emNeitherBtn = document.createElement('button');
         emNeitherBtn.type = 'button';
         emNeitherBtn.className = 'three-mode-segment';
-        emNeitherBtn.textContent = 'Neither';
+        emNeitherBtn.textContent = threeI18n('threeMode.controls.neither', 'Neither');
         emNeitherBtn.addEventListener('click', () => setBothEmphasis('neither'));
 
         bothEmphasisButtons = { built: emBuiltBtn, planned: emPlannedBtn, neither: emNeitherBtn };
@@ -527,7 +789,7 @@
         const showAllBtn = document.createElement('button');
         showAllBtn.type = 'button';
         showAllBtn.className = 'three-mode-reset-btn';
-        showAllBtn.textContent = 'Show all parcels';
+        showAllBtn.textContent = threeI18n('threeMode.controls.showAllParcels', 'Show all parcels');
         showAllBtn.addEventListener('click', () => clearIsolation());
         isolationResetEl.appendChild(showAllBtn);
         buildingModeControlsEl.appendChild(isolationResetEl);
@@ -558,11 +820,40 @@
         return null;
     }
 
+    // Entering 3D has two meanings, and they want different cameras.
+    //
+    // "Show me this proposal" — arriving on a shared link, or pressing 3D with a proposal selected on the
+    // map — anchors the scene on that proposal, frames it, and loads its surroundings. "Show me this, in
+    // 3D" — pressing 3D while looking at the map with nothing selected — keeps the camera exactly where
+    // the 2D map was. It used to anchor on whatever proposal happened to be *applied*, which could be
+    // kilometres from what the user was looking at.
+    //
+    // Which of the two it is comes from the selection: a shared link selects the proposal it opened, and
+    // a click on the map selects the proposal it hit. `focusProposalIds` narrows a shared link to the
+    // proposals it named, and is empty otherwise.
+    function focusedProposalIds() {
+        if (focusProposalIds && focusProposalIds.size) return focusProposalIds;
+        const selection = window.ProposalSelection;
+        const key = (selection && typeof selection.getKey === 'function') ? selection.getKey() : null;
+        return key ? new Set([String(key)]) : null;
+    }
+
+    function isProposalFocusedEntry() {
+        return !!focusedProposalIds();
+    }
+
+    // The geometry the scene should anchor, frame and load context around: the selected proposal, and
+    // nothing when nothing is selected — which makes every consumer fall through to the camera-focus
+    // path, so the built context loads around where the user actually is.
+    function proposalFramingGeometry() {
+        return isProposalFocusedEntry() ? computeProposalQueryGeometry() : null;
+    }
+
     function getOrigin3857() {
-        // Anchor the local XY frame on the proposal being viewed so it sits at the scene
-        // origin and the built context loads around it. Fall back to the 2D map center when
-        // there is no proposal (free 3D browsing) — keeps entry deterministic either way.
-        const center = getProposalCenterLatLng()
+        // Anchor the local XY frame on the proposal when one was asked for, so it sits at the scene
+        // origin and the built context loads around it; otherwise on the 2D map center, so a free
+        // entry lands exactly where the user was already looking.
+        const center = (isProposalFocusedEntry() ? getProposalCenterLatLng() : null)
             || ((typeof map !== 'undefined' && map) ? map.getCenter() : { lat: 0, lng: 0 });
         const p = L.CRS.EPSG3857.project(L.latLng(center.lat, center.lng));
         return p; // {x,y}
@@ -581,16 +872,33 @@
     function arrayOfLngLatRingsToShape(rings) {
         // rings: [ [ [lng, lat], ... ], hole1, hole2, ...]
         if (!rings || rings.length === 0) return null;
-        const toVec2 = (pt) => {
-            const xy = coordsToXY(pt);
-            return new THREE.Vector2(xy[0], xy[1]);
+        // Drop near-duplicate consecutive vertices (in the local metric XY frame) and the closing
+        // duplicate. turf.intersect emits sub-mm-apart points along buffer arcs and where a building
+        // crosses a parcel edge; those become zero-length edges that make THREE's earcut triangulation
+        // produce overlapping/degenerate faces — the frayed top + striped walls seen on some slices.
+        const EPS = 0.02; // metres
+        const toCleanVecs = (ring) => {
+            const out = [];
+            for (const pt of ring) {
+                const xy = coordsToXY(pt);
+                const v = new THREE.Vector2(xy[0], xy[1]);
+                const prev = out[out.length - 1];
+                if (prev && Math.hypot(v.x - prev.x, v.y - prev.y) < EPS) continue;
+                out.push(v);
+            }
+            if (out.length >= 2) {
+                const f = out[0], l = out[out.length - 1];
+                if (Math.hypot(f.x - l.x, f.y - l.y) < EPS) out.pop(); // THREE closes the ring itself
+            }
+            return out;
         };
 
-        const outer = rings[0].map(toVec2);
+        const outer = toCleanVecs(rings[0]);
+        if (outer.length < 3) return null;
         const shape = new THREE.Shape(outer);
         for (let i = 1; i < rings.length; i++) {
-            const holePath = new THREE.Path(rings[i].map(toVec2));
-            shape.holes.push(holePath);
+            const holePts = toCleanVecs(rings[i]);
+            if (holePts.length >= 3) shape.holes.push(new THREE.Path(holePts));
         }
         return shape;
     }
@@ -924,6 +1232,70 @@
         return 10; // default 3 stories ~10 meters
     }
 
+    // Reparcellization plans that have NOT been applied to the map. An applied plan has already
+    // replaced its parent parcels inside parcelLayer, so buildParcels3D draws the new parcels and
+    // there is nothing to add here. An unapplied one exists only on the proposal — without this the
+    // 3D view showed the untouched original parcel and the proposed subdivision was invisible.
+    function getPlannedReparcellizationProposals() {
+        try {
+            const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
+            if (!storage || typeof storage.getAllProposals !== 'function') return [];
+            const isAppliedLike = (status) => {
+                const s = (status || '').toString().toLowerCase();
+                return s === 'applied' || s === 'executed';
+            };
+            return storage.getAllProposals().filter(p => {
+                if (!p || !p.reparcellization) return false;
+                if (!Array.isArray(p.reparcellization.polygons) || !p.reparcellization.polygons.length) return false;
+                if (isAppliedLike(p.status) || isAppliedLike(p.reparcellization.status)) return false;
+                return true;
+            });
+        } catch (error) {
+            console.warn('[3D] Failed to enumerate planned reparcellization proposals:', error);
+            return [];
+        }
+    }
+
+    // Draw each planned plot as a flat slab just above the parcel plane, tinted with the owner
+    // colour the reparcellization editor assigned it, and outline it so the new boundaries read
+    // clearly against the parcel underneath.
+    function buildPlannedReparcellization3D(targetGroup) {
+        if (!targetGroup) return;
+        const proposals = getPlannedReparcellizationProposals();
+        if (!proposals.length) return;
+
+        proposals.forEach(proposal => {
+            proposal.reparcellization.polygons.forEach(slice => {
+                if (!slice || !slice.geometry) return;
+                try {
+                    const feature = { type: 'Feature', geometry: slice.geometry, properties: {} };
+                    let color = 0xcccccc;
+                    try {
+                        if (typeof slice.color === 'string' && slice.color.startsWith('#')) {
+                            color = parseInt(slice.color.slice(1), 16);
+                        }
+                    } catch (_) { }
+
+                    const fillMat = new THREE.MeshLambertMaterial({
+                        color,
+                        transparent: true,
+                        opacity: 0.75,
+                        polygonOffset: true,
+                        polygonOffsetFactor: -2,
+                        polygonOffsetUnits: -2
+                    });
+                    const meshes = polygonFeatureToMeshes(feature, fillMat, 0.08, 0);
+                    meshes.forEach(m => { m.userData.isPlannedReparcelPlot = true; targetGroup.add(m); });
+
+                    const borders = polygonFeatureToBorderLines(feature, materials.sliceEdges, 0.12);
+                    borders.forEach(line => { line.userData.isPlannedReparcelPlot = true; targetGroup.add(line); });
+                } catch (error) {
+                    console.warn('[3D] Failed to draw a planned reparcellization plot:', error);
+                }
+            });
+        });
+    }
+
     function buildParcels3D(targetGroup) {
         if (typeof parcelLayer === 'undefined' || !parcelLayer) return;
         // parcels at z=0
@@ -1183,14 +1555,43 @@
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return null;
         if (typeof turf === 'undefined' || !turf) return null;
+        // Only consider proposal buildings in the active city. proposedBuildings is a global,
+        // cross-session list, so a stale Zagreb building must not define the NYC nearby-buildings
+        // query bbox (which would query Socrata around Zagreb → "loaded 0 nearby 3d buildings").
+        const cityId = (typeof window !== 'undefined' && window.CityConfigManager
+                && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId() : null;
+        const isInCityFn = (typeof isInCity === 'function') ? isInCity
+            : ((typeof window !== 'undefined' && typeof window.isInCity === 'function') ? window.isInCity : null);
+        const inActiveCity = (f) => {
+            if (!cityId || !isInCityFn) return true;
+            const props = (f && f.properties) || {};
+            const ids = Array.isArray(props.parentParcelIds) && props.parentParcelIds.length
+                ? props.parentParcelIds
+                : (props.parcelId ? [props.parcelId] : []);
+            if (!ids.length) return true;
+            return ids.some(id => isInCityFn(id, cityId));
+        };
         const features = [];
         for (let i = 0; i < arr.length; i++) {
             const f = arr[i];
-            if (f && f.geometry) features.push(f);
+            if (f && f.geometry && inActiveCity(f)) features.push(f);
         }
         if (features.length === 0) return null;
+        // Frame ONLY the proposals in focus — the ones a shared link named, or the one selected on the
+        // map — so the camera lands on them rather than on the union bbox of every applied proposal. A
+        // big cached proposal on another block would otherwise drag the centre away.
+        let framed = features;
+        const focusIds = focusedProposalIds();
+        if (focusIds && focusIds.size) {
+            const subset = features.filter(f => {
+                const pid = (f.properties && f.properties.proposalId != null) ? String(f.properties.proposalId) : null;
+                return pid && focusIds.has(pid);
+            });
+            if (subset.length) framed = subset;
+        }
         try {
-            const bbox = turf.bbox(turf.featureCollection(features));
+            const bbox = turf.bbox(turf.featureCollection(framed));
             if (!bbox || bbox.some(v => !isFinite(v))) return null;
             const [minX, minY, maxX, maxY] = bbox;
             return {
@@ -1225,7 +1626,7 @@
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
 
-        const proposalGeom = computeProposalQueryGeometry();
+        const proposalGeom = proposalFramingGeometry();
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -1246,6 +1647,7 @@
         if (key === nearbyProposalBuildingsKey) return;
 
         nearbyProposalBuildingsFetching = true;
+        updateBuildingsLoader();
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         // The 3D building source is city-specific (resolved server-side from this id).
         let city;
@@ -1257,16 +1659,215 @@
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
-                nearbyProposalBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
+                const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
+                nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'})`);
+                const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
+                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'}${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly();
+                updateBuildingsLoader();
             })
             .catch(err => {
                 console.warn('Failed to fetch nearby buildings:', err);
                 nearbyProposalBuildingsFetching = false;
+                updateBuildingsLoader();
             });
+    }
+
+    // --- Real-world OSM trees (Overture base/land) ---
+    // Toggleable scenery fetched via POST /decor/near using the SAME query geometry + radius as the
+    // nearby buildings, then rendered as two InstancedMesh layers (trunk + crown) so a few thousand
+    // trees cost two draw calls. Cities without ingested trees just get an empty list (no-op).
+    const TREES_STORAGE_KEY = 'cb_3d_trees_enabled';
+    let nearbyTrees = [];               // [[lng, lat], ...] from the backend
+    let nearbyTreesKey = null;          // query key so we don't refetch the same band
+    let nearbyTreesFetching = false;
+
+    function loadTreesEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(TREES_STORAGE_KEY);
+                if (v === '0' || v === 'false') return false;
+                if (v === '1' || v === 'true') return true;
+            }
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    // Deterministic [0,1) hash from a tree's lng/lat so each tree's height/jitter is stable across
+    // rebuilds (no flicker) without storing per-tree attributes.
+    function treeRng(lng, lat) {
+        let h = Math.imul(((lng * 1e6) | 0) ^ 0x9e3779b9, 0x85ebca6b);
+        h ^= Math.imul(((lat * 1e6) | 0) ^ 0x165667b1, 0xc2b2ae35);
+        h = (h ^ (h >>> 15)) >>> 0;
+        return (h % 100000) / 100000;
+    }
+
+    // Shared base geometries (unit-sized; per-tree size comes from the instance matrix). The trunk
+    // cylinder is rotated so its length runs along +Z to match the Z-up scene.
+    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null;
+    function ensureTreeAssets() {
+        if (treeTrunkGeo) return;
+        treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.18, 1, 5);
+        treeTrunkGeo.rotateX(Math.PI / 2); // Y-length → Z-length (scene is Z-up)
+        treeCrownGeo = new THREE.SphereGeometry(1, 6, 5);
+        treeTrunkMat = new THREE.MeshLambertMaterial({ color: 0x5c3d1e });
+        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0x3a6b35 });
+    }
+
+    function disposeTreesGroup() {
+        if (!treesGroup) return;
+        for (let i = treesGroup.children.length - 1; i >= 0; i--) {
+            const c = treesGroup.children[i];
+            treesGroup.remove(c);
+            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo) c.geometry.dispose();
+        }
+    }
+
+    function buildTreesGroup() {
+        if (!treesGroup || !Array.isArray(nearbyTrees) || nearbyTrees.length === 0 || !origin3857) return;
+        ensureTreeAssets();
+        const n = nearbyTrees.length;
+        const trunkMesh = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, n);
+        const crownMesh = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, n);
+        const dummy = new THREE.Object3D();
+        let placed = 0;
+        for (let i = 0; i < n; i++) {
+            const t = nearbyTrees[i];
+            if (!t || t.length < 2) continue;
+            const [x, y] = latLngToXY(t[1], t[0]);
+            const r = treeRng(t[0], t[1]);
+            const totalH = 5 + r * 8;          // ~5–13 m, deterministic per tree
+            const trunkH = totalH * 0.48;
+            const crownR = totalH * 0.20 + 0.5;
+
+            dummy.position.set(x, y, trunkH / 2);
+            dummy.scale.set(1, 1, trunkH);
+            dummy.rotation.set(0, 0, 0);
+            dummy.updateMatrix();
+            trunkMesh.setMatrixAt(placed, dummy.matrix);
+
+            dummy.position.set(x, y, trunkH + crownR * 0.65);
+            dummy.scale.set(crownR, crownR, crownR * 1.15);
+            dummy.updateMatrix();
+            crownMesh.setMatrixAt(placed, dummy.matrix);
+            placed++;
+        }
+        trunkMesh.count = placed;
+        crownMesh.count = placed;
+        trunkMesh.instanceMatrix.needsUpdate = true;
+        crownMesh.instanceMatrix.needsUpdate = true;
+        treesGroup.add(trunkMesh);
+        treesGroup.add(crownMesh);
+    }
+
+    function rebuildTreesOnly() {
+        if (!isActive || !treesGroup) return;
+        disposeTreesGroup();
+        if (treesEnabled) buildTreesGroup();
+    }
+
+    function ensureNearbyTrees() {
+        if (!treesEnabled || nearbyTreesFetching) return;
+
+        const proposalGeom = proposalFramingGeometry();
+        let geometry, buffer, key;
+        if (proposalGeom) {
+            geometry = proposalGeom;
+            buffer = buildingLoadRadiusM;
+            const bb = proposalGeom.coordinates[0];
+            key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
+        } else {
+            const pt = computeCameraFocusGeometry();
+            if (!pt) return;
+            geometry = pt;
+            buffer = buildingLoadRadiusM;
+            const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
+            key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}|r${buildingLoadRadiusM}`;
+        }
+        if (key === nearbyTreesKey) return;
+
+        nearbyTreesFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+        fetch(`${base}/decor/near`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry, buffer_meters: buffer, city, kinds: ['trees'] })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                nearbyTrees = (payload && Array.isArray(payload.trees)) ? payload.trees : [];
+                nearbyTreesKey = key;
+                nearbyTreesFetching = false;
+                console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${proposalGeom ? 'proposal' : 'camera'}+${buffer}m)`);
+                if (isActive) rebuildTreesOnly();
+            })
+            .catch(err => {
+                console.warn('Failed to fetch nearby trees:', err);
+                nearbyTreesFetching = false;
+            });
+    }
+
+    // Flip the trees toggle: persist, show/hide the group, and fetch+build on first enable.
+    function setTreesEnabled(on) {
+        treesEnabled = !!on;
+        try { PersistentStorage.setItem(TREES_STORAGE_KEY, treesEnabled ? '1' : '0'); } catch (_) { }
+        if (treesGroup) treesGroup.visible = treesEnabled;
+        if (treesEnabled) {
+            ensureNearbyTrees();
+            rebuildTreesOnly();
+        }
+    }
+
+    // Registry of renderable scenery layers: maps an overture_feature layer key to its panel label and
+    // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
+    // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
+    // here and it shows up automatically wherever it's been ingested.
+    const DECOR_LAYERS = {
+        trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) }
+    };
+
+    // Render one checkbox per available scenery layer (intersection of DECOR_LAYERS and `available`).
+    function renderDecorToggles(available) {
+        if (!decorTogglesEl) return;
+        decorTogglesEl.innerHTML = '';
+        for (const key of available) {
+            const spec = DECOR_LAYERS[key];
+            if (!spec) continue; // ingested layer with no frontend renderer yet — skip silently
+            const row = document.createElement('div');
+            row.className = 'three-mode-trees-row';
+            const label = document.createElement('label');
+            label.className = 'three-mode-trees-toggle';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = spec.isEnabled();
+            cb.addEventListener('change', () => spec.setEnabled(cb.checked));
+            const text = document.createElement('span');
+            text.className = 'three-mode-emphasis-label';
+            // Resolve at render time (after i18n loads); falls back to the DECOR_LAYERS label.
+            text.textContent = threeI18n('threeMode.controls.' + key, spec.label);
+            label.appendChild(cb);
+            label.appendChild(text);
+            row.appendChild(label);
+            decorTogglesEl.appendChild(row);
+        }
+    }
+
+    // Ask the backend which scenery layers the active city has, then render toggles for them. Called
+    // on entering 3D (city may have changed); cities with no scenery get no toggles.
+    function refreshDecorToggles() {
+        if (!decorTogglesEl) return;
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
+        if (!city) { decorTogglesEl.innerHTML = ''; return; }
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        fetch(`${base}/decor/layers?city=${encodeURIComponent(city)}`)
+            .then(r => (r.ok ? r.json() : { layers: [] }))
+            .then(payload => renderDecorToggles((payload && Array.isArray(payload.layers)) ? payload.layers : []))
+            .catch(() => { /* leave whatever's there; toggles are non-critical */ });
     }
 
     function buildProposedBuildings3D(targetGroup, buildingMaterial) {
@@ -1330,6 +1931,8 @@
         // height (Z) stays 1:1.
         const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
 
+        pendingModelLoads++;
+        updateBuildingsLoader();
         loadGltfScene(url).then((scene) => {
             if (stale() || !scene) return;
             const inner = scene.clone(true);
@@ -1368,6 +1971,9 @@
                 createBuildingSlices(feat, height, buildingMaterial, targetGroup);
             } catch (_) { }
             if (typeof console !== 'undefined') console.warn('Building model load failed, used box fallback:', url, err);
+        }).finally(() => {
+            pendingModelLoads = Math.max(0, pendingModelLoads - 1);
+            updateBuildingsLoader();
         });
     }
 
@@ -1486,13 +2092,28 @@
                 const shadedColor = baseColor.clone();
                 const hsl = {};
                 shadedColor.getHSL(hsl);
-                // Alternate lighter/darker per parcel so adjacent slices read as distinct parcels.
-                const lightnessShift = (shade[i] === 0) ? 0.14 : -0.14;
-                hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
+                // Alternate two shades per parcel so adjacent slices read as distinct parcels.
+                // Anchor BOTH shades to a saturated mid-tone band (instead of shifting relative to
+                // the base lightness): a light base (light blue/pink) previously shifted up to ~0.8
+                // and washed out to white under lighting/specular at grazing angles. Clamping the
+                // centre keeps both shades clearly coloured whatever the base colour's lightness.
+                hsl.s = Math.max(hsl.s, 0.6);
+                const centerL = Math.min(Math.max(hsl.l, 0.34), 0.46);
+                hsl.l = centerL + (shade[i] === 0 ? 0.10 : -0.10);
                 shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
                 sliceMaterial.color.set(shadedColor);
 
-                const sliceMeshes = polygonFeatureToMeshes(slice.intersection, sliceMaterial, 0, height);
+                // Clean the slice before extruding: cleanCoords drops redundant/duplicate points and
+                // rewind gives a consistent ring winding, so every slice triangulates cleanly (no
+                // frayed caps / striped walls from degenerate turf.intersect output).
+                let sliceGeom = slice.intersection;
+                try {
+                    let cleaned = turf.cleanCoords(sliceGeom);
+                    cleaned = turf.rewind(cleaned, { mutate: false });
+                    if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) sliceGeom = cleaned;
+                } catch (_) { }
+
+                const sliceMeshes = polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height);
 
                 // Tag the slice with its parcel so parcel-isolation can match the
                 // building footprint sitting on a clicked parcel.
@@ -1631,16 +2252,21 @@
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
         ensureNearbyProposalBuildings();
+        // Trees follow the same near-query; fetch if enabled, and rebuild from whatever we have.
+        ensureNearbyTrees();
+        rebuildTreesOnly();
 
         // Freshly rebuilt buildings default to visible; re-apply isolation if active.
         if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
+        else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
     }
 
     function computeContentBoundsXY() {
-        // When a proposal is in view, frame the proposal plus a margin for its built
-        // surroundings, centred on the origin (= proposal centre). This makes entering 3D
-        // always land on the proposal, regardless of where the 2D map was panned/zoomed.
-        const proposalGeom = computeProposalQueryGeometry();
+        // When the entry asked for a proposal (a shared link), frame the proposal plus a margin for its
+        // built surroundings, centred on the origin (= proposal centre), regardless of where the 2D map
+        // was panned. A free entry from the 3D button falls through to the viewport below, so it frames
+        // what the user was looking at rather than a proposal that may be kilometres away.
+        const proposalGeom = proposalFramingGeometry();
         if (proposalGeom && proposalGeom.coordinates && proposalGeom.coordinates[0]) {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             for (const pt of proposalGeom.coordinates[0]) {
@@ -1702,6 +2328,8 @@
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
         ensureBuildingModeControls();
+        // Populate scenery toggles for the active city (which layers it has ingested).
+        refreshDecorToggles();
 
         // Lights
         const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6);
@@ -1719,12 +2347,16 @@
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
+        treesGroup = new THREE.Group();
+        treesEnabled = loadTreesEnabledPref();
+        treesGroup.visible = treesEnabled;
         scene.add(flatGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
         scene.add(lakeGroup);
+        scene.add(treesGroup);
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -1737,7 +2369,7 @@
             // In the camera-focus fallback mode (no proposal), also refetch on pan end.
             try {
                 controls.addEventListener('end', () => {
-                    if (!computeProposalQueryGeometry()) ensureNearbyProposalBuildings();
+                    if (!proposalFramingGeometry()) ensureNearbyProposalBuildings();
                 });
             } catch (_) { }
         }
@@ -1749,6 +2381,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         // Apply initial visibility based on current mode (default is 'both').
         const showPlanned = buildingRenderMode !== 'built';
         if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
@@ -1841,7 +2474,7 @@
             if (renderingOverlayEl) return;
             const el = document.createElement('div');
             el.id = 'three-rendering-overlay';
-            el.textContent = 'Rendering…';
+            el.textContent = threeI18n('threeMode.overlay.rendering', 'Rendering…');
             el.style.position = 'fixed';
             el.style.left = '50%';
             el.style.top = '50%';
@@ -1866,6 +2499,33 @@
             }
         } catch (_) { }
         renderingOverlayEl = null;
+    }
+
+    // A small badge in the 3D view, shown while built buildings are loading: the /buildings/near
+    // fetch (can pull thousands of city meshes) and any uploaded glTF models still downloading.
+    function ensureBuildingsLoaderEl() {
+        if (buildingsLoaderEl && buildingsLoaderEl.parentElement) return buildingsLoaderEl;
+        if (!threeContainer) return null;
+        const el = document.createElement('div');
+        el.className = 'three-mode-buildings-loader';
+        const spinner = document.createElement('span');
+        spinner.className = 'three-mode-loader-spinner';
+        const label = document.createElement('span');
+        label.textContent = threeI18n('threeMode.overlay.loadingBuildings', 'Loading buildings…');
+        el.appendChild(spinner);
+        el.appendChild(label);
+        threeContainer.appendChild(el);
+        buildingsLoaderEl = el;
+        return el;
+    }
+
+    // Visible whenever either source of building loading is in flight (and 3D is active).
+    function updateBuildingsLoader() {
+        try {
+            const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
+            const el = ensureBuildingsLoaderEl();
+            if (el) el.classList.toggle('is-visible', loading);
+        } catch (_) { }
     }
 
     function stopIntroAutoRotate() {
@@ -1954,13 +2614,13 @@
 
     function startLoop() {
         cancelLoop();
-        // We are ready: hide overlay and set the button label to 2D
+        // We are ready: hide overlay and settle the mode buttons.
         hideRenderingOverlay();
         isTransitioning3D = false;
-        if (toggleBtn && isActive) {
-            toggleBtn.textContent = '2D';
-            toggleBtn.title = 'Switch to 2D';
-        }
+        updateModeButtonStates();
+        // Signal readiness so callers that entered 3D just to stack another mode on top
+        // (e.g. realistic-from-2D) can proceed once the abstract scene is actually up.
+        try { window.dispatchEvent(new Event('threeModeReady')); } catch (_) { }
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
         if (pendingIntroAutoRotate) {
             pendingIntroAutoRotate = false;
@@ -2148,18 +2808,20 @@
     function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        // Optional focus: frame only these proposals (by proposalId) instead of all applied ones.
+        // Used by shared-link entry so the camera lands on the just-loaded proposal.
+        focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
+            ? new Set(options.focusProposalIds.map(String))
+            : null;
         pendingIntroAutoRotate = !!(options && options.fromUrl);
         if (pendingIntroAutoRotate) {
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
         }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
         if (threeContainer) threeContainer.classList.add('active');
-        if (toggleBtn) {
-            toggleBtn.classList.add('active');
-            toggleBtn.textContent = 'Rendering…';
-            toggleBtn.title = 'Preparing 3D view';
-        }
-        if (walkBtn) walkBtn.hidden = false;
+        updateModeButtonStates();
+        // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
+        if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -2171,23 +2833,23 @@
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         if (!isActive) return;
         isActive = false;
+        focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
         if (threeContainer) threeContainer.classList.remove('active');
-        if (toggleBtn) {
-            toggleBtn.classList.remove('active');
-            toggleBtn.textContent = '3D';
-            toggleBtn.title = 'Switch to 3D';
-        }
+        // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
+        // and the transition guard would otherwise leak and jam future entries.
+        isTransitioning3D = false;
+        hideRenderingOverlay();
+        updateModeButtonStates();
         enableLeafletInteractions();
         enableSidebarAfter3D();
+        pendingModelLoads = 0;
+        updateBuildingsLoader();
         disposeScene();
     }
 
-    function toggle3D() {
-        if (isActive) exit3D(); else enter3D();
-    }
 
     // Optional: rebuild content if parcel data reloads while in 3D
     window.addEventListener('parcelDataLoaded', () => {
@@ -2212,6 +2874,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
     });
@@ -2245,6 +2908,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
     window.addEventListener('squaresUpdated', () => {
@@ -2257,6 +2921,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
     window.addEventListener('lakesUpdated', () => {
@@ -2269,31 +2934,42 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
     });
 
-    // Wire button
+    function realisticActive() {
+        return !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
+    }
+
+    // Wire the 3D button. It always means "abstract 3D": from realistic it drops the globe,
+    // from 2D it enters 3D, and while already in abstract 3D it does nothing.
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function () {
-            if (isActive) {
-                // Exit immediately
-                toggle3D();
+            if (realisticActive()) {
+                try { window.PhotorealMode.deactivate(); } catch (_) { }
+                updateModeButtonStates();
                 return;
             }
+            if (isActive) return; // already in abstract 3D
             if (isTransitioning3D) return;
             isTransitioning3D = true;
-            // Show immediate feedback in 2D before heavy work starts
-            if (toggleBtn) {
-                toggleBtn.classList.add('active');
-                toggleBtn.textContent = 'Rendering…';
-                toggleBtn.title = 'Preparing 3D view';
-            }
+            updateModeButtonStates();
             showRenderingOverlay();
-            // Defer heavy initialization to allow the overlay/button to paint first
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    enter3D();
-                });
-            });
+            // Yield once so the overlay/button paints before the heavy scene init. setTimeout
+            // (not rAF) so it still fires when the tab is throttled and rAF would stall.
+            setTimeout(enter3D, 0);
+        });
+    }
+
+    // Wire the 2D button. It always returns to the flat Leaflet map, dropping the globe first
+    // if realistic is up, then exiting 3D.
+    if (toggle2dBtn) {
+        toggle2dBtn.addEventListener('click', function () {
+            if (realisticActive()) {
+                try { window.PhotorealMode.deactivate(); } catch (_) { }
+            }
+            if (isActive) exit3D();
+            updateModeButtonStates();
         });
     }
 
@@ -2360,7 +3036,9 @@
         params.set('lat', lat.toFixed(6));
         params.set('lon', lng.toFixed(6));
         if (ids.length) params.set('proposals', ids.join(','));
-        return `${WALK_URL_BASE}?${params.toString()}`;
+        const base = getWalkUrlBase();
+        if (!base) return null;
+        return `${base}?${params.toString()}`;
     }
 
     // Raycast a click on the renderer canvas onto the z=0 ground plane and return the lat/lng.
@@ -2420,7 +3098,46 @@
     }
 
     function handleIsolationKey(evt) {
-        if (evt.key === 'Escape' && isolatedParcelId !== null) clearIsolation();
+        if (evt.key === 'Escape' && (isolatedParcelId !== null || isolatedProposalId !== null)) clearIsolation();
+    }
+
+    // Ground lat/lng at the centre of the viewport (NDC 0,0), or null if the ray misses the ground.
+    function groundLatLngAtScreenCenter() {
+        if (!renderer || !camera) return null;
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const hit = new THREE.Vector3();
+        if (!raycaster.ray.intersectPlane(groundPlane, hit)) return null;
+        return xyToLatLng(hit.x, hit.y);
+    }
+
+    // Build + open the walk URL for a given ground point (new tab).
+    function openWalkAt(ll) {
+        if (!ll) { console.warn('[walk] no ground point for walk'); return; }
+        try {
+            const url = buildWalkUrl(ll.lat, ll.lng);
+            if (!url) { console.warn('[walk] no walk overlay configured for this city'); return; }
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (e) {
+            console.warn('[walk] failed to open walk URL:', e);
+        }
+    }
+
+    // Touch devices have no cursor, so a "tap the ground to place yourself" step is confusing —
+    // the user doesn't know a second tap is needed. On a coarse pointer, walk from screen centre
+    // immediately; on a mouse, keep the click-to-place pick.
+    const isCoarsePointer = () => {
+        try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); }
+        catch (_) { return false; }
+    };
+    function startWalk() {
+        if (!isActive) return;
+        if (isCoarsePointer()) {
+            openWalkAt(groundLatLngAtScreenCenter());
+        } else {
+            startWalkPick();
+        }
     }
 
     function startWalkPick() {
@@ -2434,16 +3151,7 @@
             if (evt.button !== 0) return;
             const ll = pickGroundLatLngFromEvent(evt);
             cancelWalkPick();
-            if (!ll) {
-                console.warn('[walk] click missed the ground plane');
-                return;
-            }
-            try {
-                const url = buildWalkUrl(ll.lat, ll.lng);
-                window.open(url, '_blank', 'noopener,noreferrer');
-            } catch (e) {
-                console.warn('[walk] failed to open walk URL:', e);
-            }
+            openWalkAt(ll);
         };
         walkPickKeyHandler = (evt) => {
             if (evt.key === 'Escape') cancelWalkPick();
@@ -2478,7 +3186,7 @@
 
             const nonUploaded = getNonUploadedAppliedProposals();
             if (nonUploaded.length === 0) {
-                startWalkPick();
+                startWalk();
                 return;
             }
 
@@ -2489,7 +3197,7 @@
                 window.showWalkUploadGateModal({
                     onComplete: () => {
                         if (!isActive) return;
-                        if (getNonUploadedAppliedProposals().length === 0) startWalkPick();
+                        if (getNonUploadedAppliedProposals().length === 0) startWalk();
                     }
                 });
             } else {
@@ -2498,10 +3206,38 @@
         });
     }
 
+    // Expose the current 3D camera as a geographic view so the photorealistic (Cesium) mode can
+    // open from the exact same vantage point instead of flying in from space. Returns null when
+    // not in 3D. The scene is uniformly Web-Mercator scaled (horizontal distances inflated by
+    // ~1/cos(lat)), so the camera->target range is converted back to real metres; the tilt angle
+    // is scale-invariant and needs no correction.
+    function getGeoCameraView() {
+        try {
+            if (!isActive || !camera || !controls || !origin3857) return null;
+            const camLL = xyToLatLng(camera.position.x, camera.position.y);
+            const tgt = controls.target;
+            const tgtLL = xyToLatLng(tgt.x, tgt.y);
+            if (!camLL || !tgtLL) return null;
+            const polar = controls.getPolarAngle();        // 0 = top-down, π/2 = horizon
+            const pitchRad = polar - Math.PI / 2;           // Cesium: 0 horizon, -π/2 straight down
+            const latRad = tgtLL.lat * Math.PI / 180;
+            const range = Math.max(1, controls.getDistance() * Math.cos(latRad));
+            let headingDeg = 0;
+            if (typeof turf !== 'undefined' && turf) {
+                try { headingDeg = turf.bearing([camLL.lng, camLL.lat], [tgtLL.lng, tgtLL.lat]); } catch (_) { }
+            }
+            return { targetLng: tgtLL.lng, targetLat: tgtLL.lat, headingDeg: headingDeg, pitchRad: pitchRad, range: range };
+        } catch (_) { return null; }
+    }
+
     // Expose globals for debugging/manual control
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
+    window.getThree3DGeoView = getGeoCameraView;
+
+    // Initial paint: mark 2D as the active mode on load.
+    updateModeButtonStates();
 })();
 
 

@@ -1678,7 +1678,11 @@
         closeBtn.type = 'button';
         closeBtn.className = 'close-circle-btn close-circle-btn--lg parcel-mint-close';
         closeBtn.textContent = '×';
-        closeBtn.onclick = () => removeParcelMintModal('close');
+        // Don't allow dismissing the modal while a mint transaction is in flight (is-busy).
+        closeBtn.onclick = () => {
+            if (overlay.classList.contains('is-busy')) return;
+            removeParcelMintModal('close');
+        };
         header.appendChild(titleWrap);
         header.appendChild(closeBtn);
 
@@ -1842,7 +1846,8 @@
         modal.appendChild(body);
         overlay.appendChild(modal);
         overlay.onclick = (event) => {
-            if (event.target === overlay) {
+            // Clicking the backdrop closes the modal, but not while a mint is in flight (is-busy).
+            if (event.target === overlay && !overlay.classList.contains('is-busy')) {
                 removeParcelMintModal('overlay');
             }
         };
@@ -1926,6 +1931,42 @@
         throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
     }
 
+    // Bounding boxes of cached parcels, computed once. The cache is append-only per session, so a
+    // feature's geometry never changes under us.
+    const featureBoundingBoxCache = new WeakMap();
+
+    function featureBoundingBox(geometry) {
+        if (!geometry || !geometry.coordinates) return null;
+        const cached = featureBoundingBoxCache.get(geometry);
+        if (cached !== undefined) return cached;
+
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        const visit = (coords) => {
+            if (!Array.isArray(coords)) return;
+            if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+                if (coords[0] < minLng) minLng = coords[0];
+                if (coords[0] > maxLng) maxLng = coords[0];
+                if (coords[1] < minLat) minLat = coords[1];
+                if (coords[1] > maxLat) maxLat = coords[1];
+                return;
+            }
+            coords.forEach(visit);
+        };
+        visit(geometry.coordinates);
+
+        const box = Number.isFinite(minLng) ? [minLng, minLat, maxLng, maxLat] : null;
+        featureBoundingBoxCache.set(geometry, box);
+        return box;
+    }
+
+    // Touching counts: neighbours share an edge, so boxes that merely abut must pass.
+    function boundingBoxesTouch(a, b) {
+        if (!a || !b) return false;
+        const EPSILON = 1e-9;
+        return a[0] <= b[2] + EPSILON && b[0] <= a[2] + EPSILON
+            && a[1] <= b[3] + EPSILON && b[1] <= a[3] + EPSILON;
+    }
+
     function findNeighbourPolygonsFromCache(parcelId) {
         if (!parcelId) return [];
         try {
@@ -1961,6 +2002,13 @@
             const seen = new Set();
             seen.add(targetId);
 
+            // booleanIntersects is a full polygon-vs-polygon test, and the cache holds every parcel
+            // loaded so far — thousands of them. Reject the ones whose bounding boxes cannot touch
+            // before paying for it: a parcel a kilometre away is four number comparisons, not a
+            // segment-intersection sweep. (Without this, one selected parcel cost ~1.4 s.)
+            const targetBox = featureBoundingBox(targetFeature.geometry);
+            if (!targetBox) return [];
+
             for (const [, cellData] of cache.grid) {
                 if (!cellData || !Array.isArray(cellData.features)) continue;
                 for (const feature of cellData.features) {
@@ -1968,6 +2016,7 @@
                     const fId = (feature.properties?.parcelId || feature.properties?.BROJ_CESTICE || '').toString();
                     if (!fId || seen.has(fId)) continue;
                     seen.add(fId);
+                    if (!boundingBoxesTouch(targetBox, featureBoundingBox(feature.geometry))) continue;
                     try {
                         if (global.turf.booleanIntersects(targetFeature, feature)) {
                             // Extract outer ring(s) as {lat, lng} arrays
@@ -2029,7 +2078,8 @@
 
             try {
                 if (statusEl) {
-                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
+                    const storageLabel = (typeof global.getStorageProviderLabel === 'function') ? global.getStorageProviderLabel() : 'decentralized storage';
+                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to ${storageLabel}...` : `Uploading parcel metadata to ${storageLabel}...`;
                     statusEl.textContent = label;
                 }
                 if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {

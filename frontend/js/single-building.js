@@ -118,6 +118,22 @@
     let buildingEntries = [];
     let activeBuildingId = null;
     let nextBuildingId = 1;
+    // Buildings to restore when the modal next opens, instead of one default building. Set by
+    // openSingleBuildingForParcels({ initialBuildings }); consumed once by showSingleBuildingModal().
+    let singleBuildingSeedBuildings = null;
+
+    // Centre of a stored building feature, as a Leaflet LatLng. Position isn't in `parameters`,
+    // so a fork has to recover it from the geometry.
+    function featureCenterLatLng(feature) {
+        try {
+            if (typeof turf === 'undefined' || !turf || !feature || !feature.geometry) return null;
+            const [lng, lat] = turf.centroid(feature).geometry.coordinates;
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+            return L.latLng(lat, lng);
+        } catch (_) {
+            return null;
+        }
+    }
     const BUILDING_COLORS = ['#0d6efd', '#d63384', '#198754', '#fd7e14', '#20c997', '#6f42c1', '#0dcaf0', '#e83e8c'];
 
     const formatSingleBuildingText = (template, params = {}) => {
@@ -2054,13 +2070,39 @@
         currentChamferM = DEFAULT_CHAMFER_M;
         currentRotationDeg = 0;
         singleRectFeature = null;
-        const initialEntry = addNewBuildingEntry(startCenter, {
-            width: currentWidthM,
-            length: currentLengthM,
-            height: currentHeightM,
-            chamfer: currentChamferM,
-            rotation: currentRotationDeg
-        });
+
+        // Restore a saved design over the defaults (e.g. a copied proposal). Unlike the other
+        // building tools, `parameters` here only describes building #0 — each building's position
+        // and any extra buildings live in the stored features — so seed from the features.
+        const seedBuildings = singleBuildingSeedBuildings;
+        singleBuildingSeedBuildings = null;
+        let initialEntry = null;
+        if (Array.isArray(seedBuildings) && seedBuildings.length) {
+            seedBuildings.forEach((feature) => {
+                if (!feature || !feature.geometry) return;
+                const props = feature.properties || {};
+                const entry = addNewBuildingEntry(featureCenterLatLng(feature) || startCenter, {
+                    width: props.width,
+                    length: props.length,
+                    height: props.height,
+                    chamfer: props.chamfer,
+                    rotation: props.rotation
+                });
+                if (!entry) return;
+                // Keep the exact stored outline rather than a re-fitted approximation of it.
+                try { entry.feature = JSON.parse(JSON.stringify(feature)); } catch (_) { }
+                if (!initialEntry) initialEntry = entry;
+            });
+        }
+        if (!initialEntry) {
+            initialEntry = addNewBuildingEntry(startCenter, {
+                width: currentWidthM,
+                length: currentLengthM,
+                height: currentHeightM,
+                chamfer: currentChamferM,
+                rotation: currentRotationDeg
+            });
+        }
         refreshBuildingSelector();
         if (initialEntry) {
             setActiveBuilding(initialEntry.id, { refreshUI: true });
@@ -2083,12 +2125,15 @@
         }, 200);
     }
 
-    function openSingleBuildingForParcels({ blockName, parcels }) {
+    // `initialBuildings` (optional) reopens the editor on previously-saved building features
+    // instead of one default building — used by "Copy into new proposal".
+    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
             return;
         }
+        singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         const ids = rawParcels.map(layer => {
             try {
                 return resolveParcelId(layer?.feature);

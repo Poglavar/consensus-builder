@@ -109,8 +109,8 @@
         if (datasetBounds) {
             const sw = bounds.getSouthWest();
             const ne = bounds.getNorthEast();
-            const [swE, swN] = global.wgs84ToHTRS96(sw.lat, sw.lng);
-            const [neE, neN] = global.wgs84ToHTRS96(ne.lat, ne.lng);
+            const [swE, swN] = global.wgs84ToDataset(sw.lat, sw.lng);
+            const [neE, neN] = global.wgs84ToDataset(ne.lat, ne.lng);
             const minE = Math.min(swE, neE);
             const maxE = Math.max(swE, neE);
             const minN = Math.min(swN, neN);
@@ -128,11 +128,11 @@
             lng: (sw.lng + ne.lng) / 2
         };
         const enforceRadius = Number.isFinite(extraRadius) ? Math.max(0, Math.floor(extraRadius)) : 0;
-        const [centerEasting, centerNorthing] = global.wgs84ToHTRS96(center.lat, center.lng);
+        const [centerEasting, centerNorthing] = global.wgs84ToDataset(center.lat, center.lng);
         const centerGridE = Math.floor(centerEasting / cache.gridSize);
         const centerGridN = Math.floor(centerNorthing / cache.gridSize);
-        const [rawSwEasting, rawSwNorthing] = global.wgs84ToHTRS96(sw.lat, sw.lng);
-        const [rawNeEasting, rawNeNorthing] = global.wgs84ToHTRS96(ne.lat, ne.lng);
+        const [rawSwEasting, rawSwNorthing] = global.wgs84ToDataset(sw.lat, sw.lng);
+        const [rawNeEasting, rawNeNorthing] = global.wgs84ToDataset(ne.lat, ne.lng);
         const minEasting = Math.min(rawSwEasting, rawNeEasting);
         const maxEasting = Math.max(rawSwEasting, rawNeEasting);
         const minNorthing = Math.min(rawSwNorthing, rawNeNorthing);
@@ -164,9 +164,9 @@
             if (keys.length) return keys;
         }
         try {
-            if (typeof bounds.getCenter === 'function' && typeof global.wgs84ToHTRS96 === 'function') {
+            if (typeof bounds.getCenter === 'function' && typeof global.wgs84ToDataset === 'function') {
                 const center = bounds.getCenter();
-                const coords = global.wgs84ToHTRS96(center.lat, center.lng);
+                const coords = global.wgs84ToDataset(center.lat, center.lng);
                 if (Array.isArray(coords) && coords.length >= 2) {
                     return [getGridKey(coords[0], coords[1])];
                 }

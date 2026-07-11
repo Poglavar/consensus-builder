@@ -41,8 +41,29 @@ function restoreParcelClickInteractivity() {
 }
 // Each road can be composed of multiple disjoint centerline segments.
 // `roadSegments` keeps all committed segments; `roadPoints` points to the currently active segment (if any).
+//
+// A segment is an ordered list of vertices with no branching — the same model as an OpenStreetMap
+// "way" (an ordered node list). Two segments are connected iff they share a vertex, exactly as two
+// OSM ways are connected iff they share a node; a branch or a crossroads is therefore not a special
+// object, just several segments meeting at a shared vertex. Clicks snap to existing vertices and
+// edges so those shared vertices actually coincide.
 let roadSegments = [];
 let roadPoints = [];
+// Stable per-segment ids, aligned with `roadSegments` by index (an OSM way id, in effect). They let a
+// segment keep its identity when it is continued in a later session, rather than becoming a new one.
+let roadSegmentIds = [];
+let nextRoadSegmentId = 1;
+
+function newRoadSegmentId() {
+    return `s${nextRoadSegmentId++}`;
+}
+
+// Register a freshly created segment array so ids stay index-aligned with `roadSegments`.
+function pushRoadSegment(points, segmentId) {
+    roadSegments.push(points);
+    roadSegmentIds.push(segmentId || newRoadSegmentId());
+    return points;
+}
 // Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
 let roadWidth = 7.5;
 let roadSidewalkWidth = 1;
@@ -128,8 +149,10 @@ const previewAffectedStyle = {
 function getAllRoadSegments(includeActive = true) {
     const segments = Array.isArray(roadSegments) ? [...roadSegments] : [];
     if (includeActive && roadHasStarted && Array.isArray(roadPoints) && roadPoints.length > 0) {
-        const last = segments[segments.length - 1];
-        if (last !== roadPoints) {
+        // The active segment is normally already in `roadSegments` (it was pushed when it started),
+        // and after resuming an earlier segment it need not be the last one — so test membership,
+        // not just the tail, or a resumed segment would be counted twice.
+        if (!segments.includes(roadPoints)) {
             segments.push(roadPoints);
         }
     }
@@ -172,6 +195,298 @@ function buildRoadUnionPolygonFromSegments(segments, width) {
         }
     });
     return combined;
+}
+
+// ---------------------------------------------------------------------------
+// Snapping — how road segments get connected to one another.
+//
+// Clicking within ROAD_SNAP_PIXELS of an existing vertex reuses that exact vertex, so the two
+// segments share a node (OSM's only notion of connectivity). Clicking near the *middle* of an
+// existing segment inserts a node there first, turning it into a shared node — an OSM T-join.
+// Clicking near a segment's *endpoint* before drawing has started resumes that segment instead of
+// starting a new one, which is how a road drawn in an earlier session gets continued.
+// ---------------------------------------------------------------------------
+const ROAD_SNAP_PIXELS = 12;
+let roadSnapMarker = null;
+
+// Closest point to `p` on the pixel segment ab, clamped to the segment.
+function projectPointOnPixelSegment(p, a, b) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const lengthSq = dx * dx + dy * dy;
+    if (lengthSq === 0) return L.point(a.x, a.y);
+    let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSq;
+    t = Math.max(0, Math.min(1, t));
+    return L.point(a.x + t * dx, a.y + t * dy);
+}
+
+// Nearest snap candidate to `latlng`, or null. Vertices win over edges: a click near a corner should
+// join that corner rather than plant a second node a few centimetres along one of its edges.
+function findRoadSnapTarget(latlng) {
+    if (typeof map === 'undefined' || !map || !latlng) return null;
+    const p = map.latLngToLayerPoint(latlng);
+    const activeIndex = roadHasStarted ? roadSegments.indexOf(roadPoints) : -1;
+    let best = null;
+
+    roadSegments.forEach((segment, segmentIndex) => {
+        if (!Array.isArray(segment) || !segment.length) return;
+        segment.forEach((vertex, vertexIndex) => {
+            // The vertex we are drawing from is not a snap target — it would add a zero-length edge.
+            if (segmentIndex === activeIndex && vertexIndex === segment.length - 1) return;
+            const distance = p.distanceTo(map.latLngToLayerPoint(vertex));
+            if (distance > ROAD_SNAP_PIXELS) return;
+            if (best && distance >= best.distance) return;
+            const isEndpoint = vertexIndex === 0 || vertexIndex === segment.length - 1;
+            best = {
+                distance,
+                latlng: L.latLng(vertex.lat, vertex.lng),
+                segmentIndex,
+                vertexIndex,
+                type: isEndpoint ? 'endpoint' : 'vertex',
+                atStart: vertexIndex === 0
+            };
+        });
+    });
+    if (best) return best;
+
+    roadSegments.forEach((segment, segmentIndex) => {
+        if (!Array.isArray(segment) || segment.length < 2) return;
+        // Never insert a node into the segment being drawn: it is about to grow anyway, and a
+        // self-insertion would renumber the vertices under the active pointer.
+        if (segmentIndex === activeIndex) return;
+        for (let i = 0; i < segment.length - 1; i++) {
+            const a = map.latLngToLayerPoint(segment[i]);
+            const b = map.latLngToLayerPoint(segment[i + 1]);
+            const projected = projectPointOnPixelSegment(p, a, b);
+            const distance = p.distanceTo(projected);
+            if (distance > ROAD_SNAP_PIXELS) continue;
+            if (best && distance >= best.distance) continue;
+            best = {
+                distance,
+                latlng: map.layerPointToLatLng(projected),
+                segmentIndex,
+                insertAfter: i,
+                type: 'edge'
+            };
+        }
+    });
+    return best;
+}
+
+function clearRoadSnapMarker() {
+    if (roadSnapMarker && typeof map !== 'undefined' && map && map.hasLayer(roadSnapMarker)) {
+        map.removeLayer(roadSnapMarker);
+    }
+    roadSnapMarker = null;
+}
+
+function showRoadSnapMarker(latlng) {
+    if (!latlng) {
+        clearRoadSnapMarker();
+        return;
+    }
+    if (roadSnapMarker) {
+        roadSnapMarker.setLatLng(latlng);
+        return;
+    }
+    roadSnapMarker = L.circleMarker(latlng, {
+        radius: 8,
+        color: '#006400',
+        weight: 2,
+        fillColor: '#ffffff',
+        fillOpacity: 0.9,
+        interactive: false
+    }).addTo(map);
+}
+
+function createRoadVertexMarker(latlng) {
+    return L.circleMarker(latlng, {
+        radius: 5,
+        color: 'green',
+        fillColor: '#00ff00',
+        fillOpacity: 1
+    }).addTo(map);
+}
+
+// Markers are cosmetic, so rather than tracking which marker belongs to which vertex (which resuming
+// and mid-segment insertion would both invalidate) just rebuild them from the segments.
+function redrawRoadVertexMarkers() {
+    roadMarkers.forEach(marker => {
+        if (marker && map.hasLayer(marker)) map.removeLayer(marker);
+    });
+    roadMarkers = [];
+    getAllRoadSegments(true).forEach(segment => {
+        segment.forEach(vertex => roadMarkers.push(createRoadVertexMarker(vertex)));
+    });
+}
+
+// Rebuild centerline + committed polygon from `roadSegments` (the source of truth) and refresh the
+// cache the per-click incremental union relies on. Used whenever segments change wholesale: undo,
+// mid-segment node insertion, and seeding an existing road for editing.
+function rebuildRoadGeometryFromSegments() {
+    const centerlinePoints = getAllRoadSegments(true);
+
+    if (roadCenterline) {
+        if (centerlinePoints.length > 0) {
+            roadCenterline.setLatLngs(centerlinePoints);
+        } else {
+            map.removeLayer(roadCenterline);
+            roadCenterline = null;
+        }
+    } else if (centerlinePoints.length > 0) {
+        roadCenterline = L.polyline(centerlinePoints, {
+            color: 'green',
+            weight: 3,
+            dashArray: '5, 5',
+            opacity: 0.7
+        }).addTo(map);
+    }
+
+    const updatedPolygon = buildRoadUnionPolygonFromSegments(centerlinePoints, roadWidth);
+    cachedCommittedPolygon = updatedPolygon;
+    if (updatedPolygon) {
+        roadPolygon = updatedPolygon;
+        if (roadPolygonLayer) {
+            roadPolygonLayer.setLatLngs(updatedPolygon);
+        } else {
+            roadPolygonLayer = L.polygon(updatedPolygon, {
+                color: 'green',
+                weight: 2,
+                fillColor: 'green',
+                fillOpacity: 0.3
+            }).addTo(map);
+        }
+    } else {
+        if (roadPolygonLayer) {
+            map.removeLayer(roadPolygonLayer);
+            roadPolygonLayer = null;
+        }
+        roadPolygon = null;
+    }
+    return updatedPolygon;
+}
+
+// Normalize a seed centerline into segments of Leaflet LatLngs. Accepts the two shapes a stored road
+// definition can have: a flat list of points (older single-segment roads) or a list of segments.
+function normalizeSeedSegments(input) {
+    if (!Array.isArray(input) || !input.length) return [];
+    const toLatLng = (pt) => {
+        if (!pt) return null;
+        const lat = Number(pt.lat !== undefined ? pt.lat : (Array.isArray(pt) ? pt[1] : NaN));
+        const lng = Number(pt.lng !== undefined ? pt.lng : (Array.isArray(pt) ? pt[0] : NaN));
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        return L.latLng(lat, lng);
+    };
+    const isNested = Array.isArray(input[0]);
+    const rawSegments = isNested ? input : [input];
+    return rawSegments
+        .map(segment => (Array.isArray(segment) ? segment.map(toLatLng).filter(Boolean) : []))
+        .filter(segment => segment.length >= 2);
+}
+
+// Reopen an existing road for editing: the drawing tool starts from its geometry instead of a blank
+// canvas, so a road can be continued across a reload, an upload/download round-trip, or a copy. The
+// locked parcels and their stats are then derived from the corridor, exactly as they are after an undo.
+function seedRoadDrawing(seed) {
+    if (!seed) return false;
+    const segments = normalizeSeedSegments(seed.centerline || seed.segments || seed.points);
+    if (!segments.length) return false;
+
+    if (Number.isFinite(Number(seed.width))) roadWidth = Number(seed.width);
+    if (Number.isFinite(Number(seed.sidewalkWidth))) {
+        roadSidewalkWidth = Number(seed.sidewalkWidth);
+        if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
+    }
+
+    roadSegments = [];
+    roadSegmentIds = [];
+    roadPoints = [];
+    roadHasStarted = false;
+    cachedCommittedPolygon = null;
+
+    const seededIds = Array.isArray(seed.segmentIds) ? seed.segmentIds : [];
+    segments.forEach((points, index) => pushRoadSegment(points, seededIds[index]));
+
+    // Keep generated ids clear of the seeded ones so a continued road never collides with a new branch.
+    seededIds.forEach(id => {
+        const match = /^s(\d+)$/.exec(String(id || ''));
+        if (match) nextRoadSegmentId = Math.max(nextRoadSegmentId, Number(match[1]) + 1);
+    });
+
+    const polygon = rebuildRoadGeometryFromSegments();
+    redrawRoadVertexMarkers();
+    recomputeLockedParcelsFromPolygon(polygon, false);
+    updateRoadInfoPanel();
+    updateUndoButtonState();
+    return true;
+}
+
+// The track counterpart. A track is a single un-branched polyline, so there are no segments to keep
+// apart — seeding restores the one centerline, its rails, and the parcels it covers.
+function seedTrackDrawing(seed) {
+    if (!seed) return false;
+    const segments = normalizeSeedSegments(seed.centerline || seed.points);
+    if (!segments.length) return false;
+    if (segments.length > 1) {
+        console.warn('[seedTrackDrawing] track has multiple centerline segments; continuing the first only', segments.length);
+    }
+
+    if (Number.isFinite(Number(seed.width))) trackWidth = Number(seed.width);
+    if (Number.isFinite(Number(seed.trackSpeed))) trackSpeed = Number(seed.trackSpeed);
+    if (Number.isFinite(Number(seed.trackMinRadius))) trackMinCurvatureRadius = Number(seed.trackMinRadius);
+
+    trackPoints = segments[0].slice();
+    trackHasStarted = true; // lockParcelsFromSegment routes to the track bookkeeping only once this is set
+
+    if (trackCenterline) map.removeLayer(trackCenterline);
+    trackCenterline = L.polyline(trackPoints, { color: 'transparent', weight: 0, opacity: 0 }).addTo(map);
+
+    trackMarkers.forEach(marker => { if (marker && map.hasLayer(marker)) map.removeLayer(marker); });
+    trackMarkers = trackPoints.map(point => L.circleMarker(point, {
+        radius: 5, color: '#0066cc', fillColor: '#0066cc', fillOpacity: 1
+    }).addTo(map));
+
+    trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+    if (trackPolygonLayer) map.removeLayer(trackPolygonLayer);
+    trackPolygonLayer = trackPolygon
+        ? L.polygon(trackPolygon, { color: '#0066cc', weight: 1, fillColor: '#e6f2ff', fillOpacity: 0.2 }).addTo(map)
+        : null;
+
+    if (trackRailsLayer) map.removeLayer(trackRailsLayer);
+    trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth });
+    if (trackRailsLayer) trackRailsLayer.addTo(map);
+
+    recomputeLockedParcelsFromPolygon(trackPolygon, true);
+    updateRoadInfoPanel();
+    updateUndoButtonState();
+    return true;
+}
+
+if (typeof window !== 'undefined') {
+    window.seedRoadDrawing = seedRoadDrawing;
+    window.seedTrackDrawing = seedTrackDrawing;
+}
+
+// Continue an existing segment from one of its two ends. Drawing always appends to the end of the
+// active array, so when the user grabs the *first* vertex we reverse the segment in place; a segment
+// has no direction of its own, and the array is the same object `roadSegments` holds.
+function resumeRoadSegment(segmentIndex, atStart) {
+    const segment = roadSegments[segmentIndex];
+    if (!Array.isArray(segment) || !segment.length) return false;
+    if (atStart && segment.length > 1) segment.reverse();
+    roadPoints = segment;
+    roadHasStarted = true;
+    return true;
+}
+
+// Insert a node into an existing segment at a point along one of its edges, so a new segment can
+// start there and the two share a node (an OSM T-join). The inserted node is collinear, so the road
+// polygon and the locked parcels are unchanged — only the node list grows.
+function insertRoadNodeOnEdge(segmentIndex, insertAfter, latlng) {
+    const segment = roadSegments[segmentIndex];
+    if (!Array.isArray(segment) || insertAfter < 0 || insertAfter >= segment.length - 1) return false;
+    segment.splice(insertAfter + 1, 0, L.latLng(latlng.lat, latlng.lng));
+    return true;
 }
 
 function computeRoadMetricsFromSegments(segments, width) {
@@ -762,6 +1077,36 @@ function toggleRoadDrawTool() {
         if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
 
+        // Open the road panel and start listening for clicks. Shared by the fresh-draw path (after the
+        // width picker resolves) and the seeded path (width comes from the road being continued).
+        const activateRoadDrawing = (statusText) => {
+            const roadInfoPanel = document.getElementById('road-info-panel');
+            if (roadInfoPanel) {
+                roadInfoPanel.style.removeProperty('display');
+                roadInfoPanel.classList.add('visible');
+            }
+            const statusElement = document.getElementById('status');
+            if (statusElement) updateStatus(statusText);
+            const roadDrawingControls = document.getElementById('road-drawing-controls');
+            if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+            updateUndoButtonState();
+            map.on('click', handleRoadClick);
+            map.on('mousemove', handleRoadMouseMove);
+            map.on('mouseout', handleRoadMouseOut);
+            document.addEventListener('keydown', handleRoadKeydown);
+        };
+
+        // Continuing an existing road: its geometry and width are already decided, so skip the picker
+        // and reopen the tool on that road. The seed is consumed once.
+        const seed = (typeof window !== 'undefined') ? window.pendingRoadDrawingSeed : null;
+        if (seed) {
+            window.pendingRoadDrawingSeed = null;
+            if (seedRoadDrawing(seed)) {
+                activateRoadDrawing('Click a segment end to continue it, or click the map to draw a new one');
+                return;
+            }
+        }
+
         // Initialize road width via the new width picker modal; fallback to dropdown if modal is unavailable
         try {
             showRoadWidthPicker().then(selection => {
@@ -780,24 +1125,7 @@ function toggleRoadDrawTool() {
                 if (typeof window !== 'undefined') {
                     window.roadSidewalkWidth = roadSidewalkWidth;
                 }
-                // Show the road info panel and set status after width is chosen
-                const roadInfoPanel = document.getElementById('road-info-panel');
-                if (roadInfoPanel) {
-                    roadInfoPanel.style.removeProperty('display');
-                    roadInfoPanel.classList.add('visible');
-                }
-                const statusElement = document.getElementById('status');
-                if (statusElement) updateStatus('Click on the map to start drawing a road');
-                // Show drawing controls now that we're ready
-                const roadDrawingControls = document.getElementById('road-drawing-controls');
-                if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
-                // Update undo button state (initially disabled)
-                updateUndoButtonState();
-                // Activate map and keyboard handlers now that width is set
-                map.on('click', handleRoadClick);
-                map.on('mousemove', handleRoadMouseMove);
-                map.on('mouseout', handleRoadMouseOut);
-                document.addEventListener('keydown', handleRoadKeydown);
+                activateRoadDrawing('Click on the map to start drawing a road');
             }).catch(() => {
                 // If picker was cancelled, turn off drawing mode gracefully
                 updateGlobalRoadDrawingMode(false);
@@ -1031,116 +1359,28 @@ function undoLastRoadSegment() {
         return; // Can't undo if there's only one point or none
     }
 
-    // Get the last segment's history
-    let lastSegment = roadSegmentHistory.pop();
-    if (!lastSegment) {
-        lastSegment = {
-            parcelIds: [],
-            stats: {
-                parcelCount: 0,
-                totalArea: 0,
-                marketPrice: 0,
-                individualOwners: 0,
-                ownershipCounts: { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 }
-            }
-        };
-    }
-
     // Remove last point
     roadPoints.pop();
 
     if (roadPoints.length === 0) {
-        roadSegments = roadSegments.filter(seg => Array.isArray(seg) && seg.length > 0);
-        roadHasStarted = roadSegments.length > 0;
+        // Drop the now-empty segment by index so `roadSegmentIds` stays aligned, and put the pen up:
+        // the next click starts a new segment (or resumes an old one by snapping to its end).
+        const emptyIndex = roadSegments.indexOf(roadPoints);
+        if (emptyIndex !== -1) {
+            roadSegments.splice(emptyIndex, 1);
+            roadSegmentIds.splice(emptyIndex, 1);
+        }
+        roadPoints = [];
+        roadHasStarted = false;
     }
 
-    // Remove last marker
-    if (roadMarkers.length > 0) {
-        const lastMarker = roadMarkers.pop();
-        if (lastMarker && map.hasLayer(lastMarker)) {
-            map.removeLayer(lastMarker);
-        }
-    }
+    // Markers are rebuilt from the segments below, so nothing to pop here.
 
-    // Unlock parcels from the last segment
-    const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
-
-        // Remove from affected parcels array
-        const index = roadAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = roadAffectedParcels[index];
-            roadAffectedParcels.splice(index, 1);
-
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
-            }
-        }
-    }
-
-    // Revert stats
-    lockedStats.parcelCount -= segmentStats.parcelCount;
-    lockedStats.totalArea -= segmentStats.totalArea;
-    lockedStats.marketPrice -= segmentStats.marketPrice;
-    lockedStats.individualOwners -= segmentStats.individualOwners;
-    Object.keys(segmentStats.ownershipCounts).forEach(type => {
-        if (lockedStats.ownershipCounts[type] !== undefined) {
-            lockedStats.ownershipCounts[type] -= segmentStats.ownershipCounts[type];
-            if (lockedStats.ownershipCounts[type] < 0) {
-                lockedStats.ownershipCounts[type] = 0;
-            }
-        }
-    });
-
-    // Rebuild centerline
-    const centerlinePoints = getAllRoadSegments(true);
-    if (roadCenterline) {
-        if (centerlinePoints.length > 0) {
-            roadCenterline.setLatLngs(centerlinePoints);
-        } else {
-            map.removeLayer(roadCenterline);
-            roadCenterline = null;
-        }
-    } else if (centerlinePoints.length > 0) {
-        roadCenterline = L.polyline(centerlinePoints, {
-            color: 'green',
-            weight: 3,
-            dashArray: '5, 5',
-            opacity: 0.7
-        }).addTo(map);
-    }
-
-    // Recalculate and redraw polygon
-    const updatedPolygon = buildRoadUnionPolygonFromSegments(centerlinePoints, roadWidth);
-    // Update the cache after undo (since we rebuilt from scratch)
-    cachedCommittedPolygon = updatedPolygon;
-    if (updatedPolygon) {
-        roadPolygon = updatedPolygon;
-        if (roadPolygonLayer) {
-            roadPolygonLayer.setLatLngs(updatedPolygon);
-        } else {
-            roadPolygonLayer = L.polygon(updatedPolygon, {
-                color: 'green',
-                weight: 2,
-                fillColor: 'green',
-                fillOpacity: 0.3
-            }).addTo(map);
-        }
-    } else {
-        if (roadPolygonLayer) {
-            map.removeLayer(roadPolygonLayer);
-            roadPolygonLayer = null;
-        }
-        roadPolygon = null;
-    }
+    // Rebuild centerline, polygon and vertex markers from the segments, then re-derive the locked
+    // parcels from the resulting corridor.
+    const updatedPolygon = rebuildRoadGeometryFromSegments();
+    redrawRoadVertexMarkers();
+    recomputeLockedParcelsFromPolygon(updatedPolygon, false);
 
     // Update UI
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
@@ -1340,21 +1580,38 @@ function handleRoadClick(e) {
     // Stop event propagation to prevent parcel selection or other click handlers
     L.DomEvent.stopPropagation(e);
 
-    const clickPoint = e.latlng;
+    // Snap to an existing vertex or edge so segments that look connected really do share a node.
+    const snap = findRoadSnapTarget(e.latlng);
+    const clickPoint = snap ? snap.latlng : e.latlng;
+    clearRoadSnapMarker();
+
+    // Clicking an existing segment's end before drawing has started continues that segment instead
+    // of beginning a new one — the same segment, extended, not a second one that happens to touch.
+    if (!roadHasStarted && snap && snap.type === 'endpoint') {
+        if (resumeRoadSegment(snap.segmentIndex, snap.atStart)) {
+            redrawRoadVertexMarkers();
+            rebuildRoadGeometryFromSegments();
+            updateStatus('Continuing this segment — click to add points, press F to finish, C to create');
+            updateRoadInfoPanel();
+            updateUndoButtonState();
+            return;
+        }
+    }
+
+    // Meeting a segment part-way along splits no geometry, it just gives the two segments a node to
+    // share. Insert it now so both the existing segment and the one starting here reference it.
+    if (snap && snap.type === 'edge' && insertRoadNodeOnEdge(snap.segmentIndex, snap.insertAfter, clickPoint)) {
+        redrawRoadVertexMarkers();
+    }
 
     if (!roadHasStarted) {
         // First click - start the road
         roadPoints = [clickPoint];
-        roadSegments.push(roadPoints);
+        pushRoadSegment(roadPoints);
         roadHasStarted = true;
 
         // Add marker for the starting point
-        const startMarker = L.circleMarker(clickPoint, {
-            radius: 5,
-            color: 'green',
-            fillColor: '#00ff00',
-            fillOpacity: 1
-        }).addTo(map);
+        const startMarker = createRoadVertexMarker(clickPoint);
         roadMarkers.push(startMarker); // Store the marker
 
         // Initialize road centerline
@@ -1373,20 +1630,11 @@ function handleRoadClick(e) {
         // Show status for next point
         updateStatus('Click to add road points, press F to finish a segment, press C to create when ready');
     } else {
-        // Build the segment polygon for this click
-        const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
-        const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
-
-        // Add another point to the road
+        // Add another point to the road (the polygon for the new edge is built below, once)
         roadPoints.push(clickPoint);
 
         // Add marker for this point
-        const pointMarker = L.circleMarker(clickPoint, {
-            radius: 5,
-            color: 'green',
-            fillColor: '#00ff00',
-            fillOpacity: 1
-        }).addTo(map);
+        const pointMarker = createRoadVertexMarker(clickPoint);
         roadMarkers.push(pointMarker); // Store the marker
 
         // Update the centerline
@@ -1479,10 +1727,15 @@ function handleRoadClick(e) {
 
 // Handle road mouse movement for preview
 function handleRoadMouseMove(e) {
+    // Show where the click would snap, whether or not a segment is under way: before the first click
+    // the highlight tells the user which segment end they are about to continue.
+    const snap = findRoadSnapTarget(e.latlng);
+    showRoadSnapMarker(snap ? snap.latlng : null);
+
     if (!roadHasStarted || !roadPoints || roadPoints.length === 0) return;
 
-    // Get current mouse position
-    const mouseLatLng = e.latlng;
+    // Get current mouse position (snapped, so the preview lands where the click will)
+    const mouseLatLng = snap ? snap.latlng : e.latlng;
 
     // Display temporary line from last point to current mouse position
     if (roadPreviewLine) {
@@ -1554,6 +1807,8 @@ function handleRoadMouseMove(e) {
 // Handle road mouse movement out
 function handleRoadMouseOut(e) {
     if (!roadDrawingMode) return; // Only act if in drawing mode
+
+    clearRoadSnapMarker();
 
     // Clear preview line
     if (roadPreviewLine) {
@@ -2733,13 +2988,38 @@ function getOwnershipTypeFromParcel(parcel) {
     return 'individual'; // Default
 }
 
+// Locked parcels and their stats are derived state: they are exactly "the parcels the corridor covers".
+// Recomputing them from the corridor polygon keeps them correct no matter what order the vertices were
+// drawn in — which the per-edge undo history could not, once a segment can be resumed, reversed, or
+// seeded from an existing road. One polygon-vs-parcels pass, the same work a single click already does.
+function recomputeLockedParcelsFromPolygon(polygon, isTrack = false) {
+    if (isTrack) {
+        clearTrackAffectedParcels();
+        trackSegmentHistory = [];
+    } else {
+        clearAffectedParcels();
+        roadSegmentHistory = [];
+    }
+    lockedParcelIds.clear();
+    lockedStats = {
+        parcelCount: 0,
+        totalArea: 0,
+        ownershipCounts: { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 },
+        marketPrice: 0,
+        individualOwners: 0
+    };
+    if (Array.isArray(polygon) && polygon.length >= 3) {
+        lockParcelsFromSegment(polygon);
+    }
+}
+
 // Lock parcels from a segment - adds them to the locked set and updates cached stats
 function lockParcelsFromSegment(segmentPolygon) {
     const newParcels = findNewAffectedParcelsForSegment(segmentPolygon);
 
-    if (newParcels.length === 0) {
-        return;
-    }
+    // An edge that locks no new parcels (it stayed inside parcels an earlier edge already took) still
+    // gets a history entry. Undo pops one entry per vertex, so skipping the push here would make undo
+    // pop some *earlier* edge's entry and unlock parcels the road still runs through.
 
     // Determine if we're in track mode
     const isTrackMode = trackHasStarted && trackDrawingMode;
@@ -3567,7 +3847,13 @@ function cancelRoadOrTrackDrawing() {
 
 // Function to finish road drawing
 async function finishRoadDrawing() {
-    const segments = getAllRoadSegments(true).filter(seg => Array.isArray(seg) && seg.length >= 2);
+    // Keep each segment paired with its id while dropping the ones too short to be a line.
+    const allSegments = getAllRoadSegments(true);
+    const drawnSegments = allSegments
+        .map((segment, index) => ({ segment, id: roadSegmentIds[index] || null }))
+        .filter(entry => Array.isArray(entry.segment) && entry.segment.length >= 2);
+    const segments = drawnSegments.map(entry => entry.segment);
+    const segmentIds = drawnSegments.map(entry => entry.id);
     if (!segments.length) return;
 
     // Immediately stop interactions and preview while finishing
@@ -3656,16 +3942,22 @@ async function finishRoadDrawing() {
         console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
     }
 
-    const centerlineSegments = segments
-        .map(segment => Array.isArray(segment)
-            ? segment.map(pt => {
+    // Keep the ids paired with the geometry through the coordinate cleaning, so a road reopened later
+    // continues its segments under the same ids rather than as anonymous new ones.
+    const centerlineWithIds = segments
+        .map((segment, index) => ({
+            points: segment.map(pt => {
                 const lat = Number(pt?.lat ?? (Array.isArray(pt) ? pt[1] : null));
                 const lng = Number(pt?.lng ?? (Array.isArray(pt) ? pt[0] : null));
                 if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
                 return { lat, lng };
-            }).filter(Boolean)
-            : null)
-        .filter(seg => Array.isArray(seg) && seg.length >= 2);
+            }).filter(Boolean),
+            id: segmentIds[index] || null
+        }))
+        .filter(entry => entry.points.length >= 2);
+
+    const centerlineSegments = centerlineWithIds.map(entry => entry.points);
+    const centerlineSegmentIds = centerlineWithIds.map(entry => entry.id);
 
     const latLngPairs = convertRoadPolygonToLatLngPairs(finalRoadPolygon);
     const geoPolygon = convertLatLngPairsToGeoJSON(latLngPairs);
@@ -3689,6 +3981,7 @@ async function finishRoadDrawing() {
     const roadDrawingContext = {
         parentParcelIds: parentParcelIds.slice(),
         centerline: centerlineSegments,
+        segmentIds: centerlineSegmentIds,
         polygon: geoPolygon,
         polygonOrder: 'lnglat', // Explicit: geoPolygon is GeoJSON format [lng, lat]
         latLngPairs,
@@ -3712,24 +4005,35 @@ async function finishRoadDrawing() {
         window.pendingRoadDrawingProposal = roadDrawingContext;
     }
 
+    // When this drawing began as a copy of an existing road, the new proposal has to record where it
+    // came from. The drawing tool is the long way round to the create dialog, but the lineage travels
+    // the same route as it does for every other copied goal.
+    const copySource = (typeof window !== 'undefined') ? window.pendingRoadCopySource : null;
+    if (typeof window !== 'undefined') window.pendingRoadCopySource = null;
+    const copyPrefill = (copySource && copySource.prefill) ? copySource.prefill : {};
+
     showProposalDialog({
         goal: 'road-track',
         lockGoal: true,
         acquisitionMode: 'partial-preferred',
         lockAcquisition: true,
         geometryPreset: {
-            statusText: 'Geometry created by drawing',
+            statusText: copySource
+                ? `Geometry copied from "${copySource.name}" and edited by drawing`
+                : 'Geometry created by drawing',
             submitted: true,
             selectedAction: 'upload',
             disableButtons: true
         },
         prefill: {
+            ...copyPrefill,
             author: defaultAuthor,
-            name: defaultName,
-            description: defaultName,
-            offer: defaultOffer
+            name: copyPrefill.name || defaultName,
+            description: copyPrefill.description || defaultName,
+            offer: Number.isFinite(copyPrefill.offer) ? copyPrefill.offer : defaultOffer
         },
-        summaryStats: ownershipAndAcquisitionStats
+        summaryStats: ownershipAndAcquisitionStats,
+        copySource: copySource ? { proposalId: copySource.proposalId, name: copySource.name } : null
     });
 
     exitRoadDrawingMode();
@@ -3761,9 +4065,11 @@ function cancelRoadDrawing() {
 // Reset road drawing variables and state
 function resetRoadDrawing(hidePanel = true) {
     roadSegments = [];
+    roadSegmentIds = [];
     roadPoints = [];
     roadWidth = 2;
     roadHasStarted = false;
+    clearRoadSnapMarker();
     // Clear affected parcels highlighting BEFORE clearing the array
     clearAffectedParcels();
     roadOwnershipTypeCache.clear();
@@ -6060,6 +6366,40 @@ function toggleTrackDrawTool() {
         if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
 
+        // Open the track panel and start listening for clicks. Shared by the fresh-draw path (after the
+        // speed picker resolves) and the seeded path (speed and width come from the track being continued).
+        const activateTrackDrawing = (statusText) => {
+            const roadInfoPanel = document.getElementById('road-info-panel');
+            if (roadInfoPanel) {
+                roadInfoPanel.style.removeProperty('display');
+                roadInfoPanel.classList.add('visible');
+            }
+            setRoadPanelLabelsForMode('track');
+            const statusElement = document.getElementById('status');
+            if (statusElement) updateStatus(statusText);
+            const roadDrawingControls = document.getElementById('road-drawing-controls');
+            if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+            updateUndoButtonState();
+            map.on('click', handleTrackClick);
+            map.on('mousemove', handleTrackMouseMove);
+            map.on('mouseout', handleTrackMouseOut);
+            document.addEventListener('keydown', handleTrackKeydown);
+            if (typeof window !== 'undefined') {
+                window.trackPreviewAffectedParcelIds = new Set();
+            }
+        };
+
+        // Continuing an existing track: its geometry, width and speed are already decided, so skip the
+        // picker and reopen the tool on that track. The seed is consumed once.
+        const trackSeed = (typeof window !== 'undefined') ? window.pendingTrackDrawingSeed : null;
+        if (trackSeed) {
+            window.pendingTrackDrawingSeed = null;
+            if (seedTrackDrawing(trackSeed)) {
+                activateTrackDrawing('Click to continue the track, or click its first point to draw from the other end');
+                return;
+            }
+        }
+
         // Initialize track speed via picker modal
         try {
             showTrackSpeedPicker().then(({ speed, minRadius, width }) => {
@@ -6069,32 +6409,7 @@ function toggleTrackDrawTool() {
                     trackWidth = width;
                 }
 
-                // Show the road info panel (reuse for tracks)
-                const roadInfoPanel = document.getElementById('road-info-panel');
-                if (roadInfoPanel) {
-                    roadInfoPanel.style.removeProperty('display');
-                    roadInfoPanel.classList.add('visible');
-                }
-                setRoadPanelLabelsForMode('track');
-                const statusElement = document.getElementById('status');
-                if (statusElement) updateStatus('Click on the map to start drawing a track');
-
-                // Show drawing controls
-                const roadDrawingControls = document.getElementById('road-drawing-controls');
-                if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
-                // Update undo button state (initially disabled)
-                updateUndoButtonState();
-
-                // Activate map and keyboard handlers
-                map.on('click', handleTrackClick);
-                map.on('mousemove', handleTrackMouseMove);
-                map.on('mouseout', handleTrackMouseOut);
-                document.addEventListener('keydown', handleTrackKeydown);
-
-                // Initialize Set for fast O(1) lookups in resetHighlight
-                if (typeof window !== 'undefined') {
-                    window.trackPreviewAffectedParcelIds = new Set();
-                }
+                activateTrackDrawing('Click on the map to start drawing a track');
             }).catch(() => {
                 // If picker was cancelled, turn off drawing mode
                 trackDrawingMode = false;
@@ -6195,146 +6510,41 @@ function undoLastTrackSegment() {
         return; // Can't undo if there's only one point or none
     }
 
-    // Get the last segment's history
-    const lastSegment = trackSegmentHistory.pop();
-    if (!lastSegment) {
-        // No history available, but still remove the point
-        trackPoints.pop();
-        if (trackMarkers.length > 0) {
-            const lastMarker = trackMarkers.pop();
-            if (lastMarker && map.hasLayer(lastMarker)) {
-                map.removeLayer(lastMarker);
-            }
-        }
-        // Rebuild centerline
-        if (trackCenterline) {
-            map.removeLayer(trackCenterline);
-            if (trackPoints.length > 0) {
-                trackCenterline = L.polyline(trackPoints, {
-                    color: 'transparent',
-                    weight: 0,
-                    opacity: 0
-                }).addTo(map);
-            } else {
-                trackCenterline = null;
-            }
-        }
-        // Recalculate rails
-        if (trackPoints.length >= 2) {
-            if (trackRailsLayer) {
-                map.removeLayer(trackRailsLayer);
-            }
-            trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-            if (trackRailsLayer) {
-                trackRailsLayer.addTo(map);
-            }
-            trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-            if (trackPolygonLayer) {
-                map.removeLayer(trackPolygonLayer);
-                trackPolygonLayer = null;
-            }
-            if (trackPolygon) {
-                trackPolygonLayer = L.polygon(trackPolygon, {
-                    color: '#0066cc',
-                    weight: 2,
-                    fillColor: '#0066cc',
-                    fillOpacity: 0.3
-                }).addTo(map);
-            }
-        } else {
-            if (trackRailsLayer) {
-                map.removeLayer(trackRailsLayer);
-                trackRailsLayer = null;
-            }
-            if (trackPolygonLayer) {
-                map.removeLayer(trackPolygonLayer);
-                trackPolygonLayer = null;
-            }
-            trackPolygon = null;
-        }
-        updateRoadInfoPanel();
-        return;
-    }
-
-    // Remove last point
+    // Remove last point and its marker
     trackPoints.pop();
-
-    // Remove last marker
-    if (trackMarkers.length > 0) {
-        const lastMarker = trackMarkers.pop();
-        if (lastMarker && map.hasLayer(lastMarker)) {
-            map.removeLayer(lastMarker);
-        }
+    const lastMarker = trackMarkers.pop();
+    if (lastMarker && map.hasLayer(lastMarker)) {
+        map.removeLayer(lastMarker);
     }
 
-    // Unlock parcels from the last segment
-    const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
-        lockedTrackParcelIds.delete(parcelId.toString());
-
-        // Remove from affected parcels array
-        const index = trackAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = trackAffectedParcels[index];
-            trackAffectedParcels.splice(index, 1);
-
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
-            }
-        }
-    }
-
-    // Revert stats
-    lockedStats.parcelCount -= segmentStats.parcelCount;
-    lockedStats.totalArea -= segmentStats.totalArea;
-    lockedStats.marketPrice -= segmentStats.marketPrice;
-    lockedStats.individualOwners -= segmentStats.individualOwners;
-    Object.keys(segmentStats.ownershipCounts).forEach(type => {
-        if (lockedStats.ownershipCounts[type] !== undefined) {
-            lockedStats.ownershipCounts[type] -= segmentStats.ownershipCounts[type];
-            if (lockedStats.ownershipCounts[type] < 0) {
-                lockedStats.ownershipCounts[type] = 0;
-            }
-        }
-    });
-
-    // Rebuild centerline
+    // Rebuild the centerline
     if (trackCenterline) {
         map.removeLayer(trackCenterline);
-        if (trackPoints.length > 0) {
-            trackCenterline = L.polyline(trackPoints, {
-                color: 'transparent',
-                weight: 0,
-                opacity: 0
-            }).addTo(map);
-        } else {
-            trackCenterline = null;
-            trackHasStarted = false;
-        }
+        trackCenterline = null;
+    }
+    if (trackPoints.length > 0) {
+        trackCenterline = L.polyline(trackPoints, {
+            color: 'transparent',
+            weight: 0,
+            opacity: 0
+        }).addTo(map);
+    } else {
+        trackHasStarted = false;
     }
 
-    // Recalculate and redraw rails and polygon
+    // Rebuild rails and the corridor polygon
+    if (trackRailsLayer) {
+        map.removeLayer(trackRailsLayer);
+        trackRailsLayer = null;
+    }
+    if (trackPolygonLayer) {
+        map.removeLayer(trackPolygonLayer);
+        trackPolygonLayer = null;
+    }
     if (trackPoints.length >= 2) {
-        if (trackRailsLayer) {
-            map.removeLayer(trackRailsLayer);
-        }
         trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-        if (trackRailsLayer) {
-            trackRailsLayer.addTo(map);
-        }
+        if (trackRailsLayer) trackRailsLayer.addTo(map);
         trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-        if (trackPolygonLayer) {
-            map.removeLayer(trackPolygonLayer);
-            trackPolygonLayer = null;
-        }
         if (trackPolygon) {
             trackPolygonLayer = L.polygon(trackPolygon, {
                 color: '#0066cc',
@@ -6344,28 +6554,19 @@ function undoLastTrackSegment() {
             }).addTo(map);
         }
     } else {
-        if (trackRailsLayer) {
-            map.removeLayer(trackRailsLayer);
-            trackRailsLayer = null;
-        }
-        if (trackPolygonLayer) {
-            map.removeLayer(trackPolygonLayer);
-            trackPolygonLayer = null;
-        }
         trackPolygon = null;
     }
 
-    // Update UI
+    // Re-derive the locked parcels from the corridor rather than reversing a per-edge history entry:
+    // once a track can be seeded or reversed, "the last entry" no longer describes the last vertex.
+    recomputeLockedParcelsFromPolygon(trackPolygon, true);
+
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
     setRoadOwnershipCounts(lockedStats.ownershipCounts);
 
     const marketEl = document.getElementById('road-market-price');
     if (marketEl) {
-        if (lockedStats.marketPrice > 0) {
-            marketEl.textContent = formatCurrency(lockedStats.marketPrice);
-        } else {
-            marketEl.textContent = '—';
-        }
+        marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
     }
 
     const ownerCountEl = document.getElementById('road-individual-owners');
@@ -6375,16 +6576,33 @@ function undoLastTrackSegment() {
 
     updateRoadAcquiringDifficulty(trackAffectedParcels);
     updateRoadInfoPanel();
-
-    // Update undo button state
     updateUndoButtonState();
 }
 
 // Handle track drawing clicks
+// A track is a single un-branched polyline, so it has exactly two ends. Drawing always appends to the
+// last vertex; clicking the *first* vertex flips the polyline so the track grows from its other end
+// instead. This is what lets a seeded track (copied, or reloaded) be continued in either direction.
+function reverseTrackDirection() {
+    trackPoints.reverse();
+    trackMarkers.reverse();
+    if (trackCenterline) trackCenterline.setLatLngs(trackPoints);
+    updateStatus('Continuing the track from its other end');
+}
+
 function handleTrackClick(e) {
     L.DomEvent.stopPropagation(e);
 
     const clickPoint = e.latlng;
+
+    if (trackHasStarted && trackPoints.length > 1) {
+        const start = map.latLngToLayerPoint(trackPoints[0]);
+        if (map.latLngToLayerPoint(clickPoint).distanceTo(start) <= ROAD_SNAP_PIXELS) {
+            reverseTrackDirection();
+            updateUndoButtonState();
+            return;
+        }
+    }
 
     if (!trackHasStarted) {
         // First click - start the track
@@ -7107,24 +7325,33 @@ async function finishTrackDrawing() {
         return;
     }
 
+    // Same lineage hand-off as roads: a track that began life as a copy carries its source to the dialog.
+    const copySource = (typeof window !== 'undefined') ? window.pendingRoadCopySource : null;
+    if (typeof window !== 'undefined') window.pendingRoadCopySource = null;
+    const copyPrefill = (copySource && copySource.prefill) ? copySource.prefill : {};
+
     showProposalDialog({
         goal: 'road-track',
         lockGoal: true,
         acquisitionMode: 'partial-preferred',
         lockAcquisition: true,
         geometryPreset: {
-            statusText: 'Geometry created by drawing',
+            statusText: copySource
+                ? `Geometry copied from "${copySource.name}" and edited by drawing`
+                : 'Geometry created by drawing',
             submitted: true,
             selectedAction: 'upload',
             disableButtons: true
         },
         prefill: {
+            ...copyPrefill,
             author: defaultAuthor,
-            name: defaultName,
-            description: defaultName,
-            offer: defaultOffer
+            name: copyPrefill.name || defaultName,
+            description: copyPrefill.description || defaultName,
+            offer: Number.isFinite(copyPrefill.offer) ? copyPrefill.offer : defaultOffer
         },
-        summaryStats: ownershipAndAcquisitionStats
+        summaryStats: ownershipAndAcquisitionStats,
+        copySource: copySource ? { proposalId: copySource.proposalId, name: copySource.name } : null
     });
 
     exitTrackDrawingMode();

@@ -1,10 +1,26 @@
 /* ========== Map ========== */
 
-/* Map 3D toggle button */
+/* Map 2D / 3D mode buttons.
+   Stacked, always-visible radio-style controls (bottom → top): 2D, 3D, then the
+   realistic globe (styled in photoreal-mode.css). The active mode's button gets the
+   .active "pressed" look (see sidebar.css).
+
+   They live at the bottom-LEFT: the parcel and proposal detail panels are anchored
+   bottom-right and used to bury them. The stack sits just clear of the sidebar, and
+   slides to the window edge when the sidebar collapses — the same `body.sidebar-collapsed`
+   signal #toggle-sidebar uses. One variable so all four buttons move together. */
+:root {
+    --map-mode-stack-left: 330px; /* sidebar (320px) + gutter */
+}
+
+body.sidebar-collapsed {
+    --map-mode-stack-left: 10px;
+}
+
+#mode-2d-toggle.map-mode-toggle,
 #mode-3d-toggle.map-mode-toggle {
     position: absolute;
-    right: 10px;
-    bottom: 48px;
+    left: var(--map-mode-stack-left);
     z-index: 1000;
     background: white;
     border: 1px solid rgba(0,0,0,0.2);
@@ -19,14 +35,16 @@
     cursor: pointer;
 }
 
-/* Walk-through button — appears just above the 3D toggle while in 3D mode.
-   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
-   Matches the 3D toggle's box dimensions and uses a yellow fill so it stands out from the
-   3D / 2D mode-toggle pair. */
+#mode-2d-toggle.map-mode-toggle { bottom: 48px; }
+#mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+
+/* Walk-through button — stacked above the mode buttons (2D / 3D / globe) and only
+   visible while in 3D mode. Hidden by default via the [hidden] attribute; three-mode.js
+   toggles visibility on enter/exit. Yellow fill so it stands out from the mode buttons. */
 #mode-walk-toggle.map-mode-walk-btn {
     position: absolute;
-    right: 10px;
-    bottom: 96px;
+    left: var(--map-mode-stack-left);
+    bottom: 192px;
     z-index: 1000;
     background: #fdd835;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -89,6 +107,49 @@
     z-index: 10;
 }
 
+/* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
+   glTF models) are still loading. Kept at the bottom so it doesn't collide with the top-centre
+   ephemeral-message toasts (which would otherwise cover it until they fade). */
+#three-container .three-mode-buildings-loader {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    z-index: 11;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease;
+}
+
+#three-container .three-mode-buildings-loader.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#three-container .three-mode-loader-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: three-mode-spin 0.7s linear infinite;
+}
+
+@keyframes three-mode-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
 #three-container .three-mode-parcel-panel {
     position: absolute;
@@ -113,6 +174,76 @@
     margin-bottom: 8px;
     color: #1a202c;
     word-break: break-word;
+}
+
+/* "Proposal: <name> [show]" row in the parcel panel, and the proposal name in the
+   aggregate proposal panel. */
+#three-container .three-mode-parcel-panel .parcel-panel-proposal {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: -2px 0 8px;
+    font-size: 12px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-label {
+    color: #5a6472;
+    flex: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #2c6cb0;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    word-break: break-word;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show:hover {
+    text-decoration: underline;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show .show-tag {
+    color: #8a93a0;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-name {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #2c6cb0;
+    word-break: break-word;
+}
+
+/* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
+#three-container .three-mode-parcel-panel .parcel-panel-subnote {
+    font-size: 11px;
+    color: #8a93a0;
+    margin: 0 0 8px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg {
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg:empty {
+    display: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-positive {
+    color: #1c8a4a;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-negative {
+    color: #c0392b;
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-table {
@@ -188,6 +319,13 @@
         width: auto;
         max-width: 360px;
     }
+
+    /* The bottom-docked parcel/proposal panel overlaps the floating status message
+       ("Applied building proposal …") on small screens. While an info box is open the box
+       takes over that corner, so hide the status to avoid the text bleeding through. */
+    body.three-mode-active.three-info-open .floating-status {
+        display: none !important;
+    }
 }
 
 #three-container .three-mode-radius-row {
@@ -219,6 +357,30 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+#three-container .three-mode-decor-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#three-container .three-mode-trees-row {
+    display: flex;
+    align-items: center;
+}
+
+#three-container .three-mode-trees-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+#three-container .three-mode-trees-toggle input[type="checkbox"] {
+    accent-color: #3a6b35;
+    cursor: pointer;
+    margin: 0;
 }
 
 #three-container .three-mode-emphasis-label {

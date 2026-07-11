@@ -1,0 +1,97 @@
+-- Daml Script tests for the minimal purchase flow (lens -> buyer -> owner).
+-- Run with `daml test`. See feature-daml.md §10.
+module Test where
+
+import Daml.Script
+import Proposal
+
+-- Happy path: lens certifies ownership, buyer proposes, owner accepts -> Sale.
+testHappyPath : Script ()
+testHappyPath = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with
+      lens
+      owner
+      parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer
+      owner
+      lens
+      parcelId = "PARCEL-1"
+      price = 100.0
+      certCid = cert
+      imageUri = Some "ipfs://bafyProposalMetadata"
+
+  saleCid <- submit owner do
+    exerciseCmd proposal Accept
+
+  Some sale <- queryContractId owner saleCid
+  assertMsg "wrong price" (sale.price == 100.0)
+  assertMsg "wrong parcel" (sale.parcelId == "PARCEL-1")
+  assertMsg "wrong buyer" (sale.buyer == buyer)
+  assertMsg "metadata uri lost on accept" (sale.imageUri == Some "ipfs://bafyProposalMetadata")
+  pure ()
+
+-- Only the owner may accept: a buyer-submitted Accept must fail authorization.
+testOnlyOwnerAccepts : Script ()
+testOnlyOwnerAccepts = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with lens, owner, parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer, owner, lens, parcelId = "PARCEL-1", price = 50.0, certCid = cert, imageUri = None
+
+  submitMustFail buyer do
+    exerciseCmd proposal Accept
+  pure ()
+
+-- Buyer can withdraw the offer before acceptance.
+testWithdraw : Script ()
+testWithdraw = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with lens, owner, parcelId = "PARCEL-1"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer, owner, lens, parcelId = "PARCEL-1", price = 75.0, certCid = cert, imageUri = None
+
+  submit buyer do
+    exerciseCmd proposal Withdraw
+  pure ()
+
+-- A proposal carrying no metadata is legal (contracts created before 0.4.0 read back this way),
+-- and the absence must survive Accept rather than becoming an empty string.
+testAcceptWithoutImageUri : Script ()
+testAcceptWithoutImageUri = do
+  lens <- allocateParty "Lens"
+  owner <- allocateParty "Owner"
+  buyer <- allocateParty "Buyer"
+
+  cert <- submit lens do
+    createCmd OwnershipCertificate with lens, owner, parcelId = "PARCEL-2"
+
+  proposal <- submit buyer do
+    createCmd PurchaseProposal with
+      buyer, owner, lens, parcelId = "PARCEL-2", price = 10.0, certCid = cert, imageUri = None
+
+  saleCid <- submit owner do
+    exerciseCmd proposal Accept
+
+  Some sale <- queryContractId owner saleCid
+  assertMsg "absent metadata should stay absent" (sale.imageUri == None)
+  pure ()

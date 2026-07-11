@@ -34,6 +34,13 @@
         return template(fallback, params);
     };
 
+    const walrusAggregatorBase = () => {
+        const configured = (typeof globalScope.WALRUS_AGGREGATOR_URL === 'string')
+            ? globalScope.WALRUS_AGGREGATOR_URL.trim()
+            : '';
+        return (configured || 'https://aggregator.walrus-testnet.walrus.space').replace(/\/$/, '');
+    };
+
     const toHttp = (url) => {
         if (!url) return '';
         const str = String(url).trim();
@@ -41,6 +48,10 @@
         if (str.startsWith('ipfs://')) {
             const hash = str.replace(/^ipfs:\/\//, '');
             return `https://ipfs.io/ipfs/${hash}`;
+        }
+        if (str.startsWith('walrus://')) {
+            const blobId = str.replace(/^walrus:\/\//, '').replace(/^\/+/, '');
+            return blobId ? `${walrusAggregatorBase()}/v1/blobs/${blobId}` : '';
         }
         return str;
     };
@@ -656,6 +667,12 @@
 
             main.appendChild(titleRow);
             main.appendChild(meta);
+            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(entry.proposalId) : '';
+            if (proposalEns && typeof ensNameLineHtml === 'function') {
+                const ensWrap = document.createElement('div');
+                ensWrap.innerHTML = ensNameLineHtml(proposalEns);
+                if (ensWrap.firstElementChild) main.appendChild(ensWrap.firstElementChild);
+            }
             if (entry.description) {
                 main.appendChild(description);
             }

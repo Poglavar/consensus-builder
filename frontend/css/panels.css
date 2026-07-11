@@ -1296,14 +1296,17 @@ with a width of 400px, and a height of half of the map height minus 5px.
     margin-left: 0;
 }
 
+/* Header now carries the proposal's name, so keep it to a single line with an ellipsis
+   (full name is in the title attribute) instead of wrapping and growing the collapsed card. */
 #proposal-details-panel .panel-header h3 {
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
+    line-height: 1.25;
+    display: block;
     flex: 1 1 auto;
     min-width: 0;
     margin-right: 0;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #proposal-details-panel .proposal-details-toggle {
@@ -1383,14 +1386,20 @@ with a width of 400px, and a height of half of the map height minus 5px.
     margin: 0;
 }
 
+/* Collapsed proposal card: hide the body, but keep the footer (Apply to map / Share) showing.
+   The header rounds only its top corners since the footer sits directly beneath it. */
 #proposal-details-panel.is-minimized .panel-header {
     border-bottom: none;
-    border-radius: 12px;
+    border-radius: 12px 12px 0 0;
 }
 
-#proposal-details-panel.is-minimized .panel-body,
-#proposal-details-panel.is-minimized .panel-footer {
+#proposal-details-panel.is-minimized .panel-body {
     display: none;
+}
+
+/* When collapsed with no actions in the footer, the header is the whole card, so round it fully. */
+#proposal-details-panel.is-minimized:not(:has(.panel-footer:not(:empty))) .panel-header {
+    border-radius: 12px;
 }
 
 /* Mobile panel padding adjustments */

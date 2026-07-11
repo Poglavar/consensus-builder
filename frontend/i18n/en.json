@@ -1,4 +1,7 @@
 {
+    "multitab": {
+        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit."
+    },
     "languages": {
         "en": "English",
         "es": "Spanish",
@@ -554,7 +557,9 @@
                 "apply": "Apply to map",
                 "applying": "Applying...",
                 "remove": "Remove from map",
-                "share": "Share Proposal"
+                "share": "Share Proposal",
+                "copy": "Copy into new proposal",
+                "drive": "Drive this track"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -640,7 +645,8 @@
                 "ownerTooltip": "Owner: {{name}}"
             },
             "descendantRoadSuffix": " • Road",
-            "descendantRoadNamedSuffix": " • Road: {{name}}"
+            "descendantRoadNamedSuffix": " • Road: {{name}}",
+            "basedOn": "Based on"
         },
         "block": {
             "title": "Block Info",
@@ -985,7 +991,7 @@
                         "park": "Parks",
                         "square": "Squares",
                         "structure": "Other structures",
-                        "reparcellization": "Reparcellization",
+                        "reparcellization": "Land readjustment",
                         "parcel": "Parcel proposals",
                         "other": "Other"
                     }
@@ -1024,7 +1030,7 @@
                     "lake": "Lake",
                     "decide later": "Decide later",
                     "structure": "Structure",
-                    "reparcellization": "Reparcellization",
+                    "reparcellization": "Land readjustment",
                     "parcel": "Parcel",
                     "other": "Other"
                 },
@@ -1144,6 +1150,8 @@
                 "mintUploadingIPFS": "Uploading to IPFS...",
                 "mintWaitingSignature": "Waiting for wallet signature...",
                 "mintingOnChain": "Minting on chain...",
+                "mintSavingServer": "Saving proposal to server...",
+                "mintSavedChainOnly": "Minted on-chain, but saving to the server failed — the ENS link may not resolve until you retry.",
                 "processingImageForUpload": "Processing image for upload...",
                 "downloadButton": "Download",
                 "downloadSuccess": "Proposal downloaded as JSON",
@@ -1163,6 +1171,15 @@
                     "fetchingPlan": "Fetching plan…",
                     "fetchingPlanTitle": "Fetching proposal",
                     "countHeading": "There are {{count}} proposal{{suffix}} in the current plan",
+                    "nameHeading": "Or give this plan a memorable name (ENS):",
+                    "namePlaceholder": "e.g. harbor-redevelopment",
+                    "nameButton": "Save name",
+                    "namePrepFirst": "Prepare the share link above first (upload all selected proposals).",
+                    "nameInvalid": "Use at least 3 characters: a–z, 0–9, hyphens.",
+                    "nameSaving": "Saving…",
+                    "nameTaken": "That name is taken — pick another.",
+                    "nameError": "Could not save the name.",
+                    "nameSaved": "saved (resolves to this plan).",
                     "applyUnknownFailure": "Unknown error while applying.",
                     "checking": "Checking…",
                     "checkingHint": "Checking upload status…",
@@ -1185,11 +1202,17 @@
                     "someAlreadyAppliedMessage": "Some proposals are already applied on the map:",
                     "whatToDo": "What would you like to do?",
                     "applyRemaining": "Apply remaining",
+                    "replacedConflicting": "Replaced {{count}} proposal(s) on the same parcels: {{list}}",
                     "notFoundOnServer": "Not found on server",
                     "partiallyAppliedTitle": "Partially Applied",
                     "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",
                     "continueAdding": "Continue adding",
                     "startFresh": "Start fresh",
+                    "appliedCountDetailed": "Applied {{count}} proposal{{suffix}}:",
+                    "appliedToast": "Applied {{count}} proposal{{suffix}}.",
+                    "skippedCountDetailed": "Skipped {{count}} duplicate proposal{{suffix}} (already present):",
+                    "failedCountDetailed": "Failed to apply {{count}} proposal{{suffix}}:",
+                    "applyBlockedByDependencies": "Blocked: dependencies not satisfied after retries.",
                     "summary": "Shared Plan Result"
                 }
             },
@@ -1239,27 +1262,53 @@
             "proposalTypeOptions": {
                 "purchase": "Purchase",
                 "urbanRule": "Urban Rule",
-                "reparcellization": "Reparcellization",
+                "reparcellization": "Land readjustment",
                 "jointInvestment": "Joint Investment"
             },
             "goalOptions": {
+                "asIs": "No change",
                 "buildings": "Buildings",
                 "single": "Building(s)",
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
                 "roadTrack": "Road/Track",
-                "decideLater": "Decide later",
+                "decideLater": "Merge",
                 "urbanRule": "Urban Rule",
-                "reparcellization": "Reparcellization",
+                "reparcellization": "Subdivide",
                 "ownershipTransfer": "Ownership transfer"
+            },
+            "goalSections": {
+                "landUse": "Land use",
+                "parcels": "Parcels",
+                "ownership": "Ownership"
+            },
+            "parcelsOptions": {
+                "asIs": "No change",
+                "merge": "Merge",
+                "readjust": "Readjust"
+            },
+            "ownershipRecipients": {
+                "noChange": "No change",
+                "toMe": "To me",
+                "toCity": "To city",
+                "thirdParty": "Third party",
+                "perSlice": "Per slice"
+            },
+            "recipientPlaceholder": "Recipient name or 0x address",
+            "recipientScope": {
+                "specific": "Specific address",
+                "any": "Anyone"
             },
             "ownershipTransfer": {
                 "label": "Transfer direction:",
                 "toMe": "To me",
                 "fromMe": "From me",
                 "nameToMe": "Ownership transfer to me",
-                "nameFromMe": "Ownership transfer from me"
+                "nameFromMe": "Ownership transfer from me",
+                "nameToCity": "Ownership transfer to city",
+                "nameThirdParty": "Ownership transfer to third party",
+                "nameOfferToSell": "Offer to sell"
             },
             "typologyOptions": {
                 "block": "Block",
@@ -1285,7 +1334,9 @@
                 "status": {
                     "noGeometry": "No geometry: please define a geometry",
                     "submitted": "✔️ geometry submitted",
-                    "auto": "Algorithmic geometry will be generated"
+                    "auto": "Algorithmic geometry will be generated",
+                    "copied": "Geometry copied from \"{name}\"",
+                    "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it"
                 }
             },
             "reparcellization": {
@@ -1382,7 +1433,8 @@
                 "unknown": "Unknown error",
                 "cancel": "Cancel",
                 "createInMemory": "Create in memory"
-            }
+            },
+            "optionsSectionTitle": "Options"
         }
     },
     "blockify": {
@@ -1414,10 +1466,13 @@
             "labels": {
                 "setback": "Setback (m):",
                 "chamfer": "Chamfer (m):",
+                "simplify": "Simplify (m):",
                 "width": "Building Width (m):",
                 "height": "Building Height (m):",
                 "gaps": "Number of gaps:",
-                "gapWidth": "Gap width (m):"
+                "gapWidth": "Gap width (m):",
+                "wings": "Number of wings:",
+                "wingLength": "Wing length (m):"
             },
             "helper": {
                 "adjust": "Adjust parameters using the sliders to modify the building shape.",
@@ -1438,6 +1493,35 @@
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} Parcels"
+            },
+            "handles": {
+                "gap": "Drag to move gap",
+                "wing": "Drag to move wing"
+            },
+            "existing": {
+                "toggle": "Based on existing buildings",
+                "proposedHeight": "Proposed height (floors):",
+                "additionalFloors": "Additional floors:",
+                "floorHeight": "Floor height (m):",
+                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
+                "summaryExact": "Proposing {{count}} buildings at {{height}} m.",
+                "loading": "Loading existing buildings...",
+                "notAvailable": "Existing building data is not available for this city yet.",
+                "noneFound": "No existing buildings found on the selected parcels.",
+                "loadFailed": "Could not load existing buildings. Try again.",
+                "summary": "Raising {{count}} of {{total}} existing buildings."
+            },
+            "manual": {
+                "edit": "Edit shape manually",
+                "back": "Back to sliders",
+                "hint": "Manual mode: drag the vertices to reshape the outline. Height stays adjustable.",
+                "needShape": "Generate a shape with the sliders first, then edit it manually.",
+                "confirmReset": "Discard manual edits and go back to the sliders?",
+                "error": "Could not build from the manual outline. Try moving the vertex back.",
+                "vertex": "Drag to reshape",
+                "uploadGeojson": "Upload GeoJSON",
+                "uploadNoPolygon": "No usable polygon found in that file.",
+                "uploadError": "Could not read that file."
             }
         }
     },
@@ -1511,7 +1595,7 @@
     },
     "reparcellization": {
         "modal": {
-            "title": "Reparcellization",
+            "title": "Land readjustment",
             "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}",
             "subtitleSingleOwner": "{{count}} parcel{{suffix}} · single owner",
@@ -1528,7 +1612,7 @@
             "ownerLegend": "Owner Legend",
             "legendMeta": "{{percent}} · {{count}} parcel{{suffix}}",
             "selectedParcelsLabel": "selected parcels",
-            "defaultDescription": "Reparcellization proposal for {{label}}",
+            "defaultDescription": "Land readjustment proposal for {{label}}",
             "syntheticOwner": "Owner of {{parcel}}",
             "single": {
                 "parcelListTitle": "Selected parcels",
@@ -1556,19 +1640,48 @@
             "uploadGeojson": "Upload GeoJSON",
             "assignOwners": "Assign owners",
             "unassigned": "Unassigned",
+            "publicLand": "Public land",
             "originalOwners": "Original owners",
+            "owners": "Owners",
+            "beforeAfter": "Before / After",
+            "labelBefore": "Before",
+            "labelAfter": "After",
             "newPlots": "New plots",
             "colOwner": "Owner",
             "colOrigArea": "Original",
             "colNewArea": "New",
             "colPlot": "Plot",
             "colOwners": "Owners",
+            "colContributed": "Contributed",
+            "colAssigned": "Assigned",
+            "colBalance": "Balance",
+            "colCashOffer": "Cash offer",
+            "totalCashOffer": "Total cash offers: {{amount}}",
+            "sweepHandleHint": "Drag to rotate the parcel lines",
+            "drawPlot": "Draw plot",
+            "drawLine": "Split with line",
+            "drawFinish": "Finish plot",
+            "drawFinishLine": "Finish line",
+            "drawUndo": "Undo point",
+            "drawCancel": "Cancel",
+            "coverageComplete": "All pooled land assigned ({{pct}}%).",
+            "coverageIncomplete": "{{count}} plot(s) unassigned · {{area}} not yet assigned ({{pct}}% covered).",
             "status": {
                 "preparingPreview": "Preparing repartition preview...",
                 "missingOwners": "Could not determine owners for reparcellization.",
                 "algorithmUnavailable": "Selected algorithm is not available yet.",
                 "splitFailed": "Failed to split the parcel geometry.",
                 "success": "Layout generated. Review and click Done to save.",
+                "manualHint": "Draw plots on the map, then assign each to an owner.",
+                "drawHint": "Click to add points, drag to adjust, then press Finish.",
+                "drawTooFew": "Add at least 3 points to make a plot.",
+                "drawInvalid": "Could not build a valid plot from those points.",
+                "drawNoOverlap": "The drawn plot is outside the pooled land.",
+                "drawSuccess": "Plot added. Click it to assign owners.",
+                "lineHint": "Click to add points, drag to adjust, then press Finish to split.",
+                "lineTooFew": "Add at least 2 points to make a split line.",
+                "lineNoSplit": "The line did not cross any plot to split.",
+                "lineSuccess": "Plot split. Click each part to assign owners.",
                 "uploadEmpty": "Uploaded file contains no polygon features.",
                 "uploadParseError": "Failed to parse GeoJSON file.",
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
@@ -1805,7 +1918,13 @@
             "success": "Location detected: {{label}}"
         },
         "switch": {
-            "confirm": "Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?"
+            "confirm": "Switching city will reload the app. Your work in this city is kept and will be here when you come back.\n\nDo you want to continue?"
+        },
+        "switchPrompt": {
+            "title": "This proposal is in {requested} — you are viewing {current}",
+            "body": "Opening it switches the map to {requested} and reloads. Your work in {current} is kept and will be here when you come back.",
+            "stay": "Stay in {current}",
+            "switch": "Open in {requested}"
         }
     },
     "alerts": {
@@ -1878,7 +1997,8 @@
             "please_enter_a_description": "Please enter a description.",
             "please_enter_a_valid_offer_amount_eur": "Please enter a valid offer amount (EUR).",
             "please_enter_a_valid_offer_amount": "Please enter a valid offer amount.",
-            "please_enter_an_author_name": "Please enter an author name."
+            "please_enter_an_author_name": "Please enter an author name.",
+            "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again."
         }
     },
     "gameDialogs": {
@@ -1904,6 +2024,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Can't apply proposal, prerequisite parcels are missing: {{missing}}",
+            "proposal_conflict_title": "Proposal conflict — same geography",
+            "proposal_conflict_missing_title": "Some parcels are missing",
+            "proposal_conflict_intro": "Applying \"{{title}}\" needs parcels that aren't available:",
+            "proposal_conflict_overlaps": "Overlaps applied proposal \"{{title}}\"",
+            "proposal_conflict_shares": "Shares {{count}} parcel{{suffix}} with this proposal.",
+            "proposal_conflict_shares_blocked": "Shares {{count}} parcel{{suffix}}, but it can't be unapplied on its own — these are built on top of it:",
+            "proposal_conflict_unapply_those_first": "Unapply those first.",
+            "proposal_conflict_not_loaded": "{{count}} ancestor parcel{{suffix}} not loaded. Applying anyway will proceed with the parcels that are present.",
+            "proposal_conflict_unapply_continue": "Unapply it & continue",
+            "proposal_conflict_unapplying": "Unapplying…",
+            "proposal_conflict_apply_anyway": "Apply anyway",
+            "proposal_conflict_cancel": "Cancel",
+            "proposal_conflict_close": "Close",
             "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
             "failed_to_apply_shared_proposals": "Failed to apply shared proposals.",
@@ -1933,6 +2066,28 @@
         }
     },
     "threeMode": {
+        "controls": {
+            "buildingRenderingAria": "Building rendering",
+            "built": "Built",
+            "both": "Both",
+            "planned": "Planned",
+            "radius": "Radius",
+            "solid": "Solid:",
+            "neither": "Neither",
+            "showAllParcels": "Show all parcels",
+            "trees": "Trees"
+        },
+        "overlay": {
+            "rendering": "Rendering…",
+            "loadingBuildings": "Loading buildings…"
+        },
+        "toggle": {
+            "switchTo2d": "Switch to 2D",
+            "switchTo3d": "Switch to 3D",
+            "preparing3d": "Preparing 3D view",
+            "walk": "Take a walk through your changes",
+            "realistic": "Realistic context (Google Photorealistic 3D)"
+        },
         "parcelPanel": {
             "title": "Parcel",
             "built": "Built",
@@ -1942,7 +2097,15 @@
             "floorNote": "@ {{h}} m/floor",
             "valueTitle": "Value @ €{{p}}/m²",
             "priceLabel": "Price per m²",
-            "gain": "Proposal gain"
+            "gain": "Proposal gain",
+            "currentValue": "Current value",
+            "proposalLabel": "Proposal",
+            "show": "show"
+        },
+        "proposalPanel": {
+            "title": "Proposal info",
+            "parcelsLabel": "Parcels",
+            "avgPerParcel": "Avg / parcel"
         }
     }
 }

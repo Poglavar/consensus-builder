@@ -708,6 +708,14 @@
     align-items: stretch;
 }
 
+/* Grid items default to min-width:auto, so a wide child (the 5-col ledger table)
+   would blow the track past the viewport. Let items shrink; tables scroll inside. */
+.reparcel-map-panel,
+.reparcel-legend-panel,
+.reparcel-actions {
+    min-width: 0;
+}
+
 .reparcel-map-panel {
     grid-area: map;
     background: #f8fafc;
@@ -717,7 +725,75 @@
     min-height: 420px;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
+
+/* Before/After swipe comparison */
+.reparcel-compare-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 1000;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.reparcel-compare-btn.active {
+    background: #137547;
+    border-color: #137547;
+    color: #fff;
+}
+.reparcel-before-map {
+    position: absolute;
+    inset: 0;
+    z-index: 800;
+    pointer-events: none;
+}
+.reparcel-compare-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+    z-index: 801;
+    cursor: ew-resize;
+    transform: translateX(-1px);
+}
+.reparcel-compare-grip {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #374151;
+    cursor: ew-resize;
+}
+.reparcel-compare-label {
+    position: absolute;
+    bottom: 10px;
+    z-index: 802;
+    background: rgba(17, 24, 39, 0.7);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+.reparcel-compare-label--before { left: 10px; }
+.reparcel-compare-label--after { right: 10px; }
 
 .reparcel-map {
     width: 100%;
@@ -748,6 +824,7 @@
 
 .reparcel-legend-list {
     overflow-y: auto;
+    overflow-x: auto;
     max-height: 240px;
     padding-right: 6px;
 }
@@ -872,6 +949,56 @@
     }
 }
 
+/* Narrow phones (≈300–480px): tighten paddings, shrink map/tables, let the
+   5-column ledger scroll horizontally instead of overflowing the screen. */
+@media (max-width: 480px) {
+    .reparcel-header {
+        padding: 12px;
+    }
+    .reparcel-header__text h2 {
+        font-size: 17px;
+    }
+    .reparcel-subtitle {
+        font-size: 12px;
+    }
+    .reparcel-content {
+        padding: 0 10px 14px;
+        gap: 12px;
+    }
+    .reparcel-map-panel {
+        padding: 8px;
+        min-height: 260px;
+    }
+    .reparcel-map {
+        height: 260px;
+    }
+    .reparcel-legend-panel {
+        padding: 10px;
+    }
+    .reparcel-owners-table,
+    .reparcel-newplots-table {
+        font-size: 11px;
+    }
+    .reparcel-owners-table th,
+    .reparcel-owners-table td,
+    .reparcel-newplots-table th,
+    .reparcel-newplots-table td {
+        padding: 4px 5px;
+    }
+    .cash-offer-cell input.cash-offer-input {
+        width: 54px;
+    }
+    .btn-draw-tool {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+    .reparcel-legend-actions .btn-icon,
+    .reparcel-legend-actions .btn-upload-label {
+        width: 36px;
+        height: 36px;
+    }
+}
+
 /* Reparcellization: owners & new plots tables */
 .reparcel-owners-table,
 .reparcel-newplots-table {
@@ -944,15 +1071,142 @@
     border-top: 1px solid #e5e7eb;
 }
 
+/* New plots now leads the panel — drop the top divider on the first section. */
+.reparcel-legend-panel > .reparcel-newplots-header:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* Owners section sits below New plots — give it the divider instead. */
+.reparcel-legend-header {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
 .reparcel-newplots-header h3 {
     margin: 0;
     font-size: 16px;
     color: #111827;
 }
 
+.reparcel-legend-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #111827;
+}
+
+/* Editing tools row (draw/line/shuffle/upload + draw toolbar) below the radios. */
+.reparcel-edit-tools {
+    margin-top: 10px;
+}
+
+/* Owner cash-offer column */
+.cash-offer-cell input.cash-offer-input {
+    width: 70px;
+    padding: 2px 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.reparcel-cashtotal {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+}
+.reparcel-cashtotal:empty {
+    display: none;
+}
+
 .reparcel-newplots-list {
     overflow-y: auto;
+    overflow-x: auto;
     max-height: 240px;
+}
+
+/* Reparcellization: hovering a plot row highlights it on the map */
+.reparcel-newplot-row {
+    cursor: pointer;
+}
+.reparcel-newplot-row:hover {
+    background: #ecfdf5;
+}
+
+/* Reparcellization: in-progress drawing toolbar (Finish / Undo / Cancel) */
+.reparcel-draw-toolbar {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+    flex-wrap: wrap;
+}
+.reparcel-draw-toolbar[hidden] {
+    display: none;
+}
+.btn-draw-tool {
+    flex: 1 1 auto;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.btn-draw-tool:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+.btn-draw-tool:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.btn-draw-finish {
+    background: #137547;
+    border-color: #137547;
+    color: #fff;
+    font-weight: 600;
+}
+.btn-draw-finish:hover:not(:disabled) {
+    background: #0f5e39;
+    border-color: #0f5e39;
+}
+
+/* Reparcellization: sweep-line orientation point (drag to rotate the cut lines) */
+.reparcel-sweep-handle {
+    width: 22px;
+    height: 22px;
+    background: #7A1CAC;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    cursor: grab;
+    box-sizing: border-box;
+}
+.reparcel-sweep-handle:active {
+    cursor: grabbing;
+    background: #5c1382;
+}
+
+/* Reparcellization: draggable vertex handles while drawing a plot */
+.reparcel-vertex-handle {
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 2px solid #137547;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    cursor: grab;
+    box-sizing: border-box;
+}
+.reparcel-vertex-handle:active {
+    cursor: grabbing;
+    background: #d1fae5;
 }
 
 /* Reparcellization: legend actions (shuffle + upload) */
@@ -966,6 +1220,26 @@
     display: flex;
     gap: 6px;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Algorithm radios wrap on narrow screens */
+.reparcel-alg-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+}
+
+/* Drawing icons are greyed out until Manual is selected */
+.reparcel-legend-actions .btn-icon:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+.reparcel-legend-actions .btn-icon:disabled:hover {
+    background: #fff;
+    border-color: #d1d5db;
 }
 
 .reparcel-legend-actions .btn-icon,
@@ -988,6 +1262,56 @@
 .reparcel-legend-actions .btn-upload-label:hover {
     background: #f3f4f6;
     border-color: #9ca3af;
+}
+
+/* Reparcellization: active "Draw plot" toggle */
+.reparcel-legend-actions .btn-icon[aria-pressed="true"],
+.reparcel-legend-actions .btn-icon.active {
+    background: #d1fae5;
+    border-color: #1B998B;
+    box-shadow: inset 0 0 0 1px #1B998B;
+}
+
+/* Reparcellization: owner ledger balance cells */
+.reparcel-ledger-table td.bal-pays { color: #b91c1c; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reparcel-ledger-table td.bal-due { color: #137547; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reparcel-ledger-table td.bal-even { color: #6b7280; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Reparcellization: pool coverage / completeness indicator */
+.reparcel-coverage {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.35;
+}
+.reparcel-coverage:empty {
+    display: none;
+}
+
+/* Reparcellization: transient status / hint line */
+.reparcel-status {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #6b7280;
+}
+.reparcel-status:empty {
+    display: none;
+}
+.reparcel-status[data-status-type="error"] {
+    color: #b91c1c;
+}
+.reparcel-status[data-status-type="warning"] {
+    color: #92400e;
+}
+.reparcel-coverage[data-state="ok"] {
+    background: #d1fae5;
+    color: #065f46;
+}
+.reparcel-coverage[data-state="warn"] {
+    background: #fef3c7;
+    color: #92400e;
 }
 
 /* Reparcellization: owner assignment popup */
@@ -2360,11 +2684,55 @@
     align-items: center;
 }
 
+/* Cosmetic only: the dimmed modal is darkened/blurred for depth while a tx is
+   pending. It deliberately keeps its z-index and pointer-events — the
+   .proposal-waiting-overlay on top is what blocks interaction (mirrors how the
+   parcel-mint overlay stays up). Dropping z-index / pointer-events here used to
+   expose the map behind, leaving parcels clickable during the wait. */
 .create-proposal-modal.dimmed-behind-overlay {
-    z-index: 1500;
     filter: blur(1px);
     opacity: 0.65;
-    pointer-events: none;
+}
+
+/* Proposal "waiting for transaction" overlay — mirrors .parcel-mint-overlay so
+   both flows block interaction the same way while a transaction is pending. */
+.proposal-waiting-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 12050; /* above the create-proposal modal (11000) */
+    cursor: progress;
+}
+
+.proposal-waiting-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    color: #334155;
+    padding: 14px 18px;
+    border-radius: 14px;
+    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
+    font-size: 14px;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.proposal-waiting-spinner {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(13, 59, 102, 0.25);
+    border-top-color: #0d3b66;
+    border-radius: 50%;
+    animation: proposal-waiting-spin 0.8s linear infinite;
+}
+
+@keyframes proposal-waiting-spin {
+    to { transform: rotate(360deg); }
 }
 
 #blockify-container {
@@ -4425,4 +4793,55 @@
     font-weight: bold;
     font-size: 14px;
     text-shadow: 0 0 2px #fff;
+}
+
+/* Draggable gap/wing handles on the Urban Rule modal map (see building-blocks.js renderGapWingHandles). */
+.blockify-handle span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    cursor: grab;
+}
+.blockify-handle:active span {
+    cursor: grabbing;
+}
+.blockify-handle--gap span {
+    background: #e53935; /* red = gap (opening cut from the ring) */
+}
+.blockify-handle--wing span {
+    background: #1e88e5; /* blue = wing (protrusion into the courtyard) */
+}
+.blockify-handle--vertex span {
+    background: #fb8c00; /* orange = draggable outline vertex (manual footprint mode) */
+    border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
+}
+#blockify-manual-toggle,
+#blockify-geojson-upload {
+    width: 100%;
+}
+#blockify-manual-toggle.active {
+    background: #fb8c00;
+    border-color: #fb8c00;
+    color: #fff;
+}
+/* "Based on existing buildings" mode toggle (urban-rule modal) */
+.blockify-existing-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.blockify-existing-toggle input[type="checkbox"] {
+    margin: 0;
+}
+/* Rule labels: radio picks which slider drives the proposal (exact height vs added floors) */
+.blockify-rule-label {
+    cursor: pointer;
+}
+.blockify-rule-label input[type="radio"] {
+    margin: 0 6px 0 0;
+    vertical-align: middle;
 }

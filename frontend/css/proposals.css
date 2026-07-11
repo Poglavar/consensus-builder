@@ -29,10 +29,14 @@
     flex-direction: column;
 }
 
+/* Desktop create-proposal dialog: ~20% wider than the old effective 400px (the base
+   .proposal-modal-content max-width:400px was capping the width below, so it must be raised
+   here too), and taller — 95vh trims the top/bottom gap so less of the form needs scrolling. */
 .create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal):not(.wallet-choice-modal) .proposal-modal-content {
-    width: min(540px, 96%);
+    width: min(480px, 96%);
+    max-width: 480px;
     height: auto;
-    max-height: 90vh;
+    max-height: 95vh;
     border-radius: 12px;
     margin: 0;
 }
@@ -100,6 +104,73 @@
     margin-left: auto;
 }
 
+/* Parent-conflict / apply-anyway modal. Reuses the shared .proposal-modal-* shell and .btn family;
+   these rules only style the per-conflict list items in the body. */
+.parent-conflict-modal {
+    /* Sit above other modals (share-modal-overlay is 13000) — this is the actionable dialog that
+       lets the user resolve a blocked apply, so it must not be hidden behind a summary. */
+    z-index: 15000 !important;
+}
+
+.parent-conflict-modal .proposal-modal-footer {
+    justify-content: flex-end;
+}
+
+.parent-conflict-intro {
+    margin: 0 0 12px;
+    color: #444;
+    font-size: 14px;
+}
+
+.parent-conflict-item {
+    border: 1px solid #ffe0b2;
+    background: #fff8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.parent-conflict-item--blocked {
+    border-color: #ffcdd2;
+    background: #fff5f5;
+}
+
+.parent-conflict-item--info {
+    border-color: #e0e0e0;
+    background: #fafafa;
+    color: #555;
+    font-size: 13px;
+}
+
+.parent-conflict-item-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.parent-conflict-item-detail {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.parent-conflict-item-blocked-list {
+    color: #b71c1c;
+    font-size: 13px;
+}
+
+.parent-conflict-item-hint {
+    color: #888;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.parent-conflict-item .btn {
+    font-size: 13px;
+    min-height: 32px;
+    padding: 6px 12px;
+}
+
 .proposal-modal-footer.lens-footer-layout {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -148,6 +219,26 @@
     height: 40px;
     min-height: 40px;
     max-height: 40px;
+}
+
+/* "Based on <name>" lineage line, shown on proposals made via "Copy into new proposal". */
+.proposal-based-on-row {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.proposal-based-on-row .proposal-based-on-link {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.proposal-based-on-row .proposal-based-on-link:hover {
+    text-decoration: underline;
+}
+
+.proposal-based-on-row .proposal-based-on-link i {
+    font-size: 10px;
 }
 
 .proposal-id-row {
@@ -569,11 +660,20 @@
     background-color: rgba(107, 114, 128, 0.08);
 }
 
-.proposal-description-input {
+/* The structure-proposal dialog's description is a 2-row <textarea>: keep it at a fixed height
+   so it scrolls instead of growing. The main create dialog's description is a single-line
+   <input>, which takes the normal input height and therefore matches Name and Offer exactly —
+   that is how those three boxes stay equalized (and compact). */
+textarea.proposal-description-input {
     line-height: 1.4;
     height: 4.2em;
     min-height: 4.2em;
     max-height: 4.2em;
+    overflow-y: auto;
+    resize: none;
+}
+
+.proposal-description-input {
     overflow-y: auto;
     resize: none;
 }
@@ -846,16 +946,18 @@
     align-items: stretch;
 }
 
+/* 34px matches the natural height of the Name and Description inputs, so the three
+   create-proposal boxes read as one compact, uniform block. */
 #proposalOffer {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
-    line-height: 44px;
+    line-height: 32px;
 }
 
 #proposalOffer::-webkit-outer-spin-button,
@@ -865,9 +967,9 @@
 }
 
 #proposalCurrency {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -1659,4 +1761,70 @@
         width: auto;
         flex: 1;
     }
+}
+
+/* Buy button for open sale offers (Ownership: Third party · Anyone) — in proposal list rows
+   and the details dialog. claimSaleOffer() binds the buyer and transfers the parcels. */
+.proposal-buy-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: auto;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 1.1;
+    font-weight: 600;
+    color: #fff;
+    background: #16a34a;
+    border: 1px solid #15803d;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.proposal-buy-btn:hover { background: #15803d; }
+
+/* The create dialog opens immediately; its map preview is built a tick later and lands here. The
+   placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */
+.proposal-screenshot-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    background: #f4f4f4;
+    border-radius: 4px;
+}
+
+.proposal-screenshot-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #ddd;
+    border-top-color: #888;
+    border-radius: 50%;
+    animation: proposal-screenshot-spin 0.8s linear infinite;
+}
+
+@keyframes proposal-screenshot-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* "Mints on <chain>" — minting follows whichever wallet is connected, or Canton mode, and the user
+   otherwise has no way to know where a proposal is about to go. */
+.proposal-mint-target {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.proposal-mint-target--onchain {
+    background: #eef6ee;
+    color: #2f6b34;
+}
+
+.proposal-mint-target--offchain {
+    background: #f4f4f4;
+    color: #666;
 }

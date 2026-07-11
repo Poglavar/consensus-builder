@@ -366,6 +366,19 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     gap: 12px;
 }
 
+/* Cross-city proposal prompt: a headline above the usual confirm body. */
+.city-switch-dialog {
+    width: min(520px, calc(100% - 40px));
+}
+
+.city-switch-dialog .city-switch-title {
+    margin: 0 0 12px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.35;
+}
+
 .header-avatars {
     display: flex;
     align-items: center;
@@ -599,10 +612,12 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     cursor: not-allowed;
 }
 
+#mode-2d-toggle.map-mode-toggle:hover,
 #mode-3d-toggle.map-mode-toggle:hover {
     background: #f5f5f5;
 }
 
+#mode-2d-toggle.map-mode-toggle.active,
 #mode-3d-toggle.map-mode-toggle.active {
     background: #333;
     color: #fff;

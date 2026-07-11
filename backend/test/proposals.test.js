@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
+import { normalizeCityCode } from '../routes/proposals.js';
 import {
     validProposalBody,
     insertResult,
@@ -1230,5 +1231,43 @@ describe('GET /proposals?parcel_id=', () => {
             parentParcelIds: [],
             childParcelIds: []
         });
+    });
+});
+
+describe('normalizeCityCode', () => {
+    // The frontend sends short codes (CITY_QUERY_MAP in frontend/js/city-config.js) while proposals
+    // are stored under the full city id. A code that fails to map silently filters out every
+    // proposal for that city — which is exactly what `ny` did.
+    const codeToId = {
+        zg: 'zagreb',
+        zgb: 'zagreb',
+        bg: 'belgrade',
+        ba: 'buenos_aires',
+        caba: 'buenos_aires',
+        'ar-ba': 'buenos_aires',
+        lj: 'ljubljana',
+        co: 'colorado',
+        ny: 'new_york',
+    };
+
+    it('maps every city code the frontend can send to a full city id', () => {
+        for (const [code, id] of Object.entries(codeToId)) {
+            expect(normalizeCityCode(code)).toBe(id);
+        }
+    });
+
+    it('accepts a full city id unchanged, so both forms work', () => {
+        expect(normalizeCityCode('new_york')).toBe('new_york');
+        expect(normalizeCityCode('zagreb')).toBe('zagreb');
+    });
+
+    it('is case- and whitespace-insensitive', () => {
+        expect(normalizeCityCode('  NY  ')).toBe('new_york');
+    });
+
+    it('returns null for an empty code so no city filter is applied', () => {
+        expect(normalizeCityCode('')).toBeNull();
+        expect(normalizeCityCode(null)).toBeNull();
+        expect(normalizeCityCode(undefined)).toBeNull();
     });
 });

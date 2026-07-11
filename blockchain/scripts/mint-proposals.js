@@ -6,6 +6,10 @@ const { resolveContractAddress } = require('./deploymentUtils');
 const { createHash } = require('crypto');
 const { Client } = require('pg');
 const { buildParcelGeometrySvg } = require('./mint-parcels');
+const { putBlob: walrusPutBlob, getWalrusConfig } = require('./walrus-storage');
+
+// Set from --storage=walrus; routes proposal image + metadata to Walrus instead of Pinata.
+let useWalrusStorage = false;
 const path = require('path');
 const fs = require('fs');
 
@@ -398,7 +402,25 @@ async function fetchParcelGeometries(parcelIds, dbClient) {
         );
     }
 
-    const remainingIds = Array.from(remaining);
+    // New York parcels: US-NY-<swis_sbl_id>, geometry in parcel_nyc_geom ⋈ parcel_nyc_unit (WGS84).
+    const nycIds = Array.from(remaining).filter(id => /^US-NY-/i.test(id));
+    if (nycIds.length > 0) {
+        const sblParts = nycIds.map(id => id.replace(/^US-NY-/i, ''));
+        const placeholders = sblParts.map((_, idx) => `$${idx + 1}`).join(', ');
+        await runQuery(
+            `
+            SELECT 'US-NY-' || u.swis_sbl_id::text AS parcel_id,
+                   ST_AsGeoJSON(g.geom) AS geometry
+            FROM parcel_nyc_geom g
+            JOIN parcel_nyc_unit u ON u.geom_id = g.geom_id
+            WHERE u.swis_sbl_id::text IN (${placeholders})
+            `,
+            sblParts,
+            row => row.parcel_id
+        );
+    }
+
+    const remainingIds = Array.from(remaining).filter(id => /^[0-9]+$/.test(id));
     if (remainingIds.length > 0) {
         const placeholders = remainingIds.map((_, idx) => `$${idx + 1}`).join(', ');
         await runQuery(
@@ -727,16 +749,28 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
         }
         const imageData = Buffer.from(svgContent, 'utf8');
         console.log('SVG image generated');
-        console.log('\nUploading image to IPFS...');
-        const imageUrl = await uploadImageToPinata(imageData, proposalName);
-        console.log('Image uploaded:', imageUrl);
+        const storageLabel = useWalrusStorage ? 'Walrus' : 'IPFS';
+        console.log(`\nUploading image to ${storageLabel}...`);
+        // imageUrl is the renderable URL stored in image_url/external_url; imageRef is the
+        // canonical pointer stored in metadata.image (walrus://<blobId> on Walrus, gateway URL on IPFS).
+        let imageUrl;
+        let imageRef;
+        if (useWalrusStorage) {
+            const imageResult = await walrusPutBlob(imageData);
+            imageUrl = imageResult.gatewayUrl;
+            imageRef = imageResult.walrusUri;
+        } else {
+            imageUrl = await uploadImageToPinata(imageData, proposalName);
+            imageRef = imageUrl;
+        }
+        console.log('Image uploaded:', imageRef);
 
         // Create and upload metadata
         const metadata = {
             name: proposalName,
             description: proposalDescription,
             type: proposalType,
-            image: imageUrl,
+            image: imageRef,
             image_url: imageUrl,
             external_url: imageUrl,
             attributes: [
@@ -769,8 +803,15 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
             }
         };
 
-        console.log('\nUploading metadata to IPFS...');
-        const ipfsUrl = await uploadMetadataToPinata(metadata, proposalName);
+        console.log(`\nUploading metadata to ${storageLabel}...`);
+        // ipfsUrl holds the on-chain metadata pointer (passed to mintAndFund as imageURI).
+        let ipfsUrl;
+        if (useWalrusStorage) {
+            const metadataResult = await walrusPutBlob(Buffer.from(JSON.stringify(metadata), 'utf8'));
+            ipfsUrl = metadataResult.walrusUri;
+        } else {
+            ipfsUrl = await uploadMetadataToPinata(metadata, proposalName);
+        }
         console.log('Metadata uploaded:', ipfsUrl);
 
         // First approve tokens if needed
@@ -912,10 +953,19 @@ async function getLastMintedParcelTokenId(parcelNftContract) {
 function parseArgs(argv) {
     const args = {
         network: 'hardhat', // Default to hardhat if not specified
-        parcelId: null
+        parcelId: null,
+        storage: null
     };
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
+        if (arg.startsWith('--storage=')) {
+            const value = arg.split('=')[1]?.trim().toLowerCase();
+            if (!['walrus', 'pinata'].includes(value)) {
+                throw new Error("Invalid --storage value. Expected one of: walrus, pinata.");
+            }
+            args.storage = value;
+            continue;
+        }
         if (arg.startsWith('--network=')) {
             args.network = arg.split('=')[1]?.trim();
             continue;
@@ -999,6 +1049,12 @@ async function main() {
         console.log(`Using network: ${args.network}`);
         if (args.parcelId) {
             console.log(`Filtering proposals to include parcel: ${args.parcelId}`);
+        }
+        useWalrusStorage = args.storage === 'walrus';
+        if (useWalrusStorage) {
+            const walrusEnv = getWalrusConfig();
+            console.log(`Storing proposal assets on Walrus via ${walrusEnv.publisherUrl}`
+                + ` (${walrusEnv.permanent ? 'permanent' : `${walrusEnv.epochs} epochs`}).`);
         }
 
         // Resolve RPC URL based on network

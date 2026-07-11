@@ -68,6 +68,17 @@
             return `https://ipfs.io/ipfs/${ipfsHash}`;
         }
 
+        // If Walrus URL, convert to aggregator gateway URL
+        if (/^walrus:\/\//.test(imageUrl)) {
+            const blobId = imageUrl.replace(/^walrus:\/\//, '').replace(/^\/+/, '');
+            if (!blobId) return null;
+            const configured = (typeof globalScope.WALRUS_AGGREGATOR_URL === 'string')
+                ? globalScope.WALRUS_AGGREGATOR_URL.trim()
+                : '';
+            const aggregator = (configured || 'https://aggregator.walrus-testnet.walrus.space').replace(/\/$/, '');
+            return `${aggregator}/v1/blobs/${blobId}`;
+        }
+
         // Relative URL - make absolute
         const baseUrl = getFrontendBaseUrl();
         const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;

@@ -28,6 +28,10 @@
     let currentMaxFloors = DEFAULT_MAX_FLOORS;
     let currentMinDistance = DEFAULT_MIN_DISTANCE;
 
+    // Parameters to restore when the modal next opens, instead of the defaults. Set by
+    // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
+    let parcelBasedSeedParameters = null;
+
     // 3D preview state
     let parcelBased3D = {
         handle: null,
@@ -484,6 +488,7 @@
         parcelBased3D.controls = handle.controls;
         parcelBased3D.modelGroup = modelGroup;
         parcelBased3D.contextGroup = handle.contextGroup;
+        parcelBased3D.cameraFramed = false; // re-frame once on the first render of this fresh scene
     }
 
     function disposeParcelBased3D() {
@@ -602,8 +607,14 @@
             parcelBased3D.modelGroup.add(edges);
         });
 
-        // Fit camera
-        fitParcelBasedCamera(maxHeight);
+        // Fit the camera only on the first render of the scene. On slider-driven updates
+        // (max floors / min distance regenerate the buildings), preserve the user's current
+        // orbit/zoom instead of re-fitting — re-fitting every input made the 3D view jump and
+        // flicker and made height changes hard to see.
+        if (!parcelBased3D.cameraFramed) {
+            fitParcelBasedCamera(maxHeight);
+            parcelBased3D.cameraFramed = true;
+        }
     }
 
     function fitParcelBasedCamera(height = 20) {
@@ -785,6 +796,15 @@
         // Reset parameters
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+
+        // Restore a saved design over the defaults (e.g. a copied proposal). Buildings here are a
+        // pure function of these two parameters, so seeding them reproduces the exact geometry.
+        const seed = parcelBasedSeedParameters;
+        parcelBasedSeedParameters = null;
+        if (seed) {
+            if (Number.isFinite(Number(seed.maxFloors))) currentMaxFloors = Number(seed.maxFloors);
+            if (Number.isFinite(Number(seed.minDistance))) currentMinDistance = Number(seed.minDistance);
+        }
 
         // Update sliders
         const maxFloorsSlider = document.getElementById('parcelbased-maxfloors-slider');
@@ -987,8 +1007,10 @@
         }
     }
 
-    // Entry point for opening parcel-based modal from parcels
-    function openParcelBasedForParcels({ blockName, parcels }) {
+    // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
+    // reopens the editor on a previously-saved design — used by "Copy into new proposal".
+    function openParcelBasedForParcels({ blockName, parcels, initialParameters = null }) {
+        parcelBasedSeedParameters = initialParameters || null;
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             if (typeof updateStatus === 'function') {

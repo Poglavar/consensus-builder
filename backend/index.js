@@ -19,20 +19,26 @@ import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
+import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
 import { setupIpfsRoute } from './routes/ipfs.js';
+import { setupWalrusRoute } from './routes/walrus.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
+import { setupParcelOwnershipRoute } from './routes/parcel-ownership.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
+import { setupEnsRoute } from './routes/ens.js';
+import { setupEnsPlansRoute } from './routes/ens-plans.js';
+import { setupCantonRoute } from './routes/canton.js';
 
 const { Pool } = pkg;
 
@@ -179,6 +185,13 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         app.set('trust proxy', 1);
     }
 
+    // The ENS CCIP-Read gateway (/ens/...) is a public, read-only, signed
+    // endpoint — any origin may fetch it. Advertise permissive CORS so
+    // browser-based resolvers (e.g. app.ens.domains, which does the gateway
+    // fetch client-side) don't log CORS errors. Must run before the
+    // allowlist CORS below so it also answers any preflight.
+    app.use('/ens', cors({ origin: '*', methods: ['GET', 'OPTIONS'], credentials: false }));
+
     const isProduction = env.NODE_ENV === 'production';
     // USE_CORS_ALLOWLIST gates the explicit-allowlist CORS middleware. In
     // production it must be set to 'true' to enable CORS at all; in dev it
@@ -293,20 +306,26 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
     setupBuildingsRoute(app, activePool);
+    setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);
     setupIpfsRoute(app);
+    setupWalrusRoute(app);
     setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
+    setupParcelOwnershipRoute(app, activePool);
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
+    setupEnsRoute(app, activePool);
+    setupEnsPlansRoute(app, activePool);
+    setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

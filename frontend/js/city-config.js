@@ -118,6 +118,12 @@
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            // Street-level "walk through it" launcher shown in 3D mode (the yellow-guy button).
+            // Currently powered by the Zagreb transit planner's 3D walk overlay. Only cities
+            // that set `walk.url` show the button; everyone else hides it (see three-mode.js).
+            walk: {
+                url: 'https://zagreb.lol/prijevoz/'
             }
         },
         belgrade: {
@@ -137,6 +143,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 34N covers Belgrade.
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.810918, 20.438859],
                 fallbackDataset: [20.438859, 44.810918]
             },
@@ -147,10 +156,15 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                // Overture-Maps footprints + heights, ingested into overture_feature (layer=buildings)
+                // and extruded server-side (backend/buildings/overture-3d.js). Resolved by city id, not
+                // this string. Like NYC, the 3D buildings load automatically in 3D mode.
+                source: 'overture'
             },
             sidebar: {
-                // Disable unsupported sections for Belgrade
+                // 'buildings' stays disabled: that sidebar toggle is the Zagreb 2D WFS layer.
+                // Belgrade's 3D buildings load automatically in 3D mode (Built/Both/Planned), the
+                // same as NYC, independent of this section.
                 disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
@@ -254,6 +268,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 13N covers Colorado.
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.7392, -104.9903],
                 fallbackDataset: [-104.9903, 39.7392]
             },
@@ -291,6 +308,9 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Parcels arrive in degrees; geometry needs metres. UTM 18N covers New York City.
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.7128, -74.0060],
                 fallbackDataset: [-74.0060, 40.7128]
             },
@@ -323,6 +343,15 @@
         }
         Object.values(CITY_CONFIGS).forEach(config => {
             const dataset = config.projection;
+            if (dataset && dataset.metricCrs && dataset.metricDefinition) {
+                try {
+                    if (!proj4.defs(dataset.metricCrs)) {
+                        proj4.defs(dataset.metricCrs, dataset.metricDefinition);
+                    }
+                } catch (error) {
+                    console.warn('[CityConfig] Failed to register metric projection', dataset.metricCrs, error);
+                }
+            }
             if (dataset && dataset.datasetCrs && dataset.definition) {
                 try {
                     if (!proj4.defs(dataset.datasetCrs)) {
@@ -358,7 +387,20 @@
         }
     }
 
+    // The city pointer lives in localStorage because it must be readable *synchronously*, before
+    // anything else: it decides which IndexedDB database PersistentStorage opens. (It used to live
+    // only in PersistentStorage, whose cache primes asynchronously — so this read was racing the
+    // very store it was reading from.) PersistentStorage keeps a copy for backwards compatibility
+    // and so the legacy-database migration can tell whose data it is looking at.
     function getStoredCityId() {
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage) {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored && CITY_CONFIGS[stored]) {
+                    return stored;
+                }
+            }
+        } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
                 const stored = PersistentStorage.getItem(STORAGE_KEY);
@@ -370,50 +412,45 @@
         return null;
     }
 
-    function clearLocalCityDataOnCityChange(previousCityId, nextCityId, options = {}) {
-        const { skipReload = true } = options;
-        if (!previousCityId || previousCityId === nextCityId) {
-            return false;
-        }
-
-        const wipeFn = (typeof window !== 'undefined' && typeof window.wipeLocalData === 'function')
-            ? window.wipeLocalData
-            : null;
-
-        if (typeof wipeFn !== 'function') {
-            console.warn('[CityConfig] wipeLocalData is not available; skipping city data wipe.');
-            return false;
-        }
-
-        try {
-            wipeFn({ skipConfirm: true, skipReload });
-            return true;
-        } catch (error) {
-            console.error('[CityConfig] Failed to wipe local data on city change:', error);
-            return false;
-        }
-    }
-
+    // Each city has its own database (see js/persistent-storage.js), so adopting the city named in
+    // a link takes nothing away: the city you were in keeps its parcels, proposals and settings, and
+    // they are all still there when you go back. Nothing is wiped here, and nothing needs asking.
     function determineCurrentCityId() {
         const storedCityId = getStoredCityId();
         const queryCityId = getCityIdFromQuery();
 
         if (queryCityId && CITY_CONFIGS[queryCityId]) {
-            if (storedCityId && queryCityId !== storedCityId) {
-                clearLocalCityDataOnCityChange(storedCityId, queryCityId, { skipReload: true });
+            if (queryCityId !== storedCityId) {
+                try {
+                    if (typeof localStorage !== 'undefined' && localStorage) {
+                        localStorage.setItem(STORAGE_KEY, queryCityId);
+                    }
+                } catch (_) { /* ignore */ }
             }
-            try {
-                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
-                    PersistentStorage.setItem(STORAGE_KEY, queryCityId);
-                }
-            } catch (_) { /* ignore */ }
             return queryCityId;
         }
 
         return storedCityId || DEFAULT_CITY_ID;
     }
 
+    function getCityLabel(cityId) {
+        const config = CITY_CONFIGS[cityId];
+        return (config && config.label) ? config.label : (cityId || '');
+    }
+
+    // Did the user actually choose this city, or did we fall back to the default? Only a defaulted
+    // city may be overridden by the one recovered from a pre-upgrade database. Read before
+    // setScope, since determineCurrentCityId writes the pointer as a side effect.
+    const cityWasExplicitlyChosen = !!(getCityIdFromQuery() || getStoredCityId());
+
     let currentCityId = determineCurrentCityId();
+    // Bind persistent storage to this city's database before anything reads from it. Nothing has
+    // been read yet: PersistentStorage deliberately does not open a database until told which one.
+    try {
+        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setScope === 'function') {
+            PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen });
+        }
+    } catch (_) { /* ignore */ }
     applyCityLanguagePreference(getCurrentCityConfig());
 
     function maybeApplyGeoDefaultCity() {
@@ -442,11 +479,6 @@
                 const previousCityId = currentCityId;
                 const cityChanged = nextId !== previousCityId;
 
-                if (cityChanged) {
-                    // Switching cities can invalidate cached local datasets; keep behaviour consistent.
-                    clearLocalCityDataOnCityChange(previousCityId, nextId, { skipReload: true });
-                }
-
                 setStoredCityId(nextId);
 
                 if (cityChanged) {
@@ -470,6 +502,11 @@
 
     function setStoredCityId(id) {
         currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage) {
+                localStorage.setItem(STORAGE_KEY, currentCityId);
+            }
+        } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
                 PersistentStorage.setItem(STORAGE_KEY, currentCityId);
@@ -506,6 +543,49 @@
             return [lat, lon];
         } catch (_) {
             return projection.fallbackLatLng || [northing, easting];
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // The metric working projection.
+    //
+    // A city's *dataset* CRS is whatever its parcels arrive in — for Zagreb a metric one (EPSG:3765),
+    // for New York and Belgrade plain WGS84 degrees. Geometry code (road corridors, buffers, areas,
+    // lengths) needs METRES, and using the dataset CRS for that silently treats degrees as metres:
+    // a 10 m road in New York came out 1113 km wide.
+    //
+    // So every city also declares a metric CRS. Where the dataset CRS is already metric it is the same
+    // projection, and nothing changes.
+    // ---------------------------------------------------------------------
+    function getMetricCrs() {
+        const projection = getProjectionConfig();
+        if (!projection) return null;
+        const crs = projection.metricCrs || projection.datasetCrs;
+        if (!crs || typeof proj4 === 'undefined' || !proj4.defs(crs)) return null;
+        return crs;
+    }
+
+    function latLngToMetric(lat, lon) {
+        const crs = getMetricCrs();
+        if (!crs) return [lon, lat];
+        try {
+            const [x, y] = proj4('EPSG:4326', crs, [lon, lat]);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('invalid conversion');
+            return [x, y];
+        } catch (_) {
+            return [lon, lat];
+        }
+    }
+
+    function metricToLatLng(x, y) {
+        const crs = getMetricCrs();
+        if (!crs) return [y, x];
+        try {
+            const [lon, lat] = proj4(crs, 'EPSG:4326', [x, y]);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('invalid conversion');
+            return [lat, lon];
+        } catch (_) {
+            return [y, x];
         }
     }
 
@@ -721,25 +801,6 @@
         }
     }
 
-    async function wipeDataForCitySwitch() {
-        try {
-            if (typeof wipeLocalData === 'function') {
-                await wipeLocalData({ skipConfirm: true, skipReload: true });
-                return;
-            }
-
-            if (typeof clearLocalParcelData === 'function') {
-                clearLocalParcelData();
-            }
-            try { if (typeof clearLocalProposalData === 'function') { clearLocalProposalData(); } } catch (_) { /* ignore */ }
-            try {
-                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
-                    PersistentStorage.clear();
-                }
-            } catch (_) { /* ignore */ }
-            try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { /* ignore */ }
-        } catch (_) { /* ignore */ }
-    }
 
     function navigateToCity(nextId) {
         try {
@@ -767,9 +828,11 @@
 
         if (requireConfirmation) {
             const confirmFn = window.showStyledConfirm || showStyledConfirm;
+            // Each city keeps its own local store, so switching costs nothing but a reload — the
+            // city you leave is exactly as you left it when you return.
             const confirmMessage = confirmationMessage || translateCityText(
                 'city.switch.confirm',
-                'Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?'
+                'Switching city will reload the app. Your work in this city is kept and will be here when you come back.\n\nDo you want to continue?'
             );
             const proceed = await confirmFn(confirmMessage, confirmationOptions || undefined);
             if (!proceed) {
@@ -780,7 +843,6 @@
             }
         }
 
-        await wipeDataForCitySwitch();
         return navigateToCity(nextId);
     }
 
@@ -1059,11 +1121,16 @@
         getCurrentCityId: () => currentCityId,
         setCurrentCityId: setStoredCityId,
         switchCity,
+        navigateToCity,
+        getCityLabel,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
         getCityCodeForCityId,
         datasetToLatLng,
         latLngToDataset,
+        latLngToMetric,
+        metricToLatLng,
+        getMetricCrs,
         formatCurrency,
         getParcelStrategy,
         getParcelGridSize,
@@ -1074,6 +1141,12 @@
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
         getParcelBuilderConfig,
+        getWalkConfig: () => getCurrentCityConfig().walk || null,
+        // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
+        // city because it depends on city street data), driving a drawn track works at any
+        // location — the track, rails and corridor come from the proposal itself — so every
+        // city falls back to the shared sim deployment. Cities may still override via `walk`.
+        getDriveConfig: () => getCurrentCityConfig().walk || { url: 'https://zagreb.lol/prijevoz/' },
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,

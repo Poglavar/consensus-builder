@@ -41,6 +41,23 @@
             }
         }
 
+        // Shift+click enters multi-select on the fly — same as ticking the "Select multiple
+        // parcels" checkbox (updateUI syncs it). The currently viewed parcel is preserved as the
+        // seed, and the shift-clicked parcel joins the selection below.
+        const shiftHeld = !!(e && e.originalEvent && e.originalEvent.shiftKey);
+        if (shiftHeld && typeof global.multiParcelSelection !== 'undefined'
+            && !global.multiParcelSelection.isActive
+            && typeof global.multiParcelSelection.toggle === 'function') {
+            global.multiParcelSelection.toggle({ preserveSelectedParcel: true });
+            if (global.multiParcelSelection.selectedParcels
+                && global.multiParcelSelection.selectedParcels.has(parcelId)) {
+                // Shift+click on the already-selected parcel: it is the seed — keep it selected
+                // instead of letting toggleParcel immediately deselect it.
+                L.DomEvent.stopPropagation(e);
+                return;
+            }
+        }
+
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive) {
             const wasToggled = global.multiParcelSelection.toggleParcel(targetLayer);
             if (wasToggled) {
@@ -204,6 +221,21 @@
 
         try { if (typeof global.updateBlockButtonStates === 'function') global.updateBlockButtonStates(); } catch (_) { }
     }
+
+    // Escape exits multi-select mode (same as unchecking the checkbox: the last parcel is
+    // restored as a single selection). Heavily guarded because many tools bind Escape for their
+    // own cancel action — never hijack it while typing, inside a modal, or while the road/measure
+    // tools (which drive multi-select programmatically) are active.
+    function handleMultiSelectEscape(event) {
+        if (!event || event.key !== 'Escape' || event.defaultPrevented) return;
+        if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection.isActive) return;
+        if (typeof global.isEditableTarget === 'function' && global.isEditableTarget(event.target)) return;
+        if (typeof global.isAnyModalOpen === 'function' && global.isAnyModalOpen()) return;
+        if (global.roadDrawingMode || global.measureMode) return;
+        if (typeof global.multiParcelSelection.toggle !== 'function') return;
+        global.multiParcelSelection.toggle();
+    }
+    global.document.addEventListener('keydown', handleMultiSelectEscape);
 
     global.onParcelClick = onParcelClick;
     global.ParcelsUISelection = Object.assign({}, global.ParcelsUISelection, { onParcelClick });

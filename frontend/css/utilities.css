@@ -587,6 +587,176 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     width: 100%;
 }
 
+/* Collapsed proposal-goal grid: show only the chosen goal as a chevron bar so
+   the sections below rise into view. Click it to re-expand all goals. */
+#proposalGoalGroup.is-collapsed .proposal-type-group {
+    grid-template-columns: 1fr;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button[data-proposal-tool]:not(.selected) {
+    display: none;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button.selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+#proposalGoalGroup.is-collapsed .proposal-type-button.selected::after {
+    content: '\25BE';
+    margin-left: 8px;
+    opacity: 0.6;
+    font-size: 12px;
+}
+
+/* Proposal-goal sub-sections: Land use / Parcels / Ownership, so the three
+   facets read as separate clusters instead of one undifferentiated grid. */
+.proposal-goal-section + .proposal-goal-section {
+    margin-top: 12px;
+}
+.proposal-goal-subhead {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+}
+/* A cluster with a single goal (e.g. Ownership) spans the full width. */
+.proposal-goal-section .proposal-type-group:has(> .proposal-type-button:only-child) {
+    grid-template-columns: 1fr;
+}
+/* Collapsed: drop the subheads and any section without the selected goal so
+   only the chosen goal's chevron bar remains (matches the existing collapse). */
+#proposalGoalGroup.is-collapsed .proposal-goal-subhead {
+    display: none;
+}
+#proposalGoalGroup.is-collapsed .proposal-goal-section + .proposal-goal-section {
+    margin-top: 0;
+}
+#proposalGoalGroup.is-collapsed .proposal-goal-section:not(:has(.proposal-type-button.selected)) {
+    display: none;
+}
+
+/* Segmented-pill choice controls — one visual vocabulary for every single-select
+   (Land use / Parcels / Ownership / Acquisition / Urban Rule typology). The native
+   radio is hidden but kept for state + keyboard a11y; the label is the pill. */
+.proposal-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.proposal-radio {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.15;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.proposal-radio input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.proposal-radio:hover { border-color: #9ca3af; background: #eaeef3; }
+.proposal-radio:has(input:checked) {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+.proposal-radio:has(input:disabled) { opacity: .4; cursor: not-allowed; }
+.proposal-radio:has(input:focus-visible) { outline: 2px solid #93c5fd; outline-offset: 2px; }
+
+/* A locked facet is shown as a quiet static line, not a row of dead/disabled pills. */
+.proposal-facet-static {
+    font-size: 13px;
+    color: #6b7280;
+    padding: 5px 0;
+}
+.proposal-facet-static .lock-ico { margin-right: 6px; opacity: .7; }
+
+/* Urban Rule typology: same pills (kept as buttons, restyled to match). */
+#proposalTypologyGroup .proposal-type-group { display: flex; flex-wrap: wrap; gap: 6px; }
+#proposalTypologyGroup .proposal-type-button {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.15;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
+}
+#proposalTypologyGroup .proposal-type-button.selected {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Inset sub-panel: things that "open" from a choice (geometry Edit/Upload, the Urban
+   Rule typology) sit visibly subordinate to it — indented, recessed, left accent. */
+.proposal-inset {
+    margin: 8px 0 4px 14px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 0 8px 8px 0;
+}
+.proposal-inset > label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #475569; }
+/* Inset action buttons (geometry Edit/Upload): outlined + auto-width so they read as
+   ACTIONS (do something), distinct from the filled-blue selected pills (which indicate
+   STATE), and sized to their label instead of stretching. */
+#proposalGeometryButtons { display: flex; flex-wrap: wrap; gap: 8px; }
+#proposalGeometryButtons .btn {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+#proposalGeometryButtons .btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+#proposalGeometryButtons .btn.selected { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
+#proposalGeometryButtons .btn:disabled { opacity: .5; }
+#proposalGeometryButtons .btn[data-geometry-action="edit"]::before { content: "✏️"; margin-right: 5px; }
+#proposalGeometryButtons .btn[data-geometry-action="upload"]::before { content: "⬆️"; margin-right: 5px; }
+
+.proposal-recipient-input {
+    margin: 8px 0 0 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Divides the proposal "intent" controls (Land use / Parcels / Ownership / …) from
+   the details below (Name, Description, Offer, Options). */
+.proposal-section-divider {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 18px 0;
+}
+
 .proposal-type-button {
     width: 100%;
     min-width: 0;
@@ -1671,6 +1841,24 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: none;
 }
 
+/* Author name shown as plain text next to the avatar (no input box / label). */
+.proposal-author-name {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+.proposal-author-name:disabled {
+    color: #1f2937;
+    opacity: 1;
+    -webkit-text-fill-color: #1f2937; /* Safari otherwise greys out disabled inputs */
+    cursor: default;
+}
+
 .btn.active {
     background-color: #28a745 !important;
     color: white !important;
@@ -2538,4 +2726,50 @@ input:checked+.slider:before {
     line-height: 22px;
     font-size: 12px;
     box-sizing: border-box;
+}
+
+/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
+   chip links to the ENS app, the name value is click-to-copy. Value
+   ellipsis-truncates so the long name never overflows tight panels. */
+.ens-name-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #64748b;
+    cursor: pointer;
+    min-width: 0;
+    max-width: 100%;
+}
+.ens-name-line:hover { color: #334155; }
+.ens-name-chip {
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: #6366f1;
+    border-radius: 4px;
+    padding: 1px 4px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.ens-name-chip:hover { background: #4f46e5; }
+.ens-name-chip:visited { color: #fff; }
+.ens-name-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* In the centered proposal-details panel, center the line as a group while
+   keeping the value's ellipsis truncation. */
+.proposal-ens-row .ens-name-line {
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: middle;
 }

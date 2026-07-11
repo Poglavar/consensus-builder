@@ -1,12 +1,12 @@
 (function (global) {
     'use strict';
 
-    // Provide a minimal, dependency-free wipeLocalData early in the load order.
-    if (typeof global.wipeLocalData === 'function') {
-        return;
-    }
-
-    global.wipeLocalData = async function wipeLocalData(options = {}) {
+    // The one function that actually erases local data. Dependency-free and defined early, so any
+    // caller can rely on it. Deliberately NOT named `wipeLocalData`: sidebar-management.js declares
+    // a global function of that name, which used to shadow this one after load — leaving the sidebar
+    // button and the city switch quietly clearing less (no localStorage, no IndexedDB drop) than the
+    // boot path did. That wrapper now delegates here, so there is exactly one eraser.
+    global.wipeAllLocalData = async function wipeAllLocalData(options = {}) {
         const { skipReload = false } = options || {};
 
         // Synchronous in-memory clears first so anything reading from cache
@@ -26,15 +26,25 @@
             }).catch(() => { /* ignore */ }));
         }
 
+        // Every city now has its own database (consensus-builder-storage::<cityId>), plus the legacy
+        // unscoped one. "Erase all local data" has to mean all of them, not just the city on screen.
         if (global.indexedDB && typeof global.indexedDB.deleteDatabase === 'function') {
-            tasks.push(new Promise(resolve => {
+            const dropDatabase = (name) => new Promise(resolve => {
                 try {
-                    const req = global.indexedDB.deleteDatabase('consensus-builder-storage');
+                    const req = global.indexedDB.deleteDatabase(name);
                     req.onsuccess = () => resolve();
                     req.onerror = () => resolve();
                     req.onblocked = () => resolve();
                 } catch (_) { resolve(); }
-            }));
+            });
+
+            const namesPromise = (global.PersistentStorage && typeof global.PersistentStorage.listDatabaseNames === 'function')
+                ? global.PersistentStorage.listDatabaseNames()
+                : Promise.resolve(['consensus-builder-storage']);
+
+            tasks.push(namesPromise
+                .then(names => Promise.all((names.length ? names : ['consensus-builder-storage']).map(dropDatabase)))
+                .catch(() => dropDatabase('consensus-builder-storage')));
         }
 
         if (global.caches && typeof global.caches.keys === 'function') {

@@ -87,4 +87,25 @@ describe("ParcelNFT", () => {
 
     expect(await parcelNFT.tokenURI(tokenId)).to.equal("ipfs://after");
   });
+
+  it("is soulbound: blocks transfers but allows minting", async () => {
+    const { recipient, other, parcelNFT } = await loadFixture(deployParcelFixture);
+    const parcelId = "HR-339318-7397";
+    const tokenId = parcelTokenId(parcelId);
+
+    // Minting works (from == address(0))
+    await expect(parcelNFT.mintParcel(recipient.address, parcelId, "ipfs://meta")).not.to.be.reverted;
+    expect(await parcelNFT.ownerOf(tokenId)).to.equal(recipient.address);
+
+    // Transfers are rejected (soulbound)
+    await expect(
+      parcelNFT.connect(recipient).transferFrom(recipient.address, other.address, tokenId)
+    ).to.be.revertedWith("ParcelNFT: soulbound, non-transferable");
+    await expect(
+      parcelNFT.connect(recipient)["safeTransferFrom(address,address,uint256)"](recipient.address, other.address, tokenId)
+    ).to.be.revertedWith("ParcelNFT: soulbound, non-transferable");
+
+    // Owner unchanged after failed transfer attempts
+    expect(await parcelNFT.ownerOf(tokenId)).to.equal(recipient.address);
+  });
 });

@@ -24,6 +24,7 @@ const FormData = require('form-data');
 const { ethers } = require('ethers');
 const { Client } = require('pg');
 const { findDeploymentAddress } = require('./deploymentUtils');
+const { putBlob: walrusPutBlob, getWalrusConfig } = require('./walrus-storage');
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -69,6 +70,12 @@ const LOCAL_UPLOAD_CHAIN_IDS = new Set(
 );
 let useLocalUploadService = false;
 let skipIpfsUploads = false;
+let useWalrusStorage = false;
+let walrusCostTotalFrost = 0; // running total of Walrus storage cost (FROST) for this run
+// Walrus uploads are network-bound and the dominant cost at scale; upload several in parallel.
+const WALRUS_UPLOAD_CONCURRENCY = Number(process.env.WALRUS_CONCURRENCY) > 0
+    ? Math.trunc(Number(process.env.WALRUS_CONCURRENCY))
+    : 8;
 
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
 const PINATA_API_SECRET = process.env.PINATA_API_SECRET;
@@ -654,6 +661,13 @@ function isParcelMissingError(error) {
     if (code === 'CALL_EXCEPTION' && (zeroData || fingerprint.includes('require(false)'))) {
         return true;
     }
+    // Some public RPCs (e.g. Base Sepolia) strip revert data, so a nonexistent-token revert
+    // surfaces as a CALL_EXCEPTION with null data. Treat a data-less revert as "missing".
+    const hasNoRevertData = error?.data == null && error?.error?.data == null && error?.info?.error?.data == null;
+    if (code === 'CALL_EXCEPTION' && hasNoRevertData
+        && (fingerprint.includes('missing revert data') || fingerprint.includes('execution reverted'))) {
+        return true;
+    }
     return false;
 }
 
@@ -816,9 +830,48 @@ async function uploadParcelImageToPinata(parcel) {
     });
 }
 
+// Store the parcel SVG + metadata JSON on Walrus. The on-chain pointer is the canonical
+// walrus://<blobId> (the frontend resolves it through the aggregator); image fields carry both
+// the walrus:// URI and a ready-to-render gateway URL.
+async function createWalrusMetadataResource(parcel, { dryRun = false, buildMetadata, metadataHelpers } = {}) {
+    if (typeof buildMetadata !== 'function') {
+        throw new Error('buildMetadata function is required to create metadata.');
+    }
+    const metadata = buildMetadata(parcel, metadataHelpers);
+
+    if (dryRun) {
+        return { metadataURI: '(pending-upload-to-walrus)', metadata, storage: 'walrus' };
+    }
+
+    const svgContent = buildParcelSvg(parcel);
+    if (!svgContent) {
+        throw new Error(`Unable to build SVG for parcel ${parcel.parcelId}`);
+    }
+    const imageResult = await walrusPutBlob(Buffer.from(svgContent, 'utf8'));
+    if (imageResult.cost != null) walrusCostTotalFrost += imageResult.cost;
+
+    metadata.image = imageResult.walrusUri;
+    metadata.image_url = imageResult.gatewayUrl;
+
+    const metadataResult = await walrusPutBlob(Buffer.from(JSON.stringify(metadata), 'utf8'));
+    if (metadataResult.cost != null) walrusCostTotalFrost += metadataResult.cost;
+
+    return {
+        metadataURI: metadataResult.walrusUri,
+        metadata,
+        storage: 'walrus',
+        blobId: metadataResult.blobId,
+        suiObjectId: metadataResult.suiObjectId,
+        gatewayUrl: metadataResult.gatewayUrl
+    };
+}
+
 async function createMetadataResource(parcel, { dryRun = false, buildMetadata, metadataHelpers } = {}) {
     if (typeof buildMetadata !== 'function') {
         throw new Error('buildMetadata function is required to create metadata.');
+    }
+    if (useWalrusStorage) {
+        return createWalrusMetadataResource(parcel, { dryRun, buildMetadata, metadataHelpers });
     }
     if (useLocalUploadService) {
         return createLocalMetadataResource(parcel, { dryRun, buildMetadata, metadataHelpers });
@@ -882,10 +935,17 @@ function parseArgs(argv) {
         network: 'hardhat', // Default to hardhat if not specified
         batch: null,
         skipMintStatusCheck: false,
-        skipIpfsUploads: false
+        skipIpfsUploads: false,
+        storage: null
     };
     argv.forEach(arg => {
-        if (arg.startsWith('--limit=')) {
+        if (arg.startsWith('--storage=')) {
+            const value = arg.split('=')[1]?.trim().toLowerCase();
+            if (!['walrus', 'pinata', 'local'].includes(value)) {
+                throw new Error("Invalid --storage value. Expected one of: walrus, pinata, local.");
+            }
+            args.storage = value;
+        } else if (arg.startsWith('--limit=')) {
             args.limit = Number(arg.split('=')[1]) || DEFAULT_LIMIT;
         } else if (arg.startsWith('--offset=')) {
             args.offset = Number(arg.split('=')[1]) || DEFAULT_OFFSET;
@@ -931,11 +991,18 @@ function parseArgs(argv) {
 }
 
 function getDemoOwnerPool() {
+    // Parcels are soulbound and ownership is EAS-attested, so the on-chain holder is just a
+    // registry custodian. When PARCEL_REGISTRY_ADDRESS is set, mint every parcel to that single
+    // address; otherwise fall back to distributing across the demo account pool.
+    const registry = (process.env.PARCEL_REGISTRY_ADDRESS || '').trim();
+    if (registry) {
+        return [registry];
+    }
     const pool = RANDOM_ADDRESS_ENV_KEYS
         .map(key => process.env[key])
         .filter(Boolean);
     if (pool.length === 0) {
-        throw new Error('No demo owner addresses defined. Populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
+        throw new Error('No owner addresses defined. Set PARCEL_REGISTRY_ADDRESS, or populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
     }
     return pool;
 }
@@ -1168,13 +1235,16 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
 }
 
 async function attachMetadataToParcels(parcels, { dryRun, verbose, buildMetadata, metadataHelpers }) {
-    const enriched = [];
-    for (const parcel of parcels) {
-        if (parcel.status !== 'available') {
-            enriched.push(parcel);
-            continue;
-        }
+    // Walrus uploads are network-bound, so run several concurrently; other providers stay
+    // sequential (limit 1) to preserve their existing behavior. Results keep input order.
+    const limit = useWalrusStorage && !dryRun ? Math.min(WALRUS_UPLOAD_CONCURRENCY, parcels.length || 1) : 1;
+    const enriched = new Array(parcels.length);
 
+    async function processOne(parcel, index) {
+        if (parcel.status !== 'available') {
+            enriched[index] = parcel;
+            return;
+        }
         const metadataResource = await createMetadataResource(parcel, { dryRun, buildMetadata, metadataHelpers });
         if (verbose) {
             if (dryRun) {
@@ -1185,10 +1255,24 @@ async function attachMetadataToParcels(parcels, { dryRun, verbose, buildMetadata
                 console.log(`[metadata] wrote ${parcel.parcelId} metadata to ${metadataResource.filePath}`);
             } else if (metadataResource.storage === 'pinata') {
                 console.log(`[metadata] uploaded ${parcel.parcelId} metadata to ${metadataResource.metadataURI}`);
+            } else if (metadataResource.storage === 'walrus') {
+                const walPart = walrusCostTotalFrost
+                    ? ` (run total ${(walrusCostTotalFrost / 1e9).toFixed(6)} WAL)`
+                    : '';
+                console.log(`[metadata] stored ${parcel.parcelId} on Walrus: ${metadataResource.metadataURI}${walPart}`);
             }
         }
-        enriched.push({ ...parcel, ...metadataResource });
+        enriched[index] = { ...parcel, ...metadataResource };
     }
+
+    let cursor = 0;
+    async function worker() {
+        while (cursor < parcels.length) {
+            const index = cursor++;
+            await processOne(parcels[index], index);
+        }
+    }
+    await Promise.all(Array.from({ length: Math.max(1, limit) }, worker));
     return enriched;
 }
 
@@ -1244,7 +1328,24 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
     const network = await provider.getNetwork();
     skipIpfsUploads = args.skipIpfsUploads;
     useLocalUploadService = shouldUseLocalUpload(network.chainId) || skipIpfsUploads;
-    if (useLocalUploadService) {
+
+    // --storage takes precedence over the chain-id heuristic when set.
+    if (args.storage === 'walrus') {
+        useWalrusStorage = true;
+        useLocalUploadService = false;
+        const walrusEnv = getWalrusConfig();
+        console.log(`Storing metadata on Walrus via ${walrusEnv.publisherUrl}`
+            + ` (${walrusEnv.permanent ? 'permanent' : `${walrusEnv.epochs} epochs`}).`);
+    } else if (args.storage === 'local') {
+        useLocalUploadService = true;
+    } else if (args.storage === 'pinata') {
+        useLocalUploadService = false;
+        skipIpfsUploads = false;
+    }
+
+    if (useWalrusStorage) {
+        // already logged above
+    } else if (useLocalUploadService) {
         console.log(`Writing metadata directly to ${BACKEND_UPLOADS_DIR}${skipIpfsUploads ? ' (forced by --no-ipfs)' : ''}`);
     } else if (skipIpfsUploads) {
         console.log('IPFS uploads disabled via --no-ipfs; will use filesystem outputs.');

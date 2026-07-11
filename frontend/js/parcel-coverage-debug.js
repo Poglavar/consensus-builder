@@ -133,11 +133,13 @@
     }
 
     function htrsToLatLng(easting, northing) {
-        if (typeof window.htrs96ToWGS84 !== 'function') {
+        // Grid cells are keyed in the dataset CRS (gridSize is in dataset units), not metric metres.
+        const convert = window.datasetToWgs84 || window.htrs96ToWGS84;
+        if (typeof convert !== 'function') {
             return null;
         }
         try {
-            const [lat, lon] = window.htrs96ToWGS84(easting, northing);
+            const [lat, lon] = convert(easting, northing);
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
                 return null;
             }

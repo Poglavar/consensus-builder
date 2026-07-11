@@ -1,0 +1,13 @@
+showProposalDialog
+showStructureProposalDialog
+openConstrainedCorridorModal
+showWalkUploadGateModal
+renderPreviewOverlay
+previewProposalOnMap
+renderProposalBuildingPreview
+setProposalModalInteractivity
+setProposalModalDimmed
+clearProposalPreview
+clearProposalPreviewLayers
+appendModalBody
+closeProposalDialog

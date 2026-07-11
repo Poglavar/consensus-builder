@@ -81,7 +81,9 @@ const config: HardhatUserConfig = {
       // gasPrice: 0,
     },
     mainnet: {
-      url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
+      // alchemyapi.io is Alchemy's dead legacy domain; use the current host and
+      // allow an explicit override via MAINNET_RPC_URL (e.g. a public RPC).
+      url: process.env.MAINNET_RPC_URL || `https://eth-mainnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
     sepolia: {

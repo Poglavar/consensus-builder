@@ -13,13 +13,26 @@ const MAX_STATUS_LENGTH = 50;
 const MAX_CURRENCY_LENGTH = 10;
 const MAX_DISBURSEMENT_MODE_LENGTH = 50;
 
-function normalizeCityCode(code) {
+// The frontend sends short city codes (frontend/js/city-config.js CITY_QUERY_MAP) but proposals are
+// stored under the full city id. Every code the frontend can produce must map, or that city's
+// proposals become invisible: `?city=ny` used to fall through unmapped and never match `new_york`.
+const CITY_CODE_TO_ID = {
+    zg: 'zagreb',
+    zgb: 'zagreb',
+    bg: 'belgrade',
+    ba: 'buenos_aires',
+    caba: 'buenos_aires',
+    'ar-ba': 'buenos_aires',
+    lj: 'ljubljana',
+    co: 'colorado',
+    ny: 'new_york'
+};
+
+export function normalizeCityCode(code) {
     const raw = (code || '').toString().trim().toLowerCase();
     if (!raw) return null;
-    if (raw === 'zg' || raw === 'zgb') return 'zagreb';
-    if (raw === 'bg') return 'belgrade';
-    if (raw === 'ba' || raw === 'caba' || raw === 'ar-ba') return 'buenos_aires';
-    return raw;
+    // Already a full city id (or an unknown value) — pass it through unchanged.
+    return CITY_CODE_TO_ID[raw] || raw;
 }
 
 function validateIdentifierField(fieldLabel) {

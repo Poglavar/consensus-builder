@@ -1,0 +1,65 @@
+<!doctype html>
+<!-- Canton chain option — minimal read-only view of a party's proposals/sales.
+     Standalone for now; becomes the party-perspective surface in a later step. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Urban Game Theory — Canton integration</title>
+    <link rel="stylesheet" href="css/canton.css?v=8" />
+</head>
+<body>
+    <main class="canton-wrap">
+        <h1>Urban Game Theory — Canton integration</h1>
+        <p class="canton-sub">Enter a party ID to see every proposal it's part of — whether as buyer, owner, or lens — plus its completed sales.</p>
+
+        <div class="canton-controls">
+            <input id="canton-party" type="text" placeholder="party id (hint::fingerprint)" autocomplete="off" list="party-options" />
+            <button id="canton-load" type="button">Load</button>
+        </div>
+        <div id="canton-status" class="canton-status"></div>
+        <div id="canton-perspective" class="canton-perspective"></div>
+
+        <section class="canton-section canton-parties">
+            <div class="canton-parties-head">
+                <h2>Test parties</h2>
+                <div class="canton-parties-actions">
+                    <button id="gen-party-btn" type="button">New test party</button>
+                    <button id="clear-parties-btn" type="button" class="canton-ghost">Clear</button>
+                </div>
+            </div>
+            <p class="canton-hint">Parties you generate (creates, the perspective switcher, or "New test party") are remembered here and offered as suggestions in every party field below. The <code>::</code> suffix is the participant's namespace — shared by all parties; the name before it is what's unique.</p>
+            <div id="canton-parties-list" class="canton-parties-list"></div>
+        </section>
+
+        <section class="canton-section canton-create">
+            <h2>Create proposal</h2>
+            <p class="canton-hint">Leave party fields blank to auto-allocate demo parties. After creating, the owner's view loads automatically.</p>
+            <div class="canton-form">
+                <label>Parcel<select id="create-parcel"><option value="">Loading real parcels…</option></select></label>
+                <label>Price<input id="create-price" type="text" value="100.0" /></label>
+                <label>Buyer (optional)<input id="create-buyer" type="text" placeholder="auto" autocomplete="off" list="party-options" /></label>
+                <label>Owner (optional)<input id="create-owner" type="text" placeholder="auto" autocomplete="off" list="party-options" /></label>
+                <label>Lens (optional)<input id="create-lens" type="text" placeholder="auto" autocomplete="off" list="party-options" /></label>
+            </div>
+            <button id="create-btn" type="button">Create proposal</button>
+            <div id="create-result" class="canton-result"></div>
+        </section>
+
+        <section class="canton-section">
+            <h2>Proposals</h2>
+            <div id="canton-proposals"></div>
+        </section>
+
+        <section class="canton-section">
+            <h2>Sales</h2>
+            <div id="canton-sales"></div>
+        </section>
+    </main>
+
+    <!-- Shared suggestion list for all party fields; filled from generated test parties. -->
+    <datalist id="party-options"></datalist>
+
+    <script src="js/canton/canton-read.js?v=8" defer></script>
+</body>
+</html>

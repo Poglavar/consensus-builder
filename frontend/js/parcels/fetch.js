@@ -56,8 +56,8 @@
                 }
             } catch (_) { /* ignore */ }
         }
-        if (typeof global.htrs96ToWGS84 === 'function') {
-            return global.htrs96ToWGS84(easting, northing);
+        if (typeof global.datasetToWgs84 === 'function') {
+            return global.datasetToWgs84(easting, northing);
         }
         return [northing, easting];
     }

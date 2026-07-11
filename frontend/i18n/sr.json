@@ -1,4 +1,7 @@
 {
+    "multitab": {
+        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje."
+    },
     "languages": {
         "en": "Engleski",
         "es": "Španski",
@@ -68,7 +71,9 @@
                 "title": "Izaberi način kreiranja",
                 "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
                 "connect": "Poveži novčanik",
-                "memory": "Kreiraj u memoriji"
+                "memory": "Kreiraj u memoriji",
+                "bodyConnected": "Novčanik je povezan. Koristiti ga za kovanje na lancu ili napraviti predlog u memoriji?",
+                "useConnected": "Koristi povezani novčanik"
             }
         }
     },
@@ -90,7 +95,12 @@
         "statusNotRegistered": "Još nisi registrovan.",
         "statusNothingToClaim": "Ništa za preuzimanje trenutno, vrati se malo kasnije.",
         "statusTxLink": "Prikaži transakciju",
-        "statusError": "Nešto je pošlo naopako. Pokušaj ponovo."
+        "statusError": "Nešto je pošlo naopako. Pokušaj ponovo.",
+        "explainerIntroPrefix": "Grad ima",
+        "explainerIntroSuffix": "naravno.",
+        "explainerIntroToken": "sopstveni token",
+        "statusClaimedDone": "Tokeni preuzeti!",
+        "statusClaiming": "Preuzimanje tokena iz ugovora..."
     },
     "attestify": {
         "title": "Registruj nadimak",
@@ -126,8 +136,14 @@
                 "housingShareSuffix": "% udeo stanovanja",
                 "areaPerInhabitantSuffix": "m² po stanovniku",
                 "closeAria": "Zatvori statistiku plana",
-                "currency": "EUR"
-            }
+                "currency": "EUR",
+                "resultingParcels": "Broj nastalih parcela (pros. m²)"
+            },
+            "newGame": "Nova igra",
+            "showAgents": "Prikaži agente",
+            "showAgentsCount": "Prikaži agente ({{count}})",
+            "showGameLog": "Prikaži dnevnik igre",
+            "showGameLogCount": "Prikaži dnevnik igre ({{count}})"
         },
         "city": {
             "label": "Grad:",
@@ -230,7 +246,9 @@
                 "institution": "Institucija",
                 "company": "Kompanija",
                 "privateIndividual": "Privatno"
-            }
+            },
+            "markMinted": "Označi iskovano",
+            "showClaimsCounts": "Prikaži broj zahteva (C)"
         },
         "parcel": {
             "forSale": "Na prodaju"
@@ -296,7 +314,24 @@
             "analyzeOsmTooltip": "Analiziraj širine vidljivih OSM puteva",
             "analysisToggleTooltip": "Prikaži ili sakrij najnoviju analizu širine puta",
             "analysisToggle": "Prikaži rezultate analize puta",
-            "legendTitle": "Legenda puteva"
+            "legendTitle": "Legenda puteva",
+            "detectAi": "Otkrij puteve pomoću AI",
+            "detectAiTooltip": "Otkrij puteve pomoću AI (buduća funkcija)",
+            "detectExisting": "Otkrij postojeće puteve",
+            "detectExistingTooltip": "Otkrij postojeće puteve koristeći sve dostupne podatke",
+            "detectGup": "Otkrij puteve iz GUP-a",
+            "detectGupTooltip": "Označi parcele kao puteve na osnovu GUP podataka",
+            "detectOsm": "Otkrij puteve iz OSM-a",
+            "detectOsmTooltip": "Nacrtaj i označi puteve na osnovu OpenStreetMap podataka",
+            "drawAlgorithmic": "Nacrtaj nove puteve algoritamski",
+            "drawAlgorithmicTooltip": "Nacrtaj nove puteve proceduralnim algoritmima (buduća funkcija)",
+            "drawDgu": "Nacrtaj puteve iz DGU-a",
+            "drawGup": "Nacrtaj puteve iz GUP-a",
+            "drawGupTooltip": "Nacrtaj GUP podatke o ulicama kao linije",
+            "drawOsm": "Nacrtaj puteve iz OSM-a",
+            "drawOsmTooltip": "Nacrtaj OpenStreetMap puteve kao linije",
+            "existingTitle": "Postojeći putevi",
+            "showLayer": "Prikaži puteve"
         },
         "areaMonitor": {
             "title": "Monitor područja",
@@ -397,7 +432,8 @@
         "proposalStatus": {
             "local": "Lokalno",
             "minted": "Iskovano"
-        }
+        },
+        "croatian": "Hrvatski"
     },
     "hud": {
         "totalSpentLabel": "Ukupno potrošeno:",
@@ -546,7 +582,9 @@
                 "apply": "Primeni na mapu",
                 "applying": "Primenjivanje...",
                 "remove": "Ukloni sa mape",
-                "share": "Podeli predlog"
+                "share": "Podeli predlog",
+                "copy": "Kopiraj u novi predlog",
+                "drive": "Vozi ovom prugom"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -592,7 +630,8 @@
                 "expiryLabel": "Vreme isteka pojačanja (opciono)",
                 "expiryPlaceholder": "YYYY-MM-DDTHH:MM:SSZ ili epoch sekunde",
                 "expiryHint": "Opciono: dodaj vreme posle kog ovo pojačanje ističe.",
-                "send": "Pošalji"
+                "send": "Pošalji",
+                "cityTokenLabel": "City Meme Token"
             },
             "acceptTransfer": {
                 "buttonLabel": "Prihvati prenos vlasništva",
@@ -631,7 +670,8 @@
                 "ownerTooltip": "Vlasnik: {{name}}"
             },
             "descendantRoadSuffix": " • Put",
-            "descendantRoadNamedSuffix": " • Put: {{name}}"
+            "descendantRoadNamedSuffix": " • Put: {{name}}",
+            "basedOn": "Zasnovano na"
         },
         "block": {
             "title": "Informacije o bloku",
@@ -698,7 +738,13 @@
             "createButton": "Kreiraj (C)",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
-            "parcelsNone": "Nijedna"
+            "parcelsNone": "Nijedna",
+            "closeAriaLabel": "Zatvori podatke o putu",
+            "ownedByCompaniesLabel": "U vlasništvu firmi:",
+            "ownedByGovernmentLabel": "U vlasništvu države:",
+            "ownedByIndividualsLabel": "U vlasništvu pojedinaca:",
+            "parcelAreaLabel": "Površina parcela:",
+            "parcelCountLabel": "Broj parcela:"
         },
         "roadAnalysis": {
             "title": "Analiza širine puta",
@@ -1079,6 +1125,8 @@
                 "mintUploadingIPFS": "Otpremanje na IPFS...",
                 "mintWaitingSignature": "Čekanje potpisa novčanika...",
                 "mintingOnChain": "Kovanje na lancu...",
+                "mintSavingServer": "Čuvanje predloga na server...",
+                "mintSavedChainOnly": "Okovano na lancu, ali čuvanje na server nije uspelo — ENS link možda neće raditi dok ne pokušate ponovo.",
                 "downloadButton": "Preuzmi",
                 "downloadSuccess": "Predlog preuzet kao JSON",
                 "downloadError": "Neuspelo preuzimanje predloga",
@@ -1100,6 +1148,15 @@
                     "fetchingPlan": "Preuzimanje plana…",
                     "fetchingPlanTitle": "Preuzimanje predloga",
                     "countHeading": "U trenutnom planu ima {{count}} predlog{{suffix}}",
+                    "nameHeading": "Ili dajte ovom planu prepoznatljivo ime (ENS):",
+                    "namePlaceholder": "npr. luka-obnova",
+                    "nameButton": "Sačuvaj ime",
+                    "namePrepFirst": "Prvo pripremite link za deljenje iznad (otpremite sve izabrane predloge).",
+                    "nameInvalid": "Koristite najmanje 3 znaka: a–z, 0–9, crtice.",
+                    "nameSaving": "Čuvanje…",
+                    "nameTaken": "To ime je zauzeto — izaberite drugo.",
+                    "nameError": "Nije moguće sačuvati ime.",
+                    "nameSaved": "sačuvano (vodi na ovaj plan).",
                     "applyUnknownFailure": "Nepoznata greška tokom primеnjivanja.",
                     "checking": "Provera…",
                     "checkingHint": "Proveravamo status otpremanja…",
@@ -1122,13 +1179,21 @@
                     "someAlreadyAppliedMessage": "Neki predlozi su već primenjeni na mapi:",
                     "whatToDo": "Šta želite da uradite?",
                     "applyRemaining": "Primeni preostale",
+                    "replacedConflicting": "Zamenjeno {{count}} predloga na istim parcelama: {{list}}",
                     "notFoundOnServer": "Nije pronađeno na serveru",
                     "partiallyAppliedTitle": "Delimično primenjeno",
                     "partiallyAppliedMessage": "{{applied}} od {{total}} predloga u ovom planu je već primenjeno. Želite li dodati preostalih {{remaining}}?",
                     "continueAdding": "Nastavi dodavanje",
                     "startFresh": "Počni ispočetka",
-                    "summary": "Rezultat podeljenog plana"
-                }
+                    "appliedCountDetailed": "Primenjeni predlozi ({{count}}):",
+                    "skippedCountDetailed": "Preskočeni duplikati ({{count}}) (već prisutni):",
+                    "failedCountDetailed": "Neuspešno primenjeni predlozi ({{count}}):",
+                    "applyBlockedByDependencies": "Blokirano: zavisnosti nisu zadovoljene nakon pokušaja.",
+                    "summary": "Rezultat podeljenog plana",
+                    "appliedToast": "Primenjeno {{count}} predloga."
+                },
+                "processingImageForUpload": "Obrada slike za otpremanje...",
+                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti sa kovanjem predloga"
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -1145,6 +1210,31 @@
                 "title": "Pregled podeljenih predloga",
                 "loading": "Parcele se još učitavaju...",
                 "applySelected": "Primeni izabrano"
+            },
+            "trackProposal": {
+                "authorLabel": "Autor:",
+                "authorPlaceholder": "Vaše ime",
+                "defaultDescription": "Ručni predlog pruge koji obuhvata {{count}} parcela.",
+                "descriptionLabel": "Opis:",
+                "descriptionPlaceholder": "Opišite svoj predlog pruge...",
+                "nameLabel": "Naziv pruge:",
+                "namePlaceholder": "npr. Glavna železnička pruga",
+                "offerLabel": "Ponuda (EUR):",
+                "offerPlaceholder": "0",
+                "parcelArea": "({{area}} m²)",
+                "parcelLabel": "Parcela {{number}}",
+                "previewUnavailable": "Pregled nije dostupan",
+                "submit": "Napravi predlog",
+                "summary": {
+                    "area": "Ukupna površina:",
+                    "curvature": "Min. poluprečnik zakrivljenosti:",
+                    "empty": "Nema otkrivenih parcela.",
+                    "heading": "Obuhvaćene parcele:",
+                    "parcels": "Obuhvaćene parcele:",
+                    "speed": "Brzina pruge:",
+                    "width": "Širina pruge:"
+                },
+                "title": "Napravi predlog pruge"
             }
         },
         "coverage": {
@@ -1180,23 +1270,49 @@
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
+                "asIs": "Bez promene",
                 "buildings": "Zgrade",
                 "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
                 "roadTrack": "Put/Pruga",
-                "decideLater": "Odluci kasnije",
+                "decideLater": "Spoji",
                 "urbanRule": "Urbano pravilo",
-                "reparcellization": "Reparcelizacija",
+                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
+            },
+            "goalSections": {
+                "landUse": "Namena",
+                "parcels": "Parcele",
+                "ownership": "Vlasništvo"
+            },
+            "parcelsOptions": {
+                "asIs": "Bez promene",
+                "merge": "Spoji",
+                "readjust": "Preraspodeli"
+            },
+            "ownershipRecipients": {
+                "noChange": "Bez promene",
+                "toMe": "Meni",
+                "toCity": "Gradu",
+                "thirdParty": "Treća strana",
+                "perSlice": "Po parceli"
+            },
+            "recipientPlaceholder": "Ime ili 0x adresa primaoca",
+            "recipientScope": {
+                "specific": "Određena adresa",
+                "any": "Bilo ko"
             },
             "ownershipTransfer": {
                 "label": "Smer prenosa:",
                 "toMe": "Na mene",
                 "fromMe": "Od mene",
                 "nameToMe": "Prenos vlasništva na mene",
-                "nameFromMe": "Prenos vlasništva od mene"
+                "nameFromMe": "Prenos vlasništva od mene",
+                "nameToCity": "Prenos vlasništva gradu",
+                "nameThirdParty": "Prenos vlasništva trećoj strani",
+                "nameOfferToSell": "Ponuda za prodaju"
             },
             "typologyOptions": {
                 "block": "Blok",
@@ -1222,7 +1338,9 @@
                 "status": {
                     "noGeometry": "Nema geometrije: definiši geometriju",
                     "submitted": "✔️ geometrija poslata",
-                    "auto": "Algoritamska geometrija će biti generisana"
+                    "auto": "Algoritamska geometrija će biti generisana",
+                    "copied": "Geometrija kopirana iz \"{name}\"",
+                    "copiedEditable": "Geometrija kopirana iz \"{name}\" — pritisnite Uredi za prilagođavanje"
                 }
             },
             "reparcellization": {
@@ -1310,8 +1428,43 @@
                 "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
                 "explainer": "Možete sami mintovati parcele. Da biste to uradili, kliknite na parcelu, idite na karticu Alati i kliknite na dugme za mintovanje.",
                 "cancel": "Otkaži",
-                "confirm": "Kreiraj"
-            }
+                "confirm": "Kreiraj",
+                "createInMemory": "Napravi u memoriji",
+                "mintPrerequisites": "Iskuj preduslove"
+            },
+            "onchainMintFailed": {
+                "cancel": "Otkaži",
+                "createInMemory": "Napravi u memoriji",
+                "message": "Kovanje na lancu nije uspelo iz razloga:",
+                "unknown": "Nepoznata greška"
+            },
+            "optionsSectionTitle": "Opcije"
+        },
+        "mintedProposals": {
+            "acceptancePossible": "Prihvatanje moguće",
+            "chainLabel": "Lanac: {{chain}}",
+            "conditional": "Uslovno",
+            "createdLabel": "Napravljeno: {{date}}",
+            "detailsButton": "Detalji",
+            "empty": "Još nema predloga iskovanih ovim novčanikom.",
+            "error": "Nije moguće učitati iskovane predloge.",
+            "explorer": "Pogledaj na Exploreru",
+            "lensLabel": "Lens: {{count}}",
+            "loading": "Učitavanje predloga sa lanca...",
+            "loadingShort": "Učitavanje...",
+            "loadingWithCount": "Pronađeno {{count}} predloga. Učitavanje...",
+            "metadataButton": "Metapodaci",
+            "metadataTitle": "Metapodaci predloga",
+            "metadataUnavailable": "Metapodaci nisu dostupni za ovaj predlog.",
+            "ok": "U redu",
+            "openFailed": "Nije moguće otvoriti detalje predloga.",
+            "ownerLabel": "Vlasnik: {{owner}}",
+            "parcelsLabel": "Parcele: {{count}}",
+            "proposalIdLabel": "Predlog #{{id}}",
+            "refresh": "Osveži",
+            "statusLabel": "Status: {{status}}",
+            "title": "Iskovani predlozi",
+            "walletRequired": "Povežite novčanik za pregled iskovanih predloga."
         }
     },
     "blockify": {
@@ -1343,10 +1496,13 @@
             "labels": {
                 "setback": "Povlačenje (m):",
                 "chamfer": "Skošenje (m):",
+                "simplify": "Pojednostavi (m):",
                 "width": "Širina zgrade (m):",
                 "height": "Visina zgrade (m):",
                 "gaps": "Broj otvora:",
-                "gapWidth": "Širina otvora (m):"
+                "gapWidth": "Širina otvora (m):",
+                "wings": "Broj krila:",
+                "wingLength": "Dužina krila (m):"
             },
             "helper": {
                 "adjust": "Podesite parametre klizačima da izmenite oblik zgrade.",
@@ -1367,6 +1523,35 @@
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela"
+            },
+            "handles": {
+                "gap": "Prevucite da pomerite otvor",
+                "wing": "Prevucite da pomerite krilo"
+            },
+            "existing": {
+                "toggle": "Na osnovu postojećih zgrada",
+                "proposedHeight": "Predložena visina (spratova):",
+                "additionalFloors": "Dodatni spratovi:",
+                "floorHeight": "Visina sprata (m):",
+                "helper": "Izaberite pravilo: predložena visina crta svaku zgradu tačno na toj visini; dodatni spratovi dodaju spratove na trenutnu visinu svake zgrade (zahteva poznate visine).",
+                "summaryExact": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                "loading": "Učitavanje postojećih zgrada...",
+                "notAvailable": "Podaci o postojećim zgradama još nisu dostupni za ovaj grad.",
+                "noneFound": "Na izabranim parcelama nisu pronađene postojeće zgrade.",
+                "loadFailed": "Učitavanje postojećih zgrada nije uspelo. Pokušajte ponovo.",
+                "summary": "Povisuje se {{count}} od {{total}} postojećih zgrada."
+            },
+            "manual": {
+                "edit": "Ručno uredi oblik",
+                "back": "Nazad na klizače",
+                "hint": "Ručni režim: prevucite temena da promenite obris. Visina se i dalje može podešavati.",
+                "needShape": "Prvo generišite oblik klizačima, pa ga uredite ručno.",
+                "confirmReset": "Odbaciti ručne izmene i vratiti se na klizače?",
+                "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte da vratite teme.",
+                "vertex": "Prevucite za oblikovanje",
+                "uploadGeojson": "Učitaj GeoJSON",
+                "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+                "uploadError": "Nije moguće pročitati datoteku."
             }
         }
     },
@@ -1445,7 +1630,11 @@
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} vlasnik{{ownerSuffix}}",
             "subtitleSingleOwner": "{{count}} parcel{{suffix}} · jedan vlasnik",
             "algorithms": {
-                "sweepLine": "Sweep line algoritam"
+                "sweepLine": "Sweep line algoritam",
+                "borderPerpendicular": "Normalno na granicu",
+                "centroidalVoronoi": "Centroidalni Voronoi",
+                "manual": "Ručno",
+                "wasserstein": "Wasserstein"
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
@@ -1476,13 +1665,58 @@
                 "lotLabel": "Parcela {{index}}",
                 "lotShareAria": "Udeo za parcelu {{index}}"
             },
+            "colContributed": "Uloženo",
+            "colAssigned": "Dodeljeno",
+            "colBalance": "Saldo",
+            "colCashOffer": "Ponuda u gotovini",
+            "totalCashOffer": "Ukupne ponude u gotovini: {{amount}}",
+            "owners": "Vlasnici",
+            "publicLand": "Javno zemljište",
+            "beforeAfter": "Pre / Posle",
+            "labelBefore": "Pre",
+            "labelAfter": "Posle",
+            "sweepHandleHint": "Prevuci za rotaciju linija parcelacije",
+            "drawPlot": "Nacrtaj parcelu",
+            "drawLine": "Podeli linijom",
+            "drawFinish": "Završi parcelu",
+            "drawFinishLine": "Završi liniju",
+            "drawUndo": "Poništi tačku",
+            "drawCancel": "Odustani",
+            "coverageComplete": "Sva udružena zemlja dodeljena ({{pct}}%).",
+            "coverageIncomplete": "{{count}} parcela bez vlasnika · {{area}} još nije dodeljeno ({{pct}}% pokriveno).",
             "status": {
                 "preparingPreview": "Pripremam pregled raspodele...",
                 "missingOwners": "Nije moguće utvrditi vlasnike za reparcelaciju.",
                 "algorithmUnavailable": "Izabrani algoritam nije još dostupan.",
                 "splitFailed": "Nije uspelo deljenje geometrije parcele.",
-                "success": "Sweep line uspešno primеnjen. Pregledaj i klikni Gotovo da sačuvaš."
-            }
+                "success": "Sweep line uspešno primеnjen. Pregledaj i klikni Gotovo da sačuvaš.",
+                "manualHint": "Nacrtaj parcele na mapi pa svaku dodeli vlasniku.",
+                "drawHint": "Klikni za dodavanje tačaka, prevuci za podešavanje, zatim pritisni Završi.",
+                "drawTooFew": "Dodaj bar 3 tačke za parcelu.",
+                "drawInvalid": "Nije moguće napraviti ispravnu parcelu iz tih tačaka.",
+                "drawNoOverlap": "Nacrtana parcela je izvan udružene zemlje.",
+                "drawSuccess": "Parcela dodata. Klikni je za dodelu vlasnika.",
+                "lineHint": "Klikni za dodavanje tačaka, prevuci za podešavanje, zatim pritisni Završi za podelu.",
+                "lineTooFew": "Dodaj bar 2 tačke za liniju podele.",
+                "lineNoSplit": "Linija nije presekla nijednu parcelu.",
+                "lineSuccess": "Parcela podeljena. Klikni svaki deo za dodelu vlasnika.",
+                "uploadEmpty": "Otpremljena datoteka ne sadrži poligone.",
+                "uploadNoOverlap": "Otpremljeni poligoni se ne preklapaju sa izabranim parcelama.",
+                "uploadParseError": "Neuspešno čitanje GeoJSON datoteke.",
+                "uploadSuccess": "Učitano {{count}} poligona iz datoteke."
+            },
+            "algorithmTitle": "Vrsta preparcelacije",
+            "assignOwners": "Dodeli vlasnike",
+            "colNewArea": "Novo",
+            "colOrigArea": "Originalno",
+            "colOwner": "Vlasnik",
+            "colOwners": "Vlasnici",
+            "colPlot": "Parcela",
+            "newPlots": "Nove parcele",
+            "originalOwners": "Originalni vlasnici",
+            "shuffle": "Izmešaj vlasništvo",
+            "unassigned": "Nedodeljeno",
+            "uploadGeojson": "Otpremi GeoJSON"
         }
     },
     "status": {
@@ -1714,7 +1948,13 @@
             "success": "Lokacija otkrivena: {{label}}"
         },
         "switch": {
-            "confirm": "Promena grada će obrisati lokalno keširane podatke (parcele, predloge, podešavanja) i ponovo učitati aplikaciju.\n\nDa li želiš da nastaviš?"
+            "confirm": "Promena grada će ponovo učitati aplikaciju. Vaš rad u ovom gradu je sačuvan i biće tu kad se vratite.\n\nŽelite li da nastavite?"
+        },
+        "switchPrompt": {
+            "title": "Ovaj predlog je u gradu {requested} — trenutno gledate {current}",
+            "body": "Otvaranje prebacuje mapu na {requested} i ponovo učitava aplikaciju. Vaš rad u gradu {current} je sačuvan i biće tu kad se vratite.",
+            "stay": "Ostani u {current}",
+            "switch": "Otvori u {requested}"
         }
     },
     "alerts": {
@@ -1780,7 +2020,15 @@
             "please_enter_a_description": "Unesi opis.",
             "please_enter_a_valid_offer_amount_eur": "Unesi validan iznos ponude (EUR).",
             "please_enter_a_valid_offer_amount": "Unesi validan iznos ponude.",
-            "please_enter_an_author_name": "Unesi ime autora."
+            "please_enter_an_author_name": "Unesi ime autora.",
+            "proposal_boost_contract_missing": "Adresa ugovora predloga nije konfigurisana za ovu mrežu.",
+            "proposal_boost_failed": "Transakcija pojačanja nije uspela: {{reason}}",
+            "proposal_boost_missing_token": "Adresa City Meme Tokena nije konfigurisana za povezanu mrežu.",
+            "proposal_boost_not_minted": "Ovaj predlog još nije na lancu. Iskujte ga pre pojačanja.",
+            "proposal_boost_success": "Uspeh! Hvala što ste pojačali ovaj predlog sa {{amount}} {{currency}}. To bi moglo pomoći da se ostvari 🤞 Pogledajte transakciju {{txLink}}",
+            "proposal_boost_switch_network": "Prebacite svoj novčanik na lanac {{chainId}} da biste pojačali ovaj predlog.",
+            "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj predlog.",
+            "copy_proposal_parcels_unavailable": "Nije moguće učitati parcele ovog predloga. Prebacite se na grad u kojem je napravljen i pokušajte ponovo."
         }
     },
     "gameDialogs": {
@@ -1806,6 +2054,19 @@
         "messages": {
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primeniti predlog zgrade, nedostaju pretci: {{missing}}",
             "cannot_apply_proposal_missing_parents": "Nije moguće primeniti predlog, nedostaju pretci: {{missing}}",
+            "proposal_conflict_title": "Sukob predloga — ista geografija",
+            "proposal_conflict_missing_title": "Nedostaju neke parcele",
+            "proposal_conflict_intro": "Za primenu predloga \"{{title}}\" potrebne su parcele koje nisu dostupne:",
+            "proposal_conflict_overlaps": "Preklapa se sa primenjenim predlogom \"{{title}}\"",
+            "proposal_conflict_shares": "Deli {{count}} parcela sa ovim predlogom.",
+            "proposal_conflict_shares_blocked": "Deli {{count}} parcela, ali se ne može samostalno poništiti — na njemu se zasnivaju:",
+            "proposal_conflict_unapply_those_first": "Prvo poništite njih.",
+            "proposal_conflict_not_loaded": "{{count}} nadređenih parcela nije učitano. Primena uprkos tome nastaviće se sa dostupnim parcelama.",
+            "proposal_conflict_unapply_continue": "Poništi i nastavi",
+            "proposal_conflict_unapplying": "Poništavanje…",
+            "proposal_conflict_apply_anyway": "Ipak primeni",
+            "proposal_conflict_cancel": "Odustani",
+            "proposal_conflict_close": "Zatvori",
             "cannot_share_this_proposal_right_now": "Trenutno nije moguće podeliti ovaj predlog.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Primena predloga puta nije uspela. Pregledaj predloge za detalje.",
             "failed_to_apply_shared_proposals": "Primena podeljenih predloga nije uspela.",
@@ -1835,6 +2096,28 @@
         }
     },
     "threeMode": {
+        "controls": {
+            "buildingRenderingAria": "Prikaz zgrada",
+            "built": "Izgrađeno",
+            "both": "Oboje",
+            "planned": "Planirano",
+            "radius": "Radijus",
+            "solid": "Puno:",
+            "neither": "Nijedno",
+            "showAllParcels": "Prikaži sve parcele",
+            "trees": "Drveće"
+        },
+        "overlay": {
+            "rendering": "Iscrtavanje…",
+            "loadingBuildings": "Učitavanje zgrada…"
+        },
+        "toggle": {
+            "switchTo2d": "Prebaci na 2D",
+            "switchTo3d": "Prebaci na 3D",
+            "preparing3d": "Priprema 3D prikaza",
+            "walk": "Prošetajte kroz svoje izmene",
+            "realistic": "Realističan kontekst (Google fotorealistični 3D)"
+        },
         "parcelPanel": {
             "title": "Parcela",
             "built": "Izgrađeno",
@@ -1844,7 +2127,15 @@
             "floorNote": "@ {{h}} m/etaži",
             "valueTitle": "Vrednost @ {{p}} €/m²",
             "priceLabel": "Cena po m²",
-            "gain": "Dobit predloga"
+            "gain": "Dobit predloga",
+            "currentValue": "Trenutna vrednost",
+            "proposalLabel": "Predlog",
+            "show": "prikaži"
+        },
+        "proposalPanel": {
+            "title": "Podaci o predlogu",
+            "parcelsLabel": "Parcele",
+            "avgPerParcel": "Prosek / parceli"
         }
     }
 }
