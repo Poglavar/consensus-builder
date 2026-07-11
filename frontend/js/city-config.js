@@ -6,6 +6,7 @@
         ba: 'buenos_aires',
         bg: 'belgrade',
         zg: 'zagreb',
+        st: 'split',
         lj: 'ljubljana',
         co: 'colorado',
         ny: 'new_york'
@@ -124,6 +125,55 @@
             // that set `walk.url` show the button; everyone else hides it (see three-mode.js).
             walk: {
                 url: 'https://zagreb.lol/prijevoz/'
+            }
+        },
+        split: {
+            id: 'split',
+            label: 'Split, Croatia',
+            currency: { locale: 'hr-HR', code: 'EUR' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: SHARED_DEFAULT_ZOOM
+                },
+                defaultCenter: [43.5081, 16.4402],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.1
+            },
+            // Same national HTRS96 grid and DGU WFS as Zagreb — the dataset
+            // covers all of Croatia, so parcels work here unchanged.
+            projection: {
+                datasetCrs: 'EPSG:3765',
+                definition: '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.5081, 16.4402],
+                fallbackDataset: [495165, 4818688],
+                datasetBounds: {
+                    minX: 240000,
+                    maxX: 730000,
+                    minY: 4460000,
+                    maxY: 5160000
+                }
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 500,
+                source: 'oss-wfs',
+                requiresBackend: true
+            },
+            sidebar: {
+                // Zagreb-only datasets (city blocks, GUP roads, area monitor,
+                // 2D buildings WFS layer) stay off until ingested for Split.
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            // locParam rides onto the walk/drive URLs as ?loc=split so the 3D
+            // sim picks Split's world sources (Overture buildings, sea layer).
+            walk: {
+                url: 'https://zagreb.lol/prijevoz/',
+                locParam: 'split'
             }
         },
         belgrade: {

@@ -2180,6 +2180,8 @@ function driveTrackProposalIn3DSim(proposalKey) {
     params.set('st3d', 'cab');
     params.set('track', serialId);
     if (appliedSerialIds.length) params.set('proposals', appliedSerialIds.join(','));
+    // loc selects the sim's per-city world sources (station-3d/core/locations.js).
+    if (driveConfig.locParam) params.set('loc', driveConfig.locParam);
     const url = `${driveConfig.url}?${params.toString()}`;
     console.log('[drive] opening 3D cab on track proposal:', url);
     window.open(url, '_blank', 'noopener,noreferrer');

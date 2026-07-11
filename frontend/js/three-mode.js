@@ -3280,9 +3280,12 @@
         params.set('lat', lat.toFixed(6));
         params.set('lon', lng.toFixed(6));
         if (ids.length) params.set('proposals', ids.join(','));
-        const base = getWalkUrlBase();
-        if (!base) return null;
-        return `${base}?${params.toString()}`;
+        const cfg = window.CityConfigManager;
+        const walk = cfg && typeof cfg.getWalkConfig === 'function' ? cfg.getWalkConfig() : null;
+        if (!walk || !walk.url) return null;
+        // loc selects the sim's per-city world sources (station-3d/core/locations.js).
+        if (walk.locParam) params.set('loc', walk.locParam);
+        return `${walk.url}?${params.toString()}`;
     }
 
     // Raycast a click on the renderer canvas onto the z=0 ground plane and return the lat/lng.
