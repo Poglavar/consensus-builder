@@ -1390,6 +1390,240 @@
         }
     }
 
+    // Corridor cross-sections in 3D. An applied road is a corridor parcel — one flat grey slab — and
+    // this lays its lanes over it: carriageway and cycle paths flush with the road, sidewalks, verges
+    // and medians raised to their kerb height. Colours and kerb heights come from CORRIDOR_LANE_TYPES,
+    // the same table the 2D map reads, so a lane is retextured for both views in one edit.
+    const corridorLaneMaterials = {};
+    const corridorSymbolMaterials = {};
+    const CORRIDOR_STRIP_Z = 0.05; // clear of the corridor parcel's own slab at z=0
+
+    function corridorLaneMaterial(type) {
+        if (!corridorLaneMaterials[type]) {
+            const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[type]) || {};
+            corridorLaneMaterials[type] = new THREE.MeshLambertMaterial({
+                color: new THREE.Color(lane.surface || '#2b2b2b'),
+                emissive: 0x000000
+            });
+        }
+        return corridorLaneMaterials[type];
+    }
+
+    function corridorStripToFeature(polygon) {
+        const ring = polygon.map(point => [point.lng, point.lat]);
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
+        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+    }
+
+    function corridorSymbolMaterial(kind) {
+        if (corridorSymbolMaterials[kind]) return corridorSymbolMaterials[kind];
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 128, 128);
+        ctx.strokeStyle = '#ffffff';
+        ctx.fillStyle = '#ffffff';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (kind === 'bike') {
+            ctx.beginPath(); ctx.arc(32, 83, 22, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(96, 83, 22, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(32, 83); ctx.lineTo(53, 50); ctx.lineTo(69, 83); ctx.lineTo(32, 83);
+            ctx.moveTo(53, 50); ctx.lineTo(84, 50); ctx.lineTo(96, 83);
+            ctx.moveTo(47, 39); ctx.lineTo(61, 39);
+            ctx.stroke();
+        } else {
+            const person = (x, scale) => {
+                ctx.beginPath(); ctx.arc(x, 30 + (1 - scale) * 20, 10 * scale, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(x, 43); ctx.lineTo(x, 82);
+                ctx.moveTo(x, 57); ctx.lineTo(x - 15 * scale, 70);
+                ctx.moveTo(x, 57); ctx.lineTo(x + 15 * scale, 70);
+                ctx.moveTo(x, 82); ctx.lineTo(x - 13 * scale, 111);
+                ctx.moveTo(x, 82); ctx.lineTo(x + 13 * scale, 111);
+                ctx.stroke();
+            };
+            person(45, 1);
+            person(88, 0.68);
+            ctx.beginPath(); ctx.moveTo(60, 67); ctx.lineTo(77, 69); ctx.stroke();
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        corridorSymbolMaterials[kind] = new THREE.MeshBasicMaterial({
+            map: texture, transparent: true, depthWrite: false, side: THREE.DoubleSide
+        });
+        return corridorSymbolMaterials[kind];
+    }
+
+    function addCorridorDecorations3D(targetGroup, decorations) {
+        const treePoints = decorations.filter(item => item.kind === 'tree');
+        const signs = decorations.filter(item => item.kind !== 'tree');
+        signs.forEach(item => {
+            const [x, y] = latLngToXY(item.lat, item.lng);
+            const size = Math.max(1.2, Math.min(3, Number(item.stripWidth) * 0.85));
+            const geometry = new THREE.PlaneGeometry(size, size);
+            const mesh = new THREE.Mesh(geometry, corridorSymbolMaterial(item.kind));
+            mesh.position.set(x, y, CORRIDOR_STRIP_Z + 0.18);
+            mesh.rotation.z = Number(item.angle) || 0;
+            mesh.userData.isCorridorDecoration = true;
+            mesh.userData.decorationKind = item.kind;
+            targetGroup.add(mesh);
+        });
+
+        if (!treePoints.length) return;
+        ensureTreeAssets();
+        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, treePoints.length);
+        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, treePoints.length);
+        const dummy = new THREE.Object3D();
+        treePoints.forEach((item, index) => {
+            const [x, y] = latLngToXY(item.lat, item.lng);
+            const random = treeRng(item.lng, item.lat);
+            const totalHeight = 5 + random * 3;
+            const trunkHeight = totalHeight * 0.48;
+            const crownRadius = totalHeight * 0.2 + 0.4;
+            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
+            dummy.scale.set(1, 1, trunkHeight);
+            dummy.rotation.set(0, 0, 0);
+            dummy.updateMatrix();
+            trunks.setMatrixAt(index, dummy.matrix);
+            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
+            dummy.scale.set(crownRadius, crownRadius, crownRadius * 1.15);
+            dummy.updateMatrix();
+            crowns.setMatrixAt(index, dummy.matrix);
+        });
+        trunks.instanceMatrix.needsUpdate = true;
+        crowns.instanceMatrix.needsUpdate = true;
+        trunks.userData.isCorridorDecoration = true;
+        trunks.userData.decorationKind = 'tree';
+        crowns.userData.isCorridorDecoration = true;
+        crowns.userData.decorationKind = 'tree';
+        targetGroup.add(trunks, crowns);
+    }
+
+    function addCorridorJunctions3D(targetGroup, junctions) {
+        const asphalt = corridorLaneMaterial('driving');
+        const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        junctions.forEach(junction => {
+            (junction.surfacePolygons || []).forEach(polygon => {
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), asphalt, CORRIDOR_STRIP_Z + 0.16, 0)
+                    .forEach(mesh => {
+                        mesh.userData.isCorridorJunction = true;
+                        targetGroup.add(mesh);
+                    });
+            });
+            (junction.crosswalkPolygons || []).forEach(polygon => {
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), white, CORRIDOR_STRIP_Z + 0.17, 0)
+                    .forEach(mesh => {
+                        mesh.userData.isCorridorCrosswalk = true;
+                        targetGroup.add(mesh);
+                    });
+            });
+        });
+    }
+
+    function addBuildingTunnelLiners3D(targetGroup, definition) {
+        const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels : [];
+        if (!tunnels.length) return;
+        const isTrack = definition?.metadata?.isTrack === true;
+        const clearHeight = isTrack ? 6 : 4.5;
+        const clearWidth = Math.max(3, Number(definition?.width) || (isTrack ? 3 : 7.5)) + 0.8;
+        const thickness = 0.25;
+        const linerMaterial = new THREE.MeshLambertMaterial({
+            color: 0x2e2340, transparent: true, opacity: 0.82, side: THREE.DoubleSide
+        });
+        const portalMaterial = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
+
+        tunnels.forEach(tunnel => {
+            if (tunnel?.kind !== 'building' || !tunnel.from || !tunnel.to) return;
+            const [x1, y1] = latLngToXY(Number(tunnel.from.lat), Number(tunnel.from.lng));
+            const [x2, y2] = latLngToXY(Number(tunnel.to.lat), Number(tunnel.to.lng));
+            const length = Math.hypot(x2 - x1, y2 - y1);
+            if (!Number.isFinite(length) || length < 0.5) return;
+            const assembly = new THREE.Group();
+            assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2, CORRIDOR_STRIP_Z + 0.05);
+            assembly.rotation.z = Math.atan2(y2 - y1, x2 - x1);
+
+            const addBox = (geometry, material, x, y, z) => {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                mesh.userData.isBuildingTunnel = true;
+                mesh.userData.tunnelId = tunnel.id || tunnel.edgeKey;
+                assembly.add(mesh);
+            };
+
+            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+                0, -clearWidth / 2, clearHeight / 2);
+            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+                0, clearWidth / 2, clearHeight / 2);
+            addBox(new THREE.BoxGeometry(length, clearWidth, thickness), linerMaterial,
+                0, 0, clearHeight);
+
+            [-length / 2, length / 2].forEach(x => {
+                addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
+                    x, -clearWidth / 2, clearHeight / 2);
+                addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
+                    x, clearWidth / 2, clearHeight / 2);
+                addBox(new THREE.BoxGeometry(thickness * 1.5, clearWidth, thickness * 1.5), portalMaterial,
+                    x, 0, clearHeight);
+            });
+            targetGroup.add(assembly);
+        });
+    }
+
+    function buildCorridorStrips3D(targetGroup) {
+        if (typeof buildCorridorStrips !== 'function' || typeof isAppliedCorridorProposal !== 'function') return;
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+
+        proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            const profile = corridorProfileOf(definition);
+            const centerline = corridorCenterlineOf(definition);
+            if (!profile || !centerline.length) return;
+
+            buildCorridorStrips(centerline, profile).forEach(strip => {
+                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                const kerb = Number(lane.height) || 0;
+                strip.polygons.forEach(polygon => {
+                    const meshes = polygonFeatureToMeshes(
+                        corridorStripToFeature(polygon),
+                        corridorLaneMaterial(strip.type),
+                        CORRIDOR_STRIP_Z,
+                        kerb
+                    );
+                    meshes.forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.laneType = strip.type;
+                        targetGroup.add(mesh);
+                    });
+                });
+            });
+            const junctions = (typeof buildCorridorJunctionTreatments === 'function')
+                ? buildCorridorJunctionTreatments(centerline, profile) : [];
+            addCorridorJunctions3D(targetGroup, junctions);
+            const decorations = (typeof buildCorridorDecorations === 'function')
+                ? buildCorridorDecorations(centerline, profile) : [];
+            addCorridorDecorations3D(targetGroup, decorations);
+        });
+
+        // Track surfaces use a different renderer, but building-tunnel metadata is common to both
+        // corridor kinds, so liners are added in a second pass over every applied corridor proposal.
+        proposalStorage.getAllProposals().forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
+            const status = String(proposal.status || '').toLowerCase();
+            const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
+            if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
+            addBuildingTunnelLiners3D(targetGroup, definition);
+        });
+    }
+
     function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial) {
         // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
         // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
@@ -2378,6 +2612,7 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -2782,7 +3017,15 @@
     }
 
     function closeAllPanelsAndModalsFor3D() {
-        try { typeof hideParcelInfoPanel === 'function' && hideParcelInfoPanel(); } catch (_) { }
+        // `hideParcelInfoPanel` in this module belongs to the Three.js overlay. Explicitly call the
+        // 2D parcel-panel owner as well; otherwise its identically named local function shadows the
+        // global closer and the Leaflet Parcel Info panel remains visible over 3D.
+        try {
+            const hideLeafletParcelInfo = window.Parcels?.uiParcelPanel?.hideParcelInfoPanel
+                || window.hideParcelInfoPanel;
+            if (typeof hideLeafletParcelInfo === 'function') hideLeafletParcelInfo();
+        } catch (_) { }
+        try { hideParcelInfoPanel(); } catch (_) { }
         try { typeof hideProposalDetailsPanel === 'function' && hideProposalDetailsPanel(); } catch (_) { }
         try { typeof hideBlockInfo === 'function' && hideBlockInfo(); } catch (_) { }
         try { typeof hideRoadInfoPanel === 'function' && hideRoadInfoPanel(); } catch (_) { }
@@ -2871,6 +3114,7 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -3239,5 +3483,3 @@
     // Initial paint: mark 2D as the active mode on load.
     updateModeButtonStates();
 })();
-
-

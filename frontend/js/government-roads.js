@@ -1584,7 +1584,7 @@
 
         function getNextIdentity(rootNumber, rootParcelId) {
             if (!rootNumber || !rootParcelId) return null;
-            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
+            const key = syntheticParcelAllocatorKey(rootParcelId, rootNumber);
             let state = allocatorState.get(key);
             if (!state) {
                 state = { baseId: rootParcelId, nextIndex: 1 };
@@ -2005,7 +2005,7 @@
 
         function getNextIdentity(rootNumber, rootParcelId) {
             if (!rootNumber || !rootParcelId) return null;
-            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
+            const key = syntheticParcelAllocatorKey(rootParcelId, rootNumber);
             let state = allocatorState.get(key);
             if (!state) {
                 state = { baseId: rootParcelId, nextIndex: 1 };

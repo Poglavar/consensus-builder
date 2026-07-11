@@ -47,6 +47,9 @@
         "connect": "Conectar billetera",
         "connectedTitle": "Billetera conectada: {{account}}",
         "disconnectHint": "Haz clic para desconectar.",
+        "noNetwork": "Sin red",
+        "noNetworkHint": "Desconecta las billeteras y abandona el modo de cadena activo.",
+        "disconnectingNetworks": "Desconectando de las redes...",
         "connectTitle": "Conecta una billetera de Ethereum",
         "modal": {
             "title": "Conectar una billetera",
@@ -593,7 +596,8 @@
             "roadSuffix": " (Carretera)",
             "mapStatus": {
                 "applied": "Aplicada",
-                "notApplied": "No aplicada"
+                "notApplied": "No aplicada",
+                "includedIn": "Incluida en {{name}}"
             },
             "disbursement": {
                 "conditional": "Condicional",
@@ -605,6 +609,8 @@
                 "apply": "Aplicar al mapa",
                 "applying": "Aplicando...",
                 "remove": "Quitar del mapa",
+                "includedInRoad": "Incluida en la vía combinada",
+                "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
                 "share": "Compartir propuesta",
                 "copy": "Copiar en una nueva propuesta",
                 "drive": "Conducir por esta vía"
@@ -759,6 +765,8 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar segmento (F)",
             "createButton": "Crear (C)",
+            "crossSectionButton": "Editar sección transversal",
+            "draftAutosaved": "Borrador guardado automáticamente en este dispositivo",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna",
@@ -934,6 +942,37 @@
         },
         "dataManagement": {
             "wipeWarning": "Esto borrará TODOS los datos almacenados localmente (parcelas, carreteras, propuestas, ajustes). ¿Deseas continuar?"
+        },
+        "corridor": {
+            "title": "Sección transversal",
+            "subtitle": "El corredor conserva su ancho, por lo que la carretera no se mueve",
+            "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
+            "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
+            "totalWidth": "Ancho total",
+            "cancel": "Cancelar",
+            "save": "Guardar como nueva propuesta",
+            "applyDrawing": "Aplicar al dibujo",
+            "addLane": "Añadir carril",
+            "grass": "Solo césped",
+            "trees": "Arboleda"
+        },
+        "corridorDraft": {
+            "title": "Borrador de trazado sin guardar",
+            "cancelBody": "Este trazado contiene cambios que todavía no forman parte de una propuesta.",
+            "cityBody": "Cambiar de ciudad cerrará este trazado. Puedes conservarlo y retomarlo al volver.",
+            "replaceBody": "Iniciar otro trazado reemplazará el borrador actual.",
+            "wipeBody": "Borrar los datos locales eliminará permanentemente este borrador.",
+            "continueEditing": "Continuar editando",
+            "discard": "Descartar borrador",
+            "discardAndWipe": "Descartar y borrar",
+            "keep": "Conservar borrador"
+        },
+        "corridorTunnel": {
+            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Crear un túnel a través del edificio?",
+            "road": "camino",
+            "track": "vía férrea",
+            "confirm": "Atravesar con túnel",
+            "cancel": "Elegir otra ruta"
         },
         "roadWidth": {
             "title": "Elige el ancho de la carretera",
@@ -2048,7 +2087,9 @@
             "please_enter_a_valid_offer_amount_eur": "Ingresa una oferta válida (EUR).",
             "please_enter_a_valid_offer_amount": "Ingresa una oferta válida.",
             "please_enter_an_author_name": "Ingresa un nombre de autor.",
-            "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de esta propuesta. Cambia a la ciudad en la que se creó e inténtalo de nuevo."
+            "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de esta propuesta. Cambia a la ciudad en la que se creó e inténtalo de nuevo.",
+            "road_source_incorporated": "Se aplicó la vía combinada y se retiró ‘{{name}}’ del mapa.",
+            "road_source_included_in_replacement": "Esta vía está incluida en ‘{{name}}’. Retira la vía combinada del mapa antes de aplicar esta."
         }
     },
     "gameDialogs": {

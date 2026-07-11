@@ -767,11 +767,20 @@ async function createProposal() {
                     segmentIds: Array.isArray(roadDrawingContext.segmentIds)
                         ? roadDrawingContext.segmentIds.slice(0, centerlinePoints.length)
                         : [],
+                    // The cross-section. `width` below is its total, kept as a cache for the many
+                    // consumers that only need the corridor's footprint.
+                    profile: safeClone(roadDrawingContext.profile) || null,
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
+                    tunnels: safeClone(roadDrawingContext.tunnels) || [],
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
                 };
+
+                // The profile is the truth; if one is present the stored width must be its sum, or the
+                // corridor polygon and its cross-section would disagree about the footprint.
+                const profileWidth = (typeof corridorProfileWidth === 'function') ? corridorProfileWidth(roadDefinition.profile) : 0;
+                if (profileWidth > 0) roadDefinition.width = profileWidth;
 
                 if (roadDrawingContext.stats) {
                     const statsClone = safeClone(roadDrawingContext.stats);
@@ -1293,6 +1302,13 @@ async function createProposal() {
                         };
 
                         const screenshotBounds = buildBoundsFromParcelPolygons(parcelPolygons, bounds);
+                        // A road proposal's image is about the designed corridor, not the much larger
+                        // set of cadastral parents it crosses. The modal preview already uses this
+                        // geometry; keep the final stored/minted capture on the same source of truth.
+                        const screenshotGeometry = resolveCorridorScreenshotGeometry(proposal, combinedPolygon);
+                        const screenshotPolygon = screenshotGeometry.polygon;
+                        const screenshotPolygonOrder = screenshotGeometry.polygonOrder;
+                        const screenshotFitToPolygonOnly = screenshotGeometry.fitToPolygonOnly;
 
                         console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
 
@@ -1321,12 +1337,15 @@ async function createProposal() {
                             if (!window.MapScreenshot?.captureViaTileStitch) return null;
                             try {
                                 const dataUrl = await window.MapScreenshot.captureViaTileStitch({
-                                    polygon: combinedPolygon,
+                                    polygon: screenshotPolygon,
                                     parcelPolygons: parcelPolygons,
                                     padding: 0.12,
                                     bounds: screenshotBounds,
                                     zoom: 19,
-                                    badge: goalBadge
+                                    badge: goalBadge,
+                                    polygonOrder: screenshotPolygonOrder,
+                                    parcelPolygonOrder: 'auto',
+                                    fitToPolygonOnly: screenshotFitToPolygonOnly
                                 });
                                 const bytes = computeByteSize(dataUrl);
                                 console.debug('[createProposal] Tile stitch capture size:', bytes, 'bytes');
@@ -1646,6 +1665,11 @@ async function createProposal() {
         }
         const storedForOnchain = proposalStorage.getProposal(proposalId);
         const storedProposalId = storedForOnchain?.proposalId || proposal.proposalId || proposalId;
+        // A geometry draft survives modal closes and failed saves. Only a successfully persisted
+        // corridor proposal consumes it.
+        if (proposal.goal === 'road-track' && typeof clearActiveCorridorDraft === 'function') {
+            clearActiveCorridorDraft();
+        }
 
         // Update stored proposal with on-chain data if available
         if (onchainResult) {

@@ -869,6 +869,9 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
     console.debug(`[applyProposalToMap] Step 6: ${step6Label} (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
+    // An applied road becomes a corridor parcel; draw its cross-section over it.
+    if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh();
+
     const totalTime = performance.now() - startTime;
     console.debug(`[applyProposalToMap] ✓ Application completed successfully in ${totalTime.toFixed(2)}ms`);
     return true;

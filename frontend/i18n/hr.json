@@ -47,6 +47,9 @@
         "connect": "Poveži novčanik",
         "connectedTitle": "Povezan novčanik: {{account}}",
         "disconnectHint": "Klikni da se odjaviš.",
+        "noNetwork": "Bez mreže",
+        "noNetworkHint": "Odspojite novčanike i napustite aktivni način lanca.",
+        "disconnectingNetworks": "Odspajanje s mreža...",
         "connectTitle": "Poveži Ethereum novčanik",
         "modal": {
             "title": "Poveži novčanik",
@@ -570,7 +573,8 @@
             "roadSuffix": " (Cesta)",
             "mapStatus": {
                 "applied": "Primijenjeno",
-                "notApplied": "Nije primijenjeno"
+                "notApplied": "Nije primijenjeno",
+                "includedIn": "Uključeno u {{name}}"
             },
             "disbursement": {
                 "conditional": "Uvjetno",
@@ -582,6 +586,8 @@
                 "apply": "Primijeni na kartu",
                 "applying": "Primjenjivanje...",
                 "remove": "Ukloni s karte",
+                "includedInRoad": "Uključeno u spojenu cestu",
+                "includedInRoadHint": "Uklonite {{name}} s karte kako biste vratili ovu cestu.",
                 "share": "Podijeli prijedlog",
                 "copy": "Kopiraj u novi prijedlog",
                 "drive": "Vozi ovom prugom"
@@ -736,6 +742,8 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Završi segment (F)",
             "createButton": "Kreiraj (C)",
+            "crossSectionButton": "Uredi poprečni presjek",
+            "draftAutosaved": "Nacrt je automatski spremljen na ovom uređaju",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna",
@@ -885,6 +893,37 @@
         },
         "dataManagement": {
             "wipeWarning": "Ovo će izbrisati SVE lokalno spremljene podatke (parcele, ceste, prijedlozi, postavke). Nastaviti?"
+        },
+        "corridor": {
+            "title": "Poprečni presjek",
+            "subtitle": "Koridor zadržava širinu pa se cesta ne pomiče",
+            "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
+            "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",
+            "totalWidth": "Ukupna širina",
+            "cancel": "Odustani",
+            "save": "Spremi kao novi prijedlog",
+            "applyDrawing": "Primijeni na crtež",
+            "addLane": "Dodaj traku",
+            "grass": "Samo trava",
+            "trees": "Drvored"
+        },
+        "corridorDraft": {
+            "title": "Nespremljeni nacrt trase",
+            "cancelBody": "Ovaj crtež sadrži promjene koje još nisu dio prijedloga.",
+            "cityBody": "Promjena grada zatvorit će ovaj crtež. Možete ga zadržati i nastaviti kad se vratite.",
+            "replaceBody": "Pokretanje drugog crteža zamijenit će trenutačni nacrt.",
+            "wipeBody": "Brisanje lokalnih podataka trajno će izbrisati ovaj nacrt.",
+            "continueEditing": "Nastavi uređivati",
+            "discard": "Odbaci nacrt",
+            "discardAndWipe": "Odbaci i izbriši",
+            "keep": "Zadrži nacrt"
+        },
+        "corridorTunnel": {
+            "offer": "Ova {{kind}} prolazila bi kroz {{count}} zgradu/zgrade. Izraditi tunel kroz zgradu?",
+            "road": "cesta",
+            "track": "pruga",
+            "confirm": "Tunel kroz zgradu",
+            "cancel": "Odaberi drugu trasu"
         },
         "roadWidth": {
             "title": "Odaberi širinu ceste",
@@ -2028,7 +2067,9 @@
             "proposal_boost_success": "Uspjeh! Hvala što ste pojačali ovaj prijedlog s {{amount}} {{currency}}. To bi moglo pomoći da se ostvari 🤞 Pogledajte transakciju {{txLink}}",
             "proposal_boost_switch_network": "Prebacite svoj novčanik na lanac {{chainId}} da biste pojačali ovaj prijedlog.",
             "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj prijedlog.",
-            "copy_proposal_parcels_unavailable": "Nije moguće učitati čestice ovog prijedloga. Prebacite se na grad u kojem je stvoren i pokušajte ponovno."
+            "copy_proposal_parcels_unavailable": "Nije moguće učitati čestice ovog prijedloga. Prebacite se na grad u kojem je stvoren i pokušajte ponovno.",
+            "road_source_incorporated": "Primijenjena je spojena cesta, a ‘{{name}}’ je uklonjena s karte.",
+            "road_source_included_in_replacement": "Ova cesta uključena je u ‘{{name}}’. Uklonite spojenu cestu s karte prije primjene ove."
         }
     },
     "gameDialogs": {

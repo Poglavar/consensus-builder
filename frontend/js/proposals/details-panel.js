@@ -449,15 +449,23 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const applyDisabledForType = isRoadProposal ? false : APPLY_DISABLED_TYPE_KEYS.has(normalizedTypeForActions);
 
     const appliedState = isProposalApplied(fullProposal);
+    const activeRoadReplacement = (isRoadProposal && typeof activeRoadSuperseder === 'function')
+        ? activeRoadSuperseder(fullProposal, id => (typeof getProposalByIdOrHash === 'function' ? getProposalByIdOrHash(id) : null))
+        : null;
+    const activeRoadReplacementName = activeRoadReplacement
+        ? (activeRoadReplacement.title || activeRoadReplacement.name || activeRoadReplacement.proposalName || activeRoadReplacement.proposalId || 'combined road')
+        : null;
     // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
     const isMinted = isProposalMinted(fullProposal);
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
     const mapStatusBadgeClass = appliedState ? 'applied' : 'not-applied';
-    const mapStatusBadgeLabel = appliedState
-        ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
-        : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied');
+    const mapStatusBadgeLabel = activeRoadReplacement
+        ? tProposal('panel.proposal.mapStatus.includedIn', 'Included in {{name}}', { name: activeRoadReplacementName })
+        : (appliedState
+            ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
+            : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied'));
     const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
     const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
     const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
@@ -489,11 +497,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     let mapActionButtonHtml = '';
     if (canShowMapActions) {
         const isApplyAction = !appliedState;
-        const buttonLabel = appliedState
-            ? tProposal('panel.proposal.actions.remove', 'Remove from map')
-            : tProposal('panel.proposal.actions.apply', 'Apply to map');
+        const buttonLabel = activeRoadReplacement
+            ? tProposal('panel.proposal.actions.includedInRoad', 'Included in combined road')
+            : (appliedState
+                ? tProposal('panel.proposal.actions.remove', 'Remove from map')
+                : tProposal('panel.proposal.actions.apply', 'Apply to map'));
         const iconClass = appliedState ? 'fa-eye-slash' : 'fa-check';
-        const isDisabled = isApplyAction && applyDisabledForType;
+        const isDisabled = isApplyAction && (applyDisabledForType || !!activeRoadReplacement);
         const buttonClass = appliedState
             ? 'btn btn-warning'
             : (isDisabled ? 'btn btn-secondary disabled' : 'btn btn-success');
@@ -506,8 +516,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : (isDisabled ? null : `applyProposalToMap('${proposalKey}')`);
         const disabledStyle = 'cursor: not-allowed; opacity: 0.55; pointer-events: none; background-color: #d1d5db; border-color: #cbd5e1; color: #555;';
         const enabledStyle = '';
+        const replacementTitle = activeRoadReplacement
+            ? tProposal('panel.proposal.actions.includedInRoadHint', 'Remove {{name}} from the map to restore this road.', { name: activeRoadReplacementName })
+            : '';
+        const safeReplacementTitle = replacementTitle && typeof escapeHtml === 'function' ? escapeHtml(replacementTitle) : replacementTitle;
         const disabledAttrs = isDisabled
-            ? `disabled aria-disabled="true" style="${disabledStyle}"`
+            ? `disabled aria-disabled="true" ${safeReplacementTitle ? `title="${safeReplacementTitle}"` : ''} style="${disabledStyle}"`
             : (enabledStyle ? `style="${enabledStyle}"` : '');
         const buttonId = `proposal-action-btn-${proposalKey}`;
         mapActionButtonHtml = `
@@ -529,6 +543,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? `
         <button class="btn btn-outline-secondary btn-copy-proposal" onclick="copyProposalIntoNewProposal('${proposalKey}')">
             <i class="fas fa-clone"></i> ${tProposal('panel.proposal.actions.copy', 'Copy into new proposal')}
+        </button>
+    `
+        : '';
+
+    // A road's cross-section can be reshuffled without moving the road. Applying the edit reopens its
+    // geometry in the drawing tool; proposal creation remains a separate, explicit step there.
+    const corridorProposal = fullProposal || proposal;
+    const corridorButtonHtml = (proposalKey && typeof proposalHasEditableCorridor === 'function' && proposalHasEditableCorridor(corridorProposal))
+        ? `
+        <button class="btn btn-outline-secondary btn-corridor-profile" onclick="openCorridorProfileEditor('${proposalKey}')">
+            <i class="fas fa-road"></i> ${tProposal('panel.proposal.actions.crossSection', 'Cross-section')}
         </button>
     `
         : '';
@@ -567,6 +592,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${driveButtonHtml}
             ${shareButtonHtml}
+            ${corridorButtonHtml}
             ${copyButtonHtml}
         </div>
     `;

@@ -531,13 +531,13 @@
 
         const roadDrawingActions = roadToolsEnabled ? `
         <div class="parcel-road-actions btn-group" data-feature="roadTools">
-            <button type="button" class="btn btn-action" onclick="toggleRoadDrawTool()"
+            <button type="button" class="btn btn-action" onclick="requestRoadDrawTool()"
                 data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title"
                 title="">
                 <i class="fas fa-road" aria-hidden="true"></i>
                 <span data-i18n-key="sidebar.roads.drawManual">Draw Road</span>
             </button>
-            <button type="button" class="btn btn-action" onclick="toggleTrackDrawTool()"
+            <button type="button" class="btn btn-action" onclick="requestTrackDrawTool()"
                 data-i18n-key="sidebar.roads.drawTrackTooltip" data-i18n-attr="title"
                 title="">
                 <i class="fas fa-train" aria-hidden="true"></i>
