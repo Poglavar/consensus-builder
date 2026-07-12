@@ -311,6 +311,32 @@ function deleteProposal(proposalId) {
             return;
         }
 
+        // An edited object remembers what it replaced: deleting it offers a one-jump restore of
+        // the original (e.g. the proposal loaded from a shared link) instead of losing both.
+        if (proposal.revertSnapshot && typeof window !== 'undefined'
+            && typeof window.showStyledChoice === 'function'
+            && typeof window.revertProposalToSnapshot === 'function'
+            && !proposal.__deleteChoiceResolved) {
+            const tHelper = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : ((k, f) => f);
+            const originalName = proposal.revertSnapshot.title || proposal.revertSnapshot.name || '';
+            window.showStyledChoice(
+                tHelper('modal.deleteProposal.withRevert', 'This object replaced “{{name}}”. Restore that version, or delete everything?', { name: originalName }),
+                [
+                    { value: 'revert', label: tHelper('modal.deleteProposal.restore', 'Restore previous version'), primary: true },
+                    { value: 'delete', label: tHelper('modal.deleteProposal.deleteAll', 'Delete everything') },
+                    { value: 'cancel', label: tHelper('modal.deleteProposal.cancel', 'Cancel') }
+                ]
+            ).then(answer => {
+                if (answer === 'revert') {
+                    window.revertProposalToSnapshot(proposalId);
+                } else if (answer === 'delete') {
+                    proposal.__deleteChoiceResolved = true;
+                    try { deleteProposal(proposalId); } finally { delete proposal.__deleteChoiceResolved; }
+                }
+            });
+            return;
+        }
+
         const goalKey = resolveProposalGoalKey(proposal, null);
         const managedByProposalManager = (
             goalKey === 'road-track'

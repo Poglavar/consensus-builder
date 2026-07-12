@@ -2306,7 +2306,7 @@ const ProposalManager = {
         if (typeof proposalStorage.save === 'function') proposalStorage.save();
         const sourceName = source.title || source.name || source.proposalName || source.proposalId || 'the previous road';
         const message = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
-            ? window.i18n.t('ephemeral.messages.road_source_incorporated', { name: sourceName })
+            ? window.i18n.t('alerts.messages.road_source_incorporated', { name: sourceName })
             : `Applied the combined road and removed “${sourceName}” from the map.`;
         try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'success'); } catch (_) { }
         console.info('[ProposalManager] Incorporated copied road source into replacement', {

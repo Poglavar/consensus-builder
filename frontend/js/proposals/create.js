@@ -283,6 +283,7 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
             blockName: blockName || null,
             lakeGraphics: lakeGraphics || null
         },
+        termsConfirmed: true,
         createdAt: new Date().toISOString(),
         expiresAt: expiresAt,
         decayEnabled: decayEnabled,
@@ -1720,6 +1721,10 @@ async function createProposal() {
             }, { force: true, recordHistory: false, dirty: false });
         }
 
+        // Dialog-created proposals have confirmed terms: the details panel shows "Proposal
+        // details" instead of "Propose" until a later edit produces a fresh unproposed object.
+        proposal.termsConfirmed = true;
+
         // Persist proposal after on-chain handling (or local-only)
         console.debug('[createProposal] Saving proposal to storage');
         const saveStartTime = performance.now();
@@ -1863,6 +1868,20 @@ async function createProposal() {
                 if (storedReplacement) {
                     delete storedReplacement.replacementLifecycle;
                     delete storedReplacement.supersedesProposalIds;
+                    // Carry the one-jump undo through proposing too: the original object the edit
+                    // chain started from stays restorable from the Delete prompt.
+                    try {
+                        const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
+                        ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
+                        snapshot.status = 'unapplied';
+                        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
+                            if (snapshot[kind] && typeof snapshot[kind] === 'object') {
+                                snapshot[kind].status = 'unapplied';
+                                if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
+                            }
+                        });
+                        storedReplacement.revertSnapshot = snapshot;
+                    } catch (_) { }
                     if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(storedReplacement);
                     if (typeof proposalStorage.save === 'function') proposalStorage.save();
                 }

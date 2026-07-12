@@ -1019,11 +1019,14 @@
         }
         const selection = await global.prepareProposalDraftParcelSelection?.(draft);
         if (!selection?.layers?.length) {
-            store.markPublishFailed(draftId, new Error(tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.')));
-            renderShell();
+            const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.');
+            store.markPublishFailed(draftId, new Error(message));
+            // The editor shell is dormant UI — say it out loud instead of rendering into the void.
+            if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+            else if (typeof global.updateStatus === 'function') global.updateStatus(message);
             return false;
         }
-        if (selection.usesSourceChildren && selection.ids?.length) {
+        if ((selection.usesSourceChildren || selection.substituted) && selection.ids?.length) {
             store.updateDraft(draftId, { fields: { parentParcelIds: selection.ids.map(String) } }, {
                 coalesceKey: 'applied-source-descendants'
             });
@@ -1108,12 +1111,24 @@
         if (!draft) return null;
 
         const currentName = String(draft.fields?.name || '').trim();
+        const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
+        const autoFields = {};
         if (!currentName || /^New (road|track)$/i.test(currentName)) {
-            const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
-            const name = typeof global.generateDefaultProposalName === 'function'
+            autoFields.name = typeof global.generateDefaultProposalName === 'function'
                 ? global.generateDefaultProposalName(typeLabel)
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
-            store.updateDraft(draftId, { fields: { name } }, { recordHistory: false });
+        }
+        // Every object carries usable terms from birth: the standard description pattern and a
+        // random placeholder offer — refined later in the Create proposal dialog if the user cares.
+        const resolvedName = autoFields.name || currentName;
+        if (!String(draft.fields?.description || '').trim() && typeof global.generateDefaultProposalDescription === 'function') {
+            autoFields.description = global.generateDefaultProposalDescription(typeLabel, resolvedName);
+        }
+        if (!(Number(draft.fields?.offer) > 0) && typeof global.generateRandomRoadOffer === 'function') {
+            autoFields.offer = global.generateRandomRoadOffer();
+        }
+        if (Object.keys(autoFields).length) {
+            store.updateDraft(draftId, { fields: autoFields }, { recordHistory: false });
         }
         const keepAsDraft = () => {
             // There is no editor dialog: the drawing simply stays in Drafts, visible as a dashed
@@ -1130,6 +1145,8 @@
         let proposal = null;
         try { proposal = store.buildProposalFromDraft(draftId); } catch (_) { proposal = null; }
         if (!proposal) return keepAsDraft();
+        // An edit produces a fresh, not-yet-proposed object even when its source had terms.
+        delete proposal.termsConfirmed;
         if (!proposal.author) {
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
@@ -1178,6 +1195,20 @@
                 if (storedReplacement) {
                     delete storedReplacement.replacementLifecycle;
                     delete storedReplacement.supersedesProposalIds;
+                    // One-jump undo: remember the ORIGINAL object this edit chain started from
+                    // (an earlier snapshot is carried forward), so Delete can offer to restore it.
+                    try {
+                        const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
+                        ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
+                        snapshot.status = 'unapplied';
+                        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
+                            if (snapshot[kind] && typeof snapshot[kind] === 'object') {
+                                snapshot[kind].status = 'unapplied';
+                                if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
+                            }
+                        });
+                        storedReplacement.revertSnapshot = snapshot;
+                    } catch (_) { }
                     if (typeof global.proposalStorage._indexProposal === 'function') global.proposalStorage._indexProposal(storedReplacement);
                     if (typeof global.proposalStorage.save === 'function') global.proposalStorage.save();
                 }
@@ -1209,6 +1240,40 @@
         // Capture (or refresh, after a geometry edit) the thumbnail in the background.
         try { global.scheduleProposalScreenshotRefresh?.(proposalId); } catch (_) { }
         return proposalId;
+    }
+
+    // Undo an edit chain in one jump: delete the replacement and bring its remembered original
+    // back onto the map (e.g. the proposal originally loaded from a shared URL).
+    async function revertProposalToSnapshot(proposalIdOrKey) {
+        const record = proposalById(proposalIdOrKey);
+        const snapshot = record?.revertSnapshot;
+        if (!record || !snapshot) return false;
+        const replacementKey = record.proposalId || proposalIdOrKey;
+        try { await global.ProposalManager?.unapplyProposal?.(replacementKey, { skipConfirm: true }); } catch (_) { }
+        try { global.proposalStorage.removeProposal(replacementKey); } catch (_) { }
+        const restored = JSON.parse(JSON.stringify(snapshot));
+        const restoredId = global.proposalStorage.addProposal(restored);
+        if (!restoredId) {
+            if (typeof global.updateStatus === 'function') global.updateStatus(tDraft('proposalDrafts.revertFailed', 'Could not restore the previous version.'));
+            return false;
+        }
+        try { global.ProposalManager?._linkProposalToAncestors?.(restoredId, restored.parentParcelIds || []); } catch (_) { }
+        try {
+            const isRoad = restored.goal === 'road-track' || !!restored.roadProposal;
+            await global.ProposalManager?.applyProposal?.(restoredId, isRoad
+                ? { applyAnyway: true, suppressMissingParentAlerts: true }
+                : { autoParkConflicts: true });
+            try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage.getProposal(restoredId)); } catch (_) { }
+        } catch (error) {
+            console.warn('[ProposalEditor] Restored proposal could not be re-applied', error);
+        }
+        global.__openProposalDetailsCollapsed = true;
+        try { global.selectAndHighlightProposal?.(restoredId, (restored.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
+        try { global.scheduleProposalScreenshotRefresh?.(restoredId); } catch (_) { }
+        if (typeof global.showEphemeralMessage === 'function') {
+            global.showEphemeralMessage(tDraft('proposalDrafts.reverted', 'Restored the previous version.'), 4000, 'success');
+        }
+        return restoredId;
     }
 
     function payloadTypology(draft) {
@@ -1329,6 +1394,7 @@
     global.editProposalGeometry = editProposalGeometry;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;
+    global.revertProposalToSnapshot = revertProposalToSnapshot;
     global.instantCreateStructureFromSelection = instantCreateStructureFromSelection;
     global.getProposalEditCapability = getProposalEditCapability;
     global.createNewProposalDraft = createNewProposalDraft;

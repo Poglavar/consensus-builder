@@ -361,8 +361,31 @@
 
                 let actionButtons = '';
 
-                const parcelAcceptanceIndicatorsHtml = global.buildParcelAcceptanceIndicators ? global.buildParcelAcceptanceIndicators(proposal) : '';
-                const ownerAcceptanceIndicatorsHtml = global.buildOwnerAcceptanceIndicators ? global.buildOwnerAcceptanceIndicators(proposal) : '';
+                // Acceptance as compact bars sharing the ID/Author rows (grey track filling green);
+                // exact figures live in the proposal details, keeping list items two rows shorter.
+                const acceptanceMiniBar = (accepted, total, title) => {
+                    if (!total) return '';
+                    const percent = Math.max(0, Math.min(100, Math.round((accepted / total) * 100)));
+                    return `<span class="proposal-item-acceptbar" title="${title}: ${accepted}/${total}"><span class="proposal-item-acceptbar-fill" style="width:${percent}%"></span><span class="proposal-item-acceptbar-text">${accepted}/${total}</span></span>`;
+                };
+                const parcelIdsForAcceptance = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+                const acceptedParcelSet = new Set((proposal.acceptedParcelIds || []).map(value => String(value)));
+                const acceptedParcelCount = parcelIdsForAcceptance.filter(value => acceptedParcelSet.has(String(value))).length;
+                const parcelAcceptanceBar = acceptanceMiniBar(
+                    acceptedParcelCount,
+                    parcelIdsForAcceptance.length,
+                    tParcel('panel.parcel.acceptance.parcelTitle', {}, 'Parcel acceptance')
+                );
+                const ownerSummary = typeof global.buildProposalOwnerAcceptanceSummary === 'function'
+                    ? global.buildProposalOwnerAcceptanceSummary(proposal)
+                    : null;
+                const ownerAcceptanceBar = (ownerSummary && ownerSummary.totalOwners > 0)
+                    ? acceptanceMiniBar(
+                        ownerSummary.acceptedOwners || 0,
+                        ownerSummary.totalOwners,
+                        tParcel('panel.parcel.acceptance.ownerTitle', {}, 'Owner acceptance')
+                    )
+                    : '';
                 const rawOfferValue = Number.isFinite(Number(proposal.offer))
                     ? Number(proposal.offer)
                     : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null);
@@ -412,17 +435,17 @@
                         </div>
                         <div class="proposal-item-details">
                             ${proposalIdText}
+                            ${parcelAcceptanceBar}
                         </div>
                         <div class="proposal-item-details">
                             <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
+                            ${ownerAcceptanceBar}
                         </div>
                         ${formattedOfferValue && !isRoadProposal ? `
                             <div class="proposal-item-details">
                                 <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.offer">${proposalOfferLabel}</span> ${currencySymbol}${formattedOfferValue}${currencySuffix}
                             </div>
                         ` : ''}
-                        ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}
-                        ${ownerAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${ownerAcceptanceIndicatorsHtml}</div>` : ''}
                         ${actionButtons ? `
                         <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
                             ${actionButtons}

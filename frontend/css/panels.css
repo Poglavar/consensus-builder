@@ -133,14 +133,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 /* Build palette: everything creatable on the selected parcel(s), one icon per tool. */
 .parcel-build-palette {
-    margin-bottom: 8px;
-}
-
-.parcel-build-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #666;
-    margin-bottom: 4px;
+    margin-bottom: 0;
 }
 
 .parcel-build-grid {
@@ -179,6 +172,56 @@ with a width of 400px, and a height of half of the map height minus 5px.
 .parcel-build-btn:hover {
     background: #eef2f7;
     border-color: #94a3b8;
+}
+
+/* Structure and terms tools get a hint of their nature; form tools stay neutral. */
+.parcel-build-btn--park { background: #e7f4e4; }
+.parcel-build-btn--park i { color: #2f7d32; }
+.parcel-build-btn--lake { background: #e3f1fb; }
+.parcel-build-btn--lake i { color: #1d6fa5; }
+.parcel-build-btn--square { background: #ededed; }
+.parcel-build-btn--square i { color: #5f6368; }
+.parcel-build-btn--offer { background: #fdf6dd; }
+.parcel-build-btn--offer i { color: #b07d10; }
+
+.parcel-build-btn--park:hover { background: #d9edd4; }
+.parcel-build-btn--lake:hover { background: #d3e9f8; }
+.parcel-build-btn--square:hover { background: #e2e2e2; }
+.parcel-build-btn--offer:hover { background: #faefc6; }
+
+/* Acceptance mini-bar inside a proposal list row: grey track, green proportional fill,
+   the exact count centred over it. */
+.proposal-item-acceptbar {
+    position: relative;
+    flex: 1;
+    min-width: 42px;
+    max-width: 90px;
+    height: 12px;
+    margin-left: auto;
+    border-radius: 6px;
+    background: #dfe3e8;
+    overflow: hidden;
+}
+
+.proposal-item-acceptbar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: #34a853;
+    border-radius: 6px;
+}
+
+.proposal-item-acceptbar-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    color: #1f2937;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    pointer-events: none;
 }
 
 #road-info-panel .metric-label {

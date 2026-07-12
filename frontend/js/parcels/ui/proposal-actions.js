@@ -128,7 +128,7 @@
 
     function buildPaletteHtml() {
         const buttons = PARCEL_BUILD_TOOLS.map(tool => `
-            <button type="button" class="parcel-build-btn" onclick="startParcelBuildTool('${tool.key}')"
+            <button type="button" class="parcel-build-btn parcel-build-btn--${tool.key}" onclick="startParcelBuildTool('${tool.key}')"
                 title="${tParcel(tool.labelKey, {}, tool.fallback)}">
                 <i class="fas ${tool.icon}"></i>
                 <span>${tParcel(tool.labelKey, {}, tool.fallback)}</span>
@@ -136,7 +136,6 @@
         `).join('');
         return `
             <div class="parcel-build-palette">
-                <div class="parcel-build-title">${tParcel('panel.parcel.build.title', {}, 'Build')}</div>
                 <div class="parcel-build-grid">${buttons}</div>
             </div>
         `;

@@ -163,6 +163,8 @@
         "mapTooltip": "Draft — click to continue",
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
         "keptAsDraft": "Could not finish this object — it stays in Drafts; click its dashed outline to continue.",
+        "reverted": "Restored the previous version.",
+        "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it."
     },
@@ -740,7 +742,7 @@
                 "remove": "Unapply",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
-                "share": "Share Proposal",
+                "share": "Share",
                 "copy": "Edit",
                 "edit": "Edit",
                 "resumeDraft": "Resume draft",
@@ -748,7 +750,10 @@
                 "drive": "Drive this track",
                 "delete": "Delete",
                 "deleteHint": "Deletes the object and its idea entirely.",
-                "propose": "Create proposal"
+                "editGeometry": "Edit geometry",
+                "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
+                "details": "Proposal details",
+                "propose": "Propose"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -1122,6 +1127,12 @@
             "unapply": "Unapply existing proposal",
             "confirm": "Tunnel through",
             "cancel": "Choose another route"
+        },
+        "deleteProposal": {
+            "withRevert": "This object replaced “{{name}}”. Restore that version, or delete everything?",
+            "restore": "Restore previous version",
+            "deleteAll": "Delete everything",
+            "cancel": "Cancel"
         },
         "corridorStructure": {
             "offer": "This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.",

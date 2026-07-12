@@ -417,25 +417,53 @@
 
     async function prepareParcelSelection(parcelIds) {
         const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
-        if (!ids.length) return { ids: [], layers: [] };
+        if (!ids.length) return { ids: [], layers: [], substituted: false };
         try {
             if (typeof global.ensureParentParcelsLoaded === 'function') await global.ensureParentParcelsLoaded(ids);
         } catch (error) {
             console.warn('[ProposalEditorAdapters] Could not hydrate all draft parcels', error);
         }
+        // Resolve each id to a live layer; an id whose parcel was split away (e.g. a road cut
+        // slices out of it) substitutes its CURRENT descendants, so proposing over a partially
+        // replaced parent keeps working on today's parcel fabric.
+        const resolved = [];
+        let substituted = false;
+        const layerIndex = global.parcelLayerById instanceof Map
+            ? global.parcelLayerById
+            : (typeof global.getParcelLayerIdMap === 'function' ? global.getParcelLayerIdMap() : null);
+        ids.forEach(id => {
+            const direct = resolveParcelLayer(id);
+            if (direct) {
+                resolved.push({ id, layer: direct });
+                return;
+            }
+            if (layerIndex && typeof layerIndex.forEach === 'function') {
+                const prefix = id + '#p-';
+                layerIndex.forEach((layer, key) => {
+                    if (typeof key !== 'string' || !key.startsWith(prefix) || !layer) return;
+                    // The corridor slice that caused the split belongs to the road, not to this
+                    // proposal's land — only the remainder slices substitute the parent.
+                    if (layer.feature?.properties?.isCorridor === true) return;
+                    resolved.push({ id: key, layer });
+                    substituted = true;
+                });
+            }
+        });
+        if (!resolved.length) return { ids: [], layers: [], substituted: false };
+        // Only seed the multi-parcel selection once we know the parcels exist — a failed stage
+        // must not leave the checkbox flipped with nothing selected.
         const selection = global.multiParcelSelection;
         if (selection) {
             selection.isActive = true;
             if (selection.selectedParcels && typeof selection.selectedParcels.clear === 'function') selection.selectedParcels.clear();
-            ids.forEach(id => {
-                selection.selectedParcels?.add(id);
-                const layer = resolveParcelLayer(id);
-                try { if (layer && typeof selection.addParcelHighlight === 'function') selection.addParcelHighlight(layer); } catch (_) { }
+            resolved.forEach(entry => {
+                selection.selectedParcels?.add(entry.id);
+                try { if (typeof selection.addParcelHighlight === 'function') selection.addParcelHighlight(entry.layer); } catch (_) { }
             });
-            selection.lastSelectedParcelId = ids[ids.length - 1];
+            selection.lastSelectedParcelId = resolved[resolved.length - 1].id;
             try { if (typeof selection.updateUI === 'function') selection.updateUI(); } catch (_) { }
         }
-        return { ids, layers: ids.map(resolveParcelLayer).filter(Boolean) };
+        return { ids: resolved.map(entry => entry.id), layers: resolved.map(entry => entry.layer), substituted };
     }
 
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {

@@ -163,6 +163,8 @@
         "mapTooltip": "Nacrt — kliknite za nastavak",
         "noGeometryYet": "Ovaj nacrt još nema geometriju — počnite da crtate da je dobije.",
         "keptAsDraft": "Objekat nije bilo moguće dovršiti — ostaje u Nacrtima; kliknite njegov isprekidani obris za nastavak.",
+        "reverted": "Vraćena je prethodna verzija.",
+        "revertFailed": "Prethodnu verziju nije bilo moguće vratiti.",
         "geometryUpdated": "Geometrija ažurirana.",
         "builtButParked": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu (blokirao ga je sukob). Parkiran je u vašoj listi predloga — izaberite ga tamo da ga vidite i primenite."
     },
@@ -765,7 +767,7 @@
                 "remove": "Ukloni sa mape",
                 "includedInRoad": "Uključeno u spojeni put",
                 "includedInRoadHint": "Uklonite {{name}} sa mape da biste vratili ovaj put.",
-                "share": "Podeli predlog",
+                "share": "Podeli",
                 "copy": "Uredi",
                 "edit": "Uredi",
                 "resumeDraft": "Nastavi nacrt",
@@ -773,7 +775,10 @@
                 "drive": "Vozi ovom prugom",
                 "delete": "Izbriši",
                 "deleteHint": "Briše objekat i njegovu ideju u potpunosti.",
-                "propose": "Napravi predlog"
+                "editGeometry": "Uredi geometriju",
+                "editGeometryUnavailable": "Ovaj tip predloga ne može se preoblikovati (ili je mintovan i nepromenljiv).",
+                "details": "Detalji predloga",
+                "propose": "Predloži"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1123,6 +1128,12 @@
             "unapply": "Ukloni postojeći predlog sa mape",
             "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
+        },
+        "deleteProposal": {
+            "withRevert": "Ovaj objekat je zamenio “{{name}}”. Vratiti tu verziju ili obrisati sve?",
+            "restore": "Vrati prethodnu verziju",
+            "deleteAll": "Obriši sve",
+            "cancel": "Odustani"
         },
         "corridorStructure": {
             "offer": "Ovaj {{kind}} bi presekao {{names}}. Izgraditi kroz? {{kind}} prolazi kroz sredinu; ostatak ostaje kakav jeste.",

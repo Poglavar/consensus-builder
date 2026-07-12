@@ -163,6 +163,8 @@
         "mapTooltip": "Borrador — haz clic para continuar",
         "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",
         "keptAsDraft": "No se pudo terminar este objeto — permanece en Borradores; haz clic en su contorno discontinuo para continuar.",
+        "reverted": "Se restauró la versión anterior.",
+        "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
         "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
     },
@@ -788,7 +790,7 @@
                 "remove": "Retirar del mapa",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
-                "share": "Compartir propuesta",
+                "share": "Compartir",
                 "copy": "Editar",
                 "edit": "Editar",
                 "resumeDraft": "Continuar borrador",
@@ -796,7 +798,10 @@
                 "drive": "Conducir por esta vía",
                 "delete": "Eliminar",
                 "deleteHint": "Elimina el objeto y su idea por completo.",
-                "propose": "Crear propuesta"
+                "editGeometry": "Editar geometría",
+                "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
+                "details": "Detalles de la propuesta",
+                "propose": "Proponer"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1172,6 +1177,12 @@
             "unapply": "Retirar la propuesta existente",
             "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
+        },
+        "deleteProposal": {
+            "withRevert": "Este objeto reemplazó a “{{name}}”. ¿Restaurar esa versión o eliminar todo?",
+            "restore": "Restaurar versión anterior",
+            "deleteAll": "Eliminar todo",
+            "cancel": "Cancelar"
         },
         "corridorStructure": {
             "offer": "Este {{kind}} cruzaría {{names}}. ¿Construir a través? El {{kind}} lo atraviesa; el resto queda como está.",

@@ -533,21 +533,30 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const shareButtonHtml = `
         <button class="btn btn-outline-primary btn-share-proposal" onclick="shareProposalFromDetails()">
-            <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share Proposal')}
+            <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;
 
     // There is no editor dialog. Selection is direct manipulation (corridors: node handles +
-    // cross-section), and the terms/details complexity lives behind one "Create proposal"
-    // action that opens the create dialog prefilled from the object — submitting absorbs the
-    // unminted source, so re-proposing IS how terms get edited. Minted objects are immutable.
-    const editButtonHtml = (proposalKey && !isMinted)
+    // cross-section), and the terms/details complexity lives behind one "Propose" action that
+    // opens the create dialog prefilled from the object — submitting absorbs the unminted
+    // source, so re-proposing IS how terms get edited. Once proposed (terms confirmed via the
+    // dialog, or minted) the slot shows "Proposal details" instead; a later geometry edit makes
+    // a fresh unproposed object and Propose returns.
+    const proposalIsProposed = (fullProposal || proposal)?.termsConfirmed === true || isMinted;
+    const editButtonHtml = (proposalKey && !isMinted && !proposalIsProposed)
         ? `
         <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
-            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.propose', 'Create proposal')}
+            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.propose', 'Propose')}
         </button>
     `
-        : '';
+        : (proposalKey && proposalIsProposed
+            ? `
+        <button class="btn btn-primary btn-proposal-details-expand" onclick="toggleProposalDetailsPanelMinimized(false)">
+            <i class="fas fa-file-alt"></i> ${tProposal('panel.proposal.actions.details', 'Proposal details')}
+        </button>
+    `
+            : '');
 
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
@@ -600,7 +609,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <i class="fas fa-draw-polygon"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
         </button>
     `
-            : '');
+            : `
+        <button class="btn btn-outline-secondary btn-edit-geometry" disabled aria-disabled="true"
+            style="opacity: 0.45; cursor: not-allowed;"
+            title="${tProposal('panel.proposal.actions.editGeometryUnavailable', 'This proposal type cannot be reshaped (or it is minted and immutable).')}">
+            <i class="fas fa-draw-polygon"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
+        </button>
+    `);
 
     // SimCity object actions: an object on the map can be edited, parked, or deleted right here.
     const deleteButtonHtml = (proposalKey && typeof deleteProposal === 'function')
@@ -612,16 +627,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
-    // Edit geometry / Edit cross-section leads: shaping the object is the most common action.
+    // Fixed slots so buttons never shuffle between selections: Edit · Propose/Details ·
+    // Apply/Unapply · Share · Delete. Contextual extras (Buy, Drive) append at the end.
+    // Colors are role-coded: blue = propose/details, green = apply, yellow = unapply,
+    // red outline = delete, neutral outline = edit/share.
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${crossSectionButtonHtml}
-            ${buyButtonHtml}
             ${editButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
-            ${driveButtonHtml}
             ${deleteButtonHtml}
+            ${buyButtonHtml}
+            ${driveButtonHtml}
         </div>
     `;
 
