@@ -1,14 +1,21 @@
-// The cross-section editor: reorder, resize, retype, add and remove the lanes of a road.
+// The cross-section editor: reorder, resize, retype, add and remove the lanes of a road, and set
+// the corridor's total width with the slider at the top (10 cm steps, capped at the widest
+// permitted preset — Boulevard, 80 m).
 //
-// Every edit here is a *profile-only* edit, and profile-only edits preserve the corridor's total width.
-// The footprint is a function of that total alone, so nothing the user does in this panel can move the
-// road, change the parcel split, or invalidate a proposal derived from it. The total is shown, fixed,
-// and an edit the traffic lanes cannot absorb is refused rather than quietly widening the road.
+// Lane edits are *profile-only* and preserve the total width; the slider is the one control that
+// changes it, with the traffic lanes absorbing the difference (an edit or width they cannot absorb
+// is refused). For a placed road the widened footprint is checked live: hitting a NEW building
+// blocks Apply — tunnels are only made while drawing — while crossing an applied park/square/lake
+// merely lights an indicator (the structure is cut at render time).
 //
-// Proposals are immutable. Editing a placed road therefore reopens its geometry as a drawing draft;
-// the user can keep editing it and explicitly create a replacement proposal later.
+// Local unminted roads take the change in place (footprint + parcel cuts rebuild on Apply); minted
+// proposals are immutable and reopen as a drawing draft instead.
 
 let corridorEditorState = null;
+let corridorEditorObstacleTimer = null;
+
+const CORRIDOR_EDITOR_MIN_WIDTH = 5;
+const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 
 function corridorEditorI18n(key, fallback) {
     try {
@@ -25,6 +32,10 @@ function corridorEditorClose() {
     const overlay = document.getElementById('corridor-editor-overlay');
     if (overlay) overlay.remove();
     document.removeEventListener('keydown', corridorEditorKeydown);
+    if (corridorEditorObstacleTimer) {
+        clearTimeout(corridorEditorObstacleTimer);
+        corridorEditorObstacleTimer = null;
+    }
     corridorEditorState = null;
 }
 
@@ -70,6 +81,81 @@ function corridorEditorFlashRefusal() {
     total.classList.remove('corridor-editor-total--refused');
     void total.offsetWidth; // restart the animation
     total.classList.add('corridor-editor-total--refused');
+}
+
+// Everything the corridor's footprint would collide with at the given total width: buildings the
+// road is not already tunnelled through (from the base map AND applied building proposals), and
+// applied parks/squares/lakes. Checked per edge, like the finish-time tunnel recheck.
+function corridorEditorCollectWidthHits(width) {
+    const result = { buildings: [], structures: [] };
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal' || !state.definition) return result;
+    if (typeof calculateRoadPolygon !== 'function') return result;
+    const segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(state.definition) : [];
+    const tunnelled = new Set();
+    (state.definition.tunnels || []).forEach(record => {
+        (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
+    });
+    const seenBuildings = new Set();
+    const seenStructures = new Set();
+    segments.forEach(segment => {
+        for (let i = 0; i < segment.length - 1; i++) {
+            const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], width);
+            if (!polygon) continue;
+            if (typeof detectLoadedBuildingTunnelIntersections === 'function') {
+                detectLoadedBuildingTunnelIntersections(polygon).forEach(hit => {
+                    const id = String(hit.id);
+                    if (tunnelled.has(id) || seenBuildings.has(id)) return;
+                    seenBuildings.add(id);
+                    result.buildings.push(hit);
+                });
+            }
+            if (typeof detectStructureCrossings === 'function') {
+                detectStructureCrossings(polygon).forEach(hit => {
+                    if (seenStructures.has(hit.id)) return;
+                    seenStructures.add(hit.id);
+                    result.structures.push(hit);
+                });
+            }
+        }
+    });
+    return result;
+}
+
+function corridorEditorUpdateIndicators(hits, blocked) {
+    const buildingsChip = document.querySelector('.corridor-editor-indicator--buildings');
+    if (buildingsChip) buildingsChip.hidden = !blocked;
+    const structuresChip = document.querySelector('.corridor-editor-indicator--structures');
+    if (structuresChip) structuresChip.hidden = !(hits && hits.structures.length);
+}
+
+// Widening is blocked only when it hits a building the road did not already touch at its
+// opening width — tunnels are made while drawing, never by widening a placed road.
+function corridorEditorRunObstacleCheck() {
+    const current = corridorEditorState;
+    if (!current || current.mode !== 'proposal') return;
+    if (!current.baselineBuildingHitIds) {
+        const openingWidth = corridorProfileWidth(current.originalProfile || current.profile);
+        current.baselineBuildingHitIds = new Set(
+            corridorEditorCollectWidthHits(openingWidth).buildings.map(hit => String(hit.id))
+        );
+    }
+    const hits = corridorEditorCollectWidthHits(corridorProfileWidth(current.profile));
+    current.widthBlocked = hits.buildings.some(hit => !current.baselineBuildingHitIds.has(String(hit.id)));
+    corridorEditorUpdateIndicators(hits, current.widthBlocked);
+    const saveButton = document.querySelector('.corridor-editor-save');
+    if (saveButton) saveButton.disabled = !current.dirty || current.widthBlocked;
+}
+
+// Debounced (the per-building intersection test is too heavy to run on every slider tick).
+function corridorEditorScheduleObstacleCheck() {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal') return;
+    if (corridorEditorObstacleTimer) clearTimeout(corridorEditorObstacleTimer);
+    corridorEditorObstacleTimer = setTimeout(() => {
+        corridorEditorObstacleTimer = null;
+        corridorEditorRunObstacleCheck();
+    }, 150);
 }
 
 // A proportional bar of the cross-section, drawn to scale across the panel.
@@ -128,20 +214,20 @@ function corridorEditorRender() {
         </button>
     `;
 
+    const currentWidth = corridorProfileWidth(profile);
     const total = document.querySelector('.corridor-editor-total');
-    if (total) {
-        if (total.tagName === 'INPUT') total.value = corridorProfileWidth(profile);
-        else total.textContent = `${corridorProfileWidth(profile)} m`;
-    }
+    if (total) total.textContent = `${Number(currentWidth.toFixed(1))} m`;
+    const slider = document.querySelector('.corridor-editor-width-slider');
+    // Do not fight the user's drag: mid-drag the slider already holds the value being applied.
+    if (slider && document.activeElement !== slider) slider.value = currentWidth;
 
     const saveButton = document.querySelector('.corridor-editor-save');
-    if (saveButton) saveButton.disabled = corridorEditorState.mode !== 'drawing' && !corridorEditorState.dirty;
-
-    const totalInput = document.querySelector('.corridor-editor-total-width');
-    if (totalInput) {
-        totalInput.onchange = () => corridorEditorApply(profileValue => withCorridorWidth(profileValue, Number(totalInput.value)));
+    if (saveButton) {
+        saveButton.disabled = corridorEditorState.mode !== 'drawing'
+            && (!corridorEditorState.dirty || corridorEditorState.widthBlocked === true);
     }
 
+    corridorEditorScheduleObstacleCheck();
     corridorEditorBindBody(body);
 }
 
@@ -221,6 +307,17 @@ async function corridorEditorSave() {
         }
         return;
     }
+    // A width that newly hits a building cannot be applied — tunnels are made while drawing.
+    // Settle any pending debounced check first so a quick drag-then-Apply cannot slip through.
+    if (corridorEditorObstacleTimer) {
+        clearTimeout(corridorEditorObstacleTimer);
+        corridorEditorObstacleTimer = null;
+        corridorEditorRunObstacleCheck();
+    }
+    if (corridorEditorState.widthBlocked) {
+        corridorEditorFlashRefusal();
+        return;
+    }
     const { source, profile } = corridorEditorState;
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
@@ -259,9 +356,19 @@ function corridorEditorOpenOverlay() {
     if (!corridorEditorState) return;
     const profile = corridorEditorState.profile;
     const drawing = corridorEditorState.mode === 'drawing';
-    const totalControl = drawing
-        ? `<input class="corridor-editor-total corridor-editor-total-width" type="number" min="5" step="0.5" value="${corridorProfileWidth(profile)}" aria-label="Total corridor width in metres">`
-        : `<strong class="corridor-editor-total">${corridorProfileWidth(profile)} m</strong>`;
+    const totalWidth = corridorProfileWidth(profile);
+    const totalControl = `
+        <span class="corridor-editor-width-control">
+            <input class="corridor-editor-width-slider" type="range"
+                   min="${CORRIDOR_EDITOR_MIN_WIDTH}" max="${CORRIDOR_EDITOR_MAX_WIDTH}" step="0.1"
+                   value="${totalWidth}" aria-label="Total corridor width in metres">
+            <strong class="corridor-editor-total">${Number(totalWidth.toFixed(1))} m</strong>
+        </span>`;
+    const indicatorsHtml = drawing ? '' : `
+            <div class="corridor-editor-indicators">
+                <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'Hits buildings (to tunnel through buildings, use drawing mode)')}</span>
+                <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
+            </div>`;
     const overlay = document.createElement('div');
     overlay.id = 'corridor-editor-overlay';
     overlay.className = 'corridor-editor-overlay';
@@ -279,7 +386,7 @@ function corridorEditorOpenOverlay() {
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
                 ${totalControl}
-            </div>
+            </div>${indicatorsHtml}
             <div class="corridor-editor-body"></div>
             <div class="corridor-editor-footer">
                 <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
@@ -294,6 +401,15 @@ function corridorEditorOpenOverlay() {
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
+    const widthSlider = overlay.querySelector('.corridor-editor-width-slider');
+    if (widthSlider) {
+        // Live: every tick re-fits the traffic lanes to the new total and repaints the preview
+        // strips on the map; the obstacle indicators follow (debounced).
+        widthSlider.addEventListener('input', () => {
+            const target = Math.round(Number(widthSlider.value) * 10) / 10;
+            corridorEditorApply(profileValue => withCorridorWidth(profileValue, target));
+        });
+    }
     overlay.addEventListener('click', (event) => { if (event.target === overlay) corridorEditorCancel(); });
     document.addEventListener('keydown', corridorEditorKeydown);
 
@@ -319,6 +435,11 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         definition,
         proposalKey: String((typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId),
         profile,
+        // The opening cross-section: widening is compared against ITS footprint, so a building
+        // the road already touched when the editor opened never blocks an unrelated edit.
+        originalProfile: JSON.parse(JSON.stringify(profile)),
+        baselineBuildingHitIds: null,
+        widthBlocked: false,
         selected: 0,
         dirty: false
     };

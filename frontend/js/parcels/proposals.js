@@ -110,15 +110,12 @@
      * @param {string} parcelId - The parcel ID
      */
     function showProposalDetails(proposalId, parcelId) {
-        // 1. Close the Parcel Info panel
-        const hideParcelInfoPanel = uiParcelPanel.hideParcelInfoPanel || global.hideParcelInfoPanel;
-        if (typeof hideParcelInfoPanel === 'function') {
-            hideParcelInfoPanel();
-        }
-
-        // 2. Select the proposal and show its details immediately
+        // Keep the Parcel Info panel open: its Proposals list is the switcher — clicking another
+        // entry just points the proposal button box at that proposal (its status badge says
+        // applied/parked/etc.), it does not navigate away from the parcel.
         if (typeof global.selectAndHighlightProposal === 'function') {
-            global.selectAndHighlightProposal(proposalId, parcelId, true);
+            global.__openProposalDetailsCollapsed = true;
+            global.selectAndHighlightProposal(proposalId, parcelId, false, true);
         } else if (typeof global.selectProposalFromList === 'function') {
             // Fallback to old function
             global.selectProposalFromList(proposalId, parcelId);

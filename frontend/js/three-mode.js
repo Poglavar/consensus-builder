@@ -104,21 +104,14 @@
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
-    // Building render mode:
-    //   'built'   — existing buildings only (solid).
-    //   'planned' — proposed buildings only (solid).
-    //   'both'    — existing + proposed together; relative opacity controlled by bothEmphasis.
-    let buildingRenderMode = 'both';
-    // In "both" mode, which type renders solid (opaque) vs ghost (translucent):
-    //   'planned' — proposed solid, existing ghost (proposal pops; default).
-    //   'built'   — existing solid, proposed ghost (context pops).
-    //   'neither' — both ghost, so neither dominates.
-    let bothEmphasis = 'planned';
+    // Building display: the built context and the planned proposals each render independently
+    // as 'solid' (opaque), 'ghost' (transparent) or 'off' (hidden). Defaults make the proposal
+    // pop against a translucent context.
+    let builtDisplay = 'ghost';
+    let plannedDisplay = 'solid';
     let buildingModeControlsEl = null;
-    let buildingModeButtons = { built: null, both: null, planned: null };
-    let bothEmphasisRowEl = null;
+    let displayStateButtons = { built: {}, planned: {} };
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
-    let bothEmphasisButtons = { built: null, planned: null, neither: null };
 
     // Parcel isolation: clicking a parcel hides everything but that parcel and the
     // building(s) sitting on it. null = not isolated (full scene).
@@ -155,72 +148,51 @@
     // and just adds tilt, instead of reframing to a different scale.
     const CAMERA_DISTANCE_SCALE = 1.0;
 
-    function updateBuildingModeButtons() {
+    function updateDisplayStateButtons() {
         try {
-            Object.keys(buildingModeButtons).forEach((key) => {
-                const btn = buildingModeButtons[key];
-                if (!btn) return;
-                if (key === buildingRenderMode) {
-                    btn.classList.add('three-mode-segment--active');
-                    btn.setAttribute('aria-pressed', 'true');
-                } else {
-                    btn.classList.remove('three-mode-segment--active');
-                    btn.setAttribute('aria-pressed', 'false');
-                }
+            ['built', 'planned'].forEach((kind) => {
+                const current = kind === 'built' ? builtDisplay : plannedDisplay;
+                Object.entries(displayStateButtons[kind] || {}).forEach(([state, btn]) => {
+                    if (!btn) return;
+                    btn.classList.toggle('three-mode-segment--active', state === current);
+                    btn.setAttribute('aria-pressed', state === current ? 'true' : 'false');
+                });
             });
         } catch (_) { }
     }
 
-    function updateBothEmphasisButtons() {
-        try {
-            // The emphasis row only makes sense in "both" mode.
-            if (bothEmphasisRowEl) bothEmphasisRowEl.style.display = (buildingRenderMode === 'both') ? '' : 'none';
-            Object.keys(bothEmphasisButtons).forEach((key) => {
-                const btn = bothEmphasisButtons[key];
-                if (!btn) return;
-                if (key === bothEmphasis) {
-                    btn.classList.add('three-mode-segment--active');
-                    btn.setAttribute('aria-pressed', 'true');
-                } else {
-                    btn.classList.remove('three-mode-segment--active');
-                    btn.setAttribute('aria-pressed', 'false');
-                }
-            });
-        } catch (_) { }
+    // With planned proposals off, the cadastre shows its pre-proposal state (proposal-created
+    // parcels hidden); any other combination shows the full fabric.
+    function derivedParcelVisibilityMode() {
+        return plannedDisplay === 'off' ? 'built' : 'both';
     }
 
-    function setBothEmphasis(emphasis) {
-        if (emphasis !== 'built' && emphasis !== 'planned' && emphasis !== 'neither') return;
-        if (emphasis === bothEmphasis) return;
-        bothEmphasis = emphasis;
-        updateBothEmphasisButtons();
-        // Only changes materials, and only matters in "both" mode.
-        if (buildingRenderMode === 'both') rebuild3DBuildingsOnly();
-    }
-
-    // Apply the visibility implied by the current buildingRenderMode (no isolation).
+    // Apply the visibility implied by the current display states (no isolation).
     function applyModeVisibility() {
-        const mode = buildingRenderMode;
-        // Planned structures (park/square/lake grounds + their decorations) are not shown
-        // in Built view. Both the flat half (grounds, paths, water) and the deco half
-        // (trees, fountains, fish) toggle together.
-        const showPlanned = mode !== 'built';
+        // Planned structures (park/square/lake grounds + their decorations) hide when planned
+        // is off. Both the flat half (grounds, paths, water) and the deco half (trees,
+        // fountains, fish) toggle together.
+        const showPlanned = plannedDisplay !== 'off';
         if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
         if (parkGroup) parkGroup.visible = showPlanned;
         if (squareGroup) squareGroup.visible = showPlanned;
         if (lakeGroup) lakeGroup.visible = showPlanned;
-        // Built mode also hides parcels created by applied proposals so the cadastre reflects
-        // the pre-proposal state (modulo the holes where ancestors used to be).
-        applyParcelVisibilityForMode(mode);
+        applyParcelVisibilityForMode(derivedParcelVisibilityMode());
     }
 
-    function setBuildingRenderMode(mode) {
-        if (mode !== 'built' && mode !== 'planned' && mode !== 'both') return;
-        if (mode === buildingRenderMode) return;
-        buildingRenderMode = mode;
-        updateBuildingModeButtons();
-        updateBothEmphasisButtons();
-        // Switching mode drops out of parcel isolation so the new mode is shown in full.
+    function setBuildingDisplay(kind, state) {
+        if (state !== 'solid' && state !== 'ghost' && state !== 'off') return;
+        if (kind === 'built') {
+            if (builtDisplay === state) return;
+            builtDisplay = state;
+        } else if (kind === 'planned') {
+            if (plannedDisplay === state) return;
+            plannedDisplay = state;
+        } else {
+            return;
+        }
+        updateDisplayStateButtons();
+        // Changing display drops out of parcel isolation so the new state is shown in full.
         isolatedParcelId = null;
         updateIsolationButton();
         rebuild3DBuildingsOnly();
@@ -676,8 +648,7 @@
     function ensureBuildingModeControls() {
         if (!threeContainer) return;
         if (buildingModeControlsEl && buildingModeControlsEl.parentElement === threeContainer) {
-            updateBuildingModeButtons();
-            updateBothEmphasisButtons();
+            updateDisplayStateButtons();
             return;
         }
 
@@ -685,33 +656,6 @@
         buildingModeControlsEl.className = 'three-mode-ui-panel';
         buildingModeControlsEl.setAttribute('role', 'group');
         buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
-
-        const builtBtn = document.createElement('button');
-        builtBtn.type = 'button';
-        builtBtn.className = 'three-mode-segment';
-        builtBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
-        builtBtn.addEventListener('click', () => setBuildingRenderMode('built'));
-
-        const bothBtn = document.createElement('button');
-        bothBtn.type = 'button';
-        bothBtn.className = 'three-mode-segment';
-        bothBtn.textContent = threeI18n('threeMode.controls.both', 'Both');
-        bothBtn.addEventListener('click', () => setBuildingRenderMode('both'));
-
-        const plannedBtn = document.createElement('button');
-        plannedBtn.type = 'button';
-        plannedBtn.className = 'three-mode-segment';
-        plannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
-        plannedBtn.addEventListener('click', () => setBuildingRenderMode('planned'));
-
-        buildingModeButtons = { built: builtBtn, both: bothBtn, planned: plannedBtn };
-
-        const buttonWrap = document.createElement('div');
-        buttonWrap.className = 'three-mode-segmented';
-        buttonWrap.appendChild(builtBtn);
-        buttonWrap.appendChild(bothBtn);
-        buttonWrap.appendChild(plannedBtn);
-        buildingModeControlsEl.appendChild(buttonWrap);
 
         // Radius row — controls how wide a band of built context is loaded/rendered.
         const radiusRow = document.createElement('div');
@@ -743,49 +687,41 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
+        // Display-state rows: Built and Planned each pick solid / transparent / off.
+        const makeDisplayRow = (kind, labelText) => {
+            const row = document.createElement('div');
+            row.className = 'three-mode-emphasis-row';
+            const label = document.createElement('span');
+            label.className = 'three-mode-emphasis-label';
+            label.textContent = labelText;
+            row.appendChild(label);
+            const wrap = document.createElement('div');
+            wrap.className = 'three-mode-segmented';
+            [
+                ['solid', threeI18n('threeMode.controls.stateSolid', 'Solid')],
+                ['ghost', threeI18n('threeMode.controls.stateGhost', 'Transparent')],
+                ['off', threeI18n('threeMode.controls.stateOff', 'Off')]
+            ].forEach(([state, stateLabel]) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'three-mode-segment';
+                btn.textContent = stateLabel;
+                btn.addEventListener('click', () => setBuildingDisplay(kind, state));
+                displayStateButtons[kind][state] = btn;
+                wrap.appendChild(btn);
+            });
+            row.appendChild(wrap);
+            return row;
+        };
+        buildingModeControlsEl.appendChild(makeDisplayRow('built', threeI18n('threeMode.controls.built', 'Built')));
+        buildingModeControlsEl.appendChild(makeDisplayRow('planned', threeI18n('threeMode.controls.planned', 'Planned')));
+
         // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
         // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
         // Belgrade, nothing for cities without scenery). Independent of the Built/Planned mode.
         decorTogglesEl = document.createElement('div');
         decorTogglesEl.className = 'three-mode-decor-toggles';
         buildingModeControlsEl.appendChild(decorTogglesEl);
-
-        // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
-        bothEmphasisRowEl = document.createElement('div');
-        bothEmphasisRowEl.className = 'three-mode-emphasis-row';
-
-        const emphasisLabel = document.createElement('span');
-        emphasisLabel.className = 'three-mode-emphasis-label';
-        emphasisLabel.textContent = threeI18n('threeMode.controls.solid', 'Solid:');
-        bothEmphasisRowEl.appendChild(emphasisLabel);
-
-        const emBuiltBtn = document.createElement('button');
-        emBuiltBtn.type = 'button';
-        emBuiltBtn.className = 'three-mode-segment';
-        emBuiltBtn.textContent = threeI18n('threeMode.controls.built', 'Built');
-        emBuiltBtn.addEventListener('click', () => setBothEmphasis('built'));
-
-        const emPlannedBtn = document.createElement('button');
-        emPlannedBtn.type = 'button';
-        emPlannedBtn.className = 'three-mode-segment';
-        emPlannedBtn.textContent = threeI18n('threeMode.controls.planned', 'Planned');
-        emPlannedBtn.addEventListener('click', () => setBothEmphasis('planned'));
-
-        const emNeitherBtn = document.createElement('button');
-        emNeitherBtn.type = 'button';
-        emNeitherBtn.className = 'three-mode-segment';
-        emNeitherBtn.textContent = threeI18n('threeMode.controls.neither', 'Neither');
-        emNeitherBtn.addEventListener('click', () => setBothEmphasis('neither'));
-
-        bothEmphasisButtons = { built: emBuiltBtn, planned: emPlannedBtn, neither: emNeitherBtn };
-
-        const emphasisWrap = document.createElement('div');
-        emphasisWrap.className = 'three-mode-segmented';
-        emphasisWrap.appendChild(emBuiltBtn);
-        emphasisWrap.appendChild(emPlannedBtn);
-        emphasisWrap.appendChild(emNeitherBtn);
-        bothEmphasisRowEl.appendChild(emphasisWrap);
-        buildingModeControlsEl.appendChild(bothEmphasisRowEl);
 
         // Show-all reset, only visible while a parcel is isolated.
         isolationResetEl = document.createElement('div');
@@ -799,8 +735,7 @@
         buildingModeControlsEl.appendChild(isolationResetEl);
 
         threeContainer.appendChild(buildingModeControlsEl);
-        updateBuildingModeButtons();
-        updateBothEmphasisButtons();
+        updateDisplayStateButtons();
         updateIsolationButton();
     }
 
@@ -1180,10 +1115,23 @@
                         object.userData.proposalId = proposalId;
                         object.userData.isProposalSurface = true;
                         if (parcelId !== null && parcelId !== undefined) object.userData.parcelId = String(parcelId);
+                        // Applied proposals already render their real geometry (buildings,
+                        // corridors, parks); this copy is a pick target only. A visible copy
+                        // sits coplanar with the real mesh and z-fights (green/grey flicker).
+                        if (applied) {
+                            if (object.isMesh && object.material) {
+                                object.material = object.material.clone();
+                                object.material.transparent = true;
+                                object.material.opacity = 0;
+                                object.material.depthWrite = false;
+                            } else if (object.isLine || object.isLineSegments) {
+                                object.visible = false;
+                            }
+                        }
                     });
                 });
             });
-            if (selectedKey && String(selectedKey) === proposalId) {
+            if (!applied && selectedKey && String(selectedKey) === proposalId) {
                 wrapper.traverse(object => {
                     const materialsToHighlight = Array.isArray(object.material) ? object.material : [object.material].filter(Boolean);
                     materialsToHighlight.forEach(material => {
@@ -2681,19 +2629,11 @@
         // attach their meshes to the freshly cleared group.
         buildingsRenderGeneration++;
 
-        // The 3-state toggle is the single source of truth inside the 3D view.
-        //   built   → nearby existing buildings only, solid
-        //   planned → proposed buildings only, solid
-        //   both    → existing + proposed together; bothEmphasis decides which is solid vs ghost
-        const showExisting = buildingRenderMode === 'built' || buildingRenderMode === 'both';
-        const showProposed = buildingRenderMode === 'planned' || buildingRenderMode === 'both';
-        let existingMaterial = buildingMaterials.solid;
-        let proposedMaterial = buildingMaterials.solid;
-        if (buildingRenderMode === 'both') {
-            // 'planned' → proposed pops; 'built' → context pops; 'neither' → both translucent.
-            existingMaterial = (bothEmphasis === 'built') ? buildingMaterials.solid : buildingMaterials.ghost;
-            proposedMaterial = (bothEmphasis === 'planned') ? buildingMaterials.solid : buildingMaterials.ghost;
-        }
+        // Each family follows its own display state: solid, transparent, or hidden.
+        const showExisting = builtDisplay !== 'off';
+        const showProposed = plannedDisplay !== 'off';
+        const existingMaterial = builtDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
+        const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
 
         if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial);
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
@@ -2835,13 +2775,8 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        // Apply initial visibility based on current mode (default is 'both').
-        const showPlanned = buildingRenderMode !== 'built';
-        if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
-        if (parkGroup) parkGroup.visible = showPlanned;
-        if (squareGroup) squareGroup.visible = showPlanned;
-        if (lakeGroup) lakeGroup.visible = showPlanned;
-        applyParcelVisibilityForMode(buildingRenderMode);
+        // Apply initial visibility based on the current display states.
+        applyModeVisibility();
         rebuild3DBuildingsOnly();
         rebuildProposalInteraction3D();
         rebuildProposalDraftPreview3D();
@@ -3168,7 +3103,7 @@
         isolatedParcelId = null;
         isolationResetEl = null;
         parcelInfoPanelEl = null;
-        bothEmphasisRowEl = null;
+        displayStateButtons = { built: {}, planned: {} };
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }
@@ -3280,6 +3215,14 @@
     function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        // 3D takes the full stage: collapse an expanded sidebar so the canvas and its in-view
+        // controls get the whole viewport instead of sharing it with the sidebar column.
+        try {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+                toggleSidebar();
+            }
+        } catch (_) { }
         // Optional focus: frame only these proposals (by proposalId) instead of all applied ones.
         // Used by shared-link entry so the camera lands on the just-loaded proposal.
         focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
@@ -3360,7 +3303,7 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        applyParcelVisibilityForMode(buildingRenderMode);
+        applyParcelVisibilityForMode(derivedParcelVisibilityMode());
         rebuild3DBuildingsOnly();
         rebuildProposalInteraction3D();
     });

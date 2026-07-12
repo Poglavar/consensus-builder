@@ -148,6 +148,8 @@
             "valid": "Lista"
         },
         "errors": {
+            "parcelsUnavailable": "Las parcelas seleccionadas no están disponibles en esta vista de la ciudad.",
+            "parcelsNotContiguous": "Un lago necesita parcelas contiguas.",
             "sourceMissing": "No se encontró la propuesta de origen.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "readOnly": "Esta propuesta es de solo lectura.",
@@ -161,6 +163,7 @@
         "mapTooltip": "Borrador — haz clic para continuar",
         "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",
         "keptAsDraft": "No se pudo terminar este objeto — permanece en Borradores; haz clic en su contorno discontinuo para continuar.",
+        "geometryUpdated": "Geometría actualizada.",
         "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
     },
     "languages": {
@@ -652,6 +655,19 @@
             "tabProposalsWithCount": "Propuestas ({{count}})",
             "tabTools": "Herramientas",
             "selectMultiple": "Seleccionar múltiples parcelas",
+            "build": {
+                "title": "Construir",
+                "block": "Manzana",
+                "rowNeedsTwo": "Las casas en hilera necesitan al menos dos parcelas.",
+                "row": "Casas en hilera",
+                "parcelBased": "Forma libre",
+                "single": "Aislado",
+                "reparcel": "Reparcelación",
+                "park": "Parque",
+                "square": "Plaza",
+                "lake": "Lago",
+            "offer": "Oferta"
+            },
             "roadToggle": "Carretera",
             "nftStatusDefault": "Estado NFT: todavía no verificado.",
             "mintAndClaimButton": "Acuñar",
@@ -769,7 +785,7 @@
             "actions": {
                 "apply": "Aplicar al mapa",
                 "applying": "Aplicando...",
-                "remove": "Apartar",
+                "remove": "Retirar del mapa",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
                 "share": "Compartir propuesta",
@@ -911,7 +927,9 @@
             }
         },
         "road": {
-            "title": "Información de la carretera",
+            "title": "Dibujar camino",
+            "titleTrack": "Dibujar vía",
+            "crossSectionButton": "Sección transversal",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",
@@ -942,8 +960,8 @@
             "ownedByIndividualsLabel": "Propiedad de particulares:",
             "parcelAreaLabel": "Área de parcela:",
             "parcelCountLabel": "Número de parcelas:",
-            "draftSavedRoadToast": "Carretera guardada como borrador — pulsa R o abre Borradores para continuar.",
-            "draftSavedTrackToast": "Vía guardada como borrador — abre Borradores para continuar.",
+            "draftSavedRoadToast": "Camino sin terminar guardado — haz clic en su contorno discontinuo o pulsa R para continuar.",
+            "draftSavedTrackToast": "Vía sin terminar guardada — haz clic en su contorno discontinuo para continuar.",
             "builtStatus": "Carretera construida — haz clic para editarla o proponerla.",
             "builtStatusTrack": "Vía construida — haz clic para editarla o proponerla.",
             "mergedStatus": "Conectado con “{{name}}” — ahora es una sola carretera.",
@@ -1127,6 +1145,8 @@
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
             "totalWidth": "Ancho total",
+            "hitsBuildings": "Choca con edificios (para túneles a través de edificios, usa el modo de dibujo)",
+            "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",
             "save": "Guardar como nueva propuesta",
             "applyDrawing": "Aplicar al dibujo",
@@ -1149,8 +1169,18 @@
             "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Crear un túnel a través del edificio?",
             "road": "camino",
             "track": "vía férrea",
+            "unapply": "Retirar la propuesta existente",
             "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
+        },
+        "corridorStructure": {
+            "offer": "Este {{kind}} cruzaría {{names}}. ¿Construir a través? El {{kind}} lo atraviesa; el resto queda como está.",
+            "buildThrough": "Construir a través",
+            "kinds": {
+                "park": "parque",
+                "square": "plaza",
+                "lake": "lago"
+            }
         },
         "roadWidth": {
             "title": "Elige el ancho de la carretera",
@@ -2338,6 +2368,13 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Representación de edificios",
+            "streamingTiles": "Cargando datos 3D…",
+            "rotateHintDesktop": "Mantén Ctrl y arrastra para rotar la vista",
+            "rotateHintMobile": "Desliza con dos dedos para rotar la vista",
+            "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",
+            "stateSolid": "Sólido",
+            "stateGhost": "Transparente",
+            "stateOff": "Apagado",
             "built": "Construido",
             "both": "Ambos",
             "planned": "Planificado",

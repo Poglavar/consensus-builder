@@ -42,3 +42,12 @@ Dialogs:
 
 - Share proposal dialog
 - Mint parcels as NFTs dialog
+
+Object lifecycle (the SimCity model):
+
+- Drawing or clicking a Build tool creates an APPLIED object on the map immediately — auto-named, no dialogs. What is on the map IS the draft: it stays editable (geometry, cross-section, width) until it is proposed.
+- Objects can be Unapplied (kept in the proposals list, removed from the map), edited in place, or deleted. Unapplied proposals render nowhere except as a preview when selected.
+- Entry points: the Build palette on the parcel info panel (Block, Row houses, Freeform, Detached, Reparcel, Park, Square, Lake, Offer) for parcel-scoped types; R for roads, T for tracks. Park/square/lake are one click — their geometry is the selection's union.
+- "Create proposal" on an object opens the terms dialog (offer, expiry, minting). Submitting absorbs the unminted source object so exactly one thing remains; minted proposals are immutable and stay behind as superseded.
+- Roads: one connected piece = one road proposal. Touching roads merge (the oldest body keeps name and cross-section); disconnecting an edit splits bodies into separate proposals. Tunnels through buildings render over the whole tunnel length but acquire nothing — parcels under a tunnel stay whole.
+- Roads built through applied parks/squares/lakes cut them at render time only: the structure remains ONE proposal and heals if the road moves or is removed.

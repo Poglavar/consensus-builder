@@ -941,7 +941,16 @@ class Proposal {
         }
 
         const proposalToken = _buildSyntheticToken(this.id || 'proposal');
-        const roadPolygon = _calculateRoadPolygon(this.definition.points, this.definition.width);
+        // Tunnel spans are covered structures that acquire nothing: the corridor parcel and the
+        // parcel cuts are built from the surface-only centerline (tunnelled edges skipped), so
+        // parcels under a tunnel stay whole. The full centerline keeps driving the rendering.
+        let acquisitionCenterline = this.definition.points;
+        const tunnelRecords = Array.isArray(this.definition.tunnels) ? this.definition.tunnels.filter(Boolean) : [];
+        if (tunnelRecords.length && typeof corridorSurfaceRuns === 'function') {
+            const surfaceRuns = corridorSurfaceRuns(this.definition.points, tunnelRecords);
+            if (surfaceRuns.length) acquisitionCenterline = surfaceRuns;
+        }
+        const roadPolygon = _calculateRoadPolygon(acquisitionCenterline, this.definition.width);
         if (!roadPolygon || this.parentFeatures.length === 0) {
             console.error('Invalid inputs to calculateChildFeatures');
             return;
@@ -7212,14 +7221,17 @@ const ProposalManager = {
             && analysis.conflicts.length > 0
             && analysis.notLoaded.length === 0
             && analysis.conflicts.every(conflict => conflict.canUnapplyCleanly)) {
+            // The source a geometry edit is about to absorb is replaced, not parked — unapply it
+            // without announcing it, or every edit ends with a misleading "Parked …" toast.
+            const absorbSourceId = options.absorbSourceProposalId ? String(options.absorbSourceProposalId) : null;
             const parked = [];
             for (const conflict of analysis.conflicts) {
                 const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true });
-                if (done !== false) parked.push(conflict.title);
+                if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
             analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
             if (parked.length && typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(`Parked ${parked.map(title => `“${title}”`).join(', ')} — still in your proposals list.`, 5000, 'info');
+                showEphemeralMessage(`Unapplied ${parked.map(title => `“${title}”`).join(', ')} — still in your proposals list.`, 5000, 'info');
             }
         }
 

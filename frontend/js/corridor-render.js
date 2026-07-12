@@ -307,6 +307,13 @@ function refreshAppliedCorridorStrips() {
         drawn += 1;
     });
 
+    // Applied roads cut through parks/squares/lakes at render time — any corridor change
+    // (apply, unapply, node drag, width edit) must re-cut them, including when the last
+    // corridor disappears and the structures heal back to their full shape.
+    try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+    try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+    try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+
     if (!drawn) return;
     appliedCorridorLayer = layer.addTo(map);
 }

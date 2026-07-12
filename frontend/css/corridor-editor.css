@@ -42,21 +42,60 @@
 
 .corridor-editor-meta {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     padding: 0 16px 10px;
     font-size: 0.85rem;
     color: #555;
 }
 
-.corridor-editor-total-width {
-    width: 86px;
-    height: 32px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    padding: 0 8px;
+/* Width slider + readout: 10 cm steps up to the widest permitted preset (Boulevard, 80 m). */
+.corridor-editor-width-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    margin-left: 14px;
+    min-width: 0;
+}
+
+.corridor-editor-width-slider {
+    flex: 1;
+    min-width: 0;
+    accent-color: #2563eb;
+}
+
+.corridor-editor-total {
+    white-space: nowrap;
+    min-width: 56px;
     text-align: right;
+}
+
+/* Obstacle chips for post-placement widening: buildings block Apply, structures just inform. */
+.corridor-editor-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 8px;
+}
+
+.corridor-editor-indicator {
+    font-size: 0.74rem;
     font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.corridor-editor-indicator--buildings {
+    background: #fdecea;
+    color: #b3261e;
+    border: 1px solid #f2b8b5;
+}
+
+.corridor-editor-indicator--structures {
+    background: #fef3e2;
+    color: #9a5b13;
+    border: 1px solid #f5d9a8;
 }
 
 /* The total is fixed by construction; flash it when an edit is refused for want of room. */

@@ -825,10 +825,6 @@
         try { if (typeof global.clearProposalInfoHoverOverlay === 'function') global.clearProposalInfoHoverOverlay(); } catch (_) { }
         try { if (typeof global.clearProposalHighlights === 'function') global.clearProposalHighlights(); } catch (_) { }
 
-        const createProposalButton = global.document.getElementById('createProposalFromParcelButton');
-        if (createProposalButton) {
-            createProposalButton.style.display = 'none';
-        }
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {
             global.multiParcelSelection.updateCreateProposalButton();

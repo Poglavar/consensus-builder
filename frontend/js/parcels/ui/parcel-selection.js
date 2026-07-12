@@ -215,10 +215,6 @@
         };
         global.window.currentParcel = global.currentParcel;
 
-        const createProposalButton = global.document.getElementById('createProposalFromParcelButton');
-        if (createProposalButton) {
-            createProposalButton.style.display = 'inline-block';
-        }
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {
             global.multiParcelSelection.updateCreateProposalButton();
@@ -226,9 +222,19 @@
 
         global.document.getElementById('parcel-info-panel').classList.add('visible');
 
-        if (appliedRoadProposal && typeof global.selectAndHighlightProposal === 'function') {
-            const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedRoadProposal))
-                || appliedRoadProposal.proposalId
+        // Any parcel carrying an applied proposal doubles as that proposal's surface: opening the
+        // parcel also opens the proposal's action buttons, referring to the applied one. Other
+        // proposals on the parcel stay reachable through the panel's Proposals list.
+        let appliedProposal = appliedRoadProposal;
+        if (!appliedProposal) {
+            try {
+                const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
+                appliedProposal = parcelProposals.find(p => typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
+            } catch (_) { }
+        }
+        if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {
+            const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedProposal))
+                || appliedProposal.proposalId
                 || feature.properties.ancestorProposal
                 || feature.properties.proposalId;
             global.__openProposalDetailsCollapsed = true;

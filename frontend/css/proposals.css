@@ -535,6 +535,41 @@
 }
 
 /* Thumbnail */
+/* Share modal header: name + type + screenshot of the proposal being shared. */
+.share-modal-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.share-modal-identity .proposal-thumb {
+    width: 64px;
+    height: 64px;
+}
+
+.share-modal-identity-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.share-modal-identity-text strong {
+    font-size: 15px;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-modal-identity-text span {
+    font-size: 12px;
+    color: #64748b;
+}
+
 .proposal-thumb {
     position: relative;
     flex: 0 0 auto;

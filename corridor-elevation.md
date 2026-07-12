@@ -162,3 +162,46 @@ The applied 2D map should show that edge with a purple dashed liner and portal m
 2. Should ±1 always mean ±6 m, or should level height be editable per proposal?
 3. Should a ramp's whole projected footprint be a surface acquisition, or only the part within the separation threshold plus explicit structural footprints?
 4. For the MVP, are affected air/subsurface rights proposal metadata only, or should they appear as a new kind of 3D parcel/right in parcel details?
+
+## Status update — 2026-07-12
+
+Deliberately deferred until the new drafting/editing lifecycle is proven in daily use. Decisions and findings from the SimCity-lifecycle session, so the plan above stays accurate:
+
+### What changed underneath this proposal
+
+The corridor interaction model was rebuilt and now provides most of the substrate slices 1–2 assumed would need building:
+
+- corridors are edited **in place** as graphs: per-vertex node handles (`js/road-node-edit.js`), unified junction nodes (coincident vertices move together), per-edge bulldozing, ⌥-click vertex deletion;
+- crossings insert **shared vertices into both segments** (`insertCorridorCrossingNodes`), merges weld end-to-end connections (`weldCorridorSegments`), and disconnected bodies **split into separate proposals** (`corridorConnectedComponents` + `createRoadProposalFromComponent`);
+- every geometry edit re-derives touched parcels against the restored fabric and re-applies (`updateLocalCorridorGeometry`) — the natural hook for a future surface-vs-spatial footprint distinction;
+- the draft editor dialog is retired; drawing instantly creates applied objects, so the level UI belongs in the drawing panel and node-edit mode, not in any editor dialog.
+
+### Decisions taken
+
+- **Interaction model:** zagreb-isochrone style — raise/lower an existing node to −1/0/+1 (node-edit mode first; a level picker in the drawing panel can come later). Constraint stays as proposed: reject a level change when a differing-level node is closer than `|Δz| / max grade`.
+- **Acquisition rule (simpler than proposed above):** only the *fully underground* stretch skips land acquisition; ramps and portals acquire as usual, and **+1 acquires exactly like level 0** ("nothing changes"). So `surfaceImpactFootprint` = projection of everything except the fully −1 run — the elevated-deck exemption in the original proposal is dropped.
+- **Grade-separated crossings:** crossing-node insertion and merge-on-connect must be **level-aware** — segments crossing at different levels get no shared node, no junction fill, and no merge. This falls out of the existing crossing pass by comparing interpolated Z with a tolerance, and it keeps the connectivity/split model honest.
+
+### Confirmed implementation hazards
+
+- The single most error-prone task is threading `level` through **every path that clones centerline points** — `corridorCenterlineOf`, weld, crossing insertion (inserted nodes need an interpolated level), split, node drag/live drag, draft autosave, sharing. All of these currently rebuild bare `{lat, lng}` and would silently drop the field, exactly as the schema section above warned.
+- 3D: reuse zagreb-isochrone's level rendering for the ribbon mesh. Acceptable interim: render constant-level runs flat at `level × levelHeightM` and defer proper ramp ribbons; Cesium/photoreal stays out of scope for the first pass.
+
+### Revised slice order
+
+1. schema + node-level editing + grade constraint (node-edit mode only);
+2. 2D level overlay per run (−1 violet/dashed, ramps with grade arrow, +1 amber) + level-aware crossings/merge;
+3. acquisition split (surface vs spatial footprint) through `updateLocalCorridorGeometry` and the apply pipeline;
+4. 3D ribbon (crib zagreb-isochrone), photoreal later.
+
+Open choices left for kickoff: strictly three levels (−1/0/+1) vs allowing ±2; adopting the grade presets table above as-is.
+
+### Building-tunnel semantics belong to slice 3 (noted 2026-07-12)
+
+Observed with today's flat tunnels: a "tunnel" edge still behaves like a surface road — it splits
+the parcels under the tunnelled buildings and acquires them. The desired behaviour ("tunnel spans
+only the buildings it passes under; those stretches split no parcels and stay as they are; the road
+is open surface outside the buildings") is exactly the surface-vs-spatial footprint split of slice 3:
+a building tunnel is a locally −1 run under each intersected footprint with ramps implied at its
+ends. Do not special-case it before slice 3 — implementing it flat would duplicate the acquisition
+logic that slice 3 rebuilds anyway. Until then tunnels remain visual metadata on the edge.

@@ -756,18 +756,35 @@ const proposalStorage = {
         if (!id) {
             return [];
         }
+        // A synthetic descendant (e.g. 605#p-xxx-1, possibly nested) inherits its ancestors'
+        // proposals: an urban rule applied to the original parcel still concerns the slices a
+        // later road cut out of it, so it must appear on those slices too.
+        const matchIds = new Set([id]);
+        {
+            let cursor = id;
+            while (true) {
+                const cut = cursor.lastIndexOf('#p-');
+                if (cut <= 0) break;
+                cursor = cursor.slice(0, cut);
+                matchIds.add(cursor);
+            }
+        }
+        const matchesId = value => {
+            const normalized = normalizeParcelId(value);
+            return normalized !== null && matchIds.has(normalized);
+        };
         const results = [];
         const hydrateRoadAssets = options && Object.prototype.hasOwnProperty.call(options, 'hydrateRoadAssets')
             ? !!options.hydrateRoadAssets
             : true;
         for (const proposal of this.proposals.values()) {
             const parentIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
-            const parcelMatch = parentIds.some(value => normalizeParcelId(value) === id);
+            const parcelMatch = parentIds.some(matchesId);
 
             const childIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
             const decideLaterChildIds = Array.isArray(proposal.decideLaterProposal?.childParcelIds) ? proposal.decideLaterProposal.childParcelIds : [];
             const allChildIds = childIds.concat(decideLaterChildIds);
-            const childMatch = allChildIds.some(value => normalizeParcelId(value) === id);
+            const childMatch = allChildIds.some(matchesId);
 
             let roadMatch = false;
             if (!parcelMatch && proposal.roadProposal) {
@@ -775,12 +792,12 @@ const proposalStorage = {
                 const roadParentIds = Array.isArray(road.parentParcelIds) ? road.parentParcelIds : [];
                 const roadChildIds = Array.isArray(road.childParcelIds) ? road.childParcelIds : [];
                 const combinedIds = roadParentIds.concat(roadChildIds);
-                roadMatch = combinedIds.some(value => normalizeParcelId(value) === id);
+                roadMatch = combinedIds.some(matchesId);
 
                 if (!roadMatch && hydrateRoadAssets) {
                     // With road assets stored in-proposal, only ids are available; rely on parent/child id lists
-                    roadMatch = roadParentIds.some(value => normalizeParcelId(value) === id)
-                        || roadChildIds.some(value => normalizeParcelId(value) === id);
+                    roadMatch = roadParentIds.some(matchesId)
+                        || roadChildIds.some(matchesId);
                 }
             }
 
@@ -1882,14 +1899,6 @@ const multiParcelSelection = {
     updateUI() {
         syncMultiSelectCheckboxes(this.isActive);
 
-        // Hide single-parcel proposal button when multi-select is active
-        const singleParcelButton = document.getElementById('createProposalFromParcelButton');
-        if (singleParcelButton) {
-            if (this.isActive) {
-                singleParcelButton.style.display = 'none';
-            }
-            // When multi-select is off, the button visibility is controlled by single parcel selection
-        }
 
         const count = this.selectedParcels.size;
         if (count >= 2) {

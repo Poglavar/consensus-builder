@@ -67,6 +67,7 @@
 
     function collectLoadedCorridorBuildings() {
         const buildings = [];
+        const seenProposalBuildings = new Set();
         const layer = global.buildingLayer;
         if (layer && typeof layer.eachLayer === 'function') {
             layer.eachLayer(entry => {
@@ -78,7 +79,65 @@
                 if (feature && feature.geometry) buildings.push(feature);
             });
         }
+        // Applied building proposals of EVERY typology (block, row, parcel-based, single) block
+        // corridors too — the shared proposedBuildings array does not reliably carry all of them.
+        try {
+            (global.proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
+                const bp = proposal?.buildingProposal;
+                if (!bp) return;
+                const status = String(bp.status || proposal.status || '').toLowerCase();
+                if (status !== 'applied' && status !== 'executed') return;
+                const proposalId = proposal.proposalId || proposal.id;
+                if (!proposalId) return;
+                const features = Array.isArray(proposal.geometry?.buildings) && proposal.geometry.buildings.length
+                    ? proposal.geometry.buildings
+                    : (Array.isArray(bp.buildings) && bp.buildings.length
+                        ? bp.buildings
+                        : (bp.buildingFeature ? [bp.buildingFeature] : []));
+                features.forEach((candidate, index) => {
+                    const feature = normalizeBuildingFeature(candidate);
+                    if (!feature || !feature.geometry) return;
+                    const dedupeKey = `proposal:${proposalId}:${index}`;
+                    if (seenProposalBuildings.has(dedupeKey)) return;
+                    seenProposalBuildings.add(dedupeKey);
+                    buildings.push({
+                        ...feature,
+                        properties: { ...(feature.properties || {}), proposalId: String(proposalId), buildingIndex: index }
+                    });
+                });
+            });
+        } catch (_) { }
         return buildings;
+    }
+
+    // Tunnel spans are covered structures that acquire nothing: splits each centerline segment
+    // into maximal runs of consecutive NON-tunnel edges. Parcel parents and parcel cuts are
+    // computed from these surface runs only; the full centerline keeps driving the rendering.
+    function corridorSurfaceRuns(segments, tunnelRecords) {
+        const isPoint = value => !!value && (value.lat !== undefined || (Array.isArray(value) && typeof value[0] === 'number'));
+        const list = Array.isArray(segments)
+            ? (segments.length && isPoint(segments[0]) ? [segments] : segments)
+            : [];
+        const tunnelKeys = new Set((tunnelRecords || [])
+            .map(record => record && record.edgeKey)
+            .filter(Boolean));
+        const runs = [];
+        list.forEach(segment => {
+            if (!Array.isArray(segment) || segment.length < 2) return;
+            let current = [];
+            for (let i = 0; i < segment.length - 1; i++) {
+                const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
+                if (key && tunnelKeys.has(key)) {
+                    if (current.length >= 2) runs.push(current);
+                    current = [];
+                } else {
+                    if (!current.length) current.push(segment[i]);
+                    current.push(segment[i + 1]);
+                }
+            }
+            if (current.length >= 2) runs.push(current);
+        });
+        return runs;
     }
 
     async function ensureCorridorBuildingFootprintsLoaded() {
@@ -160,9 +219,18 @@
         return fallback.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => params[name] ?? '');
     }
 
-    async function offerBuildingTunnel(hits, corridorKind = 'road') {
-        if (!Array.isArray(hits) || !hits.length || promptActive) return false;
-        promptActive = true;
+    function tunnelHitProposalId(hit) {
+        const fromProps = hit?.feature?.properties?.proposalId;
+        if (fromProps !== undefined && fromProps !== null && String(fromProps)) return String(fromProps);
+        const id = String(hit?.id || '');
+        if (id.startsWith('proposal:')) {
+            const parts = id.split(':');
+            if (parts.length >= 2 && parts[1]) return parts[1];
+        }
+        return null;
+    }
+
+    async function promptBuildingObstacle(hits, corridorKind, offerUnapply) {
         const count = hits.length;
         const kind = corridorKind === 'track'
             ? tunnelText('modal.corridorTunnel.track', 'track')
@@ -172,17 +240,66 @@
             'This {{kind}} would pass through {{count}} building(s). Create a tunnel through the building?',
             { kind, count }
         );
+        const choices = [];
+        if (offerUnapply) {
+            choices.push({ value: 'unapply', label: tunnelText('modal.corridorTunnel.unapply', 'Unapply existing proposal') });
+        }
+        choices.push({ value: 'tunnel', label: tunnelText('modal.corridorTunnel.confirm', 'Tunnel through'), primary: true });
+        choices.push({ value: 'cancel', label: tunnelText('modal.corridorTunnel.cancel', 'Choose another route') });
+        if (typeof global.showStyledChoice === 'function') {
+            const answer = await global.showStyledChoice(message, choices);
+            return answer || 'cancel';
+        }
+        if (typeof global.showStyledConfirm === 'function') {
+            const ok = await global.showStyledConfirm(message, {
+                okText: tunnelText('modal.corridorTunnel.confirm', 'Tunnel through'),
+                cancelText: tunnelText('modal.corridorTunnel.cancel', 'Choose another route')
+            });
+            return ok ? 'tunnel' : 'cancel';
+        }
+        return global.confirm?.(message) ? 'tunnel' : 'cancel';
+    }
+
+    // Walks the user through the buildings a new corridor edge collides with. Proposal-owned
+    // buildings can be unapplied in place; the remaining (built) ones can be tunnelled or the
+    // route abandoned. Returns { action: 'tunnel' | 'clear' | 'cancel', removedProposalIds }:
+    // 'clear' means every obstacle was unapplied and no tunnel record is needed.
+    async function resolveBuildingObstacles(hits, corridorKind = 'road') {
+        const removedProposalIds = [];
+        if (!Array.isArray(hits) || !hits.length) return { action: 'clear', removedProposalIds };
+        if (promptActive) return { action: 'cancel', removedProposalIds };
+        promptActive = true;
         try {
-            if (typeof global.showStyledConfirm === 'function') {
-                return await global.showStyledConfirm(message, {
-                    okText: tunnelText('modal.corridorTunnel.confirm', 'Tunnel through'),
-                    cancelText: tunnelText('modal.corridorTunnel.cancel', 'Choose another route')
+            let remaining = hits.slice();
+            while (remaining.length) {
+                const unappliable = Array.from(new Set(remaining.map(tunnelHitProposalId).filter(Boolean)));
+                const answer = await promptBuildingObstacle(remaining, corridorKind, unappliable.length > 0);
+                if (answer === 'tunnel') return { action: 'tunnel', removedProposalIds };
+                if (answer !== 'unapply') return { action: 'cancel', removedProposalIds };
+                for (const proposalId of unappliable) {
+                    try {
+                        const done = await global.ProposalManager?.unapplyProposal?.(proposalId, { skipConfirm: true });
+                        if (done !== false) removedProposalIds.push(proposalId);
+                    } catch (error) {
+                        console.warn('[corridor-tunnel] could not unapply obstacle proposal', proposalId, error);
+                    }
+                }
+                const removed = new Set(removedProposalIds);
+                remaining = remaining.filter(hit => {
+                    const owner = tunnelHitProposalId(hit);
+                    return !owner || !removed.has(owner);
                 });
             }
-            return !!global.confirm?.(message);
+            return { action: 'clear', removedProposalIds };
         } finally {
             promptActive = false;
         }
+    }
+
+    // Boolean legacy wrapper: true when drawing may continue with tunnel records for the hits.
+    async function offerBuildingTunnel(hits, corridorKind = 'road') {
+        const resolution = await resolveBuildingObstacles(hits, corridorKind);
+        return resolution.action === 'tunnel';
     }
 
     Object.assign(global, {
@@ -195,6 +312,9 @@
         makeBuildingTunnelRecord,
         addBuildingTunnelRecord,
         removeBuildingTunnelEdge,
+        corridorSurfaceRuns,
+        corridorTunnelHitProposalId: tunnelHitProposalId,
+        resolveBuildingObstacles,
         offerBuildingTunnel
     });
 
@@ -205,7 +325,8 @@
             corridorFeatureFromLatLngRing,
             makeBuildingTunnelRecord,
             addBuildingTunnelRecord,
-            removeBuildingTunnelEdge
+            removeBuildingTunnelEdge,
+            corridorSurfaceRuns
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

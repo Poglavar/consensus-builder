@@ -976,6 +976,25 @@ function showUploadProposalModal(proposal) {
     downloadRow.appendChild(downloadButton);
 
     rowsContainer.appendChild(downloadRow);
+
+    // Say WHAT is being shared: name, type and the stored screenshot (when one exists) sit at
+    // the top of the modal, so the link is never anonymous.
+    const identity = document.createElement('div');
+    identity.className = 'share-modal-identity';
+    const identityThumb = (typeof buildProposalThumbHtml === 'function') ? buildProposalThumbHtml(proposal) : '';
+    const identityName = String(proposal.title || proposal.name || proposal.proposalName || '').trim()
+        || tShare('untitledProposal', 'Untitled proposal');
+    const identityType = (typeof getProposalDisplayTypeLabel === 'function') ? getProposalDisplayTypeLabel(proposal) : '';
+    const esc = (typeof escapeHtml === 'function') ? escapeHtml : (value => String(value));
+    identity.innerHTML = `
+        ${identityThumb}
+        <div class="share-modal-identity-text">
+            <strong>${esc(identityName)}</strong>
+            ${identityType ? `<span>${esc(identityType)}</span>` : ''}
+        </div>
+    `;
+    fragment.appendChild(identity);
+
     fragment.appendChild(rowsContainer);
 
     // Status message container

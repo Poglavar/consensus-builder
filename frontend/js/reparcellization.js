@@ -45,7 +45,7 @@
         coverageEl: null,
         // Manual plot drawing state. mode 'polygon' draws/carves a new plot;
         // mode 'line' splits the plots it crosses into separate plots.
-        drawing: { active: false, points: [], tempLayer: null, tempMarkers: [], mode: 'polygon' },
+        drawing: { active: false, points: [], tempLayer: null, tempMarkers: [], mode: 'polygon', cursor: null },
         drawBtn: null,
         lineBtn: null,
         // Sweep-line orientation: a draggable point the cut lines point toward.
@@ -296,7 +296,7 @@
                         <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
-                                <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x270F;&#xFE0F;</button>
+                                <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x2B1F;</button>
                                 <button type="button" class="btn-icon" data-reparcel-line aria-pressed="false" title="${t('reparcellization.modal.drawLine', 'Split with line')}">&#x2702;&#xFE0F;</button>
                                 <button type="button" class="btn-icon" data-reparcel-shuffle title="${t('reparcellization.modal.shuffle', 'Shuffle ownership')}">&#x1f500;</button>
                                 <label class="btn-icon btn-upload-label" title="${t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON')}">
@@ -447,6 +447,10 @@
                 }
                 updateDrawToolButtons();
                 refreshPreview();
+                // Manual means drawing: entering the mode arms the polygon tool immediately.
+                if (option.key === 'manual' && !state.drawing.active) {
+                    startDraw('polygon');
+                }
             });
         }
 
@@ -1195,6 +1199,11 @@
         }
         if (!state.map) return;
         const latlngs = state.drawing.points.map(([lng, lat]) => L.latLng(lat, lng));
+        // Rubber-band: while drawing, the shape follows the cursor so every segment is
+        // visible as it is being placed, not only after the click.
+        if (state.drawing.active && Array.isArray(state.drawing.cursor)) {
+            latlngs.push(L.latLng(state.drawing.cursor[1], state.drawing.cursor[0]));
+        }
         if (latlngs.length < 2) return;
         if (state.drawing.mode === 'line') {
             state.drawing.tempLayer = L.polyline(latlngs, {
@@ -1237,6 +1246,12 @@
         state.drawing.points.push([e.latlng.lng, e.latlng.lat]);
         renderDrawTemp();
         updateDrawToolbar();
+    }
+
+    function onDrawMouseMove(e) {
+        if (!state.drawing.active || !e?.latlng) return;
+        state.drawing.cursor = [e.latlng.lng, e.latlng.lat];
+        updateDrawShape();
     }
 
     function undoLastPoint() {
@@ -1347,7 +1362,9 @@
             try { state.previewLayer.eachLayer(l => l.closeTooltip && l.closeTooltip()); } catch (_) { }
         }
         try { state.map.getContainer().style.cursor = 'crosshair'; } catch (_) { }
+        state.drawing.cursor = null;
         state.map.on('click', onDrawClick);
+        state.map.on('mousemove', onDrawMouseMove);
         setDrawButtonsActive();
         updateDrawToolbar();
         setStatus(state.drawing.mode === 'line'
@@ -1359,8 +1376,10 @@
         clearDrawTemp();
         state.drawing.active = false;
         state.drawing.points = [];
+        state.drawing.cursor = null;
         if (state.map) {
             state.map.off('click', onDrawClick);
+            state.map.off('mousemove', onDrawMouseMove);
             try { state.map.getContainer().style.cursor = ''; } catch (_) { }
         }
         setDrawButtonsActive();

@@ -454,8 +454,8 @@
 
     function proposalTypeLabel(goal) {
         const labels = {
-            'road-track': 'Road / Track', buildings: 'Buildings', row: 'Row houses', parcelBased: 'Parcel-based buildings',
-            single: 'Building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Freeform',
+            single: 'Detached building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
             'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
@@ -889,7 +889,7 @@
 
     const registry = createRegistry();
     registry.register('road-track', corridorAdapter, { aliases: ['road', 'track', 'road/track'] });
-    registry.register('buildings', buildBuildingAdapter('buildings'), { aliases: ['building(s)', 'residences'] });
+    registry.register('buildings', buildBuildingAdapter('buildings'), { aliases: ['building(s)', 'residences', 'block'] });
     registry.register('row', buildBuildingAdapter('row'));
     registry.register('parcelBased', buildBuildingAdapter('parcelBased'), { aliases: ['parcel-based', 'parcelbased'] });
     registry.register('single', buildBuildingAdapter('single'), { aliases: ['single-building'] });

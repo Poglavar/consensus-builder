@@ -23,6 +23,22 @@
     let autoRotateRemove = null;  // remover fn for the preRender auto-orbit listener
     const proposalEntities = [];
 
+    // Display states, mirroring 3D mode's two-row control (no radius here — Cesium streams
+    // tiles by screen-space error, so distance culling is automatic). "Built" is the Google
+    // photoreal mesh, "Planned" is the proposal massing.
+    let builtDisplay = 'solid';    // 'solid' | 'ghost' | 'off'
+    let plannedDisplay = 'solid';  // 'solid' | 'ghost' | 'off'
+    // Carve the real mesh away under proposal footprints, so a proposal replaces the real
+    // building standing on its spot instead of interpenetrating it.
+    let carveUnderProposals = true;
+    let controlsEl = null;
+    let tileLoaderEl = null;
+    let tileLoaderCountEl = null;
+    let tileProgressBound = false;
+    let rotateHintEl = null;
+    let rotateHintTimer = null;
+    const ROTATE_HINT_DONE_KEY = 'photorealRotateHintDone';
+
     const containerEl = () => document.getElementById('cesium-container');
     const toggleBtn = () => document.getElementById('mode-realistic-toggle');
 
@@ -30,6 +46,133 @@
         if (!statusEl) return;
         statusEl.textContent = msg || '';
         statusEl.style.display = msg ? 'block' : 'none';
+    }
+
+    function photorealI18n(key, fallback) {
+        try {
+            if (window.i18n && typeof window.i18n.t === 'function') {
+                const value = window.i18n.t(key, {});
+                if (value && value !== key) return value;
+            }
+        } catch (_) { }
+        return fallback;
+    }
+
+    // ---- display states (Built = Google mesh, Planned = proposals) ----
+    function applyBuiltDisplay() {
+        if (!googleTileset || !window.Cesium) return;
+        googleTileset.show = builtDisplay !== 'off';
+        try {
+            googleTileset.style = builtDisplay === 'ghost'
+                ? new Cesium.Cesium3DTileStyle({ color: 'color("white", 0.5)' })
+                : undefined;
+        } catch (err) {
+            console.warn('[photoreal] tileset style failed', err);
+        }
+    }
+
+    // Real mesh carved away under every proposal footprint: the proposal REPLACES the real
+    // building on its spot. The hole floor shows the globe's satellite terrain, and the
+    // extruded proposal stands in it. Off (or planned hidden) restores the untouched mesh.
+    function applyCarving() {
+        if (!googleTileset || !window.Cesium || !Cesium.ClippingPolygonCollection) return;
+        let supported = false;
+        try { supported = Cesium.ClippingPolygonCollection.isSupported(viewer.scene); } catch (_) { }
+        if (!supported) return;
+        if (!carveUnderProposals || plannedDisplay === 'off' || builtDisplay === 'off') {
+            googleTileset.clippingPolygons = undefined;
+            return;
+        }
+        const polygons = [];
+        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        arr.forEach(function (feat) {
+            if (!feat || !feat.geometry) return;
+            polygonsOf(feat.geometry).forEach(function (rings) {
+                const outer = rings && rings[0];
+                if (!Array.isArray(outer) || outer.length < 3) return;
+                try {
+                    polygons.push(new Cesium.ClippingPolygon({ positions: ringToCartesians(outer) }));
+                } catch (_) { }
+            });
+        });
+        try {
+            googleTileset.clippingPolygons = polygons.length
+                ? new Cesium.ClippingPolygonCollection({ polygons: polygons })
+                : undefined;
+        } catch (err) {
+            console.warn('[photoreal] clipping polygons failed', err);
+        }
+    }
+
+    function setBuiltDisplay(state) {
+        builtDisplay = state;
+        applyBuiltDisplay();
+        applyCarving();
+        updateDisplayControls();
+    }
+
+    function setPlannedDisplay(state) {
+        plannedDisplay = state;
+        renderProposedBuildings();
+        applyCarving();
+        updateDisplayControls();
+    }
+
+    function setCarveUnderProposals(value) {
+        carveUnderProposals = !!value;
+        applyCarving();
+    }
+
+    function updateDisplayControls() {
+        if (!controlsEl) return;
+        controlsEl.querySelectorAll('[data-photoreal-display]').forEach(function (button) {
+            const row = button.getAttribute('data-photoreal-row');
+            const state = button.getAttribute('data-photoreal-display');
+            const current = row === 'built' ? builtDisplay : plannedDisplay;
+            button.classList.toggle('three-mode-segment--active', state === current);
+        });
+    }
+
+    // Two rows of Solid / Transparent / Off plus the carve checkbox. Deliberately built from the
+    // SAME classes as 3D mode's panel (three-mode-ui-panel/segmented/segment) so the control looks
+    // identical and sits in the same upper-right spot in both views.
+    function ensureDisplayControls() {
+        if (controlsEl) return;
+        const el = containerEl();
+        if (!el) return;
+        controlsEl = document.createElement('div');
+        controlsEl.className = 'three-mode-ui-panel photoreal-controls';
+        const states = [
+            ['solid', photorealI18n('threeMode.controls.stateSolid', 'Solid')],
+            ['ghost', photorealI18n('threeMode.controls.stateGhost', 'Transparent')],
+            ['off', photorealI18n('threeMode.controls.stateOff', 'Off')]
+        ];
+        const rowHtml = function (row, label) {
+            const buttons = states.map(function (pair) {
+                return '<button type="button" class="three-mode-segment" data-photoreal-row="' + row + '" data-photoreal-display="' + pair[0] + '">' + pair[1] + '</button>';
+            }).join('');
+            return '<div class="three-mode-emphasis-row"><span class="three-mode-emphasis-label">' + label + '</span><div class="three-mode-segmented">' + buttons + '</div></div>';
+        };
+        controlsEl.innerHTML =
+            rowHtml('built', photorealI18n('threeMode.controls.built', 'Built'))
+            + rowHtml('planned', photorealI18n('threeMode.controls.planned', 'Planned'))
+            + '<label class="three-mode-trees-toggle photoreal-controls-carve"><input type="checkbox" data-photoreal-carve'
+            + (carveUnderProposals ? ' checked' : '') + '> '
+            + photorealI18n('threeMode.controls.carveUnderProposals', 'Hide real buildings under proposals')
+            + '</label>';
+        controlsEl.addEventListener('click', function (event) {
+            const button = event.target && event.target.closest && event.target.closest('[data-photoreal-display]');
+            if (!button) return;
+            const state = button.getAttribute('data-photoreal-display');
+            if (button.getAttribute('data-photoreal-row') === 'built') setBuiltDisplay(state);
+            else setPlannedDisplay(state);
+        });
+        const carveInput = controlsEl.querySelector('[data-photoreal-carve]');
+        if (carveInput) {
+            carveInput.addEventListener('change', function () { setCarveUnderProposals(carveInput.checked); });
+        }
+        el.appendChild(controlsEl);
+        updateDisplayControls();
     }
 
     // ---- lazy Cesium loading ----
@@ -55,6 +198,79 @@
         return cesiumLoadPromise;
     }
 
+    // ---- tile-streaming indicator ----
+    // Google tiles stream by view, so there is no meaningful percentage — but Cesium reports
+    // how many tile requests are still in flight, which is an honest "working on it" number.
+    function updateTileLoader(pending, processing) {
+        if (!tileLoaderEl) return;
+        const count = Math.max(0, (pending || 0) + (processing || 0));
+        const show = active && count > 0 && builtDisplay !== 'off';
+        tileLoaderEl.classList.toggle('visible', show);
+        if (show && tileLoaderCountEl) tileLoaderCountEl.textContent = String(count);
+    }
+
+    function bindTileProgress(ts) {
+        if (!ts || tileProgressBound || !ts.loadProgress) return;
+        tileProgressBound = true;
+        ts.loadProgress.addEventListener(function (pending, processing) {
+            updateTileLoader(pending, processing);
+        });
+    }
+
+    // ---- one-time rotate hint ----
+    function rotateHintDone() {
+        try {
+            if (typeof PersistentStorage !== 'undefined') return PersistentStorage.getItem(ROTATE_HINT_DONE_KEY) === '1';
+        } catch (_) { }
+        return false;
+    }
+
+    function markRotateHintDone() {
+        try {
+            if (typeof PersistentStorage !== 'undefined') PersistentStorage.setItem(ROTATE_HINT_DONE_KEY, '1');
+        } catch (_) { }
+        hideRotateHint();
+    }
+
+    function hideRotateHint() {
+        if (rotateHintTimer) { clearTimeout(rotateHintTimer); rotateHintTimer = null; }
+        if (!rotateHintEl) return;
+        rotateHintEl.classList.add('fading');
+        const el = rotateHintEl;
+        rotateHintEl = null;
+        setTimeout(function () { try { el.remove(); } catch (_) { } }, 700);
+    }
+
+    // Shown until the user rotates once (ever): ctrl-drag / middle-drag on desktop,
+    // two-finger drag on touch. Auto-fades after 12 s either way.
+    function showRotateHint() {
+        if (rotateHintDone() || rotateHintEl) return;
+        const el = containerEl();
+        if (!el) return;
+        const touch = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
+        const message = touch
+            ? photorealI18n('threeMode.controls.rotateHintMobile', 'Swipe with two fingers to rotate the view')
+            : photorealI18n('threeMode.controls.rotateHintDesktop', 'Hold Ctrl and drag to rotate the view');
+        rotateHintEl = document.createElement('div');
+        rotateHintEl.className = 'photoreal-rotate-hint';
+        rotateHintEl.textContent = message;
+        el.appendChild(rotateHintEl);
+        rotateHintTimer = setTimeout(hideRotateHint, 12000);
+        try {
+            const canvas = viewer && viewer.canvas;
+            if (canvas) {
+                const onPointer = function (event) {
+                    if (event.ctrlKey || event.button === 1) markRotateHintDone();
+                };
+                const onTouch = function (event) {
+                    if (event.touches && event.touches.length >= 2) markRotateHintDone();
+                };
+                canvas.addEventListener('pointerdown', onPointer, { passive: true });
+                canvas.addEventListener('touchstart', onTouch, { passive: true });
+            }
+        } catch (_) { }
+    }
+
     async function ensureViewer() {
         await ensureCesiumLoaded();
         const el = containerEl();
@@ -62,6 +278,15 @@
             statusEl = document.createElement('div');
             statusEl.className = 'photoreal-status';
             el.appendChild(statusEl);
+        }
+        if (!tileLoaderEl) {
+            tileLoaderEl = document.createElement('div');
+            tileLoaderEl.className = 'photoreal-tile-loader';
+            tileLoaderEl.innerHTML = '<span class="photoreal-spinner"></span><span>'
+                + photorealI18n('threeMode.controls.streamingTiles', 'Streaming 3D tiles…')
+                + '</span><span class="photoreal-tile-count"></span>';
+            tileLoaderCountEl = tileLoaderEl.querySelector('.photoreal-tile-count');
+            el.appendChild(tileLoaderEl);
         }
         if (viewer) return viewer;
         Cesium.Ion.defaultAccessToken = ION_TOKEN;
@@ -94,6 +319,9 @@
                 googleTileset = ts;
                 viewer.scene.primitives.add(ts);
                 setStatus('');
+                applyBuiltDisplay();
+                applyCarving();
+                bindTileProgress(ts);
                 return ts;
             })
             .catch(function (err) {
@@ -191,6 +419,8 @@
     function renderProposedBuildings() {
         if (!viewer) return;
         clearProposal();
+        if (plannedDisplay === 'off') { applyCarving(); return; }
+        const proposalAlpha = plannedDisplay === 'ghost' ? 0.35 : 0.85;
         const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
         // Provisional base for every box: the entry target's ground height (sampled from world
         // terrain, already loaded) — good enough to appear on the ground before per-box mesh refine.
@@ -226,7 +456,7 @@
                         perPositionHeight: false,
                         height: provisionalBase,
                         extrudedHeight: provisionalBase + hM,
-                        material: Cesium.Color.fromCssColorString(color).withAlpha(0.85),
+                        material: Cesium.Color.fromCssColorString(color).withAlpha(proposalAlpha),
                         outline: true,
                         outlineColor: Cesium.Color.WHITE
                     }
@@ -236,6 +466,7 @@
                 refineBase(ent, outer, hM);
             }
         }
+        applyCarving();
     }
 
     // ---- camera: open from the exact legacy-3D vantage point, no fly-in animation ----
@@ -347,6 +578,7 @@
         const entryView = (options.frameProposal ? getProposalBboxView(options.pitchDeg) : null) || getEntryView();
         try {
             await ensureViewer();
+            ensureDisplayControls();
             active = true;
             if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
                 window.renderProposalDraftComparison(
@@ -369,6 +601,7 @@
             await ensureTileset();
             if (entryView) await applyEntryView(entryView); // fine-tune once the photoreal mesh is present
             if (options.autoRotate && entryView) startAutoRotate(entryView);
+            showRotateHint();
         } catch (err) {
             console.error('[photoreal] activation failed:', err);
             setStatus('Failed to load photorealistic 3D.');
@@ -383,6 +616,8 @@
     function deactivate() {
         active = false;
         stopAutoRotate();
+        hideRotateHint();
+        updateTileLoader(0, 0);
         const el = containerEl();
         if (el) el.classList.remove('active');
         document.body.classList.remove('realistic-mode-active');

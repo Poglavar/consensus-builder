@@ -148,6 +148,8 @@
             "valid": "Ready"
         },
         "errors": {
+            "parcelsUnavailable": "The selected parcels are not available in this city view.",
+            "parcelsNotContiguous": "A lake needs contiguous parcels.",
             "sourceMissing": "Proposal source not found.",
             "noAdapter": "No editor is registered for this proposal type.",
             "readOnly": "This proposal is view-only.",
@@ -161,6 +163,7 @@
         "mapTooltip": "Draft — click to continue",
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
         "keptAsDraft": "Could not finish this object — it stays in Drafts; click its dashed outline to continue.",
+        "geometryUpdated": "Geometry updated.",
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it."
     },
     "languages": {
@@ -604,6 +607,19 @@
             "tabProposalsWithCount": "Proposals ({{count}})",
             "tabTools": "Tools",
             "selectMultiple": "Select multiple parcels",
+            "build": {
+                "title": "Build",
+                "block": "Block",
+                "rowNeedsTwo": "Row houses need at least two parcels.",
+                "row": "Row houses",
+                "parcelBased": "Freeform",
+                "single": "Detached",
+                "reparcel": "Reparcel",
+                "park": "Park",
+                "square": "Square",
+                "lake": "Lake",
+            "offer": "Offer"
+            },
             "roadToggle": "Road",
             "nftStatusDefault": "NFT status: Not checked yet.",
             "mintAndClaimButton": "Mint",
@@ -721,7 +737,7 @@
             "actions": {
                 "apply": "Apply to map",
                 "applying": "Applying...",
-                "remove": "Stash",
+                "remove": "Unapply",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
                 "share": "Share Proposal",
@@ -863,7 +879,9 @@
             }
         },
         "road": {
-            "title": "Road Info",
+            "title": "Draw road",
+            "titleTrack": "Draw track",
+            "crossSectionButton": "Cross-section",
             "finishButton": "Finish Road (F)",
             "cancelButton": "Cancel Road (Esc)",
             "widthLabel": "Road Width:",
@@ -894,8 +912,8 @@
             "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None",
-            "draftSavedRoadToast": "Road saved as a draft — press R or open Drafts to continue.",
-            "draftSavedTrackToast": "Track saved as a draft — open Drafts to continue.",
+            "draftSavedRoadToast": "Unfinished road kept — click its dashed outline or press R to continue.",
+            "draftSavedTrackToast": "Unfinished track kept — click its dashed outline to continue.",
             "builtStatus": "Road built — click it to edit or propose.",
             "builtStatusTrack": "Track built — click it to edit or propose.",
             "mergedStatus": "Connected to “{{name}}” — now one road.",
@@ -1077,6 +1095,8 @@
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
             "totalWidth": "Total width",
+            "hitsBuildings": "Hits buildings (to tunnel through buildings, use drawing mode)",
+            "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",
             "save": "Save as new proposal",
             "applyDrawing": "Apply to drawing",
@@ -1099,8 +1119,18 @@
             "offer": "This {{kind}} would pass through {{count}} building(s). Create a tunnel through the building?",
             "road": "road",
             "track": "track",
+            "unapply": "Unapply existing proposal",
             "confirm": "Tunnel through",
             "cancel": "Choose another route"
+        },
+        "corridorStructure": {
+            "offer": "This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.",
+            "buildThrough": "Build through",
+            "kinds": {
+                "park": "park",
+                "square": "square",
+                "lake": "lake"
+            }
         },
         "roadWidth": {
             "title": "Choose Road Width",
@@ -2288,6 +2318,13 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Building rendering",
+            "streamingTiles": "Streaming 3D tiles…",
+            "rotateHintDesktop": "Hold Ctrl and drag to rotate the view",
+            "rotateHintMobile": "Swipe with two fingers to rotate the view",
+            "carveUnderProposals": "Hide real buildings under proposals",
+            "stateSolid": "Solid",
+            "stateGhost": "Transparent",
+            "stateOff": "Off",
             "built": "Built",
             "both": "Both",
             "planned": "Planned",

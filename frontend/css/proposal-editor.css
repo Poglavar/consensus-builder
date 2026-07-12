@@ -424,181 +424,12 @@
     line-height: 1.5;
 }
 
-.proposal-drafts-entry {
-    display: flex;
-    width: 100%;
-    margin: 8px 0 4px;
-    padding: 8px 10px;
-    align-items: center;
-    justify-content: space-between;
-    color: #1e3a8a;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 9px;
-    cursor: pointer;
-    font-weight: 700;
-}
-
-.proposal-drafts-count {
-    display: grid;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
-    place-items: center;
-    color: #fff;
-    background: #2563eb;
-    border-radius: 999px;
-    font-size: 11px;
-}
-
-.proposal-drafts-floating-entry {
-    position: absolute;
-    z-index: 1100;
-    top: 60px;
-    left: 10px;
-    display: none;
-    min-height: 38px;
-    padding: 7px 9px;
-    align-items: center;
-    gap: 7px;
-    color: #1e3a8a;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(30, 64, 175, 0.24);
-    border-radius: 10px;
-    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.18);
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 750;
-}
-
-body.sidebar-collapsed .proposal-drafts-floating-entry {
-    display: flex;
-}
-
-.proposal-drafts-floating-entry .proposal-drafts-count {
-    min-width: 19px;
-    height: 19px;
-    padding: 0 5px;
-    font-size: 10px;
-}
-
-.proposal-drafts-overlay {
-    position: fixed;
-    z-index: 2300;
-    inset: 0;
-    display: grid;
-    padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-    place-items: center;
-    background: rgba(15, 23, 42, 0.42);
-}
-
-.proposal-drafts-dialog {
-    display: flex;
-    width: min(620px, 100%);
-    max-height: min(760px, 92vh);
-    overflow: hidden;
-    flex-direction: column;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);
-}
-
-.proposal-drafts-header {
-    display: flex;
-    padding: 16px;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.proposal-drafts-header-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.proposal-drafts-header-actions .proposal-editor-secondary {
-    min-height: 34px;
-    padding: 6px 10px;
-}
-
-.proposal-drafts-header h2 {
-    margin: 0;
-    font-size: 20px;
-}
-
-.proposal-drafts-list {
-    display: grid;
-    gap: 18px;
-    padding: 14px 16px 20px;
-    overflow-y: auto;
-}
-
-.proposal-drafts-city h3 {
-    margin: 0 0 8px;
-    color: #475569;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.proposal-draft-list-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    padding: 11px 0;
-    border-top: 1px solid #e5e7eb;
-}
-
-.proposal-draft-list-item:first-of-type {
-    border-top: 0;
-}
-
-.proposal-draft-list-item h4 {
-    margin: 0;
-    overflow: hidden;
-    font-size: 14px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.proposal-draft-list-meta {
-    margin: 4px 0 0;
-    color: #64748b;
-    font-size: 11px;
-}
-
-.proposal-draft-list-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.proposal-draft-list-actions button {
-    min-height: 32px;
-    padding: 5px 9px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.proposal-drafts-empty {
-    padding: 34px 18px;
-    color: #64748b;
-    text-align: center;
-}
-
 body.proposal-editor-open #proposal-details-panel.visible {
     opacity: 0.42;
     pointer-events: none;
 }
 
 @media (max-width: 720px) {
-    #sidebar.collapsed ~ #map-container .proposal-drafts-floating-entry {
-        display: flex;
-    }
-
     .proposal-editor-shell {
         top: auto;
         right: max(6px, env(safe-area-inset-right));
@@ -652,13 +483,6 @@ body.proposal-editor-open #proposal-details-panel.visible {
         order: 2;
     }
 
-    .proposal-draft-list-item {
-        grid-template-columns: 1fr;
-    }
-
-    .proposal-draft-list-actions {
-        justify-content: flex-start;
-    }
 }
 
 /* Auto-dismissing "saved as draft" toast shown when the drawing tool is closed. */
@@ -726,3 +550,4 @@ body.proposal-editor-open #proposal-details-panel.visible {
     border-color: #b45309;
     border-width: 4px;
 }
+

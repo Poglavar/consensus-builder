@@ -577,19 +577,30 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
-    // Node-edit mode companion: an applied local corridor edits its cross-section in place.
-    // Minted corridors are immutable and use the Edit (replacement) flow instead.
+    // Geometry editing in place: corridors get their cross-section editor (nodes are edited
+    // directly on the map), building/reparcellization types reopen their design tool seeded
+    // from the object. Minted objects are immutable — neither button appears.
     const corridorProfileEditable = !!(proposalKey && appliedState
         && (fullProposal?.roadProposal?.definition || proposal?.roadProposal?.definition)
         && typeof openCorridorProfileEditor === 'function'
         && !isMinted);
+    const geometryEditable = !corridorProfileEditable && !!(proposalKey
+        && typeof canEditProposalGeometry === 'function'
+        && typeof editProposalGeometry === 'function'
+        && canEditProposalGeometry(fullProposal || proposal));
     const crossSectionButtonHtml = corridorProfileEditable
         ? `
         <button class="btn btn-outline-secondary btn-cross-section" onclick="openCorridorProfileEditor('${proposalKey}')">
             <i class="fas fa-road"></i> ${tProposal('panel.road.crossSectionButton', 'Edit cross-section')}
         </button>
     `
-        : '';
+        : (geometryEditable
+            ? `
+        <button class="btn btn-outline-secondary btn-edit-geometry" onclick="editProposalGeometry('${proposalKey}')">
+            <i class="fas fa-draw-polygon"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
+        </button>
+    `
+            : '');
 
     // SimCity object actions: an object on the map can be edited, parked, or deleted right here.
     const deleteButtonHtml = (proposalKey && typeof deleteProposal === 'function')
@@ -601,11 +612,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // Edit geometry / Edit cross-section leads: shaping the object is the most common action.
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
+            ${crossSectionButtonHtml}
             ${buyButtonHtml}
             ${editButtonHtml}
-            ${crossSectionButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
             ${driveButtonHtml}

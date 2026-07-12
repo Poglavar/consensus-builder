@@ -148,6 +148,8 @@
             "valid": "Spremno"
         },
         "errors": {
+            "parcelsUnavailable": "Izabrane parcele nisu dostupne u ovom prikazu grada.",
+            "parcelsNotContiguous": "Jezero zahteva susedne parcele.",
             "sourceMissing": "Izvorni predlog nije pronađen.",
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
             "readOnly": "Ovaj predlog se može samo pregledati.",
@@ -161,6 +163,7 @@
         "mapTooltip": "Nacrt — kliknite za nastavak",
         "noGeometryYet": "Ovaj nacrt još nema geometriju — počnite da crtate da je dobije.",
         "keptAsDraft": "Objekat nije bilo moguće dovršiti — ostaje u Nacrtima; kliknite njegov isprekidani obris za nastavak.",
+        "geometryUpdated": "Geometrija ažurirana.",
         "builtButParked": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu (blokirao ga je sukob). Parkiran je u vašoj listi predloga — izaberite ga tamo da ga vidite i primenite."
     },
     "languages": {
@@ -628,6 +631,19 @@
             "tabProposalsWithCount": "Predlozi ({{count}})",
             "tabTools": "Alati",
             "selectMultiple": "Izaberi više parcela",
+            "build": {
+                "title": "Izgradi",
+                "block": "Blok",
+                "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
+                "row": "Nizovi kuća",
+                "parcelBased": "Slobodna forma",
+                "single": "Samostojeća",
+                "reparcel": "Preparcelacija",
+                "park": "Park",
+                "square": "Trg",
+                "lake": "Jezero",
+            "offer": "Ponuda"
+            },
             "roadToggle": "Put",
             "nftStatusDefault": "NFT status: Još nije provereno.",
             "mintAndClaimButton": "Iskovaј",
@@ -746,7 +762,7 @@
             "actions": {
                 "apply": "Primeni na mapu",
                 "applying": "Primenjivanje...",
-                "remove": "Skloni",
+                "remove": "Ukloni sa mape",
                 "includedInRoad": "Uključeno u spojeni put",
                 "includedInRoadHint": "Uklonite {{name}} sa mape da biste vratili ovaj put.",
                 "share": "Podeli predlog",
@@ -888,7 +904,9 @@
             }
         },
         "road": {
-            "title": "Informacije o putu",
+            "title": "Nacrtaj put",
+            "titleTrack": "Nacrtaj prugu",
+            "crossSectionButton": "Presek",
             "finishButton": "Završi put (F)",
             "cancelButton": "Otkaži put (Esc)",
             "widthLabel": "Širina puta:",
@@ -919,8 +937,8 @@
             "ownedByIndividualsLabel": "U vlasništvu pojedinaca:",
             "parcelAreaLabel": "Površina parcela:",
             "parcelCountLabel": "Broj parcela:",
-            "draftSavedRoadToast": "Put je sačuvan kao nacrt — pritisnite R ili otvorite Nacrte za nastavak.",
-            "draftSavedTrackToast": "Pruga je sačuvana kao nacrt — otvorite Nacrte za nastavak.",
+            "draftSavedRoadToast": "Nedovršen put je sačuvan — kliknite njegov isprekidani obris ili pritisnite R za nastavak.",
+            "draftSavedTrackToast": "Nedovršena pruga je sačuvana — kliknite njen isprekidani obris za nastavak.",
             "builtStatus": "Put izgrađen — kliknite ga za uređivanje ili predlog.",
             "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili predlog.",
             "mergedStatus": "Povezano sa “{{name}}” — sada je jedan put.",
@@ -1078,6 +1096,8 @@
             "drawingSubtitle": "Promene se prikazuju na mapi pre pravljenja predloga",
             "proposalSubtitle": "Ovde pregledajte promene pa ih primenite na crtež puta koji se može uređivati",
             "totalWidth": "Ukupna širina",
+            "hitsBuildings": "Zahvata zgrade (za tunel kroz zgrade koristite crtanje)",
+            "cutsStructures": "Preseca postavljene parkove/trgove/jezera",
             "cancel": "Otkaži",
             "save": "Sačuvaj kao novi predlog",
             "applyDrawing": "Primeni na crtež",
@@ -1100,8 +1120,18 @@
             "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Napraviti tunel kroz zgradu?",
             "road": "put",
             "track": "pruga",
+            "unapply": "Ukloni postojeći predlog sa mape",
             "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
+        },
+        "corridorStructure": {
+            "offer": "Ovaj {{kind}} bi presekao {{names}}. Izgraditi kroz? {{kind}} prolazi kroz sredinu; ostatak ostaje kakav jeste.",
+            "buildThrough": "Izgradi kroz",
+            "kinds": {
+                "park": "park",
+                "square": "trg",
+                "lake": "jezero"
+            }
         },
         "roadWidth": {
             "title": "Izaberi širinu puta",
@@ -2318,6 +2348,13 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",
+            "streamingTiles": "Učitavanje 3D podataka…",
+            "rotateHintDesktop": "Držite Ctrl i prevucite mišem za rotaciju pogleda",
+            "rotateHintMobile": "Prevucite sa dva prsta za rotaciju pogleda",
+            "carveUnderProposals": "Sakrij stvarne zgrade ispod predloga",
+            "stateSolid": "Puno",
+            "stateGhost": "Providno",
+            "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",
             "planned": "Planirano",

@@ -1,8 +1,9 @@
-// Purpose: render the shared proposal editor, review flow, and recoverable drafts list.
+// Purpose: render the shared proposal editor (the "Create proposal" terms flow) and the
+// design-session plumbing behind instant creation and geometry editing. There is no user-facing
+// drafts list: what is on the map IS the draft, editable until proposed.
 (function attachProposalEditorShell(global) {
     'use strict';
 
-    const PENDING_RESUME_KEY = 'consensus-builder.resume-proposal-draft';
     const TAB_LABELS = {
         design: ['proposalDrafts.tabs.design', 'Design'],
         parcels: ['proposalDrafts.tabs.parcels', 'Parcels'],
@@ -446,7 +447,6 @@
         editorState.localMutation = false;
         updateShellStatusOnly(draft);
         renderProposalDraftComparison(editorState.draftId, editorState.comparison);
-        updateDraftsEntryPoint();
     }
 
     function handleShellInput(event) {
@@ -751,6 +751,141 @@
         return openProposalEditorShell(draft.id, options);
     }
 
+    // Geometry editing of an existing object (SimCity: click → edit): opens the type's design
+    // tool seeded from the object via a draft; when the tool closes with changes, the draft is
+    // committed as a new object and the old one is absorbed. Untouched sessions leave nothing.
+    let geometryEditCommitDraftId = null;
+
+    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization']);
+
+    function canEditProposalGeometry(proposalOrId) {
+        const proposal = typeof proposalOrId === 'object' ? proposalOrId : proposalById(proposalOrId);
+        if (!proposal) return false;
+        if (typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal)) return false;
+        const adapter = global.proposalEditorAdapterRegistry?.get(proposal);
+        if (!adapter || !GEOMETRY_EDITABLE_ADAPTERS.has(adapter.key)) return false;
+        const capability = typeof adapter.canEdit === 'function' ? adapter.canEdit(proposal) : true;
+        return capability === true || capability?.editable === true;
+    }
+
+    async function editProposalGeometry(proposalIdOrHash) {
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        const proposal = proposalById(proposalIdOrHash);
+        if (!proposal || !canEditProposalGeometry(proposal)) return null;
+        const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
+        if (!draft) return null;
+        geometryEditCommitDraftId = draft.id;
+        try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
+        let opened = false;
+        try {
+            opened = await global.openProposalDraftDesign?.(draft.id);
+        } catch (error) {
+            opened = false;
+            console.warn('[ProposalEditor] Geometry editor failed to open', error);
+        }
+        if (opened === false) {
+            geometryEditCommitDraftId = null;
+            global.proposalDraftStore.deleteDraft(draft.id);
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            }
+        }
+        return opened;
+    }
+
+    // Build-first creation from the parcel panel's Build palette: a fresh draft seeded with the
+    // selection opens the type's design tool directly (no create dialog); closing the tool with a
+    // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
+    // come later via "Create proposal" on the object.
+    async function startInstantProposalDesign(adapterKey, parcelIds) {
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        const ids = (parcelIds || []).map(String).filter(Boolean);
+        if (!ids.length) return false;
+        const draft = global.proposalDraftStore.createDraft({
+            cityId: currentCityId(),
+            goal: adapterKey,
+            proposalType: proposalLabel(adapterKey),
+            adapterKey,
+            fields: { name: '', description: '', parentParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
+            editorPayload: {},
+            previewGeometry: null
+        });
+        if (!draft) return false;
+        geometryEditCommitDraftId = draft.id;
+        try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
+        let opened = false;
+        try {
+            opened = await global.openProposalDraftDesign?.(draft.id);
+        } catch (error) {
+            opened = false;
+            console.warn('[ProposalEditor] Build tool failed to open', error);
+        }
+        if (opened === false) {
+            geometryEditCommitDraftId = null;
+            global.proposalDraftStore.deleteDraft(draft.id);
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            }
+        }
+        return opened;
+    }
+
+    const STRUCTURE_KIND_LABELS = { park: 'Park', square: 'Square', lake: 'Lake' };
+
+    // One-click structures: a park/square/lake IS the selection's union — there is no design
+    // tool, the object simply appears applied (auto-named). Terms come later via "Create proposal".
+    async function instantCreateStructureFromSelection(kind, parcelIds) {
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        if (!STRUCTURE_KIND_LABELS[kind]) return null;
+        const ids = (parcelIds || []).map(String).filter(Boolean);
+        if (!ids.length) return null;
+        const selection = await global.prepareProposalDraftParcelSelection?.(ids);
+        if (!selection?.layers?.length) {
+            const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The selected parcels are not available in this city view.');
+            if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+            return null;
+        }
+        const geometry = typeof global.buildGeometryFromParcels === 'function'
+            ? global.buildGeometryFromParcels(selection.layers)
+            : null;
+        if (!geometry || !geometry.type) {
+            console.warn('[ProposalEditor] Could not build structure geometry from the selection', ids);
+            return null;
+        }
+        let lakeGraphics = null;
+        let structureGeometry = geometry;
+        if (kind === 'lake' && typeof global.buildLakeGraphicsFromGeometry === 'function') {
+            lakeGraphics = global.buildLakeGraphicsFromGeometry(geometry);
+            if (!lakeGraphics || !lakeGraphics.geometry) {
+                const message = tDraft('proposalDrafts.errors.parcelsNotContiguous', 'A lake needs contiguous parcels.');
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+                return null;
+            }
+            structureGeometry = lakeGraphics.geometry;
+        }
+        const draft = global.proposalDraftStore.createDraft({
+            cityId: currentCityId(),
+            goal: kind,
+            proposalType: STRUCTURE_KIND_LABELS[kind],
+            adapterKey: kind,
+            fields: { name: '', description: '', parentParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
+            editorPayload: {
+                structureProposal: {
+                    kind,
+                    status: 'unapplied',
+                    geometry: structureGeometry,
+                    parentParcelIds: ids.slice(),
+                    blockName: null,
+                    lakeGraphics: lakeGraphics || null
+                }
+            },
+            previewGeometry: structureGeometry
+        });
+        if (!draft) return null;
+        try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
+        return instantCreateProposalFromDraft(draft.id);
+    }
+
     function beginProposalDraftDesignSession(draftId) {
         const draft = global.proposalDraftStore?.getDraft?.(draftId);
         if (!draft) return null;
@@ -778,6 +913,20 @@
         // The store notifications above fired while the session was still marked active, so the
         // draft map overlay skipped this draft — re-render it now that the session is over.
         try { global.refreshDraftRoadLayer?.(); } catch (_) { }
+        // Geometry-edit sessions commit on close: a changed draft becomes the object (absorbing
+        // the source in instantCreate); an untouched one dissolves without residue.
+        if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
+            const commitId = geometryEditCommitDraftId;
+            geometryEditCommitDraftId = null;
+            const current = global.proposalDraftStore.getDraft(commitId);
+            if (current && current.dirty) {
+                Promise.resolve(instantCreateProposalFromDraft(commitId)).catch(error => {
+                    console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
+                });
+            } else if (current) {
+                global.proposalDraftStore.deleteDraft(commitId);
+            }
+        }
         if (editorState.draftId === activeId && ensureShell()?.classList.contains('is-open')) renderShell();
         return draft;
     }
@@ -999,9 +1148,12 @@
         // Roads never warn or park anything: touching roads merged before this point, and a road
         // sharing a parcel with another road (without touching it) simply coexists — corridors
         // take partial slices, so overlap with occupied parcels is tolerated silently.
+        // The about-to-be-absorbed source still occupies the parcels; it must be unapplied
+        // silently (it is replaced, not parked), so the conflict gate must know about it.
+        const absorbingSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
         const applyOptions = (proposal.goal === 'road-track')
             ? { applyAnyway: true, suppressMissingParentAlerts: true }
-            : { autoParkConflicts: true };
+            : { autoParkConflicts: true, absorbSourceProposalId: absorbingSourceId };
         try {
             await global.ProposalManager?.applyProposal?.(proposalId, applyOptions);
             // Refresh the derived layers (corridor cross-sections, parcel styles, structure
@@ -1010,6 +1162,35 @@
         } catch (error) {
             console.warn('[ProposalEditor] Auto-apply after instant create failed; object stays parked', error);
         }
+        // Rebuilding from a LOCAL object absorbs it (same rule as the create dialog): exactly one
+        // thing remains on the map and in the list. Minted sources are immutable and stay behind.
+        let absorbedSource = false;
+        try {
+            const absorbedSourceId = absorbingSourceId;
+            const sourceRecord = absorbedSourceId ? global.proposalStorage?.getProposal?.(absorbedSourceId) : null;
+            if (sourceRecord && !(typeof global.isProposalMinted === 'function' && global.isProposalMinted(sourceRecord))) {
+                absorbedSource = true;
+                if (typeof global.isProposalApplied === 'function' && global.isProposalApplied(sourceRecord)) {
+                    await global.ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true });
+                }
+                global.proposalStorage.removeProposal(absorbedSourceId);
+                const storedReplacement = global.proposalStorage.getProposal(proposalId);
+                if (storedReplacement) {
+                    delete storedReplacement.replacementLifecycle;
+                    delete storedReplacement.supersedesProposalIds;
+                    if (typeof global.proposalStorage._indexProposal === 'function') global.proposalStorage._indexProposal(storedReplacement);
+                    if (typeof global.proposalStorage.save === 'function') global.proposalStorage.save();
+                }
+                try { global.ProposalManager._refreshUIAfterProposalChange?.(storedReplacement); } catch (_) { }
+            }
+        } catch (absorbError) {
+            console.warn('[ProposalEditor] Could not absorb the source object', absorbError);
+        }
+        // A rebuild of an existing local object reads as an edit to the user, so say exactly that.
+        if (absorbedSource && typeof global.showEphemeralMessage === 'function') {
+            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
+        }
+
         // A parked object renders nothing — without a word it just looks like the road vanished.
         try {
             const persisted = global.proposalStorage?.getProposal?.(proposalId);
@@ -1025,6 +1206,8 @@
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         global.__openProposalDetailsCollapsed = true;
         try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
+        // Capture (or refresh, after a geometry edit) the thumbnail in the background.
+        try { global.scheduleProposalScreenshotRefresh?.(proposalId); } catch (_) { }
         return proposalId;
     }
 
@@ -1073,73 +1256,6 @@
         return updated;
     }
 
-    function updateDraftsEntryPoint() {
-        const count = global.proposalDraftStore?.listDrafts().length || 0;
-        const buttons = global.document?.querySelectorAll?.('[data-proposal-drafts-entry]') || [];
-        buttons.forEach(button => {
-            const badge = button.querySelector('.proposal-drafts-count');
-            if (badge) badge.textContent = String(count);
-            button.hidden = false;
-            button.setAttribute('aria-label', tDraft('proposalDrafts.entryAria', 'Open {{count}} saved proposal draft(s)', { count }));
-        });
-    }
-
-    function groupDrafts(drafts) {
-        return drafts.reduce((groups, draft) => {
-            const city = draft.cityId || '';
-            if (!groups.has(city)) groups.set(city, []);
-            groups.get(city).push(draft);
-            return groups;
-        }, new Map());
-    }
-
-    function validationLabel(draft) {
-        if (draft.state === 'error') return tDraft('proposalDrafts.states.error', 'Publishing failed · recoverable');
-        if (draft.validation?.errors?.length) return tDraft('proposalDrafts.states.invalid', '{{count}} error(s)', { count: draft.validation.errors.length });
-        if (draft.validation?.warnings?.length) return tDraft('proposalDrafts.states.warning', '{{count}} warning(s)', { count: draft.validation.warnings.length });
-        return tDraft('proposalDrafts.states.valid', 'Ready');
-    }
-
-    function openProposalDraftsList() {
-        closeProposalDraftsList();
-        const drafts = global.proposalDraftStore?.listDrafts() || [];
-        const overlay = global.document.createElement('div');
-        overlay.className = 'proposal-drafts-overlay';
-        overlay.id = 'proposal-drafts-overlay';
-        const groups = groupDrafts(drafts);
-        // Drafts are unfinished drawings, nothing more: clicking one centers the map on its
-        // dashed silhouette (switching city first when needed). No editor, no resume dialog.
-        const content = drafts.length
-            ? [...groups.entries()].map(([city, cityDrafts]) => `
-                <section class="proposal-drafts-city">
-                    <h3>${escapeHtml(cityLabel(city))}</h3>
-                    ${cityDrafts.map(draft => `
-                        <article class="proposal-draft-list-item" data-draft-id="${escapeHtml(draft.id)}" data-draft-list-action="locate" role="button" tabindex="0">
-                            <div>
-                                <h4>${escapeHtml(draft.fields?.name || tDraft('proposalDrafts.untitled', 'Untitled draft'))}</h4>
-                                <p class="proposal-draft-list-meta">${escapeHtml(proposalLabel(draft.adapterKey || draft.goal))} · ${escapeHtml(relativeTime(draft.updatedAt))} · ${escapeHtml(cityLabel(draft.cityId))}</p>
-                            </div>
-                            <div class="proposal-draft-list-actions">
-                                <button type="button" class="proposal-editor-danger" data-draft-list-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discardShort', 'Discard'))}</button>
-                            </div>
-                        </article>`).join('')}
-                </section>`).join('')
-            : `<div class="proposal-drafts-empty">${escapeHtml(tDraft('proposalDrafts.empty', 'No saved proposal drafts yet.'))}</div>`;
-        overlay.innerHTML = `
-            <div class="proposal-drafts-dialog" role="dialog" aria-modal="true" aria-labelledby="proposal-drafts-title">
-                <header class="proposal-drafts-header"><h2 id="proposal-drafts-title">${escapeHtml(tDraft('proposalDrafts.title', 'Drafts'))}</h2><div class="proposal-drafts-header-actions"><button type="button" class="proposal-editor-close" data-draft-list-action="close" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.closeList', 'Close drafts'))}">&times;</button></div></header>
-                <div class="proposal-drafts-list">${content}</div>
-            </div>`;
-        overlay.addEventListener('click', handleDraftListClick);
-        global.document.body.appendChild(overlay);
-        overlay.querySelector('[data-draft-list-action="close"]')?.focus();
-        return overlay;
-    }
-
-    function closeProposalDraftsList() {
-        global.document?.getElementById('proposal-drafts-overlay')?.remove();
-    }
-
     // Center the map on a draft's geometry; the dashed draft overlay is its map presence.
     function centerOnDraft(draft) {
         if (!draft) return false;
@@ -1169,42 +1285,6 @@
         return false;
     }
 
-    async function locateDraftFromList(draft) {
-        if (!draft) return;
-        closeProposalDraftsList();
-        if (draft.cityId && currentCityId() && String(draft.cityId) !== String(currentCityId())) {
-            try { global.sessionStorage?.setItem(PENDING_RESUME_KEY, draft.id); } catch (_) { }
-            if (global.CityConfigManager?.switchCity) await global.CityConfigManager.switchCity(draft.cityId, { requireConfirmation: false });
-            return;
-        }
-        centerOnDraft(draft);
-    }
-
-    async function handleDraftListClick(event) {
-        if (event.target === event.currentTarget) {
-            closeProposalDraftsList();
-            return;
-        }
-        const button = event.target?.closest?.('[data-draft-list-action]');
-        if (!button) return;
-        const action = button.dataset.draftListAction;
-        if (action === 'close') {
-            closeProposalDraftsList();
-            return;
-        }
-        const item = button.closest('[data-draft-id]');
-        const draftId = item?.dataset.draftId;
-        const draft = global.proposalDraftStore?.getDraft(draftId);
-        if (!draft) return;
-        if (action === 'locate') await locateDraftFromList(draft);
-        if (action === 'discard') {
-            const accepted = await confirmDestructive(tDraft('proposalDrafts.confirmDiscard', 'Discard this locally saved draft? This cannot be undone.'));
-            if (!accepted) return;
-            global.proposalDraftStore.deleteDraft(draft.id);
-            openProposalDraftsList();
-        }
-    }
-
     function handleEditorKeyboard(event) {
         const shell = ensureShell();
         if (!shell?.classList.contains('is-open')) return;
@@ -1230,10 +1310,8 @@
 
     function initializeProposalDraftUI() {
         ensureShell();
-        updateDraftsEntryPoint();
         if (!editorState.unsubscribe && global.proposalDraftStore?.subscribe) {
             editorState.unsubscribe = global.proposalDraftStore.subscribe(event => {
-                updateDraftsEntryPoint();
                 if (editorState.localMutation) return;
                 if (editorState.draftId && (!event.draftId || event.draftId === editorState.draftId)) {
                     if (event.type === 'delete' || event.type === 'consume') closeProposalEditorShell();
@@ -1241,24 +1319,17 @@
                 }
             });
         }
-        let pending = null;
-        try {
-            pending = global.sessionStorage?.getItem(PENDING_RESUME_KEY);
-            if (pending) global.sessionStorage.removeItem(PENDING_RESUME_KEY);
-        } catch (_) { }
-        if (pending) {
-            const draft = global.proposalDraftStore?.getDraft(pending);
-            if (draft && (!draft.cityId || String(draft.cityId) === String(currentCityId() || ''))) centerOnDraft(draft);
-        }
     }
 
     global.openProposalEditorShell = openProposalEditorShell;
     global.closeProposalEditorShell = closeProposalEditorShell;
-    global.openProposalDraftsList = openProposalDraftsList;
-    global.closeProposalDraftsList = closeProposalDraftsList;
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
     global.proposeExistingProposal = proposeExistingProposal;
+    global.editProposalGeometry = editProposalGeometry;
+    global.canEditProposalGeometry = canEditProposalGeometry;
+    global.startInstantProposalDesign = startInstantProposalDesign;
+    global.instantCreateStructureFromSelection = instantCreateStructureFromSelection;
     global.getProposalEditCapability = getProposalEditCapability;
     global.createNewProposalDraft = createNewProposalDraft;
     global.beginProposalDraftDesignSession = beginProposalDraftDesignSession;
@@ -1270,7 +1341,6 @@
     global.renderProposalDraftComparison = renderProposalDraftComparison;
     global.clearProposalDraftComparison = clearProposalDraftComparison;
     global.focusDraftValidationIssue = focusDraftValidationIssue;
-    global.updateDraftsEntryPoint = updateDraftsEntryPoint;
     global.initializeProposalDraftUI = initializeProposalDraftUI;
 
     if (global.document) {
@@ -1283,8 +1353,7 @@
         module.exports = {
             formatDuration,
             patchForPath,
-            displayValue,
-            groupDrafts
+            displayValue
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

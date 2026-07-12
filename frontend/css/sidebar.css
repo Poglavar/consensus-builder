@@ -366,6 +366,11 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     gap: 12px;
 }
 
+/* Multi-choice dialogs (showStyledChoice) stack buttons vertically so 3+ options stay readable. */
+.cb-confirm-buttons-stacked {
+    grid-template-columns: 1fr;
+}
+
 /* Cross-city proposal prompt: a headline above the usual confirm body. */
 .city-switch-dialog {
     width: min(520px, calc(100% - 40px));

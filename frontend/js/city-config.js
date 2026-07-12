@@ -967,6 +967,54 @@
 
     window.showStyledConfirm = showStyledConfirm;
 
+    // Multi-button variant of showStyledConfirm: choices = [{value, label, primary}].
+    // Resolves with the clicked choice's value, or null on overlay click (dismiss).
+    function showStyledChoice(message, choices = []) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'cb-confirm-overlay';
+
+            const dialog = document.createElement('div');
+            dialog.className = 'cb-confirm-dialog';
+
+            const text = document.createElement('div');
+            text.className = 'cb-confirm-message';
+            renderMessageLines(text, message);
+
+            const buttons = document.createElement('div');
+            buttons.className = 'cb-confirm-buttons cb-confirm-buttons-stacked';
+
+            function cleanup(result) {
+                if (overlay && overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                resolve(result);
+            }
+
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = choice.primary ? 'btn btn-action' : 'btn btn-secondary';
+                btn.textContent = choice.label;
+                btn.addEventListener('click', () => cleanup(choice.value));
+                buttons.appendChild(btn);
+            });
+
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) {
+                    cleanup(null);
+                }
+            });
+
+            dialog.appendChild(text);
+            dialog.appendChild(buttons);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+        });
+    }
+
+    window.showStyledChoice = showStyledChoice;
+
     function showStyledAlert(message, options = {}) {
         return new Promise(resolve => {
             const overlay = document.createElement('div');

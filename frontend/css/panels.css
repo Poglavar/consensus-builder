@@ -98,6 +98,89 @@ with a width of 400px, and a height of half of the map height minus 5px.
     padding-right: 30px;
 }
 
+/* Header row: title + the Cross-section button (opens the width/lane editor while drawing). */
+#road-info-panel .road-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 10px 0;
+    padding: 0 30px 8px 0; /* right padding keeps clear of the absolute close button */
+    border-bottom: 1px solid #eee;
+}
+
+#road-info-panel .road-panel-header h3 {
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+}
+
+.road-cross-section-btn {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1f2937;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.road-cross-section-btn:hover {
+    background: #eef2f7;
+}
+
+/* Build palette: everything creatable on the selected parcel(s), one icon per tool. */
+.parcel-build-palette {
+    margin-bottom: 8px;
+}
+
+.parcel-build-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.parcel-build-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.parcel-build-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 7px 2px 5px;
+    border: 1px solid #d7dde5;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    cursor: pointer;
+    font-size: 10.5px;
+    line-height: 1.15;
+}
+
+.parcel-build-btn i {
+    font-size: 15px;
+    color: #2563eb;
+}
+
+.parcel-build-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.parcel-build-btn:hover {
+    background: #eef2f7;
+    border-color: #94a3b8;
+}
+
 #road-info-panel .metric-label {
     font-weight: 500;
     color: #666;

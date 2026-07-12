@@ -194,14 +194,6 @@
                     </button>
                 </div>
             </div>
-            <button type="button" id="proposal-drafts-button" class="proposal-drafts-entry"
-                data-proposal-drafts-entry
-                onclick="openProposalDraftsList()" data-i18n-key="proposalDrafts.entryAria"
-                data-i18n-attr="aria-label" aria-label="Open saved proposal drafts">
-                <span><i class="fas fa-pen-ruler" aria-hidden="true"></i> <span
-                        data-i18n-key="proposalDrafts.title">Drafts</span></span>
-                <span class="proposal-drafts-count" aria-hidden="true">0</span>
-            </button>
             <!-- Data Section -->
             <div class="accordion-section" data-section="data">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
@@ -859,15 +851,6 @@
     <div id="map-container">
         <div id="map"></div>
 
-        <button type="button" id="proposal-drafts-floating-button" class="proposal-drafts-floating-entry"
-            data-proposal-drafts-entry onclick="openProposalDraftsList()"
-            data-i18n-key="proposalDrafts.entryAria" data-i18n-attr="aria-label"
-            aria-label="Open saved proposal drafts">
-            <i class="fas fa-pen-ruler" aria-hidden="true"></i>
-            <span data-i18n-key="proposalDrafts.title">Drafts</span>
-            <span class="proposal-drafts-count" aria-hidden="true">0</span>
-        </button>
-
         <!-- Floating status message (visible when sidebar is closed) -->
         <div id="floating-status" class="floating-status">
             <span id="floating-status-text"></span>
@@ -1057,7 +1040,14 @@
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label=""
                 data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
                 onclick="cancelRoadOrTrackDrawing()">×</button>
-            <h3 data-i18n-key="panel.road.title">Road Info</h3>
+            <div class="road-panel-header">
+                <h3 data-i18n-key="panel.road.title">Draw road</h3>
+                <button type="button" id="editRoadCrossSectionButton" class="road-cross-section-btn"
+                    onclick="openRoadDrawingCrossSectionEditor()">
+                    <span data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
+                        class="road-cross-section-width"></span>
+                </button>
+            </div>
 
             <!-- Road/Track drawing controls (shown when drawing) -->
             <div id="road-drawing-controls" style="display: none; margin-bottom: 8px;">
@@ -1072,19 +1062,6 @@
                     <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
                     <span data-i18n-key="panel.road.draftAutosaved">Draft autosaved locally</span>
                 </div>
-            </div>
-
-            <!-- Road width selector (shown when drawing) -->
-            <div id="roadWidthContainer" class="control-group" style="display: none; margin-bottom: 15px;">
-                <label for="roadWidthSelect" data-i18n-key="panel.road.widthLabel">Road Width:</label>
-                <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
-                    <option value="2" data-i18n-key="panel.road.width2">2m width</option>
-                    <option value="3" data-i18n-key="panel.road.width3">3m width</option>
-                    <option value="4" data-i18n-key="panel.road.width4">4m width</option>
-                    <option value="5" data-i18n-key="panel.road.width5">5m width</option>
-                    <option value="6" data-i18n-key="panel.road.width6">6m width</option>
-                    <option value="7" selected data-i18n-key="panel.road.width7">7m width</option>
-                </select>
             </div>
 
             <div class="road-metrics-grid">
@@ -1324,6 +1301,7 @@
             'js/road-node-edit.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
+            'js/proposals/screenshot-refresh.js',
             'js/proposals/dialog-share.js',
             'js/proposals/sharing-routes.js',
             'js/proposals/core.js',
@@ -1395,6 +1373,7 @@
             'js/corridor-render.js',
             'js/corridor-editor.js',
             'js/corridor-tunnel.js',
+            'js/corridor-structures.js',
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/centerline-animation.js'
@@ -1559,25 +1538,6 @@
             <div style="margin-top: 12px; text-align: right;">
                 <button type="button" id="locate-parcel-ok-btn" class="btn btn-action">OK</button>
                 <button type="button" id="locate-parcel-cancel-btn" class="btn btn-secondary">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Road Width Picker Modal -->
-    <div id="road-width-modal" class="welcome-modal" style="display: none;">
-        <div class="welcome-modal-content">
-            <h2 data-i18n-key="modal.roadWidth.title">Choose Road Width</h2>
-            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.roadWidth.subtitle">Pick a cross-section for
-                manual road drawing. Press Enter to start
-                with the default selection.</p>
-            <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
-            <p style="margin: 12px 0 0; color: #777; font-size: 13px;" data-i18n-key="modal.roadWidth.editLaterNote">
-                You can edit the road profile later — its width too.</p>
-            <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary"
-                    data-i18n-key="modal.roadWidth.cancel">Cancel</button>
-                <button type="button" id="road-width-confirm-btn" class="btn btn-action"
-                    data-i18n-key="modal.roadWidth.confirm">Start Drawing</button>
             </div>
         </div>
     </div>

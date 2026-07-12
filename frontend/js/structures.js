@@ -141,6 +141,50 @@
         try { return turf.booleanPointInPolygon(pt, feature); } catch (_) { return false; }
     }
 
+    // A road/track built through a structure cuts through it: rendering subtracts every applied
+    // corridor footprint at draw time. Stored geometry is never mutated, so the structure stays
+    // ONE proposal (its visible geometry a multipolygon around the corridor) and unapplying or
+    // moving the road heals the park/square/lake automatically.
+    function appliedCorridorCutters() {
+        const cutters = [];
+        try {
+            const storage = window.proposalStorage;
+            if (!storage || typeof storage.getAllProposals !== 'function') return cutters;
+            storage.getAllProposals().forEach(p => {
+                const rp = p && p.roadProposal;
+                const polygon = rp && rp.definition && rp.definition.polygon;
+                if (!polygon || !polygon.type) return;
+                const status = String(rp.status || p.status || '').toLowerCase();
+                if (status !== 'applied' && status !== 'executed') return;
+                cutters.push({ type: 'Feature', properties: {}, geometry: polygon });
+            });
+        } catch (_) { }
+        return cutters;
+    }
+
+    // Geometry minus the given corridor cutters; null when nothing visible remains.
+    function subtractCorridorsFromGeometry(geometry, cutters) {
+        if (!geometry || !Array.isArray(cutters) || !cutters.length || typeof turf === 'undefined') return geometry;
+        let current = { type: 'Feature', properties: {}, geometry };
+        for (const cutter of cutters) {
+            try {
+                if (!turf.booleanIntersects(current, cutter)) continue;
+                const diff = turf.difference(current, cutter);
+                if (!diff || !diff.geometry) return null;
+                current = diff;
+            } catch (_) { }
+        }
+        return current.geometry;
+    }
+
+    // Cut clone sharing the original's properties (decorations stay persisted on the original).
+    function cutStructureFeature(feature, cutters) {
+        const geometry = subtractCorridorsFromGeometry(feature && feature.geometry, cutters);
+        if (!geometry) return null;
+        if (geometry === feature.geometry) return feature;
+        return { type: 'Feature', properties: feature.properties, geometry };
+    }
+
     function randomPointsInside(feature, count) {
         const out = [];
         const bbox = featureBbox(feature) || [0, 0, 0, 0];
@@ -202,7 +246,10 @@
 
         // Sprinkle tree emojis; avoid placing trees in ponds
         try {
-            const trees = treePoints;
+            // Skip trees that fall outside the rendered geometry (e.g. on a road cut through the park)
+            const trees = treePoints.filter(coord => {
+                try { return pointInFeature(turf.point(coord), parkFeature); } catch (_) { return true; }
+            });
             trees.forEach(coord => {
                 const [lng, lat] = coord;
                 // Skip if inside any pond
@@ -602,10 +649,13 @@
             try { group.addTo(map); } catch (_) { }
         }
 
+        const parkCutters = appliedCorridorCutters();
         (window.parks || []).forEach(parkFeature => {
             try {
+                const renderFeature = cutStructureFeature(parkFeature, parkCutters);
+                if (!renderFeature) return; // fully paved over by applied roads
                 // Base grass polygon
-                const base = L.geoJSON(parkFeature, {
+                const base = L.geoJSON(renderFeature, {
                     style: {
                         color: '#0d3b1f', weight: 2, opacity: 1,
                         fillColor: '#1b5e20', fillOpacity: 0.65, pane: PARKS_PANE
@@ -615,7 +665,7 @@
                 });
                 base.addTo(group);
                 // Decorations
-                drawParkDecorations(group, parkFeature);
+                drawParkDecorations(group, renderFeature);
             } catch (e) { console.warn('Failed to render a park', e); }
         });
 
@@ -670,8 +720,8 @@
         // Subtle cobblestone texture first (under icons)
         drawSquareTexture(group, squareFeature);
 
-        // Fountain at center
-        if (dec.fountain && Array.isArray(dec.fountain)) {
+        // Fountain at center (skipped when it falls on a road cut through the square)
+        if (dec.fountain && Array.isArray(dec.fountain) && pointInFeature(turf.point(dec.fountain), squareFeature)) {
             const [lng, lat] = dec.fountain;
             L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -685,8 +735,9 @@
                 interactive: false
             }).addTo(group);
         }
-        // Stalls / terraces
-        const stalls = Array.isArray(dec.stalls) ? dec.stalls : [];
+        // Stalls / terraces (skipped when they fall on a road cut through the square)
+        const stalls = (Array.isArray(dec.stalls) ? dec.stalls : [])
+            .filter(coord => pointInFeature(turf.point(coord), squareFeature));
         stalls.forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -880,13 +931,15 @@
         } catch (_) { }
     }
 
-    function drawLakeDecorations(group, lakeFeature) {
+    function drawLakeDecorations(group, lakeFeature, corridorCutters = null) {
         if (!lakeFeature || !lakeFeature.geometry) return;
         try { ensureLakeGraphics(lakeFeature); } catch (_) { }
         const graphics = lakeFeature.properties && lakeFeature.properties.lakeGraphics;
-        const shoreGeom = graphics && graphics.shore ? graphics.shore : lakeFeature.geometry;
-        const waterGeom = graphics && graphics.water ? graphics.water : null;
-        const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
+        // Applied roads cut through every rendered zone (a causeway across the lake).
+        const cutters = Array.isArray(corridorCutters) ? corridorCutters : [];
+        const shoreGeom = subtractCorridorsFromGeometry(graphics && graphics.shore ? graphics.shore : lakeFeature.geometry, cutters);
+        const waterGeom = subtractCorridorsFromGeometry(graphics && graphics.water ? graphics.water : null, cutters);
+        const transitionGeom = subtractCorridorsFromGeometry(graphics && graphics.transition ? graphics.transition : null, cutters);
 
         if (shoreGeom) {
             L.geoJSON(shoreGeom, {
@@ -910,7 +963,12 @@
             }).addTo(group);
         }
 
-        const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
+        const fishHome = waterGeom || shoreGeom;
+        const fishCoords = ((graphics && Array.isArray(graphics.fish)) ? graphics.fish : [])
+            .filter(coord => {
+                if (!fishHome) return false;
+                try { return pointInFeature(turf.point(coord), { type: 'Feature', properties: {}, geometry: fishHome }); } catch (_) { return true; }
+            });
         fishCoords.forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -964,10 +1022,13 @@
             }
         }
 
+        const squareCutters = appliedCorridorCutters();
         (window.squares || []).forEach(squareFeature => {
             try {
+                const renderFeature = cutStructureFeature(squareFeature, squareCutters);
+                if (!renderFeature) return; // fully paved over by applied roads
                 // Base cobblestone polygon (plain grey fill)
-                const base = L.geoJSON(squareFeature, {
+                const base = L.geoJSON(renderFeature, {
                     style: { color: '#666666', weight: 2, opacity: 1, fillColor: '#bdbdbd', fillOpacity: 0.7, pane: SQUARES_PANE },
                     // Keep squares non-interactive so parcel clicks continue to hit underlying parcels
                     interactive: false,
@@ -975,7 +1036,7 @@
                 });
                 base.addTo(group);
                 // Decorations
-                drawSquareDecorations(group, squareFeature);
+                drawSquareDecorations(group, renderFeature);
             } catch (e) { console.warn('Failed to render a square', e); }
         });
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
@@ -1010,8 +1071,9 @@
             try { group.addTo(map); } catch (_) { }
         }
 
+        const lakeCutters = appliedCorridorCutters();
         (window.lakes || []).forEach(lakeFeature => {
-            try { drawLakeDecorations(group, lakeFeature); } catch (e) { console.warn('Failed to render a lake', e); }
+            try { drawLakeDecorations(group, lakeFeature, lakeCutters); } catch (e) { console.warn('Failed to render a lake', e); }
         });
 
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
