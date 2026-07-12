@@ -1090,6 +1090,7 @@
         if (!storage || typeof storage.getAllProposals !== 'function') return;
         const selectedKey = window.ProposalSelection?.getKey?.() || null;
         storage.getAllProposals().forEach(proposal => {
+            try {
             const proposalId = proposalKey3D(proposal);
             if (!proposalId) return;
             // Parked (unapplied) ideas stay off the map entirely; they only render while
@@ -1119,12 +1120,26 @@
                         // corridors, parks); this copy is a pick target only. A visible copy
                         // sits coplanar with the real mesh and z-fights (green/grey flicker).
                         if (applied) {
-                            if (object.isMesh && object.material) {
-                                object.material = object.material.clone();
-                                object.material.transparent = true;
-                                object.material.opacity = 0;
-                                object.material.depthWrite = false;
-                            } else if (object.isLine || object.isLineSegments) {
+                            // Multi-material meshes exist here (wall/cap arrays): cloning must
+                            // handle arrays, and any single failure must not abort the traverse —
+                            // a partially-processed copy stays VISIBLE source-white and washes the
+                            // real coloured mesh out ("whitening" bug, three times over).
+                            try {
+                                if (object.isMesh && object.material) {
+                                    const sourceMaterials = Array.isArray(object.material) ? object.material : [object.material];
+                                    const cloned = sourceMaterials.map(m => {
+                                        const c = m.clone();
+                                        c.transparent = true;
+                                        c.opacity = 0;
+                                        c.depthWrite = false;
+                                        return c;
+                                    });
+                                    object.material = Array.isArray(object.material) ? cloned : cloned[0];
+                                } else if (object.isLine || object.isLineSegments) {
+                                    object.visible = false;
+                                }
+                            } catch (materialError) {
+                                // Last resort: an unpatchable pick object must not stay visible.
                                 object.visible = false;
                             }
                         }
@@ -1144,6 +1159,9 @@
                     });
                     object.renderOrder = Math.max(Number(object.renderOrder) || 0, 9300);
                 });
+            }
+            } catch (proposalError) {
+                console.warn('[3D] proposal pick surface failed; skipping one proposal', proposalError);
             }
         });
     }
@@ -3545,8 +3563,20 @@
         if (picked?.proposalId) {
             const proposal = window.proposalStorage?.getProposal?.(picked.proposalId) || null;
             const parcelId = picked.parcelId || proposal?.parentParcelIds?.[0] || null;
-            if (proposal && typeof window.selectAndHighlightProposal === 'function') {
-                window.selectAndHighlightProposal(picked.proposalId, parcelId, false, true);
+            if (proposal) {
+                // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
+                // selects it silently and isolates it; clicking it again returns to full view.
+                if (isolatedProposalId === String(picked.proposalId)) {
+                    clearIsolation();
+                    try { window.ProposalSelection?.clear?.(); } catch (_) { }
+                    return;
+                }
+                if (typeof window.selectAndHighlightProposal === 'function') {
+                    // keepHighlightsWithoutUi: with no 2D panel open, the selection would
+                    // otherwise be cleared by the function's no-visible-UI safety net.
+                    window.selectAndHighlightProposal(picked.proposalId, parcelId, false, false, true);
+                }
+                isolateProposal(picked.proposalId);
                 return;
             }
         }

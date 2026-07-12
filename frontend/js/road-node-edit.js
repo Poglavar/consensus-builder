@@ -251,7 +251,7 @@
                 isJunction
                     ? 'Junction — drag to move all legs · ⌥-click to disconnect'
                     : 'Drag to move · ⌥-click to remove this node'
-            ), { sticky: true });
+            ), { sticky: true, pane: 'road-node-handles' });
             const origin = { lat: node.lat, lng: node.lng };
             let lastLiveUpdate = 0;
             marker.on('drag', () => {
@@ -280,7 +280,7 @@
                     pane: 'road-node-handles',
                     keyboard: false
                 });
-                midpoint.bindTooltip(editHint('panel.road.bulldozeHint', '🚜 Bulldoze this stretch'), { sticky: true });
+                midpoint.bindTooltip(editHint('panel.road.bulldozeHint', '🚜 Bulldoze this stretch'), { sticky: true, pane: 'road-node-handles' });
                 midpoint.on('click', (event) => {
                     try { global.L.DomEvent.stop(event.originalEvent || event); } catch (_) { }
                     bulldozeEdge(activeKey, segIndex, edgeIndex);

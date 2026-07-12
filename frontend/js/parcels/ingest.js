@@ -96,10 +96,31 @@
 
             // If a proposal previously removed this parcel (replaced by children), keep it out of the map layer while retaining it in cache.
             try {
-                const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(parcelId.toString()) : false;
+                const idString = parcelId.toString();
+                const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(idString) : false;
                 if (isReplaced) {
-                    removedByProposalSkipped.push(parcelId.toString());
-                    return;
+                    // Only keep the parent hidden when at least one replacement slice actually
+                    // exists on the map. Slice ids drift between devices, so an applied proposal
+                    // can claim a parent whose children were never (re)generated here — skipping
+                    // the parent then leaves a permanent unclickable hole in the fabric.
+                    const layerIndex = (typeof global !== 'undefined' && global.parcelLayerById instanceof Map)
+                        ? global.parcelLayerById
+                        : (typeof window !== 'undefined' && window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+                    let hasLiveChild = !layerIndex; // cannot verify -> keep the old behaviour
+                    if (layerIndex) {
+                        const derivedPrefix = idString + '#p-';
+                        const legacyPrefix = idString + '_';
+                        for (const key of layerIndex.keys()) {
+                            if (typeof key === 'string' && (key.startsWith(derivedPrefix) || key.startsWith(legacyPrefix))) {
+                                hasLiveChild = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (hasLiveChild) {
+                        removedByProposalSkipped.push(idString);
+                        return;
+                    }
                 }
             } catch (_) { /* best-effort guard */ }
 

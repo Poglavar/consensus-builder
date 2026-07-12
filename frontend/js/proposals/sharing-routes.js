@@ -1436,6 +1436,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const applied = [];
         const skipped = [];
         const failed = [];
+        // Geography conflicts are not failures: the proposal imported fine and simply stays
+        // unapplied because another applied proposal already occupies its parcels.
+        const overlapped = [];
         let lastLoadedProposalIdFor3D = null;
 
         const fetchProgressIds = new Set();
@@ -2181,7 +2184,19 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
 
                 const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while applying.');
-                const dependencyFailure = getDependencyFailureInfo((result && result.failureInfo) ? result.failureInfo : reason);
+                const failureInfo = (result && result.failureInfo) ? result.failureInfo : null;
+                if (failureInfo && String(failureInfo.code || '') === 'parcel-conflict') {
+                    overlapped.push({
+                        id: proposalId,
+                        label,
+                        occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],
+                        ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1
+                    });
+                    stepsSinceProgress = 0;
+                    attemptedSinceProgress.clear();
+                    continue;
+                }
+                const dependencyFailure = getDependencyFailureInfo(failureInfo || reason);
                 try { if (proposalId) lastReasonById.set(String(proposalId), String(reason || '')); } catch (_) { }
                 if (dependencyFailure) {
                     const dependencyMissingIds = ensureArrayOfStrings(dependencyFailure.missingIds || []);
@@ -2405,19 +2420,26 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 suffix: skipped.length === 1 ? '' : 's'
             })}</p>${skippedItems}`);
         }
+        if (overlapped.length > 0) {
+            if (bodyLines.length > 0) bodyLines.push('<br>');
+            const overlappedItems = renderList(overlapped, item => {
+                const label = escape(item.label || formatSharedProposalLabel(null, item.id));
+                const occupiers = (item.occupiers || []).filter(Boolean).map(name => escape(name)).join(', ');
+                return `<li>${label}${occupiers ? ` — ${escape(tShare('plan.overlapsWith', 'overlaps'))} ${occupiers}` : ''}</li>`;
+            });
+            bodyLines.push(`<p>${tShare('plan.overlappedCountDetailed', '{{count}} proposal(s) stay unapplied — their space is already occupied. Find them in the proposals list to preview or apply them:', {
+                count: overlapped.length
+            })}</p>${overlappedItems}`);
+        }
         if (failed.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');
+            // Raw prerequisite-id dumps belong in the console, not in the user's face.
+            try { console.warn('[handleSharedPlanRoute] failed proposals detail', failed); } catch (_) { }
             const failedItems = renderList(failed, item => {
                 const label = escape(item.label || formatSharedProposalLabel(null, item.id));
                 const type = item.type ? ` (${escape(item.type)})` : '';
                 const reason = item.reason ? ` · ${escape(item.reason)}` : '';
-                const missing = ensureArrayOfStrings(item.missingPrereqs || []);
-                const missingBlock = missing.length
-                    ? `<ul style="margin: 4px 0 0 16px; padding-left: 16px; list-style-type: circle;">
-                        ${missing.map(pid => `<li>${escape(pid)}</li>`).join('')}
-                    </ul>`
-                    : '';
-                return `<li>${label}${type}${reason}${missingBlock}</li>`;
+                return `<li>${label}${type}${reason}</li>`;
             });
             bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposal{{suffix}}:', {
                 count: failed.length,
@@ -2488,10 +2510,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
-        // Only make the user read/dismiss the summary when there is something worth reading —
-        // failures or skipped duplicates. A clean apply on a 3D link goes straight to 3D (with a
-        // brief toast) instead of a modal that would just get auto-closed by the 3D transition.
-        const summaryHasIssues = failed.length > 0 || skipped.length > 0;
+        // Only make the user read/dismiss the summary when something genuinely FAILED. Duplicates
+        // (reloading the same link) and occupancy overlaps are normal outcomes — they get a toast,
+        // never a modal that blocks every load of a shared 3D link.
+        const summaryHasIssues = failed.length > 0;
         const showSummaryModal = bodyLines.length > 0 && (summaryHasIssues || !wants3DFromUrl);
 
         let planSummaryModal = null;
@@ -2512,12 +2534,22 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { }
                 }
             });
-        } else if (applied.length > 0 && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
-            // Clean apply, auto-advancing into 3D: give lightweight feedback that it worked.
-            showEphemeralMessage(tShare('plan.appliedToast', 'Applied {{count}} proposal{{suffix}}.', {
-                count: applied.length,
-                suffix: applied.length === 1 ? '' : 's'
-            }));
+        } else if ((applied.length > 0 || skipped.length > 0 || overlapped.length > 0) && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
+            // Clean-enough apply, auto-advancing into 3D: lightweight feedback instead of a modal.
+            const bits = [];
+            const appliedOrPresent = applied.length + skipped.length;
+            if (appliedOrPresent > 0) {
+                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposal{{suffix}}.', {
+                    count: appliedOrPresent,
+                    suffix: appliedOrPresent === 1 ? '' : 's'
+                }));
+            }
+            if (overlapped.length > 0) {
+                bits.push(tShare('plan.overlappedToast', '{{count}} stay unapplied (space occupied) — see the proposals list.', {
+                    count: overlapped.length
+                }));
+            }
+            showEphemeralMessage(bits.join(' '), 6000, 'info');
         }
 
         // No dialog shown -> honor URL-driven 3D immediately after focusing.

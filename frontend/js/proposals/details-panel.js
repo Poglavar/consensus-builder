@@ -106,6 +106,12 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 }
 
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null) {
+    // The proposal action panel is 2D-only for now: in 3D the selection/isolation machinery
+    // still runs, but the button box would float context-less over the scene.
+    if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {
+        try { hideProposalDetailsPanel(true); } catch (_) { }
+        return;
+    }
     console.debug('[showProposalInfo] Called', {
         proposalId: proposal?.proposalId,
         proposalId: proposal?.proposalId,

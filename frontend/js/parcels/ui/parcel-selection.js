@@ -229,7 +229,11 @@
         if (!appliedProposal) {
             try {
                 const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
-                appliedProposal = parcelProposals.find(p => typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
+                // Roads are excluded here: every slice a road cut lists that road, so an ordinary
+                // parcel next to a corridor would otherwise select the road (node handles and
+                // all). Roads open through their own corridor click surface only.
+                appliedProposal = parcelProposals.find(p => !p.roadProposal
+                    && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
             } catch (_) { }
         }
         if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {

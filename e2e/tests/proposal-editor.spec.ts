@@ -228,9 +228,10 @@ test.describe('SimCity proposal lifecycle @core', () => {
     expect(result.roadStatus).toBe('applied');
   });
 
-  test('an applied proposal surface is selectable in 3D and opens collapsed details', async ({ mockApi: page }) => {
-    // SimCity lifecycle: only applied objects (or the selected preview) render in 3D,
-    // so the pickable surface belongs to an applied proposal.
+  test('an applied proposal surface is selectable in 3D without opening the 2D action panel', async ({ mockApi: page }) => {
+    // SimCity lifecycle: only applied objects (or the selected preview) render in 3D, so the
+    // pickable surface belongs to an applied proposal. 3D is a viewing mode: clicking selects
+    // and isolates the proposal, and the 2D details/button panel stays hidden.
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'three');
@@ -250,8 +251,6 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await expect.poll(async () => page.evaluate(() => (window as any).ProposalSelection?.getKey?.()))
       .toBe(source.proposalId);
     const panel = page.locator('#proposal-details-panel');
-    await expect(panel).toBeVisible();
-    await expect(panel).toHaveClass(/is-minimized/);
-    await expect(panel.locator('.btn-propose-proposal')).toBeVisible();
+    await expect(panel).toBeHidden();
   });
 });

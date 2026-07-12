@@ -5389,10 +5389,18 @@ const ProposalManager = {
                 updateShowProposalsButton();
             }
 
-            // Clear any proposal highlights if this was the currently highlighted proposal
-            if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalId === proposalId) {
+            // Clear selection visuals when the deleted proposal was the selected one. Key-based
+            // comparison (the object identity check missed hash/id mismatches and left the blue
+            // outline + node handles behind until the next click).
+            const selectedKey = (typeof window !== 'undefined')
+                ? (window.ProposalSelection?.getKey?.() || window.currentlyHighlightedProposal?.proposalId || null)
+                : null;
+            if (selectedKey && String(selectedKey) === String(proposalId)) {
                 if (typeof clearProposalHighlights === 'function') clearProposalHighlights();
+                try { window.ProposalSelection?.clear?.(); } catch (_) { }
+                try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
             }
+            try { if (typeof clearProposalPreviewLayers === 'function') clearProposalPreviewLayers(); } catch (_) { }
 
             // Update visual layers and lists
             if (typeof updateProposalLayer === 'function') updateProposalLayer();
@@ -7121,6 +7129,29 @@ const ProposalManager = {
      * applied proposal is built on top of its children (a dependency chain a single unapply would
      * orphan — we surface it but never auto-cascade).
      */
+    // A declared parent like "HR-1997/1#p-token-3" can stop existing when slice ids drift between
+    // devices (different load order, changed cutting rules). If the ROOT parcel's fabric exists in
+    // any form — the root itself, or any of its current descendants — the missing derived id is
+    // cosmetic, not a real prerequisite: the proposal carries its own geometry and can apply.
+    _missingDerivedParentHasLiveFabric(parcelId) {
+        const id = String(parcelId || '');
+        const cut = id.indexOf('#p-');
+        if (cut <= 0) return false;
+        const root = id.slice(0, cut);
+        try {
+            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(root)) return true;
+        } catch (_) { }
+        const layerIndex = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map) ? window.parcelLayerById : null;
+        if (layerIndex) {
+            if (layerIndex.has(root)) return true;
+            const prefix = root + '#p-';
+            for (const key of layerIndex.keys()) {
+                if (typeof key === 'string' && key.startsWith(prefix)) return true;
+            }
+        }
+        return false;
+    },
+
     _analyzeParentAvailability(declaredParentIds, unresolvableIds, selfProposalId) {
         const declared = Array.isArray(declaredParentIds) ? declaredParentIds.map(id => String(id)).filter(Boolean) : [];
         const unresolvable = new Set((Array.isArray(unresolvableIds) ? unresolvableIds : []).map(id => String(id)).filter(Boolean));
@@ -7199,7 +7230,12 @@ const ProposalManager = {
             return Array.from(new Set([...absent, ...noGeom]));
         };
 
-        let analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+        const relaxDriftedDerivedParents = (a) => {
+            if (!a || !Array.isArray(a.notLoaded) || !a.notLoaded.length) return a;
+            a.notLoaded = a.notLoaded.filter(id => !this._missingDerivedParentHasLiveFabric(id));
+            return a;
+        };
+        let analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
         if (allowFetch && analysis.notLoaded.length && typeof fetchParcelsForIds === 'function') {
             try {
                 await fetchParcelsForIds(analysis.notLoaded, { forceRefresh: true });
@@ -7207,7 +7243,7 @@ const ProposalManager = {
                 if (Array.isArray(reloaded) && reloaded.length >= features.length) {
                     features = reloaded;
                 }
-                analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+                analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
             } catch (err) {
                 console.warn(`[${idLabel}] Failed to fetch not-loaded parent parcels before apply`, err);
             }
@@ -7229,7 +7265,7 @@ const ProposalManager = {
                 const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true });
                 if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
-            analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+            analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
             if (parked.length && typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(`Unapplied ${parked.map(title => `“${title}”`).join(', ')} — still in your proposals list.`, 5000, 'info');
             }
@@ -7239,7 +7275,18 @@ const ProposalManager = {
         if (needsDecision && !applyAnyway) {
             console.warn(`[${idLabel}] Parent availability requires a decision`, analysis);
             try {
-                this._setLastApplyFailure(idLabel, { code: 'dependency-missing', message: 'Prerequisite parcels unavailable or in conflict', missingIds: analysis.notLoaded });
+                if (analysis.conflicts.length > 0 && analysis.notLoaded.length === 0) {
+                    // Pure geography conflict: retrying will never help — report it as occupancy.
+                    const occupiers = analysis.conflicts.map(c => c.title).filter(Boolean);
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'parcel-conflict',
+                        message: `Overlaps applied proposal(s): ${occupiers.join(', ')}`,
+                        conflictTitles: occupiers,
+                        missingIds: []
+                    });
+                } else {
+                    this._setLastApplyFailure(idLabel, { code: 'dependency-missing', message: 'Prerequisite parcels unavailable or in conflict', missingIds: analysis.notLoaded });
+                }
             } catch (_) { }
             if (!suppress) {
                 this._showParentConflictModal({
