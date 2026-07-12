@@ -850,7 +850,8 @@
             event.target.value = currentCityId;
             return;
         }
-        const switched = await switchCity(nextId, { requireConfirmation: true });
+        // Proposal drafts autosave across cities, so ordinary city navigation is not destructive.
+        const switched = await switchCity(nextId, { requireConfirmation: false });
         if (!switched) {
             event.target.value = currentCityId;
         }
@@ -881,24 +882,9 @@
             return false;
         }
 
-        let draftDecisionHandled = false;
-        const activeDraft = typeof window.getActiveCorridorDraft === 'function'
-            ? window.getActiveCorridorDraft()
-            : null;
-        if (activeDraft && String(activeDraft.cityId || '') === String(currentCityId || '')
-            && typeof window.guardActiveCorridorDraft === 'function') {
-            const guarded = await window.guardActiveCorridorDraft('city', { allowKeep: true });
-            if (!guarded.proceed) {
-                if (typeof updateStatus === 'function') updateStatus('City change cancelled');
-                return false;
-            }
-            draftDecisionHandled = true;
-            if (typeof window.allowCorridorDraftUnloadOnce === 'function') {
-                window.allowCorridorDraftUnloadOnce();
-            }
-        }
+        try { window.proposalDraftStore?.flush?.(); } catch (_) { }
 
-        if (requireConfirmation && !draftDecisionHandled) {
+        if (requireConfirmation) {
             const confirmFn = window.showStyledConfirm || showStyledConfirm;
             // Each city keeps its own local store, so switching costs nothing but a reload — the
             // city you leave is exactly as you left it when you return.

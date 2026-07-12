@@ -2,6 +2,167 @@
     "multitab": {
         "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit."
     },
+    "proposalDrafts": {
+        "title": "Drafts",
+        "entryAria": "Open {{count}} saved proposal draft(s)",
+        "editorAria": "Proposal draft editor",
+        "unknownCity": "Unknown city",
+        "proposal": "Proposal",
+        "untitled": "Untitled draft",
+        "source": "Source: {{id}}",
+        "newDraft": "New proposal draft",
+        "noParcels": "No parcels selected",
+        "yes": "Yes",
+        "no": "No",
+        "empty": "No saved proposal drafts yet.",
+        "confirmDiscard": "Discard this locally saved draft? This cannot be undone.",
+        "tabs": {
+            "design": "Design",
+            "parcels": "Parcels",
+            "ownership": "Ownership",
+            "terms": "Terms",
+            "details": "Details"
+        },
+        "time": {
+            "justNow": "just now",
+            "minutes": "{{count}} min ago",
+            "hours": "{{count}} h ago",
+            "days": "{{count}} d ago"
+        },
+        "sections": {
+            "detailsTitle": "Proposal details",
+            "detailsCopy": "Describe the replacement clearly. The source proposal stays immutable.",
+            "parcelsTitle": "Affected parcels",
+            "parcelsCopy": "Use the current map selection, or edit the parcel IDs directly.",
+            "ownershipTitle": "Ownership",
+            "ownershipCopy": "Set who receives the land and any recipient constraint.",
+            "termsTitle": "Terms",
+            "termsCopy": "Adjust financing, expiry, decay, and deposit terms.",
+            "designTitle": "Design",
+            "designCopy": "Edit canonical geometry and parameters in the existing map-aware design tool."
+        },
+        "fields": {
+            "name": "Name",
+            "type": "Proposal type",
+            "corridorKind": "Corridor type",
+            "description": "Description",
+            "parcelIds": "Parcel IDs",
+            "ownership": "Ownership change",
+            "recipientScope": "Recipient scope",
+            "recipientAddress": "Recipient address or name",
+            "offer": "Offer",
+            "currency": "Currency",
+            "conditional": "Conditional payout",
+            "expiry": "Expires at",
+            "decay": "Offer decay",
+            "percent": "Percent",
+            "durationMs": "Duration (ms)",
+            "deposit": "Deposit"
+        },
+        "ownership": {
+            "inherit": "Keep source setting",
+            "noChange": "No change",
+            "toMe": "To me",
+            "toCity": "To city",
+            "thirdParty": "Third party",
+            "perSlice": "Per replacement parcel",
+            "notApplicable": "Not applicable",
+            "anyone": "Anyone",
+            "specific": "Specific recipient"
+        },
+        "design": {
+            "corridorSummary": "{{segments}} segment(s) · {{width}} m wide",
+            "buildingSummary": "{{count}} building(s) · {{typology}}",
+            "reparcelSummary": "{{count}} replacement parcel(s) · {{algorithm}}",
+            "parcelSummary": "{{count}} affected parcel(s)",
+            "manual": "manual",
+            "road": "Road",
+            "track": "Track",
+            "parcelOnly": "This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
+            "unavailable": "This design editor is unavailable."
+        },
+        "review": {
+            "title": "Review changes",
+            "immutableNotice": "Publishing creates a new immutable proposal. The source is not changed or removed.",
+            "newProposal": "New proposal",
+            "noSource": "No source proposal",
+            "details": "Details",
+            "noFacetChanges": "No metadata changes",
+            "parcels": "Parcels",
+            "geometry": "Geometry",
+            "changed": "Changed",
+            "unchanged": "Unchanged"
+        },
+        "validation": {
+            "valid": "Ready to review",
+            "errors": "{{count}} error(s)",
+            "warnings": "{{count}} warning(s)",
+            "issues": {
+                "missing-name": "Add a proposal name.",
+                "missing-parcels": "Select at least one parcel.",
+                "missing-description": "A description will help others understand the replacement.",
+                "missing-goal": "Choose a proposal type or an ownership change.",
+                "invalid-centerline": "The corridor needs a valid two-point segment.",
+                "invalid-width": "Set a corridor width greater than zero.",
+                "preview-pending": "The corridor footprint will be rebuilt when Design opens.",
+                "missing-building": "Create at least one building footprint.",
+                "invalid-building": "A building has an invalid footprint.",
+                "missing-polygons": "Add at least one replacement parcel.",
+                "invalid-polygon": "Every replacement parcel needs a valid polygon.",
+                "overlapping-polygons": "Replacement parcels overlap.",
+                "coverage-gap": "Replacement parcels leave required parent area uncovered.",
+                "coverage-excess": "Replacement parcel areas exceed required parent coverage.",
+                "missing-parent-coverage": "The plan is missing required parent parcels."
+            }
+        },
+        "autosave": {
+            "saved": "Autosaved locally",
+            "recoverableError": "Saved · publishing failed"
+        },
+        "comparison": {
+            "label": "Comparison mode",
+            "source": "Source only",
+            "draft": "Draft only",
+            "overlay": "Overlay"
+        },
+        "actions": {
+            "close": "Close editor",
+            "undo": "Undo",
+            "redo": "Redo",
+            "useMapSelection": "Use map selection",
+            "openDesign": "Edit design on map",
+            "discard": "Discard draft",
+            "discardShort": "Discard",
+            "review": "Review changes",
+            "back": "Back",
+            "createReplacement": "Create replacement proposal",
+            "createProposal": "Create proposal",
+            "resume": "Resume",
+            "new": "New draft",
+            "closeList": "Close drafts"
+        },
+        "states": {
+            "error": "Publishing failed · recoverable",
+            "invalid": "{{count}} error(s)",
+            "warning": "{{count}} warning(s)",
+            "valid": "Ready"
+        },
+        "errors": {
+            "sourceMissing": "Proposal source not found.",
+            "noAdapter": "No editor is registered for this proposal type.",
+            "readOnly": "This proposal is view-only.",
+            "parcelsUnavailable": "The draft parcels are not available in the current city.",
+            "instantCreateFailed": "Could not save the new object — it stays as a draft."
+        },
+        "publish": {
+            "alreadyCreated": "This draft already created proposal {{id}}.",
+            "geometryReady": "Geometry restored from the draft"
+        },
+        "mapTooltip": "Draft — click to continue",
+        "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
+        "keptAsDraft": "Could not finish this object — it stays in Drafts; click its dashed outline to continue.",
+        "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it."
+    },
     "languages": {
         "en": "English",
         "es": "Spanish",
@@ -560,12 +721,18 @@
             "actions": {
                 "apply": "Apply to map",
                 "applying": "Applying...",
-                "remove": "Remove from map",
+                "remove": "Stash",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
                 "share": "Share Proposal",
-                "copy": "Copy into new proposal",
-                "drive": "Drive this track"
+                "copy": "Edit",
+                "edit": "Edit",
+                "resumeDraft": "Resume draft",
+                "editUnavailable": "This proposal cannot be edited safely.",
+                "drive": "Drive this track",
+                "delete": "Delete",
+                "deleteHint": "Deletes the object and its idea entirely.",
+                "propose": "Create proposal"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -714,8 +881,7 @@
             "ownedByCompaniesLabel": "Owned by companies:",
             "ownedByGovernmentLabel": "Owned by government:",
             "closeAriaLabel": "Close road info",
-            "finishButtonShort": "Finish segment (F)",
-            "createButton": "Create (C)",
+            "finishButtonShort": "Finish road (F)",
             "crossSectionButton": "Edit cross-section",
             "draftAutosaved": "Draft autosaved locally",
             "undoButton": "Undo (U)",
@@ -727,7 +893,19 @@
             "acquiringDifficultyTooltip": "Smaller is better. The acquiring difficulty is calculated based on ownership type of properties involved, with these coefficients:\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual: 2\nThe market value of each parcel is multiplied by its ownership type and all these are summed.",
             "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",
-            "parcelsNone": "None"
+            "parcelsNone": "None",
+            "draftSavedRoadToast": "Road saved as a draft — press R or open Drafts to continue.",
+            "draftSavedTrackToast": "Track saved as a draft — open Drafts to continue.",
+            "builtStatus": "Road built — click it to edit or propose.",
+            "builtStatusTrack": "Track built — click it to edit or propose.",
+            "mergedStatus": "Connected to “{{name}}” — now one road.",
+            "mergedStatusTrack": "Connected to “{{name}}” — now one track.",
+            "absorbedStatus": "Continuing “{{name}}” — finishing keeps it one road.",
+            "nodeHint": "Drag to move · ⌥-click to remove this node",
+            "bulldozeHint": "🚜 Bulldoze this stretch",
+            "splitStatus": "The road came apart — now {{count}} separate roads.",
+            "bulldozedAllStatus": "Road bulldozed.",
+            "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect"
         },
         "roadAnalysis": {
             "title": "Road Width Analysis",
@@ -891,7 +1069,7 @@
             "changeWarning": "Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?"
         },
         "dataManagement": {
-            "wipeWarning": "This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?"
+            "wipeWarning": "This will erase ALL locally stored data (parcels, roads, proposals, proposal drafts, settings). Continue?"
         },
         "corridor": {
             "title": "Cross-section",
@@ -1270,7 +1448,8 @@
                 "title": "Review Shared Proposals",
                 "loading": "Parcels still loading...",
                 "applySelected": "Apply Selected"
-            }
+            },
+            "editLaterNote": "You can edit the road profile later — its width too."
         },
         "coverage": {
             "title": "Loaded Parcels Coverage",

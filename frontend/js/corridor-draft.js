@@ -1,7 +1,13 @@
 // Purpose: derive an editable road-drawing seed from an immutable corridor proposal definition.
 (function attachCorridorDraft(global) {
-    const ACTIVE_DRAFT_KEY = 'consensus-builder.active-corridor-draft.v1';
-    let allowNextUnload = false;
+    const LEGACY_ACTIVE_DRAFT_KEY = 'consensus-builder.active-corridor-draft.v1';
+    const ACTIVE_DRAFT_KEY = global.PROPOSAL_DRAFT_STORAGE_KEY || 'consensus-builder.proposal-drafts.v1';
+    const injectedStores = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+
+    let createStore = global.createProposalDraftStore || null;
+    if (!createStore && typeof module !== 'undefined' && module.exports && typeof require === 'function') {
+        try { createStore = require('./proposal-drafts.js').createProposalDraftStore; } catch (_) { }
+    }
 
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
@@ -35,120 +41,122 @@
         return { polygon: fallbackPolygon, polygonOrder: 'auto', fitToPolygonOnly: false };
     }
 
-    function draftStorage(storage) {
-        return storage || global.localStorage || null;
+    function resolveDraftStore(storage) {
+        if (!storage && global.proposalDraftStore) return global.proposalDraftStore;
+        const target = storage || global.localStorage || null;
+        if (!target || typeof createStore !== 'function') return null;
+        if (injectedStores && injectedStores.has(target)) return injectedStores.get(target);
+        const store = createStore({ storage: target });
+        if (injectedStores) injectedStores.set(target, store);
+        return store;
+    }
+
+    function corridorDefinitionFromSeed(seed, kind, previousDefinition) {
+        const centerline = cloneDraftValue(seed?.centerline || []);
+        return {
+            ...(cloneDraftValue(previousDefinition || {})),
+            points: centerline,
+            segments: centerline,
+            segmentIds: cloneDraftValue(seed?.segmentIds || []),
+            profile: cloneDraftValue(seed?.profile || null),
+            width: seed?.width,
+            sidewalkWidth: seed?.sidewalkWidth,
+            tunnels: cloneDraftValue(seed?.tunnels || []),
+            polygon: cloneDraftValue(seed?.polygon !== undefined ? seed.polygon : previousDefinition?.polygon || null),
+            latLngPairs: cloneDraftValue(seed?.latLngPairs !== undefined ? seed.latLngPairs : previousDefinition?.latLngPairs || null),
+            metadata: {
+                ...(cloneDraftValue(previousDefinition?.metadata || {})),
+                isCorridor: true,
+                isTrack: kind === 'track',
+                isRoad: kind !== 'track',
+                trackSpeed: seed?.trackSpeed,
+                trackMinRadius: seed?.trackMinRadius
+            }
+        };
+    }
+
+    function legacyCorridorShape(draft) {
+        if (!draft || draft.goal !== 'road-track') return null;
+        const definition = draft.editorPayload?.definition || {};
+        const kind = draft.editorPayload?.kind || (definition.metadata?.isTrack ? 'track' : 'road');
+        return {
+            draftId: draft.id,
+            kind,
+            cityId: draft.cityId,
+            sourceProposalId: draft.sourceProposalId,
+            copySource: draft.sourceProposalId ? {
+                proposalId: draft.sourceProposalId,
+                name: draft.sourceSnapshot?.title || draft.sourceSnapshot?.name || draft.fields?.name || null,
+                draftId: draft.id,
+                prefill: cloneDraftValue(draft.fields || {})
+            } : null,
+            seed: {
+                centerline: cloneDraftValue(definition.points || definition.segments || []),
+                segmentIds: cloneDraftValue(definition.segmentIds || []),
+                profile: cloneDraftValue(definition.profile || null),
+                width: definition.width,
+                sidewalkWidth: definition.sidewalkWidth,
+                tunnels: cloneDraftValue(definition.tunnels || []),
+                trackSpeed: definition.metadata?.trackSpeed,
+                trackMinRadius: definition.metadata?.trackMinRadius
+            },
+            dirty: draft.dirty !== false,
+            updatedAt: draft.updatedAt
+        };
     }
 
     function saveActiveCorridorDraft(draft, storage) {
         if (!draft || !draft.kind || !draft.seed) return null;
-        const record = cloneDraftValue({
-            ...draft,
-            dirty: true,
-            updatedAt: new Date().toISOString()
-        });
-        const target = draftStorage(storage);
-        if (!target || typeof target.setItem !== 'function') return null;
-        target.setItem(ACTIVE_DRAFT_KEY, JSON.stringify(record));
-        return record;
+        const store = resolveDraftStore(storage);
+        if (!store) return null;
+        const explicitId = draft.draftId || draft.copySource?.draftId || null;
+        let existing = explicitId ? store.getDraft(explicitId) : store.getActiveDraft();
+        if (existing && existing.goal !== 'road-track') existing = null;
+        const sourceProposalId = draft.sourceProposalId || draft.copySource?.proposalId || existing?.sourceProposalId || null;
+        const definition = corridorDefinitionFromSeed(draft.seed, draft.kind, existing?.editorPayload?.definition);
+        let saved = null;
+        if (existing) {
+            saved = store.updateDraft(existing.id, {
+                cityId: draft.cityId || existing.cityId,
+                fields: {
+                    ...(cloneDraftValue(draft.copySource?.prefill || {})),
+                    parentParcelIds: cloneDraftValue(draft.parentParcelIds || existing.fields?.parentParcelIds || [])
+                },
+                editorPayload: { kind: draft.kind, definition },
+                previewGeometry: cloneDraftValue(definition.polygon || null)
+            }, { coalesceKey: 'corridor-drawing' });
+            store.resumeDraft(existing.id);
+        } else {
+            saved = store.createDraft({
+                cityId: draft.cityId || null,
+                goal: 'road-track',
+                proposalType: draft.kind === 'track' ? 'Track' : 'Road',
+                adapterKey: 'road-track',
+                sourceProposalId,
+                fields: {
+                    name: draft.copySource?.prefill?.name || draft.copySource?.name || '',
+                    description: draft.copySource?.prefill?.description || '',
+                    parentParcelIds: cloneDraftValue(draft.parentParcelIds || []),
+                    offer: Number(draft.copySource?.prefill?.offer) || 0,
+                    offerCurrency: draft.copySource?.prefill?.offerCurrency || 'USDT'
+                },
+                editorPayload: { kind: draft.kind, definition },
+                previewGeometry: cloneDraftValue(definition.polygon || null),
+                dirty: true
+            });
+        }
+        return legacyCorridorShape(saved);
     }
 
     function getActiveCorridorDraft(storage) {
-        const target = draftStorage(storage);
-        if (!target || typeof target.getItem !== 'function') return null;
-        try {
-            const value = JSON.parse(target.getItem(ACTIVE_DRAFT_KEY) || 'null');
-            return value && value.kind && value.seed && value.dirty === true ? value : null;
-        } catch (_) {
-            return null;
-        }
+        const store = resolveDraftStore(storage);
+        return legacyCorridorShape(store?.getActiveDraft());
     }
 
     function clearActiveCorridorDraft(storage) {
-        const target = draftStorage(storage);
-        if (target && typeof target.removeItem === 'function') target.removeItem(ACTIVE_DRAFT_KEY);
-    }
-
-    function corridorDraftT(key, fallback) {
-        try {
-            if (global.i18n && typeof global.i18n.t === 'function') {
-                const translated = global.i18n.t(key, {});
-                if (translated && translated !== key) return translated;
-            }
-        } catch (_) { }
-        return fallback;
-    }
-
-    function corridorDraftMessage(reason) {
-        const messages = {
-            cancel: corridorDraftT('modal.corridorDraft.cancelBody', 'This drawing has changes that are not in a proposal yet.'),
-            city: corridorDraftT('modal.corridorDraft.cityBody', 'Switching cities will close this drawing. You can keep it and resume it when you return.'),
-            replace: corridorDraftT('modal.corridorDraft.replaceBody', 'Starting another drawing will replace the current draft.'),
-            wipe: corridorDraftT('modal.corridorDraft.wipeBody', 'Wiping local data will permanently delete this drawing draft.')
-        };
-        return messages[reason] || messages.cancel;
-    }
-
-    function askCorridorDraftDecision(reason, options = {}) {
-        const allowKeep = options.allowKeep !== false;
-        if (!global.document || !global.document.body) {
-            return Promise.resolve('stay');
-        }
-        return new Promise(resolve => {
-            const overlay = global.document.createElement('div');
-            overlay.className = 'cb-confirm-overlay corridor-draft-overlay';
-            const dialog = global.document.createElement('div');
-            dialog.className = 'cb-confirm-dialog corridor-draft-dialog';
-            dialog.innerHTML = `
-                <h3>${corridorDraftT('modal.corridorDraft.title', 'Unsaved drawing draft')}</h3>
-                <div class="cb-confirm-message">${corridorDraftMessage(reason)}</div>
-                <div class="cb-confirm-buttons corridor-draft-buttons"></div>`;
-            const buttons = dialog.querySelector('.corridor-draft-buttons');
-
-            const addButton = (choice, label, className) => {
-                const button = global.document.createElement('button');
-                button.type = 'button';
-                button.className = className;
-                button.textContent = label;
-                button.dataset.draftChoice = choice;
-                button.addEventListener('click', () => close(choice));
-                buttons.appendChild(button);
-                return button;
-            };
-            const close = choice => {
-                overlay.remove();
-                resolve(choice);
-            };
-
-            const stay = addButton('stay', corridorDraftT('modal.corridorDraft.continueEditing', 'Continue editing'), 'btn btn-secondary');
-            addButton('discard', reason === 'wipe'
-                ? corridorDraftT('modal.corridorDraft.discardAndWipe', 'Discard and wipe')
-                : corridorDraftT('modal.corridorDraft.discard', 'Discard draft'), 'btn btn-danger');
-            if (allowKeep) {
-                addButton('keep', corridorDraftT('modal.corridorDraft.keep', 'Keep draft'), 'btn btn-primary');
-            }
-
-            overlay.addEventListener('click', event => {
-                if (event.target === overlay) close('stay');
-            });
-            dialog.addEventListener('keydown', event => {
-                if (event.key === 'Escape') close('stay');
-            });
-            overlay.appendChild(dialog);
-            global.document.body.appendChild(overlay);
-            stay.focus();
-        });
-    }
-
-    async function guardActiveCorridorDraft(reason, options = {}) {
-        const draft = getActiveCorridorDraft();
-        if (!draft) return { proceed: true, choice: 'none', draft: null };
-        const choice = await askCorridorDraftDecision(reason, options);
-        if (choice === 'discard') clearActiveCorridorDraft();
-        return { proceed: choice !== 'stay', choice, draft };
-    }
-
-    function allowCorridorDraftUnloadOnce() {
-        allowNextUnload = true;
+        const store = resolveDraftStore(storage);
+        const active = store?.getActiveDraft();
+        if (active?.goal === 'road-track') store.deleteDraft(active.id);
     }
 
     global.buildCorridorDrawingSeed = buildCorridorDrawingSeed;
@@ -156,25 +164,17 @@
     global.saveActiveCorridorDraft = saveActiveCorridorDraft;
     global.getActiveCorridorDraft = getActiveCorridorDraft;
     global.clearActiveCorridorDraft = clearActiveCorridorDraft;
-    global.askCorridorDraftDecision = askCorridorDraftDecision;
-    global.guardActiveCorridorDraft = guardActiveCorridorDraft;
-    global.allowCorridorDraftUnloadOnce = allowCorridorDraftUnloadOnce;
 
     if (global.addEventListener) {
-        global.addEventListener('beforeunload', event => {
-            if (allowNextUnload) {
-                allowNextUnload = false;
-                return;
-            }
-            if (!getActiveCorridorDraft()) return;
-            event.preventDefault();
-            event.returnValue = '';
+        global.addEventListener('beforeunload', () => {
+            try { resolveDraftStore()?.flush(); } catch (_) { }
         });
     }
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             ACTIVE_DRAFT_KEY,
+            LEGACY_ACTIVE_DRAFT_KEY,
             buildCorridorDrawingSeed,
             resolveCorridorScreenshotGeometry,
             saveActiveCorridorDraft,

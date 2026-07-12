@@ -9,7 +9,9 @@ function ensureProposalHighlightPanes(targetMap) {
     const panes = {
         highlight: { name: 'proposalHighlightPane', zIndex: 650 },
         hover: { name: 'proposalHoverPane', zIndex: 660 },
-        hoverLabels: { name: 'proposalHoverLabelPane', zIndex: 670 }
+        hoverLabels: { name: 'proposalHoverLabelPane', zIndex: 670 },
+        draftSource: { name: 'proposalDraftSourcePane', zIndex: 674 },
+        draft: { name: 'proposalDraftPane', zIndex: 676 }
     };
 
     Object.values(panes).forEach(({ name, zIndex }) => {
@@ -29,7 +31,9 @@ function ensureProposalHighlightPanes(targetMap) {
     window.__proposalHighlightPanes = {
         highlight: panes.highlight.name,
         hover: panes.hover.name,
-        hoverLabels: panes.hoverLabels.name
+        hoverLabels: panes.hoverLabels.name,
+        draftSource: panes.draftSource.name,
+        draft: panes.draft.name
     };
 
     return window.__proposalHighlightPanes;
@@ -63,6 +67,12 @@ function ensureProposalOverlayGroups() {
     if (!window.proposalBuildingPreviewGroup) {
         window.proposalBuildingPreviewGroup = L.featureGroup().addTo(map);
     }
+    if (!window.proposalDraftSourceGroup) {
+        window.proposalDraftSourceGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalDraftPreviewGroup) {
+        window.proposalDraftPreviewGroup = L.featureGroup().addTo(map);
+    }
 
     // Attach pane metadata so individual layers can render in a dedicated high-zIndex pane.
     // (FeatureGroup itself doesn't accept pane options.)
@@ -74,6 +84,8 @@ function ensureProposalOverlayGroups() {
         window.proposalBuildingPreviewGroup.__paneName = panes.highlight;
         window.proposalHoverGroup.__paneName = panes.hover;
         window.proposalHoverLabelGroup.__paneName = panes.hoverLabels;
+        window.proposalDraftSourceGroup.__paneName = panes.draftSource;
+        window.proposalDraftPreviewGroup.__paneName = panes.draft;
     }
 
     return {
@@ -83,9 +95,105 @@ function ensureProposalOverlayGroups() {
         hoverLabels: window.proposalHoverLabelGroup,
         background: window.proposalBackgroundGroup,
         accepted: window.proposalAcceptedGroup,
-        buildingPreview: window.proposalBuildingPreviewGroup
+        buildingPreview: window.proposalBuildingPreviewGroup,
+        draftSource: window.proposalDraftSourceGroup,
+        draft: window.proposalDraftPreviewGroup
     };
 }
+
+function proposalDraftGeometryFeatures(descriptor, draft) {
+    const features = [];
+    const pushGeometry = (value, properties = {}) => {
+        if (!value) return;
+        if (value.type === 'Feature') {
+            if (value.geometry) features.push(value);
+            return;
+        }
+        if (value.type === 'FeatureCollection') {
+            (value.features || []).forEach(feature => pushGeometry(feature));
+            return;
+        }
+        if (value.type && Array.isArray(value.coordinates)) {
+            features.push({ type: 'Feature', properties, geometry: value });
+        }
+    };
+
+    if (descriptor?.kind === 'corridor') {
+        const definition = descriptor.definition || {};
+        pushGeometry(definition.polygon, { draftKind: 'corridor' });
+        if (!features.length) {
+            const raw = definition.points || definition.segments || [];
+            const segments = Array.isArray(raw?.[0]) ? raw : (raw.length ? [raw] : []);
+            segments.forEach((segment, index) => {
+                const coordinates = (segment || []).map(point => {
+                    const lat = Number(point?.lat !== undefined ? point.lat : point?.[1]);
+                    const lng = Number(point?.lng !== undefined ? point.lng : point?.[0]);
+                    return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : null;
+                }).filter(Boolean);
+                if (coordinates.length >= 2) pushGeometry({ type: 'LineString', coordinates }, { draftKind: 'corridor', segmentIndex: index });
+            });
+        }
+    } else if (descriptor?.kind === 'buildings') {
+        (descriptor.features || []).forEach(feature => pushGeometry(feature));
+    } else if (descriptor?.kind === 'reparcellization') {
+        (descriptor.polygons || []).forEach(polygon => pushGeometry(polygon.geometry || polygon));
+    } else {
+        pushGeometry(descriptor?.geometry || null);
+    }
+
+    if (!features.length) {
+        (descriptor?.parcelIds || draft?.fields?.parentParcelIds || []).forEach(parcelId => {
+            const feature = getParcelFeatureForHighlight(parcelId, draft?.sourceSnapshot || null, { skipRecovery: true });
+            if (feature) features.push(feature);
+        });
+    }
+    return features;
+}
+
+function updateProposalDraftMapPreview(detail) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.draftSource || !groups.draft) return;
+    groups.draftSource.clearLayers();
+    groups.draft.clearLayers();
+    if (!detail) return;
+
+    const draft = window.proposalDraftStore?.getDraft?.(detail.draftId) || null;
+    const sourceStyle = {
+        color: detail.sourceStyle?.color || '#64748b',
+        fillColor: detail.sourceStyle?.color || '#64748b',
+        weight: 3,
+        opacity: 0.55,
+        fillOpacity: 0.08,
+        dashArray: '3 7',
+        className: 'proposal-draft-source-geometry'
+    };
+    const draftStyle = {
+        color: detail.draftStyle?.color || '#2563eb',
+        fillColor: detail.draftStyle?.color || '#2563eb',
+        weight: 4,
+        opacity: 1,
+        fillOpacity: 0.2,
+        dashArray: detail.draftStyle?.dashArray || '8 5',
+        className: 'proposal-draft-preview-geometry'
+    };
+
+    if (detail.sourceProposal) {
+        let sourceFeatures = [];
+        try {
+            const sets = collectProposalFeatureSets(detail.sourceProposal, { includeBuildingGeometry: true });
+            sourceFeatures = sets.primaryFeatures?.length ? sets.primaryFeatures : sets.parcelFeatures || [];
+        } catch (_) { }
+        sourceFeatures.forEach(feature => addFeatureToGroup(feature, groups.draftSource, sourceStyle));
+    }
+    if (detail.draftPreview) {
+        proposalDraftGeometryFeatures(detail.draftPreview, draft)
+            .forEach(feature => addFeatureToGroup(feature, groups.draft, draftStyle));
+    }
+    try { groups.draftSource.bringToFront?.(); } catch (_) { }
+    try { groups.draft.bringToFront?.(); } catch (_) { }
+}
+
+if (typeof window !== 'undefined') window.updateProposalDraftMapPreview = updateProposalDraftMapPreview;
 
 function clearProposalBackgroundLayers() {
     const groups = ensureProposalOverlayGroups();
@@ -505,8 +613,23 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         forEachProposalParcelInViewport(parcelIdSet, (layer) => {
             proposalHighlightStyleOverride.apply(layer, parcelStyle);
         });
+    } else if (isRoadProposal && (lifecycleStatus === 'applied' || lifecycleStatus === 'executed')) {
+        // A selected applied road gets ONE crisp selection outline around its footprint — the
+        // same visual language as a selected parcel. The cross-section strips already show the
+        // road itself, and shading every parent parcel blue only buried the selection.
+        const roadSelectedStyle = {
+            color: '#ff3300',
+            weight: 3,
+            opacity: 1,
+            dashArray: null,
+            fillOpacity: 0,
+            className: 'proposal-road-selected-outline'
+        };
+        primaryFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, roadSelectedStyle, blink ? 'proposal-blink-twice' : null);
+        });
     } else {
-        // For road proposals, style road geometry with dashed lines and no fill
+        // For (parked) road proposals, style road geometry with dashed lines and no fill
         // For other proposals, use the standard primary style
         const primaryStyle = isRoadProposal ? {
             color: '#2563EB',
@@ -654,6 +777,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         window.currentlyHighlightedProposal = proposal;
         window.selectedParcelInProposal = parcelId;
         if (showDetails) {
+            window.__openProposalDetailsCollapsed = true;
             showProposalInfo(proposal, parcelId);
         } else {
             hideProposalDetailsPanel();
@@ -692,6 +816,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // Show proposal info immediately (no visual changes yet)
     if (showDetails) {
         console.debug('[selectAndHighlightProposal] Calling showProposalInfo...');
+        window.__openProposalDetailsCollapsed = true;
         showProposalInfo(proposal, parcelId);
         console.debug('[selectAndHighlightProposal] showProposalInfo called');
     } else {

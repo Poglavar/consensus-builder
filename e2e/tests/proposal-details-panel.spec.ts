@@ -64,7 +64,15 @@ test.describe('Proposal details panel @features', () => {
     const body = panel.locator('.panel-body');
 
     await expect(panel).toBeVisible();
+    await expect(panel).toHaveClass(/is-minimized/);
+    await expect(minimizeButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(body).toBeHidden();
+
+    await minimizeButton.click();
+
+    await expect(panel).not.toHaveClass(/is-minimized/);
     await expect(minimizeButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(body).toBeVisible();
 
     await minimizeButton.click();
 

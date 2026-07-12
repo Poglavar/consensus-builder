@@ -24,6 +24,10 @@ async function injectParcelsAndClickFirst(page: any) {
     // Create parcelLayer if missing
     if (!w.parcelLayer) {
       w.parcelLayer = L.geoJSON(null).addTo(w.map);
+    } else {
+      // The default city can preload real/mock parcels before this isolated panel fixture runs.
+      // Clear them so feature indexes below always refer to the injected Zagreb fixtures.
+      w.parcelLayer.clearLayers();
     }
 
     // Add features

@@ -210,10 +210,12 @@ test.describe('Blockchain sync @features', () => {
 
     expect(result.listenerEvents).toEqual(expect.arrayContaining(['accountsChanged', 'chainChanged']));
     expect(result.metrics.totalSupplyCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.tokenByIndexCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.getProposalCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.ownerOfCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.addProposalCalls).toBeGreaterThanOrEqual(3);
+    // Accounts/chain changes trigger incremental syncs. The supply is checked each time, while
+    // the already imported token is deliberately not fetched or inserted again.
+    expect(result.metrics.tokenByIndexCalls).toBe(1);
+    expect(result.metrics.getProposalCalls).toBe(1);
+    expect(result.metrics.ownerOfCalls).toBe(1);
+    expect(result.metrics.addProposalCalls).toBe(1);
     expect(result.metrics.contractOnEvents.filter((event) => event === 'Transfer')).toHaveLength(2);
     expect(result.metrics.contractOffEvents).toContain('Transfer');
     expect(result.metrics.refreshCount).toBeGreaterThanOrEqual(3);
@@ -320,7 +322,7 @@ test.describe('Blockchain sync @features', () => {
       };
 
       globalWindow.SolanaChainDataLoader.getAllProposals = async () => ([
-        { proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example' },
+        { proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' },
       ]);
       globalWindow.SolanaChainDataLoader.getConnection = () => ({
         getAccountInfo: async () => ({ data: new Uint8Array([1, 2, 3, 4]) }),
@@ -367,7 +369,7 @@ test.describe('Blockchain sync @features', () => {
     expect(result.metrics.saveCalls).toBe(0);
     expect(result.metrics.importCalls).toHaveLength(1);
     expect(result.metrics.importCalls[0]).toMatchObject({
-      proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example',
+      proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       parentParcelIds: ['HR-335754-1234'],
       status: 'Active',
       chainId: 'solana-devnet',
@@ -377,7 +379,7 @@ test.describe('Blockchain sync @features', () => {
       onchain: {
         chainId: 'solana-devnet',
         contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',
-        proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example',
+        proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
         acceptanceCount: '1',
         solBalance: '500000000',
         ethBalance: '500000000',

@@ -595,6 +595,12 @@ function renderGeometrySection(goalKey) {
         auto: t('modal.createProposal.geometry.status.auto', 'Algorithmic geometry will be generated')
     };
 
+    // Facet changes re-run this render for the same goal; that must not discard geometry the
+    // user already drew or restored from a draft (only an actual goal switch resets it).
+    const statusEl = document.getElementById('proposalGeometryStatus');
+    const keepSubmitted = currentGeometryGoal === goalKey && proposalGeometrySubmitted;
+    const keepStatusText = (keepSubmitted && statusEl && statusEl.textContent) || label.submitted;
+
     currentGeometryGoal = goalKey;
     proposalGeometrySubmitted = false;
     buttonsRow.innerHTML = '';
@@ -640,7 +646,7 @@ function renderGeometrySection(goalKey) {
 
     if (goalKey === 'single') {
         showGroup();
-        setGeometryStatus(label.noGeometry, { submitted: false });
+        setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: false }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
@@ -650,7 +656,7 @@ function renderGeometrySection(goalKey) {
 
     if (goalKey === 'road-track') {
         showGroup();
-        setGeometryStatus(label.noGeometry, { submitted: false });
+        setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
@@ -660,7 +666,7 @@ function renderGeometrySection(goalKey) {
 
     if (goalKey === 'reparcellization') {
         showGroup();
-        setGeometryStatus(label.noGeometry, { submitted: false });
+        setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
@@ -670,7 +676,7 @@ function renderGeometrySection(goalKey) {
 
     if (goalKey === 'urban-rule') {
         showGroup();
-        setGeometryStatus(label.noGeometry, { submitted: false });
+        setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';

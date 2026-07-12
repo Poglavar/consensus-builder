@@ -977,6 +977,52 @@
         });
     }
 
+    function autosaveSingleBuildingDraft() {
+        const activeDraft = window.getActiveProposalDesignDraft?.();
+        const context = getSingleBuildingContext();
+        if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
+            || !context?.parcels?.length || !buildingEntries.some(entry => entry?.feature)
+            || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
+        const parcelIds = [];
+        const parentDetails = [];
+        context.parcels.forEach(parcel => {
+            let parcelId = null;
+            try { parcelId = resolveParcelId(parcel?.feature); } catch (_) { }
+            if (!parcelId) return;
+            const id = String(parcelId);
+            parcelIds.push(id);
+            parentDetails.push({ id, number: String(parcel?.feature?.properties?.BROJ_CESTICE || id) });
+        });
+        const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => {
+            const feature = JSON.parse(JSON.stringify(entry.feature));
+            feature.properties = {
+                ...(feature.properties || {}),
+                width: Number(entry.width),
+                length: Number(entry.length),
+                height: Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M),
+                chamfer: Number(entry.chamfer) || 0,
+                rotation: Number(entry.rotation) || 0,
+                type: 'proposedBuildingSingle'
+            };
+            return feature;
+        });
+        window.syncActiveProposalDraftFromEditor('building', {
+            parcelIds,
+            parentDetails,
+            blockName: context.blockName || describeSingleBuildingSelection(parcelIds),
+            parameters: {
+                typology: 'single',
+                width: buildings[0]?.properties?.width ?? null,
+                length: buildings[0]?.properties?.length ?? null,
+                height: buildings[0]?.properties?.height ?? null,
+                chamfer: buildings[0]?.properties?.chamfer ?? null,
+                rotation: buildings[0]?.properties?.rotation ?? null
+            },
+            buildingFeature: buildings[0] || null,
+            buildings
+        }, { coalesceKey: 'single-building-live' });
+    }
+
     function updateRectangleLayers() {
         if (!singleMap || !buildingEntries.length) return;
         if (!singleRectGroup) {
@@ -1017,6 +1063,7 @@
         }
         try { singleRectGroup.bringToFront(); } catch (_) { }
         bindRectangleLayerEvents();
+        autosaveSingleBuildingDraft();
     }
 
     function pointInsideRect(latlng) {
@@ -1217,6 +1264,12 @@
 
     function closeSingleBuildingModal(options = {}) {
         const { preservePending = false } = options;
+        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
+        if (!preservePending && buildingEntries.some(entry => entry && entry.feature) && activeDraft
+            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
+            confirmSingleBuilding();
+            return;
+        }
         handleRectDragEnd();
         if (singleMap) {
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
@@ -1244,6 +1297,7 @@
             singleModal = null;
         }
         if (map && map.invalidateSize) map.invalidateSize();
+        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
     }
 
     function confirmSingleBuilding() {
@@ -2228,5 +2282,3 @@
     window.createSingleBuildingFromUpload = createSingleBuildingFromUpload;
     window.clearSingleBuildingPendingState = clearSingleBuildingPendingState;
 })();
-
-

@@ -89,6 +89,7 @@
                 'css/panels.css',
                 'css/modals.css',
                 'css/proposals.css',
+                'css/proposal-editor.css',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
@@ -193,6 +194,14 @@
                     </button>
                 </div>
             </div>
+            <button type="button" id="proposal-drafts-button" class="proposal-drafts-entry"
+                data-proposal-drafts-entry
+                onclick="openProposalDraftsList()" data-i18n-key="proposalDrafts.entryAria"
+                data-i18n-attr="aria-label" aria-label="Open saved proposal drafts">
+                <span><i class="fas fa-pen-ruler" aria-hidden="true"></i> <span
+                        data-i18n-key="proposalDrafts.title">Drafts</span></span>
+                <span class="proposal-drafts-count" aria-hidden="true">0</span>
+            </button>
             <!-- Data Section -->
             <div class="accordion-section" data-section="data">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
@@ -850,6 +859,15 @@
     <div id="map-container">
         <div id="map"></div>
 
+        <button type="button" id="proposal-drafts-floating-button" class="proposal-drafts-floating-entry"
+            data-proposal-drafts-entry onclick="openProposalDraftsList()"
+            data-i18n-key="proposalDrafts.entryAria" data-i18n-attr="aria-label"
+            aria-label="Open saved proposal drafts">
+            <i class="fas fa-pen-ruler" aria-hidden="true"></i>
+            <span data-i18n-key="proposalDrafts.title">Drafts</span>
+            <span class="proposal-drafts-count" aria-hidden="true">0</span>
+        </button>
+
         <!-- Floating status message (visible when sidebar is closed) -->
         <div id="floating-status" class="floating-status">
             <span id="floating-status-text"></span>
@@ -1047,16 +1065,9 @@
                     <button id="undoRoadButton" class="btn btn-secondary" onclick="undoLastRoadOrTrackSegment()"
                         data-i18n-key="panel.road.undoButton">Undo (U)</button>
                     <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
-                        data-i18n-key="panel.road.finishButtonShort">Finish segment
+                        data-i18n-key="panel.road.finishButtonShort">Finish road
                         (F)</button>
-                    <button id="createRoadButton" class="btn btn-primary" onclick="createRoadOrTrackProposal()"
-                        data-i18n-key="panel.road.createButton">Create (C)</button>
                 </div>
-                <button id="editRoadCrossSectionButton" type="button" class="btn btn-outline-secondary road-cross-section-button"
-                    onclick="openRoadDrawingCrossSectionEditor()">
-                    <i class="fas fa-road" aria-hidden="true"></i>
-                    <span data-i18n-key="panel.road.crossSectionButton">Edit cross-section</span><span class="road-cross-section-width"></span>
-                </button>
                 <div id="roadDraftStatus" class="road-draft-status" hidden>
                     <i class="fas fa-cloud-arrow-up" aria-hidden="true"></i>
                     <span data-i18n-key="panel.road.draftAutosaved">Draft autosaved locally</span>
@@ -1304,8 +1315,13 @@
             'js/proposals/layer-render.js',
             'js/proposals/details-panel.js',
             'js/proposals/create.js',
+            'js/proposal-drafts.js',
             'js/corridor-draft.js',
             'js/proposals/copy.js',
+            'js/proposal-editor-adapters.js',
+            'js/proposal-editor-shell.js',
+            'js/draft-road-layer.js',
+            'js/road-node-edit.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
             'js/proposals/dialog-share.js',
@@ -1319,6 +1335,7 @@
             'js/ui-helpers.js',
             'js/lens.js',
             'js/road-supersession.js',
+            'js/proposal-supersession.js',
             'js/synthetic-parcel-identity.js',
             'js/proposal-manager.js',
             'js/reparcellization.js',
@@ -1554,13 +1571,8 @@
                 manual road drawing. Press Enter to start
                 with the default selection.</p>
             <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
-            <div style="margin-top: 12px;" class="parameter-group">
-                <label for="road-sidewalk-slider">
-                    <span data-i18n-key="modal.roadWidth.sidewalkLabel">Sidewalk width</span>
-                    <span id="road-sidewalk-value">1.0</span> m
-                </label>
-                <input type="range" id="road-sidewalk-slider" min="0" max="10" step="0.1" value="1">
-            </div>
+            <p style="margin: 12px 0 0; color: #777; font-size: 13px;" data-i18n-key="modal.roadWidth.editLaterNote">
+                You can edit the road profile later — its width too.</p>
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="road-width-cancel-btn" class="btn btn-secondary"
                     data-i18n-key="modal.roadWidth.cancel">Cancel</button>

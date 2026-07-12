@@ -40,6 +40,9 @@
     let squareGroup = null; // square decorations (fountains, stalls)
     let lakeGroup = null; // lake decorations (fish)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
+    let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
+    let latestProposalDraftPreviewDetail = null;
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
 
     // Checkbox listeners to sync 3D buildings with sidebar
@@ -142,6 +145,7 @@
     let parcelClickHandler = null;
     let parcelPointerDownHandler = null;
     let isolationKeyHandler = null;
+    let proposalSelectionUnsubscribe = null;
     // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
     let clickDownXY = null;
 
@@ -984,6 +988,216 @@
             return group;
         }
         return null;
+    }
+
+    function collectDraftPreviewFeatures(descriptor, draft) {
+        const features = [];
+        const push = (value) => {
+            if (!value) return;
+            if (value.type === 'Feature' && value.geometry) { features.push(value); return; }
+            if (value.type === 'FeatureCollection') { (value.features || []).forEach(push); return; }
+            if (value.type && Array.isArray(value.coordinates)) features.push({ type: 'Feature', properties: {}, geometry: value });
+        };
+        if (descriptor?.kind === 'corridor') {
+            const definition = descriptor.definition || {};
+            push(definition.polygon);
+            if (!features.length) {
+                const raw = definition.points || definition.segments || [];
+                const segments = Array.isArray(raw?.[0]) ? raw : (raw.length ? [raw] : []);
+                segments.forEach(segment => {
+                    const coordinates = (segment || []).map(point => {
+                        const lat = Number(point?.lat !== undefined ? point.lat : point?.[1]);
+                        const lng = Number(point?.lng !== undefined ? point.lng : point?.[0]);
+                        return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : null;
+                    }).filter(Boolean);
+                    if (coordinates.length >= 2) push({ type: 'LineString', coordinates });
+                });
+            }
+        } else if (descriptor?.kind === 'buildings') {
+            (descriptor.features || []).forEach(push);
+        } else if (descriptor?.kind === 'reparcellization') {
+            (descriptor.polygons || []).forEach(polygon => push(polygon.geometry || polygon));
+        } else {
+            push(descriptor?.geometry);
+        }
+        if (!features.length && draft?.fields?.parentParcelIds?.length && typeof parcelLayer !== 'undefined' && parcelLayer) {
+            const ids = new Set(draft.fields.parentParcelIds.map(String));
+            parcelLayer.getLayers().forEach(layer => {
+                const feature = layer?.feature;
+                const id = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id;
+                if (id !== undefined && ids.has(String(id))) push(feature);
+            });
+        }
+        return features;
+    }
+
+    function collectSourcePreviewFeatures(proposal) {
+        const features = [];
+        const push = value => {
+            if (!value) return;
+            if (value.type === 'Feature' && value.geometry) { features.push(value); return; }
+            if (value.type === 'FeatureCollection') { (value.features || []).forEach(push); return; }
+            if (value.type && Array.isArray(value.coordinates)) features.push({ type: 'Feature', properties: {}, geometry: value });
+        };
+        const definition = proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition;
+        push(definition?.polygon);
+        (proposal?.buildingProposal?.buildings || proposal?.geometry?.buildings || []).forEach(push);
+        push(proposal?.buildingProposal?.buildingFeature);
+        if (!features.length && proposal?.buildingGeometry) push({ type: 'Feature', properties: proposal.buildingProperties || {}, geometry: proposal.buildingGeometry });
+        (proposal?.reparcellization?.polygons || []).forEach(polygon => push(polygon.geometry || polygon));
+        push(proposal?.structureProposal?.geometry);
+        push(proposal?.geometry?.roadGeometry?.polygon);
+        return features;
+    }
+
+    function disposeDraftPreviewChildren(group) {
+        if (!group) return;
+        while (group.children.length) {
+            const child = group.children.pop();
+            child.traverse?.(node => {
+                try { node.geometry?.dispose?.(); } catch (_) { }
+                try {
+                    if (Array.isArray(node.material)) node.material.forEach(material => material?.dispose?.());
+                    else node.material?.dispose?.();
+                } catch (_) { }
+            });
+        }
+    }
+
+    function addDraftPreviewFeature3D(feature, target, style, kind) {
+        if (!feature?.geometry || !target) return;
+        const color = style === 'source' ? 0x64748b : 0x2563eb;
+        const opacity = style === 'source' ? 0.2 : 0.55;
+        const fill = new THREE.MeshLambertMaterial({
+            color,
+            transparent: true,
+            opacity,
+            depthWrite: style !== 'source',
+            polygonOffset: true,
+            polygonOffsetFactor: -5,
+            polygonOffsetUnits: -5,
+            side: THREE.DoubleSide
+        });
+        const line = new THREE.LineBasicMaterial({ color, transparent: true, opacity: style === 'source' ? 0.55 : 1, depthTest: false });
+        if (feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString') {
+            const object = lineFeatureToLine(feature, line, style === 'source' ? 0.35 : 0.55);
+            if (object) { object.renderOrder = style === 'source' ? 9100 : 9200; target.add(object); }
+            return;
+        }
+        const height = kind === 'buildings' ? estimateBuildingHeightMeters(feature) : 0;
+        polygonFeatureToMeshes(feature, fill, style === 'source' ? 0.22 : 0.38, height)
+            .forEach(mesh => { mesh.renderOrder = style === 'source' ? 9100 : 9200; target.add(mesh); });
+        polygonFeatureToBorderLines(feature, line, Math.max(0.5, height + 0.5))
+            .forEach(border => { border.renderOrder = style === 'source' ? 9101 : 9201; target.add(border); });
+    }
+
+    function rebuildProposalDraftPreview3D(detail = latestProposalDraftPreviewDetail) {
+        latestProposalDraftPreviewDetail = detail || null;
+        if (!isActive || !proposalDraftGroup) return;
+        disposeDraftPreviewChildren(proposalDraftGroup);
+        if (!detail) return;
+        const sourceGroup = new THREE.Group();
+        const draftGroup = new THREE.Group();
+        proposalDraftGroup.add(sourceGroup, draftGroup);
+        if (detail.sourceProposal) {
+            collectSourcePreviewFeatures(detail.sourceProposal)
+                .forEach(feature => addDraftPreviewFeature3D(feature, sourceGroup, 'source', 'source'));
+        }
+        if (detail.draftPreview) {
+            const draft = window.proposalDraftStore?.getDraft?.(detail.draftId) || null;
+            collectDraftPreviewFeatures(detail.draftPreview, draft)
+                .forEach(feature => addDraftPreviewFeature3D(feature, draftGroup, 'draft', detail.draftPreview.kind));
+        }
+    }
+
+    function proposalKey3D(proposal) {
+        if (!proposal) return null;
+        try {
+            if (typeof window.getProposalKey === 'function') return String(window.getProposalKey(proposal) || '') || null;
+        } catch (_) { }
+        const value = proposal.proposalId || proposal.id || proposal.hash || null;
+        return value === null || value === undefined ? null : String(value);
+    }
+
+    function proposalApplied3D(proposal) {
+        return [
+            proposal?.status,
+            proposal?.roadProposal?.status,
+            proposal?.buildingProposal?.status,
+            proposal?.structureProposal?.status,
+            proposal?.reparcellization?.status,
+            proposal?.decideLaterProposal?.status
+        ].some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
+    }
+
+    function proposalParcelFeatures3D(proposal) {
+        if (typeof parcelLayer === 'undefined' || !parcelLayer) return [];
+        const ids = new Set([
+            ...(proposal?.parentParcelIds || []),
+            ...(proposal?.childParcelIds || []),
+            ...(proposal?.roadProposal?.childParcelIds || []),
+            ...(proposal?.buildingProposal?.childParcelIds || []),
+            ...(proposal?.reparcellization?.childParcelIds || [])
+        ].map(String));
+        const features = [];
+        parcelLayer.getLayers().forEach(layer => {
+            const feature = layer?.feature;
+            const value = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id;
+            if (value !== undefined && ids.has(String(value))) features.push(feature);
+        });
+        return features;
+    }
+
+    function rebuildProposalInteraction3D() {
+        if (!isActive || !proposalInteractionGroup) return;
+        disposeDraftPreviewChildren(proposalInteractionGroup);
+        const storage = window.proposalStorage;
+        if (!storage || typeof storage.getAllProposals !== 'function') return;
+        const selectedKey = window.ProposalSelection?.getKey?.() || null;
+        storage.getAllProposals().forEach(proposal => {
+            const proposalId = proposalKey3D(proposal);
+            if (!proposalId) return;
+            // Parked (unapplied) ideas stay off the map entirely; they only render while
+            // selected, as a preview of where they would land when applied.
+            const applied = proposalApplied3D(proposal);
+            if (!applied && proposalId !== selectedKey) return;
+            let features = collectSourcePreviewFeatures(proposal);
+            if (!features.length) features = proposalParcelFeatures3D(proposal);
+            if (!features.length) return;
+            const wrapper = new THREE.Group();
+            wrapper.userData.proposalId = proposalId;
+            wrapper.userData.isProposalSurface = true;
+            proposalInteractionGroup.add(wrapper);
+            const isBuilding = !!(proposal.buildingProposal || proposal.buildingGeometry || proposal.geometry?.buildings);
+            features.forEach(feature => {
+                const before = new Set(wrapper.children);
+                addDraftPreviewFeature3D(feature, wrapper, applied ? 'source' : 'draft', isBuilding ? 'buildings' : 'proposal');
+                const parcelId = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id
+                    || proposal.parentParcelIds?.[0] || null;
+                wrapper.children.filter(child => !before.has(child)).forEach(child => {
+                    child.traverse?.(object => {
+                        object.userData = object.userData || {};
+                        object.userData.proposalId = proposalId;
+                        object.userData.isProposalSurface = true;
+                        if (parcelId !== null && parcelId !== undefined) object.userData.parcelId = String(parcelId);
+                    });
+                });
+            });
+            if (selectedKey && String(selectedKey) === proposalId) {
+                wrapper.traverse(object => {
+                    const materialsToHighlight = Array.isArray(object.material) ? object.material : [object.material].filter(Boolean);
+                    materialsToHighlight.forEach(material => {
+                        try {
+                            material.color?.set?.(0xf59e0b);
+                            material.opacity = Math.max(Number(material.opacity) || 0, 0.88);
+                            material.transparent = true;
+                            material.needsUpdate = true;
+                        } catch (_) { }
+                    });
+                    object.renderOrder = Math.max(Number(object.renderOrder) || 0, 9300);
+                });
+            }
+        });
     }
 
     function buildParks3D(flatTarget, decoTarget) {
@@ -2582,6 +2796,8 @@
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
         treesGroup = new THREE.Group();
+        proposalInteractionGroup = new THREE.Group();
+        proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
         treesGroup.visible = treesEnabled;
         scene.add(flatGroup);
@@ -2591,6 +2807,8 @@
         scene.add(squareGroup);
         scene.add(lakeGroup);
         scene.add(treesGroup);
+        scene.add(proposalInteractionGroup);
+        scene.add(proposalDraftGroup);
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -2625,6 +2843,8 @@
         if (lakeGroup) lakeGroup.visible = showPlanned;
         applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
+        rebuildProposalInteraction3D();
+        rebuildProposalDraftPreview3D();
 
         // Camera framing that preserves current 2D view scale and center
         const content = computeContentBoundsXY();
@@ -2694,6 +2914,9 @@
         renderer.domElement.addEventListener('click', parcelClickHandler);
         isolationKeyHandler = handleIsolationKey;
         document.addEventListener('keydown', isolationKeyHandler);
+        if (!proposalSelectionUnsubscribe && window.ProposalSelection?.subscribe) {
+            proposalSelectionUnsubscribe = window.ProposalSelection.subscribe(() => rebuildProposalInteraction3D());
+        }
 
         // Checkbox listeners (sync 3D buildings with sidebar state)
         const showExistingEl = document.getElementById('showBuildings');
@@ -2937,6 +3160,10 @@
         parcelClickHandler = null;
         parcelPointerDownHandler = null;
         isolationKeyHandler = null;
+        if (proposalSelectionUnsubscribe) {
+            try { proposalSelectionUnsubscribe(); } catch (_) { }
+            proposalSelectionUnsubscribe = null;
+        }
         clickDownXY = null;
         isolatedParcelId = null;
         isolationResetEl = null;
@@ -2955,6 +3182,8 @@
         parkGroup = null;
         squareGroup = null;
         lakeGroup = null;
+        proposalInteractionGroup = null;
+        proposalDraftGroup = null;
         threeContainer && (threeContainer.innerHTML = '');
         buildingModeControlsEl = null;
         buildingModeButtons = { built: null, planned: null };
@@ -3070,6 +3299,12 @@
         closeAllPanelsAndModalsFor3D();
         disableSidebarFor3D();
         initScene();
+        if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
+            window.renderProposalDraftComparison(
+                window.activeProposalDraftComparison.draftId,
+                window.activeProposalDraftComparison.mode || 'overlay'
+            );
+        }
     }
 
     function exit3D() {
@@ -3091,6 +3326,12 @@
         pendingModelLoads = 0;
         updateBuildingsLoader();
         disposeScene();
+        if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
+            window.renderProposalDraftComparison(
+                window.activeProposalDraftComparison.draftId,
+                window.activeProposalDraftComparison.mode || 'overlay'
+            );
+        }
     }
 
 
@@ -3121,6 +3362,7 @@
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
+        rebuildProposalInteraction3D();
     });
 
     // Rebuild buildings if the 2D buildings layer updates (e.g., after fetch)
@@ -3135,6 +3377,7 @@
         nearbyProposalBuildingsKey = null;
         if (!isActive) return;
         rebuild3DBuildingsOnly();
+        rebuildProposalInteraction3D();
     });
 
     // Rebuild parks/squares/lakes when their 2D state changes. The "flat" portion of each
@@ -3153,6 +3396,7 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
+        rebuildProposalInteraction3D();
     });
 
     window.addEventListener('squaresUpdated', () => {
@@ -3166,6 +3410,7 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
+        rebuildProposalInteraction3D();
     });
 
     window.addEventListener('lakesUpdated', () => {
@@ -3179,6 +3424,11 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
+        rebuildProposalInteraction3D();
+    });
+
+    document.addEventListener('proposalCreated', () => {
+        if (isActive) rebuildProposalInteraction3D();
     });
 
     function realisticActive() {
@@ -3304,9 +3554,10 @@
         return xyToLatLng(hit.x, hit.y);
     }
 
-    // Raycast a click against parcels/buildings and return the hit parcelId (or null).
+    // Raycast a click against proposal surfaces, parcels, and buildings. Proposal geometry is
+    // checked first so an editable overlay wins over the cadastral parcel beneath it.
     // Skips invisible objects so an isolated scene only "hits" what's actually shown.
-    function pickParcelIdFromEvent(evt) {
+    function pickMapSubjectFromEvent(evt) {
         if (!renderer || !camera) return null;
         const rect = renderer.domElement.getBoundingClientRect();
         const ndc = new THREE.Vector2(
@@ -3316,13 +3567,22 @@
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(ndc, camera);
         const targets = [];
+        if (proposalInteractionGroup) targets.push(proposalInteractionGroup);
         if (buildingGroup) targets.push(buildingGroup);
         if (flatGroup) targets.push(flatGroup);
+        if (plannedFlatGroup) targets.push(plannedFlatGroup);
         const hits = raycaster.intersectObjects(targets, true);
         for (const h of hits) {
-            const obj = h.object;
+            let obj = h.object;
             if (!obj || obj.visible === false) continue;
-            if (obj.userData && obj.userData.parcelId) return obj.userData.parcelId;
+            let proposalId = null;
+            let parcelId = null;
+            while (obj) {
+                if (!proposalId && obj.userData?.proposalId) proposalId = String(obj.userData.proposalId);
+                if (!parcelId && obj.userData?.parcelId) parcelId = String(obj.userData.parcelId);
+                obj = obj.parent;
+            }
+            if (proposalId || parcelId) return { proposalId, parcelId };
         }
         return null;
     }
@@ -3338,7 +3598,16 @@
             clickDownXY = null;
             if (moved > 6) return;
         }
-        const pid = pickParcelIdFromEvent(evt);
+        const picked = pickMapSubjectFromEvent(evt);
+        if (picked?.proposalId) {
+            const proposal = window.proposalStorage?.getProposal?.(picked.proposalId) || null;
+            const parcelId = picked.parcelId || proposal?.parentParcelIds?.[0] || null;
+            if (proposal && typeof window.selectAndHighlightProposal === 'function') {
+                window.selectAndHighlightProposal(picked.proposalId, parcelId, false, true);
+                return;
+            }
+        }
+        const pid = picked?.parcelId || null;
         // Click on empty ground, or on the already-isolated parcel, returns to full view.
         if (!pid || pid === isolatedParcelId) { clearIsolation(); return; }
         isolateParcel(pid);
@@ -3482,6 +3751,10 @@
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
+
+    document.addEventListener('proposal-draft-preview-change', event => {
+        rebuildProposalDraftPreview3D(event.detail || null);
+    });
 
     // Initial paint: mark 2D as the active mode on load.
     updateModeButtonStates();

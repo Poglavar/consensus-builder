@@ -146,7 +146,7 @@ test.describe('Proposal synthetic regressions @core', () => {
       return {
         skip: false,
         exactMatch: shouldSkip(1000, 1000),
-        tinyDelta: shouldSkip(1000, 999.6),
+        tinyDelta: shouldSkip(1000, 999.95),
         realCut: shouldSkip(267277.4099292392, 267166.3595310262),
       };
     });

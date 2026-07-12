@@ -33,19 +33,19 @@ function ensureCorridorHitPane() {
     return pane;
 }
 
-// White lane-marking lines drawn on top of the surface: dashed between same-direction lanes, solid at
-// the centerline where the flow reverses. Same weights/patterns for a drawn road, an applied one and an
-// OSM street, so they read alike.
+// White lane-marking lines drawn on top of the surface — dashed everywhere, with the centerline
+// slightly heavier and longer-dashed so the flow divide still reads. Same weights/patterns for a
+// drawn road, an applied one and an OSM street, so they read alike.
 function renderCorridorLaneMarkings(markings, group, pane) {
     if (!Array.isArray(markings)) return;
     markings.forEach(marking => {
-        const dashed = marking.kind !== 'centerline';
+        const isCenterline = marking.kind === 'centerline';
         marking.lines.forEach(line => {
             L.polyline(line, {
                 color: '#f4f4f4',
-                weight: dashed ? 1.5 : 2,
+                weight: isCenterline ? 2 : 1.5,
                 opacity: 0.9,
-                dashArray: dashed ? '6, 9' : null,
+                dashArray: isCenterline ? '10, 8' : '6, 9',
                 interactive: false,
                 pane: pane || undefined,
                 className: `corridor-lane-marking corridor-lane-marking--${marking.kind}`
@@ -183,53 +183,70 @@ function corridorProfileForRender(proposal, definition) {
 
 function forwardAppliedCorridorClick(proposal, event) {
     if (!proposal) return;
-    const childIds = Array.from(new Set([
-        ...(Array.isArray(proposal.roadProposal && proposal.roadProposal.childParcelIds) ? proposal.roadProposal.childParcelIds : []),
-        ...(Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [])
-    ].map(String).filter(Boolean)));
-    const roadLayer = childIds
-        .map(id => (typeof resolveParcelLayerById === 'function' ? resolveParcelLayerById(id) : null))
-        .find(layer => layer && layer.feature && layer.feature.properties
-            && layer.feature.properties.isRoad === true && layer.feature.properties.isCorridor === true);
-
-    if (roadLayer && typeof window.onParcelClick === 'function') {
-        window.onParcelClick({
-            target: roadLayer,
-            latlng: event && event.latlng,
-            layerPoint: event && event.layerPoint,
-            containerPoint: event && event.containerPoint,
-            originalEvent: event && event.originalEvent
-        });
+    // While a corridor tool is drawing, a click on an applied road places a drawing point on it
+    // (that is how connectors reach existing roads and merge), never a selection.
+    if (window.roadDrawingMode === true || window.trackDrawingMode === true) {
+        try {
+            if (event && event.latlng && typeof map !== 'undefined' && map) {
+                map.fire('click', {
+                    latlng: event.latlng,
+                    layerPoint: event.layerPoint,
+                    containerPoint: event.containerPoint,
+                    originalEvent: event.originalEvent
+                });
+            }
+        } catch (_) { }
         return;
     }
-
-    // A restored/server proposal may be visible before its child parcel has hydrated. Proposal details
-    // are still useful; the full parcel click path takes over as soon as the child layer exists.
+    // Clicking a road selects THE ROAD — one crisp selection outline, collapsed details, node
+    // handles. Any active parcel selection ends first (panel closed, parcel restyled), so the
+    // two selection systems never stack.
+    try { if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel(); } catch (_) { }
     const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
     if (proposalKey && typeof selectAndHighlightProposal === 'function') {
         window.__openProposalDetailsCollapsed = true;
-        selectAndHighlightProposal(proposalKey, childIds[0] || null, false, true);
+        selectAndHighlightProposal(proposalKey, null, false, true);
     }
 }
 
-function renderAppliedCorridorHitTargets(strips, proposal, group) {
+function renderAppliedCorridorHitTargets(strips, proposal, group, definition) {
     if (!Array.isArray(strips) || !proposal || !group) return;
     ensureCorridorHitPane();
+    const hitOptions = {
+        color: '#000000',
+        weight: 0,
+        opacity: 0,
+        fillColor: '#000000',
+        fillOpacity: 0.001,
+        interactive: true,
+        bubblingMouseEvents: false,
+        pane: CORRIDOR_HIT_PANE,
+        className: 'corridor-applied-hit-target'
+    };
     strips.forEach(strip => {
         (strip.polygons || []).forEach(polygon => {
-            L.polygon(polygon, {
-                color: '#000000',
-                weight: 0,
-                opacity: 0,
-                fillColor: '#000000',
-                fillOpacity: 0.001,
-                interactive: true,
-                bubblingMouseEvents: false,
-                pane: CORRIDOR_HIT_PANE,
-                className: 'corridor-applied-hit-target'
-            }).on('click', event => forwardAppliedCorridorClick(proposal, event)).addTo(group);
+            L.polygon(polygon, hitOptions)
+                .on('click', event => forwardAppliedCorridorClick(proposal, event)).addTo(group);
         });
     });
+    // The strips leave gaps (junction fills, verges, rounding); a hit target over the FULL
+    // footprint keeps every click within the corridor on the corridor, instead of falling
+    // through to the parcel underneath.
+    const footprint = definition && definition.polygon;
+    if (footprint) {
+        try {
+            const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };
+            // interactive/bubbling are LAYER options, not styles — passed at the geoJSON level so
+            // the created polygons inherit them (bubbling must stay off or a click would reach
+            // the map too and, while drawing, place a second point).
+            L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
+                style: hitOptions,
+                pane: CORRIDOR_HIT_PANE,
+                interactive: true,
+                bubblingMouseEvents: false
+            }).on('click', event => forwardAppliedCorridorClick(proposal, event)).addTo(group);
+        } catch (_) { }
+    }
 }
 
 function isAppliedCorridorProposal(proposal) {
@@ -273,7 +290,7 @@ function refreshAppliedCorridorStrips() {
         const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions });
         if (group) {
             group.addTo(layer);
-            renderAppliedCorridorHitTargets(strips, proposal, layer);
+            renderAppliedCorridorHitTargets(strips, proposal, layer, definition);
             drawn += 1;
         }
     });

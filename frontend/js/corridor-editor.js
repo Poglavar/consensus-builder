@@ -225,6 +225,26 @@ async function corridorEditorSave() {
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();
+
+    // SimCity object editing: a local, unminted road takes the new cross-section in place —
+    // the footprint rebuilds and the road re-applies. Only minted (immutable) proposals fall
+    // through to the redraw-as-replacement flow.
+    const minted = typeof isProposalMinted === 'function' && isProposalMinted(source);
+    if (!minted && typeof window.updateLocalCorridorGeometry === 'function') {
+        const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
+            definition.profile = JSON.parse(JSON.stringify(profile));
+            if (typeof corridorProfileWidth === 'function') definition.width = corridorProfileWidth(profile);
+            const sidewalks = (profile.strips || []).filter(strip => strip.type === 'sidewalk');
+            definition.sidewalkWidth = sidewalks.length
+                ? sidewalks.reduce((sum, strip) => sum + strip.width, 0) / sidewalks.length
+                : 0;
+        });
+        if (updated) {
+            if (typeof updateStatus === 'function') updateStatus('Cross-section updated.');
+            return;
+        }
+    }
+
     const reopened = typeof copyCorridorIntoNewProposal === 'function'
         && await copyCorridorIntoNewProposal(source, sourceKey, sourceName, { profile });
     if (!reopened) {

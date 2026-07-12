@@ -17,38 +17,32 @@ test.describe('Map navigation @core', () => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    // Start from a mid-range zoom to ensure room to zoom in
+    // Start from a mid-range zoom to ensure room to zoom in. Animated zooms run on
+    // requestAnimationFrame, which crawls under parallel-worker CPU contention — poll for the
+    // outcome instead of sleeping a fixed interval.
     await page.evaluate(() => { (window as any).map?.setZoom(14); });
-    await page.waitForTimeout(800);
+    await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBe(14);
 
-    const initialZoom = await getMapZoom(page);
     await page.evaluate(() => {
       const w = window as any;
       w.map?.setZoom(w.map.getZoom() + 1);
     });
-    await page.waitForTimeout(800);
-    const newZoom = await getMapZoom(page);
-
-    expect(newZoom).toBeGreaterThan(initialZoom);
+    await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBeGreaterThan(14);
   });
 
   test('zoom out programmatically decreases zoom level', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    // First zoom in so we have room to zoom out
+    // First zoom in so we have room to zoom out (see polling note in the zoom-in test).
     await page.evaluate(() => { (window as any).map?.setZoom(15); });
-    await page.waitForTimeout(800);
+    await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBe(15);
 
-    const initialZoom = await getMapZoom(page);
     await page.evaluate(() => {
       const w = window as any;
       w.map?.setZoom(w.map.getZoom() - 1);
     });
-    await page.waitForTimeout(800);
-    const newZoom = await getMapZoom(page);
-
-    expect(newZoom).toBeLessThan(initialZoom);
+    await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBeLessThan(15);
   });
 
   test('dragging pans the map', async ({ mockApi: page }) => {

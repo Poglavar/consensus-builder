@@ -350,6 +350,40 @@
         }
     }
 
+    // Autosave each regenerated layout into the active universal draft without closing the tool.
+    function autosaveParcelBasedDraft() {
+        const activeDraft = window.getActiveProposalDesignDraft?.();
+        const block = getActiveParcelBasedBlock();
+        if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
+            || !generatedParcelBasedFeatures?.length || !block?.parcels?.length
+            || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
+        const parentDetails = [];
+        const parcelIds = [];
+        block.parcels.forEach(parcel => {
+            const props = parcel?.feature?.properties;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(parcel?.feature)
+                : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+            if (!parcelId) return;
+            const id = String(parcelId);
+            parcelIds.push(id);
+            parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
+        });
+        const buildings = JSON.parse(JSON.stringify(generatedParcelBasedFeatures));
+        window.syncActiveProposalDraftFromEditor('building', {
+            parcelIds,
+            parentDetails,
+            blockName: getParcelBasedDisplayName(),
+            parameters: {
+                maxFloors: Number(currentMaxFloors) || DEFAULT_MAX_FLOORS,
+                minDistance: Number(currentMinDistance) || DEFAULT_MIN_DISTANCE,
+                typology: 'parcelBased'
+            },
+            buildings,
+            buildingFeature: buildings[0] || null
+        }, { coalesceKey: 'parcel-based-live' });
+    }
+
     // Generate buildings in modal
     function generateBuildingsInModal() {
         const block = getActiveParcelBasedBlock();
@@ -371,6 +405,7 @@
 
             generatedParcelBasedFeatures = buildings;
             displayBuildingsInModal(buildings);
+            autosaveParcelBasedDraft();
 
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
@@ -861,6 +896,12 @@
 
     function closeParcelBasedModal(options = {}) {
         const { preservePending = false } = options;
+        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
+        if (!preservePending && generatedParcelBasedFeatures.length && activeDraft
+            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
+            saveParcelBasedDesignForProposal();
+            return;
+        }
 
         // Remove the map instance
         if (parcelBasedMap) {
@@ -909,6 +950,7 @@
                 window.pendingParcelBasedFromModal = null;
             }
         }
+        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
     }
 
     // Save design for proposal

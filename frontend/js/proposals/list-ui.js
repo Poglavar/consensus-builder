@@ -626,13 +626,16 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
     // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
     // Exception: open sale offers (Ownership: Third party · Anyone) get a Buy button so a buyer can
     // claim the offer directly from the list. stopPropagation so the row click (→ details) doesn't fire.
+    const t = getProposalI18nHelper();
+    const buttons = [];
     if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
-        const t = getProposalI18nHelper();
         const buyLabel = t('panel.proposal.buy.button', 'Buy');
         const pid = proposal.proposalId || proposal.id || '';
-        return `<button type="button" class="proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');">🤝 ${buyLabel}</button>`;
+        buttons.push(`<button type="button" class="proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');">🤝 ${buyLabel}</button>`);
     }
-    return '';
+    // No editor dialog anymore: the row click selects the object and the details panel carries
+    // every action (node edit, cross-section, Create proposal, Park, Delete).
+    return buttons.join('');
 }
 
 function buildProposalListItemsHtml(dataset, options = {}) {

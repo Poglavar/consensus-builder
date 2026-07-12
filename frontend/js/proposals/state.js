@@ -89,3 +89,14 @@ let proposalLoadProgressTotal = 0;
 let _proposalHighlightRefreshHandle = null;
 
 let createProposalHotkeyAttached = false;
+
+// Universal draft publishing lives in its own module, outside this classic-script lexical scope.
+// Expose one narrow setter instead of duplicating proposal state on window.
+function setCurrentProposalToolFromDraft(tool) {
+    currentProposalTool = tool || null;
+    return currentProposalTool;
+}
+
+if (typeof window !== 'undefined') {
+    window.setCurrentProposalToolFromDraft = setCurrentProposalToolFromDraft;
+}

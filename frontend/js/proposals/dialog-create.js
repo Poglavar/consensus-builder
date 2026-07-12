@@ -2081,6 +2081,9 @@ function showProposalDialog(overrides = null) {
 }
 
 function closeProposalDialog() {
+    const closingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
+        ? String(window.pendingProposalDraftId)
+        : null;
     clearProposalBalanceWatcher();
     const modal = document.querySelector('.create-proposal-modal');
     if (modal) {
@@ -2093,6 +2096,14 @@ function closeProposalDialog() {
     // already stamped it by this point (it closes the dialog only after building the proposal).
     if (typeof window !== 'undefined') {
         window.pendingProposalCopySource = null;
+        if (closingDraftId && window.proposalDraftStore?.getDraft?.(closingDraftId)) {
+            const draft = window.proposalDraftStore.getDraft(closingDraftId);
+            if (draft.state !== 'publishing' && draft.state !== 'error') {
+                window.proposalDraftStore.setDraftState(closingDraftId, 'review');
+            }
+        }
+        window.pendingProposalDraftId = null;
+        window.pendingProposalReplacementSource = null;
     }
 
     // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;

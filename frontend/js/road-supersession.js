@@ -24,7 +24,9 @@
 
     function supersedeCopiedRoadSource(replacement, replacementId, findProposal) {
         if (!replacement || !replacement.roadProposal || typeof findProposal !== 'function') return null;
-        const copiedFrom = replacement.copiedFromProposalId;
+        const copiedFrom = replacement.sourceProposalId
+            || replacement.replacementOfProposalId
+            || replacement.copiedFromProposalId;
         if (!copiedFrom) return null;
         const source = findProposal(String(copiedFrom));
         if (!source || !source.roadProposal || source === replacement || !roadProposalIsApplied(source)) return null;

@@ -14,6 +14,10 @@
         try { global.PersistentStorage && global.PersistentStorage.clear && global.PersistentStorage.clear(); } catch (_) { /* ignore */ }
         try { global.localStorage && global.localStorage.clear && global.localStorage.clear(); } catch (_) { /* ignore */ }
         try { global.sessionStorage && global.sessionStorage.clear && global.sessionStorage.clear(); } catch (_) { /* ignore */ }
+        // The proposal draft store caches its envelope in memory and re-persists it on
+        // pagehide/beforeunload — clearing localStorage alone would let the reload flush
+        // resurrect every draft. Its wipe empties the in-memory state as well.
+        try { global.proposalDraftStore && global.proposalDraftStore.wipeAll && global.proposalDraftStore.wipeAll(); } catch (_) { /* ignore */ }
 
         // Async cleanup: we must actually wait for these before reloading,
         // otherwise IndexedDB / Cache Storage can survive into the next session

@@ -2,7 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, getMapCenter } from '../helpers/app';
 
 test.describe('City switching @core', () => {
-  test('default city is Zagreb', async ({ mockApi: page }) => {
+  test('default city is New York', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
@@ -10,7 +10,7 @@ test.describe('City switching @core', () => {
       const w = window as any;
       return w.CityConfigManager?.getCurrentCityId?.() ?? '';
     });
-    expect(cityId).toBe('zagreb');
+    expect(cityId).toBe('new_york');
   });
 
   test('CityConfigManager exposes city switching API', async ({ mockApi: page }) => {
@@ -49,7 +49,7 @@ test.describe('City switching @core', () => {
         eventCityId = e.detail?.cityId ?? '';
       }, { once: true });
 
-      w.CityConfigManager.setCurrentCityId('buenos_aires');
+      w.CityConfigManager.setCurrentCityId('colorado');
       return {
         newCityId: w.CityConfigManager.getCurrentCityId(),
         eventFired,
@@ -57,9 +57,9 @@ test.describe('City switching @core', () => {
       };
     });
 
-    expect(result.newCityId).toBe('buenos_aires');
+    expect(result.newCityId).toBe('colorado');
     expect(result.eventFired).toBe(true);
-    expect(result.eventCityId).toBe('buenos_aires');
+    expect(result.eventCityId).toBe('colorado');
   });
 
   test('city config contains expected properties', async ({ mockApi: page }) => {

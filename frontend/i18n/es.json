@@ -2,6 +2,167 @@
     "multitab": {
         "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar."
     },
+    "proposalDrafts": {
+        "title": "Borradores",
+        "entryAria": "Abrir {{count}} borrador(es) de propuesta guardados",
+        "editorAria": "Editor de borradores de propuestas",
+        "unknownCity": "Ciudad desconocida",
+        "proposal": "Propuesta",
+        "untitled": "Borrador sin título",
+        "source": "Origen: {{id}}",
+        "newDraft": "Borrador de propuesta nueva",
+        "noParcels": "No hay parcelas seleccionadas",
+        "yes": "Sí",
+        "no": "No",
+        "empty": "Todavía no hay borradores de propuestas guardados.",
+        "confirmDiscard": "¿Descartar este borrador guardado localmente? Esta acción no se puede deshacer.",
+        "tabs": {
+            "design": "Diseño",
+            "parcels": "Parcelas",
+            "ownership": "Propiedad",
+            "terms": "Condiciones",
+            "details": "Detalles"
+        },
+        "time": {
+            "justNow": "ahora mismo",
+            "minutes": "hace {{count}} min",
+            "hours": "hace {{count}} h",
+            "days": "hace {{count}} d"
+        },
+        "sections": {
+            "detailsTitle": "Detalles de la propuesta",
+            "detailsCopy": "Describe claramente el reemplazo. La propuesta original permanece inmutable.",
+            "parcelsTitle": "Parcelas afectadas",
+            "parcelsCopy": "Usa la selección actual del mapa o edita directamente los ID de parcela.",
+            "ownershipTitle": "Propiedad",
+            "ownershipCopy": "Define quién recibe el terreno y las restricciones del destinatario.",
+            "termsTitle": "Condiciones",
+            "termsCopy": "Ajusta la financiación, el vencimiento, la reducción y el depósito.",
+            "designTitle": "Diseño",
+            "designCopy": "Edita la geometría y los parámetros canónicos en la herramienta de diseño vinculada al mapa."
+        },
+        "fields": {
+            "name": "Nombre",
+            "type": "Tipo de propuesta",
+            "corridorKind": "Tipo de corredor",
+            "description": "Descripción",
+            "parcelIds": "ID de parcelas",
+            "ownership": "Cambio de propiedad",
+            "recipientScope": "Ámbito del destinatario",
+            "recipientAddress": "Dirección o nombre del destinatario",
+            "offer": "Oferta",
+            "currency": "Moneda",
+            "conditional": "Pago condicional",
+            "expiry": "Vence el",
+            "decay": "Reducción de la oferta",
+            "percent": "Porcentaje",
+            "durationMs": "Duración (ms)",
+            "deposit": "Depósito"
+        },
+        "ownership": {
+            "inherit": "Mantener la configuración original",
+            "noChange": "Sin cambios",
+            "toMe": "Para mí",
+            "toCity": "Para la ciudad",
+            "thirdParty": "Tercero",
+            "perSlice": "Por parcela de reemplazo",
+            "notApplicable": "No aplicable",
+            "anyone": "Cualquiera",
+            "specific": "Destinatario específico"
+        },
+        "design": {
+            "corridorSummary": "{{segments}} segmento(s) · {{width}} m de ancho",
+            "buildingSummary": "{{count}} edificio(s) · {{typology}}",
+            "reparcelSummary": "{{count}} parcela(s) de reemplazo · {{algorithm}}",
+            "parcelSummary": "{{count}} parcela(s) afectadas",
+            "manual": "manual",
+            "road": "Calle",
+            "track": "Vía",
+            "parcelOnly": "Esta propuesta no tiene una geometría de diseño independiente. El resaltado de parcelas sigue activo mientras editas las demás facetas.",
+            "unavailable": "Este editor de diseño no está disponible."
+        },
+        "review": {
+            "title": "Revisar cambios",
+            "immutableNotice": "La publicación crea una nueva propuesta inmutable. El origen no se modifica ni se elimina.",
+            "newProposal": "Propuesta nueva",
+            "noSource": "Sin propuesta de origen",
+            "details": "Detalles",
+            "noFacetChanges": "Sin cambios de metadatos",
+            "parcels": "Parcelas",
+            "geometry": "Geometría",
+            "changed": "Modificada",
+            "unchanged": "Sin cambios"
+        },
+        "validation": {
+            "valid": "Lista para revisar",
+            "errors": "{{count}} error(es)",
+            "warnings": "{{count}} advertencia(s)",
+            "issues": {
+                "missing-name": "Añade un nombre de propuesta.",
+                "missing-parcels": "Selecciona al menos una parcela.",
+                "missing-description": "Una descripción ayudará a entender el reemplazo.",
+                "missing-goal": "Elige un tipo de propuesta o un cambio de propiedad.",
+                "invalid-centerline": "El corredor necesita un segmento válido de dos puntos.",
+                "invalid-width": "Define un ancho de corredor mayor que cero.",
+                "preview-pending": "La huella del corredor se reconstruirá al abrir Diseño.",
+                "missing-building": "Crea al menos una huella de edificio.",
+                "invalid-building": "La huella de un edificio no es válida.",
+                "missing-polygons": "Añade al menos una parcela de reemplazo.",
+                "invalid-polygon": "Cada parcela de reemplazo necesita un polígono válido.",
+                "overlapping-polygons": "Las parcelas de reemplazo se superponen.",
+                "coverage-gap": "Las parcelas de reemplazo dejan superficie obligatoria sin cubrir.",
+                "coverage-excess": "Las parcelas de reemplazo exceden la cobertura obligatoria.",
+                "missing-parent-coverage": "Faltan parcelas de origen obligatorias en el plan."
+            }
+        },
+        "autosave": {
+            "saved": "Guardado automáticamente en local",
+            "recoverableError": "Guardado · la publicación falló"
+        },
+        "comparison": {
+            "label": "Modo de comparación",
+            "source": "Solo origen",
+            "draft": "Solo borrador",
+            "overlay": "Superposición"
+        },
+        "actions": {
+            "close": "Cerrar editor",
+            "undo": "Deshacer",
+            "redo": "Rehacer",
+            "useMapSelection": "Usar selección del mapa",
+            "openDesign": "Editar diseño en el mapa",
+            "discard": "Descartar borrador",
+            "discardShort": "Descartar",
+            "review": "Revisar cambios",
+            "back": "Atrás",
+            "createReplacement": "Crear propuesta de reemplazo",
+            "createProposal": "Crear propuesta",
+            "resume": "Continuar",
+            "new": "Nuevo borrador",
+            "closeList": "Cerrar borradores"
+        },
+        "states": {
+            "error": "La publicación falló · recuperable",
+            "invalid": "{{count}} error(es)",
+            "warning": "{{count}} advertencia(s)",
+            "valid": "Lista"
+        },
+        "errors": {
+            "sourceMissing": "No se encontró la propuesta de origen.",
+            "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
+            "readOnly": "Esta propuesta es de solo lectura.",
+            "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
+            "instantCreateFailed": "No se pudo guardar el nuevo objeto — se mantiene como borrador."
+        },
+        "publish": {
+            "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
+            "geometryReady": "Geometría restaurada desde el borrador"
+        },
+        "mapTooltip": "Borrador — haz clic para continuar",
+        "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",
+        "keptAsDraft": "No se pudo terminar este objeto — permanece en Borradores; haz clic en su contorno discontinuo para continuar.",
+        "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
+    },
     "languages": {
         "en": "Inglés",
         "es": "Español",
@@ -608,12 +769,18 @@
             "actions": {
                 "apply": "Aplicar al mapa",
                 "applying": "Aplicando...",
-                "remove": "Quitar del mapa",
+                "remove": "Apartar",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
                 "share": "Compartir propuesta",
-                "copy": "Copiar en una nueva propuesta",
-                "drive": "Conducir por esta vía"
+                "copy": "Editar",
+                "edit": "Editar",
+                "resumeDraft": "Continuar borrador",
+                "editUnavailable": "Esta propuesta no se puede editar de forma segura.",
+                "drive": "Conducir por esta vía",
+                "delete": "Eliminar",
+                "deleteHint": "Elimina el objeto y su idea por completo.",
+                "propose": "Crear propuesta"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -763,8 +930,7 @@
             "acquiringDifficultyTitle": "Dificultad estimada total de adquisición",
             "acquiringDifficultyTooltip": "Menor es mejor. La dificultad de adquisición se calcula según el tipo de propiedad de las parcelas involucradas, con estos coeficientes:\nGobierno: 0\nInstitución: 0\nEmpresa: 1\nIndividual: 2\nEl valor de mercado de cada parcela se multiplica por su tipo de propiedad y todos estos se suman.",
             "acquiringDifficultyDialogOk": "OK",
-            "finishButtonShort": "Terminar segmento (F)",
-            "createButton": "Crear (C)",
+            "finishButtonShort": "Terminar carretera (F)",
             "crossSectionButton": "Editar sección transversal",
             "draftAutosaved": "Borrador guardado automáticamente en este dispositivo",
             "undoButton": "Deshacer (U)",
@@ -775,7 +941,19 @@
             "ownedByGovernmentLabel": "Propiedad del gobierno:",
             "ownedByIndividualsLabel": "Propiedad de particulares:",
             "parcelAreaLabel": "Área de parcela:",
-            "parcelCountLabel": "Número de parcelas:"
+            "parcelCountLabel": "Número de parcelas:",
+            "draftSavedRoadToast": "Carretera guardada como borrador — pulsa R o abre Borradores para continuar.",
+            "draftSavedTrackToast": "Vía guardada como borrador — abre Borradores para continuar.",
+            "builtStatus": "Carretera construida — haz clic para editarla o proponerla.",
+            "builtStatusTrack": "Vía construida — haz clic para editarla o proponerla.",
+            "mergedStatus": "Conectado con “{{name}}” — ahora es una sola carretera.",
+            "mergedStatusTrack": "Conectado con “{{name}}” — ahora es una sola vía.",
+            "absorbedStatus": "Continuando “{{name}}” — al terminar seguirá siendo una sola carretera.",
+            "nodeHint": "Arrastra para mover · ⌥-clic elimina este nodo",
+            "bulldozeHint": "🚜 Demoler este tramo",
+            "splitStatus": "La carretera se separó — ahora son {{count}} carreteras independientes.",
+            "bulldozedAllStatus": "Carretera demolida.",
+            "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta"
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -941,7 +1119,7 @@
             "changeWarning": "Cambiar la fuente de datos BORRARÁ todos los datos guardados localmente (parcelas, carreteras, propuestas, planes, configuraciones de usuario, etc.).\n\n¿Quieres continuar?"
         },
         "dataManagement": {
-            "wipeWarning": "Esto borrará TODOS los datos almacenados localmente (parcelas, carreteras, propuestas, ajustes). ¿Deseas continuar?"
+            "wipeWarning": "Esto borrará TODOS los datos guardados localmente (parcelas, carreteras, propuestas, borradores de propuestas, ajustes). ¿Continuar?"
         },
         "corridor": {
             "title": "Sección transversal",
@@ -1320,7 +1498,8 @@
                     "width": "Ancho de vía:"
                 },
                 "title": "Crear propuesta de vía"
-            }
+            },
+            "editLaterNote": "Puedes editar el perfil de la carretera más tarde — también su ancho."
         },
         "coverage": {
             "title": "Cobertura de parcelas cargadas",

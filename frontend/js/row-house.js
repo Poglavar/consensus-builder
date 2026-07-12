@@ -1099,6 +1099,7 @@
             if (buildingFeature) {
                 generatedRowHouseFeature = buildingFeature;
                 displayRowHouseBuildingInModal(buildingFeature);
+                autosaveRowHouseDraft();
             }
         } catch (_) { }
     }
@@ -1181,6 +1182,46 @@
         }
     }
 
+    // Snapshot live geometry without closing the modal. This is intentionally separate from the
+    // legacy Done handler, which also mutates the global parcel selection and proposal form.
+    function autosaveRowHouseDraft() {
+        const activeDraft = window.getActiveProposalDesignDraft?.();
+        const block = getActiveRowHouseBlock();
+        if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
+            || !generatedRowHouseFeature || !block?.parcels?.length
+            || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
+        const parentDetails = [];
+        const parcelIds = [];
+        block.parcels.forEach(parcel => {
+            const props = parcel?.feature?.properties;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(parcel?.feature)
+                : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+            if (!parcelId) return;
+            const id = String(parcelId);
+            parcelIds.push(id);
+            parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
+        });
+        const feature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
+        window.syncActiveProposalDraftFromEditor('building', {
+            parcelIds,
+            parentDetails,
+            blockName: getRowHouseDisplayName(),
+            parameters: {
+                length: Number(currentBuildingLength),
+                width: Number(currentBuildingWidth),
+                height: Number(currentBuildingHeight),
+                chamfer: Number(currentChamfer),
+                offsetX: Number(currentOffsetX) || 0,
+                offsetY: Number(currentOffsetY) || 0,
+                rotation: Number(currentRotation) || 0,
+                typology: 'row'
+            },
+            buildingFeature: feature,
+            buildings: [feature]
+        }, { coalesceKey: 'row-house-live' });
+    }
+
     // Generate row house in modal
     function generateRowHouseInModal() {
         const block = getActiveRowHouseBlock();
@@ -1226,6 +1267,7 @@
 
             generatedRowHouseFeature = buildingFeature;
             displayRowHouseBuildingInModal(buildingFeature);
+            autosaveRowHouseDraft();
 
             const doneButton = document.getElementById('btn-rowhouse-done');
             if (doneButton) doneButton.disabled = false;
@@ -1635,6 +1677,7 @@
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
                     updateRowHouse3DScene(generatedRowHouseFeature);
                     updateBuildingMetrics(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 }
             });
 
@@ -1784,6 +1827,12 @@
 
     function closeRowHouseModal(options = {}) {
         const { preservePending = false } = options;
+        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
+        if (!preservePending && generatedRowHouseFeature && activeDraft
+            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
+            saveRowHouseDesignForProposal();
+            return;
+        }
 
         if (rowHouseMapResizeObserver) {
             try { rowHouseMapResizeObserver.disconnect(); } catch (_) { }
@@ -1852,6 +1901,7 @@
                 window.pendingRowHouseFromModal = null;
             }
         }
+        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
     }
 
     // Save design for proposal

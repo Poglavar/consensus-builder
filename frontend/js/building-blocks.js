@@ -101,10 +101,16 @@ function showBuildingAlert(key, fallback, params = {}) {
     return message;
 }
 
-function setPendingBuildingProposalContext(ctx) {
+function setPendingBuildingProposalContext(ctx, options = {}) {
     pendingBuildingProposalContext = ctx || null;
     if (typeof window !== 'undefined') {
         window.pendingBuildingProposalContext = pendingBuildingProposalContext;
+        if (pendingBuildingProposalContext && options.fromDraft !== true
+            && typeof window.syncActiveProposalDraftFromEditor === 'function') {
+            window.syncActiveProposalDraftFromEditor('building', pendingBuildingProposalContext, {
+                coalesceKey: options.coalesceKey || 'building-design'
+            });
+        }
     }
 }
 
@@ -2142,6 +2148,14 @@ function syncBlockifyControlsFromState() {
 // Function to close the blockify modal
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
+    const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
+    const hasDraftGeometry = !!generatedBuildingFeature
+        || (Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length > 0);
+    if (!preservePending && hasDraftGeometry && activeDraft
+        && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
+        saveBlockifyDesignForProposal();
+        return;
+    }
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -2218,6 +2232,7 @@ function closeBlockifyModal(options = {}) {
             window.pendingBuildingFromBlockify = null;
         }
     }
+    if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
 }
 
 // Display the block on the blockify map
@@ -2952,6 +2967,62 @@ function generateBuildingInModal() {
     }
 }
 
+function autosaveBlockifyDraft(featuresOverride = null) {
+    const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
+    const block = getActiveBlockifyBlock();
+    const features = Array.isArray(featuresOverride)
+        ? featuresOverride.filter(Boolean)
+        : (featuresOverride ? [featuresOverride] : (generatedBuildingFeatures?.length ? generatedBuildingFeatures : [generatedBuildingFeature].filter(Boolean)));
+    if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
+        || !features.length || !block?.parcels?.length
+        || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
+    const parcelIds = [];
+    const parentDetails = [];
+    block.parcels.forEach(parcel => {
+        const props = parcel?.feature?.properties;
+        const parcelId = typeof ensureParcelId === 'function'
+            ? ensureParcelId(parcel?.feature)
+            : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+        if (!parcelId) return;
+        const id = String(parcelId);
+        parcelIds.push(id);
+        parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
+    });
+    const buildings = JSON.parse(JSON.stringify(features));
+    const algorithmSelect = document.getElementById('algorithm-select');
+    const parameters = blockifyMode === 'existing'
+        ? {
+            mode: 'existing',
+            rule: existingRule,
+            proposedHeightFloors: currentProposedHeightFloors,
+            additionalFloors: currentAdditionalFloors,
+            floorHeightM: currentFloorHeightM,
+            algorithm: null
+        }
+        : {
+            mode: blockifyMode,
+            simplify: Number(currentSimplifyM),
+            gaps: JSON.parse(JSON.stringify(gapPositions || [])),
+            wings: JSON.parse(JSON.stringify(wingPositions || [])),
+            manualOuterRing: blockifyMode === 'manual' && Array.isArray(manualOuterRing)
+                ? manualOuterRing.map(coordinate => [coordinate[0], coordinate[1]])
+                : null,
+            width: Number(currentBuildingWidth),
+            height: Number(currentBuildingHeight),
+            setback: Number(currentSetback),
+            chamfer: Number(currentChamferM),
+            algorithm: algorithmSelect?.value || null
+        };
+    window.syncActiveProposalDraftFromEditor('building', {
+        parcelIds,
+        parentDetails,
+        blockName: getBlockifyDisplayName(),
+        parameters,
+        buildingFeature: buildings[0] || null,
+        buildings
+    }, { coalesceKey: 'blockify-live' });
+}
+
 // Function to display the building in the modal map
 function displayBuildingInModal(buildingFeature) {
     if (blockifyBuildingLayer) {
@@ -2969,6 +3040,7 @@ function displayBuildingInModal(buildingFeature) {
             }
         }).addTo(blockifyMap);
         try { updateBlockify3DScene(buildingFeature); } catch (e) { console.warn('3D update failed', e); }
+        autosaveBlockifyDraft(buildingFeature);
     }
 }
 
@@ -3341,6 +3413,7 @@ function displayBuildingsInModal(features) {
         }
     }).addTo(blockifyMap);
     try { updateBlockify3DScene(features); } catch (e) { console.warn('3D update failed', e); }
+    autosaveBlockifyDraft(features);
 }
 
 // Build the block from the user-edited outer ring: re-inset by the (frozen) building width so it

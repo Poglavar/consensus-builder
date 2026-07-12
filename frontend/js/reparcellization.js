@@ -237,7 +237,13 @@
         state.hasFitBounds = false;
     }
 
-    function closeModal() {
+    function closeModal(options = {}) {
+        if (options.skipPersist !== true && state.slices.length
+            && window.getActiveProposalDesignDraft?.()?.goal === 'reparcellization') {
+            // Closing is non-destructive: snapshot the current polygons even when validation still
+            // reports gaps/overlaps, so the user can repair them after reopening.
+            persistResult();
+        }
         cancelDraw();
         destroyMap();
         if (state.modal) {
@@ -264,6 +270,7 @@
         state.uploadedGeometry = null;
         state.selectedSliceIndex = null;
         dismissOwnerPopup();
+        window.finishProposalDraftDesignSession?.();
     }
 
     function buildModalStructure() {
@@ -368,7 +375,7 @@
                 if (btn.disabled) return;
                 persistResult();
                 ensureProposalDefaults();
-                closeModal();
+                closeModal({ skipPersist: true });
                 if (typeof showEphemeralMessage === 'function') {
                     let savedMessage = t(
                         'status.messages.saved_reparcellization_layout_to_the_proposal',
@@ -619,6 +626,9 @@
     function updateCommitState() {
         const c = evaluatePlanCompleteness();
         ensureCommitAvailability(c.ok);
+        if (state.slices.length && window.getActiveProposalDesignDraft?.()?.goal === 'reparcellization') {
+            persistResult();
+        }
         if (!state.coverageEl) return;
         if (!state.slices.length) {
             state.coverageEl.textContent = '';
@@ -2116,6 +2126,11 @@
             }))
         };
         window.pendingReparcellizationPlan = payload;
+        if (typeof window.syncActiveProposalDraftFromEditor === 'function') {
+            window.syncActiveProposalDraftFromEditor('reparcellization', payload, {
+                coalesceKey: 'reparcellization-design'
+            });
+        }
         if (state.commitBtns && state.commitBtns.length) {
             state.commitBtns.forEach(btn => { btn.disabled = false; });
         }

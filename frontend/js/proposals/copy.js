@@ -355,6 +355,12 @@ function copyProposalI18n(key, fallback, params) {
 
 // Entry point, wired to the "Copy into new proposal" button in the details panel.
 async function copyProposalIntoNewProposal(proposalIdOrHash) {
+    // Backwards-compatible entry point for shared links or cached UI that still invokes the old
+    // action name. The editor dialog is retired: proposing from an object goes straight to the
+    // prefilled create dialog.
+    if (typeof proposeExistingProposal === 'function') {
+        return proposeExistingProposal(proposalIdOrHash);
+    }
     if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) return;
 
     const source = (typeof getProposalByIdOrHash === 'function')

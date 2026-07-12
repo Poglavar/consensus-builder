@@ -334,6 +334,13 @@ async function createProposal() {
     console.debug('[createProposal] START - Create proposal button clicked');
     const startTime = performance.now();
     const t = getProposalI18nHelper();
+    const publishingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
+        ? String(window.pendingProposalDraftId)
+        : null;
+    const markDraftPublishFailed = (error) => {
+        if (!publishingDraftId || !window.proposalDraftStore?.getDraft?.(publishingDraftId)) return;
+        window.proposalDraftStore.markPublishFailed(publishingDraftId, error);
+    };
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
@@ -585,6 +592,27 @@ async function createProposal() {
 
         const normalizedParentParcelIds = finalParcelIds.map(id => id && id.toString ? id.toString() : String(id));
 
+        if (publishingDraftId && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
+            window.proposalDraftStore.updateDraft(publishingDraftId, {
+                fields: {
+                    name: proposalName || proposalType,
+                    description,
+                    parentParcelIds: normalizedParentParcelIds,
+                    offer,
+                    offerCurrency,
+                    acquisitionMode,
+                    boundaryAdjustment: boundaryMode,
+                    isConditional,
+                    expiresAt,
+                    decayEnabled,
+                    decayPercent,
+                    decayDurationMs,
+                    depositEnabled,
+                    depositPercent
+                }
+            }, { coalesceKey: 'publish-form' });
+        }
+
         const proposal = {
             author,
             title: proposalName || proposalType, // Keep a stable human-readable title
@@ -625,6 +653,17 @@ async function createProposal() {
         if (proposalCopySource && proposalCopySource.proposalId) {
             proposal.copiedFromProposalId = String(proposalCopySource.proposalId);
             proposal.copiedFromName = proposalCopySource.name || null;
+        }
+        if (publishingDraftId) {
+            const source = window.pendingProposalReplacementSource || {};
+            const draft = window.proposalDraftStore?.getDraft?.(publishingDraftId);
+            const immutableSourceId = draft?.sourceProposalId || source.proposalId || proposal.copiedFromProposalId || null;
+            if (immutableSourceId) {
+                proposal.sourceProposalId = String(immutableSourceId);
+                proposal.replacementOfProposalId = String(immutableSourceId);
+            }
+            proposal.proposalDraftId = publishingDraftId;
+            proposal.proposalDraftRevision = draft?.revision ?? source.revision ?? null;
         }
 
         if (selectedTool === 'decide-later') {
@@ -999,10 +1038,31 @@ async function createProposal() {
             }
         }
 
+        if (publishingDraftId) {
+            const validatedDraft = window.proposalDraftStore?.validateDraft?.(publishingDraftId);
+            if (!validatedDraft?.validation?.valid) {
+                const validationError = new Error('Draft validation failed before publishing.');
+                validationError.code = 'DRAFT_VALIDATION_FAILED';
+                validationError.validation = validatedDraft?.validation || null;
+                markDraftPublishFailed(validationError);
+                throw validationError;
+            }
+            window.proposalDraftStore.markPublishing(publishingDraftId);
+        }
+
         let hash = null;
 
         // Try to mint on-chain if blockchain is available and parcels have NFTs
-        let onchainResult = null;
+        const recoveredPublish = publishingDraftId
+            ? window.proposalDraftStore?.getDraft?.(publishingDraftId)?.publish
+            : null;
+        let onchainResult = recoveredPublish?.onchainResult || null;
+        if (onchainResult && recoveredPublish?.proposalOnchain) {
+            proposal.onchain = { ...recoveredPublish.proposalOnchain };
+            proposal.nft = recoveredPublish.proposalNft ? { ...recoveredPublish.proposalNft } : undefined;
+            shouldMintOnchain = false;
+            console.info('[createProposal] Reusing the persisted on-chain result for this draft publish operation.');
+        }
         // walletManager already declared above
         let hasWalletProvider = (walletManager && walletManager.getProvider()) || isSolanaWalletConnected || cantonActive;
 
@@ -1072,6 +1132,7 @@ async function createProposal() {
                     hideWaitingPopupSafe();
                     setProposalModalInteractivity(true);
                     setProposalCreateButtonState(false);
+                    markDraftPublishFailed(Object.assign(new Error('Wallet connection was cancelled or timed out.'), { code: 'WALLET_CONNECTION_CANCELLED' }));
                     return;
                 } else {
                     // Wallet connected - check provider again
@@ -1083,6 +1144,7 @@ async function createProposal() {
                 const connectWallet = confirm(walletPrompt);
                 if (connectWallet && walletManager && typeof walletManager.openConnectorModal === 'function') {
                     walletManager.openConnectorModal();
+                    markDraftPublishFailed(Object.assign(new Error('Connect the wallet, then retry publishing.'), { code: 'WALLET_CONNECTION_REQUIRED' }));
                     return; // User will need to click Create Proposal again after connecting
                 }
             }
@@ -1622,6 +1684,7 @@ async function createProposal() {
                     updateStatus('Proposal creation cancelled.');
                     setProposalModalInteractivity(true);
                     setProposalCreateButtonState(false);
+                    markDraftPublishFailed(error);
                     return;
                 }
 
@@ -1636,6 +1699,7 @@ async function createProposal() {
                     updateStatus('Proposal creation cancelled.');
                     setProposalModalInteractivity(true);
                     setProposalCreateButtonState(false);
+                    markDraftPublishFailed(error);
                     return;
                 }
 
@@ -1643,6 +1707,17 @@ async function createProposal() {
                 shouldMintOnchain = false;
                 onchainResult = null;
             }
+        }
+
+        if (publishingDraftId && onchainResult && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
+            window.proposalDraftStore.updateDraft(publishingDraftId, {
+                publish: {
+                    onchainResult: { ...onchainResult },
+                    proposalOnchain: proposal.onchain ? { ...proposal.onchain } : null,
+                    proposalNft: proposal.nft ? { ...proposal.nft } : null,
+                    externalPersistenceComplete: true
+                }
+            }, { force: true, recordHistory: false, dirty: false });
         }
 
         // Persist proposal after on-chain handling (or local-only)
@@ -1661,14 +1736,15 @@ async function createProposal() {
             updateStatus('Unable to save proposal.');
             setProposalModalInteractivity(true);
             setProposalCreateButtonState(false);
+            markDraftPublishFailed(Object.assign(new Error('Unable to save the replacement proposal.'), { code: 'PROPOSAL_STORAGE_FAILED' }));
             return;
         }
         const storedForOnchain = proposalStorage.getProposal(proposalId);
         const storedProposalId = storedForOnchain?.proposalId || proposal.proposalId || proposalId;
-        // A geometry draft survives modal closes and failed saves. Only a successfully persisted
-        // corridor proposal consumes it.
-        if (proposal.goal === 'road-track' && typeof clearActiveCorridorDraft === 'function') {
-            clearActiveCorridorDraft();
+        // Every editor draft survives modal closes and failures. Only successful proposal
+        // persistence consumes it, atomically recording a receipt for retry idempotency.
+        if (publishingDraftId && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
+            window.proposalDraftStore.consumeAfterPublish(publishingDraftId, storedProposalId);
         }
 
         // Update stored proposal with on-chain data if available
@@ -1751,6 +1827,51 @@ async function createProposal() {
             }
         }
 
+        // SimCity lifecycle: what you create is immediately on the map. Overlapping applied
+        // proposals get auto-parked (never deleted) by the parent-availability gate; if apply
+        // still fails, the proposal simply stays parked in the list.
+        // Roads never warn or park: corridors take partial slices, so a road sharing parcels with
+        // another (without touching it) coexists silently; touching roads merge in the draw flow.
+        const autoApplyOptions = (resolveProposalGoalKey(proposal, null) === 'road-track')
+            ? { applyAnyway: true, suppressMissingParentAlerts: true }
+            : { autoParkConflicts: true };
+        try {
+            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+                await ProposalManager.applyProposal(proposalId, autoApplyOptions);
+                // The manager applies data + parcels; derived layers (corridor cross-sections,
+                // structure layers, parcel styles) refresh through the same helper the panel
+                // buttons use.
+                try { ProposalManager._refreshUIAfterProposalChange?.(proposalStorage.getProposal(proposalId)); } catch (_) { }
+            }
+        } catch (applyError) {
+            console.warn('[createProposal] Auto-apply failed; proposal stays parked', applyError);
+        }
+
+        // Proposing an existing LOCAL object absorbs it: the record it was created from is
+        // removed, so exactly one thing remains on the map and in the list. A minted source is
+        // immutable — it stays behind, parked as superseded by the replacement.
+        try {
+            const absorbedSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
+            const sourceRecord = absorbedSourceId ? proposalStorage.getProposal(absorbedSourceId) : null;
+            if (sourceRecord && !(typeof isProposalMinted === 'function' && isProposalMinted(sourceRecord))) {
+                if (typeof isProposalApplied === 'function' && isProposalApplied(sourceRecord)) {
+                    await ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true });
+                }
+                proposalStorage.removeProposal(absorbedSourceId);
+                // The stored replacement no longer supersedes anything — its source is gone.
+                const storedReplacement = proposalStorage.getProposal(proposalId);
+                if (storedReplacement) {
+                    delete storedReplacement.replacementLifecycle;
+                    delete storedReplacement.supersedesProposalIds;
+                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(storedReplacement);
+                    if (typeof proposalStorage.save === 'function') proposalStorage.save();
+                }
+                try { ProposalManager._refreshUIAfterProposalChange?.(storedReplacement); } catch (_) { }
+            }
+        } catch (absorbError) {
+            console.warn('[createProposal] Could not absorb the local source object', absorbError);
+        }
+
         const focusParcelId = proposal.parentParcelIds[0] || null;
         const openProposalDetails = () => {
             if (!waitingPopupVisible) {
@@ -1786,6 +1907,7 @@ async function createProposal() {
 
     } catch (error) {
         console.error('Error creating proposal:', error);
+        markDraftPublishFailed(error);
         const fallback = t('alerts.messages.failed_to_create_proposal', 'Failed to create proposal.');
         const message = (error && error.message) ? error.message : fallback;
         if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {

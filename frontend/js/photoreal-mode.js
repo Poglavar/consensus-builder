@@ -348,6 +348,12 @@
         try {
             await ensureViewer();
             active = true;
+            if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
+                window.renderProposalDraftComparison(
+                    window.activeProposalDraftComparison.draftId,
+                    window.activeProposalDraftComparison.mode || 'overlay'
+                );
+            }
             try { viewer.resize(); } catch (_) { }
             if (entryView) {
                 // Aim at the matched view immediately so we skip straight to the loading view —
@@ -380,6 +386,12 @@
         const el = containerEl();
         if (el) el.classList.remove('active');
         document.body.classList.remove('realistic-mode-active');
+        if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
+            window.renderProposalDraftComparison(
+                window.activeProposalDraftComparison.draftId,
+                window.activeProposalDraftComparison.mode || 'overlay'
+            );
+        }
         const btn = toggleBtn();
         if (btn) btn.classList.remove('active');
         if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();

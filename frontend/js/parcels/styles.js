@@ -117,6 +117,13 @@
         const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
 
+        // Corridor/track detection needs the layer's feature flags. Callers that only have an id
+        // would otherwise drop a corridor slice into the generic dark road style — resolve the
+        // layer ourselves so the quiet corridor footprint survives every restyle path.
+        if (!layer && idStr && global.parcelLayerById instanceof Map) {
+            layer = global.parcelLayerById.get(idStr) || null;
+        }
+
         // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
         let trackFlag = typeof isTrackOverride === 'boolean' ? isTrackOverride : false;
         if (!trackFlag && layer) {

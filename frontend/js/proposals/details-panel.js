@@ -500,9 +500,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const buttonLabel = activeRoadReplacement
             ? tProposal('panel.proposal.actions.includedInRoad', 'Included in combined road')
             : (appliedState
-                ? tProposal('panel.proposal.actions.remove', 'Remove from map')
+                ? tProposal('panel.proposal.actions.remove', 'Stash')
                 : tProposal('panel.proposal.actions.apply', 'Apply to map'));
-        const iconClass = appliedState ? 'fa-eye-slash' : 'fa-check';
+        const iconClass = appliedState ? 'fa-box-archive' : 'fa-check';
         const isDisabled = isApplyAction && (applyDisabledForType || !!activeRoadReplacement);
         const buttonClass = appliedState
             ? 'btn btn-warning'
@@ -537,23 +537,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    // Proposals are immutable, so there is no "edit" — you fork into a new, editable draft that
-    // points back at this one.
-    const copyButtonHtml = proposalKey
+    // There is no editor dialog. Selection is direct manipulation (corridors: node handles +
+    // cross-section), and the terms/details complexity lives behind one "Create proposal"
+    // action that opens the create dialog prefilled from the object — submitting absorbs the
+    // unminted source, so re-proposing IS how terms get edited. Minted objects are immutable.
+    const editButtonHtml = (proposalKey && !isMinted)
         ? `
-        <button class="btn btn-outline-secondary btn-copy-proposal" onclick="copyProposalIntoNewProposal('${proposalKey}')">
-            <i class="fas fa-clone"></i> ${tProposal('panel.proposal.actions.copy', 'Copy into new proposal')}
-        </button>
-    `
-        : '';
-
-    // A road's cross-section can be reshuffled without moving the road. Applying the edit reopens its
-    // geometry in the drawing tool; proposal creation remains a separate, explicit step there.
-    const corridorProposal = fullProposal || proposal;
-    const corridorButtonHtml = (proposalKey && typeof proposalHasEditableCorridor === 'function' && proposalHasEditableCorridor(corridorProposal))
-        ? `
-        <button class="btn btn-outline-secondary btn-corridor-profile" onclick="openCorridorProfileEditor('${proposalKey}')">
-            <i class="fas fa-road"></i> ${tProposal('panel.proposal.actions.crossSection', 'Cross-section')}
+        <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
+            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.propose', 'Create proposal')}
         </button>
     `
         : '';
@@ -586,14 +577,39 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // Node-edit mode companion: an applied local corridor edits its cross-section in place.
+    // Minted corridors are immutable and use the Edit (replacement) flow instead.
+    const corridorProfileEditable = !!(proposalKey && appliedState
+        && (fullProposal?.roadProposal?.definition || proposal?.roadProposal?.definition)
+        && typeof openCorridorProfileEditor === 'function'
+        && !isMinted);
+    const crossSectionButtonHtml = corridorProfileEditable
+        ? `
+        <button class="btn btn-outline-secondary btn-cross-section" onclick="openCorridorProfileEditor('${proposalKey}')">
+            <i class="fas fa-road"></i> ${tProposal('panel.road.crossSectionButton', 'Edit cross-section')}
+        </button>
+    `
+        : '';
+
+    // SimCity object actions: an object on the map can be edited, parked, or deleted right here.
+    const deleteButtonHtml = (proposalKey && typeof deleteProposal === 'function')
+        ? `
+        <button class="btn btn-outline-danger btn-delete-proposal" onclick="deleteProposal('${proposalKey}')"
+            title="${tProposal('panel.proposal.actions.deleteHint', 'Deletes the object and its idea entirely.')}">
+            <i class="fas fa-trash"></i> ${tProposal('panel.proposal.actions.delete', 'Delete')}
+        </button>
+    `
+        : '';
+
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${buyButtonHtml}
+            ${editButtonHtml}
+            ${crossSectionButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
-            ${driveButtonHtml}
             ${shareButtonHtml}
-            ${corridorButtonHtml}
-            ${copyButtonHtml}
+            ${driveButtonHtml}
+            ${deleteButtonHtml}
         </div>
     `;
 
@@ -603,7 +619,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // "Based on <name>" — set when this proposal was forked via "Copy into new proposal". The
     // link jumps to the source; fall back to the stored name if the source is no longer local.
-    const copiedFromId = (fullProposal && fullProposal.copiedFromProposalId) || proposal.copiedFromProposalId || null;
+    const copiedFromId = (fullProposal && (fullProposal.sourceProposalId || fullProposal.replacementOfProposalId || fullProposal.copiedFromProposalId))
+        || proposal.sourceProposalId || proposal.replacementOfProposalId || proposal.copiedFromProposalId || null;
     let copiedFromHtml = '';
     if (copiedFromId) {
         const storedName = (fullProposal && fullProposal.copiedFromName) || proposal.copiedFromName || null;

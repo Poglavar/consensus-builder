@@ -2314,6 +2314,49 @@ const ProposalManager = {
         return restored;
     },
 
+    _beginReplacementSupersession(proposalId, proposalData) {
+        if (typeof beginReplacementSupersession !== 'function') return null;
+        const transaction = beginReplacementSupersession(proposalData, proposalId, id => _getProposalRecord(id));
+        if (transaction && typeof proposalStorage.save === 'function') proposalStorage.save();
+        return transaction;
+    },
+
+    _commitReplacementSupersession(proposalId, proposalData) {
+        if (typeof commitReplacementSupersession !== 'function') return null;
+        const transaction = commitReplacementSupersession(proposalData, proposalId, id => _getProposalRecord(id));
+        if (transaction && typeof proposalStorage.save === 'function') proposalStorage.save();
+        return transaction;
+    },
+
+    async _restoreReplacementSource(proposalId, proposalData) {
+        if (!proposalData || proposalData.roadProposal || typeof releaseReplacementSource !== 'function') return null;
+        if (typeof proposalIsAppliedForReplacement === 'function' && proposalIsAppliedForReplacement(proposalData)) return null;
+        const restoration = releaseReplacementSource(proposalData, proposalId, id => _getProposalRecord(id));
+        if (!restoration) return null;
+        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+        if (!restoration.shouldReapply || !restoration.source) return restoration;
+        try {
+            const restored = await this.applyProposal(restoration.sourceId, {
+                applyAnyway: true,
+                _restoringReplacementSource: true
+            });
+            if (!restored) throw new Error('The source proposal could not be reapplied.');
+            delete proposalData.replacementRestorationError;
+            if (typeof proposalStorage.save === 'function') proposalStorage.save();
+        } catch (error) {
+            if (typeof markReplacementRestorationFailed === 'function') {
+                markReplacementRestorationFailed(proposalData, restoration.sourceId, error);
+            }
+            if (typeof proposalStorage.save === 'function') proposalStorage.save();
+            console.error('[ProposalManager] Failed to restore replacement source', {
+                proposalId,
+                sourceProposalId: restoration.sourceId,
+                error
+            });
+        }
+        return restoration;
+    },
+
     async applyProposal(proposalId, options = {}) {
         const safeId = _normalizeProposalId(proposalId) || '';
         const applyOptions = options || {};
@@ -2329,6 +2372,18 @@ const ProposalManager = {
         if (!proposalData) {
             console.warn(`[ProposalManager.applyProposal] Proposal not found: ${safeId}`);
             return false;
+        }
+
+        if (typeof activeReplacementSuperseder === 'function') {
+            const superseder = activeReplacementSuperseder(proposalData, id => _getProposalRecord(id));
+            if (superseder) {
+                const replacementName = superseder.title || superseder.name || superseder.proposalName || superseder.proposalId || 'the replacement proposal';
+                const message = `This proposal is superseded by “${replacementName}”. Remove the replacement from the map before applying this source.`;
+                try { this._setLastApplyFailure(safeId, message); } catch (_) { }
+                try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+                try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'warning'); } catch (_) { }
+                return false;
+            }
         }
 
         // A copied road that has been incorporated into an applied replacement is deliberately parked:
@@ -2470,6 +2525,8 @@ const ProposalManager = {
             return false;
         }
 
+        if (goalKey !== 'road-track') this._beginReplacementSupersession(safeId, proposalData);
+
         result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
             if (goalKey === 'road-track') {
                 return await this._applyRoadProposal(safeId, proposalData, applyOptions);
@@ -2492,6 +2549,7 @@ const ProposalManager = {
 
         if (result) {
             if (goalKey === 'road-track') this._supersedeCopiedRoadSource(safeId, proposalData);
+            else this._commitReplacementSupersession(safeId, proposalData);
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
         }
         return result;
@@ -4435,7 +4493,10 @@ const ProposalManager = {
 
         const normalizedStatus = (currentStatus || '').toLowerCase();
 
-        if (normalizedStatus === 'unapplied') return true;
+        if (normalizedStatus === 'unapplied') {
+            await this._restoreReplacementSource(proposalId, proposalData);
+            return true;
+        }
 
         const descendantProposals = this.findDescendantTree(proposalId).map(node => node.proposalId);
         const childParcels = this._getProposalChildParcels(proposalId) || [];
@@ -4479,6 +4540,8 @@ const ProposalManager = {
         } else if (isDecideLater) {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalId));
         }
+
+        await this._restoreReplacementSource(proposalId, proposalData);
 
         // Refresh UI after unapply
         this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
@@ -4531,7 +4594,10 @@ const ProposalManager = {
         })();
 
         const normalizedStatus = (currentStatus || '').toLowerCase();
-        if (normalizedStatus === 'unapplied') return;
+        if (normalizedStatus === 'unapplied') {
+            await this._restoreReplacementSource(proposalKey, proposalData);
+            return;
+        }
 
         if (isRoad) {
             await this._unapplyProposalConfirmed(proposalKey);
@@ -4544,6 +4610,7 @@ const ProposalManager = {
         } else if (isDecideLater) {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalKey));
         }
+        await this._restoreReplacementSource(proposalKey, proposalData);
     },
 
     /**
@@ -7134,6 +7201,25 @@ const ProposalManager = {
                 analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
             } catch (err) {
                 console.warn(`[${idLabel}] Failed to fetch not-loaded parent parcels before apply`, err);
+            }
+        }
+
+        // SimCity-style creation: the freshest drawing wins. When the caller opts in, occupying
+        // proposals are parked (unapplied, never deleted) instead of asking — but only when every
+        // conflict can be unapplied cleanly; dependency chains still go through the modal, and
+        // genuinely missing parcels always do.
+        if (options && options.autoParkConflicts === true
+            && analysis.conflicts.length > 0
+            && analysis.notLoaded.length === 0
+            && analysis.conflicts.every(conflict => conflict.canUnapplyCleanly)) {
+            const parked = [];
+            for (const conflict of analysis.conflicts) {
+                const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true });
+                if (done !== false) parked.push(conflict.title);
+            }
+            analysis = this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel);
+            if (parked.length && typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(`Parked ${parked.map(title => `“${title}”`).join(', ')} — still in your proposals list.`, 5000, 'info');
             }
         }
 

@@ -2,6 +2,167 @@
     "multitab": {
         "warning": "Aplikacija je već otvorena u drugoj kartici. Da se spremljeni prijedlozi ne izgube, promjene u ovoj kartici neće se spremiti — zatvorite ostale kartice i ponovno učitajte ovu za uređivanje."
     },
+    "proposalDrafts": {
+        "title": "Skice",
+        "entryAria": "Otvori {{count}} spremljenih skica prijedloga",
+        "editorAria": "Uređivač skice prijedloga",
+        "unknownCity": "Nepoznati grad",
+        "proposal": "Prijedlog",
+        "untitled": "Skica bez naslova",
+        "source": "Izvor: {{id}}",
+        "newDraft": "Skica novog prijedloga",
+        "noParcels": "Nema odabranih čestica",
+        "yes": "Da",
+        "no": "Ne",
+        "empty": "Još nema spremljenih skica prijedloga.",
+        "confirmDiscard": "Odbaciti ovu lokalno spremljenu skicu? To se ne može poništiti.",
+        "tabs": {
+            "design": "Dizajn",
+            "parcels": "Čestice",
+            "ownership": "Vlasništvo",
+            "terms": "Uvjeti",
+            "details": "Detalji"
+        },
+        "time": {
+            "justNow": "upravo sada",
+            "minutes": "prije {{count}} min",
+            "hours": "prije {{count}} h",
+            "days": "prije {{count}} d"
+        },
+        "sections": {
+            "detailsTitle": "Detalji prijedloga",
+            "detailsCopy": "Jasno opišite zamjenu. Izvorni prijedlog ostaje nepromjenjiv.",
+            "parcelsTitle": "Obuhvaćene čestice",
+            "parcelsCopy": "Upotrijebite trenutačni odabir na karti ili izravno uredite ID-ove čestica.",
+            "ownershipTitle": "Vlasništvo",
+            "ownershipCopy": "Odredite tko prima zemljište i eventualno ograničenje primatelja.",
+            "termsTitle": "Uvjeti",
+            "termsCopy": "Prilagodite financiranje, istek, opadanje i polog.",
+            "designTitle": "Dizajn",
+            "designCopy": "Uredite izvornu geometriju i parametre u postojećem alatu povezanom s kartom."
+        },
+        "fields": {
+            "name": "Naziv",
+            "type": "Vrsta prijedloga",
+            "corridorKind": "Vrsta koridora",
+            "description": "Opis",
+            "parcelIds": "ID-ovi čestica",
+            "ownership": "Promjena vlasništva",
+            "recipientScope": "Opseg primatelja",
+            "recipientAddress": "Adresa ili naziv primatelja",
+            "offer": "Ponuda",
+            "currency": "Valuta",
+            "conditional": "Uvjetna isplata",
+            "expiry": "Istječe",
+            "decay": "Opadanje ponude",
+            "percent": "Postotak",
+            "durationMs": "Trajanje (ms)",
+            "deposit": "Polog"
+        },
+        "ownership": {
+            "inherit": "Zadrži postavku izvora",
+            "noChange": "Bez promjene",
+            "toMe": "Meni",
+            "toCity": "Gradu",
+            "thirdParty": "Trećoj strani",
+            "perSlice": "Po zamjenskoj čestici",
+            "notApplicable": "Nije primjenjivo",
+            "anyone": "Bilo tko",
+            "specific": "Određeni primatelj"
+        },
+        "design": {
+            "corridorSummary": "{{segments}} segment(a) · širina {{width}} m",
+            "buildingSummary": "{{count}} zgrada · {{typology}}",
+            "reparcelSummary": "{{count}} zamjenskih čestica · {{algorithm}}",
+            "parcelSummary": "{{count}} obuhvaćenih čestica",
+            "manual": "ručno",
+            "road": "Cesta",
+            "track": "Pruga",
+            "parcelOnly": "Ovaj prijedlog nema zasebnu geometriju dizajna. Isticanje čestica ostaje aktivno dok uređujete ostale stavke.",
+            "unavailable": "Ovaj uređivač dizajna nije dostupan."
+        },
+        "review": {
+            "title": "Pregled promjena",
+            "immutableNotice": "Objava stvara novi nepromjenjivi prijedlog. Izvor se ne mijenja niti uklanja.",
+            "newProposal": "Novi prijedlog",
+            "noSource": "Nema izvornog prijedloga",
+            "details": "Detalji",
+            "noFacetChanges": "Nema promjena metapodataka",
+            "parcels": "Čestice",
+            "geometry": "Geometrija",
+            "changed": "Promijenjeno",
+            "unchanged": "Nepromijenjeno"
+        },
+        "validation": {
+            "valid": "Spremno za pregled",
+            "errors": "{{count}} pogrešaka",
+            "warnings": "{{count}} upozorenja",
+            "issues": {
+                "missing-name": "Dodajte naziv prijedloga.",
+                "missing-parcels": "Odaberite barem jednu česticu.",
+                "missing-description": "Opis će drugima pomoći razumjeti zamjenu.",
+                "missing-goal": "Odaberite vrstu prijedloga ili promjenu vlasništva.",
+                "invalid-centerline": "Koridor treba valjani segment s dvije točke.",
+                "invalid-width": "Postavite širinu koridora veću od nule.",
+                "preview-pending": "Obuhvat koridora obnovit će se pri otvaranju Dizajna.",
+                "missing-building": "Izradite barem jedan tlocrt zgrade.",
+                "invalid-building": "Tlocrt zgrade nije valjan.",
+                "missing-polygons": "Dodajte barem jednu zamjensku česticu.",
+                "invalid-polygon": "Svaka zamjenska čestica treba valjani poligon.",
+                "overlapping-polygons": "Zamjenske čestice se preklapaju.",
+                "coverage-gap": "Zamjenske čestice ne pokrivaju cijelo potrebno područje.",
+                "coverage-excess": "Površina zamjenskih čestica premašuje potrebno područje.",
+                "missing-parent-coverage": "Planu nedostaju obvezne izvorne čestice."
+            }
+        },
+        "autosave": {
+            "saved": "Automatski spremljeno lokalno",
+            "recoverableError": "Spremljeno · objava nije uspjela"
+        },
+        "comparison": {
+            "label": "Način usporedbe",
+            "source": "Samo izvor",
+            "draft": "Samo skica",
+            "overlay": "Preklopljeno"
+        },
+        "actions": {
+            "close": "Zatvori uređivač",
+            "undo": "Poništi",
+            "redo": "Ponovi",
+            "useMapSelection": "Upotrijebi odabir s karte",
+            "openDesign": "Uredi dizajn na karti",
+            "discard": "Odbaci skicu",
+            "discardShort": "Odbaci",
+            "review": "Pregledaj promjene",
+            "back": "Natrag",
+            "createReplacement": "Stvori zamjenski prijedlog",
+            "createProposal": "Stvori prijedlog",
+            "resume": "Nastavi",
+            "new": "Nova skica",
+            "closeList": "Zatvori skice"
+        },
+        "states": {
+            "error": "Objava nije uspjela · moguće je nastaviti",
+            "invalid": "{{count}} pogrešaka",
+            "warning": "{{count}} upozorenja",
+            "valid": "Spremno"
+        },
+        "errors": {
+            "sourceMissing": "Izvorni prijedlog nije pronađen.",
+            "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
+            "readOnly": "Ovaj se prijedlog može samo pregledavati.",
+            "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
+            "instantCreateFailed": "Novi objekt nije bilo moguće spremiti — ostaje kao skica."
+        },
+        "publish": {
+            "alreadyCreated": "Ova je skica već stvorila prijedlog {{id}}.",
+            "geometryReady": "Geometrija je vraćena iz skice"
+        },
+        "mapTooltip": "Skica — kliknite za nastavak",
+        "noGeometryYet": "Ova skica još nema geometriju — počnite crtati da je dobije.",
+        "keptAsDraft": "Objekt nije bilo moguće dovršiti — ostaje u Skicama; kliknite njegov iscrtkani obris za nastavak.",
+        "builtButParked": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu (blokirao ga je sukob). Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite."
+    },
     "languages": {
         "en": "Engleski",
         "es": "Španjolski",
@@ -585,12 +746,18 @@
             "actions": {
                 "apply": "Primijeni na kartu",
                 "applying": "Primjenjivanje...",
-                "remove": "Ukloni s karte",
+                "remove": "Skloni",
                 "includedInRoad": "Uključeno u spojenu cestu",
                 "includedInRoadHint": "Uklonite {{name}} s karte kako biste vratili ovu cestu.",
                 "share": "Podijeli prijedlog",
-                "copy": "Kopiraj u novi prijedlog",
-                "drive": "Vozi ovom prugom"
+                "copy": "Uredi",
+                "edit": "Uredi",
+                "resumeDraft": "Nastavi skicu",
+                "editUnavailable": "Ovaj prijedlog nije moguće sigurno urediti.",
+                "drive": "Vozi ovom prugom",
+                "delete": "Izbriši",
+                "deleteHint": "Briše objekt i njegovu ideju u potpunosti.",
+                "propose": "Izradi prijedlog"
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -740,8 +907,7 @@
             "acquiringDifficultyTitle": "Ukupna procijenjena težina stjecanja",
             "acquiringDifficultyTooltip": "Manje je bolje. Težina stjecanja se izračunava na temelju tipa vlasništva uključenih parcela, s ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nTvrtka: 1\nPojedinačno: 2\nTržišna vrijednost svake parcele se množi s njezinim tipom vlasništva i sve se zbraja.",
             "acquiringDifficultyDialogOk": "OK",
-            "finishButtonShort": "Završi segment (F)",
-            "createButton": "Kreiraj (C)",
+            "finishButtonShort": "Završi cestu (F)",
             "crossSectionButton": "Uredi poprečni presjek",
             "draftAutosaved": "Nacrt je automatski spremljen na ovom uređaju",
             "undoButton": "Poništi (U)",
@@ -752,7 +918,19 @@
             "ownedByGovernmentLabel": "U vlasništvu države:",
             "ownedByIndividualsLabel": "U vlasništvu pojedinaca:",
             "parcelAreaLabel": "Površina čestica:",
-            "parcelCountLabel": "Broj čestica:"
+            "parcelCountLabel": "Broj čestica:",
+            "draftSavedRoadToast": "Cesta je spremljena kao skica — pritisnite R ili otvorite Skice za nastavak.",
+            "draftSavedTrackToast": "Pruga je spremljena kao skica — otvorite Skice za nastavak.",
+            "builtStatus": "Cesta izgrađena — kliknite je za uređivanje ili prijedlog.",
+            "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili prijedlog.",
+            "mergedStatus": "Spojeno s “{{name}}” — sada je jedna cesta.",
+            "mergedStatusTrack": "Spojeno s “{{name}}” — sada je jedna pruga.",
+            "absorbedStatus": "Nastavljate “{{name}}” — završetak je zadržava kao jednu cestu.",
+            "nodeHint": "Povucite za pomicanje · ⌥-klik uklanja ovaj čvor",
+            "bulldozeHint": "🚜 Sruši ovu dionicu",
+            "splitStatus": "Cesta se razdvojila — sada su {{count}} zasebne ceste.",
+            "bulldozedAllStatus": "Cesta srušena.",
+            "junctionHint": "Raskrižje — povucite za pomicanje svih krakova · ⌥-klik razdvaja"
         },
         "roadAnalysis": {
             "title": "Analiza širine ceste",
@@ -892,7 +1070,7 @@
             "changeWarning": "Promjena izvora podataka OBRISAT ĆE sve lokalno spremljene podatke (parcele, ceste, prijedlozi, planovi, korisničke postavke, itd.).\n\nŽelite li nastaviti?"
         },
         "dataManagement": {
-            "wipeWarning": "Ovo će izbrisati SVE lokalno spremljene podatke (parcele, ceste, prijedlozi, postavke). Nastaviti?"
+            "wipeWarning": "Ovo će izbrisati SVE lokalno spremljene podatke (parcele, ceste, prijedlozi, skice prijedloga, postavke). Nastaviti?"
         },
         "corridor": {
             "title": "Poprečni presjek",
@@ -1274,7 +1452,8 @@
                     "width": "Širina pruge:"
                 },
                 "title": "Stvori prijedlog pruge"
-            }
+            },
+            "editLaterNote": "Profil ceste možete urediti kasnije — i njezinu širinu."
         },
         "coverage": {
             "title": "Pokrivenost učitanih parcela",
