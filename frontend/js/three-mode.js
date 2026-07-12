@@ -2044,7 +2044,16 @@
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
-            buffer = buildingLoadRadiusM;
+            // The backend buffers the proposal bbox, so `buffer` is measured from the EDGES.
+            // Coverage target: max(edges + 200 m, roughly centre + slider radius) — a small
+            // proposal keeps the slider's radius of context, while a block-spanning one still
+            // gets a 200 m apron instead of the radius vanishing inside its own extent.
+            let halfDiagonalM = 0;
+            try {
+                const ring = proposalGeom.coordinates[0];
+                halfDiagonalM = (turf.distance(ring[0], ring[2], { units: 'kilometers' }) * 1000) / 2;
+            } catch (_) { }
+            buffer = Math.max(200, buildingLoadRadiusM - halfDiagonalM);
             // Key from bbox coords rounded to 6 decimals (~10cm) — essentially exact. Radius is
             // part of the key so moving the slider forces a refetch at the new radius.
             const bb = proposalGeom.coordinates[0];
@@ -2930,8 +2939,11 @@
         spinner.className = 'three-mode-loader-spinner';
         const label = document.createElement('span');
         label.textContent = threeI18n('threeMode.overlay.loadingBuildings', 'Loading buildings…');
+        const count = document.createElement('span');
+        count.className = 'three-mode-loader-count';
         el.appendChild(spinner);
         el.appendChild(label);
+        el.appendChild(count);
         threeContainer.appendChild(el);
         buildingsLoaderEl = el;
         return el;
@@ -2942,7 +2954,14 @@
         try {
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             const el = ensureBuildingsLoaderEl();
-            if (el) el.classList.toggle('is-visible', loading);
+            if (!el) return;
+            el.classList.toggle('is-visible', loading);
+            const count = el.querySelector('.three-mode-loader-count');
+            if (count) {
+                // The /near fetch is one request (no incremental total); pending glTF models are
+                // countable, so show that number while any are still downloading.
+                count.textContent = pendingModelLoads > 0 ? String(pendingModelLoads) : '';
+            }
         } catch (_) { }
     }
 

@@ -927,6 +927,7 @@
             "nodeHint": "Drag to move · ⌥-click to remove this node",
             "bulldozeHint": "🚜 Bulldoze this stretch",
             "splitStatus": "The road came apart — now {{count}} separate roads.",
+            "editRevertedStatus": "Could not complete that road change — reverted.",
             "bulldozedAllStatus": "Road bulldozed.",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect"
         },

@@ -234,6 +234,14 @@
                 // all). Roads open through their own corridor click surface only.
                 appliedProposal = parcelProposals.find(p => !p.roadProposal
                     && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
+                if (!appliedProposal && typeof global.structureProposalsCoveringFeature === 'function') {
+                    // Geometry fallback: a structure whose declared parcel ids drifted still
+                    // opens when the clicked parcel sits inside its shape.
+                    const covering = global.structureProposalsCoveringFeature(feature);
+                    if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
+                        appliedProposal = global.getProposalByIdOrHash(covering[0]) || null;
+                    }
+                }
             } catch (_) { }
         }
         if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {

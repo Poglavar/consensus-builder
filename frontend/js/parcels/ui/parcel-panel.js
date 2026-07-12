@@ -256,7 +256,19 @@
         // the EVM list — exclude their local copies here to avoid duplication.
         const parcelProposals = (global.CantonMode && global.CantonMode.isCantonProposal)
             ? allParcelProposals.filter((p) => !global.CantonMode.isCantonProposal(p))
-            : allParcelProposals;
+            : allParcelProposals.slice();
+        // Structures matched by geometry: an old/imported park/lake whose declared parcel ids
+        // drifted still lists on the parcels its shape actually covers.
+        try {
+            const covering = (typeof global.structureProposalsCoveringFeature === 'function')
+                ? global.structureProposalsCoveringFeature(feature)
+                : [];
+            covering.forEach(pid => {
+                if (parcelProposals.some(p => String(p.proposalId) === String(pid))) return;
+                const record = storage?.getProposal ? storage.getProposal(pid) : null;
+                if (record) parcelProposals.push(record);
+            });
+        } catch (_) { }
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)

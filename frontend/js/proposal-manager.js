@@ -4746,10 +4746,18 @@ const ProposalManager = {
                 const normalized = id && id.toString ? id.toString() : String(id || '');
                 return normalized && !parentFeatures.some(f => _getParcelIdFromFeature(f)?.toString() === normalized);
             });
-            if (remainingMissing.length > 0) {
-                const message = `Missing ancestor parcels: ${remainingMissing.join(', ')}`;
+            // Synthetic ancestors (slices of other proposals) cannot be fetched from the server by
+            // definition; on imported proposals their ids drift and may simply not exist here.
+            // Blocking the whole unapply on them locked such roads forever — restore what exists
+            // and only refuse when a REAL cadastre parcel cannot be recovered.
+            const missingBase = remainingMissing.filter(id => !String(id).includes('#p-'));
+            if (missingBase.length > 0) {
+                const message = `Missing ancestor parcels: ${missingBase.join(', ')}`;
                 console.error(message);
                 throw new Error(message);
+            }
+            if (remainingMissing.length > 0) {
+                console.warn('[_unapplyProposalConfirmed] Skipping unrecoverable synthetic ancestors', remainingMissing);
             }
         }
 

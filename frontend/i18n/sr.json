@@ -952,6 +952,7 @@
             "nodeHint": "Prevucite za pomeranje · ⌥-klik uklanja ovaj čvor",
             "bulldozeHint": "🚜 Sruši ovu deonicu",
             "splitStatus": "Put se razdvojio — sada su {{count}} zasebna puta.",
+            "editRevertedStatus": "Tu promenu puta nije bilo moguće dovršiti — vraćeno.",
             "bulldozedAllStatus": "Put srušen.",
             "junctionHint": "Raskrsnica — prevucite za pomeranje svih krakova · ⌥-klik razdvaja"
         },

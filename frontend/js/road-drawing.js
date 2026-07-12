@@ -771,6 +771,24 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         }
     } catch (error) {
         console.warn('[updateLocalCorridorGeometry] Re-apply after geometry change failed', error);
+        // Roll the definition back: without this the strips redraw from the mutated centerline
+        // while the parcel fabric stays untouched — the segment LOOKS bulldozed/moved but the
+        // underlying parcels never come back.
+        try {
+            Object.keys(definition).forEach(field => { delete definition[field]; });
+            Object.assign(definition, JSON.parse(JSON.stringify(definitionSnapshot)));
+            proposal.definition = JSON.parse(JSON.stringify(definition));
+            proposal.geometry = { ...(proposal.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
+            if (definition.polygon) proposal.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
+            if (typeof proposalStorage !== 'undefined') {
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                if (typeof proposalStorage.save === 'function') proposalStorage.save();
+            }
+            ProposalManager._refreshUIAfterProposalChange?.(proposal);
+        } catch (_) { }
+        if (typeof updateStatus === 'function') {
+            updateStatus(translateRoadText('panel.road.editRevertedStatus', 'Could not complete that road change — reverted.'));
+        }
         return false;
     }
     return true;

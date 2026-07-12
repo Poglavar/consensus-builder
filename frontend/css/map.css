@@ -109,13 +109,11 @@ body.sidebar-collapsed {
 }
 
 /* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
-   glTF models) are still loading. Kept at the bottom so it doesn't collide with the top-centre
-   ephemeral-message toasts (which would otherwise cover it until they fade). */
+   glTF models) are still loading. Upper-left, mirroring the photoreal tile-streaming pill. */
 #three-container .three-mode-buildings-loader {
     position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 12px;
+    left: 12px;
     display: flex;
     align-items: center;
     gap: 8px;

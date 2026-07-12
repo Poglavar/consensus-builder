@@ -119,9 +119,27 @@
         approvedStructureIds.clear();
     }
 
+    // Applied structure proposals whose geometry covers the given parcel (centroid test).
+    // Id-based matching fails when a structure's declared parcel ids drifted (old imports);
+    // geometry doesn't drift, so clicking inside a lake finds the lake regardless.
+    function structureProposalsCoveringFeature(parcelFeature) {
+        const out = [];
+        if (!parcelFeature || !parcelFeature.geometry || typeof global.turf === 'undefined') return out;
+        let centroid = null;
+        try { centroid = global.turf.centroid(parcelFeature); } catch (_) { return out; }
+        collectAppliedStructureFeatures().forEach(entry => {
+            if (!entry.proposalId) return;
+            try {
+                if (global.turf.booleanPointInPolygon(centroid, entry.feature)) out.push(entry.proposalId);
+            } catch (_) { }
+        });
+        return [...new Set(out)];
+    }
+
     Object.assign(global, {
         detectStructureCrossings,
         resolveStructureCrossings,
-        resetApprovedStructureCrossings
+        resetApprovedStructureCrossings,
+        structureProposalsCoveringFeature
     });
 })(typeof window !== 'undefined' ? window : globalThis);
