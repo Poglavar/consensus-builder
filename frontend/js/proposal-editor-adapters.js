@@ -168,6 +168,7 @@
             width: definition?.width,
             sidewalkWidth: definition?.sidewalkWidth,
             tunnels: clone(definition?.tunnels || []),
+            demolishedBuildings: clone(definition?.demolishedBuildings || []),
             trackSpeed: definition?.metadata?.trackSpeed,
             trackMinRadius: definition?.metadata?.trackMinRadius,
             kind

@@ -275,6 +275,7 @@ function refreshAppliedCorridorStrips() {
     ensureCorridorStripsPane();
     const layer = L.layerGroup();
     let drawn = 0;
+    const renderedCorridors = [];
 
     const proposals = proposalStorage.getAllProposals();
     proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
@@ -291,9 +292,18 @@ function refreshAppliedCorridorStrips() {
         if (group) {
             group.addTo(layer);
             renderAppliedCorridorHitTargets(strips, proposal, layer, definition);
+            renderedCorridors.push({ centerline, profile });
             drawn += 1;
         }
     });
+
+    // Where two applied roads meet (a drawing snapped onto an existing road shares its exact
+    // coordinates), form a real intersection: the same asphalt + zebra treatment as a road's
+    // own junctions, drawn once on top of both roads' markings.
+    if (typeof buildCrossCorridorJunctionTreatments === 'function' && renderedCorridors.length >= 2) {
+        const crossJunctions = buildCrossCorridorJunctionTreatments(renderedCorridors);
+        if (crossJunctions.length) renderCorridorJunctions(crossJunctions, layer, CORRIDOR_STRIPS_PANE);
+    }
 
     // Tracks have their own rail renderer and therefore do not enter the road-strip loop above, but
     // their building passages use the same applied overlay and proposal definition.
@@ -313,6 +323,13 @@ function refreshAppliedCorridorStrips() {
     try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
     try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
     try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+    // Demolitions live on applied corridors: any corridor change can raze or restore buildings.
+    // Not optional cosmetics — a failure here leaves razed buildings standing, so it must be loud.
+    if (window.buildingFeaturePool?.length) {
+        try { window.rebuildBuildingLayerFromPool(); } catch (error) {
+            console.error('[corridor-render] building demolition refresh failed — 2D building layer is stale', error);
+        }
+    }
 
     if (!drawn) return;
     appliedCorridorLayer = layer.addTo(map);

@@ -154,7 +154,7 @@
             "noAdapter": "No editor is registered for this proposal type.",
             "readOnly": "This proposal is view-only.",
             "parcelsUnavailable": "The draft parcels are not available in the current city.",
-            "instantCreateFailed": "Could not save the new object — it stays as a draft."
+            "instantCreateFailed": "Could not save the new object."
         },
         "publish": {
             "alreadyCreated": "This draft already created proposal {{id}}.",
@@ -162,7 +162,7 @@
         },
         "mapTooltip": "Draft — click to continue",
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
-        "keptAsDraft": "Could not finish this object — it stays in Drafts; click its dashed outline to continue.",
+        "keptAsDraft": "Could not create the object — the drawing has been reopened so you can fix it.",
         "reverted": "Restored the previous version.",
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
@@ -906,7 +906,6 @@
             "closeAriaLabel": "Close road info",
             "finishButtonShort": "Finish road (F)",
             "crossSectionButton": "Edit cross-section",
-            "draftAutosaved": "Draft autosaved locally",
             "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
@@ -917,9 +916,8 @@
             "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None",
-            "draftSavedRoadToast": "Unfinished road kept — click its dashed outline or press R to continue.",
-            "draftSavedTrackToast": "Unfinished track kept — click its dashed outline to continue.",
             "builtStatus": "Road built — click it to edit or propose.",
+            "segmentCancelledStatus": "Segment cancelled — placed segments stay. Esc again builds the road.",
             "builtStatusTrack": "Track built — click it to edit or propose.",
             "mergedStatus": "Connected to “{{name}}” — now one road.",
             "mergedStatusTrack": "Connected to “{{name}}” — now one track.",
@@ -1122,11 +1120,12 @@
             "keep": "Keep draft"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} would pass through {{count}} building(s). Create a tunnel through the building?",
+            "offer": "This {{kind}} would pass through {{count}} building(s). Demolish them, or tunnel through?",
             "road": "road",
             "track": "track",
             "unapply": "Unapply existing proposal",
-            "confirm": "Tunnel through",
+            "destroy": "Demolish the buildings",
+                "confirm": "Tunnel through",
             "cancel": "Choose another route"
         },
         "deleteProposal": {

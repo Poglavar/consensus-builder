@@ -97,3 +97,110 @@ describe('corridorSurfaceRuns', () => {
         expect(runs).toEqual([[p(0), p(1)], [p(2), p(3)], [p(10), p(11)]]);
     });
 });
+
+// Tunnels exist only while inside buildings: the clip splits an edge at facade crossings and
+// flags only the inside sub-edges. The fake turf below does the same planar math the real one
+// does, with degrees scaled to metres so the function's minimum-length guards behave.
+describe('clipCorridorEdgeThroughBuildings', () => {
+    const { clipCorridorEdgeThroughBuildings } = require('../../frontend/js/corridor-tunnel.js');
+    const SCALE = 100000; // 1 degree == 100 km in the fake planar world
+
+    function planarTurf() {
+        const coordsOf = feature => feature.geometry.coordinates;
+        return {
+            lineString: coords => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }),
+            point: coords => ({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: coords } }),
+            length: line => {
+                const [a, b] = coordsOf(line);
+                return Math.hypot(b[0] - a[0], b[1] - a[1]) * SCALE;
+            },
+            along: (line, distance) => {
+                const [a, b] = coordsOf(line);
+                const t = distance / (Math.hypot(b[0] - a[0], b[1] - a[1]) * SCALE);
+                return { type: 'Feature', geometry: { type: 'Point', coordinates: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t] } };
+            },
+            buffer: feature => feature, // facade buffering is a browser concern; identity here
+            lineIntersect: (line, zone) => {
+                const [a, b] = coordsOf(line);
+                const ring = zone.geometry.coordinates[0];
+                const features = [];
+                for (let i = 0; i < ring.length - 1; i++) {
+                    const c = ring[i];
+                    const d = ring[i + 1];
+                    const den = (b[0] - a[0]) * (d[1] - c[1]) - (b[1] - a[1]) * (d[0] - c[0]);
+                    if (Math.abs(den) < 1e-18) continue;
+                    const t = ((c[0] - a[0]) * (d[1] - c[1]) - (c[1] - a[1]) * (d[0] - c[0])) / den;
+                    const u = ((c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0])) / den;
+                    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                        features.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])] } });
+                    }
+                }
+                return { type: 'FeatureCollection', features };
+            },
+            nearestPointOnLine: (line, pt) => {
+                const [a, b] = coordsOf(line);
+                const p = pt.geometry.coordinates;
+                const dx = b[0] - a[0];
+                const dy = b[1] - a[1];
+                const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+                return { type: 'Feature', properties: { location: t * Math.hypot(dx, dy) * SCALE }, geometry: { type: 'Point', coordinates: [a[0] + t * dx, a[1] + t * dy] } };
+            },
+            booleanPointInPolygon: (pt, zone) => {
+                const p = pt.geometry.coordinates;
+                const ring = zone.geometry.coordinates[0];
+                let inside = false;
+                for (let i = 0, j = ring.length - 2; i < ring.length - 1; j = i++) {
+                    const xi = ring[i][0];
+                    const yi = ring[i][1];
+                    const xj = ring[j][0];
+                    const yj = ring[j][1];
+                    if (((yi > p[1]) !== (yj > p[1])) && (p[0] < (xj - xi) * (p[1] - yi) / (yj - yi) + xi)) inside = !inside;
+                }
+                return inside;
+            }
+        };
+    }
+
+    function squareBuilding(id, lngMin, lngMax, latMin = -0.0001, latMax = 0.0001) {
+        return {
+            id,
+            feature: {
+                type: 'Feature',
+                properties: { id },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[[lngMin, latMin], [lngMax, latMin], [lngMax, latMax], [lngMin, latMax], [lngMin, latMin]]]
+                }
+            }
+        };
+    }
+
+    const edgeFrom = { lat: 0, lng: 0 };
+    const edgeTo = { lat: 0, lng: 0.001 }; // 100 m in the fake world
+
+    it('splits the edge at the facades and tunnels only the inside part', () => {
+        const hit = squareBuilding('b1', 0.0004, 0.0006);
+        const plan = clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [hit], 0, planarTurf());
+        expect(plan).toHaveLength(3);
+        expect(plan.map(sub => sub.inside)).toEqual([false, true, false]);
+        expect(plan[0].from).toEqual(edgeFrom); // endpoints preserved exactly
+        expect(plan[2].to).toEqual(edgeTo);
+        expect(plan[1].from.lng).toBeCloseTo(0.0004, 6);
+        expect(plan[1].to.lng).toBeCloseTo(0.0006, 6);
+        expect(plan[1].hits).toEqual([hit]);
+    });
+
+    it('handles several buildings on one edge as separate tunnels', () => {
+        const first = squareBuilding('b1', 0.0002, 0.0003);
+        const second = squareBuilding('b2', 0.0006, 0.0008);
+        const plan = clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [first, second], 0, planarTurf());
+        expect(plan.map(sub => sub.inside)).toEqual([false, true, false, true, false]);
+        expect(plan[1].hits).toEqual([first]);
+        expect(plan[3].hits).toEqual([second]);
+    });
+
+    it('returns null when the centerline never enters a footprint', () => {
+        const grazing = squareBuilding('b1', 0.0004, 0.0006, 0.0002, 0.0004); // beside the line
+        expect(clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [grazing], 0, planarTurf())).toBeNull();
+    });
+});

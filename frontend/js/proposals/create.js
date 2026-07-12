@@ -813,6 +813,7 @@ async function createProposal() {
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     tunnels: safeClone(roadDrawingContext.tunnels) || [],
+                    demolishedBuildings: safeClone(roadDrawingContext.demolishedBuildings) || [],
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
                 };

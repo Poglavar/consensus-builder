@@ -62,6 +62,7 @@
             width: seed?.width,
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: cloneDraftValue(seed?.tunnels || []),
+            demolishedBuildings: cloneDraftValue(seed?.demolishedBuildings || []),
             polygon: cloneDraftValue(seed?.polygon !== undefined ? seed.polygon : previousDefinition?.polygon || null),
             latLngPairs: cloneDraftValue(seed?.latLngPairs !== undefined ? seed.latLngPairs : previousDefinition?.latLngPairs || null),
             metadata: {
@@ -97,6 +98,7 @@
                 width: definition.width,
                 sidewalkWidth: definition.sidewalkWidth,
                 tunnels: cloneDraftValue(definition.tunnels || []),
+                demolishedBuildings: cloneDraftValue(definition.demolishedBuildings || []),
                 trackSpeed: definition.metadata?.trackSpeed,
                 trackMinRadius: definition.metadata?.trackMinRadius
             },

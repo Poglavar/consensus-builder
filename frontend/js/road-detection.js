@@ -1312,6 +1312,61 @@ function clearDetectedRoads() {
 }
 
 // Run all available detection strategies sequentially and restore a clear map view when done
+// ---------------------------------------------------------------------------
+// Curated road source (city-config `curatedRoads`): the backend serves the parcels the
+// road_parcel_classification materialized view already marked as roads (Zagreb only for now).
+// One bbox fetch replaces the whole client-side OSM/GUP/WFS detection for such cities, and it
+// auto-runs in the background after every parcel ingest so roads appear without the sidebar.
+// ---------------------------------------------------------------------------
+
+let curatedRoadFetchInFlight = false;
+let curatedRoadFetchTimer = null;
+
+function curatedRoadsConfig() {
+    try { return window.CityConfigManager?.getCuratedRoadsConfig?.() || null; } catch (_) { return null; }
+}
+
+async function fetchCuratedRoadParcels() {
+    const config = curatedRoadsConfig();
+    if (!config?.url || typeof map === 'undefined' || !map) return 0;
+    if (curatedRoadFetchInFlight) return 0;
+    curatedRoadFetchInFlight = true;
+    try {
+        const bounds = map.getBounds();
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
+        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const response = await fetch(`${base}${config.url}?bbox=${encodeURIComponent(bbox)}`);
+        if (!response.ok) throw new Error(`curated road source responded ${response.status}`);
+        const collection = await response.json();
+        let added = 0;
+        (collection.features || []).forEach(feature => {
+            const parcelId = feature?.properties?.parcelId;
+            if (!parcelId) return;
+            if (!isRoadParcel(parcelId)) {
+                addRoadParcel(String(parcelId));
+                added += 1;
+            }
+        });
+        if (added > 0) updateParcelStyles();
+        console.log(`[${new Date().toISOString()}] [curated-roads] ${collection.features?.length || 0} road parcels in view, ${added} newly marked`);
+        return added;
+    } finally {
+        curatedRoadFetchInFlight = false;
+    }
+}
+
+// Auto-run: parcels land in bursts per moveend, so debounce like the buildings viewport fetch.
+function scheduleCuratedRoadRefresh() {
+    if (!curatedRoadsConfig()) return;
+    if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
+    curatedRoadFetchTimer = setTimeout(() => {
+        curatedRoadFetchTimer = null;
+        fetchCuratedRoadParcels().catch(error => console.error('[curated-roads] background fetch failed', error));
+    }, 800);
+}
+window.addEventListener('parcelDataLoaded', scheduleCuratedRoadRefresh);
+window.fetchCuratedRoadParcels = fetchCuratedRoadParcels;
+
 async function detectExistingRoads() {
     const controlButton = document.getElementById('detectExistingRoadsButton');
     const originalLabel = controlButton ? controlButton.textContent : null;
@@ -1328,6 +1383,14 @@ async function detectExistingRoads() {
     }
 
     try {
+        // A curated source is authoritative: use it INSTEAD of the three client-side detectors.
+        if (curatedRoadsConfig()?.url) {
+            updateStatus('Loading existing roads from the curated source...');
+            const added = await fetchCuratedRoadParcels();
+            updateStatus(`Existing roads loaded — ${added} parcels newly marked as roads.`);
+            return;
+        }
+
         updateStatus('Detecting existing roads using all available sources...');
 
         await detectRoadsFromOSM();

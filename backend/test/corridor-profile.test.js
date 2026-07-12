@@ -715,3 +715,51 @@ describe('profile edits preserve the total width', () => {
         expect(back.strips.slice(0, 3).map(s => s.type)).toEqual(['sidewalk', 'cycleway', 'parking']);
     });
 });
+
+// Cross-corridor intersections: a road snapped onto another applied road (shared vertex, or an
+// endpoint landing exactly on the other's edge) gets a real junction treatment where they meet.
+describe('buildCrossCorridorJunctionTreatments', () => {
+    const { buildCrossCorridorJunctionTreatments, CORRIDOR_PROFILE_PRESETS } = require('../../frontend/js/corridor-profile.js');
+    const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
+
+    function withPlanarProjection(run) {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try { return run(); } finally {
+            delete global.wgs84ToHTRS96;
+            delete global.htrs96ToWGS84;
+        }
+    }
+
+    it('forms a junction where a branch ends exactly on another road edge (T-joint)', () => {
+        withPlanarProjection(() => {
+            const main = { centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
+            const branch = { centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
+            const junctions = buildCrossCorridorJunctionTreatments([main, branch]);
+            expect(junctions).toHaveLength(1);
+            expect(junctions[0].degree).toBe(3);
+            expect(junctions[0].surfacePolygons).toHaveLength(3);
+        });
+    });
+
+    it('forms nothing for roads that merely pass near each other', () => {
+        withPlanarProjection(() => {
+            const main = { centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
+            const nearMiss = { centerline: [[{ lat: 5, lng: 0 }, { lat: 50, lng: 0 }]], profile };
+            expect(buildCrossCorridorJunctionTreatments([main, nearMiss])).toEqual([]);
+        });
+    });
+
+    it('does not duplicate a single road own junctions', () => {
+        withPlanarProjection(() => {
+            const road = {
+                centerline: [
+                    [{ lat: 0, lng: -50 }, { lat: 0, lng: 0 }, { lat: 0, lng: 50 }],
+                    [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]
+                ],
+                profile
+            };
+            expect(buildCrossCorridorJunctionTreatments([road])).toEqual([]);
+        });
+    });
+});

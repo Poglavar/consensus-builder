@@ -4696,18 +4696,26 @@ const ProposalManager = {
         } catch (_) { }
     },
 
-    // Internal: perform unapply after confirmation
-    async _unapplyProposalConfirmed(proposalId) {
+    // Internal: perform unapply after confirmation. `visitedProposals` breaks CYCLES in the
+    // child-proposal links (old imports carry mutual A<->B references; a proposal's status only
+    // flips at the END of its own frame, so without this the recursion never terminates —
+    // "Maximum call stack size exceeded" on bulldoze/unapply).
+    async _unapplyProposalConfirmed(proposalId, visitedProposals = null) {
+        const visited = visitedProposals || new Set();
+        const selfKey = String(proposalId);
+        if (visited.has(selfKey)) return;
+        visited.add(selfKey);
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData || !proposalData.roadProposal) return;
         const roadProposal = proposalData.roadProposal;
 
         const descendantProposalIds = this._getAllDescendantProposals(proposalId);
         for (const childId of descendantProposalIds) {
+            if (visited.has(String(childId))) continue;
             const childProposal = _getProposalRecord(childId);
             if (!childProposal || !childProposal.roadProposal) continue;
             if (childProposal.roadProposal.status === 'applied') {
-                await this._unapplyProposalConfirmed(childId);
+                await this._unapplyProposalConfirmed(childId, visited);
             }
         }
 

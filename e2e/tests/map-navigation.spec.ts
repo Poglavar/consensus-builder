@@ -17,15 +17,15 @@ test.describe('Map navigation @core', () => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    // Start from a mid-range zoom to ensure room to zoom in. Animated zooms run on
-    // requestAnimationFrame, which crawls under parallel-worker CPU contention — poll for the
-    // outcome instead of sleeping a fixed interval.
-    await page.evaluate(() => { (window as any).map?.setZoom(14); });
+    // Start from a mid-range zoom to ensure room to zoom in. animate:false everywhere —
+    // animated multi-level zooms run on requestAnimationFrame, and a setZoom issued while a
+    // previous animation is still running is silently ignored by Leaflet (persistent red).
+    await page.evaluate(() => { (window as any).map?.setZoom(14, { animate: false }); });
     await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBe(14);
 
     await page.evaluate(() => {
       const w = window as any;
-      w.map?.setZoom(w.map.getZoom() + 1);
+      w.map?.setZoom(w.map.getZoom() + 1, { animate: false });
     });
     await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBeGreaterThan(14);
   });
@@ -35,12 +35,12 @@ test.describe('Map navigation @core', () => {
     await waitForMapReady(page);
 
     // First zoom in so we have room to zoom out (see polling note in the zoom-in test).
-    await page.evaluate(() => { (window as any).map?.setZoom(15); });
+    await page.evaluate(() => { (window as any).map?.setZoom(15, { animate: false }); });
     await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBe(15);
 
     await page.evaluate(() => {
       const w = window as any;
-      w.map?.setZoom(w.map.getZoom() - 1);
+      w.map?.setZoom(w.map.getZoom() - 1, { animate: false });
     });
     await expect.poll(() => getMapZoom(page), { timeout: 10_000 }).toBeLessThan(15);
   });

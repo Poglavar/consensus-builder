@@ -340,19 +340,36 @@ async function fetchBuildings() {
         // Convert the data to WGS84
         const convertedData = typeof convertGeoJSON === 'function' ? convertGeoJSON(data) : data;
 
-        // Update the building layer
-        if (buildingLayer) {
-            map.removeLayer(buildingLayer);
-        }
-
-        buildingLayer = L.geoJSON(convertedData, {
-            style: {
-                fillColor: 'blue',
-                fillOpacity: 0.2,
-                color: 'blue',
-                weight: 1
+        // MERGE with what's already loaded instead of replacing it: the fetch covers only the
+        // current viewport (maxFeatures-capped), so replacing left a single-viewport patch and
+        // panning "lost" buildings. Dedupe by feature id; cap the pool to keep memory sane.
+        const buildingKeyOf = (feature) => {
+            const props = feature?.properties || {};
+            const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+            if (direct !== undefined && direct !== null && String(direct)) return String(direct);
+            try { return JSON.stringify(feature?.geometry?.coordinates?.[0]?.[0] || feature?.geometry?.coordinates || ''); } catch (error) {
+                console.error('[fetchBuildings] building has no id and unserializable geometry — dedup disabled for it', error);
+                return Math.random().toString(36);
             }
-        }).addTo(map);
+        };
+        const mergedById = new Map();
+        if (buildingLayer && typeof buildingLayer.eachLayer === 'function') {
+            buildingLayer.eachLayer(entry => {
+                if (entry?.feature) mergedById.set(buildingKeyOf(entry.feature), entry.feature);
+            });
+        }
+        (convertedData?.features || []).forEach(feature => {
+            if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
+        });
+        let mergedFeatures = Array.from(mergedById.values());
+        const BUILDING_POOL_CAP = 12000;
+        if (mergedFeatures.length > BUILDING_POOL_CAP) {
+            // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
+            mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
+        }
+        // The full pool survives demolition filtering, so unapplying the road brings them back.
+        window.buildingFeaturePool = mergedFeatures;
+        rebuildBuildingLayerFromPool();
 
         // Notify other modules (e.g., 3D) that buildings layer has updated
         try { window.buildingLayer = buildingLayer; } catch (_) { }
@@ -368,6 +385,37 @@ async function fetchBuildings() {
         }
     }
 }
+
+// Rebuild the visible 2D building layer from the pooled features, minus every building an
+// APPLIED corridor has demolished. Called after fetches and after corridor apply/unapply/edit.
+function rebuildBuildingLayerFromPool() {
+    const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+    // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
+    const demolished = collectDemolishedBuildingIds();
+    const keyOf = (feature) => {
+        const props = feature?.properties || {};
+        const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+        return (direct !== undefined && direct !== null) ? String(direct) : '';
+    };
+    const visible = demolished.size
+        ? pool.filter(feature => !demolished.has(keyOf(feature)))
+        : pool;
+    const layerWasOnMap = buildingLayer ? map.hasLayer(buildingLayer) : true;
+    if (buildingLayer) {
+        map.removeLayer(buildingLayer);
+    }
+    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features: visible }, {
+        style: {
+            fillColor: 'blue',
+            fillOpacity: 0.2,
+            color: 'blue',
+            weight: 1
+        }
+    });
+    if (layerWasOnMap) buildingLayer.addTo(map);
+    try { window.buildingLayer = buildingLayer; } catch (_) { }
+}
+window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;
 
 // Function to update the total spent display
 function updateTotalSpentDisplay() {

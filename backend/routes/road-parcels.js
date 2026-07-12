@@ -34,8 +34,12 @@ export function setupRoadParcelsRoute(app, pool) {
                         ST_Intersection(rpc.geom, e.geom),
                         4326
                     )
-                )::json AS geometry
-                FROM road_parcel_classification rpc, envelope e
+                )::json AS geometry,
+                    'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcel_id,
+                    rpc.total_score AS score
+                FROM road_parcel_classification rpc
+                JOIN parcel p ON p.cestica_id = rpc.cestica_id AND p.current = true
+                CROSS JOIN envelope e
                 WHERE rpc.classification = 'road'
                   AND rpc.geom IS NOT NULL
                   AND rpc.geom && e.geom
@@ -46,7 +50,9 @@ export function setupRoadParcelsRoute(app, pool) {
                 .filter(r => r.geometry)
                 .map(r => ({
                     type: 'Feature',
-                    properties: {},
+                    // parcelId matches the id the frontend's /parcels features carry, so the
+                    // client can mark road parcels by id instead of geometry matching.
+                    properties: { parcelId: r.parcel_id, score: r.score },
                     geometry: r.geometry,
                 }));
 

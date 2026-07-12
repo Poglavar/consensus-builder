@@ -125,6 +125,12 @@
             // that set `walk.url` show the button; everyone else hides it (see three-mode.js).
             walk: {
                 url: 'https://zagreb.lol/prijevoz/'
+            },
+            // Server-curated road classification (road_parcel_classification MV via the app
+            // backend). Cities with this key get existing roads marked from the endpoint —
+            // auto-fetched after parcels load — instead of client-side OSM/GUP/WFS detection.
+            curatedRoads: {
+                url: '/road-parcels'
             }
         },
         split: {
@@ -968,7 +974,9 @@
     window.showStyledConfirm = showStyledConfirm;
 
     // Multi-button variant of showStyledConfirm: choices = [{value, label, primary}].
-    // Resolves with the clicked choice's value, or null on overlay click (dismiss).
+    // Resolves with the clicked choice's value, or null on overlay click / Escape.
+    // Fully keyboard-driven: the primary choice is focused on open (Enter accepts it),
+    // Tab and arrow keys move between the buttons.
     function showStyledChoice(message, choices = []) {
         return new Promise(resolve => {
             const overlay = document.createElement('div');
@@ -985,12 +993,14 @@
             buttons.className = 'cb-confirm-buttons cb-confirm-buttons-stacked';
 
             function cleanup(result) {
+                document.removeEventListener('keydown', onKeydown, true);
                 if (overlay && overlay.parentNode) {
                     overlay.parentNode.removeChild(overlay);
                 }
                 resolve(result);
             }
 
+            const buttonEls = [];
             choices.forEach(choice => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -998,7 +1008,30 @@
                 btn.textContent = choice.label;
                 btn.addEventListener('click', () => cleanup(choice.value));
                 buttons.appendChild(btn);
+                buttonEls.push(btn);
             });
+
+            function onKeydown(event) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    cleanup(null);
+                    return;
+                }
+                if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(event.key)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const current = buttonEls.indexOf(document.activeElement);
+                    const delta = (event.key === 'ArrowDown' || event.key === 'ArrowRight') ? 1 : -1;
+                    const next = current === -1 ? 0 : (current + delta + buttonEls.length) % buttonEls.length;
+                    buttonEls[next]?.focus();
+                }
+                // Enter activates the focused button natively (default action, unaffected by
+                // stopPropagation); Tab cycles natively. Everything else must not leak to the
+                // page behind the dialog — drawing hotkeys (F/U/R) listen on document too.
+                event.stopPropagation();
+            }
+            document.addEventListener('keydown', onKeydown, true);
 
             overlay.addEventListener('click', (event) => {
                 if (event.target === overlay) {
@@ -1010,6 +1043,8 @@
             dialog.appendChild(buttons);
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
+            const primaryIndex = Math.max(0, choices.findIndex(choice => choice.primary));
+            buttonEls[primaryIndex]?.focus();
         });
     }
 
@@ -1248,6 +1283,7 @@
         getSidebarConfig,
         getParcelBuilderConfig,
         getWalkConfig: () => getCurrentCityConfig().walk || null,
+        getCuratedRoadsConfig: () => getCurrentCityConfig().curatedRoads || null,
         // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
         // city because it depends on city street data), driving a drawn track works at any
         // location — the track, rails and corridor come from the proposal itself — so every

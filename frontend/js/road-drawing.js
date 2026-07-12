@@ -88,6 +88,8 @@ if (typeof window !== 'undefined') {
 let roadCenterline = null;
 let roadPolygon = null;
 let roadPreviewLine = null;
+// How many points the active polyline had when the pen went down — Esc trims back to this.
+let roadStrokeBaseCount = 0;
 let roadPreviewPolygon = null;
 let roadAffectedParcels = [];
 let roadMouseMarker = null;
@@ -97,6 +99,7 @@ let roadCenterlineLayer = null;
 let roadPolygonLayer = null;
 let roadMarkers = [];
 let roadBuildingTunnels = [];
+let roadDemolishedBuildings = []; // {id, geometry} records accepted via the Demolish choice
 let roadBuildingTunnelLayer = null;
 let lastRoadMoveUpdate = 0;
 let throttleDelay = 150; // milliseconds between updates
@@ -136,10 +139,16 @@ function refreshTrackBuildingTunnelLayer() {
 
 // Width/profile edits can make a previously clear edge touch a building. Recheck every committed edge
 // before proposal creation and offer one combined decision for all newly discovered passages.
-async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = []) {
+async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = [], demolishedRecords = []) {
     const list = Array.isArray(records) ? records.slice() : [];
+    const demolished = Array.isArray(demolishedRecords) ? demolishedRecords.slice() : [];
+    const demolishedIds = new Set(demolished.map(record => String(record.id)));
     if (typeof detectLoadedBuildingTunnelIntersections !== 'function'
-        || typeof corridorTunnelEdgeKey !== 'function') return { accepted: true, records: list };
+        || typeof corridorTunnelEdgeKey !== 'function') {
+        // Hard dependency (corridor-tunnel.js). Proceeding would silently pave through buildings.
+        console.error('[road-drawing] building obstacle detection unavailable — refusing to finish the corridor');
+        return { accepted: false, records: list, demolished };
+    }
     const missing = [];
     const combinedHits = new Map();
     (segments || []).forEach((segment, segmentIndex) => {
@@ -150,7 +159,8 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
             if (!edgeKey) continue;
             const existing = list.find(record => record?.edgeKey === edgeKey) || null;
             const polygon = calculateRoadPolygon([from, to], width);
-            const hits = polygon ? detectLoadedBuildingTunnelIntersections(polygon) : [];
+            const hits = (polygon ? detectLoadedBuildingTunnelIntersections(polygon) : [])
+                .filter(hit => !demolishedIds.has(String(hit.id)));
             const existingIds = new Set((existing?.buildingIds || []).map(String));
             const newHits = hits.filter(hit => !existingIds.has(String(hit.id)));
             if (!newHits.length) continue;
@@ -159,27 +169,59 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
                 ...(existing?.buildingIds || []).map(id => ({ id })),
                 ...hits
             ];
-            missing.push({ from, to, hits: mergedHits, segmentId: segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null) });
+            missing.push({
+                from, to, hits: mergedHits, segmentIndex, pointIndex,
+                // An edge that already carries a tunnel record keeps whole-edge semantics; only
+                // virgin edges get clipped to inside-the-building sub-tunnels below.
+                hasExistingRecord: !!existing,
+                segmentId: segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null)
+            });
         }
     });
-    if (!missing.length) return { accepted: true, records: list };
+    if (!missing.length) return { accepted: true, records: list, demolished };
     const resolution = typeof resolveBuildingObstacles === 'function'
         ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
-        : { action: 'cancel', removedProposalIds: [] };
-    if (resolution.action === 'cancel') return { accepted: false, records: list };
-    if (resolution.action === 'clear') return { accepted: true, records: list };
+        : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
+    if (resolution.action === 'cancel') return { accepted: false, records: list, demolished };
+    if (resolution.action === 'destroy') {
+        (resolution.demolishedBuildings || []).forEach(record => {
+            if (!demolishedIds.has(String(record.id))) {
+                demolishedIds.add(String(record.id));
+                demolished.push(record);
+            }
+        });
+        return { accepted: true, records: list, demolished };
+    }
     const removedOwners = new Set(resolution.removedProposalIds || []);
     const hitStillStands = hit => {
         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
         return !owner || !removedOwners.has(owner);
     };
+    // Process edges of each segment from the END backwards so splicing portal vertices into
+    // the live segment array never shifts the indices of edges still waiting their turn.
+    missing.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
     missing.forEach(edge => {
         const standingHits = edge.hits.filter(hitStillStands);
         if (!standingHits.length) return;
-        const record = makeBuildingTunnelRecord(edge.from, edge.to, standingHits, { segmentId: edge.segmentId });
-        if (record) addBuildingTunnelRecord(list, record);
+        const clippableHits = standingHits.filter(hit => hit.feature);
+        const plan = (!edge.hasExistingRecord && clippableHits.length && typeof clipCorridorEdgeThroughBuildings === 'function')
+            ? clipCorridorEdgeThroughBuildings(edge.from, edge.to, clippableHits, width)
+            : null;
+        if (!plan) {
+            const record = makeBuildingTunnelRecord(edge.from, edge.to, standingHits, { segmentId: edge.segmentId });
+            if (record) addBuildingTunnelRecord(list, record);
+            return;
+        }
+        const segment = segments[edge.segmentIndex];
+        const interior = plan.slice(0, -1).map(sub => ({ lat: sub.to.lat, lng: sub.to.lng }));
+        segment.splice(edge.pointIndex + 1, 0, ...interior);
+        plan.forEach(sub => {
+            if (!sub.inside) return;
+            const record = makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId: edge.segmentId });
+            if (record) addBuildingTunnelRecord(list, record);
+        });
     });
-    return { accepted: true, records: list };
+    return { accepted: true, records: list, demolished };
 }
 
 // Locked parcels tracking - these are parcels confirmed by clicking (not just preview)
@@ -490,6 +532,20 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         segments: component.segments,
         segmentIds: component.segmentIds,
         tunnels: [],
+        // Each split piece keeps only the demolitions its own footprint covers.
+        demolishedBuildings: (Array.isArray(baseDefinition.demolishedBuildings) && polygon?.type)
+            ? baseDefinition.demolishedBuildings.filter(record => {
+                try {
+                    return record?.geometry && turf.booleanPointInPolygon(
+                        turf.centroid({ type: 'Feature', properties: {}, geometry: record.geometry }),
+                        { type: 'Feature', properties: {}, geometry: polygon }
+                    );
+                } catch (error) {
+                    console.error('[createRoadProposalFromComponent] demolition footprint check failed', record?.id, error);
+                    return false;
+                }
+            })
+            : [],
         polygon: (polygon && polygon.type) ? polygon : null,
         latLngPairs
     };
@@ -571,6 +627,7 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         && typeof resolveBuildingObstacles === 'function') {
         const tunnelledIds = new Set();
         (definition.tunnels || []).forEach(record => (record?.buildingIds || []).forEach(id => tunnelledIds.add(String(id))));
+        (definition.demolishedBuildings || []).forEach(record => tunnelledIds.add(String(record.id)));
         const edgeHits = [];
         normalizedSegments.forEach((segment, segIndex) => {
             for (let i = 0; i < segment.length - 1; i++) {
@@ -583,6 +640,8 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                         from: segment[i],
                         to: segment[i + 1],
                         hits,
+                        segmentIndex: segIndex,
+                        pointIndex: i,
                         segmentId: Array.isArray(normalizedIds) ? (normalizedIds[segIndex] || null) : null
                     });
                 }
@@ -598,19 +657,42 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                 Object.assign(definition, definitionSnapshot);
                 return false;
             }
+            if (resolution.action === 'destroy' && (resolution.demolishedBuildings || []).length) {
+                definition.demolishedBuildings = definition.demolishedBuildings || [];
+                definition.demolishedBuildings.push(...resolution.demolishedBuildings);
+            }
             if (resolution.action === 'tunnel') {
                 const removedOwners = new Set(resolution.removedProposalIds || []);
                 definition.tunnels = definition.tunnels || [];
+                // End-backwards per segment so splicing portals never shifts pending edge indices.
+                edgeHits.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
                 edgeHits.forEach(edge => {
                     const standing = edge.hits.filter(hit => {
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
                     if (!standing.length) return;
-                    const record = (typeof makeBuildingTunnelRecord === 'function')
-                        ? makeBuildingTunnelRecord(edge.from, edge.to, standing, { segmentId: edge.segmentId })
+                    // Tunnel only while inside the buildings: portals become centerline vertices.
+                    const plan = (typeof clipCorridorEdgeThroughBuildings === 'function')
+                        ? clipCorridorEdgeThroughBuildings(edge.from, edge.to, standing, editWidth)
                         : null;
-                    if (record && typeof addBuildingTunnelRecord === 'function') addBuildingTunnelRecord(definition.tunnels, record);
+                    if (!plan) {
+                        const record = (typeof makeBuildingTunnelRecord === 'function')
+                            ? makeBuildingTunnelRecord(edge.from, edge.to, standing, { segmentId: edge.segmentId })
+                            : null;
+                        if (record && typeof addBuildingTunnelRecord === 'function') addBuildingTunnelRecord(definition.tunnels, record);
+                        return;
+                    }
+                    const segment = normalizedSegments[edge.segmentIndex];
+                    const interior = plan.slice(0, -1).map(sub => ({ lat: sub.to.lat, lng: sub.to.lng }));
+                    segment.splice(edge.pointIndex + 1, 0, ...interior);
+                    plan.forEach(sub => {
+                        if (!sub.inside) return;
+                        const record = (typeof makeBuildingTunnelRecord === 'function')
+                            ? makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId: edge.segmentId })
+                            : null;
+                        if (record && typeof addBuildingTunnelRecord === 'function') addBuildingTunnelRecord(definition.tunnels, record);
+                    });
                 });
             }
             // 'clear' (every obstacle was unapplied) proceeds with nothing extra to record.
@@ -958,11 +1040,6 @@ async function absorbAppliedRoadIntoDrawing(snap) {
     redrawRoadVertexMarkers();
     updateRoadInfoPanel();
     if (typeof updateRoadCrossSectionButton === 'function') updateRoadCrossSectionButton();
-    saveCurrentCorridorDrawingDraft('road');
-    const draftId = window.activeProposalDesignDraftId;
-    if (draftId && absorbedRoadIdentity.name && window.proposalDraftStore?.getDraft?.(draftId)) {
-        window.proposalDraftStore.updateDraft(draftId, { fields: { name: absorbedRoadIdentity.name } }, { recordHistory: false });
-    }
     if (typeof updateStatus === 'function') {
         updateStatus(translateRoadText('panel.road.absorbedStatus', 'Continuing “{{name}}” — finishing keeps it one road.', {
             name: absorbedRoadIdentity.name || 'road'
@@ -1075,11 +1152,6 @@ function currentCorridorDraftCityId() {
     } catch (_) { return null; }
 }
 
-function updateRoadDraftStatus(saved) {
-    const status = document.getElementById('roadDraftStatus');
-    if (status) status.hidden = saved !== true;
-}
-
 function draftLatLng(point) {
     if (!point) return null;
     const lat = Number(point.lat !== undefined ? point.lat : point[1]);
@@ -1100,7 +1172,8 @@ function saveCurrentCorridorDrawingDraft(kind) {
             width: trackWidth,
             trackSpeed,
             trackMinRadius: trackMinCurvatureRadius,
-            tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || []))
+            tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || [])),
+            demolishedBuildings: JSON.parse(JSON.stringify(trackDemolishedBuildings || []))
         };
     } else {
         const entries = getAllRoadSegments(true)
@@ -1116,7 +1189,8 @@ function saveCurrentCorridorDrawingDraft(kind) {
             profile: getRoadDrawingProfile(),
             width: roadWidth,
             sidewalkWidth: roadSidewalkWidth,
-            tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || []))
+            tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
+            demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || []))
         };
     }
 
@@ -1145,22 +1219,13 @@ function saveCurrentCorridorDrawingDraft(kind) {
         parentParcelIds,
         sourceProposalId: copySource && copySource.proposalId ? String(copySource.proposalId) : null
     });
-    updateRoadDraftStatus(!!saved);
-    // A fresh drawing creates its draft on the first autosave — adopt it into the design
-    // session so later autosaves, the finish path, and the draft overlay all target it.
+    // A fresh drawing creates its draft at finish time — adopt it into the design session so
+    // instantCreate consumes exactly this draft.
     if (saved && !window.activeProposalDesignDraftId && typeof window.beginProposalDraftDesignSession === 'function') {
         const savedId = saved.draftId || saved.id;
         if (savedId) window.beginProposalDraftDesignSession(savedId);
     }
     return saved;
-}
-
-function restoreCorridorDraftIntoPending(draft) {
-    if (!draft || !draft.seed) return false;
-    if (draft.kind === 'track') window.pendingTrackDrawingSeed = draft.seed;
-    else window.pendingRoadDrawingSeed = draft.seed;
-    window.pendingRoadCopySource = draft.copySource || null;
-    return true;
 }
 
 // Apply a live editor profile to the drawing. A total-width change rebuilds the footprint and derives
@@ -1184,7 +1249,6 @@ function setRoadDrawingProfile(profile) {
     recomputeLockedParcelsFromPolygon(polygon, false);
     updateRoadInfoPanel();
     updateRoadCrossSectionButton();
-    saveCurrentCorridorDrawingDraft('road');
     return true;
 }
 
@@ -1283,6 +1347,7 @@ function seedRoadDrawing(seed) {
     roadPoints = [];
     roadHasStarted = false;
     roadBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
+    roadDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
     cachedCommittedPolygon = null;
 
     const seededIds = Array.isArray(seed.segmentIds) ? seed.segmentIds : [];
@@ -1300,7 +1365,6 @@ function seedRoadDrawing(seed) {
     recomputeLockedParcelsFromPolygon(polygon, false);
     updateRoadInfoPanel();
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('road');
     return true;
 }
 
@@ -1321,6 +1385,7 @@ function seedTrackDrawing(seed) {
     trackPoints = segments[0].slice();
     trackHasStarted = true; // lockParcelsFromSegment routes to the track bookkeeping only once this is set
     trackBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
+    trackDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
 
     if (trackCenterline) map.removeLayer(trackCenterline);
     trackCenterline = L.polyline(trackPoints, { color: 'transparent', weight: 0, opacity: 0 }).addTo(map);
@@ -1344,7 +1409,6 @@ function seedTrackDrawing(seed) {
     recomputeLockedParcelsFromPolygon(trackPolygon, true);
     updateRoadInfoPanel();
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('track');
     return true;
 }
 
@@ -1364,6 +1428,7 @@ function resumeRoadSegment(segmentIndex, atStart) {
     if (atStart && segment.length > 1) segment.reverse();
     roadPoints = segment;
     roadHasStarted = true;
+    roadStrokeBaseCount = roadPoints.length; // Esc cancels only what this stroke adds
     return true;
 }
 
@@ -1921,29 +1986,10 @@ async function requestCorridorDrawingTool(kind) {
     if (kind === 'road' && roadDrawingMode) return cancelRoadDrawing();
     if (kind === 'track' && trackDrawingMode) return cancelTrackDrawing();
 
-    const draft = typeof getActiveCorridorDraft === 'function' ? getActiveCorridorDraft() : null;
-    const sameCity = draft && String(draft.cityId || '') === String(currentCorridorDraftCityId() || '');
-    if (draft && sameCity && draft.kind === kind) {
-        if (roadDrawingMode) exitRoadDrawingMode();
-        if (trackDrawingMode) exitTrackDrawingMode();
-        window.beginProposalDraftDesignSession?.(draft.draftId);
-        restoreCorridorDraftIntoPending(draft);
-        if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
-            await ensureCorridorBuildingFootprintsLoaded();
-        }
-        if (kind === 'track') toggleTrackDrawTool();
-        else toggleRoadDrawTool();
-        return true;
-    }
-
-    // A different draft remains autosaved. Starting another drawing simply activates a new draft;
-    // it never replaces or discards the previous one.
     if (roadDrawingMode) exitRoadDrawingMode();
     if (trackDrawingMode) exitTrackDrawingMode();
-    // No draft is created for an empty drawing — pressing R and walking away leaves nothing
-    // behind. The first autosave (two points drawn) creates the draft, and
-    // saveCurrentCorridorDrawingDraft adopts it into the design session then. Clearing the
-    // active draft prevents that first autosave from hijacking an unrelated corridor draft.
+    // The draft store is only the finish-time hand-off to instantCreate — clear any stale active
+    // draft so finishing this drawing cannot hijack an unrelated one.
     try { window.proposalDraftStore?.clearActiveDraft?.(); } catch (_) { }
     // Build-through approvals for parks/squares/lakes last one drawing session only.
     if (typeof resetApprovedStructureCrossings === 'function') resetApprovedStructureCrossings();
@@ -2134,10 +2180,19 @@ function handleRoadKeydown(e) {
         undoLastRoadSegment();
     }
 
-    // Check for Escape key (cancel road)
+    // Escape cancels only the segment being drawn; placed segments always remain. With no
+    // active segment it applies the road (nothing drawn is ever lost — there are no drafts),
+    // and with nothing drawn at all it closes the tool.
     if (e.key === 'Escape') {
         e.preventDefault(); // Prevent browser default behavior
-        cancelRoadDrawing();
+        if (roadHasStarted) {
+            cancelActiveRoadStroke();
+            updateStatus(translateRoadText('panel.road.segmentCancelledStatus', 'Segment cancelled — placed segments stay. Esc again builds the road.'));
+        } else if (getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+            finishRoadDrawing();
+        } else {
+            exitRoadDrawingMode();
+        }
     }
 }
 
@@ -2241,6 +2296,40 @@ function updateUndoButtonState() {
     }
 }
 
+// Esc cancels ONLY the stroke in progress: points added since the pen went down are removed,
+// everything placed earlier stays. A stub left with fewer than 2 points is dropped entirely.
+function cancelActiveRoadStroke() {
+    if (!roadHasStarted || !Array.isArray(roadPoints)) return false;
+    while (roadPoints.length > Math.max(roadStrokeBaseCount, 0)) {
+        const removedPoint = roadPoints[roadPoints.length - 1];
+        const previousPoint = roadPoints[roadPoints.length - 2];
+        if (previousPoint && typeof removeBuildingTunnelEdge === 'function') {
+            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
+        }
+        roadPoints.pop();
+    }
+    if (roadPoints.length < 2) {
+        const stubIndex = roadSegments.indexOf(roadPoints);
+        if (stubIndex !== -1) {
+            roadSegments.splice(stubIndex, 1);
+            roadSegmentIds.splice(stubIndex, 1);
+        }
+    }
+    roadPoints = [];
+    roadHasStarted = false;
+    if (roadPreviewLine) {
+        roadPreviewLine.removeFrom(map);
+        roadPreviewLine = null;
+    }
+    const updatedPolygon = rebuildRoadGeometryFromSegments();
+    redrawRoadVertexMarkers();
+    refreshRoadBuildingTunnelLayer();
+    recomputeLockedParcelsFromPolygon(updatedPolygon, false);
+    updateRoadInfoPanel();
+    updateUndoButtonState();
+    return true;
+}
+
 // Undo last road segment
 function undoLastRoadSegment() {
     const existingSegments = getAllRoadSegments(true);
@@ -2252,6 +2341,7 @@ function undoLastRoadSegment() {
         // Resume editing the last committed segment
         roadPoints = existingSegments[existingSegments.length - 1];
         roadHasStarted = true;
+        roadStrokeBaseCount = roadPoints.length;
     }
 
     if (!roadHasStarted || roadPoints.length <= 1) {
@@ -2310,7 +2400,6 @@ function undoLastRoadSegment() {
 
     // Update undo button state
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('road');
 }
 
 
@@ -2340,7 +2429,6 @@ async function handleRoadClick(e) {
             updateStatus('Continuing this segment — click to add points, press F to finish the road');
             updateRoadInfoPanel();
             updateUndoButtonState();
-            saveCurrentCorridorDrawingDraft('road');
             return;
         }
     }
@@ -2356,6 +2444,7 @@ async function handleRoadClick(e) {
         roadPoints = [clickPoint];
         pushRoadSegment(roadPoints);
         roadHasStarted = true;
+        roadStrokeBaseCount = 0;
 
         // Add marker for the starting point
         const startMarker = createRoadVertexMarker(clickPoint);
@@ -2379,25 +2468,36 @@ async function handleRoadClick(e) {
     } else {
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
         const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
-        let buildingTunnel = null;
+        let tunnelSubEdges = null;
         if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
-            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon);
+            const sessionDemolishedIds = new Set(roadDemolishedBuildings.map(record => String(record.id)));
+            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon)
+                .filter(hit => !sessionDemolishedIds.has(String(hit.id)));
             if (hits.length) {
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, 'road')
-                    : { action: 'cancel', removedProposalIds: [] };
+                    : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
                 if (resolution.action === 'cancel') return;
+                if (resolution.action === 'destroy') {
+                    roadDemolishedBuildings.push(...(resolution.demolishedBuildings || []));
+                }
                 if (resolution.action === 'tunnel') {
                     const removedOwners = new Set(resolution.removedProposalIds || []);
                     const standingHits = hits.filter(hit => {
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
-                    const segmentIndex = roadSegments.indexOf(roadPoints);
-                    buildingTunnel = (standingHits.length && typeof makeBuildingTunnelRecord === 'function')
-                        ? makeBuildingTunnelRecord(segmentPoints[0], segmentPoints[1], standingHits, {
-                            segmentId: roadSegmentIds[segmentIndex] || null
-                        }) : null;
+                    if (standingHits.length) {
+                        // Tunnel ONLY while inside the buildings: clip the edge at the facades and
+                        // insert the portals as real vertices; outside portions stay surface road.
+                        tunnelSubEdges = (typeof clipCorridorEdgeThroughBuildings === 'function')
+                            ? clipCorridorEdgeThroughBuildings(segmentPoints[0], segmentPoints[1], standingHits, roadWidth)
+                            : null;
+                        if (!tunnelSubEdges) {
+                            // Degenerate geometry (clip found no interior crossing): whole edge.
+                            tunnelSubEdges = [{ from: segmentPoints[0], to: segmentPoints[1], inside: true, hits: standingHits }];
+                        }
+                    }
                 }
             }
             // Parks/squares/lakes in the way get their own decision: unapply / build through / reroute.
@@ -2407,12 +2507,27 @@ async function handleRoadClick(e) {
             }
         }
 
-        // Add another point to the road (the polygon for the new edge is built below, once)
-        roadPoints.push(clickPoint);
-        if (buildingTunnel && typeof addBuildingTunnelRecord === 'function') {
-            roadBuildingTunnels = addBuildingTunnelRecord(roadBuildingTunnels, buildingTunnel);
+        // Add another point to the road (the polygon for the new edge is built below, once).
+        // A tunnelled edge contributes its facade portals as real vertices first, so the tunnel
+        // spans exactly the inside sub-edges and the rest of the edge stays surface road.
+        if (tunnelSubEdges) {
+            const segmentIndex = roadSegments.indexOf(roadPoints);
+            const segmentId = roadSegmentIds[segmentIndex] || null;
+            tunnelSubEdges.forEach((sub, index) => {
+                if (index < tunnelSubEdges.length - 1) {
+                    roadPoints.push(sub.to);
+                    roadMarkers.push(createRoadVertexMarker(sub.to));
+                }
+                if (sub.inside && typeof makeBuildingTunnelRecord === 'function') {
+                    const record = makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId });
+                    if (record && typeof addBuildingTunnelRecord === 'function') {
+                        roadBuildingTunnels = addBuildingTunnelRecord(roadBuildingTunnels, record);
+                    }
+                }
+            });
             refreshRoadBuildingTunnelLayer();
         }
+        roadPoints.push(clickPoint);
 
         // Add marker for this point
         const pointMarker = createRoadVertexMarker(clickPoint);
@@ -2504,7 +2619,6 @@ async function handleRoadClick(e) {
 
     // Update undo button state
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('road');
 }
 
 // Handle road mouse movement for preview
@@ -2672,7 +2786,6 @@ function exitRoadDrawingMode() {
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');
-    updateRoadDraftStatus(false);
     window.finishProposalDraftDesignSession?.();
 }
 
@@ -4618,6 +4731,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const mergedSegments = [];
     const mergedSegmentIds = [];
     const mergedTunnels = [];
+    const mergedDemolished = [];
     const mergedParents = new Set();
     const collectDefinition = (definition, parents) => {
         (corridorCenterlineOf(definition) || []).forEach((segment, index) => {
@@ -4625,6 +4739,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
             mergedSegmentIds.push(Array.isArray(definition.segmentIds) ? (definition.segmentIds[index] || null) : null);
         });
         (definition.tunnels || []).forEach(tunnel => mergedTunnels.push(JSON.parse(JSON.stringify(tunnel))));
+        (definition.demolishedBuildings || []).forEach(record => mergedDemolished.push(JSON.parse(JSON.stringify(record))));
         (parents || []).forEach(id => { if (id) mergedParents.add(String(id)); });
     };
     targets.forEach(proposal => collectDefinition(
@@ -4690,6 +4805,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
                 segments: mergedSegments,
                 segmentIds: mergedSegmentIds,
                 tunnels: mergedTunnels,
+                demolishedBuildings: mergedDemolished,
                 profile,
                 width,
                 sidewalkWidth,
@@ -4714,10 +4830,11 @@ async function finishRoadDrawing() {
     if (!segments.length) return;
 
     const tunnelCheck = await ensureBuildingTunnelsForSegments(
-        segments, roadWidth, 'road', roadBuildingTunnels, segmentIds
+        segments, roadWidth, 'road', roadBuildingTunnels, segmentIds, roadDemolishedBuildings
     );
     if (!tunnelCheck.accepted) return;
     roadBuildingTunnels = tunnelCheck.records;
+    roadDemolishedBuildings = tunnelCheck.demolished;
     refreshRoadBuildingTunnelLayer();
 
     // Immediately stop interactions and preview while finishing
@@ -4826,9 +4943,14 @@ async function finishRoadDrawing() {
     // Tunnelled stretches acquire nothing: parcels only under tunnel edges must not be parents.
     if (Array.isArray(roadBuildingTunnels) && roadBuildingTunnels.length) {
         const surfaceFootprint = corridorSurfaceFootprintGeoJSON(centerlineSegments, roadWidth, roadBuildingTunnels);
-        const surfaceIds = new Set(surfaceFootprint ? collectParcelsIntersectingFootprint(surfaceFootprint) : []);
-        for (let i = parentParcelIds.length - 1; i >= 0; i--) {
-            if (!surfaceIds.has(parentParcelIds[i])) parentParcelIds.splice(i, 1);
+        // A FULLY tunnelled corridor has no surface footprint: keep the declared parents (it
+        // then applies and splits like a normal corridor, matching calculateChildFeatures'
+        // fallback). Emptying the list failed validation and stranded the drawing as a draft.
+        if (surfaceFootprint) {
+            const surfaceIds = new Set(collectParcelsIntersectingFootprint(surfaceFootprint));
+            for (let i = parentParcelIds.length - 1; i >= 0; i--) {
+                if (!surfaceIds.has(parentParcelIds[i])) parentParcelIds.splice(i, 1);
+            }
         }
     }
 
@@ -4862,6 +4984,7 @@ async function finishRoadDrawing() {
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,
         tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
+        demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
         stats: ownershipAndAcquisitionStats,
         metadata: {
             mode: 'draw',
@@ -4892,6 +5015,10 @@ async function finishRoadDrawing() {
     // proposal terms later. Drafts are created lazily on autosave — force one now if missing.
     if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft('road');
     const designDraftId = window.activeProposalDesignDraftId;
+    if (designDraftId && absorbedRoadIdentity?.name && window.proposalDraftStore?.getDraft?.(designDraftId)) {
+        // Continuing an absorbed road: the finished object keeps the original road's name.
+        window.proposalDraftStore.updateDraft(designDraftId, { fields: { name: absorbedRoadIdentity.name } }, { recordHistory: false });
+    }
     if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
@@ -4938,27 +5065,15 @@ async function finishRoadDrawing() {
     }
 }
 
-// Closing the drawing tool (X button or Escape) never discards work — the geometry autosaves as
-// a draft. Say so visibly, so the close doesn't read as a destructive cancel.
-function showCorridorDraftSavedToast(kind) {
-    document.getElementById('corridor-draft-saved-toast')?.remove();
-    const toast = document.createElement('div');
-    toast.id = 'corridor-draft-saved-toast';
-    toast.className = 'corridor-draft-saved-toast';
-    toast.setAttribute('role', 'status');
-    const message = kind === 'track'
-        ? translateRoadText('panel.road.draftSavedTrackToast', 'Unfinished track kept — click its dashed outline to continue.')
-        : translateRoadText('panel.road.draftSavedRoadToast', 'Unfinished road kept — click its dashed outline or press R to continue.');
-    toast.innerHTML = `<p>💾 ${message}</p>`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 6000);
-}
-
-// Cancel road drawing
+// Closing the drawing tool (X button, or R again) applies what was drawn — there are no drafts,
+// so anything drawable instantly becomes the object. An empty drawing just closes.
 async function cancelRoadDrawing() {
-    const saved = saveCurrentCorridorDrawingDraft('road');
+    if (roadHasStarted) cancelActiveRoadStroke();
+    if (getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+        await finishRoadDrawing();
+        return true;
+    }
     exitRoadDrawingMode();
-    if (saved) showCorridorDraftSavedToast('road');
     return true;
 }
 
@@ -4968,6 +5083,7 @@ function resetRoadDrawing(hidePanel = true) {
     roadSegmentIds = [];
     roadPoints = [];
     roadBuildingTunnels = [];
+    roadDemolishedBuildings = [];
     absorbedRoadIdentity = null; // the absorbed name already lives on the drawing's draft
     roadWidth = 2;
     roadProfile = null;
@@ -6680,6 +6796,7 @@ let committedTrackMetrics = {
 };
 let trackMarkers = [];
 let trackBuildingTunnels = [];
+let trackDemolishedBuildings = [];
 let trackBuildingTunnelLayer = null;
 let trackPreviewAffectedParcels = [];
 let trackRailsLayer = null; // Layer group for track rails and sleepers
@@ -7401,9 +7518,11 @@ function handleTrackKeydown(e) {
         undoLastTrackSegment();
     }
 
+    // Escape applies the track if one is drawable (nothing is ever kept as a draft), else closes.
     if (e.key === 'Escape') {
         e.preventDefault();
-        cancelTrackDrawing();
+        if (trackHasStarted && trackPoints.length >= 2) finishTrackDrawing();
+        else exitTrackDrawingMode();
     }
 }
 
@@ -7486,7 +7605,6 @@ function undoLastTrackSegment() {
     updateRoadAcquiringDifficulty(trackAffectedParcels);
     updateRoadInfoPanel();
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('track');
 }
 
 // Handle track drawing clicks
@@ -7498,7 +7616,6 @@ function reverseTrackDirection() {
     trackMarkers.reverse();
     if (trackCenterline) trackCenterline.setLatLngs(trackPoints);
     updateStatus('Continuing the track from its other end');
-    saveCurrentCorridorDrawingDraft('track');
 }
 
 async function handleTrackClick(e) {
@@ -7576,23 +7693,34 @@ async function handleTrackClick(e) {
         // Build the segment polygon for this click
         const segmentPoints = [trackPoints[trackPoints.length - 1], pointToAdd];
         const segmentPolygon = calculateRoadPolygon(segmentPoints, trackWidth);
-        let buildingTunnel = null;
+        let tunnelSubEdges = null;
         if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
-            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon);
+            const sessionDemolishedIds = new Set(trackDemolishedBuildings.map(record => String(record.id)));
+            const hits = detectLoadedBuildingTunnelIntersections(segmentPolygon)
+                .filter(hit => !sessionDemolishedIds.has(String(hit.id)));
             if (hits.length) {
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, 'track')
-                    : { action: 'cancel', removedProposalIds: [] };
+                    : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
                 if (resolution.action === 'cancel') return;
+                if (resolution.action === 'destroy') {
+                    trackDemolishedBuildings.push(...(resolution.demolishedBuildings || []));
+                }
                 if (resolution.action === 'tunnel') {
                     const removedOwners = new Set(resolution.removedProposalIds || []);
                     const standingHits = hits.filter(hit => {
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
-                    buildingTunnel = (standingHits.length && typeof makeBuildingTunnelRecord === 'function')
-                        ? makeBuildingTunnelRecord(segmentPoints[0], segmentPoints[1], standingHits, { segmentId: 'track' })
-                        : null;
+                    if (standingHits.length) {
+                        // Tunnel only while inside the buildings — portals become track vertices.
+                        tunnelSubEdges = (typeof clipCorridorEdgeThroughBuildings === 'function')
+                            ? clipCorridorEdgeThroughBuildings(segmentPoints[0], segmentPoints[1], standingHits, trackWidth)
+                            : null;
+                        if (!tunnelSubEdges) {
+                            tunnelSubEdges = [{ from: segmentPoints[0], to: segmentPoints[1], inside: true, hits: standingHits }];
+                        }
+                    }
                 }
             }
             // Parks/squares/lakes in the way get their own decision: unapply / build through / reroute.
@@ -7602,12 +7730,27 @@ async function handleTrackClick(e) {
             }
         }
 
-        // Add point to track
-        trackPoints.push(pointToAdd);
-        if (buildingTunnel && typeof addBuildingTunnelRecord === 'function') {
-            trackBuildingTunnels = addBuildingTunnelRecord(trackBuildingTunnels, buildingTunnel);
+        // Add point to track. A tunnelled edge first contributes its facade portals as real
+        // vertices, so the tunnel spans exactly the inside sub-edges.
+        if (tunnelSubEdges) {
+            tunnelSubEdges.forEach((sub, index) => {
+                if (index < tunnelSubEdges.length - 1) {
+                    trackPoints.push(sub.to);
+                    trackMarkers.push(L.circleMarker(sub.to, {
+                        radius: 5, color: '#0066cc', fillColor: '#0066cc', fillOpacity: 1
+                    }).addTo(map));
+                    trackCenterline.addLatLng(sub.to);
+                }
+                if (sub.inside && typeof makeBuildingTunnelRecord === 'function') {
+                    const record = makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId: 'track' });
+                    if (record && typeof addBuildingTunnelRecord === 'function') {
+                        trackBuildingTunnels = addBuildingTunnelRecord(trackBuildingTunnels, record);
+                    }
+                }
+            });
             refreshTrackBuildingTunnelLayer();
         }
+        trackPoints.push(pointToAdd);
 
         // Play feedback sound for the committed segment
         playTrackSegmentSound();
@@ -7698,7 +7841,6 @@ async function handleTrackClick(e) {
 
     // Enable undo once we have at least one segment
     updateUndoButtonState();
-    saveCurrentCorridorDrawingDraft('track');
 }
 
 // Handle track mouse movement for preview
@@ -8136,10 +8278,11 @@ async function finishTrackDrawing() {
     if (!trackHasStarted || trackPoints.length < 2) return;
 
     const tunnelCheck = await ensureBuildingTunnelsForSegments(
-        [trackPoints], trackWidth, 'track', trackBuildingTunnels, ['track']
+        [trackPoints], trackWidth, 'track', trackBuildingTunnels, ['track'], trackDemolishedBuildings
     );
     if (!tunnelCheck.accepted) return;
     trackBuildingTunnels = tunnelCheck.records;
+    trackDemolishedBuildings = tunnelCheck.demolished;
     refreshTrackBuildingTunnelLayer();
 
     // Immediately stop interactions and preview while finishing
@@ -8228,9 +8371,14 @@ async function finishTrackDrawing() {
     // Tunnelled stretches acquire nothing: parcels only under tunnel edges must not be parents.
     if (Array.isArray(trackBuildingTunnels) && trackBuildingTunnels.length) {
         const surfaceFootprint = corridorSurfaceFootprintGeoJSON([centerlineSegments], trackWidth, trackBuildingTunnels);
-        const surfaceIds = new Set(surfaceFootprint ? collectParcelsIntersectingFootprint(surfaceFootprint) : []);
-        for (let i = parentParcelIds.length - 1; i >= 0; i--) {
-            if (!surfaceIds.has(parentParcelIds[i])) parentParcelIds.splice(i, 1);
+        // A FULLY tunnelled corridor has no surface footprint: keep the declared parents (it
+        // then applies and splits like a normal corridor, matching calculateChildFeatures'
+        // fallback). Emptying the list failed validation and stranded the drawing as a draft.
+        if (surfaceFootprint) {
+            const surfaceIds = new Set(collectParcelsIntersectingFootprint(surfaceFootprint));
+            for (let i = parentParcelIds.length - 1; i >= 0; i--) {
+                if (!surfaceIds.has(parentParcelIds[i])) parentParcelIds.splice(i, 1);
+            }
         }
     }
 
@@ -8257,6 +8405,7 @@ async function finishTrackDrawing() {
         width: trackWidth,
         sidewalkWidth: null,
         tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || [])),
+        demolishedBuildings: JSON.parse(JSON.stringify(trackDemolishedBuildings || [])),
         stats: ownershipAndAcquisitionStats,
         metadata: {
             mode: 'draw',
@@ -8340,9 +8489,11 @@ async function finishTrackDrawing() {
 
 // Cancel track drawing
 async function cancelTrackDrawing() {
-    const saved = saveCurrentCorridorDrawingDraft('track');
+    if (trackHasStarted && trackPoints.length >= 2) {
+        await finishTrackDrawing();
+        return true;
+    }
     exitTrackDrawingMode();
-    if (saved) showCorridorDraftSavedToast('track');
     return true;
 }
 
@@ -8392,7 +8543,6 @@ function exitTrackDrawingMode() {
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');
-    updateRoadDraftStatus(false);
     window.finishProposalDraftDesignSession?.();
 }
 
@@ -8407,6 +8557,7 @@ function resetTrackDrawing(hidePanel = true) {
 
     trackPoints = [];
     trackBuildingTunnels = [];
+    trackDemolishedBuildings = [];
     trackHasStarted = false;
     trackAffectedParcels = [];
     trackIds.forEach(id => {

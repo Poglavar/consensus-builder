@@ -154,7 +154,7 @@
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
             "readOnly": "Ovaj predlog se može samo pregledati.",
             "parcelsUnavailable": "Parcele iz nacrta nisu dostupne u trenutnom gradu.",
-            "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati — ostaje kao nacrt."
+            "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati."
         },
         "publish": {
             "alreadyCreated": "Ovaj nacrt je već napravio predlog {{id}}.",
@@ -162,7 +162,7 @@
         },
         "mapTooltip": "Nacrt — kliknite za nastavak",
         "noGeometryYet": "Ovaj nacrt još nema geometriju — počnite da crtate da je dobije.",
-        "keptAsDraft": "Objekat nije bilo moguće dovršiti — ostaje u Nacrtima; kliknite njegov isprekidani obris za nastavak.",
+        "keptAsDraft": "Objekat nije bilo moguće stvoriti — crtanje je ponovo otvoreno da ispravite problem.",
         "reverted": "Vraćena je prethodna verzija.",
         "revertFailed": "Prethodnu verziju nije bilo moguće vratiti.",
         "geometryUpdated": "Geometrija ažurirana.",
@@ -932,7 +932,6 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Završi put (F)",
             "crossSectionButton": "Uredi poprečni presek",
-            "draftAutosaved": "Nacrt je automatski sačuvan na ovom uređaju",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna",
@@ -942,9 +941,8 @@
             "ownedByIndividualsLabel": "U vlasništvu pojedinaca:",
             "parcelAreaLabel": "Površina parcela:",
             "parcelCountLabel": "Broj parcela:",
-            "draftSavedRoadToast": "Nedovršen put je sačuvan — kliknite njegov isprekidani obris ili pritisnite R za nastavak.",
-            "draftSavedTrackToast": "Nedovršena pruga je sačuvana — kliknite njen isprekidani obris za nastavak.",
             "builtStatus": "Put izgrađen — kliknite ga za uređivanje ili predlog.",
+            "segmentCancelledStatus": "Segment poništen — postavljeni segmenti ostaju. Esc ponovo gradi put.",
             "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili predlog.",
             "mergedStatus": "Povezano sa “{{name}}” — sada je jedan put.",
             "mergedStatusTrack": "Povezano sa “{{name}}” — sada je jedna pruga.",
@@ -1123,11 +1121,12 @@
             "keep": "Zadrži nacrt"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Napraviti tunel kroz zgradu?",
+            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Srušiti ih ili prokopati tunel?",
             "road": "put",
             "track": "pruga",
             "unapply": "Ukloni postojeći predlog sa mape",
-            "confirm": "Tunel kroz zgradu",
+            "destroy": "Sruši zgrade",
+                "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
         },
         "deleteProposal": {

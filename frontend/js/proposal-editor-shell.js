@@ -909,9 +909,6 @@
         // The design tool seeded multi-select for its parcel context; closing the tool must
         // disarm it, or the "Multiparcel selection" panel resurfaces on later clicks.
         try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-        // The store notifications above fired while the session was still marked active, so the
-        // draft map overlay skipped this draft — re-render it now that the session is over.
-        try { global.refreshDraftRoadLayer?.(); } catch (_) { }
         // Geometry-edit sessions commit on close: a changed draft becomes the object (absorbing
         // the source in instantCreate); an untouched one dissolves without residue.
         if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
@@ -1129,17 +1126,27 @@
         if (Object.keys(autoFields).length) {
             store.updateDraft(draftId, { fields: autoFields }, { recordHistory: false });
         }
-        const keepAsDraft = () => {
-            // There is no editor dialog: the drawing simply stays in Drafts, visible as a dashed
-            // silhouette — clicking it continues the drawing.
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.keptAsDraft', 'Could not finish this object — it stays in Drafts; click its dashed outline to continue.'));
-            }
+        const keepAsDraft = (reason = '') => {
+            // There are no drafts: a drawing that cannot become an object is reopened in the
+            // drawing tool so the user can fix it, with a loud message saying WHY it failed.
+            const base = tDraft('proposalDrafts.keptAsDraft', 'Could not create the object — the drawing has been reopened so you can fix it.');
+            const message = reason ? `${base} (${reason})` : base;
+            console.error('[ProposalEditor] instantCreate failed:', reason || '(no reason)');
+            if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 7000, 'error');
+            if (typeof global.updateStatus === 'function') global.updateStatus(message);
+            Promise.resolve(global.openProposalDraftDesign?.(draftId)).then(opened => {
+                if (!opened) {
+                    console.error('[ProposalEditor] Could not reopen the failed drawing; discarding draft', draftId);
+                    try { global.proposalDraftStore?.deleteDraft?.(draftId); } catch (_) { }
+                }
+            });
             return null;
         };
 
         draft = store.validateDraft(draftId);
-        if (!draft?.validation?.valid) return keepAsDraft();
+        if (!draft?.validation?.valid) {
+            return keepAsDraft(draft?.validation?.errors?.[0]?.message || '');
+        }
 
         let proposal = null;
         try { proposal = store.buildProposalFromDraft(draftId); } catch (_) { proposal = null; }
@@ -1153,7 +1160,7 @@
         const proposalId = global.proposalStorage?.addProposal?.(proposal);
         if (!proposalId) {
             if (typeof global.showStyledAlert === 'function') {
-                global.showStyledAlert(tDraft('proposalDrafts.errors.instantCreateFailed', 'Could not save the new object — it stays as a draft.'));
+                global.showStyledAlert(tDraft('proposalDrafts.errors.instantCreateFailed', 'Could not save the new object.'));
             }
             return keepAsDraft();
         }

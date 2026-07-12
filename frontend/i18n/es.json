@@ -154,7 +154,7 @@
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "readOnly": "Esta propuesta es de solo lectura.",
             "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
-            "instantCreateFailed": "No se pudo guardar el nuevo objeto — se mantiene como borrador."
+            "instantCreateFailed": "No se pudo guardar el nuevo objeto."
         },
         "publish": {
             "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
@@ -162,7 +162,7 @@
         },
         "mapTooltip": "Borrador — haz clic para continuar",
         "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",
-        "keptAsDraft": "No se pudo terminar este objeto — permanece en Borradores; haz clic en su contorno discontinuo para continuar.",
+        "keptAsDraft": "No se pudo crear el objeto — el dibujo se ha reabierto para que corrijas el problema.",
         "reverted": "Se restauró la versión anterior.",
         "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
@@ -955,7 +955,6 @@
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar carretera (F)",
             "crossSectionButton": "Editar sección transversal",
-            "draftAutosaved": "Borrador guardado automáticamente en este dispositivo",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna",
@@ -965,9 +964,8 @@
             "ownedByIndividualsLabel": "Propiedad de particulares:",
             "parcelAreaLabel": "Área de parcela:",
             "parcelCountLabel": "Número de parcelas:",
-            "draftSavedRoadToast": "Camino sin terminar guardado — haz clic en su contorno discontinuo o pulsa R para continuar.",
-            "draftSavedTrackToast": "Vía sin terminar guardada — haz clic en su contorno discontinuo para continuar.",
             "builtStatus": "Carretera construida — haz clic para editarla o proponerla.",
+            "segmentCancelledStatus": "Segmento cancelado — los segmentos colocados se mantienen. Esc de nuevo construye el camino.",
             "builtStatusTrack": "Vía construida — haz clic para editarla o proponerla.",
             "mergedStatus": "Conectado con “{{name}}” — ahora es una sola carretera.",
             "mergedStatusTrack": "Conectado con “{{name}}” — ahora es una sola vía.",
@@ -1172,11 +1170,12 @@
             "keep": "Conservar borrador"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Crear un túnel a través del edificio?",
+            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Demolerlos o atravesarlos con un túnel?",
             "road": "camino",
             "track": "vía férrea",
             "unapply": "Retirar la propuesta existente",
-            "confirm": "Atravesar con túnel",
+            "destroy": "Demoler los edificios",
+                "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
         },
         "deleteProposal": {

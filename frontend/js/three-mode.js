@@ -1808,10 +1808,27 @@
         // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
         // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
         // via WFS) is no longer used here — it has only 2D footprints with no heights.
+        // Buildings demolished by applied corridors are matched by FOOTPRINT (the 2D and 3D
+        // datasets have different id spaces) and skipped.
         try {
+            // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
+            const demolishedFootprints = window.collectDemolishedBuildingRecords()
+                .map(record => record.geometry).filter(Boolean);
+            const isDemolished = (bld) => {
+                if (!demolishedFootprints.length || typeof turf === 'undefined') return false;
+                try {
+                    const footprint = buildingFootprintPolygon(bld);
+                    if (!footprint) return false;
+                    const centre = turf.centroid(footprint);
+                    return demolishedFootprints.some(geometry => {
+                        try { return turf.booleanPointInPolygon(centre, { type: 'Feature', properties: {}, geometry }); } catch (_) { return false; }
+                    });
+                } catch (_) { return false; }
+            };
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
                     try {
+                        if (isDemolished(bld)) return;
                         const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
                         if (mesh) targetGroup.add(mesh);
                     } catch (e) {

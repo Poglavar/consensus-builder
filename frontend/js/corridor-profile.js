@@ -863,7 +863,15 @@ function buildCorridorJunctionTreatments(segments, profile) {
     const planarSegments = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
     const junctions = findCorridorJunctionsPlanar(planarSegments);
     if (!junctions.length) return [];
+    return junctions.map(junction => corridorJunctionTreatmentPlanar(junction, profile)).filter(Boolean);
+}
 
+// One junction's visual treatment: an asphalt patch down every arm plus zebra bars on each
+// approach, sized from the given profile. Shared by a road's own junctions and by the
+// cross-corridor junctions formed where two applied roads meet.
+function corridorJunctionTreatmentPlanar(junction, profile) {
+    const spans = corridorStripSpans(profile);
+    if (!spans.length) return null;
     const roadway = spans.filter(strip => strip.type !== 'sidewalk' && strip.type !== 'verge');
     const roadwayLeft = roadway.length ? Math.max(...roadway.map(strip => strip.left)) : corridorProfileWidth(profile) / 2;
     const roadwayRight = roadway.length ? Math.min(...roadway.map(strip => strip.right)) : -corridorProfileWidth(profile) / 2;
@@ -873,32 +881,110 @@ function buildCorridorJunctionTreatments(segments, profile) {
     const crossingDepth = 3;
     const armLength = setback + crossingDepth + 1;
 
-    return junctions.map(junction => {
-        const surfacePolygons = [];
-        const crosswalkPolygons = [];
-        junction.arms.forEach(direction => {
-            const end = [junction.point[0] + direction[0] * armLength, junction.point[1] + direction[1] * armLength];
-            const surface = corridorStripRingPlanar([junction.point, end], roadwayLeft, roadwayRight);
-            if (surface) surfacePolygons.push(planarRingToLatLng(surface));
-            if (!hasSidewalk) return;
+    const surfacePolygons = [];
+    const crosswalkPolygons = [];
+    junction.arms.forEach(direction => {
+        const end = [junction.point[0] + direction[0] * armLength, junction.point[1] + direction[1] * armLength];
+        const surface = corridorStripRingPlanar([junction.point, end], roadwayLeft, roadwayRight);
+        if (surface) surfacePolygons.push(planarRingToLatLng(surface));
+        if (!hasSidewalk) return;
 
-            const normal = [-direction[1], direction[0]];
-            const stripeWidth = 0.8;
-            const stripeGap = 0.8;
-            for (let across = roadwayRight + 0.25; across + stripeWidth <= roadwayLeft - 0.25; across += stripeWidth + stripeGap) {
-                const corners = [
-                    [setback, across], [setback + crossingDepth, across],
-                    [setback + crossingDepth, across + stripeWidth], [setback, across + stripeWidth]
-                ].map(([along, lateral]) => [
-                    junction.point[0] + direction[0] * along + normal[0] * lateral,
-                    junction.point[1] + direction[1] * along + normal[1] * lateral
-                ]);
-                crosswalkPolygons.push(planarRingToLatLng(corners));
-            }
-        });
-        const [lat, lng] = htrs96ToWGS84(junction.point[0], junction.point[1]);
-        return { lat, lng, degree: junction.degree, surfacePolygons, crosswalkPolygons };
+        const normal = [-direction[1], direction[0]];
+        const stripeWidth = 0.8;
+        const stripeGap = 0.8;
+        for (let across = roadwayRight + 0.25; across + stripeWidth <= roadwayLeft - 0.25; across += stripeWidth + stripeGap) {
+            const corners = [
+                [setback, across], [setback + crossingDepth, across],
+                [setback + crossingDepth, across + stripeWidth], [setback, across + stripeWidth]
+            ].map(([along, lateral]) => [
+                junction.point[0] + direction[0] * along + normal[0] * lateral,
+                junction.point[1] + direction[1] * along + normal[1] * lateral
+            ]);
+            crosswalkPolygons.push(planarRingToLatLng(corners));
+        }
     });
+    const [lat, lng] = htrs96ToWGS84(junction.point[0], junction.point[1]);
+    return { lat, lng, degree: junction.degree, surfacePolygons, crosswalkPolygons };
+}
+
+// Intersections BETWEEN applied roads. Snapping while drawing copies exact coordinates, so a
+// road snapped onto another one shares a vertex with it, or ends exactly on one of its edges.
+// This finds those meeting points across corridors and gives them the same junction treatment
+// a road's own T-joints get. Conditions: at least two DIFFERENT corridors at the node; a vertex
+// counts as lying on another road's edge within 0.75 m (an unsnapped near-miss stays two roads).
+function buildCrossCorridorJunctionTreatments(corridors) {
+    if (!corridorProjectionAvailable() || !Array.isArray(corridors) || corridors.length < 2) return [];
+    const TOLERANCE = 0.75; // metres
+    const planarCorridors = corridors
+        .map(entry => ({
+            profile: entry.profile,
+            segments: (entry.centerline || [])
+                .filter(segment => Array.isArray(segment) && segment.length >= 2)
+                .map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)))
+        }))
+        .filter(corridor => corridor.segments.length && corridor.profile);
+    if (planarCorridors.length < 2) return [];
+
+    // A vertex of one corridor that lies on another corridor's edge becomes a node of that edge
+    // too (render-only), so the junction finder sees the T-joint.
+    const augmented = planarCorridors.map(corridor => ({
+        profile: corridor.profile,
+        segments: corridor.segments.map(segment => segment.map(point => point.slice()))
+    }));
+    augmented.forEach((target, targetIndex) => {
+        target.segments = target.segments.map(segment => {
+            const result = [segment[0]];
+            for (let i = 0; i < segment.length - 1; i++) {
+                const a = segment[i];
+                const b = segment[i + 1];
+                const dx = b[0] - a[0];
+                const dy = b[1] - a[1];
+                const len2 = dx * dx + dy * dy;
+                const inserts = [];
+                if (len2 > 1e-9) {
+                    augmented.forEach((other, otherIndex) => {
+                        if (otherIndex === targetIndex) return;
+                        other.segments.forEach(otherSegment => otherSegment.forEach(point => {
+                            const t = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / len2;
+                            if (t <= 1e-6 || t >= 1 - 1e-6) return;
+                            const px = a[0] + t * dx;
+                            const py = a[1] + t * dy;
+                            if (Math.hypot(point[0] - px, point[1] - py) <= TOLERANCE) {
+                                inserts.push({ t, point: [point[0], point[1]] });
+                            }
+                        }));
+                    });
+                }
+                inserts.sort((x, y) => x.t - y.t).forEach(insert => {
+                    const last = result[result.length - 1];
+                    if (Math.hypot(last[0] - insert.point[0], last[1] - insert.point[1]) > 1e-3) {
+                        result.push(insert.point);
+                    }
+                });
+                result.push(b);
+            }
+            return result;
+        });
+    });
+
+    const keyOf = point => `${Math.round(point[0] * 100) / 100},${Math.round(point[1] * 100) / 100}`;
+    const touchingByNode = new Map();
+    augmented.forEach((corridor, index) => corridor.segments.forEach(segment => segment.forEach(point => {
+        const key = keyOf(point);
+        if (!touchingByNode.has(key)) touchingByNode.set(key, new Set());
+        touchingByNode.get(key).add(index);
+    })));
+
+    return findCorridorJunctionsPlanar(augmented.flatMap(corridor => corridor.segments))
+        .filter(junction => (touchingByNode.get(keyOf(junction.point))?.size || 0) >= 2)
+        .map(junction => {
+            // The widest meeting road decides the junction's asphalt reach and zebra span.
+            const profile = [...touchingByNode.get(keyOf(junction.point))]
+                .map(index => planarCorridors[index].profile)
+                .reduce((best, candidate) => corridorProfileWidth(candidate) > corridorProfileWidth(best) ? candidate : best);
+            return corridorJunctionTreatmentPlanar(junction, profile);
+        })
+        .filter(Boolean);
 }
 
 // ---------------------------------------------------------------------------
@@ -1006,6 +1092,7 @@ if (typeof window !== 'undefined') {
     window.corridorStripRingPlanar = corridorStripRingPlanar;
     window.buildCorridorDecorations = buildCorridorDecorations;
     window.buildCorridorJunctionTreatments = buildCorridorJunctionTreatments;
+    window.buildCrossCorridorJunctionTreatments = buildCrossCorridorJunctionTreatments;
 }
 
 // Node-visible for unit tests; the browser loads this file as a classic script.
@@ -1038,6 +1125,7 @@ if (typeof module !== 'undefined' && module.exports) {
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
         buildCorridorDecorations,
-        buildCorridorJunctionTreatments
+        buildCorridorJunctionTreatments,
+        buildCrossCorridorJunctionTreatments
     };
 }
