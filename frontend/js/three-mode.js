@@ -2500,6 +2500,7 @@
             for (let i = 0; i < n; i++) shade[i] = i % 2;
         }
 
+        const pendingSliceObjects = [];
         sliceData.forEach((slice, i) => {
             try {
                 const sliceMaterial = material.clone();
@@ -2536,21 +2537,27 @@
 
                 sliceMeshes.forEach(mesh => {
                     if (sliceParcelId) mesh.userData.parcelId = sliceParcelId;
-                    targetGroup.add(mesh);
+                    pendingSliceObjects.push(mesh);
                     const edges = new THREE.EdgesGeometry(mesh.geometry);
                     const line = new THREE.LineSegments(edges, materials.sliceEdges);
                     if (sliceParcelId) line.userData.parcelId = sliceParcelId;
-                    targetGroup.add(line);
+                    pendingSliceObjects.push(line);
                 });
             } catch (e) {
                 console.warn("Error creating building slice", e);
             }
         });
 
+        // Commit the slices ONLY when they cover the building; otherwise draw the full building
+        // INSTEAD. Drawing both used to stack the full mesh coplanar with the partial slices,
+        // and the z-fight showed as striped/whitened walls and caps.
         const slices = n;
-        if (slices === 0 || (totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
+        if (slices > 0 && !(totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
+            pendingSliceObjects.forEach(object => targetGroup.add(object));
+        } else {
             if (slices > 0) {
-                console.warn("Slicing did not cover the whole building, drawing remainder.");
+                console.warn("Slicing did not cover the whole building, drawing it unsliced instead.");
+                pendingSliceObjects.forEach(object => { try { object.geometry?.dispose?.(); } catch (_) { } });
             }
             const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
             meshes.forEach(m => targetGroup.add(m));

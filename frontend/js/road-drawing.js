@@ -538,6 +538,8 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
     if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
 
     const definition = proposal.roadProposal.definition;
+    // Taken BEFORE the mutation: a rejected edit (reroute in the obstacle prompt) restores this.
+    const definitionSnapshot = JSON.parse(JSON.stringify(definition));
     if (typeof mutateDefinition === 'function') mutateDefinition(definition);
 
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
@@ -559,6 +561,60 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
             updateStatus(translateRoadText('panel.road.bulldozedAllStatus', 'Road bulldozed.'));
         }
         return true;
+    }
+
+    // Dragging a road into a building gets the same three-way decision as drawing into one:
+    // unapply the occupying proposal / tunnel through / reroute (the edit is reverted).
+    const editKind = definition.metadata?.isTrack === true ? 'track' : 'road';
+    const editWidth = Number(definition.width) || 10;
+    if (typeof detectLoadedBuildingTunnelIntersections === 'function'
+        && typeof resolveBuildingObstacles === 'function') {
+        const tunnelledIds = new Set();
+        (definition.tunnels || []).forEach(record => (record?.buildingIds || []).forEach(id => tunnelledIds.add(String(id))));
+        const edgeHits = [];
+        normalizedSegments.forEach((segment, segIndex) => {
+            for (let i = 0; i < segment.length - 1; i++) {
+                const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], editWidth);
+                if (!polygon) continue;
+                const hits = detectLoadedBuildingTunnelIntersections(polygon)
+                    .filter(hit => !tunnelledIds.has(String(hit.id)));
+                if (hits.length) {
+                    edgeHits.push({
+                        from: segment[i],
+                        to: segment[i + 1],
+                        hits,
+                        segmentId: Array.isArray(normalizedIds) ? (normalizedIds[segIndex] || null) : null
+                    });
+                }
+            }
+        });
+        if (edgeHits.length) {
+            const combined = new Map();
+            edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
+            const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind);
+            if (resolution.action === 'cancel') {
+                // Reroute: put the definition back exactly as it was and drop the edit.
+                Object.keys(definition).forEach(field => { delete definition[field]; });
+                Object.assign(definition, definitionSnapshot);
+                return false;
+            }
+            if (resolution.action === 'tunnel') {
+                const removedOwners = new Set(resolution.removedProposalIds || []);
+                definition.tunnels = definition.tunnels || [];
+                edgeHits.forEach(edge => {
+                    const standing = edge.hits.filter(hit => {
+                        const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
+                        return !owner || !removedOwners.has(owner);
+                    });
+                    if (!standing.length) return;
+                    const record = (typeof makeBuildingTunnelRecord === 'function')
+                        ? makeBuildingTunnelRecord(edge.from, edge.to, standing, { segmentId: edge.segmentId })
+                        : null;
+                    if (record && typeof addBuildingTunnelRecord === 'function') addBuildingTunnelRecord(definition.tunnels, record);
+                });
+            }
+            // 'clear' (every obstacle was unapplied) proceeds with nothing extra to record.
+        }
     }
 
     // Merge-on-connect works on drags too: if the moved geometry now touches other local
@@ -1913,9 +1969,6 @@ if (typeof window !== 'undefined') {
 // or guards the active draft; this function remains the synchronous low-level activator.
 function toggleRoadDrawTool() {
     // Gate: require personalized profile to draw roads (which create proposals)
-    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
-        return;
-    }
 
     updateGlobalRoadDrawingMode(!roadDrawingMode);
     const roadDrawButton = document.getElementById('roadDrawButton');
@@ -7152,9 +7205,6 @@ function showTrackSpeedPicker() {
 // Toggle track drawing tool
 function toggleTrackDrawTool() {
     // Gate: require personalized profile to draw tracks (which create proposals)
-    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
-        return;
-    }
 
     trackDrawingMode = !trackDrawingMode;
     updateGlobalTrackDrawingMode(trackDrawingMode);

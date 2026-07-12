@@ -699,7 +699,6 @@
     }
 
     async function editProposal(proposalIdOrHash) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
         const proposal = proposalById(proposalIdOrHash);
         const capability = getProposalEditCapability(proposal);
         if (!capability.editable) {
@@ -769,7 +768,6 @@
     }
 
     async function editProposalGeometry(proposalIdOrHash) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal || !canEditProposalGeometry(proposal)) return null;
         const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
@@ -798,7 +796,6 @@
     // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
     // come later via "Create proposal" on the object.
     async function startInstantProposalDesign(adapterKey, parcelIds) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return false;
         const draft = global.proposalDraftStore.createDraft({
@@ -835,7 +832,6 @@
     // One-click structures: a park/square/lake IS the selection's union — there is no design
     // tool, the object simply appears applied (auto-named). Terms come later via "Create proposal".
     async function instantCreateStructureFromSelection(kind, parcelIds) {
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
         if (!STRUCTURE_KIND_LABELS[kind]) return null;
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return null;
@@ -910,6 +906,9 @@
         }
         editorState.designDraftId = null;
         global.activeProposalDesignDraftId = null;
+        // The design tool seeded multi-select for its parcel context; closing the tool must
+        // disarm it, or the "Multiparcel selection" panel resurfaces on later clicks.
+        try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
         // The store notifications above fired while the session was still marked active, so the
         // draft map overlay skipped this draft — re-render it now that the session is over.
         try { global.refreshDraftRoadLayer?.(); } catch (_) { }

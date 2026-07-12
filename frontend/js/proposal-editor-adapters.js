@@ -455,6 +455,10 @@
         const selection = global.multiParcelSelection;
         if (selection) {
             selection.isActive = true;
+            // Seeded programmatically for an editor/dialog flow — released when that flow ends
+            // (releaseEditorSeededMultiSelection), so a cancelled Propose or closed design tool
+            // doesn't leave multi-select armed and the panel popping on later clicks.
+            selection.__seededByEditor = true;
             if (selection.selectedParcels && typeof selection.selectedParcels.clear === 'function') selection.selectedParcels.clear();
             resolved.forEach(entry => {
                 selection.selectedParcels?.add(entry.id);
@@ -464,6 +468,24 @@
             try { if (typeof selection.updateUI === 'function') selection.updateUI(); } catch (_) { }
         }
         return { ids: resolved.map(entry => entry.id), layers: resolved.map(entry => entry.layer), substituted };
+    }
+
+    // Exit a multi-parcel selection that an editor flow seeded (never one the user built by hand).
+    function releaseEditorSeededMultiSelection() {
+        const selection = global.multiParcelSelection;
+        if (!selection || !selection.isActive || !selection.__seededByEditor) return;
+        selection.__seededByEditor = false;
+        try {
+            if (typeof selection.toggle === 'function') {
+                selection.toggle({ restoreSingleSelection: false });
+                return;
+            }
+        } catch (_) { }
+        try {
+            selection.clearSelection?.();
+            selection.isActive = false;
+            selection.updateUI?.();
+        } catch (_) { }
     }
 
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {
@@ -978,6 +1000,7 @@
     global.summarizeProposalDraftChanges = summarizeProposalDraftChanges;
     global.openProposalDraftDesign = openProposalDraftDesign;
     global.prepareProposalDraftParcelSelection = prepareProposalDraftParcelSelection;
+    global.releaseEditorSeededMultiSelection = releaseEditorSeededMultiSelection;
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {

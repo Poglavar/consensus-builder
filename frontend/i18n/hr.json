@@ -1398,6 +1398,7 @@
                 "parcelIdHeader": "ID Parcele",
                 "proposalIdHeader": "ID Prijedloga",
                 "ancestorUploadButton": "Prenesi",
+                "sharePlanButton": "Podijeli cijeli plan (svi primijenjeni prijedlozi)…",
                 "plan": {
                     "title": "Podijeli plan",
                     "fetching": "Preuzimanje prijedloga #{{id}}…",

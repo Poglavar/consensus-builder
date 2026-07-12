@@ -997,6 +997,21 @@ function showUploadProposalModal(proposal) {
 
     fragment.appendChild(rowsContainer);
 
+    // Escape hatch to the multi-proposal flow: share EVERYTHING currently applied as one plan.
+    const sharePlanButton = document.createElement('button');
+    sharePlanButton.type = 'button';
+    sharePlanButton.className = 'btn share-modal-secondary share-modal-plan-btn';
+    sharePlanButton.style.width = '100%';
+    sharePlanButton.style.marginBottom = '0.75rem';
+    sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
+    sharePlanButton.addEventListener('click', () => {
+        try {
+            document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => btn.click());
+        } catch (_) { }
+        if (typeof shareAppliedProposals === 'function') shareAppliedProposals();
+    });
+    fragment.appendChild(sharePlanButton);
+
     // Status message container
     const uploadStatus = document.createElement('div');
     uploadStatus.style.marginBottom = '0.75rem';

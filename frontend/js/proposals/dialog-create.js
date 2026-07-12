@@ -2085,6 +2085,9 @@ function closeProposalDialog() {
         ? String(window.pendingProposalDraftId)
         : null;
     clearProposalBalanceWatcher();
+    // If this dialog seeded multi-select for its parcel context, disarm it — a cancelled
+    // Propose must not leave the "Multiparcel selection" panel armed for later clicks.
+    try { if (typeof window !== 'undefined') window.releaseEditorSeededMultiSelection?.(); } catch (_) { }
     const modal = document.querySelector('.create-proposal-modal');
     if (modal) {
         modal.remove();

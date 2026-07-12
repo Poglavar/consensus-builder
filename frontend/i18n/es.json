@@ -1446,6 +1446,7 @@
                 "parcelIdHeader": "ID de Parcela",
                 "proposalIdHeader": "ID de Propuesta",
                 "ancestorUploadButton": "Subir",
+                "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
                 "plan": {
                     "title": "Compartir plan",
                     "fetching": "Obteniendo propuesta #{{id}}…",

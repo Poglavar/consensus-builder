@@ -418,7 +418,6 @@ function corridorEditorOpenOverlay() {
 
 // Entry point, wired to the "Cross-section" button in a road proposal's details panel.
 function openCorridorProfileEditor(proposalIdOrHash) {
-    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) return;
     corridorEditorCancel();
 
     const source = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalIdOrHash) : null;
