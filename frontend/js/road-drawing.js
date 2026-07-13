@@ -1148,7 +1148,9 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
 // Clicking near a segment's *endpoint* before drawing has started resumes that segment instead of
 // starting a new one, which is how a road drawn in an earlier session gets continued.
 // ---------------------------------------------------------------------------
-const ROAD_SNAP_PIXELS = 12;
+// Touch fingers land ~2× less precisely than a cursor — with the mouse-calibrated 12 px,
+// mobile users constantly missed node snaps and built near-miss disconnected junctions.
+const ROAD_SNAP_PIXELS = (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches) ? 26 : 12;
 let roadSnapMarker = null;
 
 // Closest point to `p` on the pixel segment ab, clamped to the segment.

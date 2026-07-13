@@ -440,6 +440,11 @@ body.sidebar-collapsed {
     font-weight: 600;
     cursor: pointer;
     transition: background 120ms ease, color 120ms ease;
+    /* Four segments on the Built row: labels shrink with a clean ellipsis instead of clipping. */
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #three-container .three-mode-segment + .three-mode-segment,
@@ -456,6 +461,40 @@ body.sidebar-collapsed {
 #cesium-container .three-mode-segment--active {
     background: #2c6cb0;
     color: #fff;
+}
+
+/* Phones: the control panel spans the top edge instead of hugging the right corner (with the
+   four-segment Built row it otherwise eats half the scene or squeezes to nothing), and the
+   segments grow to finger height. */
+@media (max-width: 480px) {
+    #three-container .three-mode-ui-panel,
+    #cesium-container .three-mode-ui-panel {
+        left: 12px;
+        right: 12px;
+        max-width: none;
+    }
+
+    #three-container .three-mode-emphasis-row .three-mode-segment,
+    #cesium-container .three-mode-emphasis-row .three-mode-segment {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    /* The panel now owns the top edge — the loading pill moves to the bottom centre. */
+    #three-container .three-mode-buildings-loader {
+        top: auto;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+@media (pointer: coarse) {
+    #three-container .three-mode-segment,
+    #cesium-container .three-mode-segment {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 }
 
 /* Hide sidebar toggles and bubbles in 3D mode */

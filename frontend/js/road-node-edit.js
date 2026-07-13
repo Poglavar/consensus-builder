@@ -33,27 +33,34 @@
         activeKey = null;
     }
 
+    // A divIcon's element IS its hit area — on touch screens the mouse-sized handles were
+    // nearly impossible to grab, so coarse pointers get finger-sized ones.
+    const coarsePointer = typeof global.matchMedia === 'function' && global.matchMedia('(pointer: coarse)').matches;
+
     function handleIcon() {
+        const size = coarsePointer ? 26 : 14;
         return global.L.divIcon({
             className: 'road-node-handle',
-            iconSize: [14, 14],
-            iconAnchor: [7, 7]
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
         });
     }
 
     function junctionIcon() {
+        const size = coarsePointer ? 32 : 18;
         return global.L.divIcon({
             className: 'road-node-handle road-node-handle--junction',
-            iconSize: [18, 18],
-            iconAnchor: [9, 9]
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
         });
     }
 
     function bulldozeIcon() {
+        const size = coarsePointer ? 24 : 12;
         return global.L.divIcon({
             className: 'road-edge-bulldoze',
-            iconSize: [12, 12],
-            iconAnchor: [6, 6]
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
         });
     }
 

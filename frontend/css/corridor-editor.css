@@ -260,11 +260,35 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 6px;
+    left: 50%;
+    margin-left: -1px;
     width: 2px;
     background: rgba(255, 255, 255, 0.85);
     border-radius: 1px;
     box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+}
+
+/* Touch: the 14 px seam grab area is unhittable with a finger — widen the invisible target
+   (the visual line stays centered via the 50% rule above). */
+@media (pointer: coarse) {
+    .corridor-section-seam {
+        width: 32px;
+        margin-left: -16px;
+    }
+
+    /* iOS Safari zooms the whole page when focusing an input styled under 16 px —
+       lane width/type fields get the threshold size on touch devices. */
+    .corridor-lane-type,
+    .corridor-lane-width,
+    .corridor-lane-landscape {
+        font-size: 16px;
+        height: 38px;
+    }
+
+    .corridor-lane-btn {
+        width: 38px;
+        height: 38px;
+    }
 }
 
 .corridor-section-seam:hover::after {

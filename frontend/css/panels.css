@@ -1118,6 +1118,19 @@ with a width of 400px, and a height of half of the map height minus 5px.
     color: #fff;
 }
 
+/* Touch: the compact 22 px button is under the finger-target floor. */
+@media (pointer: coarse) {
+    #parcel-info-panel #info-tab .multi-select-detect-btn {
+        height: 34px;
+        line-height: 34px;
+        padding: 0 14px;
+    }
+
+    #parcel-info-panel #info-tab .multi-select-options label {
+        min-height: 34px;
+    }
+}
+
 /* Parcel Info Panel Layout */
 .parcel-info-header {
     position: sticky;
