@@ -1915,12 +1915,6 @@ const multiParcelSelection = {
                         parcelButtons.style.display = '';
                     }
 
-                    // Ensure road checkbox is visible for single parcel view
-                    const roadCheckboxGroup = document.querySelector('#parcel-info-panel .road-checkbox');
-                    if (roadCheckboxGroup) {
-                        roadCheckboxGroup.style.display = '';
-                    }
-
                     // Clear all tab content
                     const infoContent = document.getElementById('info-content');
                     const proposalsContent = document.getElementById('proposals-content');
@@ -2037,12 +2031,6 @@ const multiParcelSelection = {
             parcelButtons.style.display = '';
         }
 
-        // Hide road checkbox section
-        const roadCheckboxGroup = document.querySelector('#parcel-info-panel .road-checkbox');
-        if (roadCheckboxGroup) {
-            roadCheckboxGroup.style.display = 'none';
-        }
-
         // Clear the regular info content and use parcel-info-content for multi-parcel display
         document.getElementById('info-content').innerHTML = '';
 
@@ -2136,12 +2124,6 @@ const multiParcelSelection = {
         const parcelButtons = document.querySelector('.parcel-info-buttons');
         if (parcelButtons) {
             parcelButtons.style.display = '';
-        }
-
-        // Show road checkbox section again
-        const roadCheckboxGroup = document.querySelector('#parcel-info-panel .road-checkbox');
-        if (roadCheckboxGroup) {
-            roadCheckboxGroup.style.display = '';
         }
 
         // Clear all tab content areas

@@ -115,9 +115,6 @@
             showParcelInfoPanel(feature);
         }
         global.currentParcelCoordinates = feature.geometry.coordinates;
-        const currentIsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
-        global.document.getElementById('roadCheckbox').checked = currentIsRoad;
-
         const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
         const previousLayer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
         if (previousLayer && previousSelectedId && previousSelectedId !== parcelId.toString()) {
@@ -172,6 +169,9 @@
             }
         }
 
+        // Road status outlived the "is road" checkbox: it is still set by road auto-detection and by
+        // applying a road proposal, and consumers read it off currentParcel.
+        const currentIsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         global.currentParcel = {
             id: parcelId,
             layer: targetLayer,

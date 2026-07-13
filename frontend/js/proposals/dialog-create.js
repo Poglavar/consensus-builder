@@ -265,22 +265,37 @@ function setProposalModalDimmed(dimmed) {
     }
 }
 
-function openConstrainedCorridorModal() {
+// Designating existing parcels as road land.
+//
+// This is NOT a drawing tool. It does not lay out a road — it DECLARES that the parcels the user has
+// already selected are road land, and hands that to the proposal so it can be offered for, argued over
+// and recorded. Nothing is designed, so there is no centerline, no cross-section, no width to pick and
+// no road/track choice to make: the geometry is simply the parcels, merged.
+//
+// It exists because "give up this land for a road" is a different act from "design a road here", and
+// because a parcel's road status has to come from somewhere accountable. It used to come from a
+// checkbox in the parcel panel that wrote the shared road-parcel store behind the lifecycle's back;
+// this replaces it, and unapplying the proposal gives the land back.
+//
+// A road you actually design is drawn with the corridor tool (js/road-drawing.js) — one tool, which
+// also owns the cross-section, the rails, the junctions and the 3D.
+function openRoadDesignationModal() {
     const selection = (typeof getCurrentParcelSelectionContext === 'function')
         ? getCurrentParcelSelectionContext()
         : { layers: [], ids: [] };
     const parcelIds = Array.isArray(selection.ids) ? selection.ids.filter(Boolean) : [];
     const parcels = Array.isArray(selection.layers) ? selection.layers.filter(Boolean) : [];
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-    const tCorridor = getConstrainedCorridorTranslator(t);
+    const tCorridor = getRoadDesignationTranslator(t);
 
     if (!parcels.length) {
         if (typeof updateStatus === 'function') {
-            updateStatus(tCorridor('statusSelectParcels', 'Select parcels before opening the constrained corridor tool.'));
+            updateStatus(tCorridor('statusSelectParcels', 'Select the parcels to designate as road land.'));
         }
         return;
     }
 
+    // The designation becomes ONE parcel, so the land it names has to be one piece.
     const contiguity = (typeof areParcelsContiguous === 'function')
         ? areParcelsContiguous(parcels)
         : { contiguous: true };
@@ -288,7 +303,7 @@ function openConstrainedCorridorModal() {
     if (!contiguity.contiguous) {
         const message = (typeof t === 'function')
             ? t('proposals.contiguityDisabledReason', 'Disabled because the parcels in the proposal are not contiguous')
-            : tCorridor('statusContiguity', 'Parcels must be contiguous to draw a constrained corridor.');
+            : tCorridor('statusContiguity', 'Parcels must be contiguous to designate them as road land.');
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', message);
         } else if (typeof alert === 'function') {
@@ -303,17 +318,26 @@ function openConstrainedCorridorModal() {
 
     if (!superGeometry) {
         if (typeof updateStatus === 'function') {
-            updateStatus(tCorridor('statusBoundaryFailed', 'Could not build a corridor boundary from the selected parcels.'));
+            updateStatus(tCorridor('statusBoundaryFailed', 'Could not build a boundary from the selected parcels.'));
         }
         return;
     }
 
-    const superFeature = { type: 'Feature', properties: {}, geometry: superGeometry };
-    const superTurfFeature = (typeof turf !== 'undefined' && turf.feature)
-        ? turf.feature(superGeometry)
-        : superFeature;
+    // The designation becomes ONE parcel, and the child-feature builder keeps only the largest part of
+    // the geometry it is given. So a merge that comes back in several pieces would quietly drop land —
+    // refuse it instead. (A single-part MultiPolygon is just how the union is shaped; that is fine.)
+    if (superGeometry.type === 'MultiPolygon' && (superGeometry.coordinates?.length || 0) > 1) {
+        const message = tCorridor('statusContiguity', 'Parcels must be contiguous to designate them as road land.');
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('parcels_not_contiguous', message);
+        }
+        console.error('[road-designation] merged parcels came back in several pieces — refusing', superGeometry.coordinates.length);
+        return;
+    }
 
-    // Clone parcel features to avoid mutating the live map layers
+    const superFeature = { type: 'Feature', properties: {}, geometry: superGeometry };
+
+    // Clone parcel features so the preview cannot mutate the live map layers.
     const parcelFeatures = parcels
         .map(layer => {
             const feature = layer?.feature;
@@ -324,12 +348,11 @@ function openConstrainedCorridorModal() {
 
     if (!parcelFeatures.length) {
         if (typeof updateStatus === 'function') {
-            updateStatus(tCorridor('statusGeometryFailed', 'Could not resolve parcel geometries for the constrained corridor modal.'));
+            updateStatus(tCorridor('statusGeometryFailed', 'Could not resolve the selected parcels.'));
         }
         return;
     }
 
-    // Remove any existing modal before opening a new one
     if (constrainedCorridorState && constrainedCorridorState.close) {
         constrainedCorridorState.close();
     }
@@ -337,90 +360,30 @@ function openConstrainedCorridorModal() {
     const overlay = document.createElement('div');
     overlay.className = 'constrained-corridor-overlay';
 
-    const mapId = `constrained-corridor-map-${Date.now()}`;
-    const corridorText = {
-        ariaLabel: tCorridor('ariaLabel', 'Constrained corridor'),
-        title: tCorridor('title', 'Constrained corridor'),
+    const mapId = `road-designation-map-${Date.now()}`;
+    const text = {
+        ariaLabel: tCorridor('designationAriaLabel', 'Designate as road land'),
+        title: tCorridor('designationTitle', 'Designate as road land'),
+        hint: tCorridor('designationHint', 'The selected parcels, merged, become road land. Nothing is designed — to lay out a road with lanes, draw it with the road tool instead.'),
         closeLabel: tCorridor('closeLabel', 'Close'),
-        mapAriaLabel: tCorridor('mapAriaLabel', 'Constrained corridor map'),
-        modeAriaLabel: tCorridor('modeAriaLabel', 'Corridor mode'),
-        modeFull: tCorridor('modeFull', 'Full parcel'),
-        modeDraw: tCorridor('modeDraw', 'Draw'),
-        typeAriaLabel: tCorridor('typeAriaLabel', 'Corridor type'),
-        typeRoad: tCorridor('typeRoad', 'Road'),
-        typeTrack: tCorridor('typeTrack', 'Track'),
-        panelHeader: tCorridor('panelHeader', 'Road Info'),
-        undo: tCorridor('undo', '(U)ndo'),
-        finish: tCorridor('finish', '(F)inish'),
-        metricLength: tCorridor('metricLength', 'Length'),
-        metricArea: tCorridor('metricArea', 'Area'),
-        hintFullMode: tCorridor('hintFullMode', 'Full parcel mode will use the merged parcel outline as the corridor geometry.'),
-        hintDrawMode: tCorridor('hintDrawMode', 'Draw a road or track inside the merged parcels.'),
-        widthHeaderRoad: tCorridor('widthHeaderRoad', 'Choose road width'),
-        widthHeaderTrack: tCorridor('widthHeaderTrack', 'Choose track width'),
-        sidewalkWidth: tCorridor('sidewalkWidth', 'Sidewalk width'),
-        trackWidth: tCorridor('trackWidth', 'Track width'),
+        mapAriaLabel: tCorridor('mapAriaLabel', 'Designation map'),
         done: tCorridor('done', 'Done')
     };
 
     overlay.innerHTML = `
-        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="${corridorText.ariaLabel}">
+        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="${text.ariaLabel}">
             <div class="corridor-header">
-                <div class="corridor-title">${corridorText.title}</div>
-                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${corridorText.closeLabel}" data-corridor-close>&times;</button>
+                <div class="corridor-title">${text.title}</div>
+                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${text.closeLabel}" data-corridor-close>&times;</button>
             </div>
             <div class="corridor-layout">
                 <div class="corridor-map-panel">
-                    <div id="${mapId}" class="corridor-map" aria-label="${corridorText.mapAriaLabel}"></div>
+                    <div id="${mapId}" class="corridor-map" aria-label="${text.mapAriaLabel}"></div>
                 </div>
                 <div class="corridor-sidebar">
-                    <div class="corridor-toggle-row" role="group" aria-label="${corridorText.modeAriaLabel}">
-                        <button type="button" class="btn proposal-type-button selected" data-corridor-mode="full">${corridorText.modeFull}</button>
-                        <button type="button" class="btn proposal-type-button" data-corridor-mode="draw">${corridorText.modeDraw}</button>
-                    </div>
-                    <div class="corridor-toggle-row" role="group" aria-label="${corridorText.typeAriaLabel}" data-corridor-type-row>
-                        <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">${corridorText.typeRoad}</button>
-                        <button type="button" class="btn proposal-type-button" data-corridor-type="track">${corridorText.typeTrack}</button>
-                    </div>
-                    <div class="corridor-draw-controls" data-corridor-draw-controls>
-                        <div class="corridor-width-picker" data-corridor-width-picker style="display:flex; flex-direction:column; gap:6px;">
-                            <div class="corridor-width-header" data-corridor-width-header>${corridorText.widthHeaderRoad}</div>
-                            <div class="roadwidth-grid" data-corridor-road-grid style="max-height:160px; overflow:auto;"></div>
-                            <label class="corridor-sidewalk" data-corridor-sidewalk style="display:flex; align-items:center; gap:8px;">
-                                <span data-corridor-sidewalk-label>${corridorText.sidewalkWidth}</span>
-                                <input type="range" min="0" max="5" step="0.1" value="1" data-corridor-sidewalk-slider style="flex:1;">
-                                <span data-corridor-sidewalk-value>1.0 m</span>
-                            </label>
-                            <div class="corridor-track-controls" data-corridor-track-controls style="display:none; gap:8px; flex-direction:column; max-height:220px; overflow:auto;">
-                                <div class="roadwidth-grid" data-corridor-track-grid></div>
-                                <label class="corridor-track-width" style="display:flex; align-items:center; gap:8px;">
-                                    <span data-corridor-track-label>${corridorText.trackWidth}</span>
-                                    <input type="range" min="3" max="15" step="0.1" value="3" data-corridor-track-slider style="flex:1;">
-                                    <span data-corridor-track-value>3.0 m</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="corridor-panel">
-                            <div class="corridor-panel__header">${corridorText.panelHeader}</div>
-                            <div class="corridor-undo-row">
-                                <button type="button" class="btn btn-secondary" data-corridor-undo disabled>${corridorText.undo}</button>
-                                <button type="button" class="btn btn-secondary" data-corridor-finish disabled>${corridorText.finish}</button>
-                            </div>
-                            <div class="corridor-metrics" aria-live="polite">
-                                <div class="corridor-metric">
-                                    <div class="corridor-metric__label">${corridorText.metricLength}</div>
-                                    <div class="corridor-metric__value" data-corridor-length>0 m</div>
-                                </div>
-                                <div class="corridor-metric">
-                                    <div class="corridor-metric__label">${corridorText.metricArea}</div>
-                                    <div class="corridor-metric__value" data-corridor-area>0 m²</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="corridor-hint" data-corridor-hint>${corridorText.hintFullMode}</div>
+                    <div class="corridor-hint">${text.hint}</div>
                     <div class="corridor-actions">
-                        <button type="button" class="btn btn-proposal" data-corridor-done>${corridorText.done}</button>
+                        <button type="button" class="btn btn-proposal" data-corridor-done>${text.done}</button>
                     </div>
                 </div>
             </div>
@@ -443,21 +406,12 @@ function openConstrainedCorridorModal() {
     }).addTo(map);
 
     const parcelLayer = L.geoJSON(parcelFeatures, {
-        style: () => ({
-            color: '#1f2937',
-            weight: 1.4,
-            fillColor: '#e5e7eb',
-            fillOpacity: 0.12
-        })
+        style: () => ({ color: '#1f2937', weight: 1.4, fillColor: '#e5e7eb', fillOpacity: 0.12 })
     }).addTo(map);
 
+    // The merged outline IS the geometry being designated — so it is what the preview shows, filled.
     const boundaryLayer = L.geoJSON(superFeature, {
-        style: () => ({
-            color: '#0f172a',
-            weight: 6,
-            dashArray: '8 6',
-            fillOpacity: 0
-        })
+        style: () => ({ color: '#0f172a', weight: 4, fillColor: '#6b7280', fillOpacity: 0.35 })
     }).addTo(map);
 
     const bounds = parcelLayer.getBounds();
@@ -465,45 +419,7 @@ function openConstrainedCorridorModal() {
         map.fitBounds(bounds.pad(0.1));
     }
 
-    let drawMode = 'full';
-    let corridorType = 'road';
-    let corridorWidth = DEFAULT_CORRIDOR_WIDTHS.road;
-    const drawnPoints = [];
-    let drawingFinalized = false;
-    let lineLayer = null;
-    let polygonLayer = null;
-    let previewLine = null;
-    let previewPolygon = null;
-
-    const drawControls = overlay.querySelector('[data-corridor-draw-controls]');
-    const modeButtons = overlay.querySelectorAll('[data-corridor-mode]');
-    const typeButtons = overlay.querySelectorAll('[data-corridor-type]');
-    const undoButton = overlay.querySelector('[data-corridor-undo]');
-    const finishButton = overlay.querySelector('[data-corridor-finish]');
-    const doneButton = overlay.querySelector('[data-corridor-done]');
-    const lengthEl = overlay.querySelector('[data-corridor-length]');
-    const areaEl = overlay.querySelector('[data-corridor-area]');
-    const hintEl = overlay.querySelector('[data-corridor-hint]');
-    const widthPicker = overlay.querySelector('[data-corridor-width-picker]');
-    const widthHeader = overlay.querySelector('[data-corridor-width-header]');
-    const roadGrid = overlay.querySelector('[data-corridor-road-grid]');
-    const trackControls = overlay.querySelector('[data-corridor-track-controls]');
-    const trackGrid = overlay.querySelector('[data-corridor-track-grid]');
-    const trackSlider = overlay.querySelector('[data-corridor-track-slider]');
-    const trackValue = overlay.querySelector('[data-corridor-track-value]');
-    const trackLabel = overlay.querySelector('[data-corridor-track-label]');
-    const sidewalkControls = overlay.querySelector('[data-corridor-sidewalk]');
-    const sidewalkSlider = overlay.querySelector('[data-corridor-sidewalk-slider]');
-    const sidewalkValue = overlay.querySelector('[data-corridor-sidewalk-value]');
-    const sidewalkLabel = overlay.querySelector('[data-corridor-sidewalk-label]');
-
     const closeModal = () => {
-        map.off('click', handleMapClick);
-        map.off('mousemove', handleMouseMove);
-        if (lineLayer) map.removeLayer(lineLayer);
-        if (polygonLayer) map.removeLayer(polygonLayer);
-        if (previewLine) map.removeLayer(previewLine);
-        if (previewPolygon) map.removeLayer(previewPolygon);
         map.removeLayer(parcelLayer);
         map.removeLayer(boundaryLayer);
         map.remove();
@@ -513,557 +429,48 @@ function openConstrainedCorridorModal() {
         constrainedCorridorState = null;
     };
 
-    constrainedCorridorState = {
-        close: closeModal,
-        overlay
-    };
-
-    // Corridor width picker (inline, mirrors road/track width dialogs)
-    const persistGet = (key, fallback) => {
-        try {
-            const val = (typeof PersistentStorage !== 'undefined' && PersistentStorage.getItem)
-                ? PersistentStorage.getItem(key)
-                : null;
-            return val !== null && val !== undefined && val !== '' ? val : fallback;
-        } catch (_) {
-            return fallback;
-        }
-    };
-    const persistSet = (key, val) => {
-        try {
-            if (typeof PersistentStorage !== 'undefined' && PersistentStorage.setItem) {
-                PersistentStorage.setItem(key, String(val));
-            }
-        } catch (_) { /* ignore */ }
-    };
-
-    const roadWidthOptions = [
-        { id: 'roadwidth6', label: tCorridor('roadWidths.alley', 'Alley ~7.5 m'), width: 7.5 },
-        { id: 'roadwidth5', label: tCorridor('roadWidths.local', 'Local ~10 m'), width: 10 },
-        { id: 'roadwidth4', label: tCorridor('roadWidths.collector', 'Collector ~18 m'), width: 18 },
-        { id: 'roadwidth3', label: tCorridor('roadWidths.mainStreet', 'Main street ~26 m'), width: 26 },
-        { id: 'roadwidth2', label: tCorridor('roadWidths.avenue', 'Avenue ~40 m'), width: 40 },
-        { id: 'roadwidth1', label: tCorridor('roadWidths.boulevard', 'Boulevard ~80 m'), width: 80 }
-    ];
-
-    const trackSpeedOptions = [
-        { id: 'trackspeed1', speed: 50, label: '50 km/h', minRadius: 300 },
-        { id: 'trackspeed2', speed: 80, label: '80 km/h', minRadius: 500 },
-        { id: 'trackspeed3', speed: 120, label: '120 km/h', minRadius: 1000 },
-        { id: 'trackspeed4', speed: 160, label: '160 km/h', minRadius: 2000 },
-        { id: 'trackspeed5', speed: 200, label: '200 km/h', minRadius: 3500 },
-        { id: 'trackspeed6', speed: 250, label: '250 km/h', minRadius: 5000 }
-    ];
-
-    let selectedRoadWidthId = persistGet('lastRoadWidthId', 'roadwidth6');
-    let selectedTrackSpeedId = persistGet('lastTrackSpeedId', 'trackspeed1');
-    let corridorSidewalkWidth = parseFloat(persistGet('lastSidewalkWidth', 1));
-    if (!Number.isFinite(corridorSidewalkWidth)) corridorSidewalkWidth = 1;
-    let roadBaseWidth = (roadWidthOptions.find(o => o.id === selectedRoadWidthId) || roadWidthOptions[0]).width;
-    let trackWidthValue = parseFloat(persistGet('lastTrackWidth', DEFAULT_CORRIDOR_WIDTHS.track));
-    if (!Number.isFinite(trackWidthValue)) trackWidthValue = DEFAULT_CORRIDOR_WIDTHS.track;
-
-    const getRoadThumb = (id) => {
-        if (typeof getRoadWidthThumbDataURI === 'function') {
-            try { return getRoadWidthThumbDataURI(id); } catch (_) { }
-        }
-        // Fallback simple placeholder
-        return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect width="200" height="120" fill="#cfd8dc"/><rect x="20" y="40" width="160" height="40" rx="6" fill="#616161"/><rect x="20" y="58" width="160" height="4" fill="#ffffff"/></svg>`);
-    };
-
-    function setCorridorWidth(newWidth) {
-        if (!Number.isFinite(newWidth)) return;
-        corridorWidth = newWidth;
-        updatePreview();
-    }
-
-    function syncSidewalkUI() {
-        if (sidewalkSlider) sidewalkSlider.value = corridorSidewalkWidth;
-        if (sidewalkValue) sidewalkValue.textContent = `${Number(corridorSidewalkWidth).toFixed(1)} m`;
-    }
-
-    if (sidewalkLabel) sidewalkLabel.textContent = corridorText.sidewalkWidth;
-    syncSidewalkUI();
-    if (sidewalkSlider) {
-        sidewalkSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            if (!Number.isFinite(val)) return;
-            corridorSidewalkWidth = val;
-            persistSet('lastSidewalkWidth', val);
-            syncSidewalkUI();
-            if (corridorType === 'road') {
-                setCorridorWidth(roadBaseWidth); // Sidewalk is contained within road width
-            }
-        });
-    }
-
-    function renderRoadWidthGrid() {
-        if (!roadGrid) return;
-        roadGrid.innerHTML = '';
-        roadGrid.style.display = 'grid';
-        roadGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
-        roadGrid.style.gap = '8px';
-        roadWidthOptions.forEach(opt => {
-            const card = document.createElement('div');
-            card.className = 'roadwidth-card' + (opt.id === selectedRoadWidthId ? ' selected' : '');
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            card.dataset.id = opt.id;
-            card.dataset.width = String(opt.width);
-
-            const img = document.createElement('img');
-            img.className = 'roadwidth-thumb';
-            img.alt = opt.label;
-            img.src = getRoadThumb(opt.id);
-
-            const lbl = document.createElement('div');
-            lbl.className = 'roadwidth-label';
-            lbl.textContent = opt.label;
-
-            card.appendChild(img);
-            card.appendChild(lbl);
-
-            const selectFn = () => {
-                selectedRoadWidthId = opt.id;
-                persistSet('lastRoadWidthId', opt.id);
-                roadBaseWidth = opt.width;
-                roadGrid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
-                card.classList.add('selected');
-                if (corridorType === 'road') {
-                    setCorridorWidth(roadBaseWidth); // Sidewalk is contained within road width
-                }
-            };
-
-            card.addEventListener('click', selectFn);
-            card.addEventListener('keydown', (ev) => {
-                if (ev.key === 'Enter' || ev.key === ' ') {
-                    ev.preventDefault();
-                    selectFn();
-                }
-            });
-
-            roadGrid.appendChild(card);
-        });
-    }
-
-    function renderTrackGrid() {
-        if (!trackGrid) return;
-        trackGrid.innerHTML = '';
-        trackGrid.style.display = 'grid';
-        trackGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
-        trackGrid.style.gap = '8px';
-        trackSpeedOptions.forEach(opt => {
-            const card = document.createElement('div');
-            card.className = 'roadwidth-card' + (opt.id === selectedTrackSpeedId ? ' selected' : '');
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            card.dataset.id = opt.id;
-            card.dataset.speed = String(opt.speed);
-            card.dataset.minRadius = String(opt.minRadius);
-
-            const lbl = document.createElement('div');
-            lbl.className = 'roadwidth-label';
-            lbl.textContent = `${opt.label} (min radius: ${opt.minRadius}m)`;
-            card.appendChild(lbl);
-
-            const selectFn = () => {
-                selectedTrackSpeedId = opt.id;
-                persistSet('lastTrackSpeedId', opt.id);
-                trackGrid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
-                card.classList.add('selected');
-            };
-
-            card.addEventListener('click', selectFn);
-            card.addEventListener('keydown', (ev) => {
-                if (ev.key === 'Enter' || ev.key === ' ') {
-                    ev.preventDefault();
-                    selectFn();
-                }
-            });
-
-            trackGrid.appendChild(card);
-        });
-    }
-
-    function syncTrackWidthUI() {
-        if (!trackSlider || !trackValue) return;
-        trackSlider.value = trackWidthValue;
-        trackValue.textContent = `${Number(trackWidthValue).toFixed(1)} m`;
-    }
-
-    if (trackSlider) {
-        syncTrackWidthUI();
-        trackSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value);
-            if (!Number.isFinite(val)) return;
-            trackWidthValue = val;
-            persistSet('lastTrackWidth', val);
-            syncTrackWidthUI();
-            if (corridorType === 'track') {
-                setCorridorWidth(trackWidthValue);
-            }
-        });
-    }
-
-    // Build pickers once
-    renderRoadWidthGrid();
-    renderTrackGrid();
-
-    function applyMode(mode) {
-        drawMode = mode;
-        modeButtons.forEach(btn => {
-            const isActive = btn.getAttribute('data-corridor-mode') === mode;
-            btn.classList.toggle('selected', isActive);
-        });
-        if (drawControls) {
-            drawControls.style.display = mode === 'draw' ? 'flex' : 'none';
-        }
-        if (hintEl) {
-            hintEl.textContent = mode === 'draw' ? corridorText.hintDrawMode : corridorText.hintFullMode;
-        }
-        const mapContainer = map.getContainer();
-        if (mapContainer) {
-            mapContainer.style.cursor = mode === 'draw' ? 'crosshair' : '';
-            mapContainer.classList.toggle('corridor-draw-mode', mode === 'draw');
-        }
-        drawingFinalized = false;
-        if (mode === 'full') {
-            clearDrawnGeometry();
-        }
-        updateButtons();
-    }
-
-    function applyType(type) {
-        corridorType = type === 'track' ? 'track' : 'road';
-        if (widthHeader) {
-            widthHeader.textContent = corridorType === 'track' ? corridorText.widthHeaderTrack : corridorText.widthHeaderRoad;
-        }
-        if (trackControls) trackControls.style.display = corridorType === 'track' ? 'flex' : 'none';
-        if (roadGrid) roadGrid.style.display = corridorType === 'road' ? 'grid' : 'none';
-        if (trackLabel) trackLabel.textContent = corridorText.trackWidth;
-        if (sidewalkControls) sidewalkControls.style.display = corridorType === 'road' ? 'flex' : 'none';
-        if (sidewalkLabel) sidewalkLabel.textContent = corridorText.sidewalkWidth;
-
-        if (corridorType === 'track') {
-            corridorWidth = Number.isFinite(trackWidthValue) ? trackWidthValue : DEFAULT_CORRIDOR_WIDTHS.track;
-        } else {
-            const sel = roadWidthOptions.find(o => o.id === selectedRoadWidthId) || roadWidthOptions[0];
-            roadBaseWidth = sel?.width || DEFAULT_CORRIDOR_WIDTHS.road;
-            corridorWidth = roadBaseWidth; // Sidewalk sits inside road width
-        }
-        typeButtons.forEach(btn => {
-            const active = btn.getAttribute('data-corridor-type') === corridorType;
-            btn.classList.toggle('selected', active);
-        });
-        updatePreview();
-    }
+    constrainedCorridorState = { close: closeModal, overlay };
 
     function handleOverlayClick(event) {
-        if (event.target && event.target.matches('[data-corridor-close]')) {
-            closeModal();
-        }
+        if (event.target === overlay) closeModal();
     }
 
     function handleKeydown(event) {
-        const targetTag = (event.target?.tagName || '').toLowerCase();
-        const isFormField = targetTag === 'input' || targetTag === 'textarea' || targetTag === 'select';
         if (event.key === 'Escape') {
             event.preventDefault();
             closeModal();
-            return;
-        }
-        if (isFormField) return;
-        if ((event.key === 'u' || event.key === 'U') && !undoButton?.disabled) {
-            event.preventDefault();
-            handleUndo();
-        }
-        if ((event.key === 'f' || event.key === 'F') && !finishButton?.disabled) {
-            event.preventDefault();
-            finalizeCorridorDrawing();
         }
     }
 
-    function pointInsideSuperparcel(latlng) {
-        if (!latlng) return false;
-        if (typeof turf === 'undefined') return true;
-        try {
-            return turf.booleanPointInPolygon(turf.point([latlng.lng, latlng.lat]), superTurfFeature);
-        } catch (_) {
-            return true;
-        }
-    }
-
-    function clearDrawnGeometry() {
-        drawnPoints.length = 0;
-        drawingFinalized = false;
-        if (lineLayer) { map.removeLayer(lineLayer); lineLayer = null; }
-        if (polygonLayer) { map.removeLayer(polygonLayer); polygonLayer = null; }
-        if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
-        if (previewPolygon) { map.removeLayer(previewPolygon); previewPolygon = null; }
-        setMetrics(0, 0);
-    }
-
-    function handleMapClick(event) {
-        if (drawMode !== 'draw' || !event || !event.latlng) return;
-        if (drawingFinalized) {
-            clearDrawnGeometry();
-        }
-        if (!pointInsideSuperparcel(event.latlng)) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('corridor_point_outside', 'Clicks must stay within the selected parcels.');
-            }
-            return;
-        }
-        drawnPoints.push(event.latlng);
-        updatePreview();
-    }
-
-    function handleMouseMove(event) {
-        if (drawMode !== 'draw' || drawingFinalized || !event || !event.latlng) return;
-        updatePreview(event.latlng);
-    }
-
-    function toClosedRing(latlngs) {
-        if (!Array.isArray(latlngs) || !latlngs.length) return [];
-        const ring = latlngs.map(pt => [pt.lng, pt.lat]);
-        const first = ring[0];
-        const last = ring[ring.length - 1];
-        if (first && last && (first[0] !== last[0] || first[1] !== last[1])) {
-            ring.push([first[0], first[1]]);
-        }
-        return ring;
-    }
-
-    function computeMetrics(points, polygonLatLngs) {
-        let length = 0;
-        let area = 0;
-        if (typeof turf !== 'undefined') {
-            if (points && points.length >= 2) {
-                try {
-                    const line = turf.lineString(points.map(pt => [pt.lng, pt.lat]));
-                    length = turf.length(line, { units: 'kilometers' }) * 1000;
-                } catch (_) { }
-            }
-            if (polygonLatLngs && polygonLatLngs.length >= 3) {
-                try {
-                    const ring = toClosedRing(polygonLatLngs);
-                    if (ring.length >= 4) {
-                        const poly = turf.polygon([ring]);
-                        area = turf.area(poly);
-                    }
-                } catch (_) { }
-            }
-        }
-        return { length, area };
-    }
-
-    function setMetrics(length, area) {
-        if (lengthEl) lengthEl.textContent = `${length.toFixed(1)} m`;
-        if (areaEl) areaEl.textContent = `${area.toFixed(1)} m²`;
-    }
-
-    function updatePreview(hoverPoint) {
-        if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
-        if (previewPolygon) { map.removeLayer(previewPolygon); previewPolygon = null; }
-        if (lineLayer) { map.removeLayer(lineLayer); lineLayer = null; }
-        if (polygonLayer) { map.removeLayer(polygonLayer); polygonLayer = null; }
-
-        const points = drawnPoints.slice();
-        const useHover = hoverPoint && !drawingFinalized;
-        if (useHover) points.push(hoverPoint);
-
-        if (!points.length) {
-            setMetrics(0, 0);
-            updateButtons();
-            return;
-        }
-
-        const line = L.polyline(points, { color: '#2563eb', weight: 3 }).addTo(map);
-        if (drawingFinalized) {
-            lineLayer = line;
-        } else {
-            previewLine = line;
-        }
-
-        let polygonLatLngs = null;
-        if (points.length >= 2) {
-            polygonLatLngs = (typeof calculateRoadPolygon === 'function')
-                ? calculateRoadPolygon(points, corridorWidth)
-                : null;
-            if (polygonLatLngs && polygonLatLngs.length >= 3) {
-                const polygon = L.polygon(polygonLatLngs, {
-                    color: '#34d399',
-                    weight: 2,
-                    fillColor: '#34d399',
-                    fillOpacity: 0.25
-                }).addTo(map);
-                if (drawingFinalized) {
-                    polygonLayer = polygon;
-                } else {
-                    previewPolygon = polygon;
-                }
-            }
-        }
-
-        const metrics = computeMetrics(points, polygonLatLngs);
-        setMetrics(metrics.length, metrics.area);
-        updateButtons();
-    }
-
-    function updateButtons() {
-        const hasLine = drawnPoints.length >= 2;
-        const drawDisabled = drawMode !== 'draw';
-        if (undoButton) {
-            undoButton.disabled = drawnPoints.length === 0 || drawDisabled;
-        }
-        if (finishButton) {
-            finishButton.disabled = !hasLine || drawDisabled;
-        }
-        if (doneButton) {
-            doneButton.disabled = (drawMode === 'draw' && !hasLine);
-        }
-    }
-
-    function handleUndo() {
-        if (!drawnPoints.length || drawMode !== 'draw') return;
-        drawnPoints.pop();
-        drawingFinalized = false;
-        updatePreview();
-    }
-
-    function finalizeCorridorDrawing() {
-        if (drawMode !== 'draw' || drawnPoints.length < 2) return;
-        drawingFinalized = true;
-        updatePreview();
-    }
-
+    // A designation has no centerline — that absence is what says it was never designed, and it is what
+    // corridorIsDesignation() reads to keep the cross-section editor and the strip renderer away from it.
     function persistGeometryAndClose() {
-        if (drawMode === 'full') {
-            pendingConstrainedCorridor = {
-                mode: 'full',
-                type: corridorType,
-                width: corridorWidth,
-                parentParcelIds: parcelIds.slice(),
-                superGeometry: superGeometry,
-                polygon: superGeometry,
-                centerline: []
-            };
-            if (typeof window !== 'undefined') {
-                window.pendingConstrainedCorridor = pendingConstrainedCorridor;
-            }
-            if (typeof setGeometryStatus === 'function') {
-                const submittedLabel = (typeof t === 'function')
-                    ? t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
-                    : '✔️ geometry submitted';
-                setGeometryStatus(submittedLabel, { submitted: true });
-            }
-            closeModal();
-            return;
-        }
-
-        if (drawnPoints.length < 2) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('corridor_draw_more_points', 'Add at least two points to draw a corridor.');
-            }
-            return;
-        }
-
-        const polygonLatLngs = (typeof calculateRoadPolygon === 'function')
-            ? calculateRoadPolygon(drawnPoints, corridorWidth)
-            : null;
-
-        if (!polygonLatLngs || !polygonLatLngs.length) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('corridor_polygon_missing', 'Could not build a corridor polygon.');
-            }
-            return;
-        }
-
-        const ring = toClosedRing(polygonLatLngs);
-        if (!ring.length) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('corridor_polygon_missing', 'Could not build a corridor polygon.');
-            }
-            return;
-        }
-
-        if (typeof turf !== 'undefined') {
-            try {
-                const corridorPoly = turf.polygon([ring]);
-                const paddedSuper = turf.buffer(superTurfFeature, 0.15, { units: 'meters' }) || superTurfFeature;
-                const within = turf.booleanWithin(corridorPoly, paddedSuper);
-                let outsideArea = 0;
-                if (!within && typeof turf.difference === 'function' && typeof turf.area === 'function') {
-                    const outside = turf.difference(corridorPoly, paddedSuper);
-                    outsideArea = outside ? turf.area(outside) : 0;
-                }
-                if (!within && outsideArea > 0.5) {
-                    if (typeof showProposalAlertMessage === 'function') {
-                        showProposalAlertMessage('corridor_outside_bounds', 'The corridor must stay within the selected parcels.');
-                    }
-                    return;
-                }
-            } catch (_) { /* best effort */ }
-        }
-
-        const geoPolygon = { type: 'Polygon', coordinates: [ring] };
-        const centerline = drawnPoints.map(pt => [pt.lng, pt.lat]);
-
         pendingConstrainedCorridor = {
-            mode: 'draw',
-            type: corridorType,
-            width: corridorWidth,
+            mode: 'full',
+            type: 'road',
+            width: DEFAULT_CORRIDOR_WIDTHS.road,
             parentParcelIds: parcelIds.slice(),
             superGeometry: superGeometry,
-            polygon: geoPolygon,
-            centerline
+            polygon: superGeometry,
+            centerline: []
         };
-
         if (typeof window !== 'undefined') {
             window.pendingConstrainedCorridor = pendingConstrainedCorridor;
         }
-
         if (typeof setGeometryStatus === 'function') {
             const submittedLabel = (typeof t === 'function')
                 ? t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
                 : '✔️ geometry submitted';
             setGeometryStatus(submittedLabel, { submitted: true });
         }
-
         closeModal();
     }
 
-    modeButtons.forEach(btn => {
-        btn.addEventListener('click', () => applyMode(btn.getAttribute('data-corridor-mode') === 'draw' ? 'draw' : 'full'));
-    });
-
-    typeButtons.forEach(btn => {
-        btn.addEventListener('click', () => applyType(btn.getAttribute('data-corridor-type')));
-    });
-
-    if (undoButton) {
-        undoButton.addEventListener('click', handleUndo);
-    }
-
-    if (finishButton) {
-        finishButton.addEventListener('click', finalizeCorridorDrawing);
-    }
-
-    if (doneButton) {
-        doneButton.addEventListener('click', persistGeometryAndClose);
-    }
-
-    if (map) {
-        map.on('click', handleMapClick);
-        map.on('mousemove', handleMouseMove);
-    }
-
+    overlay.querySelector('[data-corridor-close]')?.addEventListener('click', closeModal);
+    overlay.querySelector('[data-corridor-done]')?.addEventListener('click', persistGeometryAndClose);
     overlay.addEventListener('click', handleOverlayClick);
     overlay.addEventListener('keydown', handleKeydown, true);
 
-    // Initialize state
-    applyMode('full');
-    applyType('road');
     setTimeout(() => {
         try { map.invalidateSize(); } catch (_) { }
     }, 50);

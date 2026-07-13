@@ -404,10 +404,13 @@ test.describe('Capture how-to screenshots', () => {
     });
     await closeTools();
 
-    // ============================================ CONSTRAINED CORRIDOR (cesta-05)
+    // ============================================ ROAD DESIGNATION (cesta-05)
+    // Not a corridor: the merged parcels simply BECOME road land, with nothing designed. (The
+    // overlay keeps its old .constrained-corridor-* class names — the tool was renamed, the CSS
+    // was not.)
     await shot('cesta-05-koridor', async () => {
       await showPanelWithSelection(blockIds);
-      await page.evaluate(() => (window as any).openConstrainedCorridorModal());
+      await page.evaluate(() => (window as any).openRoadDesignationModal());
       await page.locator('.constrained-corridor-overlay').waitFor({ state: 'visible', timeout: 15_000 });
       await page.waitForTimeout(1500);
       await saveEl('.constrained-corridor-modal', 'cesta-05-koridor');

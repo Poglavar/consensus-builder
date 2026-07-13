@@ -1373,9 +1373,6 @@ async function renderBlockInfoStats(blockName) {
                 const metrics = calculateRoadMetrics(selectedParcel.feature.geometry.coordinates);
                 showParcelInfoPanel(selectedParcel.feature, metrics);
 
-                // Update the checkbox state
-                document.getElementById('roadCheckbox').checked = currentParcel.isRoad;
-
                 // Show the parcel info panel
                 document.getElementById('parcel-info-panel').classList.add('visible');
 

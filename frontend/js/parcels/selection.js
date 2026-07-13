@@ -388,10 +388,6 @@
                 : global.showParcelInfoPanel;
             if (showPanel && typeof showParcelInfoPanel === 'function') {
                 showParcelInfoPanel(selectedLayer.feature);
-                const roadCheckbox = document.getElementById('roadCheckbox');
-                if (roadCheckbox) {
-                    roadCheckbox.checked = global.currentParcel.isRoad;
-                }
                 const parcelInfoPanel = document.getElementById('parcel-info-panel');
                 if (parcelInfoPanel) {
                     parcelInfoPanel.classList.add('visible');

@@ -187,43 +187,19 @@
     },
     "proposals": {
         "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas",
-        "constrainedCorridor": {
-            "statusUnavailable": "La ventana de corredor restringido aún no está disponible.",
-            "statusSelectParcels": "Selecciona parcelas antes de abrir la herramienta de corredor restringido.",
-            "statusContiguity": "Las parcelas deben ser contiguas para dibujar un corredor restringido.",
-            "statusBoundaryFailed": "No se pudo generar el límite del corredor a partir de las parcelas seleccionadas.",
-            "statusGeometryFailed": "No se pudieron resolver las geometrías de las parcelas para la ventana de corredor restringido.",
+        "roadDesignation": {
+            "statusUnavailable": "La designación de suelo viario aún no está disponible.",
+            "statusSelectParcels": "Selecciona las parcelas que quieres designar como suelo viario.",
+            "statusContiguity": "Las parcelas deben ser contiguas para designarlas como suelo viario.",
+            "statusBoundaryFailed": "No se pudo generar el límite a partir de las parcelas seleccionadas.",
+            "statusGeometryFailed": "No se pudieron resolver las parcelas seleccionadas.",
             "statusMapUnavailable": "La librería de mapas no está disponible.",
-            "statusMissing": "Abre la herramienta de corredor restringido y haz clic en Listo antes de crear una propuesta de carretera/camino.",
-            "ariaLabel": "Corredor restringido",
-            "title": "Corredor restringido",
+            "statusMissing": "Abre la herramienta de designación y haz clic en Listo antes de crear la propuesta.",
+            "designationAriaLabel": "Designar como suelo viario",
+            "designationTitle": "Designar como suelo viario",
+            "designationHint": "Las parcelas seleccionadas, fusionadas, se convierten en suelo viario. No se diseña nada: para trazar una carretera con carriles, dibújala con la herramienta de carreteras.",
             "closeLabel": "Cerrar",
-            "mapAriaLabel": "Mapa de corredor restringido",
-            "modeAriaLabel": "Modo de corredor",
-            "modeFull": "Parcela completa",
-            "modeDraw": "Dibujar",
-            "typeAriaLabel": "Tipo de corredor",
-            "typeRoad": "Carretera",
-            "typeTrack": "Camino",
-            "panelHeader": "Información vial",
-            "undo": "Deshacer (U)",
-            "finish": "(F)inalizar",
-            "metricLength": "Longitud",
-            "metricArea": "Área",
-            "hintFullMode": "El modo de parcela completa usará el contorno combinado de la parcela como geometría del corredor.",
-            "hintDrawMode": "Dibuja una carretera o un camino dentro de las parcelas combinadas.",
-            "widthHeaderRoad": "Elige el ancho de la carretera",
-            "widthHeaderTrack": "Elige el ancho del camino",
-            "sidewalkWidth": "Ancho de la acera",
-            "trackWidth": "Ancho del camino",
-            "roadWidths": {
-                "alley": "Callejón ~7,5 m",
-                "local": "Local ~10 m",
-                "collector": "Colectora ~18 m",
-                "mainStreet": "Calle principal ~26 m",
-                "avenue": "Avenida ~40 m",
-                "boulevard": "Bulevar ~80 m"
-            },
+            "mapAriaLabel": "Mapa de designación",
             "done": "Listo"
         }
     },
@@ -698,7 +674,6 @@
                 "selectAtLeastOne": "Selecciona al menos una parcela para crear una propuesta.",
                 "selectParcelFirst": "Selecciona una parcela primero."
             },
-            "roadToggle": "Carretera",
             "nftStatusDefault": "Estado NFT: todavía no verificado.",
             "mintAndClaimButton": "Acuñar",
             "claimButton": "Reclamar",
@@ -1218,6 +1193,14 @@
                 "verge": "Franja verde",
                 "median": "Mediana",
                 "rail": "Vía"
+            },
+            "presetWidths": {
+                "alley": "Callejón ~7,5 m",
+                "local": "Local ~10 m",
+                "collector": "Colectora ~18 m",
+                "mainStreet": "Calle principal ~26 m",
+                "avenue": "Avenida ~40 m",
+                "boulevard": "Bulevar ~80 m"
             }
         },
         "corridorDraft": {

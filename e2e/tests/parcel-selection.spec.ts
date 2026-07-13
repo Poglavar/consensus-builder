@@ -49,4 +49,39 @@ test.describe('Parcel selection and ownership @core', () => {
     test.skip(!hasSome, 'Ownership module not loaded in this environment');
     expect(hasSome).toBe(true);
   });
+
+  // Regression: the rest of this file only asserts that functions EXIST, and the panel spec only
+  // asserts the panel opens — which showParcelInfoPanel() does before the tail of onParcelClick
+  // runs. A ReferenceError in that tail therefore left the panel visible while `currentParcel` was
+  // never set (build palette empty, every proposal flow dead) and the whole suite stayed green.
+  // Selecting a parcel must complete WITHOUT throwing, and must leave currentParcel behind.
+  test('clicking a parcel completes without a page error and sets currentParcel', async ({ mockApi: page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (err) => pageErrors.push(err.message));
+
+    await page.goto('/');
+    await waitForMapReady(page);
+    await zoomToParcelLevel(page);
+    await page.waitForTimeout(3000);
+
+    const clicked = await page.evaluate(() => {
+      const w = window as any;
+      const layers = w.parcelLayer?.getLayers?.() || [];
+      if (!layers.length || typeof w.onParcelClick !== 'function') return { ran: false };
+      const layer = layers[0];
+      w.onParcelClick({ target: layer, latlng: layer.getBounds().getCenter() });
+      return { ran: true };
+    });
+    test.skip(!clicked.ran, 'Parcel layer not populated in static-serve mode');
+
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => ({
+      currentParcelId: (window as any).currentParcel?.id ?? null,
+      isRoadDefined: (window as any).currentParcel?.isRoad !== undefined,
+    }));
+
+    expect(pageErrors, `page errors while selecting a parcel: ${pageErrors.join(' | ')}`).toEqual([]);
+    expect(after.currentParcelId).not.toBeNull();
+    expect(after.isRoadDefined).toBe(true);
+  });
 });

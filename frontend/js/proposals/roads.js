@@ -1,9 +1,9 @@
 // proposals/roads.js — extracted from proposals.js (behavior-preserving relocation).
 
-function getConstrainedCorridorTranslator(baseHelper) {
+function getRoadDesignationTranslator(baseHelper) {
     return (key, fallback, params = {}) => {
         if (typeof baseHelper === 'function') {
-            return baseHelper(`proposals.constrainedCorridor.${key}`, fallback, params);
+            return baseHelper(`proposals.roadDesignation.${key}`, fallback, params);
         }
         return fallback;
     };
@@ -11,7 +11,7 @@ function getConstrainedCorridorTranslator(baseHelper) {
 
 function getCorridorI18nHelper() {
     const baseHelper = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : null;
-    return getConstrainedCorridorTranslator(baseHelper);
+    return getRoadDesignationTranslator(baseHelper);
 }
 
 function serialiseRoadCoordinates(coords = []) {

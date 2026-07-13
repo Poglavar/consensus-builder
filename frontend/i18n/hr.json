@@ -187,43 +187,19 @@
     },
     "proposals": {
         "contiguityDisabledReason": "Onemogućeno jer parcele u prijedlogu nisu susjedne",
-        "constrainedCorridor": {
-            "statusUnavailable": "Modal ograničenog koridora još nije dostupan.",
-            "statusSelectParcels": "Odaberi parcele prije otvaranja alata za ograničeni koridor.",
-            "statusContiguity": "Parcele moraju biti susjedne za crtanje ograničenog koridora.",
-            "statusBoundaryFailed": "Nije moguće izgraditi granicu koridora iz odabranih parcela.",
-            "statusGeometryFailed": "Nije moguće dohvatiti geometrije parcela za modal ograničenog koridora.",
+        "roadDesignation": {
+            "statusUnavailable": "Proglašenje cestovnim zemljištem još nije dostupno.",
+            "statusSelectParcels": "Odaberi čestice koje želiš proglasiti cestovnim zemljištem.",
+            "statusContiguity": "Čestice moraju biti susjedne da bi se proglasile cestovnim zemljištem.",
+            "statusBoundaryFailed": "Nije moguće izgraditi granicu iz odabranih čestica.",
+            "statusGeometryFailed": "Nije moguće dohvatiti geometrije odabranih čestica.",
             "statusMapUnavailable": "Biblioteka za karte nije dostupna.",
-            "statusMissing": "Otvori alat za ograničeni koridor i klikni Gotovo prije stvaranja prijedloga ceste/staze.",
-            "ariaLabel": "Ograničeni koridor",
-            "title": "Ograničeni koridor",
+            "statusMissing": "Otvori alat za proglašenje cestovnim zemljištem i klikni Gotovo prije stvaranja prijedloga.",
+            "designationAriaLabel": "Proglasi cestovnim zemljištem",
+            "designationTitle": "Proglasi cestovnim zemljištem",
+            "designationHint": "Odabrane čestice, spojene, postaju cestovno zemljište. Ništa se ne projektira — za cestu s prometnim trakama iscrtaj je alatom za ceste.",
             "closeLabel": "Zatvori",
-            "mapAriaLabel": "Karta ograničenog koridora",
-            "modeAriaLabel": "Način koridora",
-            "modeFull": "Cijela parcela",
-            "modeDraw": "Crtaj",
-            "typeAriaLabel": "Tip koridora",
-            "typeRoad": "Cesta",
-            "typeTrack": "Staza",
-            "panelHeader": "Info o cesti",
-            "undo": "Poništi (U)",
-            "finish": "Dovrši (F)",
-            "metricLength": "Duljina",
-            "metricArea": "Površina",
-            "hintFullMode": "Način cijele parcele koristi spojeni obris parcele kao geometriju koridora.",
-            "hintDrawMode": "Nacrtaj cestu ili stazu unutar spojenih parcela.",
-            "widthHeaderRoad": "Odaberi širinu ceste",
-            "widthHeaderTrack": "Odaberi širinu staze",
-            "sidewalkWidth": "Širina nogostupa",
-            "trackWidth": "Širina staze",
-            "roadWidths": {
-                "alley": "Prilaz ~7,5 m",
-                "local": "Lokalna ~10 m",
-                "collector": "Sabirna ~18 m",
-                "mainStreet": "Glavna ulica ~26 m",
-                "avenue": "Avenija ~40 m",
-                "boulevard": "Bulevar ~80 m"
-            },
+            "mapAriaLabel": "Karta proglašenja",
             "done": "Gotovo"
         }
     },
@@ -676,7 +652,6 @@
                 "selectAtLeastOne": "Odaberi barem jednu parcelu za stvaranje prijedloga.",
                 "selectParcelFirst": "Prvo odaberi parcelu."
             },
-            "roadToggle": "Cesta",
             "nftStatusDefault": "NFT status: Još nije provjereno.",
             "mintAndClaimButton": "Iskuj",
             "claimButton": "Preuzmi",
@@ -1170,6 +1145,14 @@
                 "verge": "Zeleni pojas",
                 "median": "Razdjelni pojas",
                 "rail": "Pruga"
+            },
+            "presetWidths": {
+                "alley": "Prilaz ~7,5 m",
+                "local": "Lokalna ~10 m",
+                "collector": "Sabirna ~18 m",
+                "mainStreet": "Glavna ulica ~26 m",
+                "avenue": "Avenija ~40 m",
+                "boulevard": "Bulevar ~80 m"
             }
         },
         "corridorDraft": {

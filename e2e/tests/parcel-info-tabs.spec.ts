@@ -152,17 +152,20 @@ test.describe('Parcel info panel tabs @core', () => {
     });
     await page.waitForTimeout(500);
 
+    // The "is road" checkbox used to live here; road status is now set by auto-detection and by
+    // applying a road proposal, so the tab's content is the claim/mint controls.
     const tabState = await page.evaluate(() => {
       const toolsTab = document.getElementById('tools-tab');
-      const roadCheckbox = document.getElementById('roadCheckbox');
       return {
         toolsActive: toolsTab?.classList.contains('active') ?? false,
-        hasRoadCheckbox: !!roadCheckbox,
+        visible: !!toolsTab && getComputedStyle(toolsTab).display !== 'none',
+        hasClaimControls: !!document.getElementById('claimButton') && !!document.getElementById('mintAndClaimButton'),
       };
     });
 
     expect(tabState.toolsActive).toBe(true);
-    expect(tabState.hasRoadCheckbox).toBe(true);
+    expect(tabState.visible).toBe(true);
+    expect(tabState.hasClaimControls).toBe(true);
   });
 
   test('switching back to Info tab restores info content', async ({ mockApi: page }) => {

@@ -187,43 +187,19 @@
     },
     "proposals": {
         "contiguityDisabledReason": "Onemogućeno jer parcele u predlogu nisu susedne",
-        "constrainedCorridor": {
-            "statusUnavailable": "Modal ograničenog koridora još nije dostupan.",
-            "statusSelectParcels": "Izaberi parcele pre otvaranja alata za ograničeni koridor.",
-            "statusContiguity": "Parcele moraju biti susedne da bi se crtao ograničeni koridor.",
-            "statusBoundaryFailed": "Nije moguće formirati granicu koridora iz izabranih parcela.",
-            "statusGeometryFailed": "Nije moguće dobiti geometrije parcela za modal ograničenog koridora.",
+        "roadDesignation": {
+            "statusUnavailable": "Proglašenje putnim zemljištem još nije dostupno.",
+            "statusSelectParcels": "Izaberi parcele koje želiš da proglasiš putnim zemljištem.",
+            "statusContiguity": "Parcele moraju biti susedne da bi se proglasile putnim zemljištem.",
+            "statusBoundaryFailed": "Nije moguće formirati granicu iz izabranih parcela.",
+            "statusGeometryFailed": "Nije moguće dobiti geometrije izabranih parcela.",
             "statusMapUnavailable": "Biblioteka za mapu nije dostupna.",
-            "statusMissing": "Otvori alat za ograničeni koridor i klikni Gotovo pre pravljenja predloga puta/staze.",
-            "ariaLabel": "Ograničeni koridor",
-            "title": "Ograničeni koridor",
+            "statusMissing": "Otvori alat za proglašenje putnim zemljištem i klikni Gotovo pre pravljenja predloga.",
+            "designationAriaLabel": "Proglasi putnim zemljištem",
+            "designationTitle": "Proglasi putnim zemljištem",
+            "designationHint": "Izabrane parcele, spojene, postaju putno zemljište. Ništa se ne projektuje — za put sa saobraćajnim trakama iscrtaj ga alatom za puteve.",
             "closeLabel": "Zatvori",
-            "mapAriaLabel": "Mapa ograničenog koridora",
-            "modeAriaLabel": "Režim koridora",
-            "modeFull": "Cela parcela",
-            "modeDraw": "Crtaj",
-            "typeAriaLabel": "Tip koridora",
-            "typeRoad": "Put",
-            "typeTrack": "Staza",
-            "panelHeader": "Info o putu",
-            "undo": "Poništi (U)",
-            "finish": "Završi (F)",
-            "metricLength": "Dužina",
-            "metricArea": "Površina",
-            "hintFullMode": "Režim cele parcele koristi spojeni obris parcele kao geometriju koridora.",
-            "hintDrawMode": "Nacrtaj put ili stazu unutar spojenih parcela.",
-            "widthHeaderRoad": "Izaberi širinu puta",
-            "widthHeaderTrack": "Izaberi širinu staze",
-            "sidewalkWidth": "Širina trotoara",
-            "trackWidth": "Širina staze",
-            "roadWidths": {
-                "alley": "Prilaz ~7,5 m",
-                "local": "Lokalna ~10 m",
-                "collector": "Sabirna ~18 m",
-                "mainStreet": "Glavna ulica ~26 m",
-                "avenue": "Avenija ~40 m",
-                "boulevard": "Bulevar ~80 m"
-            },
+            "mapAriaLabel": "Mapa proglašenja",
             "done": "Gotovo"
         }
     },
@@ -675,7 +651,6 @@
                 "selectAtLeastOne": "Izaberi bar jednu parcelu da napraviš predlog.",
                 "selectParcelFirst": "Prvo izaberi parcelu."
             },
-            "roadToggle": "Put",
             "nftStatusDefault": "NFT status: Još nije provereno.",
             "mintAndClaimButton": "Iskovaј",
             "claimButton": "Preuzmi",
@@ -1170,6 +1145,14 @@
                 "verge": "Zeleni pojas",
                 "median": "Razdelni pojas",
                 "rail": "Pruga"
+            },
+            "presetWidths": {
+                "alley": "Prilaz ~7,5 m",
+                "local": "Lokalna ~10 m",
+                "collector": "Sabirna ~18 m",
+                "mainStreet": "Glavna ulica ~26 m",
+                "avenue": "Avenija ~40 m",
+                "boulevard": "Bulevar ~80 m"
             }
         },
         "corridorDraft": {

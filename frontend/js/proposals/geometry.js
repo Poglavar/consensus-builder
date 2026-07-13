@@ -689,7 +689,7 @@ function renderGeometrySection(goalKey) {
 
 function handleGeometryAction(actionKey) {
     const t = getProposalI18nHelper();
-    const tCorridor = getConstrainedCorridorTranslator(t);
+    const tCorridor = getRoadDesignationTranslator(t);
     const label = {
         submitted: t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
     };
@@ -702,10 +702,13 @@ function handleGeometryAction(actionKey) {
             if (currentGeometryGoal === 'single') {
                 launchSingleBuildingToolForSelection();
             } else if (currentGeometryGoal === 'road-track') {
-                if (typeof openConstrainedCorridorModal === 'function') {
-                    openConstrainedCorridorModal();
+                // The road-track goal's geometry step DESIGNATES the selected parcels as road land.
+                // Designing a road (a centerline with a cross-section) is the corridor tool's job, on the
+                // main map — not a second drawing surface inside a modal.
+                if (typeof openRoadDesignationModal === 'function') {
+                    openRoadDesignationModal();
                 } else if (typeof updateStatus === 'function') {
-                    updateStatus(tCorridor('statusUnavailable', 'Constrained corridor modal is not available yet.'));
+                    updateStatus(tCorridor('statusUnavailable', 'Road designation is not available yet.'));
                 }
             } else if (currentGeometryGoal === 'urban-rule') {
                 openUrbanRuleGeometry();

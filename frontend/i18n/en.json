@@ -187,43 +187,19 @@
     },
     "proposals": {
         "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous",
-        "constrainedCorridor": {
-            "statusUnavailable": "Constrained corridor modal is not available yet.",
-            "statusSelectParcels": "Select parcels before opening the constrained corridor tool.",
-            "statusContiguity": "Parcels must be contiguous to draw a constrained corridor.",
-            "statusBoundaryFailed": "Could not build a corridor boundary from the selected parcels.",
-            "statusGeometryFailed": "Could not resolve parcel geometries for the constrained corridor modal.",
+        "roadDesignation": {
+            "statusUnavailable": "Road designation is not available yet.",
+            "statusSelectParcels": "Select the parcels to designate as road land.",
+            "statusContiguity": "Parcels must be contiguous to designate them as road land.",
+            "statusBoundaryFailed": "Could not build a boundary from the selected parcels.",
+            "statusGeometryFailed": "Could not resolve the selected parcels.",
             "statusMapUnavailable": "Map library unavailable.",
-            "statusMissing": "Open the constrained corridor tool and click Done before creating a road/track proposal.",
-            "ariaLabel": "Constrained corridor",
-            "title": "Constrained corridor",
+            "statusMissing": "Open the road designation tool and click Done before creating the proposal.",
+            "designationAriaLabel": "Designate as road land",
+            "designationTitle": "Designate as road land",
+            "designationHint": "The selected parcels, merged, become road land. Nothing is designed — to lay out a road with lanes, draw it with the road tool instead.",
             "closeLabel": "Close",
-            "mapAriaLabel": "Constrained corridor map",
-            "modeAriaLabel": "Corridor mode",
-            "modeFull": "Full parcel",
-            "modeDraw": "Draw",
-            "typeAriaLabel": "Corridor type",
-            "typeRoad": "Road",
-            "typeTrack": "Track",
-            "panelHeader": "Road Info",
-            "undo": "(U)ndo",
-            "finish": "(F)inish",
-            "metricLength": "Length",
-            "metricArea": "Area",
-            "hintFullMode": "Full parcel mode will use the merged parcel outline as the corridor geometry.",
-            "hintDrawMode": "Draw a road or track inside the merged parcels.",
-            "widthHeaderRoad": "Choose road width",
-            "widthHeaderTrack": "Choose track width",
-            "sidewalkWidth": "Sidewalk width",
-            "trackWidth": "Track width",
-            "roadWidths": {
-                "alley": "Alley ~7.5 m",
-                "local": "Local ~10 m",
-                "collector": "Collector ~18 m",
-                "mainStreet": "Main street ~26 m",
-                "avenue": "Avenue ~40 m",
-                "boulevard": "Boulevard ~80 m"
-            },
+            "mapAriaLabel": "Designation map",
             "done": "Done"
         }
     },
@@ -651,7 +627,6 @@
                 "selectAtLeastOne": "Select at least one parcel to create a proposal.",
                 "selectParcelFirst": "Select a parcel first."
             },
-            "roadToggle": "Road",
             "nftStatusDefault": "NFT status: Not checked yet.",
             "mintAndClaimButton": "Mint",
             "claimButton": "Claim",
@@ -1169,6 +1144,14 @@
                 "verge": "Green verge",
                 "median": "Median",
                 "rail": "Track"
+            },
+            "presetWidths": {
+                "alley": "Alley ~7.5 m",
+                "local": "Local ~10 m",
+                "collector": "Collector ~18 m",
+                "mainStreet": "Main street ~26 m",
+                "avenue": "Avenue ~40 m",
+                "boulevard": "Boulevard ~80 m"
             }
         },
         "corridorDraft": {

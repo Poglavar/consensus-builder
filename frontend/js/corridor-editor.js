@@ -366,7 +366,7 @@ function corridorEditorPresetsHtml() {
     const buttons = CORRIDOR_EDITOR_PRESETS
         .filter(preset => CORRIDOR_PROFILE_PRESETS[preset.width])
         .map(preset => `<button type="button" class="corridor-preset-btn" data-preset="${preset.width}">${
-            corridorEditorI18n(`proposals.constrainedCorridor.roadWidths.${preset.key}`, preset.fallback)
+            corridorEditorI18n(`modal.corridor.presetWidths.${preset.key}`, preset.fallback)
         }</button>`).join('');
     return `
         <div class="corridor-editor-presets">
@@ -844,6 +844,10 @@ function openRoadDrawingCrossSectionEditor() {
 
 // Any placed corridor can be re-sectioned from its details panel. A track is one of them: its lane list
 // is a cross-section like a road's, and the map draws it as one — rails and all — so an edit to it shows.
+//
+// A DESIGNATION is not: it is parcels declared to be road land, with no centerline and therefore no
+// cross-section. corridorProfileOf() returns null for one rather than inventing lanes out of its width,
+// which is exactly what makes this check refuse it — there is nothing to re-section.
 function proposalHasEditableCorridor(proposal) {
     const definition = (typeof corridorProposalDefinition === 'function') ? corridorProposalDefinition(proposal) : null;
     if (!definition) return false;

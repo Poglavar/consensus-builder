@@ -771,7 +771,7 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     }
     
     /* Checkbox/radio larger touch areas */
-    .checkbox-group label, .road-checkbox label {
+    .checkbox-group label {
         min-height: 44px;
         padding: 0 8px;
         display: flex;

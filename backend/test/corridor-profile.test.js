@@ -1027,3 +1027,38 @@ describe('corridorIsTrack / corridorProfileHasRail', () => {
         })).toBe(true);
     });
 });
+
+// A DESIGNATION is not a designed corridor: it is existing parcels declared to be road land. It has a
+// polygon and no centerline, so it has no cross-section — and must not be given a synthetic one.
+describe('corridorIsDesignation', () => {
+    const { corridorIsDesignation, corridorIsTrack } = require('../../frontend/js/corridor-profile.js');
+    const polygon = { type: 'Polygon', coordinates: [[[15.98, 45.80], [15.99, 45.80], [15.99, 45.81], [15.98, 45.81], [15.98, 45.80]]] };
+
+    it('a polygon with no centerline is a designation', () => {
+        expect(corridorIsDesignation({ points: [], width: 10, polygon })).toBe(true);
+        expect(corridorIsDesignation({ polygon })).toBe(true);
+    });
+
+    it('a drawn corridor is not a designation, even though it also has a polygon', () => {
+        const drawn = { points: [[{ lat: 45.80, lng: 15.98 }, { lat: 45.81, lng: 15.99 }]], width: 10, polygon };
+        expect(corridorIsDesignation(drawn)).toBe(false);
+    });
+
+    it('is nothing without a polygon', () => {
+        expect(corridorIsDesignation({ points: [], width: 10 })).toBe(false);
+        expect(corridorIsDesignation(null)).toBe(false);
+    });
+
+    // The load-bearing consequence: no phantom cross-section. A designation's `width` is a leftover
+    // number, and furnishing lanes out of it would put a road the user never designed on the map.
+    it('has no profile — corridorProfileOf refuses to invent one', () => {
+        expect(corridorProfileOf({ points: [], width: 10, polygon })).toBe(null);
+        // ...but a drawn corridor with the same width still gets its legacy profile.
+        expect(corridorProfileOf({ points: [[{ lat: 45.80, lng: 15.98 }, { lat: 45.81, lng: 15.99 }]], width: 10 }))
+            .not.toBe(null);
+    });
+
+    it('a designation is not a track, whatever its width', () => {
+        expect(corridorIsTrack({ points: [], width: 10, polygon })).toBe(false);
+    });
+});

@@ -661,11 +661,14 @@ function corridorProfileFromOsmFeature(feature) {
 }
 
 // Read the profile off a stored corridor definition, synthesising one for corridors drawn before
-// profiles existed. Always returns a profile whose total equals the definition's width.
+// profiles existed. Always returns a profile whose total equals the definition's width — or null for a
+// DESIGNATION, which has no cross-section at all (see below): its width is a leftover number, and
+// synthesising lanes out of it would furnish a road that was never designed.
 function corridorProfileOf(definition) {
     if (!definition) return null;
     const stored = normalizeCorridorProfile(definition.profile);
     if (stored) return stored;
+    if (corridorIsDesignation(definition)) return null;
     const isTrack = !!(definition.metadata && definition.metadata.isTrack);
     return corridorProfileFromLegacy(definition.width, definition.sidewalkWidth, isTrack);
 }
@@ -693,6 +696,25 @@ function corridorIsTrack(definition) {
     if (!definition) return false;
     if (corridorProfileHasRail(corridorProfileOf(definition))) return true;
     return !!(definition.metadata && definition.metadata.isTrack === true);
+}
+
+// ---------------------------------------------------------------------------
+// Designations
+//
+// A DESIGNATION is not a corridor that was designed — it is existing parcels DECLARED to be road land.
+// Nothing was laid out: it has no centerline, only the polygon of the parcels it names. That makes it a
+// different kind of object from everything above, and the distinction is not cosmetic: a corridor's
+// footprint is swept from its centerline at its cross-section's width, while a designation's footprint
+// simply IS the land it names. So a designation has no lanes to edit, no rails to lay, no strips to draw
+// — and asking it for a cross-section would invent one out of a width that means nothing.
+//
+// This is the honest replacement for ticking a parcel "road" by hand: it goes through the proposal
+// lifecycle, so it carries an author, terms and a record, and unapplying it gives the land back.
+// ---------------------------------------------------------------------------
+function corridorIsDesignation(definition) {
+    if (!definition) return false;
+    if (corridorCenterlineOf(definition).length) return false;
+    return !!definition.polygon;
 }
 
 // ---------------------------------------------------------------------------
@@ -1303,6 +1325,7 @@ if (typeof window !== 'undefined') {
     window.corridorRailGaugeOf = corridorRailGaugeOf;
     window.corridorProfileHasRail = corridorProfileHasRail;
     window.corridorIsTrack = corridorIsTrack;
+    window.corridorIsDesignation = corridorIsDesignation;
     window.corridorDefaultTrackProfile = corridorDefaultTrackProfile;
     window.withSidewalkWidth = withSidewalkWidth;
     window.withLaneWidth = withLaneWidth;
@@ -1344,6 +1367,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorProfileOf,
         corridorProfileHasRail,
         corridorIsTrack,
+        corridorIsDesignation,
         corridorStripSpans,
         corridorCenterlineOf,
         corridorLandscapeOf,

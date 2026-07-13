@@ -890,25 +890,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     background-color: #e3f2fd;
 }
 
-.road-checkbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-/* Hide road checkbox when roadTools feature is disabled */
-.road-checkbox[data-feature-hidden="true"],
-#parcel-info-panel .road-checkbox[data-feature-hidden="true"],
-#tools-tab .road-checkbox[data-feature-hidden="true"] {
-    display: none;
-}
-
-.road-checkbox input {
-    margin-right: 8px;
-}
-
 /* Base class for all parcel info buttons */
 .parcel-info-btn {
     font-size: 0.9em;
