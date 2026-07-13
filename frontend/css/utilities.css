@@ -2361,7 +2361,9 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         width: 100% !important;
         /* Use 100% instead of 100vw to avoid overflow */
         max-width: 100% !important;
-        max-height: 85vh;
+        /* Mobile policy: a panel takes at most half the screen; content beyond that scrolls
+           inside. Panels that genuinely need more (proposal details) override to full height. */
+        max-height: 50vh;
         border-radius: 12px 12px 0 0;
         box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
         box-sizing: border-box;

@@ -4482,6 +4482,25 @@ function findAffectedParcels(roadPolygon) {
 }
 
 // Update road info panel with current metrics (works for both roads and tracks)
+// Collapse the drawing panel to a slim strip (title + Cross-section + Undo/Finish) so the map
+// stays visible while drawing — essential on phones, where the full panel covers half the screen.
+function toggleRoadInfoPanelMinimized() {
+    const panel = document.getElementById('road-info-panel');
+    if (!panel) return;
+    const minimized = panel.classList.toggle('is-minimized');
+    const btn = document.getElementById('road-panel-minimize');
+    if (btn) {
+        const label = minimized
+            ? translateRoadText('sidebar.areaMonitor.expand', 'Expand')
+            : translateRoadText('sidebar.areaMonitor.minimize', 'Minimize');
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+        btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+        btn.innerHTML = minimized ? '+' : '&#8722;';
+    }
+}
+window.toggleRoadInfoPanelMinimized = toggleRoadInfoPanelMinimized;
+
 function updateRoadInfoPanel() {
     // Check if road or track has started
     const hasRoadSegments = getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 0);

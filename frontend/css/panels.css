@@ -276,6 +276,24 @@ with a width of 400px, and a height of half of the map height minus 5px.
     right: 8px;
 }
 
+#road-info-panel .road-panel-minimize {
+    position: absolute;
+    top: 8px;
+    right: 54px;
+}
+
+/* Minimized: a slim strip — header (title + Cross-section) and the Undo/Finish controls stay,
+   metrics and ownership stats hide, so the map is visible while drawing on small screens. */
+#road-info-panel.is-minimized > :not(.road-panel-header):not(#road-drawing-controls):not(.close-button):not(.road-panel-minimize) {
+    display: none;
+}
+
+#road-info-panel.is-minimized .road-panel-header {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
 /* Ensure undo/finish buttons split the row evenly on small screens */
 #road-drawing-controls > div > .btn {
     flex: 1 1 0;
@@ -1633,12 +1651,19 @@ with a width of 400px, and a height of half of the map height minus 5px.
         max-height: 33vh;
     }
     
-    /* Road info panel fits screen width on mobile */
+    /* Road info panel fits screen width on mobile; panels never take more than half the
+       screen — anything taller scrolls inside (or the user collapses it to the strip). */
     #road-info-panel {
         width: calc(100vw - 20px) !important;
         max-width: calc(100vw - 20px) !important;
         left: 10px !important;
         right: 10px !important;
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+
+    #block-info-panel {
+        max-height: 50vh;
     }
     
     /* Parcel proposals list uses full width on mobile */
