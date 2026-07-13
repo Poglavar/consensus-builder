@@ -167,6 +167,24 @@ test.describe('Capture how-to screenshots', () => {
         document.querySelectorAll('.constrained-corridor-overlay').forEach(el => el.remove());
       });
       await page.waitForTimeout(600);
+      // Closing a design tool now asks "Discard this design? / Keep editing" (the Done button is
+      // the only commit path). The dialog's FIRST button is "Keep editing", so the generic
+      // acceptConfirm above would leave the tool open and it would photobomb the next shot —
+      // answer this one on its primary (Discard/Odbaci) button instead.
+      for (let i = 0; i < 3; i++) {
+        const handled = await page.evaluate(() => {
+          const overlay = document.querySelector('.cb-confirm-overlay');
+          if (!overlay) return false;
+          const message = overlay.querySelector('.cb-confirm-message')?.textContent || '';
+          if (!/dizajn|design/i.test(message)) return false;
+          const discard = (overlay.querySelector('.btn-action') || overlay.querySelector('button:last-of-type')) as HTMLButtonElement | null;
+          if (!discard) return false;
+          discard.click();
+          return true;
+        });
+        if (!handled) break;
+        await page.waitForTimeout(500);
+      }
       await acceptConfirm();
       // Any proposal card the tool left selected/open must not ride along into the next shot.
       await page.evaluate(() => {
