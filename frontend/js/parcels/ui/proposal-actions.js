@@ -34,7 +34,9 @@
                 global.multiParcelSelection.selectedParcels.clear();
                 global.multiParcelSelection.selectedParcels.add(global.currentParcel.id);
                 if (typeof global.showProposalDialog === 'function') {
-                    global.showProposalDialog();
+                    // Offer negotiates ownership only — building/land-use/parcel changes have
+                    // their own palette tools.
+                    global.showProposalDialog({ ownershipOnly: true });
                 }
             } else {
                 console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
@@ -67,7 +69,7 @@
         }
 
         if (typeof global.showProposalDialog === 'function') {
-            global.showProposalDialog();
+            global.showProposalDialog({ ownershipOnly: true });
         }
     }
 
@@ -77,8 +79,8 @@
     const PARCEL_BUILD_TOOLS = [
         { key: 'buildings', icon: 'fa-city', labelKey: 'panel.parcel.build.block', fallback: 'Block' },
         { key: 'row', icon: 'fa-grip-horizontal', labelKey: 'panel.parcel.build.row', fallback: 'Row houses' },
-        { key: 'parcelBased', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Freeform' },
-        { key: 'single', icon: 'fa-home', labelKey: 'panel.parcel.build.single', fallback: 'Detached' },
+        { key: 'parcelBased', icon: 'fa-home', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Detached' },
+        { key: 'single', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
         { key: 'reparcellization', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.reparcel', fallback: 'Reparcel' },
         { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
         { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },

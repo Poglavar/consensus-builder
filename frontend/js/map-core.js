@@ -337,8 +337,9 @@ async function fetchBuildings() {
         if (!response.ok) throw new Error('Failed to fetch building data');
         const data = await response.json();
 
-        // Convert the data to WGS84
-        const convertedData = typeof convertGeoJSON === 'function' ? convertGeoJSON(data) : data;
+        // Convert to WGS84 — the WFS request asks for EPSG:3765, so declare it: client-side
+        // conversion is the expected path here, not a failed backend transformation.
+        const convertedData = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
 
         // MERGE with what's already loaded instead of replacing it: the fetch covers only the
         // current viewport (maxFeatures-capped), so replacing left a single-viewport patch and
@@ -400,11 +401,18 @@ function rebuildBuildingLayerFromPool() {
     const visible = demolished.size
         ? pool.filter(feature => !demolished.has(keyOf(feature)))
         : pool;
-    const layerWasOnMap = buildingLayer ? map.hasLayer(buildingLayer) : true;
+    // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
+    // layer on the map" broke the show-buildings toggle: the corridor tunnel preload creates
+    // the layer OFF-map while the box is unticked, and the next tick then inherited hidden.
+    const checkbox = document.getElementById('showBuildings');
+    const shouldShow = checkbox ? checkbox.checked : (buildingLayer ? map.hasLayer(buildingLayer) : true);
     if (buildingLayer) {
         map.removeLayer(buildingLayer);
     }
     buildingLayer = L.geoJSON({ type: 'FeatureCollection', features: visible }, {
+        // Context only: existing buildings must never intercept clicks meant for the parcels
+        // beneath them (they are inspectable in 3D, not in 2D).
+        interactive: false,
         style: {
             fillColor: 'blue',
             fillOpacity: 0.2,
@@ -412,7 +420,7 @@ function rebuildBuildingLayerFromPool() {
             weight: 1
         }
     });
-    if (layerWasOnMap) buildingLayer.addTo(map);
+    if (shouldShow) buildingLayer.addTo(map);
     try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
 window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;

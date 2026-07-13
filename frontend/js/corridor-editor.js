@@ -14,7 +14,8 @@
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
 
-const CORRIDOR_EDITOR_MIN_WIDTH = 5;
+// 2 m allows pure pedestrian footpaths (delete every lane except a sidewalk, then narrow it).
+const CORRIDOR_EDITOR_MIN_WIDTH = 2;
 const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 
 function corridorEditorI18n(key, fallback) {
@@ -93,13 +94,20 @@ function corridorEditorCollectWidthHits(width) {
     if (typeof calculateRoadPolygon !== 'function') return result;
     const segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(state.definition) : [];
     const tunnelled = new Set();
+    const tunnelEdgeKeys = new Set();
     (state.definition.tunnels || []).forEach(record => {
         (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
+        if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
     });
+    // Buildings this road already demolished are gone — a width change cannot "hit" them.
+    (state.definition.demolishedBuildings || []).forEach(record => tunnelled.add(String(record?.id)));
     const seenBuildings = new Set();
     const seenStructures = new Set();
     segments.forEach(segment => {
         for (let i = 0; i < segment.length - 1; i++) {
+            // A tunnel edge is already underground: nothing under it can be newly "hit".
+            if (typeof corridorTunnelEdgeKey === 'function'
+                && tunnelEdgeKeys.has(corridorTunnelEdgeKey(segment[i], segment[i + 1]))) continue;
             const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], width);
             if (!polygon) continue;
             if (typeof detectLoadedBuildingTunnelIntersections === 'function') {

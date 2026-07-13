@@ -146,7 +146,11 @@
     }
 
     async function ensureCorridorBuildingFootprintsLoaded() {
-        if (collectLoadedCorridorBuildings().length) return true;
+        // Gate on the BASE-MAP footprints specifically: collectLoadedCorridorBuildings() also
+        // returns applied building proposals, and any proposal nearby used to convince this
+        // preload that footprints were loaded — obstacle prompts then only worked once the
+        // user manually ticked "show existing buildings" (which fetched the real ones).
+        if (Array.isArray(global.buildingFeaturePool) && global.buildingFeaturePool.length) return true;
         try {
             const config = global.CityConfigManager?.getCurrentCityConfig?.();
             if (config?.buildings?.source === 'none') return false;
@@ -154,17 +158,9 @@
             if (!Number.isFinite(zoom) || zoom < 17 || zoom > 19) return false;
             if (typeof global.fetchBuildings !== 'function') return false;
             await global.fetchBuildings();
-            const loaded = collectLoadedCorridorBuildings().length > 0;
-            // Footprint DATA is what tunnel detection needs; keep the visible layer wherever the
-            // user left it. fetchBuildings adds the layer to the map unconditionally, so take it
-            // back off when the sidebar checkbox is unticked (the data stays readable).
-            try {
-                const checkbox = global.document?.getElementById('showBuildings');
-                if (checkbox && !checkbox.checked && global.buildingLayer && global.map?.hasLayer?.(global.buildingLayer)) {
-                    global.map.removeLayer(global.buildingLayer);
-                }
-            } catch (_) { }
-            return loaded;
+            // Footprint DATA is what tunnel detection needs; layer VISIBILITY follows the
+            // sidebar checkbox inside rebuildBuildingLayerFromPool, so nothing to undo here.
+            return collectLoadedCorridorBuildings().length > 0;
         } catch (error) {
             console.warn('[corridor-tunnel] building footprints could not be prepared', error);
             return false;

@@ -204,6 +204,42 @@
         }
     }
 
+    // A random footprint inside the setback envelope: shrink the envelope by a random extra
+    // inset, then slide it randomly while it still fits (concave envelopes may refuse a slide —
+    // retried smaller; the unslid shrunken footprint always fits).
+    function randomFootprintWithinEnvelope(envelope) {
+        try {
+            const [minX, minY, maxX, maxY] = turf.bbox(envelope);
+            const shortSideMeters = Math.min(maxX - minX, maxY - minY) * 111320;
+            const insetMeters = Math.random() * shortSideMeters * 0.18;
+            if (insetMeters < 0.3) return envelope;
+            const shrunk = turf.buffer(envelope, -insetMeters / 1000, { units: 'kilometers', steps: 8 });
+            const footprint = shrunk ? toSingleLargestPolygonLocal(shrunk) : null;
+            if (!footprint || !footprint.geometry || turf.area(footprint) < 25) return envelope;
+
+            const [fMinX, fMinY, fMaxX, fMaxY] = turf.bbox(footprint);
+            const translate = (feature, dx, dy) => {
+                const clone = JSON.parse(JSON.stringify(feature));
+                const shift = coords => coords.map(item => Array.isArray(item[0]) ? shift(item) : [item[0] + dx, item[1] + dy]);
+                clone.geometry.coordinates = shift(clone.geometry.coordinates);
+                return clone;
+            };
+            for (let attempt = 0; attempt < 8; attempt++) {
+                const scale = 1 - attempt / 8;
+                const dx = ((minX - fMinX) + Math.random() * ((maxX - fMaxX) - (minX - fMinX))) * scale;
+                const dy = ((minY - fMinY) + Math.random() * ((maxY - fMaxY) - (minY - fMinY))) * scale;
+                const shifted = translate(footprint, dx, dy);
+                try {
+                    if (turf.booleanContains(envelope, shifted)) return shifted;
+                } catch (_) { }
+            }
+            return footprint;
+        } catch (error) {
+            console.warn('[ParcelBased] random footprint failed; using the full envelope', error);
+            return null;
+        }
+    }
+
     // Generate building for a single parcel
     function generateBuildingForParcel(parcel, index, minDistance, maxFloors) {
         const feature = parcel.feature;
@@ -215,12 +251,16 @@
             ? ensureParcelId(feature)
             : (props.parcelId || props.parcel_id || props.id || `parcel-${index}`);
 
-        // Generate setback polygon
-        const buildingPolygon = generateSetbackPolygon(feature, minDistance);
-        if (!buildingPolygon) {
+        // Generate setback envelope
+        const envelope = generateSetbackPolygon(feature, minDistance);
+        if (!envelope) {
             console.warn(`[ParcelBased] Could not generate building for parcel ${parcelId} - polygon too small or invalid`);
             return null;
         }
+
+        // The setbacks are MINIMUMS, not the building form: randomize the footprint's size and
+        // its position within the envelope, so Regenerate explores real variety.
+        const buildingPolygon = randomFootprintWithinEnvelope(envelope) || envelope;
 
         // Pick random number of floors between 1 and maxFloors
         const floors = Math.floor(Math.random() * maxFloors) + 1;
@@ -697,11 +737,12 @@
             container.id = 'parcelbased-container';
 
             container.innerHTML = `
+                <div id="parcelbased-header">
+                    <h2 data-i18n-key="parcelBased.modal.title">Detached houses</h2>
+                    <button id="parcelbased-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="parcelBased.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close parcel-based modal">×</button>
+                </div>
+                <div id="parcelbased-body">
                 <div id="parcelbased-main">
-                    <div id="parcelbased-header">
-                        <h2 data-i18n-key="parcelBased.modal.title">Parcel-based Urban Rules</h2>
-                        <button id="parcelbased-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="parcelBased.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close parcel-based modal">×</button>
-                    </div>
                     <div id="parcelbased-map"></div>
                     <div id="parcelbased-3d"></div>
                     <div id="parcelbased-controls">
@@ -753,6 +794,7 @@
                             <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate to randomize floor counts again.</span>
                         </p>
                     </div>
+                </div>
                 </div>
             `;
 

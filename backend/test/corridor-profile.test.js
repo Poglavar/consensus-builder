@@ -763,3 +763,27 @@ describe('buildCrossCorridorJunctionTreatments', () => {
         });
     });
 });
+
+// Pedestrian footpaths: a profile with no traffic lanes must still take width changes —
+// every strip scales proportionally since there are no driving lanes to absorb the delta.
+describe('withCorridorWidth on lane-free footpaths', () => {
+    const { withCorridorWidth, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
+
+    it('scales a sidewalk-only profile to the requested total', () => {
+        const footpath = { strips: [{ type: 'sidewalk', width: 4 }] };
+        const narrowed = withCorridorWidth(footpath, 2);
+        expect(narrowed).not.toBeNull();
+        expect(corridorProfileWidth(narrowed)).toBeCloseTo(2, 3);
+        expect(narrowed.strips).toHaveLength(1);
+        expect(narrowed.strips[0].type).toBe('sidewalk');
+    });
+
+    it('scales multi-strip lane-free profiles proportionally and exactly', () => {
+        const alley = { strips: [{ type: 'sidewalk', width: 2 }, { type: 'verge', width: 1 }, { type: 'sidewalk', width: 1 }] };
+        const widened = withCorridorWidth(alley, 8);
+        expect(widened).not.toBeNull();
+        expect(corridorProfileWidth(widened)).toBeCloseTo(8, 3);
+        expect(widened.strips[0].width).toBeCloseTo(4, 3);
+        expect(widened.strips[1].width).toBeCloseTo(2, 3);
+    });
+});

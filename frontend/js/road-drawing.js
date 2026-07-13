@@ -164,16 +164,19 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
             const existingIds = new Set((existing?.buildingIds || []).map(String));
             const newHits = hits.filter(hit => !existingIds.has(String(hit.id)));
             if (!newHits.length) continue;
+            if (existing) {
+                // The edge is already a tunnel — buildings that only NOW appeared in the loaded
+                // pool are inside that tunnel span; absorb them into the record, don't re-ask.
+                const record = makeBuildingTunnelRecord(from, to, [
+                    ...existing.buildingIds.map(id => ({ id })),
+                    ...hits
+                ], { segmentId: existing.segmentId || segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null) });
+                if (record) addBuildingTunnelRecord(list, record);
+                continue;
+            }
             newHits.forEach(hit => combinedHits.set(hit.id, hit));
-            const mergedHits = [
-                ...(existing?.buildingIds || []).map(id => ({ id })),
-                ...hits
-            ];
             missing.push({
-                from, to, hits: mergedHits, segmentIndex, pointIndex,
-                // An edge that already carries a tunnel record keeps whole-edge semantics; only
-                // virgin edges get clipped to inside-the-building sub-tunnels below.
-                hasExistingRecord: !!existing,
+                from, to, hits, segmentIndex, pointIndex,
                 segmentId: segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null)
             });
         }
@@ -204,7 +207,7 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
         const standingHits = edge.hits.filter(hitStillStands);
         if (!standingHits.length) return;
         const clippableHits = standingHits.filter(hit => hit.feature);
-        const plan = (!edge.hasExistingRecord && clippableHits.length && typeof clipCorridorEdgeThroughBuildings === 'function')
+        const plan = (clippableHits.length && typeof clipCorridorEdgeThroughBuildings === 'function')
             ? clipCorridorEdgeThroughBuildings(edge.from, edge.to, clippableHits, width)
             : null;
         if (!plan) {
@@ -626,11 +629,33 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
     if (typeof detectLoadedBuildingTunnelIntersections === 'function'
         && typeof resolveBuildingObstacles === 'function') {
         const tunnelledIds = new Set();
-        (definition.tunnels || []).forEach(record => (record?.buildingIds || []).forEach(id => tunnelledIds.add(String(id))));
+        const tunnelEdgeKeys = new Set();
+        (definition.tunnels || []).forEach(record => {
+            (record?.buildingIds || []).forEach(id => tunnelledIds.add(String(id)));
+            if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
+        });
         (definition.demolishedBuildings || []).forEach(record => tunnelledIds.add(String(record.id)));
+        // Only edges the edit INTRODUCED can newly collide with a building. Everything that was
+        // already part of the road before this edit was accepted when it was drawn — bulldozing
+        // a stretch or tweaking the profile must never re-litigate the remaining geometry.
+        const preEditEdgeKeys = new Set();
+        if (typeof corridorTunnelEdgeKey === 'function') {
+            ((typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(definitionSnapshot) : [])
+                .forEach(segment => {
+                    for (let i = 0; i < segment.length - 1; i++) {
+                        const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
+                        if (key) preEditEdgeKeys.add(key);
+                    }
+                });
+        }
         const edgeHits = [];
         normalizedSegments.forEach((segment, segIndex) => {
             for (let i = 0; i < segment.length - 1; i++) {
+                if (typeof corridorTunnelEdgeKey === 'function') {
+                    const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
+                    // Pre-existing edges were accepted when drawn; tunnel edges are underground.
+                    if (preEditEdgeKeys.has(key) || tunnelEdgeKeys.has(key)) continue;
+                }
                 const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], editWidth);
                 if (!polygon) continue;
                 const hits = detectLoadedBuildingTunnelIntersections(polygon)
@@ -1131,7 +1156,10 @@ function redrawRoadStrips() {
 
     // Same renderer as applied corridors and OSM streets — see js/corridor-render.js.
     const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(segments, roadProfile) : [];
-    const decorations = (typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(segments, roadProfile) : [];
+    // Trees only — bike/pedestrian lane explainers stay out of the map (cross-section editor
+    // is the reference for lane meaning).
+    const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(segments, roadProfile) : [])
+        .filter(decoration => decoration.kind === 'tree');
     const junctions = (typeof buildCorridorJunctionTreatments === 'function') ? buildCorridorJunctionTreatments(segments, roadProfile) : [];
     roadStripLayer = renderCorridorStrips(strips, { markings, decorations, junctions });
     if (!roadStripLayer) return restoreCorridorFill();
@@ -2258,6 +2286,15 @@ function handleRoadDrawHotkey(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (isEditableTarget(event.target)) return;
     if (isAnyModalOpen()) return;
+    // B toggles the existing-buildings layer — flipped often while drawing roads through fabric.
+    if (event.key === 'b' || event.key === 'B') {
+        const checkbox = document.getElementById('showBuildings');
+        if (!checkbox) return;
+        event.preventDefault();
+        checkbox.checked = !checkbox.checked;
+        if (typeof toggleLayer === 'function') toggleLayer('buildings');
+        return;
+    }
     if (event.key !== 'r' && event.key !== 'R') return;
 
     if (typeof toggleRoadDrawTool !== 'function') return;

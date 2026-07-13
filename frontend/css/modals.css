@@ -2743,7 +2743,15 @@
     border-radius: 8px;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
+}
+
+/* Header on top spanning the full width; main | sidebar side by side below it. */
+#blockify-body {
+    flex: 1;
+    display: flex;
     flex-direction: row;
+    min-height: 0;
 }
 
 #blockify-main {
@@ -2885,7 +2893,15 @@
     border-radius: 8px;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
+}
+
+/* Header on top spanning the full width; main | sidebar side by side below it. */
+#single-building-body {
+    flex: 1;
+    display: flex;
     flex-direction: row;
+    min-height: 0;
 }
 
 #single-building-main {
@@ -4210,6 +4226,7 @@
         overflow-x: hidden;
     }
     
+    #blockify-body,
     #blockify-main {
         display: contents;
     }
@@ -4290,6 +4307,7 @@
         overflow-x: hidden;
     }
     
+    #single-building-body,
     #single-building-main {
         display: contents;
         border-right: none;
@@ -4593,7 +4611,15 @@
     border-radius: 8px;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
+}
+
+/* Header on top spanning the full width; main | sidebar side by side below it. */
+#parcelbased-body {
+    flex: 1;
+    display: flex;
     flex-direction: row;
+    min-height: 0;
 }
 
 #parcelbased-main {
@@ -4746,6 +4772,7 @@
         overflow-x: hidden;
     }
 
+    #parcelbased-body,
     #parcelbased-main {
         display: contents;
     }

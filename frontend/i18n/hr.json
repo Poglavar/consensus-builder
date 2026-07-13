@@ -451,7 +451,7 @@
             "countProgress": "Obrađeno parcela: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Zgrade",
+            "title": "Slobodna forma",
             "showLayer": "Prikaži sloj zgrada",
             "showExisting": "Prikaži postojeće zgrade",
             "showProposed": "Prikaži predložene zgrade"
@@ -639,8 +639,8 @@
                 "block": "Blok",
                 "rowNeedsTwo": "Nizovi kuća trebaju barem dvije parcele.",
                 "row": "Nizovi kuća",
-                "parcelBased": "Slobodna forma",
-                "single": "Samostojeća",
+                "parcelBased": "Slobodnostojeće",
+                "single": "Slobodna forma",
                 "reparcel": "Preparcelacija",
                 "park": "Park",
                 "square": "Trg",
@@ -1854,7 +1854,7 @@
     },
     "parcelBased": {
         "modal": {
-            "title": "Urbana pravila po parceli",
+            "title": "Slobodnostojeće kuće",
             "closeAria": "Zatvori prozor pravila po parceli",
             "generating": "Generiram zgrade...",
             "generatedSummary": "Generirano {{count}} zgrada",
@@ -1871,8 +1871,8 @@
             },
             "helper": {
                 "maxFloors": "Maks. katova: svaka zgrada dobiva nasumičan broj katova od 1 do ove vrijednosti.",
-                "minDistance": "Min. udaljenost: zgrade se povlače za ovu udaljenost od granica parcele.",
-                "regenerate": "Klikni Regeneriraj za ponovnu nasumičnu dodjelu broja katova."
+                "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica parcele.",
+                "regenerate": "Klikni Regeneriraj za novu nasumičnu varijaciju — broj katova te veličina i položaj tlocrta unutar odmaka."
             },
             "messages": {
                 "creationFailed": "Generiranje zgrada nije uspjelo. Pokušaj prilagoditi parametre.",

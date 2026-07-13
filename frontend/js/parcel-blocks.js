@@ -53,6 +53,13 @@ function isCorridorParcel(parcelOrId, layer = null) {
         return true;
     }
 
+    // Road parcels BOUND blocks — they are never inside one. The legacy detectors marked roads
+    // with isCorridor too, but the curated road source sets only isRoad, so ask the road-parcel
+    // set directly or the flood-fill crosses every street.
+    if (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(parcelId)) {
+        return true;
+    }
+
     if (parcelId && typeof readPersistedParcelRecord === 'function') {
         const record = readPersistedParcelRecord(parcelId);
         const persistedProps = record?.properties || {};

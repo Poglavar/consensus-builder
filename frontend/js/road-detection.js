@@ -1132,29 +1132,19 @@ function updateParcelStyles() {
         if (!parcelId) return;
         const isRoad = isRoadParcel(parcelId);
 
+        // Road parcels get no name labels — we care where roads are and how big, not what
+        // they are called. Any tooltip a previous build bound is taken off here.
+        const boundTooltip = layer.getTooltip?.();
+        if (boundTooltip?.options?.className === 'road-name-tooltip') {
+            layer.unbindTooltip();
+        }
         if (isRoad) {
             layer.setStyle(roadStyle);
-
-            // Get road name for tooltip
-            const persistedProps = readPersistedRoadProperties(parcelId) || {};
-            const roadName = layer.feature?.properties?.roadName || persistedProps.roadName || 'Unnamed Road';
-
-            // Add or update tooltip with road name
-            if (layer.getTooltip()) {
-                layer.setTooltipContent(roadName);
-            } else {
-                layer.bindTooltip(roadName, {
-                    permanent: false,
-                    direction: 'center',
-                    className: 'road-name-tooltip'
-                });
-            }
+            // The isRoad flag rides parent features into their split children (proposal-manager
+            // re-marks children that carry it), so slicing a road parcel keeps the rest dark.
+            if (layer.feature?.properties) layer.feature.properties.isRoad = true;
         } else {
             layer.setStyle(normalStyle);
-            // Remove any existing tooltip
-            if (layer.getTooltip()) {
-                layer.unbindTooltip();
-            }
         }
     });
 }
@@ -1344,6 +1334,7 @@ async function fetchCuratedRoadParcels() {
             if (!parcelId) return;
             if (!isRoadParcel(parcelId)) {
                 addRoadParcel(String(parcelId));
+                writePersistedRoadProperties(String(parcelId), props => { props.isRoad = true; });
                 added += 1;
             }
         });

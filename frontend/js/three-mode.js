@@ -93,7 +93,10 @@
     //   (at low opacity over near-white tiles the buildings looked invisible).
     const buildingMaterials = {
         solid: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
+        // Buildings an applied corridor demolishes: still drawn (they exist until the proposal
+        // executes) but as reddish condemned ghosts, so they never read as surviving fabric.
+        demolished: new THREE.MeshPhongMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12, transparent: true, opacity: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
     };
 
     const materials = {
@@ -1809,7 +1812,8 @@
         // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
         // via WFS) is no longer used here — it has only 2D footprints with no heights.
         // Buildings demolished by applied corridors are matched by FOOTPRINT (the 2D and 3D
-        // datasets have different id spaces) and skipped.
+        // datasets have different id spaces) and drawn as condemned ghosts — they follow the
+        // Built control like every existing building, but never look like surviving fabric.
         try {
             // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
             const demolishedFootprints = window.collectDemolishedBuildingRecords()
@@ -1828,8 +1832,8 @@
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
                     try {
-                        if (isDemolished(bld)) return;
-                        const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
+                        const material = isDemolished(bld) ? buildingMaterials.demolished : buildingMaterial;
+                        const mesh = buildMeshFromBuilding3D(bld, material);
                         if (mesh) targetGroup.add(mesh);
                     } catch (e) {
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);

@@ -65,6 +65,12 @@
 
             window.__BOOTSTRAP_CACHE_TOKEN = getBootstrapCacheToken();
             window.appendBuildToken = appendBuildToken;
+            // The boot gate (body.app-loading) is normally lifted by js/boot-ready.js, the last
+            // script in the load list. If that one file ever fails to fetch, the gate must fail
+            // OPEN, not lock the sidebar forever — window load fires after every sync script.
+            window.addEventListener('load', function () {
+                document.body.classList.remove('app-loading');
+            });
             window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths) {
                 var html = '';
                 paths.forEach(function (path) {
@@ -144,7 +150,7 @@
     <!-- No inline styles, they're now in viewer.css -->
 </head>
 
-<body>
+<body class="app-loading">
     <!-- Main container with sidebar and map -->
     <div id="sidebar">
         <!-- Sidebar header -->
@@ -1402,7 +1408,8 @@
             'js/area-monitor/map.js',
             'js/area-monitor/paint.js?v=20260404i',
             'js/area-monitor/ui.js?v=20260428a',
-            'js/area-monitor/routing.js?v=20260404a'
+            'js/area-monitor/routing.js?v=20260404a',
+            'js/boot-ready.js'
         ]);
     </script>
 

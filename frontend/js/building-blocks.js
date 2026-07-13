@@ -1690,11 +1690,12 @@ function showBlockifyModal() {
         const defaultDesc = getBlockifyAlgorithmDescription(defaultAlgo);
 
         container.innerHTML = `
+            <div id="blockify-header">
+                <h2 data-i18n-key="blockify.modal.title">Urban Rule</h2>
+                <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
+            </div>
+            <div id="blockify-body">
             <div id="blockify-main">
-                <div id="blockify-header">
-                    <h2 data-i18n-key="blockify.modal.title">Urban Rule</h2>
-                    <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
-                </div>
                 <div id="blockify-map"></div>
                 <div id="blockify-3d"></div>
                 <div id="blockify-controls">
@@ -1819,6 +1820,7 @@ function showBlockifyModal() {
                     <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
                 </div>
             </div>
+        </div>
         `;
 
         modalDiv.appendChild(container);

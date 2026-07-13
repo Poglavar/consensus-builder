@@ -2671,7 +2671,23 @@
         );
         ensureCommitAvailability(false);
         state.ownerShares = await buildOwnerShares(state.selection);
-        updateSubtitleWithOwners(state.ownerShares.length);
+        const realOwnerCount = state.ownerShares.length;
+        // A single owner can still readjust: the implicit second party is PUBLIC LAND (the land
+        // the proposal cedes to public use, or plots the city would sell on later). Open with a
+        // half/half split — the sweep handle and plot editing take it from there. Contribution
+        // accounting is untouched: the owner contributed everything, public land nothing, so the
+        // balance column shows exactly what the ceded half is worth.
+        if (state.ownerShares.length === 1) {
+            state.ownerShares[0].percent = 0.5;
+            state.ownerShares.push({
+                ...getPublicLandOwner(),
+                parcelIds: [],
+                area: 0,
+                value: 0,
+                percent: 0.5
+            });
+        }
+        updateSubtitleWithOwners(realOwnerCount);
         if (!state.ownerShares.length) {
             setStatus(
                 t('reparcellization.modal.status.missingOwners', 'Could not determine owners for reparcellization.'),

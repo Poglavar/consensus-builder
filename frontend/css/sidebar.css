@@ -837,3 +837,17 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
         padding: 2px 5px !important;
     }
     }
+
+/* Boot gate: the sidebar and its toggle are painted long before the script list at the end of
+   the body has parsed, so their inline onclick handlers do not exist yet. Until boot-ready.js
+   (the last script) removes this class, keep that chrome inert — an early click then does
+   nothing instead of throwing "toggleSidebar is not defined". Panels and modals need no gate:
+   they are hidden until a handler opens them. */
+body.app-loading {
+    cursor: progress;
+}
+
+body.app-loading #sidebar,
+body.app-loading .sidebar-toggle-button {
+    pointer-events: none;
+}

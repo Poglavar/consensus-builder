@@ -286,7 +286,10 @@ function refreshAppliedCorridorStrips() {
 
         const strips = buildCorridorStrips(centerline, profile);
         const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings(centerline, profile) : [];
-        const decorations = (typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(centerline, profile) : [];
+        // Trees are physical objects and stay; bike/pedestrian lane explainers are clutter on
+        // the map — lane meaning lives in the cross-section editor.
+        const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations(centerline, profile) : [])
+            .filter(decoration => decoration.kind === 'tree');
         const junctions = (typeof buildCorridorJunctionTreatments === 'function') ? buildCorridorJunctionTreatments(centerline, profile) : [];
         const group = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions });
         if (group) {

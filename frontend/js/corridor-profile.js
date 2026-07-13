@@ -213,6 +213,19 @@ function withCorridorWidth(profile, width) {
     const target = Number(width);
     if (!normalized || !Number.isFinite(target) || target <= 0) return null;
     const current = corridorProfileWidth(normalized);
+    // No traffic lanes (a pedestrian footpath): every strip scales proportionally — there are
+    // no driving lanes to absorb the change, but the width must still be editable.
+    if (!normalized.strips.some(strip => strip.type === 'driving')) {
+        const scale = target / current;
+        let assigned = 0;
+        const scaled = normalized.strips.map((strip, index) => {
+            if (index === normalized.strips.length - 1) return { ...strip, width: roundStripWidth(target - assigned) };
+            const next = roundStripWidth(strip.width * scale);
+            assigned += next;
+            return { ...strip, width: next };
+        });
+        return normalizeCorridorProfile(scaled);
+    }
     const strips = redistributeToDriving(normalized.strips, current - target);
     return strips ? normalizeCorridorProfile(strips) : null;
 }

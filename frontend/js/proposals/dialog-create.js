@@ -1254,6 +1254,7 @@ function showProposalDialog(overrides = null) {
     const overrideSummaryStats = proposalDialogOverrides?.summaryStats || null;
     const overrideGeometryPreset = proposalDialogOverrides?.geometryPreset || null;
     const goalLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockGoal);
+    const ownershipOnly = !!(proposalDialogOverrides && proposalDialogOverrides.ownershipOnly);
     const acquisitionLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockAcquisition);
 
     const selection = getCurrentParcelSelectionContext();
@@ -1790,6 +1791,19 @@ function showProposalDialog(overrides = null) {
             r.disabled = true;
             r.setAttribute('aria-disabled', 'true');
         });
+    }
+
+    if (ownershipOnly) {
+        // The Offer palette entry: building/land-use and parcel changes have their own palette
+        // tools, so this dialog only negotiates ownership. Land use and parcels lock to
+        // "no change" (greyed); the ownership radios stay live.
+        modal.querySelectorAll('[data-goal-section="land-use"] input[type="radio"], [data-goal-section="parcels"] input[type="radio"]').forEach(radio => {
+            radio.checked = radio.value === 'as-is';
+            radio.disabled = true;
+            radio.setAttribute('aria-disabled', 'true');
+        });
+        modal.querySelectorAll('[data-goal-section="land-use"], [data-goal-section="parcels"]')
+            .forEach(section => section.classList.add('proposal-goal-section--locked'));
     }
 
     if (acquisitionLocked) {

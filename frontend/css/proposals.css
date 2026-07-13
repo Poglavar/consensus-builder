@@ -1891,3 +1891,9 @@ textarea.proposal-description-input {
     background: #f4f4f4;
     color: #666;
 }
+
+/* Offer flow: land-use and parcels are locked to "no change" — visibly inert, ownership stays live. */
+.proposal-goal-section--locked {
+    opacity: 0.5;
+    pointer-events: none;
+}

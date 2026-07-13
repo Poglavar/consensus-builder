@@ -1768,7 +1768,7 @@
         }
 
         const modalText = {
-            title: translateSingleBuildingText('modal.singleBuilding.title', 'Buildings'),
+            title: translateSingleBuildingText('modal.singleBuilding.title', 'Freeform'),
             closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close buildings modal'),
             previewLabel: translateSingleBuildingText('modal.singleBuilding.previewLabel', '3D Preview'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
@@ -1805,11 +1805,12 @@
             container.id = 'single-building-container';
 
             container.innerHTML = `
+                <div id="single-building-header">
+                    <h2>${modalText.title}</h2>
+                    <button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${modalText.closeLabel}">×</button>
+                </div>
+                <div id="single-building-body">
                 <div id="single-building-main">
-                    <div id="single-building-header">
-                        <h2>${modalText.title}</h2>
-                        <button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${modalText.closeLabel}">×</button>
-                    </div>
                     <div id="single-building-map"></div>
                     <div class="single-building-3d-wrapper">
                         <div class="single-building-3d-label">${modalText.previewLabel}</div>
@@ -1851,7 +1852,8 @@
                     </div>
                     <p class="parameter-info-text">${modalText.infoText}</p>
                 </div>
-            `;
+            </div>
+        `;
 
             modal.appendChild(container);
             document.body.appendChild(modal);

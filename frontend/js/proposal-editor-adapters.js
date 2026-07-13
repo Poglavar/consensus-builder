@@ -187,6 +187,7 @@
             width: seed?.width,
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: clone(seed?.tunnels || []),
+            demolishedBuildings: clone(seed?.demolishedBuildings || sourceDefinition?.demolishedBuildings || []),
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
             latLngPairs: clone(seed?.latLngPairs !== undefined ? seed.latLngPairs : sourceDefinition?.latLngPairs || null),
             metadata: {
@@ -287,11 +288,20 @@
                 errors.push(issue('coverage-excess', 'Replacement parcel areas exceed the required parent coverage.', 'editorPayload.plan.polygons'));
             }
         }
-        if (!global.turf || typeof global.turf.booleanOverlap !== 'function') return { errors, warnings };
+        if (!global.turf || typeof global.turf.intersect !== 'function' || typeof global.turf.area !== 'function') return { errors, warnings };
         for (let i = 0; i < features.length; i += 1) {
             for (let j = i + 1; j < features.length; j += 1) {
                 try {
-                    if (global.turf.booleanOverlap(features[i], features[j])) {
+                    const intersection = global.turf.intersect(features[i], features[j]);
+                    if (!intersection) continue;
+                    const overlapArea = Number(global.turf.area(intersection)) || 0;
+                    const smaller = Math.min(
+                        Number(geometryArea(features[i].geometry)) || 0,
+                        Number(geometryArea(features[j].geometry)) || 0
+                    );
+                    // Manual line cuts leave hairline slivers along the shared edges (float noise);
+                    // only a real two-dimensional overlap counts as a plan error.
+                    if (overlapArea > Math.max(0.5, smaller * 0.001)) {
                         errors.push(issue('overlapping-polygons', `Replacement parcels ${i + 1} and ${j + 1} overlap.`, 'editorPayload.plan.polygons', features[i].geometry));
                     }
                 } catch (_) { }
@@ -505,8 +515,8 @@
 
     function proposalTypeLabel(goal) {
         const labels = {
-            'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Freeform',
-            single: 'Detached building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
+            single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
             'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
@@ -902,7 +912,10 @@
 
         function get(keyOrProposal) {
             const rawKey = typeof keyOrProposal === 'object' ? sourceGoal(keyOrProposal) : normalizeGoal(keyOrProposal);
-            const key = aliases.get(rawKey) || rawKey;
+            // A direct adapter key always wins; aliases only catch names no adapter owns.
+            // (The legacy 'building(s)' label normalizes to 'single' — an alias registered under
+            // that name would shadow the Detached adapter and open the wrong design editor.)
+            const key = adapters.has(rawKey) ? rawKey : (aliases.get(rawKey) || rawKey);
             if (adapters.has(key)) return adapters.get(key);
             if (readOnly.has(key)) {
                 return {
@@ -940,7 +953,7 @@
 
     const registry = createRegistry();
     registry.register('road-track', corridorAdapter, { aliases: ['road', 'track', 'road/track'] });
-    registry.register('buildings', buildBuildingAdapter('buildings'), { aliases: ['building(s)', 'residences', 'block'] });
+    registry.register('buildings', buildBuildingAdapter('buildings'), { aliases: ['residences', 'block'] });
     registry.register('row', buildBuildingAdapter('row'));
     registry.register('parcelBased', buildBuildingAdapter('parcelBased'), { aliases: ['parcel-based', 'parcelbased'] });
     registry.register('single', buildBuildingAdapter('single'), { aliases: ['single-building'] });

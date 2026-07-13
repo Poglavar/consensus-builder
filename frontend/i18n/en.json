@@ -426,7 +426,7 @@
             "countProgress": "Parcels processed: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Buildings",
+            "title": "Freeform",
             "showLayer": "Show buildings",
             "showExisting": "Show Existing Buildings",
             "showProposed": "Show Proposed Buildings"
@@ -614,8 +614,8 @@
                 "block": "Block",
                 "rowNeedsTwo": "Row houses need at least two parcels.",
                 "row": "Row houses",
-                "parcelBased": "Freeform",
-                "single": "Detached",
+                "parcelBased": "Detached",
+                "single": "Freeform",
                 "reparcel": "Reparcel",
                 "park": "Park",
                 "square": "Square",
@@ -1824,7 +1824,7 @@
     },
     "parcelBased": {
         "modal": {
-            "title": "Parcel-based Urban Rules",
+            "title": "Detached houses",
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings...",
             "generatedSummary": "Generated {{count}} building(s)",
@@ -1841,8 +1841,8 @@
             },
             "helper": {
                 "maxFloors": "Max Floors: each building gets a random number of floors from 1 to this value.",
-                "minDistance": "Min Distance: buildings are set back this distance from parcel borders.",
-                "regenerate": "Click Regenerate to randomize floor counts again."
+                "minDistance": "Min Distance: buildings keep at least this distance from parcel borders.",
+                "regenerate": "Click Regenerate for a new random variation — floor counts, footprint sizes and positions within the setbacks."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",

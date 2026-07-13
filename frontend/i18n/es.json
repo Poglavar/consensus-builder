@@ -421,7 +421,7 @@
             "countProgress": "Parcelas procesadas: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Edificios",
+            "title": "Forma libre",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
             "showProposed": "Mostrar edificios propuestos"
@@ -662,8 +662,8 @@
                 "block": "Manzana",
                 "rowNeedsTwo": "Las casas en hilera necesitan al menos dos parcelas.",
                 "row": "Casas en hilera",
-                "parcelBased": "Forma libre",
-                "single": "Aislado",
+                "parcelBased": "Aislada",
+                "single": "Forma libre",
                 "reparcel": "Reparcelación",
                 "park": "Parque",
                 "square": "Plaza",
@@ -1874,7 +1874,7 @@
     },
     "parcelBased": {
         "modal": {
-            "title": "Reglas Urbanas por Parcela",
+            "title": "Viviendas aisladas",
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios...",
             "generatedSummary": "Se generaron {{count}} edificio(s)",
@@ -1891,8 +1891,8 @@
             },
             "helper": {
                 "maxFloors": "Pisos máximos: cada edificio recibe un número aleatorio de pisos entre 1 y este valor.",
-                "minDistance": "Distancia mínima: los edificios se retiran esta distancia de los bordes de la parcela.",
-                "regenerate": "Haz clic en Regenerar para volver a aleatorizar la cantidad de pisos."
+                "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
+                "regenerate": "Haz clic en Regenerar para una nueva variación aleatoria — pisos, tamaño y posición de la planta dentro de los retiros."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
