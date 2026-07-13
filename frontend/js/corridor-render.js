@@ -360,6 +360,7 @@ function refreshAppliedCorridorStrips() {
 
     const proposals = proposalStorage.getAllProposals();
     proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
+        try {
         const definition = corridorProposalDefinition(proposal);
         const fallbackProfile = corridorProfileForRender(proposal, definition);
         const centerline = corridorCenterlineOf(definition);
@@ -398,6 +399,10 @@ function refreshAppliedCorridorStrips() {
         const corridorId = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         entries.forEach(entry => renderedCorridors.push({ centerline: [entry.points], profile: entry.profile, corridorId }));
         drawn += 1;
+        } catch (error) {
+            // One corrupt road must not strip the asphalt off EVERY road on the map.
+            console.error('[corridor-render] strips failed for proposal', proposal?.proposalId, error);
+        }
     });
 
     // Where two applied roads meet (a drawing snapped onto an existing road shares its exact

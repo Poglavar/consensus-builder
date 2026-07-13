@@ -204,3 +204,71 @@ describe('clipCorridorEdgeThroughBuildings', () => {
         expect(clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [grazing], 0, planarTurf())).toBeNull();
     });
 });
+
+// Partial demolition: a building straddling the demolition region loses only the inside part.
+describe('splitDemolitionFootprint', () => {
+    const { splitDemolitionFootprint } = require('../../frontend/js/corridor-tunnel.js');
+
+    // Planar fake turf: degrees ARE metres here, so areas come out in "square metres".
+    function planarAreaTurf() {
+        const ringArea = ring => {
+            let sum = 0;
+            for (let i = 0; i < ring.length - 1; i++) sum += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+            return Math.abs(sum / 2);
+        };
+        return {
+            intersect: (a, b) => {
+                // Axis-aligned rectangle intersection is enough for these fixtures.
+                const bbox = f => {
+                    const ring = f.geometry.coordinates[0];
+                    const xs = ring.map(c => c[0]);
+                    const ys = ring.map(c => c[1]);
+                    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+                };
+                const [ax1, ay1, ax2, ay2] = bbox(a);
+                const [bx1, by1, bx2, by2] = bbox(b);
+                const x1 = Math.max(ax1, bx1), y1 = Math.max(ay1, by1);
+                const x2 = Math.min(ax2, bx2), y2 = Math.min(ay2, by2);
+                if (x2 <= x1 || y2 <= y1) return null;
+                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } };
+            },
+            difference: (a, b) => {
+                // Fixtures cut a rectangle by a half-plane rectangle: remainder is the leftover box.
+                const inter = planarAreaTurf().intersect(a, b);
+                if (!inter) return a;
+                const ringA = a.geometry.coordinates[0];
+                const ringI = inter.geometry.coordinates[0];
+                const [ax1, ay1, ax2, ay2] = [Math.min(...ringA.map(c => c[0])), Math.min(...ringA.map(c => c[1])), Math.max(...ringA.map(c => c[0])), Math.max(...ringA.map(c => c[1]))];
+                const [ix1, , ix2] = [Math.min(...ringI.map(c => c[0])), 0, Math.max(...ringI.map(c => c[0]))];
+                if (ix1 <= ax1 && ix2 >= ax2) return null; // fully consumed
+                const [rx1, rx2] = ix1 > ax1 ? [ax1, ix1] : [ix2, ax2];
+                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[rx1, ay1], [rx2, ay1], [rx2, ay2], [rx1, ay2], [rx1, ay1]]] } };
+            },
+            area: f => ringArea(f.geometry.coordinates[0])
+        };
+    }
+
+    const box = (x1, y1, x2, y2) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } });
+
+    it('splits a straddling building into demolished part and remainder', () => {
+        const building = box(0, 0, 20, 10);   // 200 m²
+        const region = box(10, -5, 40, 15);   // covers the right half (100 m²)
+        const split = splitDemolitionFootprint(building, region, planarAreaTurf());
+        expect(split.full).toBe(false);
+        expect(split.demolishedPart).toBeTruthy();
+        expect(split.remainder).toBeTruthy();
+    });
+
+    it('demolishes fully when the remainder is a sliver', () => {
+        const building = box(0, 0, 20, 10);
+        const region = box(1, -5, 40, 15);    // leaves a 1 m strip (10 m² < max(10, 15%*200)=30)
+        const split = splitDemolitionFootprint(building, region, planarAreaTurf());
+        expect(split.full).toBe(true);
+    });
+
+    it('ignores a barely-touched building', () => {
+        const building = box(0, 0, 20, 10);
+        const region = box(19.9, 9.8, 40, 15); // clip ~0.02 m² < 2 m²
+        expect(splitDemolitionFootprint(building, region, planarAreaTurf())).toBeNull();
+    });
+});

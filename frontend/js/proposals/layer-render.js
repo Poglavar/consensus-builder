@@ -695,6 +695,10 @@ function applyProposalHighlights() {
 
 function clearProposalHighlights() {
     window.currentlyHighlightedProposal = null;
+    // The id mirror must die with the selection: proposal-manager re-selects on apply/unapply when
+    // this id matches, so a stale id resurrects the blue selection mid-drawing (absorb unapplies the
+    // very road the user once clicked). It was set in selectAndHighlightProposal and never cleared.
+    window.currentlyHighlightedProposalId = null;
     window.selectedParcelInProposal = null;
 
     // Restore any parcel-layer style overrides left behind by the previous highlight.
@@ -743,6 +747,17 @@ function reapplyProposalHighlights() {
 }
 
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
+    // While a corridor tool is drawing, NOTHING may select a proposal — the session opened with a
+    // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
+    // (this is what painted the blue outline + panel over an active drawing session); refuse it
+    // loudly and name the caller so the culprit path is visible in the console.
+    if (window.roadDrawingMode === true || window.trackDrawingMode === true) {
+        console.error('[selectAndHighlightProposal] BLOCKED during active drawing session', {
+            proposalIdOrHash,
+            stack: new Error('selection during drawing').stack
+        });
+        return;
+    }
     console.debug('[selectAndHighlightProposal] Called', {
         proposalIdOrHash,
         parcelId,

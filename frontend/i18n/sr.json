@@ -1126,11 +1126,12 @@
             "keep": "Zadrži nacrt"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Srušiti ih ili prokopati tunel?",
+            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Preseći ih, srušiti ili prokopati tunel?",
             "road": "put",
             "track": "pruga",
             "unapply": "Ukloni postojeći predlog sa mape",
             "destroy": "Sruši zgrade",
+                "cut": "Preseci zgrade",
                 "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
         },
@@ -2374,6 +2375,7 @@
             "carveUnderProposals": "Sakrij stvarne zgrade ispod predloga",
             "stateSolid": "Puno",
             "stateGhost": "Providno",
+            "stateSurviving": "Preostale",
             "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",

@@ -281,7 +281,13 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
             geometry: structureGeometry,
             parentParcelIds,
             blockName: blockName || null,
-            lakeGraphics: lakeGraphics || null
+            lakeGraphics: lakeGraphics || null,
+            // Structures clear their ground by default — no prompt.
+            demolishedBuildings: (typeof demolishBuildingsUnderFootprint === 'function')
+                ? (typeof ensureCorridorBuildingFootprintsLoaded === 'function'
+                    ? await ensureCorridorBuildingFootprintsLoaded().then(() => demolishBuildingsUnderFootprint(structureGeometry))
+                    : await demolishBuildingsUnderFootprint(structureGeometry))
+                : []
         },
         termsConfirmed: true,
         createdAt: new Date().toISOString(),
@@ -752,7 +758,13 @@ async function createProposal() {
                 status: 'unapplied',
                 geometry: structureGeometry || null,
                 parentParcelIds: normalizedParentParcelIds,
-                blockName: formatParcelSelectionLabel(normalizedParentParcelIds)
+                blockName: formatParcelSelectionLabel(normalizedParentParcelIds),
+                // Structures clear their ground by default — no prompt.
+                demolishedBuildings: (structureGeometry && typeof demolishBuildingsUnderFootprint === 'function')
+                    ? (typeof ensureCorridorBuildingFootprintsLoaded === 'function'
+                        ? await ensureCorridorBuildingFootprintsLoaded().then(() => demolishBuildingsUnderFootprint(structureGeometry))
+                        : await demolishBuildingsUnderFootprint(structureGeometry))
+                    : []
             };
         }
 
@@ -1862,7 +1874,7 @@ async function createProposal() {
             const sourceRecord = absorbedSourceId ? proposalStorage.getProposal(absorbedSourceId) : null;
             if (sourceRecord && !(typeof isProposalMinted === 'function' && isProposalMinted(sourceRecord))) {
                 if (typeof isProposalApplied === 'function' && isProposalApplied(sourceRecord)) {
-                    await ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true });
+                    await ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true, skipRestoreSource: true });
                 }
                 proposalStorage.removeProposal(absorbedSourceId);
                 // The stored replacement no longer supersedes anything — its source is gone.

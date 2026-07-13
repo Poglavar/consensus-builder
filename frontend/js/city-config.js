@@ -1023,6 +1023,15 @@
                     cleanup(null);
                     return;
                 }
+                // Enter must ALWAYS mean the primary choice, even when something stole the
+                // focus after the dialog opened (then no button would receive the key).
+                if (event.key === 'Enter' && !dialog.contains(document.activeElement)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const primaryIndex = Math.max(0, choices.findIndex(choice => choice.primary));
+                    cleanup(choices[primaryIndex] ? choices[primaryIndex].value : null);
+                    return;
+                }
                 if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(event.key)) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -1049,7 +1058,9 @@
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
             const primaryIndex = Math.max(0, choices.findIndex(choice => choice.primary));
-            buttonEls[primaryIndex]?.focus();
+            // Focus after layout — a synchronous focus on a prompt opened from inside another
+            // event handler loses to whatever refocuses afterwards (the map container does).
+            requestAnimationFrame(() => buttonEls[primaryIndex]?.focus({ preventScroll: true }));
         });
     }
 

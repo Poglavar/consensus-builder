@@ -859,6 +859,23 @@
             }
             structureGeometry = lakeGraphics.geometry;
         }
+        // A park/square/lake clears its ground by DEFAULT, without prompting: buildings under
+        // the footprint are demolished (rendered as condemned red ghosts in 3D, hidden in 2D,
+        // restored on unapply); building PROPOSALS in the way are unapplied but kept in the list.
+        let demolishedBuildings = [];
+        try {
+            // Building footprints load lazily (the road tool preloads them; one-click
+            // structures must too, or the scan sees an empty city and demolishes nothing).
+            if (typeof global.ensureCorridorBuildingFootprintsLoaded === 'function') {
+                await global.ensureCorridorBuildingFootprintsLoaded();
+            }
+            if (typeof global.demolishBuildingsUnderFootprint === 'function') {
+                demolishedBuildings = await global.demolishBuildingsUnderFootprint(structureGeometry);
+            }
+        } catch (error) {
+            console.error('[ProposalEditor] structure demolition scan failed', error);
+        }
+
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: kind,
@@ -872,7 +889,8 @@
                     geometry: structureGeometry,
                     parentParcelIds: ids.slice(),
                     blockName: null,
-                    lakeGraphics: lakeGraphics || null
+                    lakeGraphics: lakeGraphics || null,
+                    demolishedBuildings
                 }
             },
             previewGeometry: structureGeometry
@@ -1157,6 +1175,32 @@
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
 
+        // Building typologies REDEVELOP their parcels: existing buildings on them are
+        // demolished by default (partially, clipped at the parcel boundary, when a building
+        // straddles it). Structures record theirs at creation; roads decide while drawing.
+        if (proposal.buildingProposal && !Array.isArray(proposal.buildingProposal.demolishedBuildings)) {
+            try {
+                const parentIds = (proposal.parentParcelIds || []).map(String);
+                const layers = parentIds
+                    .map(id => (global.parcelLayerById instanceof Map) ? global.parcelLayerById.get(id) : null)
+                    .filter(layer => layer && layer.feature);
+                const region = (layers.length && typeof global.buildGeometryFromParcels === 'function')
+                    ? global.buildGeometryFromParcels(layers)
+                    : null;
+                if (region && region.type && typeof global.demolishBuildingsUnderFootprint === 'function') {
+                    if (typeof global.ensureCorridorBuildingFootprintsLoaded === 'function') {
+                        await global.ensureCorridorBuildingFootprintsLoaded();
+                    }
+                    proposal.buildingProposal.demolishedBuildings = await global.demolishBuildingsUnderFootprint(region);
+                } else {
+                    proposal.buildingProposal.demolishedBuildings = [];
+                }
+            } catch (error) {
+                console.error('[ProposalEditor] building-typology demolition scan failed', error);
+                proposal.buildingProposal.demolishedBuildings = [];
+            }
+        }
+
         const proposalId = global.proposalStorage?.addProposal?.(proposal);
         if (!proposalId) {
             if (typeof global.showStyledAlert === 'function') {
@@ -1194,7 +1238,7 @@
             if (sourceRecord && !(typeof global.isProposalMinted === 'function' && global.isProposalMinted(sourceRecord))) {
                 absorbedSource = true;
                 if (typeof global.isProposalApplied === 'function' && global.isProposalApplied(sourceRecord)) {
-                    await global.ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true });
+                    await global.ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true, skipRestoreSource: true });
                 }
                 global.proposalStorage.removeProposal(absorbedSourceId);
                 const storedReplacement = global.proposalStorage.getProposal(proposalId);

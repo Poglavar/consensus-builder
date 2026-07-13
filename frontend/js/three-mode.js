@@ -187,7 +187,8 @@
     }
 
     function setBuildingDisplay(kind, state) {
-        if (state !== 'solid' && state !== 'ghost' && state !== 'off') return;
+        if (state !== 'solid' && state !== 'ghost' && state !== 'off' && state !== 'surviving') return;
+        if (state === 'surviving' && kind !== 'built') return; // only existing fabric can "survive"
         if (kind === 'built') {
             if (builtDisplay === state) return;
             builtDisplay = state;
@@ -703,11 +704,17 @@
             row.appendChild(label);
             const wrap = document.createElement('div');
             wrap.className = 'three-mode-segmented';
-            [
+            const states = [
                 ['solid', threeI18n('threeMode.controls.stateSolid', 'Solid')],
                 ['ghost', threeI18n('threeMode.controls.stateGhost', 'Transparent')],
                 ['off', threeI18n('threeMode.controls.stateOff', 'Off')]
-            ].forEach(([state, stateLabel]) => {
+            ];
+            if (kind === 'built') {
+                // "Surviving": solid existing fabric, but the buildings the plan demolishes are
+                // NOT drawn at all — the after-the-plan ground truth.
+                states.splice(2, 0, ['surviving', threeI18n('threeMode.controls.stateSurviving', 'Surviving')]);
+            }
+            states.forEach(([state, stateLabel]) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'three-mode-segment';
@@ -1887,7 +1894,7 @@
         });
     }
 
-    function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial) {
+    function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, hideDemolished = false) {
         // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
         // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
         // via WFS) is no longer used here — it has only 2D footprints with no heights.
@@ -1896,24 +1903,130 @@
         // Built control like every existing building, but never look like surviving fabric.
         try {
             // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-            const demolishedFootprints = window.collectDemolishedBuildingRecords()
-                .map(record => record.geometry).filter(Boolean);
-            const isDemolished = (bld) => {
-                if (!demolishedFootprints.length || typeof turf === 'undefined') return false;
+            const demolitionRecords = window.collectDemolishedBuildingRecords().filter(record => record && record.geometry);
+            // Each record's demolished REGION: the whole footprint for a full demolition, the
+            // accumulated cut for a partial one. Matching is by OVERLAP, not centroid — the 2D
+            // (DKP) and 3D (building_3d) datasets subdivide buildings differently, so one 3D hall
+            // can be hit by several 2D records and a record can clip only a wing of a 3D mesh;
+            // centroid containment missed those and left roads vanishing into uncut meshes.
+            const demolitionRegions = [];
+            if (typeof turf !== 'undefined') {
+                demolitionRecords.forEach(record => {
+                    try {
+                        const region = { type: 'Feature', properties: {}, geometry: record.demolishedPart || record.geometry };
+                        demolitionRegions.push({ region, bbox: turf.bbox(region) });
+                    } catch (error) {
+                        console.error('[three-mode] demolition record has unusable geometry — ignored in 3D', record.id, error);
+                    }
+                });
+            }
+            const bboxesOverlap = (a, b) => a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
+            // Applied corridors ALSO carve their surface footprint out of every mesh they cross
+            // even without a matching record: the 2D and 3D datasets genuinely disagree in places
+            // (a mesh with no DKP footprint can never earn a record), and Cut-through is the
+            // corridor default. Tunnel spans are excluded via the surface footprint. A higher
+            // area bar than record carving — max(15 m², 5%) — keeps facade-grazing dataset
+            // offsets from turning whole street fronts into prisms.
+            const corridorRegions = [];
+            if (typeof turf !== 'undefined' && typeof proposalStorage !== 'undefined') {
+                const pushRegion = (geometry) => {
+                    const geom = geometry?.geometry || geometry; // accept Feature or raw geometry
+                    if (!geom || !geom.type || !Array.isArray(geom.coordinates)) return;
+                    const region = { type: 'Feature', properties: {}, geometry: geom };
+                    try { corridorRegions.push({ region, bbox: turf.bbox(region) }); } catch (_) { }
+                };
+                try {
+                    (proposalStorage.getAllProposals() || []).forEach(proposal => {
+                        const appliedLike = (...statuses) => statuses
+                            .some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
+                        const definition = corridorProposalDefinition(proposal);
+                        if (definition && appliedLike(proposal.status, proposal.roadProposal?.status)) {
+                            pushRegion((Array.isArray(definition.tunnels) && definition.tunnels.length
+                                && typeof window.corridorSurfaceFootprintForDefinition === 'function')
+                                ? window.corridorSurfaceFootprintForDefinition(definition)
+                                : definition.polygon);
+                        }
+                        // Parks/squares/lakes clear their ground by default — their footprint is a
+                        // clearance region even when the 2D scan missed a building (coverage gaps,
+                        // meshes with no DKP counterpart).
+                        const sp = proposal?.structureProposal;
+                        if (sp && appliedLike(proposal.status, sp.status)) {
+                            pushRegion(sp.geometry);
+                        }
+                    });
+                } catch (error) {
+                    console.error('[three-mode] carve regions could not be collected', error);
+                }
+            }
+            // null → untouched; { remainder: null, demolished } → whole building razed;
+            // { remainder, demolished } → partial: prisms for both parts.
+            const demolitionCarveFor = (bld) => {
+                if ((!demolitionRegions.length && !corridorRegions.length) || typeof turf === 'undefined') return null;
                 try {
                     const footprint = buildingFootprintPolygon(bld);
-                    if (!footprint) return false;
-                    const centre = turf.centroid(footprint);
-                    return demolishedFootprints.some(geometry => {
-                        try { return turf.booleanPointInPolygon(centre, { type: 'Feature', properties: {}, geometry }); } catch (_) { return false; }
-                    });
-                } catch (_) { return false; }
+                    if (!footprint) return null;
+                    const footprintBbox = turf.bbox(footprint);
+                    const footprintArea0 = Number(turf.area(footprint)) || 0;
+                    let demolishedUnion = null;
+                    const absorb = (part) => {
+                        if (!demolishedUnion) {
+                            demolishedUnion = part;
+                        } else {
+                            try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (_) { }
+                        }
+                    };
+                    for (const { region, bbox } of demolitionRegions) {
+                        if (!bboxesOverlap(footprintBbox, bbox)) continue;
+                        let part = null;
+                        try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
+                        if (!part || (Number(turf.area(part)) || 0) < 2) continue;
+                        absorb(part);
+                    }
+                    for (const { region, bbox } of corridorRegions) {
+                        if (!bboxesOverlap(footprintBbox, bbox)) continue;
+                        let part = null;
+                        try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
+                        if (!part || (Number(turf.area(part)) || 0) < Math.max(15, footprintArea0 * 0.05)) continue;
+                        absorb(part);
+                    }
+                    if (!demolishedUnion) return null;
+                    let remainder = null;
+                    try { remainder = turf.difference(footprint, demolishedUnion); } catch (_) { remainder = null; }
+                    // Same thresholds as the 2D cut (upsertCutRecord): a sliver remainder is not
+                    // worth keeping — the whole building reads as demolished.
+                    const footprintArea = Number(turf.area(footprint)) || 0;
+                    const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
+                    if (!remainder || remainderArea < Math.max(10, footprintArea * 0.15)) {
+                        return { remainder: null, demolished: footprint };
+                    }
+                    return { remainder, demolished: demolishedUnion };
+                } catch (_) { return null; }
             };
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
                     try {
-                        const material = isDemolished(bld) ? buildingMaterials.demolished : buildingMaterial;
-                        const mesh = buildMeshFromBuilding3D(bld, material);
+                        const carve = demolitionCarveFor(bld);
+                        if (!carve) {
+                            const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
+                            if (mesh) targetGroup.add(mesh);
+                            return;
+                        }
+                        if (carve.remainder) {
+                            // PARTIAL demolition: the real mesh cannot be sliced, so the affected
+                            // building trades facade detail for truth — two extruded prisms at
+                            // its measured height: the surviving remainder in normal material,
+                            // the demolished part as the condemned ghost (absent in Surviving).
+                            const height = building3DHeightMeters(bld);
+                            polygonFeatureToMeshes(carve.remainder, buildingMaterial, 0, height)
+                                .forEach(m => targetGroup.add(m));
+                            if (!hideDemolished) {
+                                polygonFeatureToMeshes(carve.demolished, buildingMaterials.demolished, 0, height)
+                                    .forEach(m => targetGroup.add(m));
+                            }
+                            return;
+                        }
+                        if (hideDemolished) return; // "Surviving": razed fabric absent
+                        const mesh = buildMeshFromBuilding3D(bld, buildingMaterials.demolished);
                         if (mesh) targetGroup.add(mesh);
                     } catch (e) {
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
@@ -1922,6 +2035,27 @@
             }
         } catch (_) { }
         ensureNearbyProposalBuildings();
+    }
+
+    // Height of a { z_min, z_max, faces[] } building in metres; falls back to scanning face
+    // vertices when z_max is absent.
+    function building3DHeightMeters(bld) {
+        const zmin = Number(bld?.z_min);
+        const zmax = Number(bld?.z_max);
+        if (Number.isFinite(zmin) && Number.isFinite(zmax) && zmax > zmin) return zmax - zmin;
+        let top = -Infinity;
+        let bottom = Infinity;
+        (bld?.faces || []).forEach(face => {
+            (face?.coordinates || []).forEach(ring => {
+                (ring || []).forEach(c => {
+                    if (c && Number.isFinite(c[2])) {
+                        if (c[2] > top) top = c[2];
+                        if (c[2] < bottom) bottom = c[2];
+                    }
+                });
+            });
+        });
+        return (Number.isFinite(top) && Number.isFinite(bottom) && top > bottom) ? (top - bottom) : 10;
     }
 
     // Build a THREE.Mesh from a { object_id, z_min, faces[] } building returned by /buildings/near.
@@ -2138,10 +2272,52 @@
         return { type: 'Point', coordinates: [lng, lat] };
     }
 
+    // Everything the user has placed on the map, as one bbox superpolygon: entering 3D loads
+    // the built context around the WHOLE plan (edges + apron), not just around the camera.
+    function appliedWorkFramingGeometry() {
+        try {
+            const proposals = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
+                ? proposalStorage.getAllProposals()
+                : [];
+            let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+            let found = false;
+            const extend = geometry => {
+                if (!geometry || !geometry.type) return;
+                try {
+                    const [a, b, c, d] = turf.bbox({ type: 'Feature', properties: {}, geometry });
+                    if (![a, b, c, d].every(Number.isFinite)) return;
+                    minLng = Math.min(minLng, a);
+                    minLat = Math.min(minLat, b);
+                    maxLng = Math.max(maxLng, c);
+                    maxLat = Math.max(maxLat, d);
+                    found = true;
+                } catch (_) { }
+            };
+            proposals.forEach(proposal => {
+                const applied = (typeof isProposalApplied === 'function') ? isProposalApplied(proposal) : false;
+                if (!applied) return;
+                extend(proposal.roadProposal?.definition?.polygon);
+                extend(proposal.structureProposal?.geometry);
+                (proposal.geometry?.buildings || []).forEach(feature => extend(feature?.geometry));
+                (proposal.reparcellization?.polygons || []).forEach(polygon => extend(polygon?.geometry));
+            });
+            if (!found) return null;
+            return {
+                type: 'Polygon',
+                coordinates: [[[minLng, minLat], [maxLng, minLat], [maxLng, maxLat], [minLng, maxLat], [minLng, minLat]]]
+            };
+        } catch (error) {
+            console.error('[three-mode] applied-work framing failed', error);
+            return null;
+        }
+    }
+
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
 
-        const proposalGeom = proposalFramingGeometry();
+        // Priority: the shared-link proposal frame, else the superpolygon of EVERYTHING the
+        // user has applied (plus the edge apron below), else the camera point.
+        const proposalGeom = proposalFramingGeometry() || appliedWorkFramingGeometry();
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -2768,10 +2944,12 @@
         const showExisting = builtDisplay !== 'off';
         const showProposed = plannedDisplay !== 'off';
         if (existingRailGroup) existingRailGroup.visible = showExisting;
-        const existingMaterial = builtDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
+        const existingMaterial = (builtDisplay === 'solid' || builtDisplay === 'surviving')
+            ? buildingMaterials.solid
+            : buildingMaterials.ghost;
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
 
-        if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial);
+        if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial, builtDisplay === 'surviving');
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).

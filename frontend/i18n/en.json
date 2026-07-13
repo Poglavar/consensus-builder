@@ -1125,11 +1125,12 @@
             "keep": "Keep draft"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} would pass through {{count}} building(s). Demolish them, or tunnel through?",
+            "offer": "This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?",
             "road": "road",
             "track": "track",
             "unapply": "Unapply existing proposal",
             "destroy": "Demolish the buildings",
+                "cut": "Cut through the buildings",
                 "confirm": "Tunnel through",
             "cancel": "Choose another route"
         },
@@ -2344,6 +2345,7 @@
             "carveUnderProposals": "Hide real buildings under proposals",
             "stateSolid": "Solid",
             "stateGhost": "Transparent",
+            "stateSurviving": "Surviving",
             "stateOff": "Off",
             "built": "Built",
             "both": "Both",

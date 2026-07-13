@@ -1182,8 +1182,11 @@ class Proposal {
                     parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
                 } catch (_) { parentParcelArea = 0; }
                 const difference = turf.difference(parcelTurf, roadTurf);
+                // Same rule as _buildChildFeaturesFromDefinition: legacy road parcels have no
+                // isRoad property — their status lives in roadParcelsSet.
                 const parentIsRoad = originalFeature?.properties?.isRoad === true
-                    || originalFeature?.properties?.isRoad === 'true';
+                    || originalFeature?.properties?.isRoad === 'true'
+                    || (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(String(parcelId)));
 
                 if (!difference) {
                     // Parcel is completely covered, so it produces no child features.
@@ -1224,7 +1227,9 @@ class Proposal {
                     newFeature.properties.rootParcelId = rootParcelId;
                     newFeature.properties.proposalId = this.id;
                     newFeature.properties.isRoad = parentIsRoad;
-                    newFeature.properties.isCorridor = parentIsRoad === true;
+                    // Corridor-ness inherits the parent's own flag (see _buildChildFeaturesFromDefinition).
+                    newFeature.properties.isCorridor = originalFeature?.properties?.isCorridor === true
+                        || originalFeature?.properties?.isCorridor === 'true';
 
                     _assignOwnershipDetails(newFeature, {
                         parentFeature: originalFeature,
@@ -2016,8 +2021,13 @@ const ProposalManager = {
                             parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
                         } catch (_) { parentParcelArea = 0; }
                         const difference = turf.difference(parcelTurf, roadTurf);
+                        // Legacy (curated/DGU) road parcels carry NO isRoad property — their road
+                        // status lives in the roadParcelsSet. Checking only the props flag wrote
+                        // isRoad:false onto their remainder slices, stripping the grey the moment
+                        // a drawn road connected to an existing road parcel.
                         const parentIsRoad = originalFeature?.properties?.isRoad === true
-                            || originalFeature?.properties?.isRoad === 'true';
+                            || originalFeature?.properties?.isRoad === 'true'
+                            || (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(String(parcelId)));
 
                         if (!difference) {
                             // Parcel fully consumed by corridor
@@ -2056,7 +2066,11 @@ const ProposalManager = {
                             newFeature.properties.rootParcelId = rootParcelId;
                             newFeature.properties.proposalId = safeId;
                             newFeature.properties.isRoad = parentIsRoad;
-                            newFeature.properties.isCorridor = parentIsRoad === true;
+                            // Corridor-ness inherits the parent's own flag: a re-cut drawn-road slice
+                            // stays a corridor, but a legacy road parcel's remainder is a plain grey
+                            // road parcel, never a corridor strip.
+                            newFeature.properties.isCorridor = originalFeature?.properties?.isCorridor === true
+                                || originalFeature?.properties?.isCorridor === 'true';
 
                             _assignOwnershipDetails(newFeature, {
                                 parentFeature: originalFeature,
@@ -2583,6 +2597,24 @@ const ProposalManager = {
             const structureStatus = (sp.status || '').toLowerCase();
             const proposalStatus = (proposalData.status || '').toLowerCase();
             const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+
+            // Structures clear their ground by default. A structure with NO demolition list
+            // (created before the feature, or while no building footprints were loaded)
+            // computes it now, at apply time, after making sure footprints are available.
+            if (!Array.isArray(sp.demolishedBuildings) || (!sp.demolishedBuildings.length && sp.demolitionScanned !== true)) {
+                try {
+                    if (typeof window.ensureCorridorBuildingFootprintsLoaded === 'function') {
+                        await window.ensureCorridorBuildingFootprintsLoaded();
+                    }
+                    if (sp.geometry && typeof window.demolishBuildingsUnderFootprint === 'function') {
+                        sp.demolishedBuildings = await window.demolishBuildingsUnderFootprint(sp.geometry);
+                        sp.demolitionScanned = true;
+                        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.save === 'function') proposalStorage.save();
+                    }
+                } catch (error) {
+                    console.error('[_applyStructureProposal] demolition scan failed', idLabel, error);
+                }
+            }
             console.debug(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
             const collection = (kind === 'park') ? window.parks : (kind === 'lake' ? window.lakes : window.squares);
@@ -2668,9 +2700,9 @@ const ProposalManager = {
                             if (st === 'applied' || p.status === 'Applied') {
                                 const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
                                 if (hasFamilyUnapply) {
-                                    this.unapplyWholeFamily(p.proposalId);
+                                    this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
                                 } else if (typeof this.unapplyProposal === 'function') {
-                                    this.unapplyProposal(p.proposalId, { skipConfirm: true });
+                                    this.unapplyProposal(p.proposalId, { skipConfirm: true, skipRestoreSource: true });
                                 }
                             }
                         });
@@ -4093,7 +4125,14 @@ const ProposalManager = {
             feature.properties.ancestorProposal = proposalId;
             delete feature.properties.descendantProposal;
             this._persistParcelFeature(feature);
-            if (feature.properties.isRoad) {
+            const parentIdsForRoadCheck = []
+                .concat(feature.properties.parentParcelIds || [])
+                .concat(feature.properties.parentParcelId ? [feature.properties.parentParcelId] : [])
+                .concat(feature.properties.rootParcelId ? [feature.properties.rootParcelId] : []);
+            const parentIsRoadParcel = typeof window.isRoadParcel === 'function'
+                && parentIdsForRoadCheck.some(id => id && window.isRoadParcel(String(id)));
+            if (feature.properties.isRoad || parentIsRoadParcel) {
+                feature.properties.isRoad = true;
                 feature.properties.roadName = feature.properties.roadName || 'Unnamed Road';
                 feature.properties.roadId = feature.properties.roadId || '';
                 if (typeof window.addRoadParcel === 'function') window.addRoadParcel(parcelId);
@@ -4313,9 +4352,9 @@ const ProposalManager = {
                     if (otherKey === ancestorKey && (otherStatus === 'applied' || otherStatus === 'executed')) {
                         const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
                         if (hasFamilyUnapply) {
-                            this.unapplyWholeFamily(p.proposalId);
+                            this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
                         } else if (typeof this.unapplyProposal === 'function') {
-                            this.unapplyProposal(p.proposalId, { skipConfirm: true });
+                            this.unapplyProposal(p.proposalId, { skipConfirm: true, skipRestoreSource: true });
                         }
                     }
                 });
@@ -4472,6 +4511,10 @@ const ProposalManager = {
     async unapplyProposal(proposalId, options = {}) {
         if (typeof proposalStorage === 'undefined') return false;
         const skipConfirm = !!options.skipConfirm;
+        // An absorb/merge SUBSUMES the proposal — restoring its replacement source there
+        // resurrects the previous generation of the very road being absorbed, which the next
+        // drawing click absorbs again: an ancestor-resurrection loop.
+        const skipRestoreSource = !!options.skipRestoreSource;
 
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData) return false;
@@ -4512,7 +4555,7 @@ const ProposalManager = {
         const normalizedStatus = (currentStatus || '').toLowerCase();
 
         if (normalizedStatus === 'unapplied') {
-            await this._restoreReplacementSource(proposalId, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
             return true;
         }
 
@@ -4559,7 +4602,7 @@ const ProposalManager = {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalId));
         }
 
-        await this._restoreReplacementSource(proposalId, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
 
         // Refresh UI after unapply
         this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
@@ -4575,11 +4618,16 @@ const ProposalManager = {
      * _refreshUIAfterProposalChange() after all batch operations are complete.
      * This allows efficient bulk unapply without intermediate UI updates.
      */
-    async unapplyWholeFamily(proposalId, visited = new Set()) {
+    async unapplyWholeFamily(proposalId, visited = new Set(), options = {}) {
         if (!proposalId || typeof proposalStorage === 'undefined') return;
         const proposalKey = String(proposalId);
         if (visited.has(proposalKey)) return;
         visited.add(proposalKey);
+        // skipRestoreSource: callers that unapply to MAKE ROOM (conflict parking, absorb,
+        // one-structure-per-block) must not resurrect the replaced ancestor — that re-applies an
+        // old generation underneath whatever is being placed. Only a deliberate user unapply
+        // keeps the one-jump-undo restore.
+        const skipRestoreSource = options.skipRestoreSource === true;
 
         const proposalData = _getProposalRecord(proposalKey);
         if (!proposalData) return;
@@ -4593,7 +4641,7 @@ const ProposalManager = {
         const combinedDescendants = Array.from(new Set([...descendantProposals, ...proposalDescendants]));
 
         for (const childId of combinedDescendants) {
-            await this.unapplyWholeFamily(childId, visited);
+            await this.unapplyWholeFamily(childId, visited, options);
         }
 
         const isRoad = !!proposalData.roadProposal;
@@ -4613,7 +4661,7 @@ const ProposalManager = {
 
         const normalizedStatus = (currentStatus || '').toLowerCase();
         if (normalizedStatus === 'unapplied') {
-            await this._restoreReplacementSource(proposalKey, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
             return;
         }
 
@@ -4628,7 +4676,7 @@ const ProposalManager = {
         } else if (isDecideLater) {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalKey));
         }
-        await this._restoreReplacementSource(proposalKey, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
     },
 
     /**
@@ -4886,7 +4934,14 @@ const ProposalManager = {
             }
 
             // If the original was a road, restore that too
-            if (feature.properties.isRoad) {
+            const parentIdsForRoadCheck = []
+                .concat(feature.properties.parentParcelIds || [])
+                .concat(feature.properties.parentParcelId ? [feature.properties.parentParcelId] : [])
+                .concat(feature.properties.rootParcelId ? [feature.properties.rootParcelId] : []);
+            const parentIsRoadParcel = typeof window.isRoadParcel === 'function'
+                && parentIdsForRoadCheck.some(id => id && window.isRoadParcel(String(id)));
+            if (feature.properties.isRoad || parentIsRoadParcel) {
+                feature.properties.isRoad = true;
                 feature.properties.roadName = feature.properties.roadName || 'Unnamed Road';
                 feature.properties.roadId = feature.properties.roadId || '';
                 if (typeof window.addRoadParcel === 'function') window.addRoadParcel(parcelId);
@@ -7287,7 +7342,8 @@ const ProposalManager = {
             const absorbSourceId = options.absorbSourceProposalId ? String(options.absorbSourceProposalId) : null;
             const parked = [];
             for (const conflict of analysis.conflicts) {
-                const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true });
+                // Parking must not resurrect the parked proposal's replaced ancestor under the new drawing.
+                const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true, skipRestoreSource: true });
                 if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
             analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
@@ -7320,7 +7376,7 @@ const ProposalManager = {
                     analysis,
                     onApplyAnyway: () => this.applyProposal(idLabel, { ...options, applyAnyway: true }),
                     onUnapplyAndRetry: async (conflictProposalId) => {
-                        await this.unapplyProposal(conflictProposalId, { skipConfirm: true });
+                        await this.unapplyProposal(conflictProposalId, { skipConfirm: true, skipRestoreSource: true });
                         return this.applyProposal(idLabel, { ...options, applyAnyway: true });
                     }
                 });

@@ -298,21 +298,54 @@ function drawRoadVisualization(metrics) {
     });
 }
 
-// Fetch buildings from data source
-async function fetchBuildings() {
-    // Only fetch on zoom levels 17–19
+// Areas already fetched into the footprint pool. Corridor tools consult this to load buildings
+// along the DRAWN geometry — the pool otherwise only covers viewports the user happened to view,
+// and buildings never loaded can never be detected, prompted for, or demolished.
+const buildingFetchCoverage = [];
+
+function boundsCoveredByBuildingFetch(bounds) {
     try {
-        const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-        if (!isFinite(z) || z < 17 || z > 19) {
-            return;
-        }
-    } catch (_) { /* noop */ }
+        return buildingFetchCoverage.some(rect => rect.contains(bounds));
+    } catch (_) {
+        return false;
+    }
+}
+
+// Ensure footprints exist for `bounds` (an L.LatLngBounds or anything L.latLngBounds accepts).
+// Fetches with generous padding so neighbouring corridor edges reuse one fetch.
+async function ensureBuildingFootprintsForBounds(rawBounds) {
+    if (!rawBounds) return;
+    try {
+        const config = (typeof CityConfigManager !== 'undefined') ? CityConfigManager.getCurrentCityConfig?.() : null;
+        if (config?.buildings?.source === 'none') return;
+    } catch (_) { }
+    let bounds = null;
+    try { bounds = L.latLngBounds(rawBounds); } catch (_) { return; }
+    if (!bounds || !bounds.isValid()) return;
+    if (boundsCoveredByBuildingFetch(bounds)) return;
+    await fetchBuildings(bounds.pad(0.5));
+}
+window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
+
+// Fetch buildings from data source. With `boundsOverride` (L.LatLngBounds) the fetch targets that
+// area regardless of zoom — used by corridor tools to cover drawn geometry; without it, the
+// current viewport is fetched (zoom-gated so a city-wide view never requests everything).
+async function fetchBuildings(boundsOverride = null) {
+    // Only fetch on zoom levels 17–19
+    if (!boundsOverride) {
+        try {
+            const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+            if (!isFinite(z) || z < 17 || z > 19) {
+                return;
+            }
+        } catch (_) { /* noop */ }
+    }
     if (typeof updateStatus === 'function') {
         updateStatus('Fetching buildings...');
     }
 
     try {
-        const bounds = map.getBounds();
+        const bounds = boundsOverride || map.getBounds();
         const bbox = getBboxFromBounds(bounds);
 
         const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
@@ -344,9 +377,12 @@ async function fetchBuildings() {
         // MERGE with what's already loaded instead of replacing it: the fetch covers only the
         // current viewport (maxFeatures-capped), so replacing left a single-viewport patch and
         // panning "lost" buildings. Dedupe by feature id; cap the pool to keep memory sane.
+        // Same identity as demolition records use (corridor-tunnel.js) — the two MUST agree,
+        // or click-time decisions stop matching the pool. ZGRADA_ID is the Zagreb DKP id.
         const buildingKeyOf = (feature) => {
+            if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
             const props = feature?.properties || {};
-            const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+            const direct = props.ZGRADA_ID ?? props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
             if (direct !== undefined && direct !== null && String(direct)) return String(direct);
             try { return JSON.stringify(feature?.geometry?.coordinates?.[0]?.[0] || feature?.geometry?.coordinates || ''); } catch (error) {
                 console.error('[fetchBuildings] building has no id and unserializable geometry — dedup disabled for it', error);
@@ -370,6 +406,14 @@ async function fetchBuildings() {
         }
         // The full pool survives demolition filtering, so unapplying the road brings them back.
         window.buildingFeaturePool = mergedFeatures;
+        // A fetch that hit the maxFeatures cap was truncated — it must not claim its bbox as
+        // covered, or the corridor preload would trust a hole-riddled area.
+        try {
+            const fetchedCount = (data?.features || []).length;
+            if (fetchedCount < 2000) {
+                buildingFetchCoverage.push(L.latLngBounds(bounds.getSouthWest(), bounds.getNorthEast()));
+            }
+        } catch (_) { }
         rebuildBuildingLayerFromPool();
 
         // Notify other modules (e.g., 3D) that buildings layer has updated
@@ -392,14 +436,28 @@ async function fetchBuildings() {
 function rebuildBuildingLayerFromPool() {
     const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
     // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-    const demolished = collectDemolishedBuildingIds();
+    // Records WITHOUT `remainder` hide the building entirely; records WITH it are PARTIAL
+    // demolitions — the building keeps standing with the remainder footprint.
+    const demolishedById = new Map();
+    collectDemolishedBuildingRecords().forEach(record => {
+        if (record && record.id) demolishedById.set(String(record.id), record);
+    });
+    // Identity must be the SAME one demolition records were written with (corridor-tunnel.js) —
+    // the old local variant knew nothing of ZGRADA_ID, so Zagreb records never matched and
+    // demolished buildings were never hidden from the 2D layer.
     const keyOf = (feature) => {
+        if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
         const props = feature?.properties || {};
-        const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+        const direct = props.ZGRADA_ID ?? props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
         return (direct !== undefined && direct !== null) ? String(direct) : '';
     };
-    const visible = demolished.size
-        ? pool.filter(feature => !demolished.has(keyOf(feature)))
+    const visible = demolishedById.size
+        ? pool.map(feature => {
+            const record = demolishedById.get(keyOf(feature));
+            if (!record) return feature;
+            if (!record.remainder) return null; // full demolition
+            return { ...feature, geometry: record.remainder };
+        }).filter(Boolean)
         : pool;
     // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor tunnel preload creates

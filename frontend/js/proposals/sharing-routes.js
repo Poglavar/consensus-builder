@@ -1086,9 +1086,9 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                                 actuallyApplied.forEach(hash => {
                                     try {
                                         if (hasFamilyUnapply) {
-                                            ProposalManager.unapplyWholeFamily(hash);
+                                            ProposalManager.unapplyWholeFamily(hash, new Set(), { skipRestoreSource: true });
                                         } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                                            ProposalManager.unapplyProposal(hash, { skipConfirm: true });
+                                            ProposalManager.unapplyProposal(hash, { skipConfirm: true, skipRestoreSource: true });
                                         }
                                     } catch (_) { }
                                 });
@@ -1794,9 +1794,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     if (!pid) continue;
                     try {
                         if (typeof ProposalManager.unapplyWholeFamily === 'function') {
-                            await ProposalManager.unapplyWholeFamily(pid);
+                            await ProposalManager.unapplyWholeFamily(pid, new Set(), { skipRestoreSource: true });
                         } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true });
+                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true, skipRestoreSource: true });
                         }
                     } catch (err) {
                         console.warn('[handleSharedPlanRoute] Failed to unapply conflicting proposal', pid, err);

@@ -622,6 +622,8 @@
     }
 
     function updateParksLayer() {
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
         if (typeof map === 'undefined') return;
         ensureParksPane();
         const group = ensureParksLayer();
@@ -984,6 +986,8 @@
     }
 
     function updateSquaresLayer() {
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
         if (typeof map === 'undefined') return;
         ensureSquaresPane();
         const group = ensureSquaresLayer();
@@ -1044,6 +1048,8 @@
     }
 
     function updateLakesLayer() {
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
         if (typeof map === 'undefined') return;
         ensureLakesPane();
         const group = ensureLakesLayer();

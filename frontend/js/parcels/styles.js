@@ -147,10 +147,14 @@
             return { ...corridorParcelStyle };
         }
 
-        // Check for road (tracks have isRoad=false, so no conflict)
+        // Check for road (tracks have isRoad=false, so no conflict). Both sources count: the
+        // feature's own isRoad flag (child slices carry it before addRoadParcel registers them)
+        // and the persisted road-parcel set (legacy/curated parcels carry no flag at all).
+        const propsRoadFlag = !!(layer && layer.feature && layer.feature.properties
+            && (layer.feature.properties.isRoad === true || layer.feature.properties.isRoad === 'true'));
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
-            : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
+            : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
         if (roadFlag) {
             return { ...roadStyle };
         }
@@ -183,9 +187,11 @@
 
         // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
         const { isRoad: isRoadOverride } = options || {};
+        const propsRoadFlag = !!(layer && layer.feature && layer.feature.properties
+            && (layer.feature.properties.isRoad === true || layer.feature.properties.isRoad === 'true'));
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
-            : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
+            : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
 
         // Check if this is a track parcel (via layer or by searching parcelLayer)
