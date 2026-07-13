@@ -2075,6 +2075,40 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
 }
 
 // Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected
+// Silent block detection for UX suggestions ("did you mean the whole block?"): the same
+// visibility + floodfill as the Detect button, but no animation, no selection, no status —
+// returns { count, parcelIds } or null whenever a valid block cannot be derived.
+function detectBlockParcelIdsForParcel(parcelId) {
+    try {
+        const idStr = parcelId !== undefined && parcelId !== null ? String(parcelId) : null;
+        if (!idStr) return null;
+        const seed = (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(idStr) : null;
+        if (!seed) return null;
+        if (isCorridorParcel(idStr, seed)) return null;
+        if (!parcelLayer || typeof parcelLayer.getLayers !== 'function') return null;
+        const bounds = map.getBounds();
+        const visibleParcels = parcelLayer.getLayers().filter(layer => {
+            if (!layer || typeof layer.getBounds !== 'function') return false;
+            try { return bounds.intersects(layer.getBounds()); } catch (_) { return false; }
+        });
+        const nonCorridorParcels = visibleParcels.filter(p => {
+            const pid = parcelIdFromLayer(p);
+            return pid && !isCorridorParcel(pid, p);
+        });
+        if (!nonCorridorParcels.length) return null;
+        const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
+        const blockParcels = [];
+        const floodResult = floodfillBlock(seed, blockParcels, neighborMap);
+        if (!floodResult || !floodResult.isValid || !blockParcels.length) return null;
+        const ids = blockParcels.map(parcelIdFromLayer).filter(Boolean).map(String);
+        return { count: ids.length, parcelIds: ids };
+    } catch (error) {
+        console.warn('[parcel-blocks] silent block detection failed', error);
+        return null;
+    }
+}
+window.detectBlockParcelIdsForParcel = detectBlockParcelIdsForParcel;
+
 function animateFloodfillFromSelected() {
     if (window.debugLayer) window.debugLayer.clearLayers();
     clearRejectionLabels();

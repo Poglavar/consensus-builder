@@ -213,6 +213,12 @@
 
     function drawParkDecorations(group, parkFeature) {
         if (!parkFeature || !parkFeature.geometry) return;
+        // While the geometry editor is editing THIS structure, it renders the live editable
+        // copy — the static one would duplicate every object underneath it.
+        if (window.structureGeometryEditorEditingProposalId
+            && String(parkFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
+            return;
+        }
         // Ensure deterministic decorations are present and persisted
         ensureParkDecorations(parkFeature);
         const decorations = (parkFeature.properties && parkFeature.properties.decorations) ? parkFeature.properties.decorations : null;
@@ -221,6 +227,7 @@
         const flowerbeds = Array.isArray(decorations.flowerbeds) ? decorations.flowerbeds : [];
         const paths = Array.isArray(decorations.paths) ? decorations.paths : [];
         const treePoints = Array.isArray(decorations.trees) ? decorations.trees : [];
+        const benches = Array.isArray(decorations.benches) ? decorations.benches : [];
 
         // Winding paths: two or three dashed polylines across bbox, clipped by keeping only inside points
         // Draw stored paths
@@ -271,6 +278,27 @@
                         html: '🌳',
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
+                    }),
+                    pane: PARKS_PANE,
+                    interactive: false
+                }).addTo(group);
+            });
+        } catch (_) { }
+
+        // Benches (placed in the geometry editor): draggable only inside the editor —
+        // here they render as static glyphs, like the trees.
+        try {
+            benches.forEach(bench => {
+                const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                try { if (!pointInFeature(turf.point(coord), parkFeature)) return; } catch (_) { }
+                const [lng, lat] = coord;
+                L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'park-bench-glyph',
+                        html: `<span style="display:inline-block;transform:rotate(${Math.round(Number(bench?.bearing) || 0)}deg);color:#7c4a12;font-size:12px;">▰</span>`,
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7]
                     }),
                     pane: PARKS_PANE,
                     interactive: false
@@ -727,6 +755,12 @@
 
     function drawSquareDecorations(group, squareFeature) {
         if (!squareFeature || !squareFeature.geometry) return;
+        // While the geometry editor is editing THIS structure, it renders the live editable
+        // copy — the static one would duplicate every object underneath it.
+        if (window.structureGeometryEditorEditingProposalId
+            && String(squareFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
+            return;
+        }
         // Ensure decorations exist for legacy squares
         try { ensureSquareDecorations(squareFeature); } catch (_) { }
         const dec = squareFeature.properties && squareFeature.properties.decorations;
@@ -792,13 +826,65 @@
                 interactive: false
             }).addTo(group);
         });
+        // Statues (one auto-placed per square; more placeable in the geometry editor)
+        (Array.isArray(dec.statues) ? dec.statues : [])
+            .filter(coord => Array.isArray(coord) && pointInFeature(turf.point(coord), squareFeature))
+            .forEach(([lng, lat]) => {
+                L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'square-statue-emoji',
+                        html: '<div style="font-size:20px;line-height:20px;">🗿</div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    }),
+                    pane: SQUARES_ICON_PANE,
+                    zIndexOffset: 1000,
+                    interactive: false
+                }).addTo(group);
+            });
+    }
+
+    // One statue per square by default: offset from the centre toward a corner, first
+    // candidate inside the polygon wins (fountain owns the centre).
+    function autoStatuePoint(squareFeature) {
+        try {
+            const bbox = featureBbox(squareFeature);
+            if (!bbox) return null;
+            const [minLng, minLat, maxLng, maxLat] = bbox;
+            const cLng = (minLng + maxLng) / 2;
+            const cLat = (minLat + maxLat) / 2;
+            const dLng = (maxLng - minLng) * 0.28;
+            const dLat = (maxLat - minLat) * 0.28;
+            const candidates = [
+                [cLng + dLng, cLat + dLat],
+                [cLng - dLng, cLat - dLat],
+                [cLng + dLng, cLat - dLat],
+                [cLng - dLng, cLat + dLat]
+            ];
+            for (const candidate of candidates) {
+                if (pointInFeature(turf.point(candidate), squareFeature)) return candidate;
+            }
+            const random = randomPointsInside(squareFeature, 5);
+            const fallback = random && random[0] && random[0].geometry && random[0].geometry.coordinates;
+            return Array.isArray(fallback) ? fallback : null;
+        } catch (_) {
+            return null;
+        }
     }
 
     function ensureSquareDecorations(squareFeature) {
         try {
             if (!squareFeature || !squareFeature.geometry) return;
             const props = squareFeature.properties = squareFeature.properties || {};
-            if (props.decorations && typeof props.decorations === 'object') return;
+            if (props.decorations && typeof props.decorations === 'object') {
+                // Upgrade: squares predating statues get their one auto-placed statue.
+                if (!Array.isArray(props.decorations.statues)) {
+                    const statue = autoStatuePoint(squareFeature);
+                    props.decorations.statues = statue ? [statue] : [];
+                    saveSquares();
+                }
+                return;
+            }
             // Fountain at centroid; ensure inside polygon by fallback random sampling
             let ctr = null;
             try { ctr = turf.centroid(squareFeature); } catch (_) { ctr = null; }
@@ -834,7 +920,8 @@
                 const pt = turf.point([lng, lat]);
                 if (pointInFeature(pt, squareFeature)) stalls.push([lng, lat]);
             }
-            props.decorations = { fountain, fountains: fountain ? [fountain] : [], trees: [], benches: [], stalls, version: 2 };
+            const statue = autoStatuePoint(squareFeature);
+            props.decorations = { fountain, fountains: fountain ? [fountain] : [], trees: [], benches: [], stalls, statues: statue ? [statue] : [], version: 2 };
             saveSquares();
         } catch (_) { }
     }

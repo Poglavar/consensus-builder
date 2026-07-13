@@ -9,10 +9,23 @@
         decorations: null,
         tool: null,
         pathPoints: [],
-        selectedBench: null,
         layer: null,
-        panel: null
+        panel: null,
+        reselectKey: null
     };
+
+    // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
+    // surface z=630, icons 632; parks 625/627) — default marker/overlay panes sit BELOW them,
+    // which buried the editor's icons under the square's semi-transparent surface.
+    const EDITOR_PANE = 'structureGeometryEditorPane';
+    function ensureEditorPane() {
+        if (!global.map || typeof global.map.getPane !== 'function') return;
+        let pane = global.map.getPane(EDITOR_PANE);
+        if (!pane && typeof global.map.createPane === 'function') {
+            pane = global.map.createPane(EDITOR_PANE);
+            if (pane) pane.style.zIndex = '655';
+        }
+    }
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -34,6 +47,11 @@
                 flowerbeds: (Array.isArray(value.flowerbeds) ? value.flowerbeds : []).filter(Array.isArray),
                 ponds: (Array.isArray(value.ponds) ? value.ponds : []).filter(Array.isArray),
                 paths: (Array.isArray(value.paths) ? value.paths : []).map(path => (Array.isArray(path) ? path.map(coordinate).filter(Boolean) : [])).filter(path => path.length > 1),
+                // Benches are first-class placeable objects (same as trees) — no orientation UI.
+                benches: (Array.isArray(value.benches) ? value.benches : []).map(bench => {
+                    const point = coordinate(bench?.coordinate || bench?.position || bench);
+                    return point ? { coordinate: point, bearing: ((Number(bench?.bearing) || 0) % 360 + 360) % 360 } : null;
+                }).filter(Boolean),
                 version: 3
             };
         }
@@ -48,6 +66,7 @@
                 return point ? { coordinate: point, bearing: ((Number(bench?.bearing) || 0) % 360 + 360) % 360 } : null;
             }).filter(Boolean),
             stalls: (Array.isArray(value.stalls) ? value.stalls : []).map(coordinate).filter(Boolean),
+            statues: (Array.isArray(value.statues) ? value.statues : []).map(coordinate).filter(Boolean),
             version: 2
         };
     }
@@ -99,7 +118,6 @@
         const list = state.decorations?.[type];
         if (!Array.isArray(list) || index < 0 || index >= list.length) return;
         list.splice(index, 1);
-        if (type === 'benches') state.selectedBench = null;
         render();
     }
 
@@ -116,6 +134,7 @@
             icon,
             draggable: true,
             keyboard: true,
+            pane: EDITOR_PANE,
             zIndexOffset: options.zIndexOffset || 500
         }).addTo(group);
         marker.on('dragend', () => {
@@ -132,27 +151,24 @@
         marker.on('click', event => {
             global.L.DomEvent.stopPropagation(event);
             if (state.tool === 'erase') removeDecoration(type, index);
-            else if (type === 'benches') {
-                state.selectedBench = index;
-                render();
-            }
         });
     }
 
     function renderPark(group) {
         state.decorations.paths.forEach((path, index) => bindErasable(global.L.polyline(path.map(([lng, lat]) => [lat, lng]), {
-            color: '#f7edc8', weight: 5, opacity: 0.95, dashArray: '8 5'
+            color: '#f7edc8', weight: 5, opacity: 0.95, dashArray: '8 5', pane: EDITOR_PANE
         }).addTo(group), 'paths', index));
         state.decorations.ponds.forEach((ring, index) => bindErasable(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
-            color: '#1d4ed8', fillColor: '#38bdf8', fillOpacity: 0.75, weight: 2
+            color: '#1d4ed8', fillColor: '#38bdf8', fillOpacity: 0.75, weight: 2, pane: EDITOR_PANE
         }).addTo(group), 'ponds', index));
         state.decorations.flowerbeds.forEach((ring, index) => bindErasable(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
-            color: '#be185d', fillColor: '#f472b6', fillOpacity: 0.78, weight: 2
+            color: '#be185d', fillColor: '#f472b6', fillOpacity: 0.78, weight: 2, pane: EDITOR_PANE
         }).addTo(group), 'flowerbeds', index));
         state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
+        (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
-                color: '#f59e0b', weight: 4, dashArray: '5 5'
+                color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE
             }).addTo(group);
         }
     }
@@ -161,10 +177,11 @@
         state.decorations.fountains.forEach((coord, index) => addPointMarker(group, 'fountains', coord, index, makeIcon('is-fountain', '⛲', 30)));
         state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
         state.decorations.benches.forEach((bench, index) => {
-            const selected = state.selectedBench === index ? ' is-selected' : '';
-            const icon = makeIcon(`is-bench${selected}`, `<span style="transform:rotate(${bench.bearing}deg)">▰</span>`);
-            addPointMarker(group, 'benches', bench.coordinate, index, icon, { zIndexOffset: selected ? 900 : 500 });
+            const icon = makeIcon('is-bench', `<span style="transform:rotate(${bench.bearing || 0}deg)">▰</span>`);
+            addPointMarker(group, 'benches', bench.coordinate, index, icon);
         });
+        (state.decorations.stalls || []).forEach((coord, index) => addPointMarker(group, 'stalls', coord, index, makeIcon('is-stall', '🍽️')));
+        (state.decorations.statues || []).forEach((coord, index) => addPointMarker(group, 'statues', coord, index, makeIcon('is-statue', '🗿')));
     }
 
     function render() {
@@ -178,7 +195,8 @@
                 weight: 3,
                 dashArray: '8 5'
             },
-            interactive: false
+            interactive: false,
+            pane: EDITOR_PANE
         }).addTo(state.layer);
         if (state.kind === 'park') renderPark(state.layer);
         else renderSquare(state.layer);
@@ -214,14 +232,17 @@
                 state.decorations[state.tool === 'pond' ? 'ponds' : 'flowerbeds'].push(ring);
             } else if (state.tool === 'path') {
                 state.pathPoints.push(coord);
+            } else if (state.tool === 'bench') {
+                state.decorations.benches.push({ coordinate: coord, bearing: 0 });
             }
         } else {
             if (state.tool === 'fountain') state.decorations.fountains.push(coord);
             else if (state.tool === 'tree') state.decorations.trees.push(coord);
             else if (state.tool === 'bench') {
                 state.decorations.benches.push({ coordinate: coord, bearing: 0 });
-                state.selectedBench = state.decorations.benches.length - 1;
             }
+            else if (state.tool === 'stall') state.decorations.stalls.push(coord);
+            else if (state.tool === 'statue') state.decorations.statues.push(coord);
         }
         render();
     }
@@ -255,7 +276,6 @@
         panel.className = 'structure-geometry-editor';
         panel.setAttribute('aria-label', 'Structure geometry editor');
         panel.addEventListener('click', handlePanelClick);
-        panel.addEventListener('input', handlePanelInput);
         global.document.body.appendChild(panel);
         state.panel = panel;
         return panel;
@@ -267,19 +287,21 @@
                 toolButton('tree', '🌳', 'Tree'),
                 toolButton('flowerbed', '🌸', 'Flowerbed'),
                 toolButton('pond', '💧', 'Pond'),
-                toolButton('path', '〰', 'Footpath')
+                toolButton('path', '〰', 'Footpath'),
+                toolButton('bench', '▰', 'Bench')
             ].join('')
             : [
                 toolButton('fountain', '⛲', 'Fountain'),
                 toolButton('tree', '🌳', 'Tree'),
-                toolButton('bench', '▰', 'Bench')
+                toolButton('bench', '▰', 'Bench'),
+                toolButton('stall', '🍽️', 'Table'),
+                toolButton('statue', '🗿', 'Statue')
             ].join('');
         return `
             <header><div><strong>${state.kind === 'park' ? 'Park' : 'Square'} editor</strong><small>Choose an item, then click inside the boundary. Drag point items to move them.</small></div><button type="button" data-action="cancel" aria-label="Close">×</button></header>
             <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', 'Remove')}</div>
             <div class="structure-geometry-options">
                 <button type="button" data-action="finish-path">Finish path</button>
-                <label data-bench-bearing>Bench angle <input type="range" min="0" max="345" step="15" data-role="bench-bearing"><output data-role="bench-angle">0°</output></label>
             </div>
             <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">Cancel</button><button type="button" data-action="save" class="is-primary">Save design</button></div></footer>`;
     }
@@ -297,13 +319,6 @@
             finish.hidden = state.kind !== 'park' || state.tool !== 'path';
             finish.disabled = state.pathPoints.length < 2;
         }
-        const bearing = panel.querySelector('[data-bench-bearing]');
-        if (bearing) bearing.hidden = state.kind !== 'square' || state.selectedBench === null;
-        const selected = state.selectedBench === null ? null : state.decorations?.benches?.[state.selectedBench];
-        const slider = panel.querySelector('[data-role="bench-bearing"]');
-        const output = panel.querySelector('[data-role="bench-angle"]');
-        if (selected && slider) slider.value = String(selected.bearing || 0);
-        if (output) output.textContent = `${selected?.bearing || 0}°`;
         const hint = panel.querySelector('[data-role="hint"]');
         if (hint) hint.textContent = state.tool === 'erase'
             ? 'Click an item to remove it.'
@@ -318,14 +333,6 @@
         if (action === 'finish-path') finishPath();
         else if (action === 'cancel') closeEditor(false);
         else if (action === 'save') saveEditor();
-    }
-
-    function handlePanelInput(event) {
-        if (!event.target?.matches?.('[data-role="bench-bearing"]') || state.selectedBench === null) return;
-        const bench = state.decorations?.benches?.[state.selectedBench];
-        if (!bench) return;
-        bench.bearing = Number(event.target.value) || 0;
-        render();
     }
 
     function onMapClick(event) {
@@ -346,6 +353,8 @@
 
     function closeEditor(saved) {
         const draftId = state.draftId;
+        const reselectKey = state.reselectKey || null;
+        state.reselectKey = null;
         if (global.map) {
             global.map.off('click', onMapClick);
             if (state.layer) global.map.removeLayer(state.layer);
@@ -358,12 +367,23 @@
         state.decorations = null;
         state.tool = null;
         state.pathPoints = [];
-        state.selectedBench = null;
         state.layer = null;
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
             global.finishProposalDraftDesignSession(draftId);
         }
+        // The applied structure resumes rendering its own decorations.
+        if (global.structureGeometryEditorEditingProposalId) {
+            global.structureGeometryEditorEditingProposalId = null;
+            try { global.updateParksLayer?.(); } catch (_) { }
+            try { global.updateSquaresLayer?.(); } catch (_) { }
+        }
         if (saved && typeof global.updateStatus === 'function') global.updateStatus('Structure design saved.');
+        // The editor replaced the proposal card for its duration — on cancel, bring the card
+        // back for the proposal that was selected. (On save the shell re-selects the rebuilt
+        // proposal itself, which may carry a NEW id.)
+        if (!saved && reselectKey && typeof global.selectAndHighlightProposal === 'function') {
+            try { global.selectAndHighlightProposal(reselectKey, null, false, true); } catch (_) { }
+        }
     }
 
     function saveEditor() {
@@ -396,8 +416,21 @@
         state.decorations = normalizeDecorations(kind, sourceDecorations(draft));
         state.tool = null;
         state.pathPoints = [];
-        state.selectedBench = null;
+        ensureEditorPane();
         state.layer = global.L.layerGroup().addTo(global.map);
+        // The editor owns the map and the UI for its duration: remember which proposal card was
+        // open (restored on cancel), then close the proposal card and any parcel panel — the
+        // editor panel replaces them. Parcel hover/click stays suppressed via
+        // isStructureGeometryEditorActive (checked in the parcel handlers).
+        state.reselectKey = global.ProposalSelection?.getKey?.() || null;
+        try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
+        try { global.hideParcelInfoPanel?.(); } catch (_) { }
+        // Hide the applied structure's own decoration rendering for the duration — the editor
+        // shows the live editable copy, and static duplicates read as "objects I cannot drag".
+        global.structureGeometryEditorEditingProposalId = draft?.sourceProposalId
+            || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id || null;
+        try { global.updateParksLayer?.(); } catch (_) { }
+        try { global.updateSquaresLayer?.(); } catch (_) { }
         const panel = ensurePanel();
         panel.innerHTML = panelMarkup();
         panel.classList.add('is-open');
@@ -413,6 +446,8 @@
 
     global.openStructureGeometryEditor = openStructureGeometryEditor;
     global.closeStructureGeometryEditor = () => closeEditor(false);
+    // While the editor is open, the map belongs to it: parcel click/hover handlers consult this.
+    global.isStructureGeometryEditorActive = () => !!state.draftId;
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = { normalizeDecorations, boundaryFeature };

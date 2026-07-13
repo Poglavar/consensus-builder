@@ -98,7 +98,37 @@
         return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
     }
 
-    function startParcelBuildTool(toolKey) {
+    // A whole block of this size or smaller is a plausible "I meant the block" target;
+    // beyond it the suggestion is more likely noise than help.
+    const BLOCK_SUGGEST_MAX_PARCELS = 60;
+
+    // Single parcel selected but it sits in a multi-parcel block: the user may simply have
+    // forgotten to select the block first. Offer to do it for them — Yes selects the whole
+    // block (and lands on the Proposals tab, tool NOT auto-launched); No proceeds one-parcel.
+    // Returns true when the tool launch should stop here.
+    async function maybeSuggestWholeBlock(ids) {
+        if (ids.length !== 1) return false;
+        if (typeof global.detectBlockParcelIdsForParcel !== 'function') return false;
+        const block = global.detectBlockParcelIdsForParcel(ids[0]);
+        if (!block || block.count <= 1 || block.count > BLOCK_SUGGEST_MAX_PARCELS) return false;
+        if (typeof global.showStyledConfirm !== 'function') return false;
+        const message = tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
+            `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`);
+        const wantsBlock = await global.showStyledConfirm(message, {
+            okText: tParcel('panel.parcel.suggestWholeBlockYes', {}, 'Yes, select the block'),
+            cancelText: tParcel('panel.parcel.suggestWholeBlockNo', {}, 'No, just this parcel')
+        });
+        if (!wantsBlock) return false;
+        try { await Promise.resolve(global.animateFloodfillFromSelected?.()); } catch (error) {
+            console.warn('[buildPalette] block selection failed', error);
+        }
+        try {
+            document.querySelector('.parcel-tab-btn[data-i18n-key="panel.parcel.tabProposals"]')?.click();
+        } catch (_) { }
+        return true;
+    }
+
+    async function startParcelBuildTool(toolKey) {
         const ids = parcelBuildSelectionIds();
         if (!ids.length) {
             if (typeof global.updateStatus === 'function') {
@@ -106,6 +136,10 @@
             }
             return;
         }
+        // Ownership offers target the specific parcel the user picked — no block suggestion.
+        // For every other tool the suggestion runs BEFORE the per-tool guards (a row on one
+        // parcel is exactly the case where selecting the block solves the problem).
+        if (toolKey !== 'offer' && await maybeSuggestWholeBlock(ids)) return;
         // A row dictates form across parcels — on a single parcel it degenerates to a building.
         if (toolKey === 'row' && ids.length < 2) {
             const message = tParcel('panel.parcel.build.rowNeedsTwo', {}, 'Row houses need at least two parcels.');

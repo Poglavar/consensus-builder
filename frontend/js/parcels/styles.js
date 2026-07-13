@@ -91,8 +91,10 @@
         opacity: normalStyle.opacity !== undefined ? normalStyle.opacity : 1,
         dashArray: normalStyle.dashArray || '',
         fillColor: normalStyle.fillColor,
-        // Keep fills visible for applied spatial proposals (e.g., building overlays) instead of clearing to transparent
-        fillOpacity: 0.2
+        // Border-only, like every other parcel. The old 0.2 red fill "pink-shaded" the WHOLE
+        // parcel whenever any applied park/square/building touched a corner of it — the
+        // proposal's own visuals already show where it sits, so the parcel fill was only noise.
+        fillOpacity: 0
     };
 
     let parcelsWithAppliedSpatialProposals = new Set();

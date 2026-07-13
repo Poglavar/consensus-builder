@@ -16,6 +16,11 @@
         if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
             return;
         }
+        // The structure geometry editor owns the map while open — clicks place furniture,
+        // never select the parcel under the park/square.
+        if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) {
+            return;
+        }
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const targetLayer = e && e.target ? e.target : null;
         if (!targetLayer || !targetLayer.feature) return;

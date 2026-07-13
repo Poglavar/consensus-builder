@@ -295,6 +295,86 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
+/* Custom city dropdown: replaces the native select popup (which macOS anchors at the selected
+   option and opens upward near the screen top) with a menu that always opens DOWNWARD. The
+   native select stays in the DOM, hidden, as the source of truth. */
+.city-selector-controls .city-select-native-hidden {
+    display: none;
+}
+
+.city-dropdown {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.city-dropdown-toggle {
+    width: 100%;
+    padding: 6px 26px 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5f5;
+    background: #fff;
+    font-size: 14px;
+    color: #1f2937;
+    min-height: 34px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%236b7280' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.city-dropdown-toggle:focus-visible {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.city-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #cbd5f5;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+    z-index: 5000;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.city-dropdown-option {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 14px;
+    color: #1f2937;
+    text-align: left;
+    cursor: pointer;
+}
+
+.city-dropdown-option:hover,
+.city-dropdown-option:focus-visible {
+    background: #eef2ff;
+    outline: none;
+}
+
+.city-dropdown-option.is-current {
+    font-weight: 700;
+    color: #2563eb;
+}
+
 #detect-city-button {
     border: none;
     background: #f3f4f6;

@@ -26,6 +26,8 @@
 
     function highlightFeature(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // No parcel hover while the structure geometry editor owns the map.
+        if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;

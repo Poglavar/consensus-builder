@@ -1161,6 +1161,84 @@
         });
         select.value = currentCityId;
         select.addEventListener('change', handleCitySelectChange);
+        buildCityDropdown(select);
+    }
+
+    // Custom dropdown over the native select: macOS anchors a native <select> popup at the
+    // selected option, so near the top of the screen it opens UPWARD with scroll arrows. This
+    // one always opens downward. The hidden native select stays the source of truth — picking
+    // an option sets its value and fires 'change', so every existing consumer keeps working.
+    function buildCityDropdown(select) {
+        const wrap = select.parentElement;
+        if (!wrap) return;
+        const existing = wrap.querySelector('.city-dropdown');
+        if (existing) existing.remove();
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'city-dropdown';
+
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'city-dropdown-toggle';
+        toggle.setAttribute('aria-haspopup', 'listbox');
+        toggle.setAttribute('aria-expanded', 'false');
+
+        const menu = document.createElement('ul');
+        menu.className = 'city-dropdown-menu';
+        menu.setAttribute('role', 'listbox');
+        menu.hidden = true;
+
+        const labelFor = id => CITY_CONFIGS[id]?.label || id || '';
+        const syncToggleLabel = () => { toggle.textContent = labelFor(select.value); };
+
+        const closeMenu = () => {
+            menu.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+        };
+
+        Object.values(CITY_CONFIGS).forEach(config => {
+            const item = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'city-dropdown-option';
+            btn.setAttribute('role', 'option');
+            btn.dataset.value = config.id;
+            btn.textContent = config.label;
+            if (config.id === select.value) btn.classList.add('is-current');
+            btn.addEventListener('click', () => {
+                closeMenu();
+                if (select.value === config.id) return;
+                select.value = config.id;
+                syncToggleLabel();
+                select.dispatchEvent(new Event('change'));
+            });
+            item.appendChild(btn);
+            menu.appendChild(item);
+        });
+
+        toggle.addEventListener('click', event => {
+            event.stopPropagation();
+            const open = menu.hidden;
+            menu.hidden = !open;
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open) {
+                menu.querySelectorAll('.city-dropdown-option').forEach(btn => {
+                    btn.classList.toggle('is-current', btn.dataset.value === select.value);
+                });
+            }
+        });
+        document.addEventListener('click', event => {
+            if (!dropdown.contains(event.target)) closeMenu();
+        });
+        dropdown.addEventListener('keydown', event => {
+            if (event.key === 'Escape') { closeMenu(); toggle.focus(); }
+        });
+
+        syncToggleLabel();
+        dropdown.appendChild(toggle);
+        dropdown.appendChild(menu);
+        wrap.insertBefore(dropdown, select);
+        select.classList.add('city-select-native-hidden');
     }
 
     function haversineDistance(lat1, lon1, lat2, lon2) {

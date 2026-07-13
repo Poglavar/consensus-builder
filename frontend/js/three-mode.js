@@ -1184,8 +1184,7 @@
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
         const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-        const trunkMat = new THREE.MeshLambertMaterial({ color: 0x6d4c41 });
-        const treeMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32 });
+        const flowerMat = new THREE.MeshLambertMaterial({ color: 0xf472b6, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: false });
 
@@ -1233,50 +1232,152 @@
                     });
                 }
 
-                // Simple 3D trees as trunk + cone crown at sampled interior points
-                let area = 0; try { area = turf.area(p); } catch (_) { }
-                const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
-                let bbox = null; try { bbox = turf.bbox(p); } catch (_) { }
-                if (!bbox) return;
-                let placed = 0, safety = 0;
-                while (placed < count && safety < count * 20) {
-                    safety++;
-                    const rnd = turf.randomPoint(1, { bbox }).features[0];
-                    try { if (!turf.booleanPointInPolygon(rnd, p)) continue; } catch (_) { continue; }
-                    // Avoid placing in ponds
-                    try {
-                        if (deco && Array.isArray(deco.ponds)) {
-                            let inPond = false;
-                            for (let i = 0; i < deco.ponds.length; i++) {
-                                const ring = deco.ponds[i];
-                                const pondPoly = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
-                                if (turf.booleanPointInPolygon(rnd, pondPoly)) { inPond = true; break; }
+                // Flowerbeds: pink patches slightly above the grass (mirrors the 2D rendering —
+                // they were previously not rendered in 3D at all).
+                if (deco && Array.isArray(deco.flowerbeds)) {
+                    deco.flowerbeds.forEach(ring => {
+                        try {
+                            const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+                            polygonFeatureToMeshes(feature, flowerMat, 0.068, 0).forEach(m => flatTarget.add(m));
+                        } catch (_) { }
+                    });
+                }
+
+                // Benches: user-placed first-class objects (same as trees).
+                if (deco && Array.isArray(deco.benches)) {
+                    deco.benches.forEach(bench => {
+                        try {
+                            const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
+                            if (!Array.isArray(coord) || coord.length < 2) return;
+                            addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
+                        } catch (_) { }
+                    });
+                }
+
+                const addTreeAt = (lng, lat) => addTree3D(decoTarget, lng, lat);
+
+                // Trees: the STORED coordinates are the truth — auto-generated and user-placed
+                // alike (the old random sampling ignored edits, so a repositioned tree never
+                // moved in 3D). Random sampling remains only for legacy parks without tree data.
+                const storedTrees = (deco && Array.isArray(deco.trees)) ? deco.trees.filter(coord => {
+                    if (!Array.isArray(coord) || coord.length < 2) return false;
+                    try { return turf.booleanPointInPolygon(turf.point(coord), p); } catch (_) { return true; }
+                }) : [];
+                if (storedTrees.length) {
+                    storedTrees.forEach(coord => addTreeAt(coord[0], coord[1]));
+                } else {
+                    let area = 0; try { area = turf.area(p); } catch (_) { }
+                    const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
+                    let bbox = null; try { bbox = turf.bbox(p); } catch (_) { }
+                    if (!bbox) return;
+                    let placed = 0, safety = 0;
+                    while (placed < count && safety < count * 20) {
+                        safety++;
+                        const rnd = turf.randomPoint(1, { bbox }).features[0];
+                        try { if (!turf.booleanPointInPolygon(rnd, p)) continue; } catch (_) { continue; }
+                        // Avoid placing in ponds
+                        try {
+                            if (deco && Array.isArray(deco.ponds)) {
+                                let inPond = false;
+                                for (let i = 0; i < deco.ponds.length; i++) {
+                                    const ring = deco.ponds[i];
+                                    const pondPoly = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+                                    if (turf.booleanPointInPolygon(rnd, pondPoly)) { inPond = true; break; }
+                                }
+                                if (inPond) continue;
                             }
-                            if (inPond) continue;
-                        }
-                    } catch (_) { }
-                    const [lng, lat] = rnd.geometry.coordinates;
-                    const [x, y] = latLngToXY(lat, lng);
-                    const trunkH = 3 + Math.random() * 2;
-                    const crownH = 4 + Math.random() * 3;
-                    const trunkR = 0.45 + Math.random() * 0.35;
-                    const crownR = 1.8 + Math.random() * 1.2;
-
-                    const trunkGeo = new THREE.CylinderGeometry(trunkR, trunkR, trunkH, 8);
-                    trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
-                    trunkGeo.translate(x, y, trunkH / 2);
-                    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-                    decoTarget.add(trunk);
-
-                    const crownGeo = new THREE.ConeGeometry(crownR, crownH, 8);
-                    crownGeo.rotateX(Math.PI / 2); // stand upright along Z
-                    crownGeo.translate(x, y, trunkH + crownH / 2);
-                    const crown = new THREE.Mesh(crownGeo, treeMat);
-                    decoTarget.add(crown);
-                    placed++;
+                        } catch (_) { }
+                        addTreeAt(rnd.geometry.coordinates[0], rnd.geometry.coordinates[1]);
+                        placed++;
+                    }
                 }
             } catch (_) { }
         });
+    }
+
+    // ---- Shared park/square furniture (module-scope materials, created once) ----
+    let furnitureMats = null;
+    function furnitureMaterials() {
+        if (!furnitureMats) {
+            furnitureMats = {
+                wood: new THREE.MeshLambertMaterial({ color: 0x8a5a2b }),
+                trunk: new THREE.MeshLambertMaterial({ color: 0x6d4c41 }),
+                crown: new THREE.MeshLambertMaterial({ color: 0x2e7d32 }),
+                stone: new THREE.MeshLambertMaterial({ color: 0xc9c9c2 }),
+                table: new THREE.MeshLambertMaterial({ color: 0xf5f5f0 })
+            };
+        }
+        return furnitureMats;
+    }
+
+    // Trunk + cone crown, deterministic per position (the same park renders the same forest).
+    function addTree3D(target, lng, lat) {
+        const [x, y] = latLngToXY(lat, lng);
+        const mats = furnitureMaterials();
+        const random = treeRng(lng, lat);
+        const trunkH = 3 + random * 2;
+        const crownH = 4 + random * 3;
+        const trunkR = 0.45 + random * 0.35;
+        const crownR = 1.8 + random * 1.2;
+        const trunkGeo = new THREE.CylinderGeometry(trunkR, trunkR, trunkH, 8);
+        trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
+        trunkGeo.translate(x, y, trunkH / 2);
+        target.add(new THREE.Mesh(trunkGeo, mats.trunk));
+        const crownGeo = new THREE.ConeGeometry(crownR, crownH, 8);
+        crownGeo.rotateX(Math.PI / 2);
+        crownGeo.translate(x, y, trunkH + crownH / 2);
+        target.add(new THREE.Mesh(crownGeo, mats.crown));
+    }
+
+    // A bench: seat slab + backrest + legs, rotated to `bearing` (degrees from north).
+    function addBench3D(target, lng, lat, bearingDeg = 0) {
+        const [x, y] = latLngToXY(lat, lng);
+        const wood = furnitureMaterials().wood;
+        const group = new THREE.Group();
+        const seatGeo = new THREE.BoxGeometry(1.7, 0.55, 0.1);
+        seatGeo.translate(0, 0, 0.45);
+        group.add(new THREE.Mesh(seatGeo, wood));
+        const backGeo = new THREE.BoxGeometry(1.7, 0.08, 0.5);
+        backGeo.translate(0, -0.28, 0.75);
+        group.add(new THREE.Mesh(backGeo, wood));
+        [-0.7, 0.7].forEach(offset => {
+            const legGeo = new THREE.BoxGeometry(0.08, 0.45, 0.45);
+            legGeo.translate(offset, 0, 0.22);
+            group.add(new THREE.Mesh(legGeo, wood));
+        });
+        group.position.set(x, y, 0.06);
+        group.rotation.z = ((90 - (Number(bearingDeg) || 0)) * Math.PI) / 180;
+        target.add(group);
+    }
+
+    // A restaurant/terrace table (the 2D "plate" stall): round top on a centre leg.
+    function addTable3D(target, lng, lat) {
+        const [x, y] = latLngToXY(lat, lng);
+        const mats = furnitureMaterials();
+        const legGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.72, 8);
+        legGeo.rotateX(Math.PI / 2);
+        legGeo.translate(x, y, 0.06 + 0.36);
+        target.add(new THREE.Mesh(legGeo, mats.stone));
+        const topGeo = new THREE.CylinderGeometry(0.75, 0.75, 0.06, 20);
+        topGeo.rotateX(Math.PI / 2);
+        topGeo.translate(x, y, 0.06 + 0.75);
+        target.add(new THREE.Mesh(topGeo, mats.table));
+    }
+
+    // A statue: stone pedestal + simple standing figure.
+    function addStatue3D(target, lng, lat) {
+        const [x, y] = latLngToXY(lat, lng);
+        const stone = furnitureMaterials().stone;
+        const pedGeo = new THREE.BoxGeometry(1.4, 1.4, 1.0);
+        pedGeo.translate(x, y, 0.06 + 0.5);
+        target.add(new THREE.Mesh(pedGeo, stone));
+        const bodyGeo = new THREE.CylinderGeometry(0.32, 0.45, 1.9, 10);
+        bodyGeo.rotateX(Math.PI / 2);
+        bodyGeo.translate(x, y, 0.06 + 1.0 + 0.95);
+        target.add(new THREE.Mesh(bodyGeo, stone));
+        const headGeo = new THREE.SphereGeometry(0.3, 10, 10);
+        headGeo.translate(x, y, 0.06 + 1.0 + 1.9 + 0.25);
+        target.add(new THREE.Mesh(headGeo, stone));
     }
 
     // Build Squares (ground + simple fountain)
@@ -1296,8 +1397,32 @@
                 groundMeshes.forEach(m => { m.userData.isSquareGround = true; flatTarget.add(m); });
 
                 const dec = sq.properties && sq.properties.decorations;
-                if (!dec || !Array.isArray(dec.fountain)) return;
-                const [lng, lat] = dec.fountain;
+                if (!dec) return;
+
+                // Furniture from the geometry editor (all first-class objects there).
+                (Array.isArray(dec.trees) ? dec.trees : []).forEach(coord => {
+                    try { if (Array.isArray(coord)) addTree3D(decoTarget, coord[0], coord[1]); } catch (_) { }
+                });
+                (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
+                    try {
+                        const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
+                        if (Array.isArray(coord)) addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
+                    } catch (_) { }
+                });
+                (Array.isArray(dec.stalls) ? dec.stalls : []).forEach(coord => {
+                    try { if (Array.isArray(coord)) addTable3D(decoTarget, coord[0], coord[1]); } catch (_) { }
+                });
+                (Array.isArray(dec.statues) ? dec.statues : []).forEach(coord => {
+                    try { if (Array.isArray(coord)) addStatue3D(decoTarget, coord[0], coord[1]); } catch (_) { }
+                });
+
+                // Fountains: edited squares store an ARRAY; legacy squares a single `fountain`.
+                const fountains = (Array.isArray(dec.fountains) && dec.fountains.length)
+                    ? dec.fountains
+                    : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
+                fountains.forEach(fountainCoord => {
+                if (!Array.isArray(fountainCoord) || fountainCoord.length < 2) return;
+                const [lng, lat] = fountainCoord;
                 const [x, y] = latLngToXY(lat, lng);
 
                 // Simple fountain: pedestal + basin + water disk + small spout
@@ -1342,6 +1467,7 @@
                 group.add(spout);
 
                 decoTarget.add(group);
+                });
             } catch (_) { }
         });
     }
@@ -1998,11 +2124,15 @@
                         if (!part || (Number(turf.area(part)) || 0) < 2) continue;
                         absorb(part);
                     }
+                    // The graze bar (15 m² / 5%) keeps dataset offsets from prism-ifying street
+                    // fronts — but it must never exceed HALF the building, or small sheds fully
+                    // inside a park/lake could never clear it and survived as leftovers.
+                    const clearBar = Math.max(2, Math.min(Math.max(15, footprintArea0 * 0.05), footprintArea0 * 0.5));
                     for (const { region, bbox } of corridorRegions) {
                         if (!bboxesOverlap(footprintBbox, bbox)) continue;
                         let part = null;
                         try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
-                        if (!part || (Number(turf.area(part)) || 0) < Math.max(15, footprintArea0 * 0.05)) continue;
+                        if (!part || (Number(turf.area(part)) || 0) < clearBar) continue;
                         absorb(part);
                     }
                     if (!demolishedUnion) return null;

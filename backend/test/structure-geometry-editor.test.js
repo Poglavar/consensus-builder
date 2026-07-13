@@ -25,6 +25,27 @@ describe('structure geometry editor data normalization', () => {
         expect(normalized.paths).toEqual([[[15.9, 45.8], [15.91, 45.81]]]);
     });
 
+    it('normalizes park benches as first-class point objects', () => {
+        const normalized = normalizeDecorations('park', {
+            benches: [{ coordinate: [15.9, 45.8], bearing: 400 }, [15.91, 45.81], { coordinate: ['bad', 45.8] }]
+        });
+
+        expect(normalized.benches).toEqual([
+            { coordinate: [15.9, 45.8], bearing: 40 },
+            { coordinate: [15.91, 45.81], bearing: 0 }
+        ]);
+    });
+
+    it('normalizes square stalls and statues as plain coordinate lists', () => {
+        const normalized = normalizeDecorations('square', {
+            stalls: [[15.9, 45.8], ['bad', 45.8]],
+            statues: [[15.92, 45.82], null]
+        });
+
+        expect(normalized.stalls).toEqual([[15.9, 45.8]]);
+        expect(normalized.statues).toEqual([[15.92, 45.82]]);
+    });
+
     it('accepts polygon features and rejects point geometry as boundaries', () => {
         const polygon = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
         expect(boundaryFeature({ type: 'Feature', properties: {}, geometry: polygon })).toEqual({ type: 'Feature', properties: {}, geometry: polygon });

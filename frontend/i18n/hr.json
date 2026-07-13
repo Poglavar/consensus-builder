@@ -636,6 +636,9 @@
             "selectMultiple": "Odaberi više parcela",
             "selectManually": "Ručno",
             "detectBlock": "Detektiraj blok",
+            "suggestWholeBlock": "Odabrana je samo jedna parcela. Jeste li mislili na cijeli blok ({{count}} parcela)?",
+            "suggestWholeBlockYes": "Da, odaberi blok",
+            "suggestWholeBlockNo": "Ne, samo ova parcela",
             "build": {
                 "title": "Izgradi",
                 "block": "Blok",

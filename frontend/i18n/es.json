@@ -659,6 +659,9 @@
             "selectMultiple": "Seleccionar múltiples parcelas",
             "selectManually": "Manualmente",
             "detectBlock": "Detectar bloque",
+            "suggestWholeBlock": "Solo hay una parcela seleccionada. ¿Quería seleccionar el bloque completo ({{count}} parcelas)?",
+            "suggestWholeBlockYes": "Sí, seleccionar el bloque",
+            "suggestWholeBlockNo": "No, solo esta parcela",
             "build": {
                 "title": "Construir",
                 "block": "Manzana",

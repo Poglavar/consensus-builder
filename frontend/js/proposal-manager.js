@@ -418,8 +418,20 @@ function _shouldSkipChildFeature(feature) {
     if (!feature || !feature.properties) return false;
     const props = feature.properties;
     const marker = props.descendantProposal || props.descendantProposals;
-    if (Array.isArray(marker)) return marker.length > 0;
-    return !!marker;
+    const markers = Array.isArray(marker) ? marker : (marker ? [marker] : []);
+    if (!markers.length) return false;
+    // Only an APPLIED descendant that REPLACES its parents justifies skipping this child.
+    // Structures (parks/squares/lakes) stamp the marker too but OVERLAY their ground —
+    // treating their marker as "replaced" left a hole under every structure at boot restore
+    // (parcels dead after page reload).
+    return markers.some(id => {
+        const record = _getProposalRecord(String(id));
+        if (!record) return false;
+        if (typeof isProposalApplied === 'function' && !isProposalApplied(record)) return false;
+        if (record.structureProposal && !record.roadProposal && !record.reparcellization
+            && !record.buildingProposal && !record.decideLaterProposal) return false;
+        return true;
+    });
 }
 
 function _buildFeatureFromPersisted(parcelId) {

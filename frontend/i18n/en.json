@@ -611,6 +611,9 @@
             "selectMultiple": "Select multiple parcels",
             "selectManually": "Manually",
             "detectBlock": "Detect block",
+            "suggestWholeBlock": "Only one parcel is selected. Did you mean the whole block ({{count}} parcels)?",
+            "suggestWholeBlockYes": "Yes, select the block",
+            "suggestWholeBlockNo": "No, just this parcel",
             "build": {
                 "title": "Build",
                 "block": "Block",
