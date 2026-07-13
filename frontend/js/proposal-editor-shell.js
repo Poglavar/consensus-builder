@@ -502,8 +502,8 @@
         mutateFromInput(input, true);
     }
 
-    async function confirmDestructive(message) {
-        if (typeof global.showStyledConfirm === 'function') return global.showStyledConfirm(message);
+    async function confirmDestructive(message, options = {}) {
+        if (typeof global.showStyledConfirm === 'function') return global.showStyledConfirm(message, options);
         return global.confirm ? global.confirm(message) : false;
     }
 
@@ -760,8 +760,9 @@
     }
 
     // Geometry editing of an existing object (SimCity: click → edit): opens the type's design
-    // tool seeded from the object via a draft; when the tool closes with changes, the draft is
-    // committed as a new object and the old one is absorbed. Untouched sessions leave nothing.
+    // tool seeded from the object via a draft; when the tool is CONFIRMED (its Done button), the
+    // draft is committed as a new object and the old one is absorbed. Closing the tool with X or
+    // Esc discards the draft instead — the source object is left exactly as it was.
     let geometryEditCommitDraftId = null;
 
     const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square']);
@@ -936,8 +937,10 @@
         // The design tool seeded multi-select for its parcel context; closing the tool must
         // disarm it, or the "Multiparcel selection" panel resurfaces on later clicks.
         try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-        // Geometry-edit sessions commit on close: a changed draft becomes the object (absorbing
-        // the source in instantCreate); an untouched one dissolves without residue.
+        // A CONFIRMED design tool commits its session here: a changed draft becomes the object
+        // (absorbing the source in instantCreate); an untouched one dissolves without residue.
+        // An abandoned session (X/Esc) never reaches this point — discardProposalDraftDesignSession
+        // clears the commit id first, so tearing the tool down publishes nothing.
         if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
             const commitId = geometryEditCommitDraftId;
             geometryEditCommitDraftId = null;
@@ -952,6 +955,46 @@
         }
         if (editorState.draftId === activeId && ensureShell()?.classList.contains('is-open')) renderShell();
         return draft;
+    }
+
+    // Does the open design tool own a commit-on-confirm session — a geometry edit of an existing
+    // object, or a Build-palette creation? Those turn into an object ONLY when the tool is
+    // confirmed, so their close (X/Esc) path has something to lose and must ask first.
+    function isProposalDesignCommitSession() {
+        const activeId = editorState.designDraftId || global.activeProposalDesignDraftId || null;
+        if (!activeId || !geometryEditCommitDraftId) return false;
+        return String(activeId) === String(geometryEditCommitDraftId);
+    }
+
+    // Abandon a design session instead of committing it: the seeding draft is deleted, so a
+    // geometry edit leaves its source object untouched and a Build session leaves nothing behind.
+    function discardProposalDraftDesignSession() {
+        if (!isProposalDesignCommitSession()) return false;
+        const commitId = geometryEditCommitDraftId;
+        geometryEditCommitDraftId = null;
+        editorState.designDraftId = null;
+        global.activeProposalDesignDraftId = null;
+        // The design tool seeded multi-select for its parcel context; abandoning it must disarm
+        // that too, or the "Multiparcel selection" panel resurfaces on later clicks.
+        try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
+        try { global.proposalDraftStore?.deleteDraft?.(commitId); } catch (_) { }
+        clearProposalDraftComparison();
+        return true;
+    }
+
+    // Gate for the X/Esc path of every design tool: resolves false when the user chooses to stay in
+    // the tool. Sessions that cannot commit on their own (the editor shell's "Edit design on map",
+    // whose draft outlives the tool) close silently — there is nothing to lose there. The discard
+    // itself happens in the tool's teardown, which calls discardProposalDraftDesignSession.
+    async function confirmDiscardProposalDesignSession(options = {}) {
+        if (!isProposalDesignCommitSession() || options.hasDesign === false) return true;
+        return confirmDestructive(
+            `${tDraft('proposalDrafts.discardDesign.title', 'Discard this design?')}\n${tDraft('proposalDrafts.discardDesign.body', 'Closing the editor throws away the changes you made here. Use Done to keep them.')}`,
+            {
+                okText: tDraft('proposalDrafts.discardDesign.confirm', 'Discard'),
+                cancelText: tDraft('proposalDrafts.discardDesign.cancel', 'Keep editing')
+            }
+        );
     }
 
     function formatDuration(ms) {
@@ -1471,6 +1514,9 @@
     global.beginProposalDraftDesignSession = beginProposalDraftDesignSession;
     global.getActiveProposalDesignDraft = getActiveProposalDesignDraft;
     global.finishProposalDraftDesignSession = finishProposalDraftDesignSession;
+    global.isProposalDesignCommitSession = isProposalDesignCommitSession;
+    global.discardProposalDraftDesignSession = discardProposalDraftDesignSession;
+    global.confirmDiscardProposalDesignSession = confirmDiscardProposalDesignSession;
     global.stageProposalDraftForPublishing = stageProposalDraftForPublishing;
     global.instantCreateProposalFromDraft = instantCreateProposalFromDraft;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;

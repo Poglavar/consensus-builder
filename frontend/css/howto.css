@@ -1,7 +1,8 @@
-/* Shared styling for the "Kako koristiti" (how-to) guide pages: the hub and each
-   per-proposal-type walkthrough. Mirrors the roadmap.html look (teal gradient sidebar
-   + centred content) and adds step lists, callouts and screenshot frames that render
-   cleanly even before real screenshots are dropped into images/howto/. */
+/* Shared styling for the how-to guide pages (Croatian kako-koristiti*.html and the
+   English how-to-use*.html mirrors): the hub and each per-proposal-type walkthrough.
+   Mirrors the roadmap.html look (teal gradient sidebar + centred content) and adds step
+   lists, callouts, a tool table and screenshot frames that render cleanly even before
+   real screenshots are dropped into images/howto/. */
 
 html,
 body {
@@ -400,11 +401,174 @@ body {
     font-style: italic;
 }
 
+/* Language switcher (hr <-> en). The guides are static pages, so this is a plain link
+   pair rather than the app's i18n runtime. */
+.lang-switch {
+    display: flex;
+    gap: 6px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    width: 100%;
+}
+
+.lang-switch a {
+    flex: 1;
+    color: white;
+    text-decoration: none;
+    padding: 7px 0;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: background-color 0.2s ease;
+}
+
+.lang-switch a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.lang-switch a.is-current {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1a6d85;
+    border-color: transparent;
+}
+
+/* The "draw first, propose later" flow strip on the hub page. */
+.flow-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin: 26px 0 8px;
+    flex-wrap: wrap;
+}
+
+.flow-strip .flow-step {
+    flex: 1 1 130px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.flow-strip .flow-step i {
+    display: block;
+    font-size: 20px;
+    color: #2193b0;
+    margin-bottom: 8px;
+}
+
+.flow-strip .flow-step strong {
+    display: block;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 3px;
+}
+
+.flow-strip .flow-step span {
+    font-size: 12px;
+    color: #7a8794;
+    line-height: 1.4;
+}
+
+.flow-strip .flow-arrow {
+    align-self: center;
+    color: #b9c4ce;
+    font-size: 14px;
+}
+
+/* Tool reference table (the Build palette). */
+.tool-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+}
+
+.tool-table th {
+    background: #eef6f9;
+    color: #1a6d85;
+    text-align: left;
+    padding: 11px 14px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.tool-table td {
+    padding: 11px 14px;
+    border-top: 1px solid #eef1f4;
+    color: #555;
+    line-height: 1.5;
+    vertical-align: top;
+}
+
+.tool-table td:first-child {
+    white-space: nowrap;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.tool-table td:first-child i {
+    color: #2193b0;
+    margin-right: 7px;
+    width: 16px;
+    text-align: center;
+}
+
+.tool-table tr.is-grouped td {
+    background: #fbfdfe;
+}
+
+.tool-table a {
+    color: #2193b0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.tool-table a:hover {
+    text-decoration: underline;
+}
+
+/* Wide content must scroll inside itself rather than pushing the page sideways. */
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Two screenshots side by side (before/after, 2D/3D). */
+.shot-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.shot-pair .howto-shot {
+    margin: 16px 0 4px;
+    min-width: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     body {
         flex-direction: column;
         min-height: auto;
+    }
+
+    .shot-pair {
+        grid-template-columns: 1fr;
+    }
+
+    .flow-strip .flow-arrow {
+        display: none;
     }
 
     .sidebar {

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!-- Vodič na hrvatskom za četiri alata za zgrade: Blok (urbano pravilo), Niz kuća,
+     Slobodnostojeće i Slobodna forma — parametri, kontrole na karti i granice svakog alata.
+     Engleski parnjak: how-to-use-buildings.html. -->
+<html lang="hr">
+
+<head>
+    <title>Zgrade — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Zgrade</h1>
+        <div class="sidebar-links">
+            <a href="kako-koristiti.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Sve upute
+            </a>
+            <a href="index.html?lang=hr" class="back-link">
+                <i class="fas fa-map"></i>
+                Natrag na aplikaciju
+            </a>
+            <a href="#blok" class="back-link"><i class="fas fa-city"></i> Blok</a>
+            <a href="#niz" class="back-link"><i class="fas fa-grip-horizontal"></i> Niz kuća</a>
+            <a href="#slobodnostojece" class="back-link"><i class="fas fa-home"></i> Slobodnostojeće</a>
+            <a href="#slobodna-forma" class="back-link"><i class="fas fa-ruler-combined"></i> Slobodna forma</a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-zgrade.html" class="is-current">HR</a>
+            <a href="how-to-use-buildings.html">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Pravilo ili slobodna ruka</h2>
+                <p>
+                    Za zgrade postoje četiri alata, a razlika među njima je jedna: <strong>tko odlučuje o obliku</strong>.
+                    Kod <em>Bloka</em>, <em>Niza</em> i <em>Slobodnostojećih</em> oblik nastaje iz pravila koje zadaš
+                    klizačima. Kod <em>Slobodne forme</em> crtaš točno ono što želiš.
+                </p>
+            </div>
+
+            <div class="callout note">
+                <i class="fas fa-circle-info"></i>
+                Sva četiri alata na kraju daju prijedlog tipa <strong>Urbanističko pravilo</strong> — razlikuju se po
+                tipologiji (Blok, Niz, Po parceli). Nije riječ o apstraktnom propisu: prijedlog nosi konkretne
+                tlocrte zgrada koje si generirao.
+            </div>
+
+            <div class="callout warn">
+                <i class="fas fa-triangle-exclamation"></i>
+                <strong>Blok</strong> i <strong>Niz kuća</strong> traže <strong>susjedne</strong> čestice. Ako nisu,
+                alati su onemogućeni uz objašnjenje <em>„Onemogućeno jer parcele u prijedlogu nisu susjedne”</em>.
+                Niz uz to traži <strong>najmanje dvije</strong> čestice — na jednoj se svodi na običnu zgradu.
+            </div>
+
+            <section id="blok" class="guide-section">
+                <h2><i class="fas fa-city"></i> Blok — <span style="font-weight:400">„Urbano pravilo”</span></h2>
+                <p>
+                    Popunjava cijeli blok obodnom izgradnjom — zgrade po rubu, dvorište u sredini. Alat otvara prozor
+                    <span class="ui-label">Urbano pravilo</span> s kartom, 3D pregledom i pločom
+                    <span class="ui-label">Parametri</span>.
+                </p>
+
+                <h3>Dva načina rada</h3>
+                <p>
+                    Prekidač <span class="ui-label">Na temelju postojećih zgrada</span> mijenja cijelu ploču
+                    parametara:
+                </p>
+                <ul>
+                    <li>
+                        <strong>Isključen (zadano)</strong> — blok se crta ispočetka, iz klizača.
+                    </li>
+                    <li>
+                        <strong>Uključen</strong> — zadržava postojeće zgrade i samo im mijenja visinu. Biraš između
+                        <span class="ui-label">Predložena visina (katova)</span> (svaka zgrada ide točno na tu visinu)
+                        i <span class="ui-label">Dodatni katovi</span> (svakoj se dodaje katova na postojeću visinu).
+                        <span class="ui-label">Visina kata</span> je 2,5–5 m.
+                    </li>
+                </ul>
+
+                <h3>Klizači (crtanje ispočetka)</h3>
+                <div class="table-scroll">
+                    <table class="tool-table">
+                        <thead>
+                            <tr>
+                                <th>Parametar</th>
+                                <th>Raspon</th>
+                                <th>Što radi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Povlačenje</td>
+                                <td>0–50 m</td>
+                                <td>Odmak od ruba čestice.</td>
+                            </tr>
+                            <tr>
+                                <td>Širina zgrade</td>
+                                <td>1–100 m</td>
+                                <td>Dubina obodnog trakta. Šire = manje dvorište.</td>
+                            </tr>
+                            <tr>
+                                <td>Visina zgrade</td>
+                                <td>3–80 m</td>
+                                <td>Visina obodne izgradnje.</td>
+                            </tr>
+                            <tr>
+                                <td>Skošenje</td>
+                                <td>0–10 m</td>
+                                <td>Reže uglove.</td>
+                            </tr>
+                            <tr>
+                                <td>Pojednostavi</td>
+                                <td>0–20 m</td>
+                                <td>Zaglađuje nepravilan obris.</td>
+                            </tr>
+                            <tr>
+                                <td>Broj i širina otvora</td>
+                                <td>0–10 · 1–20 m</td>
+                                <td>Prolazi kroz obodni trakt (pasaži, ulazi u dvorište).</td>
+                            </tr>
+                            <tr>
+                                <td>Broj i duljina krila</td>
+                                <td>0–10 · 10–200 m</td>
+                                <td>Krila koja ulaze u dvorište.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout tip">
+                    <i class="fas fa-hand-pointer"></i>
+                    <strong>Otvore i krila ne moraš pogađati klizačima.</strong> Čim ih ima barem jedan, na karti se
+                    pojave ručke — <em>„Povucite za pomicanje otvora”</em> i <em>„Povucite za pomicanje krila”</em> —
+                    pa ih klizanjem po obodu bloka namjestiš točno gdje trebaju biti.
+                </div>
+
+                <p>
+                    Ako ti pravilo ne da ono što želiš, klikni <span class="ui-label">Ručno uredi oblik</span>: svaki
+                    vrh obrisa postaje ručka koju povlačiš (<em>„Povucite za oblikovanje”</em>). Povratak je
+                    <span class="ui-label">Natrag na klizače</span> — ali on <strong>odbacuje ručne izmjene</strong>.
+                    Postojeći tlocrt možeš i uvesti gumbom <span class="ui-label">Učitaj GeoJSON</span>.
+                </p>
+                <p>
+                    Potvrdi s <span class="ui-label">Gotovo</span>. Gumb je neaktivan dok zgrada nije generirana.
+                </p>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-01-blok.png" alt="Prozor Urbano pravilo s klizačima i 3D pregledom"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>„Urbano pravilo”: klizači lijevo, rezultat odmah na karti i u 3D pregledu.</figcaption>
+                </figure>
+
+                <div class="callout warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    Dvorište zna nestati: ako je zgrada preširoka, unutarnji rub se raspadne i dobiješ puni blok.
+                    Poruka to i kaže — rješenje je smanjiti <span class="ui-label">Širinu zgrade</span>. Na vrlo
+                    složenoj čestici alat može odustati i predložiti da je prvo podijeliš cestama.
+                </div>
+            </section>
+
+            <section id="niz" class="guide-section">
+                <h2><i class="fas fa-grip-horizontal"></i> Niz kuća</h2>
+                <p>
+                    Niz prislonjenih kuća preko više čestica. Prozor <span class="ui-label">Niz kuća</span> ima četiri
+                    klizača: <span class="ui-label">Duljina</span> (4–200 m),
+                    <span class="ui-label">Širina</span> (2–100 m), <span class="ui-label">Visina</span> (3–80 m) i
+                    <span class="ui-label">Skošenje</span> (0–10 m, reže uglove pod 45°).
+                </p>
+                <p>
+                    Duljina ide <strong>paralelno s najdužom stranicom</strong> čestice, širina okomito na nju. Uživo
+                    vidiš <span class="ui-label">Opseg</span>, <span class="ui-label">Površinu</span> i
+                    <span class="ui-label">Volumen</span>.
+                </p>
+
+                <div class="callout tip">
+                    <i class="fas fa-hand-pointer"></i>
+                    <strong>Niz je izravno manipulabilan na karti.</strong> Povuci tijelo da ga pomakneš, narančastu
+                    ručku na uglu da ga zakreneš, a crne ručke na sredinama stranica da mu mijenjaš širinu i duljinu.
+                </div>
+
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    Niz mora ostati unutar odabranih čestica. Zatražiš li vrijednost koja ne stane, alat prvo pokuša
+                    pomaknuti i uspraviti niz — a ako ni to ne pomogne, <strong>klizač se vraća na zadnju valjanu
+                    vrijednost</strong>. To nije greška nego granica prostora.
+                </div>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-02-niz.png" alt="Prozor Niz kuća s ručkama za rotaciju"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>Niz kuća: klizači i ručke za pomicanje, rotaciju i promjenu veličine.</figcaption>
+                </figure>
+            </section>
+
+            <section id="slobodnostojece" class="guide-section">
+                <h2><i class="fas fa-home"></i> Slobodnostojeće kuće</h2>
+                <p>
+                    Po jedna samostojeća kuća na svakoj odabranoj čestici. Samo dva klizača:
+                </p>
+                <ul>
+                    <li><span class="ui-label">Maks. katova</span> (1–20) — svaka kuća dobiva
+                        <strong>nasumičan</strong> broj katova od 1 do te vrijednosti.</li>
+                    <li><span class="ui-label">Min. udaljenost od granica</span> (0,5–20 m) — odmak od međa.</li>
+                </ul>
+                <p>
+                    Ploča pokazuje <span class="ui-label">Zgrade</span>,
+                    <span class="ui-label">Ukupnu tlocrtnu površinu</span>,
+                    <span class="ui-label">Ukupni volumen</span> i <span class="ui-label">Prosječno katova</span>.
+                </p>
+                <div class="callout tip">
+                    <i class="fas fa-dice"></i>
+                    Alat je namjerno nasumičan — tako naselje izgleda organski, a ne kao niz identičnih kutija. Ne
+                    sviđa ti se raspored? <span class="ui-label">Regeneriraj</span> baca nove kockice: druge visine,
+                    druge veličine i položaji tlocrta unutar odmaka.
+                </div>
+            </section>
+
+            <section id="slobodna-forma" class="guide-section">
+                <h2><i class="fas fa-ruler-combined"></i> Slobodna forma</h2>
+                <p>
+                    Kad ti nijedno pravilo ne odgovara. Prozor <span class="ui-label">Zgrade</span> nema urbanističku
+                    logiku — samo pravokutnike koje sam postavljaš. I nije ograničen na jednu zgradu: gore je popis
+                    zgrada s gumbima za <strong>dodavanje</strong>, <strong>preimenovanje</strong> i
+                    <strong>brisanje</strong>, pa ih možeš složiti nekoliko.
+                </p>
+                <p>
+                    Za odabranu zgradu klizači su <span class="ui-label">Širina</span> i
+                    <span class="ui-label">Duljina</span> (1–100 m), <span class="ui-label">Visina</span>
+                    (3–250 m), <span class="ui-label">Faza</span> (0–10 m) i
+                    <span class="ui-label">Rotacija</span> (0–355°). Zgradu možeš i jednostavno
+                    <strong>povući</strong> po karti, a kontrolama na stranama je zakrenuti.
+                </p>
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    Zgrada mora ostati unutar bloka. Kao i kod niza, vrijednost koja bi je izbacila van se odbija i
+                    klizač se vraća natrag.
+                </div>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-03-slobodna-forma.png"
+                            alt="Prozor Zgrade sa slobodnom formom i 3D pregledom"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>Slobodna forma: više zgrada, svaka sa svojim parametrima.</figcaption>
+                </figure>
+            </section>
+
+            <div class="callout tip final-tip">
+                <i class="fas fa-lightbulb"></i>
+                Počni pravilom, završi rukom. <strong>Blok</strong> ti u nekoliko sekundi da uvjerljiv obodni blok;
+                ako zapne na jednom detalju, prijeđi na <span class="ui-label">Ručno uredi oblik</span> umjesto da se
+                boriš s klizačima. <strong>Slobodnu formu</strong> čuvaj za slučajeve kad zaista projektiraš, a ne
+                pravilo primjenjuješ.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

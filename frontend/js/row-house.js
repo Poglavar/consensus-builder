@@ -170,7 +170,7 @@
 
     function getRowHouseDisplayName() {
         if (rowHouseBlockNameOverride) return rowHouseBlockNameOverride;
-        return translateRowHouseText('rowHouse.modal.messages.selectedParcels', 'Selected Parcels');
+        return translateRowHouseText('rowHouses.modal.messages.selectedParcels', 'Selected Parcels');
     }
 
     function getActiveRowHouseBlock() {
@@ -181,9 +181,9 @@
     }
 
     function describeRowHouseParcelSelection(ids) {
-        if (!Array.isArray(ids) || ids.length === 0) return translateRowHouseText('rowHouse.modal.messages.selectedParcels', 'Selected Parcels');
-        if (ids.length === 1) return translateRowHouseText('rowHouse.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
-        return translateRowHouseText('rowHouse.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
+        if (!Array.isArray(ids) || ids.length === 0) return translateRowHouseText('rowHouses.modal.messages.selectedParcels', 'Selected Parcels');
+        if (ids.length === 1) return translateRowHouseText('rowHouses.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
+        return translateRowHouseText('rowHouses.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
     }
 
     // --- Geometry utilities ---
@@ -1607,7 +1607,8 @@
             document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
             // Add event listeners
-            document.getElementById('rowhouse-close').addEventListener('click', closeRowHouseModal);
+            document.getElementById('rowhouse-close').addEventListener('click', requestCloseRowHouseModal);
+            document.addEventListener('keydown', handleRowHouseKeydown);
             const doneButton = document.getElementById('btn-rowhouse-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveRowHouseDesignForProposal);
@@ -1681,12 +1682,8 @@
                 }
             });
 
-            // Close modal when clicking outside the container
-            modalDiv.addEventListener('click', (e) => {
-                if (e.target === modalDiv) {
-                    closeRowHouseModal();
-                }
-            });
+            // No outside-click close: a stray click on the backdrop would throw the design away.
+            // The editor is left only via the X (discard, after confirming) or Done (save).
 
             // Ensure 3D canvas is interactive
             const threeDiv = document.getElementById('rowhouse-3d');
@@ -1825,14 +1822,30 @@
         try { initRowHouse3DSimple(); } catch (e) { console.warn('3D init failed', e); }
     }
 
+    // The X / Esc path. Closing NEVER saves — only "Done" (saveRowHouseDesignForProposal) does.
+    // When the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette
+    // creation) the design would be lost, so ask first; declining keeps the editor open.
+    async function requestCloseRowHouseModal() {
+        if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+            const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: !!generatedRowHouseFeature });
+            if (!proceed) return;
+        }
+        closeRowHouseModal();
+    }
+
+    // Escape closes the editor exactly like the X does (discard, after confirming).
+    function handleRowHouseKeydown(event) {
+        if (event.key !== 'Escape') return;
+        if (!document.getElementById('rowhouse-modal')) return;
+        event.preventDefault();
+        requestCloseRowHouseModal();
+    }
+
+    // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
+    // X/Esc discards the design session first.
     function closeRowHouseModal(options = {}) {
         const { preservePending = false } = options;
-        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
-        if (!preservePending && generatedRowHouseFeature && activeDraft
-            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
-            saveRowHouseDesignForProposal();
-            return;
-        }
+        document.removeEventListener('keydown', handleRowHouseKeydown);
 
         if (rowHouseMapResizeObserver) {
             try { rowHouseMapResizeObserver.disconnect(); } catch (_) { }
@@ -1901,19 +1914,24 @@
                 window.pendingRowHouseFromModal = null;
             }
         }
-        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
+        if (typeof window !== 'undefined') {
+            // Only "Done" commits — it tears down with preservePending after saving. Every other
+            // close abandons the design session, leaving the edited object exactly as it was.
+            if (!preservePending) window.discardProposalDraftDesignSession?.();
+            window.finishProposalDraftDesignSession?.();
+        }
     }
 
     // Save design for proposal
     function saveRowHouseDesignForProposal() {
         if (!generatedRowHouseFeature) {
-            setRowHouseInfo('rowHouse.modal.messages.generateBeforeFinishing', 'Generate a row house before finishing.');
+            setRowHouseInfo('rowHouses.modal.messages.generateBeforeFinishing', 'Generate a row house before finishing.');
             return;
         }
 
         const block = getActiveRowHouseBlock();
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-            setRowHouseInfo('rowHouse.modal.messages.blockHasNoParcels', 'Block has no parcels.');
+            setRowHouseInfo('rowHouses.modal.messages.blockHasNoParcels', 'Block has no parcels.');
             return;
         }
 
@@ -1952,7 +1970,7 @@
         }
 
         if (!normalizedParcelIds.length) {
-            setRowHouseInfo('rowHouse.modal.messages.unableToMapParcels', 'Unable to map parcels for this block.');
+            setRowHouseInfo('rowHouses.modal.messages.unableToMapParcels', 'Unable to map parcels for this block.');
             return;
         }
 
@@ -1995,7 +2013,7 @@
         if (description) {
             if (!description.value.trim()) {
                 description.value = translateRowHouseText(
-                    'rowHouse.modal.messages.defaultProposalDescription',
+                    'rowHouses.modal.messages.defaultProposalDescription',
                     'Row house proposal for {{blockName}}',
                     { blockName: context.blockName || 'selected parcels' }
                 );

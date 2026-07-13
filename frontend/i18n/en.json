@@ -16,6 +16,12 @@
         "no": "No",
         "empty": "No saved proposal drafts yet.",
         "confirmDiscard": "Discard this locally saved draft? This cannot be undone.",
+        "discardDesign": {
+            "title": "Discard this design?",
+            "body": "Closing the editor throws away the changes you made here. Press “Done” to keep them.",
+            "confirm": "Discard",
+            "cancel": "Keep editing"
+        },
         "tabs": {
             "design": "Design",
             "parcels": "Parcels",
@@ -148,12 +154,11 @@
             "valid": "Ready"
         },
         "errors": {
-            "parcelsUnavailable": "The selected parcels are not available in this city view.",
+            "parcelsUnavailable": "The draft parcels are not available in the current city.",
             "parcelsNotContiguous": "A lake needs contiguous parcels.",
             "sourceMissing": "Proposal source not found.",
             "noAdapter": "No editor is registered for this proposal type.",
             "readOnly": "This proposal is view-only.",
-            "parcelsUnavailable": "The draft parcels are not available in the current city.",
             "instantCreateFailed": "Could not save the new object."
         },
         "publish": {
@@ -206,6 +211,19 @@
             "metricLength": "Length",
             "metricArea": "Area",
             "hintFullMode": "Full parcel mode will use the merged parcel outline as the corridor geometry.",
+            "hintDrawMode": "Draw a road or track inside the merged parcels.",
+            "widthHeaderRoad": "Choose road width",
+            "widthHeaderTrack": "Choose track width",
+            "sidewalkWidth": "Sidewalk width",
+            "trackWidth": "Track width",
+            "roadWidths": {
+                "alley": "Alley ~7.5 m",
+                "local": "Local ~10 m",
+                "collector": "Collector ~18 m",
+                "mainStreet": "Main street ~26 m",
+                "avenue": "Avenue ~40 m",
+                "boulevard": "Boulevard ~80 m"
+            },
             "done": "Done"
         }
     },
@@ -316,6 +334,7 @@
             "listButton": "Proposals List ({{count}})",
             "mintedButton": "Minted Proposals",
             "shareButton": "Share entire plan (all proposals)",
+            "shareButtonEmpty": "No applied plans. Apply some first",
             "clearButton": "Clear Proposals From Local Storage",
             "planStats": {
                 "buttonLabel": "Plan Stats",
@@ -426,7 +445,7 @@
             "countProgress": "Parcels processed: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Freeform",
+            "title": "Buildings",
             "showLayer": "Show buildings",
             "showExisting": "Show Existing Buildings",
             "showProposed": "Show Proposed Buildings"
@@ -621,11 +640,16 @@
                 "row": "Row houses",
                 "parcelBased": "Detached",
                 "single": "Freeform",
-                "reparcel": "Reparcel",
+                "reparcel": "Land readjustment",
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
-            "offer": "Offer"
+                "offer": "Offer",
+                "noParcelSelected": "No parcel selected. Please select a parcel first.",
+                "useMainCreateButton": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
+                "enableMultiSelect": "Enable multi-parcel selection to use this action.",
+                "selectAtLeastOne": "Select at least one parcel to create a proposal.",
+                "selectParcelFirst": "Select a parcel first."
             },
             "roadToggle": "Road",
             "nftStatusDefault": "NFT status: Not checked yet.",
@@ -891,7 +915,7 @@
         "road": {
             "title": "Draw road",
             "titleTrack": "Draw track",
-            "crossSectionButton": "Cross-section",
+            "crossSectionButton": "Edit cross-section",
             "finishButton": "Finish Road (F)",
             "cancelButton": "Cancel Road (Esc)",
             "widthLabel": "Road Width:",
@@ -910,7 +934,6 @@
             "ownedByGovernmentLabel": "Owned by government:",
             "closeAriaLabel": "Close road info",
             "finishButtonShort": "Finish road (F)",
-            "crossSectionButton": "Edit cross-section",
             "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
@@ -932,7 +955,12 @@
             "splitStatus": "The road came apart — now {{count}} separate roads.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
             "bulldozedAllStatus": "Road bulldozed.",
-            "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect"
+            "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
+            "finishButtonShortTrack": "Finish track (F)",
+            "lengthLabelTrack": "Track length:",
+            "areaLabelTrack": "Track area:",
+            "ownedByInstitutionLabel": "Owned by institution:",
+            "costLabel": "Cost:"
         },
         "roadAnalysis": {
             "title": "Road Width Analysis",
@@ -1036,6 +1064,9 @@
             "title": "Buildings",
             "buildingsTitle": "Buildings",
             "buildingsLabel": "Select building",
+            "addLabel": "Add building",
+            "deleteLabel": "Delete building",
+            "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
             "previewLabel": "3D Preview",
             "confirm": "Done",
@@ -1100,7 +1131,7 @@
         },
         "corridor": {
             "title": "Cross-section",
-            "subtitle": "The corridor keeps its width, so the road does not move",
+            "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
             "totalWidth": "Total width",
@@ -1114,8 +1145,25 @@
             "save": "Save as new proposal",
             "applyDrawing": "Apply to drawing",
             "addLane": "Add lane",
+            "addLaneOfType": "Add: {{lane}} ({{width}} m)",
+            "presets": "Standard cross-sections",
+            "standardWidth": "Standard width: {{width}} m",
+            "resetStandard": "Reset to the standard width ({{width}} m)",
+            "dragReorder": "Drag to reorder the lanes",
+            "dragReorderHint": "Drag a lane by its handle to reorder it; drag a seam in the diagram to move width from one lane to its neighbour.",
+            "maxWidthReached": "A corridor cannot be wider than {{max}} m. Remove or narrow a lane first.",
             "grass": "Grass only",
-            "trees": "Tree grove"
+            "trees": "Tree grove",
+            "laneTypes": {
+                "driving": "Traffic lane",
+                "bus": "Bus lane",
+                "parking": "Parking",
+                "cycleway": "Cycle path",
+                "sidewalk": "Sidewalk",
+                "verge": "Green verge",
+                "median": "Median",
+                "rail": "Rail bed"
+            }
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -1134,8 +1182,8 @@
             "track": "track",
             "unapply": "Unapply existing proposal",
             "destroy": "Demolish the buildings",
-                "cut": "Cut through the buildings",
-                "confirm": "Tunnel through",
+            "cut": "Cut through the buildings",
+            "confirm": "Tunnel through",
             "cancel": "Choose another route"
         },
         "deleteProposal": {
@@ -1187,7 +1235,11 @@
                 "parcelArea": "({{area}} m²)",
                 "submit": "Create Proposal",
                 "previewUnavailable": "Preview unavailable",
-                "defaultDescription": "Manual road proposal affecting {{count}} parcel{{suffix}}."
+                "defaultDescription": {
+                    "one": "Manual road proposal affecting {{count}} parcel.",
+                    "few": "Manual road proposal affecting {{count}} parcels.",
+                    "other": "Manual road proposal affecting {{count}} parcels."
+                }
             },
             "trackProposal": {
                 "title": "Create Track Proposal",
@@ -1212,7 +1264,11 @@
                 "parcelArea": "({{area}} m²)",
                 "submit": "Create Proposal",
                 "previewUnavailable": "Preview unavailable",
-                "defaultDescription": "Manual track proposal affecting {{count}} parcel{{suffix}}."
+                "defaultDescription": {
+                    "one": "Manual track proposal affecting {{count}} parcel.",
+                    "few": "Manual track proposal affecting {{count}} parcels.",
+                    "other": "Manual track proposal affecting {{count}} parcels."
+                }
             },
             "polygonError": {
                 "title": "Polygon Error",
@@ -1351,7 +1407,11 @@
             },
             "share": {
                 "sizeWarning": "Warning: This link is close to the maximum size the server accepts. Consider sharing fewer parcels if it fails.",
-                "defaultIntro": "Share this link to load {{count}} applied proposal{{suffix}}.",
+                "defaultIntro": {
+                    "one": "Share this link to load {{count}} applied proposal.",
+                    "few": "Share this link to load {{count}} applied proposals.",
+                    "other": "Share this link to load {{count}} applied proposals."
+                },
                 "singleIntro": "Share this link to load proposal <strong>{{title}}</strong>.",
                 "authorLabel": "Author:",
                 "cameraLabel": "Camera zoom:",
@@ -1388,14 +1448,27 @@
                 "stopIntro": "Stopped applying at proposal: <strong>{{title}}</strong> · {{hash}}",
                 "stopMissingIntro": "Missing ancestor parcels for this proposal:",
                 "stopGenericFailure": "The proposal could not be applied. Check console for details.",
-                "stopSuccessCount": "Successfully applied {{count}} proposal{{suffix}} so far.",
+                "stopSuccessCount": {
+                    "one": "Successfully applied {{count}} proposal so far.",
+                    "few": "Successfully applied {{count}} proposals so far.",
+                    "other": "Successfully applied {{count}} proposals so far."
+                },
+                "uploadAncestorsMissing": {
+                    "one": "Upload ancestor proposal first: {{list}}",
+                    "few": "Upload ancestor proposals first: {{list}}",
+                    "other": "Upload ancestor proposals first: {{list}}"
+                },
                 "stopTitle": "Stopped Applying Proposals",
                 "leaveAsIs": "Leave as is",
                 "unapplySuccessful": "Unapply successful proposals",
                 "summary": {
                     "appliedFrom": "Applied proposals from {{author}}.",
                     "appliedCount": "{{count}} applied.",
-                    "skippedCount": "Skipped {{count}} duplicate proposal{{suffix}} (already present).",
+                    "skippedCount": {
+                        "one": "Skipped {{count}} duplicate proposal (already present).",
+                        "few": "Skipped {{count}} duplicate proposals (already present).",
+                        "other": "Skipped {{count}} duplicate proposals (already present)."
+                    },
                     "failedCount": "{{count}} failed.",
                     "title": "Applied Shared Proposals",
                     "unapplyApplied": "Unapply applied"
@@ -1439,7 +1512,11 @@
                     "applying": "Applying proposal #{{id}}…",
                     "fetchingPlan": "Fetching plan…",
                     "fetchingPlanTitle": "Fetching proposal",
-                    "countHeading": "There are {{count}} proposal{{suffix}} in the current plan",
+                    "countHeading": {
+                        "one": "There is {{count}} proposal in the current plan",
+                        "few": "There are {{count}} proposals in the current plan",
+                        "other": "There are {{count}} proposals in the current plan"
+                    },
                     "nameHeading": "Or give this plan a memorable name (ENS):",
                     "namePlaceholder": "e.g. harbor-redevelopment",
                     "nameButton": "Save name",
@@ -1458,9 +1535,17 @@
                     "alreadyAppliedTitle": "Plan Already Applied",
                     "alreadyAppliedMessage": "This shared plan is already applied to the map.",
                     "alreadyAppliedWithOthersTitle": "Plan Already Applied",
-                    "alreadyAppliedWithOthersMessage": "This shared plan is already on the map, along with {{count}} other proposal{{suffix}}.",
+                    "alreadyAppliedWithOthersMessage": {
+                        "one": "This shared plan is already on the map, along with {{count}} other proposal.",
+                        "few": "This shared plan is already on the map, along with {{count}} other proposals.",
+                        "other": "This shared plan is already on the map, along with {{count}} other proposals."
+                    },
                     "otherProposalsAppliedTitle": "Other Proposals Applied",
-                    "otherProposalsAppliedMessage": "There {{verb}} {{count}} other proposal{{suffix}} currently applied to the map.",
+                    "otherProposalsAppliedMessage": {
+                        "one": "There is {{count}} other proposal currently applied to the map.",
+                        "few": "There are {{count}} other proposals currently applied to the map.",
+                        "other": "There are {{count}} other proposals currently applied to the map."
+                    },
                     "showMe": "Show me",
                     "addToThem": "Add to them",
                     "clearThenAdd": "Clear, then add",
@@ -1480,10 +1565,26 @@
                     "overlappedCountDetailed": "{{count}} proposal(s) stay unapplied — their space is already occupied. Find them in the proposals list to preview or apply them:",
                     "overlapsWith": "overlaps",
                     "overlappedToast": "{{count}} stay unapplied (space occupied) — see the proposals list.",
-                    "appliedCountDetailed": "Applied {{count}} proposal{{suffix}}:",
-                    "appliedToast": "Applied {{count}} proposal{{suffix}}.",
-                    "skippedCountDetailed": "Skipped {{count}} duplicate proposal{{suffix}} (already present):",
-                    "failedCountDetailed": "Failed to apply {{count}} proposal{{suffix}}:",
+                    "appliedCountDetailed": {
+                        "one": "Applied {{count}} proposal:",
+                        "few": "Applied {{count}} proposals:",
+                        "other": "Applied {{count}} proposals:"
+                    },
+                    "appliedToast": {
+                        "one": "Applied {{count}} proposal.",
+                        "few": "Applied {{count}} proposals.",
+                        "other": "Applied {{count}} proposals."
+                    },
+                    "skippedCountDetailed": {
+                        "one": "Skipped {{count}} duplicate proposal (already present):",
+                        "few": "Skipped {{count}} duplicate proposals (already present):",
+                        "other": "Skipped {{count}} duplicate proposals (already present):"
+                    },
+                    "failedCountDetailed": {
+                        "one": "Failed to apply {{count}} proposal:",
+                        "few": "Failed to apply {{count}} proposals:",
+                        "other": "Failed to apply {{count}} proposals:"
+                    },
                     "applyBlockedByDependencies": "Blocked: dependencies not satisfied after retries.",
                     "summary": "Shared Plan Result"
                 }
@@ -1707,7 +1808,12 @@
                 "cancel": "Cancel",
                 "createInMemory": "Create in memory"
             },
-            "optionsSectionTitle": "Options"
+            "optionsSectionTitle": "Options",
+            "mintTarget": {
+                "offchain": "Off-chain (this browser only)",
+                "mintsOn": "Mints on",
+                "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
+            }
         }
     },
     "blockify": {
@@ -1869,9 +1975,9 @@
     "reparcellization": {
         "modal": {
             "title": "Land readjustment",
-            "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}",
-            "subtitleSingleOwner": "{{count}} parcel{{suffix}} · single owner",
+            "subtitle": "{{algorithm}} · {{parcels}}",
+            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
+            "subtitleSingleOwner": "{{parcels}} · single owner",
             "algorithms": {
                 "borderPerpendicular": "Border perpendicular",
                 "sweepLine": "Sweep line algorithm",
@@ -1879,11 +1985,15 @@
                 "wasserstein": "Wasserstein",
                 "manual": "Manual"
             },
-            "algorithmTitle": "Reparcellization type",
+            "algorithmTitle": "Land readjustment type",
             "closeAria": "Close",
             "done": "Done",
             "ownerLegend": "Owner Legend",
-            "legendMeta": "{{percent}} · {{count}} parcel{{suffix}}",
+            "legendMeta": {
+                "one": "{{percent}} · {{count}} parcel",
+                "few": "{{percent}} · {{count}} parcels",
+                "other": "{{percent}} · {{count}} parcels"
+            },
             "selectedParcelsLabel": "selected parcels",
             "defaultDescription": "Land readjustment proposal for {{label}}",
             "syntheticOwner": "Owner of {{parcel}}",
@@ -1959,6 +2069,16 @@
                 "uploadParseError": "Failed to parse GeoJSON file.",
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
                 "uploadSuccess": "Loaded {{count}} polygons from file."
+            },
+            "parcelCount": {
+                "one": "{{count}} parcel",
+                "few": "{{count}} parcels",
+                "other": "{{count}} parcels"
+            },
+            "ownerCount": {
+                "one": "{{count}} owner",
+                "few": "{{count}} owners",
+                "other": "{{count}} owners"
             }
         }
     },
@@ -2039,11 +2159,23 @@
             "fetching_gup_road_data": "Fetching GUP road data...",
             "fetching_osm_road_data": "Fetching OSM road data...",
             "fetching_buildings": "Fetching buildings...",
-            "loaded_buildings_count": "Loaded {{count}} building{{suffix}}",
+            "loaded_buildings_count": {
+                "one": "Loaded {{count}} building",
+                "few": "Loaded {{count}} buildings",
+                "other": "Loaded {{count}} buildings"
+            },
             "fetching_data": "Fetching data...",
             "fetching_government_road_plan": "Fetching government road plan...",
-            "preparing_government_plan_summary": "Preparing government plan{{suffix}}: {{vertexCount}} plan point{{pointSuffix}}…",
-            "applying_government_plan_summary": "Applying government plan{{suffix}}: {{targetLabel}}, {{pieceCountLabel}}, {{vertexCount}} plan point{{pointSuffix}}…",
+            "preparing_government_plan_summary": {
+                "one": "Preparing government plan{{descriptor}}: {{count}} plan point…",
+                "few": "Preparing government plan{{descriptor}}: {{count}} plan points…",
+                "other": "Preparing government plan{{descriptor}}: {{count}} plan points…"
+            },
+            "applying_government_plan_summary": {
+                "one": "Applying government plan{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} plan point…",
+                "few": "Applying government plan{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} plan points…",
+                "other": "Applying government plan{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} plan points…"
+            },
             "processing_parcels_progress": "Processing parcels: {{processed}}/{{total}} ({{percent}}%)…",
             "processing_parcels_progress_complete": "Processing parcels: {{processed}}/{{total}} (100%)",
             "worker_processing_parcels_progress": "Worker processing parcels: {{processed}}/{{total}} ({{percent}}%)…",
@@ -2051,21 +2183,49 @@
             "drew_dgu_road_usage_polygons": "Drew {{count}} DGU road-usage polygons",
             "fetched_roads_from_openstreetmap": "Fetched {{count}} roads from OpenStreetMap",
             "filtering_visible_parcels": "Filtering visible parcels...",
-            "showing_road_parcels_count_only": "Showing {{count}} road parcel{{suffix}} only",
+            "showing_road_parcels_count_only": {
+                "one": "Showing {{count}} road parcel only",
+                "few": "Showing {{count}} road parcels only",
+                "other": "Showing {{count}} road parcels only"
+            },
             "found_parcels_intersecting_viewport_building_edge_index": "Found {{count}} parcels intersecting viewport. Building edge index...",
             "counting_blocks_progress": "Counting blocks... {{percent}}%",
             "finished_block_count_summary": "Finished count. Found {{added}} new blocks, removed {{removed}} blocks. Total non-road parcels processed: {{processed}}.",
             "game_already_initialized": "Game already initialized",
-            "fetching_data_for_new_grid_cells_progress": "Fetching data for {{total}} new grid cell{{cellSuffix}} ({{completed}}/{{total}})...",
+            "fetching_data_for_new_grid_cells_progress": {
+                "one": "Fetching data for {{count}} new grid cell ({{completed}}/{{count}})...",
+                "few": "Fetching data for {{count}} new grid cells ({{completed}}/{{count}})...",
+                "other": "Fetching data for {{count}} new grid cells ({{completed}}/{{count}})..."
+            },
             "fetching_ancestor_parcels_for_label": "Fetching ancestor parcels for {{label}}...",
             "fetching_parcel_owners_for_label": "Fetching parcel owners for {{label}}...",
             "ancestor_parcels_ready_for_label": "Ancestors ready for {{label}}.",
-            "added_new_parcels_summary": "Added {{newCount}} new parcel{{newSuffix}} ({{total}} total in layer)",
-            "applying_shared_proposals_progress": "Applying {{count}} shared proposal{{suffix}}...",
+            "added_new_parcels_summary": {
+                "one": "Added {{count}} new parcel ({{total}} total in layer)",
+                "few": "Added {{count}} new parcels ({{total}} total in layer)",
+                "other": "Added {{count}} new parcels ({{total}} total in layer)"
+            },
+            "applying_shared_proposals_progress": {
+                "one": "Applying {{count}} shared proposal...",
+                "few": "Applying {{count}} shared proposals...",
+                "other": "Applying {{count}} shared proposals..."
+            },
             "applying_specific_shared_proposal": "Applying shared proposal {{title}} #{{id}}...",
-            "no_new_parcels_to_load_summary": "No new parcels to load ({{total}} parcel{{visibleSuffix}} visible)",
-            "cleared_parcel_items_from_local_storage": "Cleared {{count}} parcel-related item{{suffix}} from local storage",
-            "cleared_local_proposals_summary": "Cleared {{count}} proposal{{suffix}} from local storage",
+            "no_new_parcels_to_load_summary": {
+                "one": "No new parcels to load ({{count}} parcel visible)",
+                "few": "No new parcels to load ({{count}} parcels visible)",
+                "other": "No new parcels to load ({{count}} parcels visible)"
+            },
+            "cleared_parcel_items_from_local_storage": {
+                "one": "Cleared {{count}} parcel-related item from local storage",
+                "few": "Cleared {{count}} parcel-related items from local storage",
+                "other": "Cleared {{count}} parcel-related items from local storage"
+            },
+            "cleared_local_proposals_summary": {
+                "one": "Cleared {{count}} proposal from local storage",
+                "few": "Cleared {{count}} proposals from local storage",
+                "other": "Cleared {{count}} proposals from local storage"
+            },
             "game_initialized_summary": "Game initialized: {{agents}} agents created, {{parcels}} parcels assigned",
             "game_state_reset_agent_preserved": "Game state has been reset. Your agent has been preserved with fresh data.",
             "game_state_reset_all_deleted": "Game state has been reset. All agents and progress deleted.",
@@ -2074,11 +2234,19 @@
             "government_road_plan_has_no_geometry_overlapping_the_parcels_in_view": "Government road plan has no geometry overlapping the parcels in view.",
             "government_road_plan_has_no_overlap_with_current_view": "Government road plan has no overlap with the current map view.",
             "government_road_plan_hidden": "Government road plan hidden.",
-            "government_road_plan_drawn_summary": "Government road plan drawn{{suffix}}: {{count}} feature{{featureSuffix}}.",
-            "government_road_plan_loaded_summary": "Government road plan loaded{{suffix}}{{vertexSummary}}.",
+            "government_road_plan_drawn_summary": {
+                "one": "Government road plan drawn{{descriptor}}: {{count}} feature.",
+                "few": "Government road plan drawn{{descriptor}}: {{count}} features.",
+                "other": "Government road plan drawn{{descriptor}}: {{count}} features."
+            },
+            "government_road_plan_loaded_summary": "Government road plan loaded{{descriptor}}{{vertexSummary}}.",
             "government_road_plan_is_still_loading_try_again_in_a_moment": "Government road plan is still loading. Try again in a moment.",
-            "applying_government_road_plan": "Applying government road plan{{suffix}}...",
-            "applied_government_road_plan_summary": "Applied government road plan{{suffix}}: added {{count}} new segment{{segmentSuffix}}.",
+            "applying_government_road_plan": "Applying government road plan{{descriptor}}...",
+            "applied_government_road_plan_summary": {
+                "one": "Applied government road plan{{descriptor}}: added {{count}} new segment.",
+                "few": "Applied government road plan{{descriptor}}: added {{count}} new segments.",
+                "other": "Applied government road plan{{descriptor}}: added {{count}} new segments."
+            },
             "could_not_apply_government_road_plan_check_console": "Could not apply the government road plan. Check the console for details.",
             "initializing_game_state": "Initializing game state...",
             "focused_on_block": "Focused on block {{name}}",
@@ -2102,7 +2270,7 @@
             "no_government_plan_segments_overlap_this_view": "No government plan segments overlap this view{{vertexSummary}}.",
             "no_government_plan_segments_remain_in_view": "No government plan segments remain in this view.",
             "no_government_road_plan_data_available_for_this_view": "No government road plan data is available for this view.",
-            "no_unapplied_government_road_plan_segments_in_view": "No unapplied government road plan segments in this view{{suffix}}.",
+            "no_unapplied_government_road_plan_segments_in_view": "No unapplied government road plan segments in this view{{descriptor}}.",
             "no_parcel_selected_for_road_measurement": "No parcel selected for road measurement.",
             "no_parcel_selected_please_select_a_parcel_first": "No parcel selected. Please select a parcel first.",
             "no_parcels_available_in_the_current_view": "No parcels available in the current view.",
@@ -2124,7 +2292,11 @@
             "please_select_at_least_one_parcel_to_create_a_proposal": "Please select at least one parcel to create a proposal.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
             "proposal_not_found": "Proposal not found",
-            "proposal_created_with_parcel_count": "Proposal \"{{type}}\" created successfully with {{count}} parcel{{suffix}}.",
+            "proposal_created_with_parcel_count": {
+                "one": "Proposal \"{{type}}\" created successfully with {{count}} parcel.",
+                "few": "Proposal \"{{type}}\" created successfully with {{count}} parcels.",
+                "other": "Proposal \"{{type}}\" created successfully with {{count}} parcels."
+            },
             "proposal_created_review_details_and_apply_when_ready": "Proposal \"{{title}}\" created. Review details and apply it to the map when ready.",
             "proposal_deleted": "Proposal \"{{title}}\" deleted",
             "applied_structure_proposal": "Applied structure proposal \"{{title}}\"",
@@ -2141,7 +2313,11 @@
             "analyzed_osm_road_segments_summary": "Analyzed OSM road segments. {{summary}}",
             "gup_detection_complete": "GUP detection complete. Marked {{count}} parcels as roads.",
             "road_detection_complete_with_names": "Road detection complete. Found {{count}} road parcels and assigned names.",
-            "selected_proposal_summary": "Selected proposal \"{{title}}\" (contains {{count}} parcel{{suffix}})",
+            "selected_proposal_summary": {
+                "one": "Selected proposal \"{{title}}\" (contains {{count}} parcel)",
+                "few": "Selected proposal \"{{title}}\" (contains {{count}} parcels)",
+                "other": "Selected proposal \"{{title}}\" (contains {{count}} parcels)"
+            },
             "selected_parcel_with_number": "Selected parcel {{number}}",
             "select_a_block_first": "Select a block first",
             "select_a_parcel_before_attempting_to_claim_it": "Select a parcel before attempting to claim it.",
@@ -2303,10 +2479,22 @@
             "proposal_conflict_missing_title": "Some parcels are missing",
             "proposal_conflict_intro": "Applying \"{{title}}\" needs parcels that aren't available:",
             "proposal_conflict_overlaps": "Overlaps applied proposal \"{{title}}\"",
-            "proposal_conflict_shares": "Shares {{count}} parcel{{suffix}} with this proposal.",
-            "proposal_conflict_shares_blocked": "Shares {{count}} parcel{{suffix}}, but it can't be unapplied on its own — these are built on top of it:",
+            "proposal_conflict_shares": {
+                "one": "Shares {{count}} parcel with this proposal.",
+                "few": "Shares {{count}} parcels with this proposal.",
+                "other": "Shares {{count}} parcels with this proposal."
+            },
+            "proposal_conflict_shares_blocked": {
+                "one": "Shares {{count}} parcel, but it can't be unapplied on its own — these are built on top of it:",
+                "few": "Shares {{count}} parcels, but it can't be unapplied on its own — these are built on top of it:",
+                "other": "Shares {{count}} parcels, but it can't be unapplied on its own — these are built on top of it:"
+            },
             "proposal_conflict_unapply_those_first": "Unapply those first.",
-            "proposal_conflict_not_loaded": "{{count}} ancestor parcel{{suffix}} not loaded. Applying anyway will proceed with the parcels that are present.",
+            "proposal_conflict_not_loaded": {
+                "one": "{{count}} ancestor parcel not loaded. Applying anyway will proceed with the parcels that are present.",
+                "few": "{{count}} ancestor parcels not loaded. Applying anyway will proceed with the parcels that are present.",
+                "other": "{{count}} ancestor parcels not loaded. Applying anyway will proceed with the parcels that are present."
+            },
             "proposal_conflict_unapply_continue": "Unapply it & continue",
             "proposal_conflict_unapplying": "Unapplying…",
             "proposal_conflict_apply_anyway": "Apply anyway",
@@ -2315,7 +2503,11 @@
             "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
             "failed_to_apply_shared_proposals": "Failed to apply shared proposals.",
-            "failed_to_apply_shared_proposals_summary": "Failed to apply {{count}} shared proposal{{suffix}}. Check console for details.",
+            "failed_to_apply_shared_proposals_summary": {
+                "one": "Failed to apply {{count}} shared proposal. Check console for details.",
+                "few": "Failed to apply {{count}} shared proposals. Check console for details.",
+                "other": "Failed to apply {{count}} shared proposals. Check console for details."
+            },
             "failed_to_encode_share_data": "Failed to encode share data.",
             "failed_to_encode_shared_proposal_data": "Failed to encode shared proposal data.",
             "failed_to_generate_share_link": "Failed to generate share link.",
@@ -2390,5 +2582,31 @@
             "parcelsLabel": "Parcels",
             "avgPerParcel": "Avg / parcel"
         }
+    },
+    "structureEditor": {
+        "ariaLabel": "Structure geometry editor",
+        "titlePark": "Park editor",
+        "titleSquare": "Square editor",
+        "instructions": "Choose an item, then click inside the boundary. Drag point items to move them.",
+        "closeLabel": "Close",
+        "tools": {
+            "tree": "Tree",
+            "flowerbed": "Flowerbed",
+            "pond": "Pond",
+            "path": "Footpath",
+            "bench": "Bench",
+            "fountain": "Fountain",
+            "stall": "Table",
+            "statue": "Statue",
+            "erase": "Remove"
+        },
+        "finishPath": "Finish path",
+        "cancel": "Cancel",
+        "save": "Save design",
+        "hintErase": "Click an item to remove it.",
+        "hintPlace": "Click the map to place the selected item.",
+        "hintSelect": "Select an item to begin.",
+        "statusOutside": "Place items inside the structure boundary.",
+        "statusSaved": "Structure design saved."
     }
 }

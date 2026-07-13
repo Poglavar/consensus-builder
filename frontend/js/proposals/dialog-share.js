@@ -649,9 +649,8 @@ function showSharePlanModal() {
         const countLine = document.createElement('div');
         countLine.style.fontSize = '13px';
         countLine.style.color = '#475569';
-        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposal{{suffix}} in the current plan', {
-            count: totalInPlan,
-            suffix: totalInPlan === 1 ? '' : 's'
+        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposals in the current plan', {
+            count: totalInPlan
         });
         container.appendChild(countLine);
 
@@ -1173,7 +1172,6 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     const tShare = getShareI18nHelper();
     const proposals = Array.isArray(payload?.proposals) ? payload.proposals : [];
     const proposalCount = proposals.length;
-    const proposalSuffix = proposalCount === 1 ? '' : 's';
     const fragment = document.createDocumentFragment();
 
     if (options && options.nearLimit) {
@@ -1185,10 +1183,10 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     }
 
     const intro = document.createElement('p');
-    const introParams = (options && options.introParams) || { count: proposalCount, suffix: proposalSuffix };
+    const introParams = (options && options.introParams) || { count: proposalCount };
     intro.innerHTML = (options && options.introHtml)
         ? options.introHtml
-        : tShare('defaultIntro', 'Share this link to load {{count}} applied proposal{{suffix}}.', introParams);
+        : tShare('defaultIntro', 'Share this link to load {{count}} applied proposals.', introParams);
     fragment.appendChild(intro);
 
     const textarea = document.createElement('textarea');

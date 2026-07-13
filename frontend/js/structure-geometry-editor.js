@@ -27,6 +27,18 @@
         }
     }
 
+    // The panel is built in JS, so it translates at build time: same fallback-aware helper the
+    // other JS-built panels use (window.i18n.t returns the key itself when a string is missing).
+    function t(key, fallback, params = {}) {
+        const fullKey = `structureEditor.${key}`;
+        const api = global.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(fullKey, params);
+            if (translated && translated !== fullKey) return translated;
+        }
+        return fallback;
+    }
+
     function clone(value) {
         if (value === undefined || value === null) return value;
         try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
@@ -111,7 +123,7 @@
     }
 
     function rejectOutside() {
-        if (typeof global.updateStatus === 'function') global.updateStatus('Place items inside the structure boundary.');
+        if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
     }
 
     function removeDecoration(type, index) {
@@ -274,7 +286,7 @@
         if (state.panel || !global.document?.body) return state.panel;
         const panel = global.document.createElement('section');
         panel.className = 'structure-geometry-editor';
-        panel.setAttribute('aria-label', 'Structure geometry editor');
+        panel.setAttribute('aria-label', t('ariaLabel', 'Structure geometry editor'));
         panel.addEventListener('click', handlePanelClick);
         global.document.body.appendChild(panel);
         state.panel = panel;
@@ -284,26 +296,29 @@
     function panelMarkup() {
         const tools = state.kind === 'park'
             ? [
-                toolButton('tree', '🌳', 'Tree'),
-                toolButton('flowerbed', '🌸', 'Flowerbed'),
-                toolButton('pond', '💧', 'Pond'),
-                toolButton('path', '〰', 'Footpath'),
-                toolButton('bench', '▰', 'Bench')
+                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
+                toolButton('flowerbed', '🌸', t('tools.flowerbed', 'Flowerbed')),
+                toolButton('pond', '💧', t('tools.pond', 'Pond')),
+                toolButton('path', '〰', t('tools.path', 'Footpath')),
+                toolButton('bench', '▰', t('tools.bench', 'Bench'))
             ].join('')
             : [
-                toolButton('fountain', '⛲', 'Fountain'),
-                toolButton('tree', '🌳', 'Tree'),
-                toolButton('bench', '▰', 'Bench'),
-                toolButton('stall', '🍽️', 'Table'),
-                toolButton('statue', '🗿', 'Statue')
+                toolButton('fountain', '⛲', t('tools.fountain', 'Fountain')),
+                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
+                toolButton('bench', '▰', t('tools.bench', 'Bench')),
+                toolButton('stall', '🍽️', t('tools.stall', 'Table')),
+                toolButton('statue', '🗿', t('tools.statue', 'Statue'))
             ].join('');
+        const title = state.kind === 'park'
+            ? t('titlePark', 'Park editor')
+            : t('titleSquare', 'Square editor');
         return `
-            <header><div><strong>${state.kind === 'park' ? 'Park' : 'Square'} editor</strong><small>Choose an item, then click inside the boundary. Drag point items to move them.</small></div><button type="button" data-action="cancel" aria-label="Close">×</button></header>
-            <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', 'Remove')}</div>
+            <header><div><strong>${title}</strong><small>${t('instructions', 'Choose an item, then click inside the boundary. Drag point items to move them.')}</small></div><button type="button" data-action="cancel" aria-label="${t('closeLabel', 'Close')}">×</button></header>
+            <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', t('tools.erase', 'Remove'))}</div>
             <div class="structure-geometry-options">
-                <button type="button" data-action="finish-path">Finish path</button>
+                <button type="button" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
             </div>
-            <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">Cancel</button><button type="button" data-action="save" class="is-primary">Save design</button></div></footer>`;
+            <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" data-action="save" class="is-primary">${t('save', 'Save design')}</button></div></footer>`;
     }
 
     function updatePanelState() {
@@ -321,8 +336,10 @@
         }
         const hint = panel.querySelector('[data-role="hint"]');
         if (hint) hint.textContent = state.tool === 'erase'
-            ? 'Click an item to remove it.'
-            : (state.tool ? 'Click the map to place the selected item.' : 'Select an item to begin.');
+            ? t('hintErase', 'Click an item to remove it.')
+            : (state.tool
+                ? t('hintPlace', 'Click the map to place the selected item.')
+                : t('hintSelect', 'Select an item to begin.'));
     }
 
     function handlePanelClick(event) {
@@ -377,7 +394,7 @@
             try { global.updateParksLayer?.(); } catch (_) { }
             try { global.updateSquaresLayer?.(); } catch (_) { }
         }
-        if (saved && typeof global.updateStatus === 'function') global.updateStatus('Structure design saved.');
+        if (saved && typeof global.updateStatus === 'function') global.updateStatus(t('statusSaved', 'Structure design saved.'));
         // The editor replaced the proposal card for its duration — on cancel, bring the card
         // back for the proposal that was selected. (On save the shell re-selects the rebuilt
         // proposal itself, which may carry a NEW id.)

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- English guide to land readjustment: pooling parcels and re-dividing them, automatically
+     (Sweep line) or by hand, with an owner balance sheet (contributed/assigned/balance).
+     Croatian counterpart: kako-koristiti-reparcelacija.html. -->
+<html lang="en">
+
+<head>
+    <title>Land readjustment — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Land readjustment</h1>
+        <div class="sidebar-links">
+            <a href="how-to-use.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                All guides
+            </a>
+            <a href="index.html?lang=en" class="back-link">
+                <i class="fas fa-map"></i>
+                Back to the app
+            </a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-reparcelacija.html">HR</a>
+            <a href="how-to-use-reparcellization.html" class="is-current">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Pool it, then divide it again</h2>
+                <p>
+                    Land readjustment merges the selected parcels into one surface and then re-divides it into a tidier
+                    layout. This is not merge-then-split by hand: the ownership shares are <strong>preserved</strong>,
+                    and the app shows you who put in how much and how much they get back.
+                </p>
+            </div>
+
+            <ol class="steps">
+                <li class="step">
+                    <h3>Select contiguous parcels</h3>
+                    <p>
+                        Turn on <span class="ui-label">Select multiple parcels</span> and mark the block you want to
+                        rearrange. The parcels must be <strong>contiguous</strong> — otherwise the submission fails.
+                    </p>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/reparcelacija-01-odabir.png"
+                                alt="A multi-selection of contiguous parcels" onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                        </div>
+                        <figcaption>Selecting the contiguous parcels that go into the readjustment.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Start the tool</h3>
+                    <p>
+                        In the <span class="ui-label">Proposals</span> tab, in the “Build” palette, click
+                        <span class="ui-label">Land readjustment</span>. The <span class="ui-label">Land readjustment</span>
+                        window opens and immediately proposes a layout.
+                    </p>
+                </li>
+
+                <li class="step">
+                    <h3>Pick the type</h3>
+                    <p>
+                        Under <span class="ui-label">Land readjustment type</span> you choose between two options:
+                    </p>
+                    <div class="table-scroll">
+                        <table class="tool-table">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-wand-magic-sparkles"></i>Sweep line algorithm</td>
+                                    <td>Automatically draws parallel division lines and lays out the new plots. The
+                                        default, and the fastest.</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-pencil"></i>Manual</td>
+                                    <td>You draw each new plot yourself and assign it an owner.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <figure class="howto-shot">
+                        <div class="shot-frame">
+                            <img src="images/howto/reparcelacija-02-alat.png"
+                                alt="The land readjustment tool with an automatically generated layout"
+                                onerror="this.style.display='none'">
+                            <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                        </div>
+                        <figcaption>Sweep line proposes a new layout right away; you refine it.</figcaption>
+                    </figure>
+                </li>
+
+                <li class="step">
+                    <h3>Refine the layout</h3>
+                    <p>
+                        <strong>Sweep line:</strong> a handle appears on the map — <em>“Drag to rotate the parcel
+                        lines”</em>. Rotating it changes the direction of the division and you see a different layout
+                        immediately. When the land is in the hands of a <strong>single owner</strong>, you also get
+                        <span class="ui-label">Number of parcels</span> and
+                        <span class="ui-label">Distribution</span> — <span class="ui-label">Equal</span>,
+                        <span class="ui-label">Random</span> or <span class="ui-label">Manual</span>.
+                    </p>
+                    <p>
+                        <strong>Manual:</strong> this enables the <span class="ui-label">Draw plot</span> tool (click
+                        the vertices, then <span class="ui-label">Finish plot</span>) and
+                        <span class="ui-label">Split with line</span> (drag a cut through an existing plot). You can
+                        also import an existing plan with <span class="ui-label">Upload GeoJSON</span>. Then click each
+                        new plot and assign it an owner.
+                    </p>
+                    <div class="callout note">
+                        <i class="fas fa-circle-info"></i>
+                        The app keeps track of whether all the land is covered. Until it is, it reports how much is
+                        <em>not yet assigned</em> and how many plots have no owner. The goal is
+                        <em>“All pooled land assigned (100%).”</em>
+                    </div>
+                </li>
+
+                <li class="step">
+                    <h3>Check the owner balance</h3>
+                    <p>
+                        This is the heart of a readjustment. For each owner, the table shows:
+                    </p>
+                    <div class="table-scroll">
+                        <table class="tool-table">
+                            <tbody>
+                                <tr>
+                                    <td>Contributed</td>
+                                    <td>How much land they put into the pool.</td>
+                                </tr>
+                                <tr>
+                                    <td>Assigned</td>
+                                    <td>How much they get in the new layout.</td>
+                                </tr>
+                                <tr>
+                                    <td>Balance</td>
+                                    <td>The difference. This is the number people will negotiate over.</td>
+                                </tr>
+                                <tr>
+                                    <td>Cash offer</td>
+                                    <td>Money to compensate the ones who come out short.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <span class="ui-label">Owner Legend</span> explains the colours on the map, and the
+                        <span class="ui-label">Before / After</span> toggle compares the old layout with the new one.
+                    </p>
+                    <div class="callout tip">
+                        <i class="fas fa-scale-balanced"></i>
+                        A readjustment that leaves nobody short of what they put in practically votes itself through. If
+                        someone's <strong>Balance</strong> is negative, either fix their share or offer them cash —
+                        otherwise you have no reason to expect them to agree.
+                    </div>
+                </li>
+
+                <li class="step">
+                    <h3>Confirm with “Done”</h3>
+                    <p>
+                        Click <span class="ui-label">Done</span> to save the layout into the proposal. This step is
+                        <strong>mandatory</strong> — without it the proposal cannot be created.
+                    </p>
+                </li>
+
+                <li class="step">
+                    <h3>Write the terms and create it</h3>
+                    <p>
+                        <span class="ui-label">Create Proposal</span> opens: name, description and offer. Click
+                        <span class="ui-label">Create Proposal</span> and you're done.
+                    </p>
+                </li>
+            </ol>
+
+            <div class="callout note">
+                <i class="fas fa-circle-info"></i>
+                Land readjustment changes the <strong>shape</strong> of the parcels but keeps the ownership shares —
+                which is why it is the right tool for badly divided blocks: nobody loses land, they just get it back in
+                a more usable form.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -126,16 +126,16 @@
 
         const parcelCount = state.subtitleData.parcelCount || 0;
         const algorithmLabel = state.subtitleData.algorithmLabel || '';
+        // The counted nouns are nested translation references so each one picks its own plural form
+        // (Croatian/Serbian need 1 / 2-4 / 5+); the i18n runtime resolves them before interpolating.
         const params = {
             algorithm: algorithmLabel,
-            parcelCount,
-            parcelSuffix: parcelCount === 1 ? '' : 's',
-            ownerCount: ownerCount || 0,
-            ownerSuffix: (ownerCount || 0) === 1 ? '' : 's'
+            parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount },
+            owners: { key: 'reparcellization.modal.ownerCount', count: ownerCount || 0 }
         };
         const subtitleText = t(
             'reparcellization.modal.subtitleWithOwners',
-            '{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}',
+            '{{algorithm}} · {{parcels}} · {{owners}}',
             params
         );
         state.subtitleEl.textContent = subtitleText;
@@ -281,11 +281,10 @@
         const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
         const subtitleParams = {
             algorithm: algorithmLabel,
-            count: parcelCount,
-            suffix: parcelCount === 1 ? '' : 's'
+            parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount }
         };
         const titleText = t('reparcellization.modal.title', 'Reparcellization');
-        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
+        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');

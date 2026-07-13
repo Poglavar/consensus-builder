@@ -328,7 +328,8 @@
                                 <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share
                                     entire plan (all
                                     proposals)</span>
-                                <span class="share-plan-subtext">No applied plans. Apply some first</span>
+                                <span class="share-plan-subtext" data-i18n-key="sidebar.proposals.shareButtonEmpty">No
+                                    applied plans. Apply some first</span>
                             </button>
                             <button class="btn btn-danger" onclick="clearLocalProposalData()"
                                 data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From
@@ -1059,7 +1060,7 @@
                 data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
                 onclick="cancelRoadOrTrackDrawing()">×</button>
             <div class="road-panel-header">
-                <h3 data-i18n-key="panel.road.title">Draw road</h3>
+                <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
                 <button type="button" id="editRoadCrossSectionButton" class="road-cross-section-btn"
                     onclick="openRoadDrawingCrossSectionEditor()">
                     <span data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
@@ -1080,11 +1081,12 @@
 
             <div class="road-metrics-grid">
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.lengthLabel">Road Length:</div>
+                    <div class="metric-label" id="road-length-label" data-i18n-key="panel.road.lengthLabel">Road Length:
+                    </div>
                     <div class="metric-value" id="road-length">0 m</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.areaLabel">Road Area:</div>
+                    <div class="metric-label" id="road-area-label" data-i18n-key="panel.road.areaLabel">Road Area:</div>
                     <div class="metric-value" id="road-area">0 m²</div>
                 </div>
                 <div class="metric-group">
@@ -1114,7 +1116,8 @@
                     <div class="metric-value" id="road-owned-government">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Owned by institution:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByInstitutionLabel">Owned by institution:
+                    </div>
                     <div class="metric-value" id="road-owned-institution">—</div>
                 </div>
                 <div class="metric-group">
@@ -1122,7 +1125,7 @@
                     <div class="metric-value" id="road-owned-mixed">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Cost:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.costLabel">Cost:</div>
                     <div class="metric-value" id="road-market-price">—</div>
                 </div>
                 <div class="metric-group">

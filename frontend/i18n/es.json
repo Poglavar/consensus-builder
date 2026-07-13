@@ -16,6 +16,12 @@
         "no": "No",
         "empty": "Todavía no hay borradores de propuestas guardados.",
         "confirmDiscard": "¿Descartar este borrador guardado localmente? Esta acción no se puede deshacer.",
+        "discardDesign": {
+            "title": "¿Descartar este diseño?",
+            "body": "Al cerrar el editor se descartan los cambios que hiciste aquí. Pulsa «Listo» para conservarlos.",
+            "confirm": "Descartar",
+            "cancel": "Seguir editando"
+        },
         "tabs": {
             "design": "Diseño",
             "parcels": "Parcelas",
@@ -148,12 +154,11 @@
             "valid": "Lista"
         },
         "errors": {
-            "parcelsUnavailable": "Las parcelas seleccionadas no están disponibles en esta vista de la ciudad.",
+            "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
             "parcelsNotContiguous": "Un lago necesita parcelas contiguas.",
             "sourceMissing": "No se encontró la propuesta de origen.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "readOnly": "Esta propuesta es de solo lectura.",
-            "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto."
         },
         "publish": {
@@ -206,6 +211,19 @@
             "metricLength": "Longitud",
             "metricArea": "Área",
             "hintFullMode": "El modo de parcela completa usará el contorno combinado de la parcela como geometría del corredor.",
+            "hintDrawMode": "Dibuja una carretera o un camino dentro de las parcelas combinadas.",
+            "widthHeaderRoad": "Elige el ancho de la carretera",
+            "widthHeaderTrack": "Elige el ancho del camino",
+            "sidewalkWidth": "Ancho de la acera",
+            "trackWidth": "Ancho del camino",
+            "roadWidths": {
+                "alley": "Callejón ~7,5 m",
+                "local": "Local ~10 m",
+                "collector": "Colectora ~18 m",
+                "mainStreet": "Calle principal ~26 m",
+                "avenue": "Avenida ~40 m",
+                "boulevard": "Bulevar ~80 m"
+            },
             "done": "Listo"
         }
     },
@@ -334,7 +352,6 @@
             "title": "Parcelas",
             "titleZoomHint": "Parcelas (acercar más)",
             "showParcels": "Mostrar parcelas",
-            "subtitleSingleOwner": "{{count}} parcela{{suffix}} · un propietario",
             "showAdParcels": "Mostrar parcelas anunciadas",
             "forSale": "En venta",
             "showParcelNumbers": "Mostrar IDs de parcela",
@@ -421,7 +438,7 @@
             "countProgress": "Parcelas procesadas: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Forma libre",
+            "title": "Edificios",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
             "showProposed": "Mostrar edificios propuestos"
@@ -477,6 +494,7 @@
             "listButton": "Lista de propuestas ({{count}})",
             "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir plan completo (todas las propuestas)",
+            "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
             "clearButton": "Borrar propuestas del almacenamiento local",
             "planStats": {
                 "buttonLabel": "Estadísticas del plan",
@@ -673,7 +691,12 @@
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
-            "offer": "Oferta"
+                "offer": "Oferta",
+                "noParcelSelected": "No hay ninguna parcela seleccionada. Selecciona una parcela primero.",
+                "useMainCreateButton": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
+                "enableMultiSelect": "Activa la selección de varias parcelas para usar esta acción.",
+                "selectAtLeastOne": "Selecciona al menos una parcela para crear una propuesta.",
+                "selectParcelFirst": "Selecciona una parcela primero."
             },
             "roadToggle": "Carretera",
             "nftStatusDefault": "Estado NFT: todavía no verificado.",
@@ -939,7 +962,7 @@
         "road": {
             "title": "Dibujar camino",
             "titleTrack": "Dibujar vía",
-            "crossSectionButton": "Sección transversal",
+            "crossSectionButton": "Editar sección transversal",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",
@@ -959,7 +982,6 @@
             "acquiringDifficultyTooltip": "Menor es mejor. La dificultad de adquisición se calcula según el tipo de propiedad de las parcelas involucradas, con estos coeficientes:\nGobierno: 0\nInstitución: 0\nEmpresa: 1\nIndividual: 2\nEl valor de mercado de cada parcela se multiplica por su tipo de propiedad y todos estos se suman.",
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar carretera (F)",
-            "crossSectionButton": "Editar sección transversal",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna",
@@ -980,7 +1002,12 @@
             "splitStatus": "La carretera se separó — ahora son {{count}} carreteras independientes.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
             "bulldozedAllStatus": "Carretera demolida.",
-            "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta"
+            "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta",
+            "finishButtonShortTrack": "Terminar vía (F)",
+            "lengthLabelTrack": "Longitud de la vía:",
+            "areaLabelTrack": "Área de la vía:",
+            "ownedByInstitutionLabel": "Propiedad de instituciones:",
+            "costLabel": "Coste:"
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -1086,6 +1113,9 @@
             "title": "Edificios",
             "buildingsTitle": "Edificios",
             "buildingsLabel": "Selecciona un edificio",
+            "addLabel": "Añadir edificio",
+            "deleteLabel": "Eliminar edificio",
+            "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
@@ -1150,7 +1180,7 @@
         },
         "corridor": {
             "title": "Sección transversal",
-            "subtitle": "El corredor conserva su ancho, por lo que la carretera no se mueve",
+            "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
             "totalWidth": "Ancho total",
@@ -1164,8 +1194,25 @@
             "save": "Guardar como nueva propuesta",
             "applyDrawing": "Aplicar al dibujo",
             "addLane": "Añadir carril",
+            "addLaneOfType": "Añadir: {{lane}} ({{width}} m)",
+            "presets": "Secciones estándar",
+            "standardWidth": "Ancho estándar: {{width}} m",
+            "resetStandard": "Restablecer el ancho estándar ({{width}} m)",
+            "dragReorder": "Arrastra para reordenar los carriles",
+            "dragReorderHint": "Arrastra un carril por su asa para reordenarlo; arrastra una junta del diagrama para pasar ancho de un carril al contiguo.",
+            "maxWidthReached": "Un corredor no puede superar los {{max}} m. Quita o estrecha un carril primero.",
             "grass": "Solo césped",
-            "trees": "Arboleda"
+            "trees": "Arboleda",
+            "laneTypes": {
+                "driving": "Carril de circulación",
+                "bus": "Carril bus",
+                "parking": "Aparcamiento",
+                "cycleway": "Carril bici",
+                "sidewalk": "Acera",
+                "verge": "Franja verde",
+                "median": "Mediana",
+                "rail": "Plataforma ferroviaria"
+            }
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -1184,8 +1231,8 @@
             "track": "vía férrea",
             "unapply": "Retirar la propuesta existente",
             "destroy": "Demoler los edificios",
-                "cut": "Cortar los edificios",
-                "confirm": "Atravesar con túnel",
+            "cut": "Cortar los edificios",
+            "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
         },
         "deleteProposal": {
@@ -1237,7 +1284,11 @@
                 "parcelArea": "({{area}} m²)",
                 "submit": "Crear propuesta",
                 "previewUnavailable": "Vista previa no disponible",
-                "defaultDescription": "Propuesta manual de carretera que afecta a {{count}} parcela{{suffix}}."
+                "defaultDescription": {
+                    "one": "Propuesta manual de carretera que afecta a {{count}} parcela.",
+                    "few": "Propuesta manual de carretera que afecta a {{count}} parcelas.",
+                    "other": "Propuesta manual de carretera que afecta a {{count}} parcelas."
+                }
             },
             "polygonError": {
                 "title": "Error de polígono",
@@ -1376,7 +1427,11 @@
             },
             "share": {
                 "sizeWarning": "Advertencia: este enlace está cerca del tamaño máximo que acepta el servidor. Considera compartir menos parcelas si falla.",
-                "defaultIntro": "Comparte este enlace para cargar {{count}} propuesta{{suffix}} aplicada{{suffix}}.",
+                "defaultIntro": {
+                    "one": "Comparte este enlace para cargar {{count}} propuesta aplicada.",
+                    "few": "Comparte este enlace para cargar {{count}} propuestas aplicadas.",
+                    "other": "Comparte este enlace para cargar {{count}} propuestas aplicadas."
+                },
                 "singleIntro": "Comparte este enlace para cargar la propuesta <strong>{{title}}</strong>.",
                 "authorLabel": "Autor:",
                 "cameraLabel": "Zoom de la cámara:",
@@ -1413,14 +1468,27 @@
                 "stopIntro": "Detenido al aplicar en la propuesta: <strong>{{title}}</strong> · {{hash}}",
                 "stopMissingIntro": "Faltan parcelas ascendentes para esta propuesta:",
                 "stopGenericFailure": "No se pudo aplicar la propuesta. Revisa la consola para más detalles.",
-                "stopSuccessCount": "Se han aplicado correctamente {{count}} propuesta{{suffix}} hasta ahora.",
+                "stopSuccessCount": {
+                    "one": "Se ha aplicado correctamente {{count}} propuesta hasta ahora.",
+                    "few": "Se han aplicado correctamente {{count}} propuestas hasta ahora.",
+                    "other": "Se han aplicado correctamente {{count}} propuestas hasta ahora."
+                },
+                "uploadAncestorsMissing": {
+                    "one": "Primero sube la propuesta antecesora: {{list}}",
+                    "few": "Primero sube las propuestas antecesoras: {{list}}",
+                    "other": "Primero sube las propuestas antecesoras: {{list}}"
+                },
                 "stopTitle": "Aplicación de propuestas detenida",
                 "leaveAsIs": "Dejar como está",
                 "unapplySuccessful": "Deshacer propuestas aplicadas",
                 "summary": {
                     "appliedFrom": "Propuestas aplicadas de {{author}}.",
                     "appliedCount": "{{count}} aplicadas.",
-                    "skippedCount": "Se omitieron {{count}} propuesta{{suffix}} duplicada{{suffix}} (ya presentes).",
+                    "skippedCount": {
+                        "one": "Se omitió {{count}} propuesta duplicada (ya presente).",
+                        "few": "Se omitieron {{count}} propuestas duplicadas (ya presentes).",
+                        "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes)."
+                    },
                     "failedCount": "{{count}} fallaron.",
                     "title": "Propuestas compartidas aplicadas",
                     "unapplyApplied": "Deshacer aplicadas"
@@ -1464,7 +1532,11 @@
                     "applying": "Aplicando propuesta #{{id}}…",
                     "fetchingPlan": "Obteniendo plan…",
                     "fetchingPlanTitle": "Obteniendo propuesta",
-                    "countHeading": "Hay {{count}} propuesta{{suffix}} en el plan actual",
+                    "countHeading": {
+                        "one": "Hay {{count}} propuesta en el plan actual",
+                        "few": "Hay {{count}} propuestas en el plan actual",
+                        "other": "Hay {{count}} propuestas en el plan actual"
+                    },
                     "nameHeading": "O dale a este plan un nombre memorable (ENS):",
                     "namePlaceholder": "p. ej. puerto-remodelacion",
                     "nameButton": "Guardar nombre",
@@ -1483,9 +1555,17 @@
                     "alreadyAppliedTitle": "Plan ya aplicado",
                     "alreadyAppliedMessage": "Este plan compartido ya está aplicado en el mapa.",
                     "alreadyAppliedWithOthersTitle": "Plan ya aplicado",
-                    "alreadyAppliedWithOthersMessage": "Este plan compartido ya está en el mapa, junto con {{count}} otra{{suffix}} propuesta{{suffix}}.",
+                    "alreadyAppliedWithOthersMessage": {
+                        "one": "Este plan compartido ya está en el mapa, junto con {{count}} propuesta más.",
+                        "few": "Este plan compartido ya está en el mapa, junto con {{count}} propuestas más.",
+                        "other": "Este plan compartido ya está en el mapa, junto con {{count}} propuestas más."
+                    },
                     "otherProposalsAppliedTitle": "Otras propuestas aplicadas",
-                    "otherProposalsAppliedMessage": "Hay {{count}} otra{{suffix}} propuesta{{suffix}} actualmente aplicada{{suffix}} en el mapa.",
+                    "otherProposalsAppliedMessage": {
+                        "one": "Hay {{count}} otra propuesta aplicada actualmente en el mapa.",
+                        "few": "Hay {{count}} otras propuestas aplicadas actualmente en el mapa.",
+                        "other": "Hay {{count}} otras propuestas aplicadas actualmente en el mapa."
+                    },
                     "showMe": "Mostrar",
                     "addToThem": "Agregar a ellas",
                     "clearThenAdd": "Limpiar y agregar",
@@ -1505,12 +1585,28 @@
                     "overlappedCountDetailed": "{{count}} propuesta(s) quedan sin aplicar — su espacio ya está ocupado. Encuéntralas en la lista de propuestas para previsualizarlas o aplicarlas:",
                     "overlapsWith": "se superpone con",
                     "overlappedToast": "{{count}} quedan sin aplicar (espacio ocupado) — mira la lista de propuestas.",
-                    "appliedCountDetailed": "Se aplicaron {{count}} propuesta(s):",
-                    "skippedCountDetailed": "Se omitieron {{count}} propuesta(s) duplicada(s) (ya presentes):",
-                    "failedCountDetailed": "No se pudieron aplicar {{count}} propuesta(s):",
+                    "appliedCountDetailed": {
+                        "one": "Se aplicó {{count}} propuesta:",
+                        "few": "Se aplicaron {{count}} propuestas:",
+                        "other": "Se aplicaron {{count}} propuestas:"
+                    },
+                    "skippedCountDetailed": {
+                        "one": "Se omitió {{count}} propuesta duplicada (ya presente):",
+                        "few": "Se omitieron {{count}} propuestas duplicadas (ya presentes):",
+                        "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes):"
+                    },
+                    "failedCountDetailed": {
+                        "one": "No se pudo aplicar {{count}} propuesta:",
+                        "few": "No se pudieron aplicar {{count}} propuestas:",
+                        "other": "No se pudieron aplicar {{count}} propuestas:"
+                    },
                     "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
                     "summary": "Resultado del plan compartido",
-                    "appliedToast": "Se aplicaron {{count}} propuesta(s)."
+                    "appliedToast": {
+                        "one": "Se aplicó {{count}} propuesta.",
+                        "few": "Se aplicaron {{count}} propuestas.",
+                        "other": "Se aplicaron {{count}} propuestas."
+                    }
                 }
             },
             "sharedInspector": {
@@ -1532,7 +1628,11 @@
             "trackProposal": {
                 "authorLabel": "Autor:",
                 "authorPlaceholder": "Tu nombre",
-                "defaultDescription": "Propuesta de vía manual que afecta a {{count}} parcela(s).",
+                "defaultDescription": {
+                    "one": "Propuesta de vía manual que afecta a {{count}} parcela.",
+                    "few": "Propuesta de vía manual que afecta a {{count}} parcelas.",
+                    "other": "Propuesta de vía manual que afecta a {{count}} parcelas."
+                },
                 "descriptionLabel": "Descripción:",
                 "descriptionPlaceholder": "Describe tu propuesta de vía...",
                 "nameLabel": "Nombre de la vía:",
@@ -1757,7 +1857,12 @@
                 "cancel": "Cancelar",
                 "createInMemory": "Crear en memoria"
             },
-            "optionsSectionTitle": "Opciones"
+            "optionsSectionTitle": "Opciones",
+            "mintTarget": {
+                "offchain": "Fuera de la cadena (solo en este navegador)",
+                "mintsOn": "Se acuña en",
+                "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
+            }
         }
     },
     "blockify": {
@@ -1919,8 +2024,8 @@
     "reparcellization": {
         "modal": {
             "title": "Reparcelación",
-            "subtitle": "{{algorithm}} · {{count}} parcela{{suffix}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcela{{parcelSuffix}} · {{ownerCount}} propietario{{ownerSuffix}}",
+            "subtitle": "{{algorithm}} · {{parcels}}",
+            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "algorithms": {
                 "borderPerpendicular": "Perpendicular al borde",
                 "sweepLine": "Algoritmo de línea de barrido",
@@ -1932,7 +2037,11 @@
             "closeAria": "Cerrar",
             "done": "Listo",
             "ownerLegend": "Leyenda de propietarios",
-            "legendMeta": "{{percent}} · {{count}} parcela{{suffix}}",
+            "legendMeta": {
+                "one": "{{percent}} · {{count}} parcela",
+                "few": "{{percent}} · {{count}} parcelas",
+                "other": "{{percent}} · {{count}} parcelas"
+            },
             "selectedParcelsLabel": "parcelas seleccionadas",
             "defaultDescription": "Propuesta de reparcelación para {{label}}",
             "syntheticOwner": "Propietario de {{parcel}}",
@@ -2007,9 +2116,19 @@
                 "superParcelLabel": "Área de la superparcela",
                 "totalParcelsLabel": "Número total de parcelas: {{count}}"
             },
-            "subtitleSingleOwner": "{{count}} parcela(s) · un solo propietario",
+            "subtitleSingleOwner": "{{parcels}} · un propietario",
             "unassigned": "Sin asignar",
-            "uploadGeojson": "Subir GeoJSON"
+            "uploadGeojson": "Subir GeoJSON",
+            "parcelCount": {
+                "one": "{{count}} parcela",
+                "few": "{{count}} parcelas",
+                "other": "{{count}} parcelas"
+            },
+            "ownerCount": {
+                "one": "{{count}} propietario",
+                "few": "{{count}} propietarios",
+                "other": "{{count}} propietarios"
+            }
         }
     },
     "status": {
@@ -2084,45 +2203,93 @@
             "fetching_gup_road_data": "Obteniendo datos viales GUP...",
             "fetching_osm_road_data": "Obteniendo datos viales OSM...",
             "fetching_buildings": "Obteniendo edificios...",
-            "loaded_buildings_count": "Se cargaron {{count}} edificio{{suffix}}",
+            "loaded_buildings_count": {
+                "one": "Se cargó {{count}} edificio",
+                "few": "Se cargaron {{count}} edificios",
+                "other": "Se cargaron {{count}} edificios"
+            },
             "fetching_data": "Obteniendo datos...",
             "fetching_government_road_plan": "Obteniendo el plan vial gubernamental...",
-            "preparing_government_plan_summary": "Preparando plan gubernamental{{suffix}}: {{vertexCount}} punto{{pointSuffix}} del plan…",
-            "applying_government_plan_summary": "Aplicando plan gubernamental{{suffix}}: {{targetLabel}}, {{pieceCountLabel}}, {{vertexCount}} punto{{pointSuffix}} del plan…",
+            "preparing_government_plan_summary": {
+                "one": "Preparando plan gubernamental{{descriptor}}: {{count}} punto del plan…",
+                "few": "Preparando plan gubernamental{{descriptor}}: {{count}} puntos del plan…",
+                "other": "Preparando plan gubernamental{{descriptor}}: {{count}} puntos del plan…"
+            },
+            "applying_government_plan_summary": {
+                "one": "Aplicando plan gubernamental{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} punto del plan…",
+                "few": "Aplicando plan gubernamental{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} puntos del plan…",
+                "other": "Aplicando plan gubernamental{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} puntos del plan…"
+            },
             "processing_parcels_progress": "Procesando parcelas: {{processed}}/{{total}} ({{percent}}%)…",
             "processing_parcels_progress_complete": "Procesando parcelas: {{processed}}/{{total}} (100%)",
             "worker_processing_parcels_progress": "Trabajador procesando parcelas: {{processed}}/{{total}} ({{percent}}%)…",
             "fetching_road_data_from_openstreetmap": "Obteniendo datos viales de OpenStreetMap...",
             "filtering_visible_parcels": "Filtrando las parcelas visibles...",
-            "showing_road_parcels_count_only": "Mostrando {{count}} parcela{{suffix}} de carretera únicamente",
+            "showing_road_parcels_count_only": {
+                "one": "Mostrando solo {{count}} parcela de carretera",
+                "few": "Mostrando solo {{count}} parcelas de carretera",
+                "other": "Mostrando solo {{count}} parcelas de carretera"
+            },
             "found_parcels_intersecting_viewport_building_edge_index": "Se encontraron {{count}} parcelas que intersectan la vista. Construyendo índice de bordes...",
             "counting_blocks_progress": "Contando bloques... {{percent}}%",
             "finished_block_count_summary": "Conteo finalizado. Se encontraron {{added}} bloques nuevos, se eliminaron {{removed}} bloques. Total de parcelas no viales procesadas: {{processed}}.",
             "game_already_initialized": "El juego ya está inicializado",
             "data_source_set_to_value_cleared_local_data": "Se configuró la fuente de datos en {{value}}. Todos los datos locales se borraron.",
-            "fetching_data_for_new_grid_cells_progress": "Obteniendo datos para {{total}} celda{{cellSuffix}} de cuadrícula ({{completed}}/{{total}})...",
+            "fetching_data_for_new_grid_cells_progress": {
+                "one": "Obteniendo datos para {{count}} celda de cuadrícula nueva ({{completed}}/{{count}})...",
+                "few": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})...",
+                "other": "Obteniendo datos para {{count}} celdas de cuadrícula nuevas ({{completed}}/{{count}})..."
+            },
             "fetching_ancestor_parcels_for_label": "Obteniendo parcelas ascendentes para {{label}}...",
             "fetching_parcel_owners_for_label": "Obteniendo propietarios de parcelas para {{label}}...",
             "ancestor_parcels_ready_for_label": "Parcelas ascendentes listas para {{label}}.",
-            "added_new_parcels_summary": "Se agregaron {{newCount}} parcela{{newSuffix}} nuevas ({{total}} en la capa)",
-            "applying_shared_proposals_progress": "Aplicando {{count}} propuesta{{suffix}} compartida{{suffix}}...",
+            "added_new_parcels_summary": {
+                "one": "Se agregó {{count}} parcela nueva ({{total}} en la capa)",
+                "few": "Se agregaron {{count}} parcelas nuevas ({{total}} en la capa)",
+                "other": "Se agregaron {{count}} parcelas nuevas ({{total}} en la capa)"
+            },
+            "applying_shared_proposals_progress": {
+                "one": "Aplicando {{count}} propuesta compartida...",
+                "few": "Aplicando {{count}} propuestas compartidas...",
+                "other": "Aplicando {{count}} propuestas compartidas..."
+            },
             "applying_specific_shared_proposal": "Aplicando la propuesta compartida {{title}} #{{id}}...",
-            "no_new_parcels_to_load_summary": "No hay parcelas nuevas para cargar ({{total}} parcela{{visibleSuffix}} visibles)",
-            "cleared_parcel_items_from_local_storage": "Se borraron {{count}} elemento{{suffix}} relacionados con parcelas del almacenamiento local",
-            "cleared_local_proposals_summary": "Se borraron {{count}} propuesta{{suffix}} del almacenamiento local",
+            "no_new_parcels_to_load_summary": {
+                "one": "No hay parcelas nuevas para cargar ({{count}} parcela visible)",
+                "few": "No hay parcelas nuevas para cargar ({{count}} parcelas visibles)",
+                "other": "No hay parcelas nuevas para cargar ({{count}} parcelas visibles)"
+            },
+            "cleared_parcel_items_from_local_storage": {
+                "one": "Se borró {{count}} elemento relacionado con parcelas del almacenamiento local",
+                "few": "Se borraron {{count}} elementos relacionados con parcelas del almacenamiento local",
+                "other": "Se borraron {{count}} elementos relacionados con parcelas del almacenamiento local"
+            },
+            "cleared_local_proposals_summary": {
+                "one": "Se borró {{count}} propuesta del almacenamiento local",
+                "few": "Se borraron {{count}} propuestas del almacenamiento local",
+                "other": "Se borraron {{count}} propuestas del almacenamiento local"
+            },
             "game_initialized_summary": "Juego inicializado: {{agents}} agentes creados, {{parcels}} parcelas asignadas",
             "game_state_reset_agent_preserved": "El estado del juego se restableció. Tu agente se conservó con datos nuevos.",
             "game_state_reset_all_deleted": "El estado del juego se restableció. Todos los agentes y el progreso se eliminaron.",
             "government_road_plan_fully_applied": "Plan vial gubernamental aplicado por completo.",
-            "applying_government_road_plan": "Aplicando el plan vial gubernamental{{suffix}}...",
+            "applying_government_road_plan": "Aplicando el plan vial gubernamental{{descriptor}}...",
             "government_road_plan_already_matches_current_view": "El plan vial gubernamental ya coincide con la vista actual del mapa.",
             "government_road_plan_has_no_geometry_overlapping_the_parcels_in_view": "El plan vial gubernamental no tiene geometría que se superponga con las parcelas en vista.",
             "government_road_plan_has_no_overlap_with_current_view": "El plan vial gubernamental no se superpone con la vista actual del mapa.",
             "government_road_plan_hidden": "Plan vial gubernamental oculto.",
-            "government_road_plan_drawn_summary": "Plan vial gubernamental dibujado{{suffix}}: {{count}} elemento{{featureSuffix}}.",
-            "government_road_plan_loaded_summary": "Plan vial gubernamental cargado{{suffix}}{{vertexSummary}}.",
+            "government_road_plan_drawn_summary": {
+                "one": "Plan vial gubernamental dibujado{{descriptor}}: {{count}} elemento.",
+                "few": "Plan vial gubernamental dibujado{{descriptor}}: {{count}} elementos.",
+                "other": "Plan vial gubernamental dibujado{{descriptor}}: {{count}} elementos."
+            },
+            "government_road_plan_loaded_summary": "Plan vial gubernamental cargado{{descriptor}}{{vertexSummary}}.",
             "government_road_plan_is_still_loading_try_again_in_a_moment": "El plan vial gubernamental sigue cargando. Inténtalo de nuevo en un momento.",
-            "applied_government_road_plan_summary": "Plan vial gubernamental aplicado{{suffix}}: se agregaron {{count}} segmento{{segmentSuffix}} nuevo{{segmentSuffix}}.",
+            "applied_government_road_plan_summary": {
+                "one": "Plan vial gubernamental aplicado{{descriptor}}: se agregó {{count}} segmento nuevo.",
+                "few": "Plan vial gubernamental aplicado{{descriptor}}: se agregaron {{count}} segmentos nuevos.",
+                "other": "Plan vial gubernamental aplicado{{descriptor}}: se agregaron {{count}} segmentos nuevos."
+            },
             "could_not_apply_government_road_plan_check_console": "No se pudo aplicar el plan vial gubernamental. Revisa la consola para más detalles.",
             "initializing_game_state": "Inicializando el estado del juego...",
             "focused_on_block": "Se enfocó en el bloque {{name}}",
@@ -2143,7 +2310,7 @@
             "no_government_plan_segments_available_for_this_view": "No hay segmentos del plan gubernamental para esta vista.",
             "no_government_plan_segments_overlap_this_view": "No hay segmentos del plan gubernamental que se superpongan con esta vista{{vertexSummary}}.",
             "no_government_plan_segments_remain_in_view": "No quedan segmentos del plan gubernamental en esta vista.",
-            "no_unapplied_government_road_plan_segments_in_view": "No hay segmentos del plan vial gubernamental sin aplicar en esta vista{{suffix}}.",
+            "no_unapplied_government_road_plan_segments_in_view": "No hay segmentos del plan vial gubernamental sin aplicar en esta vista{{descriptor}}.",
             "no_government_road_plan_data_available_for_this_view": "No hay datos del plan vial gubernamental para esta vista.",
             "no_parcel_selected_for_road_measurement": "No se seleccionó una parcela para medir la carretera.",
             "no_parcel_selected_please_select_a_parcel_first": "No hay parcela seleccionada. Selecciona una parcela primero.",
@@ -2166,7 +2333,11 @@
             "please_select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear una propuesta.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
             "proposal_not_found": "Propuesta no encontrada",
-            "proposal_created_with_parcel_count": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcela{{suffix}}.",
+            "proposal_created_with_parcel_count": {
+                "one": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcela.",
+                "few": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcelas.",
+                "other": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcelas."
+            },
             "proposal_created_review_details_and_apply_when_ready": "Propuesta \"{{title}}\" creada. Revisa los detalles y aplícala al mapa cuando esté lista.",
             "proposal_deleted": "Propuesta \"{{title}}\" eliminada",
             "applied_structure_proposal": "Se aplicó la propuesta de estructura \"{{title}}\"",
@@ -2181,7 +2352,11 @@
             "road_proposal_created_and_applied": "La propuesta vial \"{{name}}\" se creó y aplicó.",
             "road_plan_applied_to_current_map_view": "Plan vial aplicado en la vista actual del mapa.",
             "analyzed_osm_road_segments_summary": "Se analizaron los segmentos viales de OSM. {{summary}}",
-            "selected_proposal_summary": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcela{{suffix}})",
+            "selected_proposal_summary": {
+                "one": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcela)",
+                "few": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcelas)",
+                "other": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcelas)"
+            },
             "selected_parcel_with_number": "Parcela seleccionada {{number}}",
             "select_a_block_first": "Selecciona primero un bloque",
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
@@ -2353,10 +2528,22 @@
             "proposal_conflict_missing_title": "Faltan algunas parcelas",
             "proposal_conflict_intro": "Para aplicar la propuesta \"{{title}}\" se necesitan parcelas que no están disponibles:",
             "proposal_conflict_overlaps": "Se superpone con la propuesta aplicada \"{{title}}\"",
-            "proposal_conflict_shares": "Comparte {{count}} parcela(s) con esta propuesta.",
-            "proposal_conflict_shares_blocked": "Comparte {{count}} parcela(s), pero no se puede deshacer por sí sola — estas se construyen sobre ella:",
+            "proposal_conflict_shares": {
+                "one": "Comparte {{count}} parcela con esta propuesta.",
+                "few": "Comparte {{count}} parcelas con esta propuesta.",
+                "other": "Comparte {{count}} parcelas con esta propuesta."
+            },
+            "proposal_conflict_shares_blocked": {
+                "one": "Comparte {{count}} parcela, pero no se puede deshacer por sí sola — estas se construyen sobre ella:",
+                "few": "Comparte {{count}} parcelas, pero no se puede deshacer por sí sola — estas se construyen sobre ella:",
+                "other": "Comparte {{count}} parcelas, pero no se puede deshacer por sí sola — estas se construyen sobre ella:"
+            },
             "proposal_conflict_unapply_those_first": "Deshaga esas primero.",
-            "proposal_conflict_not_loaded": "{{count}} parcela(s) antecesora(s) no cargada(s). Aplicar de todos modos continuará con las parcelas presentes.",
+            "proposal_conflict_not_loaded": {
+                "one": "{{count}} parcela antecesora no cargada. Aplicar de todos modos continuará con las parcelas presentes.",
+                "few": "{{count}} parcelas antecesoras no cargadas. Aplicar de todos modos continuará con las parcelas presentes.",
+                "other": "{{count}} parcelas antecesoras no cargadas. Aplicar de todos modos continuará con las parcelas presentes."
+            },
             "proposal_conflict_unapply_continue": "Deshacer y continuar",
             "proposal_conflict_unapplying": "Deshaciendo…",
             "proposal_conflict_apply_anyway": "Aplicar de todos modos",
@@ -2365,7 +2552,11 @@
             "cannot_share_this_proposal_right_now": "No se puede compartir esta propuesta en este momento.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "No se pudo aplicar la propuesta vial. Revisa las propuestas para más detalles.",
             "failed_to_apply_shared_proposals": "No se pudieron aplicar las propuestas compartidas.",
-            "failed_to_apply_shared_proposals_summary": "No se pudieron aplicar {{count}} propuesta{{suffix}} compartida{{suffix}}. Consulta la consola para más detalles.",
+            "failed_to_apply_shared_proposals_summary": {
+                "one": "No se pudo aplicar {{count}} propuesta compartida. Consulta la consola para más detalles.",
+                "few": "No se pudieron aplicar {{count}} propuestas compartidas. Consulta la consola para más detalles.",
+                "other": "No se pudieron aplicar {{count}} propuestas compartidas. Consulta la consola para más detalles."
+            },
             "failed_to_encode_share_data": "No se pudieron codificar los datos para compartir.",
             "failed_to_encode_shared_proposal_data": "No se pudieron codificar los datos de la propuesta compartida.",
             "failed_to_generate_share_link": "No se pudo generar el enlace para compartir.",
@@ -2440,5 +2631,31 @@
             "parcelsLabel": "Parcelas",
             "avgPerParcel": "Media / parcela"
         }
+    },
+    "structureEditor": {
+        "ariaLabel": "Editor de geometría de la estructura",
+        "titlePark": "Editor de parque",
+        "titleSquare": "Editor de plaza",
+        "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra los elementos puntuales para moverlos.",
+        "closeLabel": "Cerrar",
+        "tools": {
+            "tree": "Árbol",
+            "flowerbed": "Parterre",
+            "pond": "Estanque",
+            "path": "Sendero",
+            "bench": "Banco",
+            "fountain": "Fuente",
+            "stall": "Mesa",
+            "statue": "Estatua",
+            "erase": "Eliminar"
+        },
+        "finishPath": "Terminar sendero",
+        "cancel": "Cancelar",
+        "save": "Guardar diseño",
+        "hintErase": "Haz clic en un elemento para eliminarlo.",
+        "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
+        "hintSelect": "Selecciona un elemento para empezar.",
+        "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
+        "statusSaved": "Diseño de la estructura guardado."
     }
 }

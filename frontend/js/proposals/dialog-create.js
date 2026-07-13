@@ -379,6 +379,11 @@ function openConstrainedCorridorModal() {
         metricLength: tCorridor('metricLength', 'Length'),
         metricArea: tCorridor('metricArea', 'Area'),
         hintFullMode: tCorridor('hintFullMode', 'Full parcel mode will use the merged parcel outline as the corridor geometry.'),
+        hintDrawMode: tCorridor('hintDrawMode', 'Draw a road or track inside the merged parcels.'),
+        widthHeaderRoad: tCorridor('widthHeaderRoad', 'Choose road width'),
+        widthHeaderTrack: tCorridor('widthHeaderTrack', 'Choose track width'),
+        sidewalkWidth: tCorridor('sidewalkWidth', 'Sidewalk width'),
+        trackWidth: tCorridor('trackWidth', 'Track width'),
         done: tCorridor('done', 'Done')
     };
 
@@ -403,17 +408,17 @@ function openConstrainedCorridorModal() {
                     </div>
                     <div class="corridor-draw-controls" data-corridor-draw-controls>
                         <div class="corridor-width-picker" data-corridor-width-picker style="display:flex; flex-direction:column; gap:6px;">
-                            <div class="corridor-width-header" data-corridor-width-header>Choose road width</div>
+                            <div class="corridor-width-header" data-corridor-width-header>${corridorText.widthHeaderRoad}</div>
                             <div class="roadwidth-grid" data-corridor-road-grid style="max-height:160px; overflow:auto;"></div>
                             <label class="corridor-sidewalk" data-corridor-sidewalk style="display:flex; align-items:center; gap:8px;">
-                                <span data-corridor-sidewalk-label>Sidewalk width</span>
+                                <span data-corridor-sidewalk-label>${corridorText.sidewalkWidth}</span>
                                 <input type="range" min="0" max="5" step="0.1" value="1" data-corridor-sidewalk-slider style="flex:1;">
                                 <span data-corridor-sidewalk-value>1.0 m</span>
                             </label>
                             <div class="corridor-track-controls" data-corridor-track-controls style="display:none; gap:8px; flex-direction:column; max-height:220px; overflow:auto;">
                                 <div class="roadwidth-grid" data-corridor-track-grid></div>
                                 <label class="corridor-track-width" style="display:flex; align-items:center; gap:8px;">
-                                    <span data-corridor-track-label>Track width</span>
+                                    <span data-corridor-track-label>${corridorText.trackWidth}</span>
                                     <input type="range" min="3" max="15" step="0.1" value="3" data-corridor-track-slider style="flex:1;">
                                     <span data-corridor-track-value>3.0 m</span>
                                 </label>
@@ -557,12 +562,12 @@ function openConstrainedCorridorModal() {
     };
 
     const roadWidthOptions = [
-        { id: 'roadwidth6', label: 'Alley ~7.5 m', width: 7.5 },
-        { id: 'roadwidth5', label: 'Local ~10 m', width: 10 },
-        { id: 'roadwidth4', label: 'Collector ~18 m', width: 18 },
-        { id: 'roadwidth3', label: 'Main street ~26 m', width: 26 },
-        { id: 'roadwidth2', label: 'Avenue ~40 m', width: 40 },
-        { id: 'roadwidth1', label: 'Boulevard ~80 m', width: 80 }
+        { id: 'roadwidth6', label: tCorridor('roadWidths.alley', 'Alley ~7.5 m'), width: 7.5 },
+        { id: 'roadwidth5', label: tCorridor('roadWidths.local', 'Local ~10 m'), width: 10 },
+        { id: 'roadwidth4', label: tCorridor('roadWidths.collector', 'Collector ~18 m'), width: 18 },
+        { id: 'roadwidth3', label: tCorridor('roadWidths.mainStreet', 'Main street ~26 m'), width: 26 },
+        { id: 'roadwidth2', label: tCorridor('roadWidths.avenue', 'Avenue ~40 m'), width: 40 },
+        { id: 'roadwidth1', label: tCorridor('roadWidths.boulevard', 'Boulevard ~80 m'), width: 80 }
     ];
 
     const trackSpeedOptions = [
@@ -601,7 +606,7 @@ function openConstrainedCorridorModal() {
         if (sidewalkValue) sidewalkValue.textContent = `${Number(corridorSidewalkWidth).toFixed(1)} m`;
     }
 
-    if (sidewalkLabel) sidewalkLabel.textContent = 'Sidewalk width';
+    if (sidewalkLabel) sidewalkLabel.textContent = corridorText.sidewalkWidth;
     syncSidewalkUI();
     if (sidewalkSlider) {
         sidewalkSlider.addEventListener('input', (e) => {
@@ -738,9 +743,7 @@ function openConstrainedCorridorModal() {
             drawControls.style.display = mode === 'draw' ? 'flex' : 'none';
         }
         if (hintEl) {
-            hintEl.textContent = mode === 'draw'
-                ? 'Draw a road or track inside the merged parcels.'
-                : 'Full parcel mode will use the merged parcel outline as the corridor geometry.';
+            hintEl.textContent = mode === 'draw' ? corridorText.hintDrawMode : corridorText.hintFullMode;
         }
         const mapContainer = map.getContainer();
         if (mapContainer) {
@@ -757,13 +760,13 @@ function openConstrainedCorridorModal() {
     function applyType(type) {
         corridorType = type === 'track' ? 'track' : 'road';
         if (widthHeader) {
-            widthHeader.textContent = corridorType === 'track' ? 'Choose track width' : 'Choose road width';
+            widthHeader.textContent = corridorType === 'track' ? corridorText.widthHeaderTrack : corridorText.widthHeaderRoad;
         }
         if (trackControls) trackControls.style.display = corridorType === 'track' ? 'flex' : 'none';
         if (roadGrid) roadGrid.style.display = corridorType === 'road' ? 'grid' : 'none';
-        if (trackLabel) trackLabel.textContent = 'Track width';
+        if (trackLabel) trackLabel.textContent = corridorText.trackWidth;
         if (sidewalkControls) sidewalkControls.style.display = corridorType === 'road' ? 'flex' : 'none';
-        if (sidewalkLabel) sidewalkLabel.textContent = 'Sidewalk width';
+        if (sidewalkLabel) sidewalkLabel.textContent = corridorText.sidewalkWidth;
 
         if (corridorType === 'track') {
             corridorWidth = Number.isFinite(trackWidthValue) ? trackWidthValue : DEFAULT_CORRIDOR_WIDTHS.track;
@@ -1272,14 +1275,17 @@ function showProposalDialog(overrides = null) {
 
     // Which chain this proposal will be minted on, if any. Minting is implicit — it follows whichever
     // wallet is connected or whether Canton mode is on — so the dialog has to say so out loud.
+    const offchainLabel = t('modal.createProposal.mintTarget.offchain', 'Off-chain (this browser only)');
     const mintTarget = (typeof getActiveMintTarget === 'function')
         ? getActiveMintTarget()
-        : { chain: null, label: 'Off-chain (this browser only)', onchain: false };
+        : { chain: null, label: offchainLabel, onchain: false };
+    const mintsOnLabel = t('modal.createProposal.mintTarget.mintsOn', 'Mints on');
+    const noWalletTooltip = t('modal.createProposal.mintTarget.noWalletTooltip', 'No wallet connected; the proposal stays in this browser.');
     const mintChainHtml = `
         <div class="proposal-mint-target ${mintTarget.onchain ? 'proposal-mint-target--onchain' : 'proposal-mint-target--offchain'}"
-             title="${mintTarget.identity ? String(mintTarget.identity) : 'No wallet connected; the proposal stays in this browser.'}">
+             title="${mintTarget.identity ? String(mintTarget.identity) : noWalletTooltip}">
             <i class="fas ${mintTarget.onchain ? 'fa-link' : 'fa-link-slash'}" aria-hidden="true"></i>
-            <span>${mintTarget.onchain ? 'Mints on' : ''} <b>${mintTarget.label}</b></span>
+            <span>${mintTarget.onchain ? mintsOnLabel : ''} <b>${mintTarget.label}</b></span>
         </div>`;
 
     currentProposalTool = null;

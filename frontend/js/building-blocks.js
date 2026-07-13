@@ -1838,7 +1838,8 @@ function showBlockifyModal() {
         document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
         // Add event listeners
-        document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
+        document.getElementById('blockify-close').addEventListener('click', requestCloseBlockifyModal);
+        document.addEventListener('keydown', handleBlockifyKeydown);
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) {
             doneButton.addEventListener('click', saveBlockifyDesignForProposal);
@@ -1891,6 +1892,10 @@ function showBlockifyModal() {
                         generatedBuildingFeature.properties.height = currentBuildingHeight;
                     }
                     updateBlockify3DScene(generatedBuildingFeature);
+                    // The draft carries its own copy of the feature and it is what gets published
+                    // (serializeProposal reads editorPayload.context.buildings). Nothing regenerates
+                    // the footprint here, so without this autosave a height-only edit was dropped.
+                    autosaveBlockifyDraft();
                 }
             });
         }
@@ -2002,12 +2007,8 @@ function showBlockifyModal() {
             });
         }
 
-        // Close modal when clicking outside the container
-        modalDiv.addEventListener('click', (e) => {
-            if (e.target === modalDiv) {
-                closeBlockifyModal();
-            }
-        });
+        // No outside-click close: a stray click on the backdrop would throw the design away.
+        // The editor is left only via the X (discard, after confirming) or Done (save).
         // Prevent the 3D canvas from being occluded by map interactions
         const threeDiv = document.getElementById('blockify-3d');
         if (threeDiv) {
@@ -2147,17 +2148,36 @@ function syncBlockifyControlsFromState() {
     if (typeof updateExistingValueLabels === 'function') updateExistingValueLabels();
 }
 
-// Function to close the blockify modal
+// Is there a generated design in the editor right now?
+function blockifyHasGeneratedDesign() {
+    return !!generatedBuildingFeature
+        || (Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length > 0);
+}
+
+// The X / Esc path. Closing NEVER saves — only "Done" (saveBlockifyDesignForProposal) does. When
+// the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette creation)
+// the design would be lost, so ask first; declining keeps the editor open.
+async function requestCloseBlockifyModal() {
+    if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+        const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: blockifyHasGeneratedDesign() });
+        if (!proceed) return;
+    }
+    closeBlockifyModal();
+}
+
+// Escape closes the editor exactly like the X does (discard, after confirming).
+function handleBlockifyKeydown(event) {
+    if (event.key !== 'Escape') return;
+    if (!document.getElementById('blockify-modal')) return;
+    event.preventDefault();
+    requestCloseBlockifyModal();
+}
+
+// Tear the blockify modal down. This is pure teardown: the design is committed (or not) by the
+// caller — "Done" saves first, X/Esc discards the design session first.
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
-    const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
-    const hasDraftGeometry = !!generatedBuildingFeature
-        || (Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length > 0);
-    if (!preservePending && hasDraftGeometry && activeDraft
-        && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
-        saveBlockifyDesignForProposal();
-        return;
-    }
+    document.removeEventListener('keydown', handleBlockifyKeydown);
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -2206,12 +2226,10 @@ function closeBlockifyModal(options = {}) {
         const setbackSlider = document.getElementById('setback-slider');
         const widthSlider = document.getElementById('width-slider');
 
-        if (closeBtn) closeBtn.removeEventListener('click', closeBlockifyModal);
+        if (closeBtn) closeBtn.removeEventListener('click', requestCloseBlockifyModal);
         if (doneBtn) doneBtn.removeEventListener('click', saveBlockifyDesignForProposal);
         if (setbackSlider) setbackSlider.removeEventListener('input', null);
         if (widthSlider) widthSlider.removeEventListener('input', null);
-
-        modal.removeEventListener('click', closeBlockifyModal);
 
         // Remove the modal
         modal.remove();
@@ -2234,7 +2252,12 @@ function closeBlockifyModal(options = {}) {
             window.pendingBuildingFromBlockify = null;
         }
     }
-    if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
+    if (typeof window !== 'undefined') {
+        // Only "Done" commits — it tears down with preservePending after saving. Every other
+        // close abandons the design session, leaving the edited object exactly as it was.
+        if (!preservePending) window.discardProposalDraftDesignSession?.();
+        window.finishProposalDraftDesignSession?.();
+    }
 }
 
 // Display the block on the blockify map

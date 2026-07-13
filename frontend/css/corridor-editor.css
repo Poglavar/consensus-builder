@@ -49,26 +49,15 @@
     color: #555;
 }
 
-/* Width slider + readout: 10 cm steps up to the widest permitted preset (Boulevard, 80 m). */
-.corridor-editor-width-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    margin-left: 14px;
-    min-width: 0;
-}
-
-.corridor-editor-width-slider {
-    flex: 1;
-    min-width: 0;
-    accent-color: #2563eb;
-}
-
+/* The total width is a READOUT, not a control: it is the sum of the lanes. Sized like a headline
+   number because it is the one figure the whole panel is about. */
 .corridor-editor-total {
     white-space: nowrap;
-    min-width: 56px;
     text-align: right;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #111;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Obstacle chips for post-placement widening: buildings block Apply, structures just inform. */
@@ -98,7 +87,7 @@
     border: 1px solid #f5d9a8;
 }
 
-/* The total is fixed by construction; flash it when an edit is refused for want of room. */
+/* Flash the total when an edit is refused — a lane below its minimum, or the 80 m cap. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
     color: #b3261e;
@@ -112,7 +101,8 @@
 
 .corridor-editor-body {
     overflow-y: auto;
-    padding: 0 16px 12px;
+    /* The top padding is not decoration: without it the scroll container clips the first group label. */
+    padding: 6px 16px 12px;
 }
 
 /* Scale diagram: each lane's share of the panel is its share of the road. */
@@ -133,24 +123,57 @@
     min-width: 2px;
 }
 
+/* The selected lane has to be findable at a glance in BOTH places — the diagram and the row list are
+   one selection seen twice, so they get the same blue. */
 .corridor-section-lane--selected {
-    box-shadow: inset 0 0 0 2px #1a73e8;
+    box-shadow: inset 0 0 0 3px #1a73e8, inset 0 0 0 5px rgba(255, 255, 255, 0.9);
+    z-index: 1;
 }
 
+/* Flex, not grid: at 400 px the action buttons drop to a second line instead of crushing the
+   type select. The landscape select takes a whole line of its own. */
 .corridor-lane-row {
-    display: grid;
-    grid-template-columns: 14px minmax(0, 1fr) 64px 14px auto auto auto;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
-    padding: 4px 2px;
+    padding: 4px 4px;
     border-radius: 4px;
+    border-left: 3px solid transparent;
+    outline: none;
 }
 
 .corridor-lane-row--selected {
-    background: #eef4fe;
+    background: #e8f0fe;
+    border-left-color: #1a73e8;
+    box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.35);
+}
+
+/* Grab affordance for the drag-to-reorder handle (the ↑/↓ buttons remain the touch/keyboard path). */
+.corridor-lane-handle {
+    flex: 0 0 auto;
+    width: 14px;
+    text-align: center;
+    color: #9aa0a6;
+    cursor: grab;
+    user-select: none;
+    line-height: 1;
+}
+
+.corridor-lane-handle:active {
+    cursor: grabbing;
+}
+
+.corridor-lane-row--dragging {
+    opacity: 0.45;
+}
+
+.corridor-lane-row--drop {
+    box-shadow: inset 0 -2px 0 0 #1a73e8;
 }
 
 .corridor-lane-swatch {
+    flex: 0 0 auto;
     width: 12px;
     height: 22px;
     border-radius: 2px;
@@ -168,8 +191,16 @@
     min-width: 0;
 }
 
+.corridor-lane-type {
+    flex: 1 1 110px;
+}
+
+.corridor-lane-width {
+    flex: 0 0 62px;
+}
+
 .corridor-lane-landscape {
-    grid-column: 2 / 8;
+    flex: 1 0 100%;
     width: 100%;
     margin-bottom: 3px;
 }
@@ -177,6 +208,36 @@
 .corridor-lane-unit {
     font-size: 0.78rem;
     color: #777;
+}
+
+/* The type's standard width: a hint while the lane is at it, a one-click way back once it is not. */
+.corridor-lane-standard {
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    color: #9aa0a6;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+button.corridor-lane-standard--reset {
+    border: 1px solid #cfd8e3;
+    border-radius: 4px;
+    background: #f5f8ff;
+    color: #1a73e8;
+    cursor: pointer;
+    padding: 3px 5px;
+    line-height: 1;
+}
+
+button.corridor-lane-standard--reset:hover {
+    background: #e8f0fe;
+}
+
+.corridor-lane-actions {
+    flex: 0 0 auto;
+    display: inline-flex;
+    gap: 4px;
+    margin-left: auto;
 }
 
 .corridor-lane-btn {
@@ -198,9 +259,117 @@
     color: #b3261e;
 }
 
-.corridor-add-lane {
-    margin-top: 10px;
-    width: 100%;
+/* Presets and palette: the two "make the road" controls. The presets stamp a whole standard
+   cross-section; the palette adds one lane at its standard width, and the road gets that much wider. */
+.corridor-editor-group-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.corridor-editor-presets {
+    margin-bottom: 12px;
+}
+
+.corridor-editor-preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.corridor-preset-btn {
+    flex: 1 1 auto;
+    border: 1px solid #cfd8e3;
+    border-radius: 999px;
+    background: #f7f9fc;
+    color: #1f2937;
+    font-size: 0.76rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.corridor-preset-btn:hover {
+    background: #e8f0fe;
+    border-color: #1a73e8;
+    color: #1a73e8;
+}
+
+/* Sits above the lane rows: adding a lane must not be something you have to scroll a boulevard's
+   fifteen rows to reach. */
+.corridor-editor-palette {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.corridor-editor-palette-buttons {
+    display: grid;
+    /* Two columns at the panel's full width: a lane type's name ("Biciklistička staza") has to be
+       readable, not elided into a tooltip. */
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 5px;
+}
+
+.corridor-palette-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    min-width: 0;
+}
+
+.corridor-palette-btn:hover {
+    border-color: #1a73e8;
+    background: #f5f8ff;
+}
+
+.corridor-palette-swatch {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 18px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.corridor-palette-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.corridor-palette-width {
+    flex: 0 0 auto;
+    color: #9aa0a6;
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Said out loud rather than silently refused: the one edit the editor can still turn down. */
+.corridor-editor-notice {
+    background: #fef3e2;
+    color: #9a5b13;
+    border: 1px solid #f5d9a8;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+}
+
+.corridor-editor-hint {
+    font-size: 0.72rem;
+    color: #9aa0a6;
+    margin: 8px 0 4px;
 }
 
 .corridor-editor-footer {
@@ -211,16 +380,27 @@
     border-top: 1px solid #eee;
 }
 
-/* Mobile: the lane rows lose the arrows' breathing room first. */
+/* Mobile: the row wraps of its own accord (flex), so only the spacing needs tightening. */
 @media (max-width: 420px) {
     .corridor-lane-row {
-        grid-template-columns: 10px minmax(0, 1fr) 54px 12px auto auto auto;
         gap: 4px;
+    }
+
+    .corridor-lane-type {
+        flex: 1 1 90px;
     }
 
     .corridor-lane-btn {
         width: 26px;
         height: 26px;
+    }
+
+    .corridor-editor-palette-buttons {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+    .corridor-editor-total {
+        font-size: 1.15rem;
     }
 }
 
@@ -288,6 +468,12 @@
     .corridor-lane-btn {
         width: 38px;
         height: 38px;
+    }
+
+    /* Finger-sized targets for the two things that build the road. */
+    .corridor-preset-btn,
+    .corridor-palette-btn {
+        min-height: 38px;
     }
 }
 

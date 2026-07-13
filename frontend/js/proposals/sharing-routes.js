@@ -1046,20 +1046,17 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             bodyLines.push(`<p>${tShare('summary.appliedFrom', 'Applied proposals from {{author}}.', { author: escapeHtml(authorName) })}</p>`);
             if (actuallyApplied.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.appliedCount', '{{count}} applied.', {
-                    count: actuallyApplied.length,
-                    suffix: actuallyApplied.length === 1 ? '' : 's'
+                    count: actuallyApplied.length
                 })}</p>`);
             }
             if (skipped.length > 0) {
-                bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposal{{suffix}} (already present).', {
-                    count: skipped.length,
-                    suffix: skipped.length === 1 ? '' : 's'
+                bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposals (already present).', {
+                    count: skipped.length
                 })}</p>`);
             }
             if (failures.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.failedCount', '{{count}} failed.', {
-                    count: failures.length,
-                    suffix: failures.length === 1 ? '' : 's'
+                    count: failures.length
                 })}</p>`);
             }
             if (blockedAncestors.size > 0) {
@@ -1118,8 +1115,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             const failureCount = failures.length;
             const total = failureCount + blockedCount;
             showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals_summary', `Unable to apply ${total} shared proposal${total === 1 ? '' : 's'} (missing ancestors or errors).`, {
-                count: total,
-                suffix: total === 1 ? '' : 's'
+                count: total
             }), 6000, 'error');
         }
 
@@ -2408,17 +2404,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const bodyLines = [];
         if (applied.length > 0) {
             const appliedItems = renderList(applied, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposal{{suffix}}:', {
-                count: applied.length,
-                suffix: applied.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposals:', {
+                count: applied.length
             })}</p>${appliedItems}`);
         }
         if (skipped.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');
             const skippedItems = renderList(skipped, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposal{{suffix}} (already present):', {
-                count: skipped.length,
-                suffix: skipped.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposals (already present):', {
+                count: skipped.length
             })}</p>${skippedItems}`);
         }
         if (overlapped.length > 0) {
@@ -2442,9 +2436,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = item.reason ? ` · ${escape(item.reason)}` : '';
                 return `<li>${label}${type}${reason}</li>`;
             });
-            bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposal{{suffix}}:', {
-                count: failed.length,
-                suffix: failed.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposals:', {
+                count: failed.length
             })}</p>${failedItems}`);
         }
 
@@ -2540,9 +2533,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const bits = [];
             const appliedOrPresent = applied.length + skipped.length;
             if (appliedOrPresent > 0) {
-                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposal{{suffix}}.', {
-                    count: appliedOrPresent,
-                    suffix: appliedOrPresent === 1 ? '' : 's'
+                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposals.', {
+                    count: appliedOrPresent
                 }));
             }
             if (overlapped.length > 0) {

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!-- Main guide in English: explains the "build first, propose second" workflow, the Build
+     palette, drafts, views and sharing. The other how-to-use-*.html guides go deeper on
+     individual tools. Croatian counterpart: kako-koristiti.html. -->
+<html lang="en">
+
+<head>
+    <title>How to use — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>How to use</h1>
+        <div class="sidebar-links">
+            <a href="index.html?lang=en" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to the app
+            </a>
+            <a href="#workflow" class="back-link"><i class="fas fa-route"></i> The workflow</a>
+            <a href="#palette" class="back-link"><i class="fas fa-shapes"></i> The “Build” palette</a>
+            <a href="#drafts" class="back-link"><i class="fas fa-pen-ruler"></i> Drafts</a>
+            <a href="#views" class="back-link"><i class="fas fa-cube"></i> Views</a>
+            <a href="#sharing" class="back-link"><i class="fas fa-share-nodes"></i> Sharing</a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti.html">HR</a>
+            <a href="how-to-use.html" class="is-current">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Build first, propose second</h2>
+                <p>
+                    Consensus Builder works like a city-building game. You don't start by filling in a form — you start
+                    by picking land and <strong>building</strong> something on it. Only once the design looks the way
+                    you want it do you write the terms, and that turns it into a proposal other people can decide on.
+                </p>
+            </div>
+
+            <section id="workflow">
+                <h2>1. The workflow</h2>
+
+                <div class="flow-strip">
+                    <div class="flow-step">
+                        <i class="fas fa-hand-pointer"></i>
+                        <strong>Select</strong>
+                        <span>One parcel, several, or a whole block</span>
+                    </div>
+                    <i class="fas fa-chevron-right flow-arrow"></i>
+                    <div class="flow-step">
+                        <i class="fas fa-shapes"></i>
+                        <strong>Build</strong>
+                        <span>Click a tool in the palette</span>
+                    </div>
+                    <i class="fas fa-chevron-right flow-arrow"></i>
+                    <div class="flow-step">
+                        <i class="fas fa-pen-ruler"></i>
+                        <strong>Design</strong>
+                        <span>Shape it, tune the parameters</span>
+                    </div>
+                    <i class="fas fa-chevron-right flow-arrow"></i>
+                    <div class="flow-step">
+                        <i class="fas fa-file-signature"></i>
+                        <strong>Terms</strong>
+                        <span>Name, description, offer, ownership</span>
+                    </div>
+                    <i class="fas fa-chevron-right flow-arrow"></i>
+                    <div class="flow-step">
+                        <i class="fas fa-share-nodes"></i>
+                        <strong>Share</strong>
+                        <span>Apply it, look at it, send it</span>
+                    </div>
+                </div>
+
+                <ol class="steps">
+                    <li class="step">
+                        <h3>Select land on the map</h3>
+                        <p>
+                            Click a parcel. For anything spanning several parcels, turn on <span class="ui-label">Select
+                            multiple parcels</span> and click them one by one. The parcel panel opens — go to the
+                            <span class="ui-label">Proposals</span> tab.
+                        </p>
+                        <div class="callout note">
+                            <i class="fas fa-circle-info"></i>
+                            If you select a single parcel that sits inside a block, the app will ask:
+                            <em>“Only one parcel is selected. Did you mean the whole block (N parcels)?”</em>
+                            Choose <span class="ui-label">Yes, select the block</span> and it selects the whole block
+                            for you.
+                        </div>
+                        <figure class="howto-shot">
+                            <div class="shot-frame">
+                                <img src="images/howto/hub-01-odabir.png"
+                                    alt="A selected parcel with the Proposals tab and the Build palette open"
+                                    onerror="this.style.display='none'">
+                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                            </div>
+                            <figcaption>A selected parcel and the “Proposals” tab with the tool palette.</figcaption>
+                        </figure>
+                    </li>
+
+                    <li class="step">
+                        <h3>Click a tool in the “Build” palette</h3>
+                        <p>
+                            Every tool drops you straight into its designer — no intermediate step. Buildings, land
+                            readjustment and freeform open an editor; <span class="ui-label">Park</span>,
+                            <span class="ui-label">Square</span> and <span class="ui-label">Lake</span> are applied in
+                            a single click. The full list of tools is <a href="#palette">in the next section</a>.
+                        </p>
+                    </li>
+
+                    <li class="step">
+                        <h3>Design it</h3>
+                        <p>
+                            In the editor you change the shape, the typology, the number of floors and the rest of the
+                            parameters. You see the result on the map as you work. When you're happy, confirm the design
+                            — usually with <span class="ui-label">Done</span>.
+                        </p>
+                        <figure class="howto-shot">
+                            <div class="shot-frame">
+                                <img src="images/howto/hub-02-dizajn.png"
+                                    alt="A design editor open over the selected parcels"
+                                    onerror="this.style.display='none'">
+                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                            </div>
+                            <figcaption>The design editor works directly on the map.</figcaption>
+                        </figure>
+                    </li>
+
+                    <li class="step">
+                        <h3>Write the terms</h3>
+                        <p>
+                            Once the design is done, the <span class="ui-label">Create Proposal</span> window opens.
+                            This is where everything the design can't say goes: <span class="ui-label">Name</span>,
+                            <span class="ui-label">Description</span>, <span class="ui-label">Offer</span>, and who
+                            receives ownership. Under <span class="ui-label">Options</span> you can add conditionality,
+                            an expiry, offer decay or a deposit.
+                        </p>
+                        <figure class="howto-shot">
+                            <div class="shot-frame">
+                                <img src="images/howto/hub-03-uvjeti.png"
+                                    alt="The Create Proposal window with the fields for the terms"
+                                    onerror="this.style.display='none'">
+                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                            </div>
+                            <figcaption>“Create Proposal” comes <em>after</em> the design, not before it.</figcaption>
+                        </figure>
+                    </li>
+
+                    <li class="step">
+                        <h3>Apply it and look at it</h3>
+                        <p>
+                            The proposal exists, but the map doesn't change until you explicitly apply it. In the
+                            proposal details, click <span class="ui-label">Apply to map</span>, then look at it in
+                            <a href="how-to-use-views.html">3D</a> before you share it.
+                        </p>
+                    </li>
+                </ol>
+            </section>
+
+            <section id="palette" class="guide-section">
+                <h2>2. The “Build” palette</h2>
+                <p>
+                    The palette lives in the <span class="ui-label">Proposals</span> tab of the parcel panel and shows
+                    everything you can build on the current selection.
+                </p>
+
+                <div class="table-scroll">
+                    <table class="tool-table">
+                        <thead>
+                            <tr>
+                                <th>Tool</th>
+                                <th>What it does</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="is-grouped">
+                                <td><i class="fas fa-city"></i>Block</td>
+                                <td>Fills the block with buildings from an urban rule (buildable envelope, height,
+                                    setbacks). <a href="how-to-use-buildings.html">Buildings guide →</a></td>
+                            </tr>
+                            <tr class="is-grouped">
+                                <td><i class="fas fa-grip-horizontal"></i>Row houses</td>
+                                <td>A terrace of attached houses across the selected parcels. Needs
+                                    <strong>at least two</strong> parcels.</td>
+                            </tr>
+                            <tr class="is-grouped">
+                                <td><i class="fas fa-home"></i>Detached</td>
+                                <td>One standalone house on each selected parcel.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-ruler-combined"></i>Freeform</td>
+                                <td>A building you draw yourself, no rules — for when the typologies don't fit.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-vector-square"></i>Land readjustment</td>
+                                <td>Pools the selected parcels and re-divides them into a tidier layout.
+                                    <a href="how-to-use-reparcellization.html">Guide →</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-tree"></i>Park</td>
+                                <td>A park across the selected parcels, in one click. You add the furniture (trees,
+                                    benches, paths) afterwards. <a href="how-to-use-park-square.html">Guide →</a></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-chess-board"></i>Square</td>
+                                <td>A public square, in one click. It comes with a statue; fountains, tables and
+                                    benches you add afterwards.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-water"></i>Lake</td>
+                                <td>A body of water across the selected parcels. The parcels must be contiguous.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-handshake"></i>Offer</td>
+                                <td>The one tool that builds nothing: a purchase or a transfer of ownership, with no
+                                    change on the map.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout note">
+                    <i class="fas fa-road"></i>
+                    <strong>Roads and tracks are not in the palette.</strong> They sit right next to it, as
+                    <span class="ui-label">Draw Road</span> and <span class="ui-label">Draw Track</span>, because they
+                    aren't built <em>on</em> parcels — they cut through them.
+                    <a href="how-to-use-road.html">Roads and tracks guide →</a>
+                </div>
+
+                <div class="callout tip">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Block, Row houses and Detached</strong> are <em>rules</em> — the shape falls out of the
+                    parameters you set. <strong>Freeform</strong> is the opposite: you draw exactly what you want. If a
+                    rule is boxing you in, switch to freeform.
+                </div>
+            </section>
+
+            <section id="drafts" class="guide-section">
+                <h2>3. Drafts</h2>
+                <p>
+                    A design you didn't finish is not lost. It is saved as a <span class="ui-label">Draft</span> and
+                    waits for you in the drafts list — resume it later, edit it, or discard it.
+                </p>
+                <p>
+                    The draft editor has <span class="ui-label">Design</span>,
+                    <span class="ui-label">Parcels</span>, <span class="ui-label">Ownership</span>,
+                    <span class="ui-label">Terms</span> and <span class="ui-label">Details</span> tabs, so you can work
+                    on each part of the proposal separately. <span class="ui-label">Review changes</span> shows you
+                    exactly what changes, and <span class="ui-label">Create proposal</span> publishes it.
+                </p>
+                <div class="callout note">
+                    <i class="fas fa-lock"></i>
+                    A published proposal is <strong>immutable</strong>. Publishing from a draft creates a new proposal —
+                    the original is neither changed nor deleted. Editing is therefore always a matter of creating a new
+                    version, never of patching the old one.
+                </div>
+            </section>
+
+            <section id="views" class="guide-section">
+                <h2>4. Views</h2>
+                <p>
+                    You can look at the same proposal in four ways. The buttons are on the map, top right.
+                </p>
+                <div class="view-list">
+                    <article>
+                        <span class="view-number">2D</span>
+                        <div>
+                            <h3>The map</h3>
+                            <p>For selecting parcels, drawing, and checking boundaries. This is where the work happens.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span class="view-number">3D</span>
+                        <div>
+                            <h3>The spatial model</h3>
+                            <p>Buildings, roads and public space as 3D objects — plus a panel that works out what the
+                                proposal is worth to you.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span class="view-number"><i class="fas fa-globe"></i></span>
+                        <div>
+                            <h3>Realistic context</h3>
+                            <p>Your proposal standing inside Google's photorealistic model of the city.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span class="view-number"><i class="fas fa-person-walking"></i></span>
+                        <div>
+                            <h3>Walk</h3>
+                            <p>Eye level, from a pedestrian's point of view. Only in cities that support it.</p>
+                        </div>
+                    </article>
+                </div>
+                <p style="margin-top:16px">
+                    <a href="how-to-use-views.html">The full guide to views and 3D →</a>
+                </p>
+            </section>
+
+            <section id="sharing" class="guide-section">
+                <h2>5. Sharing</h2>
+                <div class="guide-cards basics-grid">
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-share-nodes"></i></div>
+                        <h3>One proposal</h3>
+                        <p>Open the proposal and click <span class="ui-label">Share</span>. You get a link that opens
+                            exactly that intervention.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-diagram-project"></i></div>
+                        <h3>The whole plan</h3>
+                        <p>Apply every proposal you want to send, then in the sidebar click
+                            <span class="ui-label">Share entire plan (all proposals)</span>. The link preserves their
+                            order and their dependencies.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-clone"></i></div>
+                        <h3>A second variant</h3>
+                        <p>Want to try an alternative? Copy the proposal into a new one instead of losing the existing
+                            one — both stay around, side by side.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2>The detailed guides</h2>
+                <div class="guide-cards">
+                    <a href="how-to-use-buildings.html" class="guide-card">
+                        <div class="card-icon"><i class="fas fa-city"></i></div>
+                        <h3>Buildings</h3>
+                        <p>Block, row houses, detached and freeform — and how an urban rule shapes the result.</p>
+                    </a>
+                    <a href="how-to-use-road.html" class="guide-card">
+                        <div class="card-icon"><i class="fas fa-road"></i></div>
+                        <h3>Roads and tracks</h3>
+                        <p>Drawing the alignment, the cross-section with its lanes and sidewalks, and the new blocks a
+                            road creates.</p>
+                    </a>
+                    <a href="how-to-use-park-square.html" class="guide-card">
+                        <div class="card-icon"><i class="fas fa-tree"></i></div>
+                        <h3>Park, square and lake</h3>
+                        <p>Public space in one click, then the furniture editor: trees, benches, paths, fountains.</p>
+                    </a>
+                    <a href="how-to-use-reparcellization.html" class="guide-card">
+                        <div class="card-icon"><i class="fas fa-vector-square"></i></div>
+                        <h3>Land readjustment</h3>
+                        <p>Redividing a messy block into usable parcels while keeping everyone's ownership share.</p>
+                    </a>
+                    <a href="how-to-use-views.html" class="guide-card">
+                        <div class="card-icon"><i class="fas fa-cube"></i></div>
+                        <h3>Views and 3D</h3>
+                        <p>2D, 3D, realistic context and walk — and how to read a proposal's gain.</p>
+                    </a>
+                </div>
+            </section>
+
+            <div class="callout tip final-tip">
+                <i class="fas fa-lightbulb"></i>
+                Remember the order: <strong>select → build → design → terms → apply → share</strong>. When something
+                confuses you, it is almost always because you are trying to describe an intervention before you have
+                built it.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

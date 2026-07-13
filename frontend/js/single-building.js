@@ -1262,14 +1262,32 @@
         }
     }
 
+    // The X / Esc path. Closing NEVER saves — only "Done" (confirmSingleBuilding) does. When the
+    // editor is running a commit-on-confirm session (a geometry edit, or a Build-palette creation)
+    // the design would be lost, so ask first; declining keeps the editor open.
+    async function requestCloseSingleBuildingModal() {
+        if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+            const proceed = await window.confirmDiscardProposalDesignSession({
+                hasDesign: buildingEntries.some(entry => entry && entry.feature)
+            });
+            if (!proceed) return;
+        }
+        closeSingleBuildingModal();
+    }
+
+    // Escape closes the editor exactly like the X does (discard, after confirming).
+    function handleSingleBuildingKeydown(event) {
+        if (event.key !== 'Escape') return;
+        if (!singleModal) return;
+        event.preventDefault();
+        requestCloseSingleBuildingModal();
+    }
+
+    // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
+    // X/Esc discards the design session first.
     function closeSingleBuildingModal(options = {}) {
         const { preservePending = false } = options;
-        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
-        if (!preservePending && buildingEntries.some(entry => entry && entry.feature) && activeDraft
-            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
-            confirmSingleBuilding();
-            return;
-        }
+        document.removeEventListener('keydown', handleSingleBuildingKeydown);
         handleRectDragEnd();
         if (singleMap) {
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
@@ -1297,7 +1315,12 @@
             singleModal = null;
         }
         if (map && map.invalidateSize) map.invalidateSize();
-        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
+        if (typeof window !== 'undefined') {
+            // Only "Done" commits — it tears down with preservePending after saving. Every other
+            // close abandons the design session, leaving the edited object exactly as it was.
+            if (!preservePending) window.discardProposalDraftDesignSession?.();
+            window.finishProposalDraftDesignSession?.();
+        }
     }
 
     function confirmSingleBuilding() {
@@ -1775,6 +1798,7 @@
             buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
             addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Add'),
             deleteLabel: translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete'),
+            renameLabel: translateSingleBuildingText('modal.singleBuilding.renameLabel', 'Rename'),
             parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
             widthLabel: translateSingleBuildingText('modal.singleBuilding.widthLabel', 'Width (m):'),
             lengthLabel: translateSingleBuildingText('modal.singleBuilding.lengthLabel', 'Length (m):'),
@@ -1825,7 +1849,7 @@
                     <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                         <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;"></select>
                         <input type="text" id="single-building-name-input" maxlength="20" style="display:none; flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;" placeholder="Building Name">
-                        <button id="single-building-rename" class="btn btn-light" type="button" title="Rename" aria-label="Rename" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">T</button>
+                        <button id="single-building-rename" class="btn btn-light" type="button" title="${modalText.renameLabel}" aria-label="${modalText.renameLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">T</button>
                         <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
                         <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
                     </div>
@@ -1859,7 +1883,8 @@
             document.body.appendChild(modal);
             singleModal = modal;
 
-            document.getElementById('single-building-close').addEventListener('click', closeSingleBuildingModal);
+            document.getElementById('single-building-close').addEventListener('click', requestCloseSingleBuildingModal);
+            document.addEventListener('keydown', handleSingleBuildingKeydown);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
             const wSlider = document.getElementById('single-width-slider');
@@ -2078,8 +2103,8 @@
                 });
             }
 
-            // Close when clicking outside
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeSingleBuildingModal(); });
+            // No outside-click close: a stray click on the backdrop would throw the design away.
+            // The editor is left only via the X (discard, after confirming) or Done (save).
         }
 
         if (!singleMap) {

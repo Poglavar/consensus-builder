@@ -148,14 +148,52 @@
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, replacer);
     }
 
-    function translate(key, params = {}) {
+    // CLDR plural category for the active language. Slavic languages need three forms (1 / 2-4 / 5+),
+    // which is why a translation may declare its key as an object of `one`/`few`/`other` variants.
+    function pluralCategory(count) {
+        try {
+            return new Intl.PluralRules(currentLanguage).select(count);
+        } catch (_) {
+            return count === 1 ? 'one' : 'other';
+        }
+    }
+
+    // A param value may itself be a translation reference — { key: '...', count: n } — so a phrase that
+    // needs its own plural form can be embedded in a sentence and still follow a language change.
+    function resolveParams(params, depth) {
+        if (!params || typeof params !== 'object') return {};
+        const resolved = {};
+        Object.keys(params).forEach(name => {
+            const value = params[name];
+            const isReference = depth < 3 && value && typeof value === 'object' && typeof value.key === 'string';
+            resolved[name] = isReference ? translate(value.key, value, depth + 1) : value;
+        });
+        return resolved;
+    }
+
+    function lookupTemplate(key, params) {
+        const languageTable = translations[currentLanguage] || {};
+        const fallbackTable = translations[FALLBACK_LANGUAGE] || {};
+        const count = params ? params.count : undefined;
+
+        if (typeof count === 'number' && isFinite(count)) {
+            const forms = [pluralCategory(count), 'other'];
+            for (const form of forms) {
+                const pluralKey = `${key}.${form}`;
+                const template = languageTable[pluralKey] ?? fallbackTable[pluralKey];
+                if (template != null) return template;
+            }
+        }
+
+        return languageTable[key] ?? fallbackTable[key] ?? key;
+    }
+
+    function translate(key, params = {}, depth = 0) {
         const safeKey = key != null ? String(key) : '';
         if (!safeKey) return '';
 
-        const languageTable = translations[currentLanguage] || {};
-        const fallbackTable = translations[FALLBACK_LANGUAGE] || {};
-        const template = languageTable[safeKey] ?? fallbackTable[safeKey] ?? safeKey;
-        return interpolate(template, params);
+        const resolved = resolveParams(params, depth);
+        return interpolate(lookupTemplate(safeKey, resolved), resolved);
     }
 
     function parseParams(rawParams) {

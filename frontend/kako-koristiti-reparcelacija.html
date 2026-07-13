@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- Vodič (na hrvatskom) za izradu prijedloga reparcelacije, korak po korak, sa
-     slotovima za snimke zaslona. Statična stranica po uzoru na roadmap.html. -->
+<!-- Vodič na hrvatskom za reparcelaciju: udruživanje čestica i njihova ponovna podjela,
+     automatski (Sweep line) ili ručno, uz bilancu vlasnika (uloženo/dodijeljeno/saldo).
+     Engleski parnjak: how-to-use-reparcellization.html. -->
 <html lang="hr">
 
 <head>
-    <title>Kako izraditi prijedlog reparcelacije — Consensus Builder</title>
+    <title>Reparcelacija — Consensus Builder</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
@@ -22,178 +23,175 @@
                 <i class="fas fa-arrow-left"></i>
                 Sve upute
             </a>
-            <a href="index.html" class="back-link">
+            <a href="index.html?lang=hr" class="back-link">
                 <i class="fas fa-map"></i>
                 Natrag na aplikaciju
             </a>
         </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-reparcelacija.html" class="is-current">HR</a>
+            <a href="how-to-use-reparcellization.html">EN</a>
+        </div>
     </div>
 
-    <div class="main-content">
+    <main class="main-content">
         <div class="container">
             <div class="intro">
-                <h2>Prijedlog reparcelacije</h2>
+                <h2>Udruži pa iznova podijeli</h2>
                 <p>
-                    Reparcelacija spaja odabrane parcele u jednu površinu i zatim je iznova dijeli na novi raspored
-                    parcela. Ne radi se o ručnom spajanju pa razdvajanju — odabereš parcele, odabereš
-                    <em>Reparcelacija</em>, a algoritam <strong>Sweep line</strong> automatski preraspodijeli granice.
-                    Ti pregledaš rezultat i potvrdiš.
+                    Reparcelacija spaja odabrane čestice u jednu površinu i onda je iznova dijeli na uredniji raspored.
+                    Nije riječ o ručnom spajanju pa razdvajanju: vlasnički udjeli se <strong>čuvaju</strong>, a
+                    aplikacija ti pokazuje tko je koliko uložio i koliko dobiva natrag.
                 </p>
             </div>
 
             <ol class="steps">
                 <li class="step">
-                    <h3>Odaberi parcele na karti</h3>
+                    <h3>Odaberi povezane čestice</h3>
                     <p>
-                        Uključi višestruki odabir i izaberi parcele koje želiš iznova podijeliti. Ploča nosi naslov
-                        <span class="ui-label">Višestruki odabir parcela</span>, a odabrane su navedene pod
-                        <span class="ui-label">Odabrane parcele:</span>. Parcele moraju biti
-                        <strong>povezane</strong> — inače slanje ne uspijeva uz poruku
-                        <em>„Parcele nisu povezane”</em>.
+                        Uključi <span class="ui-label">Odaberi više parcela</span> i označi blok koji želiš
+                        preurediti. Čestice moraju biti <strong>povezane</strong> — inače slanje ne uspijeva.
                     </p>
                     <figure class="howto-shot">
                         <div class="shot-frame">
                             <img src="images/howto/reparcelacija-01-odabir.png"
-                                alt="Višestruki odabir parcela" onerror="this.style.display='none'">
+                                alt="Višestruki odabir povezanih čestica" onerror="this.style.display='none'">
                             <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
                         </div>
-                        <figcaption>Višestruki odabir povezanih parcela.</figcaption>
+                        <figcaption>Odabir povezanih čestica koje ulaze u reparcelaciju.</figcaption>
                     </figure>
                 </li>
 
                 <li class="step">
-                    <h3>Otvori prozor za izradu prijedloga</h3>
+                    <h3>Pokreni alat</h3>
                     <p>
-                        Klikni gumb <span class="ui-label">Kreiraj prijedlog</span> u odjeljku prijedloga. Otvara se
-                        prozor naslova <span class="ui-label">Kreiraj prijedlog</span>.
-                    </p>
-                    <figure class="howto-shot">
-                        <div class="shot-frame">
-                            <img src="images/howto/reparcelacija-02-modal.png"
-                                alt="Prozor Kreiraj prijedlog" onerror="this.style.display='none'">
-                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                        </div>
-                        <figcaption>Prozor „Kreiraj prijedlog”.</figcaption>
-                    </figure>
-                </li>
-
-                <li class="step">
-                    <h3>Odaberi cilj: Reparcelacija</h3>
-                    <p>
-                        Pod <span class="ui-label">Cilj prijedloga:</span> klikni
-                        <span class="ui-label">Reparcelacija</span>. Time se odmah pokreće algoritam i otvara alat za
-                        reparcelaciju.
-                    </p>
-                    <figure class="howto-shot">
-                        <div class="shot-frame">
-                            <img src="images/howto/reparcelacija-03-cilj.png"
-                                alt="Odabir cilja Reparcelacija" onerror="this.style.display='none'">
-                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                        </div>
-                        <figcaption>Odabir cilja „Reparcelacija”.</figcaption>
-                    </figure>
-                </li>
-
-                <li class="step">
-                    <h3>(Po želji) postavi vlasništvo i algoritam</h3>
-                    <p>
-                        Pod <span class="ui-label">Vlasništvo</span> biraš
-                        <span class="ui-label">Jedan vlasnik</span> ili <span class="ui-label">Više vlasnika</span>.
-                        Način „Jedan vlasnik” otključava ručno određivanje smjera podjele u alatu.
-                    </p>
-                    <p>
-                        Pod <span class="ui-label">Algoritam:</span> ponuđeni su Sweep line, Centroidal Voronoi,
-                        Wasserstein i <span class="ui-label">Ručno</span>, ali trenutno radi samo
-                        <strong>Sweep line</strong> (automatski odabran).
+                        U kartici <span class="ui-label">Prijedlozi</span>, u paleti „Izgradi”, klikni
+                        <span class="ui-label">Reparcelacija</span>. Otvara se prozor
+                        <span class="ui-label">Reparcelacija</span> i odmah predlaže raspored.
                     </p>
                 </li>
 
                 <li class="step">
-                    <h3>Pregledaj raspored u alatu za reparcelaciju</h3>
+                    <h3>Odaberi vrstu reparcelacije</h3>
                     <p>
-                        Otvara se alat naslova <span class="ui-label">Reparcelacija</span>; karta prikazuje novi
-                        raspored parcela. Kod uspjeha status glasi
-                        <em>„Sweep line uspješno primijenjen. Pregledaj i klikni Gotovo za spremanje.”</em> Boje vlasnika
-                        objašnjava <span class="ui-label">Legenda vlasnika</span>.
+                        Pod <span class="ui-label">Vrsta reparcelacije</span> biraš između dvije mogućnosti:
                     </p>
-                    <div class="callout warn">
-                        <i class="fas fa-triangle-exclamation"></i>
-                        U ovom su alatu neke oznake još uvijek na engleskom: vrsta algoritma
-                        (<em>Reparcellization type</em>), te popisi <em>Original owners</em> (postojeći vlasnici) i
-                        <em>New plots</em> (nove parcele).
+                    <div class="table-scroll">
+                        <table class="tool-table">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-wand-magic-sparkles"></i>Sweep line algoritam</td>
+                                    <td>Automatski povlači paralelne linije podjele i raspoređuje nove čestice. Zadano
+                                        i najbrže.</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-pencil"></i>Ručno</td>
+                                    <td>Sam crtaš svaku novu česticu i dodjeljuješ joj vlasnika.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <figure class="howto-shot">
                         <div class="shot-frame">
-                            <img src="images/howto/reparcelacija-05-alat.png"
-                                alt="Alat za reparcelaciju s novim rasporedom" onerror="this.style.display='none'">
+                            <img src="images/howto/reparcelacija-02-alat.png"
+                                alt="Alat za reparcelaciju s automatski generiranim rasporedom"
+                                onerror="this.style.display='none'">
                             <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
                         </div>
-                        <figcaption>Alat za reparcelaciju s automatski generiranim rasporedom.</figcaption>
+                        <figcaption>Sweep line odmah predlaže novi raspored; ti ga dotjeruješ.</figcaption>
                     </figure>
                 </li>
 
                 <li class="step">
-                    <h3>(Samo „Jedan vlasnik”) ugodi podjelu</h3>
+                    <h3>Dotjeraj raspored</h3>
                     <p>
-                        Vidiš <span class="ui-label">Površina superparcele</span> i
-                        <span class="ui-label">Broj parcela</span>. Pod <span class="ui-label">Raspodjela</span> biraš
-                        <span class="ui-label">Jednako</span>, <span class="ui-label">Nasumično</span> ili
-                        <span class="ui-label">Ručno</span>. Za smjer reza
-                        <strong>povuci liniju na karti</strong> — uputa glasi
-                        <em>„Povuci liniju na karti kako bi odredio smjer podjele.”</em>
+                        <strong>Sweep line:</strong> na karti se pojavi ručka — <em>„Povuci za rotaciju linija
+                        parcelacije”</em>. Rotiranjem mijenjaš smjer podjele i odmah vidiš drugačiji raspored. Kad je
+                        zemljište u rukama <strong>jednog vlasnika</strong>, dobivaš i
+                        <span class="ui-label">Broj parcela</span> te
+                        <span class="ui-label">Raspodjelu</span> — <span class="ui-label">Jednako</span>,
+                        <span class="ui-label">Nasumično</span> ili <span class="ui-label">Ručno</span>.
                     </p>
-                </li>
-
-                <li class="step">
-                    <h3>Potvrdi raspored — klikni „Gotovo”</h3>
                     <p>
-                        Klikni <span class="ui-label">Gotovo</span>. Novi raspored sprema se u prijedlog uz poruku
-                        <em>„Raspored reparcelacije spremljen za ovaj prijedlog.”</em>
+                        <strong>Ručno:</strong> aktiviraju se alati
+                        <span class="ui-label">Nacrtaj parcelu</span> (klikaj vrhove, pa
+                        <span class="ui-label">Završi parcelu</span>) i
+                        <span class="ui-label">Podijeli linijom</span> (povuci rez kroz postojeću česticu). Postojeći
+                        plan možeš i uvesti gumbom <span class="ui-label">Prenesi GeoJSON</span>. Svaku novu česticu
+                        zatim klikni i dodijeli joj vlasnika.
                     </p>
-                    <div class="callout warn">
-                        <i class="fas fa-triangle-exclamation"></i>
-                        Ovaj je korak obavezan. Preskočiš li <span class="ui-label">Gotovo</span>, slanje neće uspjeti:
-                        <em>„Pokreni algoritam reparcelacije i klikni Gotovo prije kreiranja ovog prijedloga.”</em>
+                    <div class="callout note">
+                        <i class="fas fa-circle-info"></i>
+                        Aplikacija prati je li sve zemljište pokriveno. Dok nije, javlja koliko je
+                        <em>još nije dodijeljeno</em> i koliko je čestica bez vlasnika. Cilj je
+                        <em>„Sva udružena zemlja dodijeljena (100 %)”</em>.
                     </div>
                 </li>
 
                 <li class="step">
-                    <h3>Popuni detalje prijedloga</h3>
+                    <h3>Provjeri bilancu vlasnika</h3>
                     <p>
-                        U prozoru <em>Kreiraj prijedlog</em> dodaj <span class="ui-label">Naziv:</span>,
-                        <span class="ui-label">Opis:</span> i, po želji, <span class="ui-label">Ponuda:</span> (iznos).
-                        Pod <span class="ui-label">Opcije:</span> su uvjetnost, rok isteka, opadanje ponude i depozit.
-                        <span class="ui-label">Sažetak prijedloga</span> prikazuje odabrane parcele, ukupnu površinu i
-                        broj vlasnika.
+                        Ovo je srce reparcelacije. Tablica za svakog vlasnika pokazuje:
+                    </p>
+                    <div class="table-scroll">
+                        <table class="tool-table">
+                            <tbody>
+                                <tr>
+                                    <td>Uloženo</td>
+                                    <td>Koliko je zemljišta unio u zajedničku površinu.</td>
+                                </tr>
+                                <tr>
+                                    <td>Dodijeljeno</td>
+                                    <td>Koliko dobiva u novom rasporedu.</td>
+                                </tr>
+                                <tr>
+                                    <td>Saldo</td>
+                                    <td>Razlika. Ovo je broj oko kojeg će se pregovarati.</td>
+                                </tr>
+                                <tr>
+                                    <td>Ponuda gotovine</td>
+                                    <td>Novčana nadoknada onima koji su u minusu.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <span class="ui-label">Legenda vlasnika</span> objašnjava boje na karti, a prekidač
+                        <span class="ui-label">Prije / Poslije</span> uspoređuje stari i novi raspored.
+                    </p>
+                    <div class="callout tip">
+                        <i class="fas fa-scale-balanced"></i>
+                        Reparcelacija koja nikoga ne ostavlja u minusu gotovo se sama izglasa. Ako je nečiji
+                        <strong>saldo</strong> negativan, ili mu popravi udio, ili mu ponudi gotovinu — inače nemaš
+                        razloga očekivati pristanak.
+                    </div>
+                </li>
+
+                <li class="step">
+                    <h3>Potvrdi s „Gotovo”</h3>
+                    <p>
+                        Klikni <span class="ui-label">Gotovo</span> da spremiš raspored u prijedlog. Ovaj korak je
+                        <strong>obavezan</strong> — bez njega prijedlog se ne može kreirati.
                     </p>
                 </li>
 
                 <li class="step">
-                    <h3>Pošalji prijedlog</h3>
+                    <h3>Upiši uvjete i kreiraj</h3>
                     <p>
-                        Klikni <span class="ui-label">Kreiraj prijedlog</span>. Tijekom izrade pokazuje
-                        <span class="ui-label">Kreiram...</span> (te <span class="ui-label">Čekam transakciju...</span>
-                        ako se kuje na lancu). Ako nedostaju podaci, javit će
-                        <em>„Unesi autora, naziv i valjanu ponudu.”</em>
+                        Otvara se <span class="ui-label">Kreiraj prijedlog</span>: naziv, opis i ponuda. Klikni
+                        <span class="ui-label">Kreiraj prijedlog</span> i gotovo.
                     </p>
-                    <figure class="howto-shot">
-                        <div class="shot-frame">
-                            <img src="images/howto/reparcelacija-09-gotovo.png"
-                                alt="Stvoreni prijedlog reparcelacije" onerror="this.style.display='none'">
-                            <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                        </div>
-                        <figcaption>Stvoreni prijedlog reparcelacije.</figcaption>
-                    </figure>
                 </li>
             </ol>
 
             <div class="callout note">
                 <i class="fas fa-circle-info"></i>
-                Reparcelacija mijenja oblik parcela, ali zadržava vlasničke udjele — zato je korisna za uređivanje
-                neskladno podijeljenih blokova bez gubitka vlasništva.
+                Reparcelacija mijenja <strong>oblik</strong> čestica, ali zadržava vlasničke udjele — zato je pravi
+                alat za neskladno podijeljene blokove: nitko ne gubi zemljište, samo ga dobiva u upotrebljivijem
+                obliku.
             </div>
         </div>
-    </div>
+    </main>
 </body>
 
 </html>

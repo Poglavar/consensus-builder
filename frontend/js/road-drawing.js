@@ -2310,28 +2310,27 @@ function disableMultiSelectForDrawing() {
     } catch (_) { /* ignore */ }
 }
 
+// One panel serves both road and track drawing, so switching mode swaps the i18n KEY on each label —
+// not just its text. Writing text alone left the road-mode key in place, so the next applyTranslations()
+// (a language switch) would put the road wording back on a track panel, and any literal written here
+// would survive untranslated in every language.
 function setRoadPanelLabelsForMode(mode = 'road') {
-    const titleEl = document.querySelector('#road-info-panel h3[data-i18n-key="panel.road.title"]');
-    const finishBtn = document.getElementById('finishRoadButton');
-    const lengthLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.lengthLabel"]');
-    const areaLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.areaLabel"]');
-    const crossSectionButton = document.getElementById('editRoadCrossSectionButton');
     const isTrack = mode === 'track';
+    const modeLabels = [
+        ['road-panel-title', isTrack ? 'panel.road.titleTrack' : 'panel.road.title', isTrack ? 'Draw track' : 'Draw road'],
+        ['finishRoadButton', isTrack ? 'panel.road.finishButtonShortTrack' : 'panel.road.finishButtonShort', isTrack ? 'Finish track (F)' : 'Finish road (F)'],
+        ['road-length-label', isTrack ? 'panel.road.lengthLabelTrack' : 'panel.road.lengthLabel', isTrack ? 'Track length:' : 'Road length:'],
+        ['road-area-label', isTrack ? 'panel.road.areaLabelTrack' : 'panel.road.areaLabel', isTrack ? 'Track area:' : 'Road area:']
+    ];
 
-    if (titleEl) {
-        titleEl.textContent = isTrack
-            ? translateRoadText('panel.road.titleTrack', 'Draw track')
-            : translateRoadText('panel.road.title', 'Draw road');
-    }
-    if (finishBtn) {
-        finishBtn.textContent = isTrack ? 'Finish track (F)' : 'Finish road (F)';
-    }
-    if (lengthLabel) {
-        lengthLabel.textContent = isTrack ? 'Track length:' : 'Road length:';
-    }
-    if (areaLabel) {
-        areaLabel.textContent = isTrack ? 'Track area:' : 'Road area:';
-    }
+    modeLabels.forEach(([id, key, fallback]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute('data-i18n-key', key);
+        el.textContent = translateRoadText(key, fallback);
+    });
+
+    const crossSectionButton = document.getElementById('editRoadCrossSectionButton');
     if (crossSectionButton) crossSectionButton.style.display = isTrack ? 'none' : '';
 }
 

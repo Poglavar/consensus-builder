@@ -7442,14 +7442,13 @@ const ProposalManager = {
             const t = (typeof getProposalI18nHelper === 'function')
                 ? getProposalI18nHelper()
                 : ((key, fallback) => fallback);
-            const plural = (n) => (n === 1 ? '' : 's');
             const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
             const conflictHtml = conflicts.map(c => {
                 const count = c.parcelIds.length;
                 const overlaps = esc(t('ephemeral.messages.proposal_conflict_overlaps', 'Overlaps applied proposal "{{title}}"', { title: c.title }));
                 if (c.canUnapplyCleanly) {
-                    const shares = esc(t('ephemeral.messages.proposal_conflict_shares', 'Shares {{count}} parcel{{suffix}} with this proposal.', { count, suffix: plural(count) }));
+                    const shares = esc(t('ephemeral.messages.proposal_conflict_shares', 'Shares {{count}} parcels with this proposal.', { count }));
                     const btnLabel = esc(t('ephemeral.messages.proposal_conflict_unapply_continue', 'Unapply it & continue'));
                     return `
                         <div class="parent-conflict-item">
@@ -7458,7 +7457,7 @@ const ProposalManager = {
                             <button type="button" class="btn btn-warning pc-unapply" data-conflict-id="${esc(c.proposalId)}">${btnLabel}</button>
                         </div>`;
                 }
-                const sharesBlocked = esc(t('ephemeral.messages.proposal_conflict_shares_blocked', "Shares {{count}} parcel{{suffix}}, but it can't be unapplied on its own — these are built on top of it:", { count, suffix: plural(count) }));
+                const sharesBlocked = esc(t('ephemeral.messages.proposal_conflict_shares_blocked', "Shares {{count}} parcels, but it can't be unapplied on its own — these are built on top of it:", { count }));
                 const hint = esc(t('ephemeral.messages.proposal_conflict_unapply_those_first', 'Unapply those first.'));
                 return `
                     <div class="parent-conflict-item parent-conflict-item--blocked">
@@ -7470,7 +7469,7 @@ const ProposalManager = {
             }).join('');
 
             const notLoadedHtml = notLoaded.length
-                ? `<div class="parent-conflict-item parent-conflict-item--info">${esc(t('ephemeral.messages.proposal_conflict_not_loaded', '{{count}} ancestor parcel{{suffix}} not loaded. Applying anyway will proceed with the parcels that are present.', { count: notLoaded.length, suffix: plural(notLoaded.length) }))}</div>`
+                ? `<div class="parent-conflict-item parent-conflict-item--info">${esc(t('ephemeral.messages.proposal_conflict_not_loaded', '{{count}} ancestor parcels not loaded. Applying anyway will proceed with the parcels that are present.', { count: notLoaded.length }))}</div>`
                 : '';
 
             const title = hasConflicts

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!-- English guide to the four building tools: Block (urban rule), Row houses, Detached and
+     Freeform — their parameters, the on-map handles, and where each one stops.
+     Croatian counterpart: kako-koristiti-zgrade.html. -->
+<html lang="en">
+
+<head>
+    <title>Buildings — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Buildings</h1>
+        <div class="sidebar-links">
+            <a href="how-to-use.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                All guides
+            </a>
+            <a href="index.html?lang=en" class="back-link">
+                <i class="fas fa-map"></i>
+                Back to the app
+            </a>
+            <a href="#block" class="back-link"><i class="fas fa-city"></i> Block</a>
+            <a href="#row" class="back-link"><i class="fas fa-grip-horizontal"></i> Row houses</a>
+            <a href="#detached" class="back-link"><i class="fas fa-home"></i> Detached</a>
+            <a href="#freeform" class="back-link"><i class="fas fa-ruler-combined"></i> Freeform</a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-zgrade.html">HR</a>
+            <a href="how-to-use-buildings.html" class="is-current">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>A rule, or your own hand</h2>
+                <p>
+                    There are four building tools, and only one thing separates them: <strong>who decides the
+                    shape</strong>. With <em>Block</em>, <em>Row houses</em> and <em>Detached</em>, the shape comes out
+                    of a rule you set with sliders. With <em>Freeform</em>, you draw exactly what you want.
+                </p>
+            </div>
+
+            <div class="callout note">
+                <i class="fas fa-circle-info"></i>
+                All four end up as an <strong>urban rule</strong> proposal — they differ only in typology (Block, Row,
+                Parcel-based). This is not some abstract regulation: the proposal carries the actual building footprints
+                you generated.
+            </div>
+
+            <div class="callout warn">
+                <i class="fas fa-triangle-exclamation"></i>
+                <strong>Block</strong> and <strong>Row houses</strong> need <strong>contiguous</strong> parcels. If they
+                aren't, the tools are disabled and tell you why: <em>“Disabled because the parcels in the proposal are
+                not contiguous”</em>. Row houses also need <strong>at least two</strong> parcels — on a single one it is
+                just an ordinary building.
+            </div>
+
+            <section id="block" class="guide-section">
+                <h2><i class="fas fa-city"></i> Block — <span style="font-weight:400">“Urban Rule”</span></h2>
+                <p>
+                    Fills a whole block with perimeter development — buildings along the edge, courtyard in the middle.
+                    The tool opens the <span class="ui-label">Urban Rule</span> window with a map, a 3D preview and a
+                    <span class="ui-label">Parameters</span> panel.
+                </p>
+
+                <h3>Two ways to work</h3>
+                <p>
+                    The <span class="ui-label">Based on existing buildings</span> toggle changes the whole parameter
+                    panel:
+                </p>
+                <ul>
+                    <li>
+                        <strong>Off (the default)</strong> — the block is drawn from scratch, out of the sliders.
+                    </li>
+                    <li>
+                        <strong>On</strong> — it keeps the existing buildings and only changes their height. You choose
+                        between <span class="ui-label">Proposed height (floors)</span> (every building goes to exactly
+                        that height) and <span class="ui-label">Additional floors</span> (each one gets that many floors
+                        added on top of what it has). <span class="ui-label">Floor height (m)</span> runs 2.5–5 m.
+                    </li>
+                </ul>
+
+                <h3>The sliders (drawing from scratch)</h3>
+                <div class="table-scroll">
+                    <table class="tool-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Range</th>
+                                <th>What it does</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Setback</td>
+                                <td>0–50 m</td>
+                                <td>Distance from the parcel boundary.</td>
+                            </tr>
+                            <tr>
+                                <td>Building Width</td>
+                                <td>1–100 m</td>
+                                <td>Depth of the perimeter wing. Wider = smaller courtyard.</td>
+                            </tr>
+                            <tr>
+                                <td>Building Height</td>
+                                <td>3–80 m</td>
+                                <td>Height of the perimeter development.</td>
+                            </tr>
+                            <tr>
+                                <td>Chamfer</td>
+                                <td>0–10 m</td>
+                                <td>Cuts the corners.</td>
+                            </tr>
+                            <tr>
+                                <td>Simplify</td>
+                                <td>0–20 m</td>
+                                <td>Smooths out a ragged outline.</td>
+                            </tr>
+                            <tr>
+                                <td>Number and width of gaps</td>
+                                <td>0–10 · 1–20 m</td>
+                                <td>Openings through the perimeter wing (passages, courtyard entrances).</td>
+                            </tr>
+                            <tr>
+                                <td>Number and length of wings</td>
+                                <td>0–10 · 10–200 m</td>
+                                <td>Wings reaching into the courtyard.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout tip">
+                    <i class="fas fa-hand-pointer"></i>
+                    <strong>You don't have to guess gaps and wings with the sliders.</strong> As soon as there is at
+                    least one, handles appear on the map — <em>“Drag to move gap”</em> and <em>“Drag to move wing”</em>
+                    — and you slide them along the perimeter until they sit exactly where they should.
+                </div>
+
+                <p>
+                    If the rule won't give you what you want, click <span class="ui-label">Edit shape manually</span>:
+                    every vertex of the outline becomes a handle you can drag (<em>“Drag to reshape”</em>). The way back
+                    is <span class="ui-label">Back to sliders</span> — but that <strong>discards your manual
+                    edits</strong>. You can also bring in an existing footprint with
+                    <span class="ui-label">Upload GeoJSON</span>.
+                </p>
+                <p>
+                    Confirm with <span class="ui-label">Done</span>. The button stays inactive until a building has been
+                    generated.
+                </p>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-01-blok.png"
+                            alt="The Urban Rule window with sliders and a 3D preview"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>“Urban Rule”: sliders on the left, the result immediately on the map and in the 3D
+                        preview.</figcaption>
+                </figure>
+
+                <div class="callout warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    The courtyard can vanish: if the building is too wide, the inner edge falls apart and you get a
+                    solid block. The message says as much — the fix is to reduce the
+                    <span class="ui-label">Building Width</span>. On a very complicated parcel the tool may give up
+                    entirely and suggest you split it with roads first.
+                </div>
+            </section>
+
+            <section id="row" class="guide-section">
+                <h2><i class="fas fa-grip-horizontal"></i> Row houses</h2>
+                <p>
+                    A terrace of attached houses across several parcels. The <span class="ui-label">Row Houses</span>
+                    window has four sliders: <span class="ui-label">Length</span> (4–200 m),
+                    <span class="ui-label">Width</span> (2–100 m), <span class="ui-label">Height</span> (3–80 m) and
+                    <span class="ui-label">Chamfer</span> (0–10 m, cuts the corners at 45°).
+                </p>
+                <p>
+                    Length runs <strong>parallel to the longest side</strong> of the parcel, width perpendicular to it.
+                    You see <span class="ui-label">Circumference</span>, <span class="ui-label">Area</span> and
+                    <span class="ui-label">Volume</span> update live.
+                </p>
+
+                <div class="callout tip">
+                    <i class="fas fa-hand-pointer"></i>
+                    <strong>The row is directly manipulable on the map.</strong> Drag the body to move it, the orange
+                    corner handle to rotate it, and the black handles at the midpoints of the sides to change its width
+                    and length.
+                </div>
+
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    The row has to stay inside the selected parcels. Ask for a value that doesn't fit and the tool first
+                    tries to shift and straighten the row — and if that isn't enough, <strong>the slider snaps back to
+                    the last valid value</strong>. That's not a bug, that's the edge of the site.
+                </div>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-02-niz.png" alt="The Row Houses window with rotation handles"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>Row houses: sliders, plus handles to move, rotate and resize.</figcaption>
+                </figure>
+            </section>
+
+            <section id="detached" class="guide-section">
+                <h2><i class="fas fa-home"></i> Detached houses</h2>
+                <p>
+                    One standalone house on each selected parcel. Only two sliders:
+                </p>
+                <ul>
+                    <li><span class="ui-label">Max Floors</span> (1–20) — each house gets a
+                        <strong>random</strong> number of floors between 1 and that value.</li>
+                    <li><span class="ui-label">Min Distance from Borders</span> (0.5–20 m) — the setback from the
+                        boundaries.</li>
+                </ul>
+                <p>
+                    The panel shows <span class="ui-label">Buildings</span>,
+                    <span class="ui-label">Total Footprint</span>,
+                    <span class="ui-label">Total Volume</span> and <span class="ui-label">Avg Floors</span>.
+                </p>
+                <div class="callout tip">
+                    <i class="fas fa-dice"></i>
+                    The randomness is deliberate — it makes the neighbourhood look organic instead of like a row of
+                    identical boxes. Don't like the arrangement? <span class="ui-label">Regenerate</span> rolls the dice
+                    again: different heights, different footprint sizes and positions within the setbacks.
+                </div>
+            </section>
+
+            <section id="freeform" class="guide-section">
+                <h2><i class="fas fa-ruler-combined"></i> Freeform</h2>
+                <p>
+                    For when no rule suits you. The <span class="ui-label">Buildings</span> window has no urban logic in
+                    it — just rectangles you place yourself. And it isn't limited to one building: at the top there's a
+                    list of buildings with buttons to <strong>add</strong>, <strong>rename</strong> and
+                    <strong>delete</strong>, so you can assemble several.
+                </p>
+                <p>
+                    For the selected building the sliders are <span class="ui-label">Width</span> and
+                    <span class="ui-label">Length</span> (1–100 m), <span class="ui-label">Height</span>
+                    (3–250 m), <span class="ui-label">Chamfer</span> (0–10 m) and
+                    <span class="ui-label">Rotation</span> (0–355°). You can also simply <strong>drag</strong> the
+                    building around the map, and rotate it with the handles on its sides.
+                </p>
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    The building has to stay inside the block. As with row houses, a value that would push it out is
+                    rejected and the slider snaps back.
+                </div>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/zgrade-03-slobodna-forma.png"
+                            alt="The Buildings window in freeform mode with a 3D preview"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>Freeform: several buildings, each with its own parameters.</figcaption>
+                </figure>
+            </section>
+
+            <div class="callout tip final-tip">
+                <i class="fas fa-lightbulb"></i>
+                Start with a rule, finish by hand. <strong>Block</strong> gives you a convincing perimeter block in
+                seconds; if it gets stuck on one detail, switch to <span class="ui-label">Edit shape manually</span>
+                instead of fighting the sliders. Save <strong>Freeform</strong> for the cases where you are genuinely
+                designing, not applying a rule.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

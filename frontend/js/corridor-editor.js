@@ -1,12 +1,20 @@
-// The cross-section editor: reorder, resize, retype, add and remove the lanes of a road, and set
-// the corridor's total width with the slider at the top (10 cm steps, capped at the widest
-// permitted preset — Boulevard, 80 m).
+// The cross-section editor: add, remove, resize, retype and reorder the lanes of a road.
 //
-// Lane edits are *profile-only* and preserve the total width; the slider is the one control that
-// changes it, with the traffic lanes absorbing the difference (an edit or width they cannot absorb
-// is refused). For a placed road the widened footprint is checked live: hitting a NEW building
-// blocks Apply — tunnels are only made while drawing — while crossing an applied park/square/lake
-// merely lights an indicator (the structure is cut at render time).
+// THE LANE LIST IS THE ROAD. The total width shown at the top is a READOUT — the sum of the lanes —
+// not a control: you widen a street by giving it another lane, and narrow it by taking one away. There
+// is no width slider, and adding a lane can never fail for want of room (the old model paid for every
+// edit out of the traffic lanes, and once they hit their minimum "Add lane" silently did nothing).
+// The one hard limit left is CORRIDOR_EDITOR_MAX_WIDTH, and hitting it says so.
+//
+// Dragging a seam in the schematic is the one gesture that keeps the total: it moves width from one
+// lane to its neighbour, so the footprint does not budge.
+//
+// The presets row stamps a whole standard cross-section (the same road classes the drawing width
+// picker offers), which is the fast path: take a correct section, then tweak it.
+//
+// For a placed road the resulting footprint is checked live: hitting a NEW building blocks Apply —
+// tunnels are only made while drawing — while crossing an applied park/square/lake merely lights an
+// indicator (the structure is cut at render time).
 //
 // Local unminted roads take the change in place (footprint + parcel cuts rebuild on Apply); minted
 // proposals are immutable and reopen as a drawing draft instead.
@@ -14,18 +22,32 @@
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
 
-// 2 m allows pure pedestrian footpaths (delete every lane except a sidewalk, then narrow it).
-const CORRIDOR_EDITOR_MIN_WIDTH = 2;
 const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 
-function corridorEditorI18n(key, fallback) {
+function corridorEditorI18n(key, fallback, params = {}) {
     try {
         if (window.i18n && typeof window.i18n.t === 'function') {
-            const translated = window.i18n.t(key, {});
+            const translated = window.i18n.t(key, params);
             if (translated && translated !== key) return translated;
         }
     } catch (_) { }
-    return fallback;
+    // The fallback carries the same placeholders as the translation, so it interpolates too.
+    return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (
+        Object.prototype.hasOwnProperty.call(params, name) ? params[name] : match
+    ));
+}
+
+// The derived total, as text. Two decimals, trailing zeros dropped: lanes step in 25 cm, and rounding
+// 27.25 m to "27.3 m" would show a total that is not the sum of the numbers printed underneath it.
+function corridorEditorTotalText(width) {
+    return `${Number(Number(width).toFixed(2))} m`;
+}
+
+// CORRIDOR_LANE_TYPES carries an English label because the model is shared with the 3D renderers;
+// anything the editor shows to a user goes through here so it is translated.
+function corridorLaneTypeLabel(type) {
+    const laneType = CORRIDOR_LANE_TYPES[type] || {};
+    return corridorEditorI18n(`modal.corridor.laneTypes.${type}`, laneType.label || type);
 }
 
 function corridorEditorClose() {
@@ -55,17 +77,33 @@ function corridorEditorKeydown(event) {
     }
 }
 
-// Apply an edit, or refuse it. `edit` returns a new profile or null; null means the traffic lanes had no
-// room, and the right answer is to say so, not to grow the road.
+// Apply an edit, or refuse it. `edit` returns a new profile or null; null means the edit was meaningless
+// (a lane below its minimum, the last lane, an unknown type) and the right answer is to say so.
+//
+// The only other refusal is the hard width cap: the total is the sum of the lanes, so a widening edit
+// cannot fail on room — it can only run past the widest corridor the app will draw, and then it must SAY
+// so. A silent no-op here is the exact bug this editor was rebuilt to remove.
 function corridorEditorApply(edit) {
     if (!corridorEditorState) return;
     const next = edit(corridorEditorState.profile);
     if (!next) {
         // Redraw from the model so the refused number does not sit in the input pretending to be real.
+        corridorEditorState.notice = null;
         corridorEditorRender();
         corridorEditorFlashRefusal();
         return;
     }
+    if (corridorProfileWidth(next) > CORRIDOR_EDITOR_MAX_WIDTH + 1e-6) {
+        corridorEditorState.notice = corridorEditorI18n(
+            'modal.corridor.maxWidthReached',
+            'A corridor cannot be wider than {{max}} m. Remove or narrow a lane first.',
+            { max: CORRIDOR_EDITOR_MAX_WIDTH }
+        );
+        corridorEditorRender();
+        corridorEditorFlashRefusal();
+        return;
+    }
+    corridorEditorState.notice = null;
     corridorEditorState.profile = next;
     corridorEditorState.dirty = true;
     if (corridorEditorState.mode === 'drawing' && typeof setRoadDrawingProfile === 'function') {
@@ -80,12 +118,19 @@ function corridorEditorApply(edit) {
     corridorEditorRender();
 }
 
+// The total lives in the header, which a render does not rebuild, so the class has to come off by
+// itself — left on, it would dye the number permanently red after the first refusal.
 function corridorEditorFlashRefusal() {
     const total = document.querySelector('.corridor-editor-total');
     if (!total) return;
     total.classList.remove('corridor-editor-total--refused');
     void total.offsetWidth; // restart the animation
     total.classList.add('corridor-editor-total--refused');
+    total.addEventListener(
+        'animationend',
+        () => total.classList.remove('corridor-editor-total--refused'),
+        { once: true }
+    );
 }
 
 // Everything the corridor's footprint would collide with at the given total width: buildings the
@@ -162,7 +207,7 @@ function corridorEditorRunObstacleCheck() {
     if (saveButton) saveButton.disabled = !current.dirty || current.widthBlocked;
 }
 
-// Debounced (the per-building intersection test is too heavy to run on every slider tick).
+// Debounced (the per-building intersection test is too heavy to run on every tick of a seam drag).
 function corridorEditorScheduleObstacleCheck() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal') return;
@@ -178,11 +223,12 @@ function corridorEditorSectionHtml(profile) {
     const total = corridorProfileWidth(profile);
     const cells = profile.strips.map((lane, index) => {
         const laneType = CORRIDOR_LANE_TYPES[lane.type] || {};
+        const laneLabel = corridorLaneTypeLabel(lane.type);
         const percent = (lane.width / total) * 100;
         const selected = index === corridorEditorState.selected ? ' corridor-section-lane--selected' : '';
         return `<button type="button" class="corridor-section-lane${selected}" style="width:${percent}%;background:${laneType.surface}"
-                    data-lane-index="${index}" title="${laneType.label} · ${lane.width} m"
-                    aria-label="${laneType.label}, ${lane.width} metres"></button>`;
+                    data-lane-index="${index}" title="${laneLabel} · ${lane.width} m"
+                    aria-label="${laneLabel}, ${lane.width} metres"></button>`;
     }).join('');
     // Drag handles on the seams between lanes: dragging moves width from one side to the
     // other (total unchanged) — the schematic IS the editor, not just a picture.
@@ -218,17 +264,36 @@ function corridorEditorSyncWidthsInPlace(profile) {
         if (lane) input.value = lane.width;
     });
     const totalEl = document.querySelector('.corridor-editor-total');
-    if (totalEl) totalEl.textContent = `${Number(total.toFixed(1))} m`;
+    if (totalEl) totalEl.textContent = corridorEditorTotalText(total);
+}
+
+// A rail bed belongs to a track, not a road: it is only on offer where the profile already has one.
+function corridorEditorLaneTypes(profile) {
+    const hasRail = (profile.strips || []).some(strip => strip.type === 'rail');
+    return Object.keys(CORRIDOR_LANE_TYPES).filter(type => type !== 'rail' || hasRail);
+}
+
+// The standard width for a lane's type, and — only when the lane deviates from it — the one-click way
+// back. A permanent reset button on every row would be clutter for something the user rarely wants.
+function corridorEditorStandardHtml(lane, index) {
+    const standard = corridorStandardWidth(lane.type);
+    const label = `${Number(standard)} m`;
+    if (Math.abs(lane.width - standard) < 1e-6) {
+        return `<span class="corridor-lane-standard" title="${corridorEditorI18n('modal.corridor.standardWidth', 'Standard width: {{width}} m', { width: Number(standard) })}">${label}</span>`;
+    }
+    return `<button type="button" class="corridor-lane-standard corridor-lane-standard--reset" data-reset-standard="${index}"
+                title="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: Number(standard) })}"
+                aria-label="${corridorEditorI18n('modal.corridor.resetStandard', 'Reset to the standard width ({{width}} m)', { width: Number(standard) })}">↺ ${label}</button>`;
 }
 
 function corridorEditorRowsHtml(profile) {
-    const options = Object.keys(CORRIDOR_LANE_TYPES)
-        .filter(type => type !== 'rail'); // a rail bed belongs to a track, not a road
+    const options = corridorEditorLaneTypes(profile);
+    const dragHint = corridorEditorI18n('modal.corridor.dragReorder', 'Drag to reorder the lanes');
 
     return profile.strips.map((lane, index) => {
         const laneType = CORRIDOR_LANE_TYPES[lane.type] || {};
         const selected = index === corridorEditorState.selected ? ' corridor-lane-row--selected' : '';
-        const typeOptions = options.map(type => `<option value="${type}"${type === lane.type ? ' selected' : ''}>${CORRIDOR_LANE_TYPES[type].label}</option>`).join('');
+        const typeOptions = options.map(type => `<option value="${type}"${type === lane.type ? ' selected' : ''}>${corridorLaneTypeLabel(type)}</option>`).join('');
         const landscape = (lane.type === 'verge' || lane.type === 'median') ? corridorLandscapeOf(lane) : null;
         const landscapeSelect = landscape ? `
             <select class="corridor-lane-landscape" data-lane-index="${index}" aria-label="Green strip planting">
@@ -236,39 +301,118 @@ function corridorEditorRowsHtml(profile) {
                 <option value="trees"${landscape === 'trees' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.trees', 'Tree grove')}</option>
             </select>` : '';
         return `
-        <div class="corridor-lane-row${selected}" data-lane-index="${index}">
+        <div class="corridor-lane-row${selected}" data-lane-index="${index}" tabindex="0">
+            <span class="corridor-lane-handle" draggable="true" data-drag-index="${index}" title="${dragHint}" aria-hidden="true">⠿</span>
             <span class="corridor-lane-swatch" style="background:${laneType.surface}"></span>
             <select class="corridor-lane-type" data-lane-index="${index}" aria-label="Lane type">${typeOptions}</select>
             <input class="corridor-lane-width" type="number" min="0.5" step="0.25" value="${lane.width}"
                    data-lane-index="${index}" aria-label="Lane width in metres">
             <span class="corridor-lane-unit">m</span>
-            <button type="button" class="corridor-lane-btn" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}>↑</button>
-            <button type="button" class="corridor-lane-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
-            <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
+            ${corridorEditorStandardHtml(lane, index)}
+            <span class="corridor-lane-actions">
+                <button type="button" class="corridor-lane-btn" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}>↑</button>
+                <button type="button" class="corridor-lane-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
+                <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
+            </span>
             ${landscapeSelect}
         </div>`;
     }).join('');
+}
+
+// The lane palette: one button per lane type, each inserting that type at its standard width. The road
+// grows by exactly that much — this is how a street is widened now that there is no width slider.
+function corridorEditorPaletteHtml(profile) {
+    const buttons = corridorEditorLaneTypes(profile).map(type => {
+        const laneType = CORRIDOR_LANE_TYPES[type] || {};
+        const width = Number(corridorStandardWidth(type));
+        const label = corridorLaneTypeLabel(type);
+        return `<button type="button" class="corridor-palette-btn" data-add-type="${type}"
+                    title="${corridorEditorI18n('modal.corridor.addLaneOfType', 'Add: {{lane}} ({{width}} m)', { lane: label, width })}">
+                    <span class="corridor-palette-swatch" style="background:${laneType.surface}"></span>
+                    <span class="corridor-palette-label">${label}</span>
+                    <span class="corridor-palette-width">${width} m</span>
+                </button>`;
+    }).join('');
+    return `
+        <div class="corridor-editor-palette">
+            <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.addLane', 'Add lane')}</div>
+            <div class="corridor-editor-palette-buttons">${buttons}</div>
+        </div>`;
+}
+
+// The standard cross-sections, keyed by the same totals the road-width picker offers. One click stamps a
+// complete, correct section; tweaking it afterwards is what the rest of the editor is for.
+const CORRIDOR_EDITOR_PRESETS = [
+    { width: 7.5, key: 'alley', fallback: 'Alley ~7.5 m' },
+    { width: 10, key: 'local', fallback: 'Local ~10 m' },
+    { width: 18, key: 'collector', fallback: 'Collector ~18 m' },
+    { width: 26, key: 'mainStreet', fallback: 'Main street ~26 m' },
+    { width: 40, key: 'avenue', fallback: 'Avenue ~40 m' },
+    { width: 80, key: 'boulevard', fallback: 'Boulevard ~80 m' }
+];
+
+function corridorEditorPresetsHtml() {
+    const buttons = CORRIDOR_EDITOR_PRESETS
+        .filter(preset => CORRIDOR_PROFILE_PRESETS[preset.width])
+        .map(preset => `<button type="button" class="corridor-preset-btn" data-preset="${preset.width}">${
+            corridorEditorI18n(`proposals.constrainedCorridor.roadWidths.${preset.key}`, preset.fallback)
+        }</button>`).join('');
+    return `
+        <div class="corridor-editor-presets">
+            <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.presets', 'Standard cross-sections')}</div>
+            <div class="corridor-editor-preset-buttons">${buttons}</div>
+        </div>`;
+}
+
+// Selection is one thing shown in two places. Both are updated IN PLACE: a full re-render would throw
+// away the focus of whatever the user just clicked, and a click on a row is often the start of using it.
+function corridorEditorSyncSelection(scrollIntoView) {
+    if (!corridorEditorState) return;
+    const selected = corridorEditorState.selected;
+    document.querySelectorAll('.corridor-section-lane').forEach(cell => {
+        cell.classList.toggle('corridor-section-lane--selected', Number(cell.dataset.laneIndex) === selected);
+    });
+    document.querySelectorAll('.corridor-lane-row').forEach(row => {
+        const isSelected = Number(row.dataset.laneIndex) === selected;
+        row.classList.toggle('corridor-lane-row--selected', isSelected);
+        if (isSelected && scrollIntoView && typeof row.scrollIntoView === 'function') {
+            row.scrollIntoView({ block: 'nearest' });
+        }
+    });
+}
+
+function corridorEditorSelect(index, scrollIntoView) {
+    if (!corridorEditorState) return;
+    corridorEditorState.selected = index;
+    corridorEditorSyncSelection(scrollIntoView);
 }
 
 function corridorEditorRender() {
     const body = document.querySelector('.corridor-editor-body');
     if (!body || !corridorEditorState) return;
     const profile = corridorEditorState.profile;
+    const notice = corridorEditorState.notice
+        ? `<div class="corridor-editor-notice" role="status">${corridorEditorState.notice}</div>`
+        : '';
 
+    // Presets, then the diagram, then the palette — the two controls that BUILD the road stay at the top,
+    // where they cannot be pushed below the fold by a boulevard's fifteen lane rows.
     body.innerHTML = `
+        ${corridorEditorPresetsHtml()}
         ${corridorEditorSectionHtml(profile)}
+        ${notice}
+        ${corridorEditorPaletteHtml(profile)}
+        <div class="corridor-editor-hint">${corridorEditorI18n('modal.corridor.dragReorderHint', 'Drag a lane by its handle to reorder it; drag a seam in the diagram to move width from one lane to its neighbour.')}</div>
         <div class="corridor-editor-lanes">${corridorEditorRowsHtml(profile)}</div>
-        <button type="button" class="btn btn-outline-secondary corridor-add-lane">
-            <i class="fas fa-plus"></i> ${corridorEditorI18n('modal.corridor.addLane', 'Add lane')}
-        </button>
     `;
 
     const currentWidth = corridorProfileWidth(profile);
     const total = document.querySelector('.corridor-editor-total');
-    if (total) total.textContent = `${Number(currentWidth.toFixed(1))} m`;
-    const slider = document.querySelector('.corridor-editor-width-slider');
-    // Do not fight the user's drag: mid-drag the slider already holds the value being applied.
-    if (slider && document.activeElement !== slider) slider.value = currentWidth;
+    if (total) {
+        total.textContent = corridorEditorTotalText(currentWidth);
+        // The refusal flash is a moment, not a state: an edit that lands clears it.
+        if (!corridorEditorState.notice) total.classList.remove('corridor-editor-total--refused');
+    }
 
     const saveButton = document.querySelector('.corridor-editor-save');
     if (saveButton) {
@@ -281,11 +425,16 @@ function corridorEditorRender() {
 }
 
 function corridorEditorBindBody(body) {
+    // Clicking a lane in the diagram selects its row below (and brings it into view).
     body.querySelectorAll('.corridor-section-lane').forEach(cell => {
-        cell.addEventListener('click', () => {
-            corridorEditorState.selected = Number(cell.dataset.laneIndex);
-            corridorEditorRender();
-        });
+        cell.addEventListener('click', () => corridorEditorSelect(Number(cell.dataset.laneIndex), true));
+    });
+
+    // ...and the other way round: touching a row highlights its lane in the diagram.
+    body.querySelectorAll('.corridor-lane-row').forEach(row => {
+        const select = () => corridorEditorSelect(Number(row.dataset.laneIndex), false);
+        row.addEventListener('click', select);
+        row.addEventListener('focusin', select);
     });
 
     body.querySelectorAll('.corridor-section-seam').forEach(seam => {
@@ -373,13 +522,82 @@ function corridorEditorBindBody(body) {
         });
     });
 
-    const addLane = body.querySelector('.corridor-add-lane');
-    if (addLane) {
-        addLane.addEventListener('click', () => {
-            const at = corridorEditorState.selected + 1;
-            corridorEditorApply(profile => withLaneInserted(profile, at, { type: 'parking', width: 2 }));
+    body.querySelectorAll('[data-reset-standard]').forEach(button => {
+        const index = Number(button.dataset.resetStandard);
+        button.addEventListener('click', () => {
+            corridorEditorState.selected = index;
+            corridorEditorApply(profile => withLaneWidth(profile, index, corridorStandardWidth(profile.strips[index].type)));
         });
-    }
+    });
+
+    // The palette. A new lane goes AFTER the selected one — the outermost strips are almost always
+    // sidewalks, so appending on the right would put a traffic lane outside the pavement.
+    body.querySelectorAll('[data-add-type]').forEach(button => {
+        const type = button.dataset.addType;
+        button.addEventListener('click', () => {
+            const state = corridorEditorState;
+            const lanes = state.profile.strips.length;
+            const at = (state.selected >= 0 && state.selected < lanes) ? state.selected + 1 : lanes;
+            const lane = { type, width: corridorStandardWidth(type) };
+            if ((CORRIDOR_LANE_TYPES[type] || {}).directional) lane.direction = 'forward';
+            state.selected = at; // the new lane lands at `at`, and the render below highlights it
+            corridorEditorApply(profile => withLaneInserted(profile, at, lane));
+        });
+    });
+
+    body.querySelectorAll('[data-preset]').forEach(button => {
+        const preset = CORRIDOR_PROFILE_PRESETS[button.dataset.preset];
+        if (!preset) return;
+        button.addEventListener('click', () => {
+            corridorEditorState.selected = 0;
+            corridorEditorApply(() => normalizeCorridorProfile(preset.map(strip => ({ ...strip }))));
+        });
+    });
+
+    corridorEditorBindLaneDrag(body);
+}
+
+// Drag a lane row by its handle to reorder it. The ↑/↓ buttons stay: they are the keyboard and touch
+// path (HTML5 drag does not exist on a finger), and this is the same withLaneMoved either way.
+function corridorEditorBindLaneDrag(body) {
+    const rows = [...body.querySelectorAll('.corridor-lane-row')];
+    const clearMarks = () => rows.forEach(row => row.classList.remove('corridor-lane-row--dragging', 'corridor-lane-row--drop'));
+
+    body.querySelectorAll('.corridor-lane-handle').forEach(handle => {
+        const row = handle.closest('.corridor-lane-row');
+        handle.addEventListener('dragstart', event => {
+            corridorEditorState.dragIndex = Number(handle.dataset.dragIndex);
+            event.dataTransfer.effectAllowed = 'move';
+            // Some browsers refuse a drag with no payload.
+            event.dataTransfer.setData('text/plain', String(corridorEditorState.dragIndex));
+            if (row && typeof event.dataTransfer.setDragImage === 'function') event.dataTransfer.setDragImage(row, 12, 12);
+            if (row) row.classList.add('corridor-lane-row--dragging');
+        });
+        handle.addEventListener('dragend', () => {
+            corridorEditorState.dragIndex = null;
+            clearMarks();
+        });
+    });
+
+    rows.forEach(row => {
+        row.addEventListener('dragover', event => {
+            if (corridorEditorState.dragIndex === null || corridorEditorState.dragIndex === undefined) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            rows.forEach(other => other.classList.remove('corridor-lane-row--drop'));
+            if (Number(row.dataset.laneIndex) !== corridorEditorState.dragIndex) row.classList.add('corridor-lane-row--drop');
+        });
+        row.addEventListener('drop', event => {
+            event.preventDefault();
+            const from = corridorEditorState.dragIndex;
+            const to = Number(row.dataset.laneIndex);
+            corridorEditorState.dragIndex = null;
+            clearMarks();
+            if (from === null || from === undefined || from === to) return;
+            corridorEditorState.selected = to;
+            corridorEditorApply(profile => withLaneMoved(profile, from, to));
+        });
+    });
 }
 
 // Apply returns a placed road to the normal drawing tool with its edited profile. No proposal exists
@@ -456,13 +674,9 @@ function corridorEditorOpenOverlay() {
     const profile = corridorEditorState.profile;
     const drawing = corridorEditorState.mode === 'drawing';
     const totalWidth = corridorProfileWidth(profile);
+    // Output, not input: the total IS the sum of the lanes, and the lanes are edited below.
     const totalControl = `
-        <span class="corridor-editor-width-control">
-            <input class="corridor-editor-width-slider" type="range"
-                   min="${CORRIDOR_EDITOR_MIN_WIDTH}" max="${CORRIDOR_EDITOR_MAX_WIDTH}" step="0.1"
-                   value="${totalWidth}" aria-label="Total corridor width in metres">
-            <strong class="corridor-editor-total">${Number(totalWidth.toFixed(1))} m</strong>
-        </span>`;
+        <strong class="corridor-editor-total" aria-live="polite">${corridorEditorTotalText(totalWidth)}</strong>`;
     const scopeHtml = (!drawing && corridorEditorState.canScopeSegment) ? `
             <div class="corridor-editor-scope" role="radiogroup" aria-label="${corridorEditorI18n('modal.corridor.scopeLabel', 'Applies to')}">
                 <label class="corridor-editor-scope-option"><input type="radio" name="corridor-editor-scope" value="segment"${corridorEditorState.scope === 'segment' ? ' checked' : ''}><span>${corridorEditorI18n('modal.corridor.scopeSegment', 'This segment')}</span></label>
@@ -514,14 +728,10 @@ function corridorEditorOpenOverlay() {
             state.originalProfile = JSON.parse(JSON.stringify(state.profile));
             state.baselineBuildingHitIds = null;
             state.dirty = false;
+            state.notice = null;
             if (typeof setCorridorProfilePreview === 'function') {
                 setCorridorProfilePreview(state.proposalKey, state.profile, state.scope === 'segment' ? state.segmentId : null);
             }
-            const slider = document.querySelector('.corridor-editor-width-slider');
-            const totalEl = document.querySelector('.corridor-editor-total');
-            const widthNow = corridorProfileWidth(state.profile);
-            if (slider) slider.value = widthNow;
-            if (totalEl) totalEl.textContent = `${Number(widthNow.toFixed(1))} m`;
             corridorEditorRender();
             corridorEditorScheduleObstacleCheck();
         });
@@ -530,15 +740,6 @@ function corridorEditorOpenOverlay() {
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
-    const widthSlider = overlay.querySelector('.corridor-editor-width-slider');
-    if (widthSlider) {
-        // Live: every tick re-fits the traffic lanes to the new total and repaints the preview
-        // strips on the map; the obstacle indicators follow (debounced).
-        widthSlider.addEventListener('input', () => {
-            const target = Math.round(Number(widthSlider.value) * 10) / 10;
-            corridorEditorApply(profileValue => withCorridorWidth(profileValue, target));
-        });
-    }
     overlay.addEventListener('click', (event) => { if (event.target === overlay) corridorEditorCancel(); });
     document.addEventListener('keydown', corridorEditorKeydown);
 
@@ -584,6 +785,8 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         baselineBuildingHitIds: null,
         widthBlocked: false,
         selected: 0,
+        dragIndex: null,
+        notice: null,
         dirty: false
     };
     corridorEditorOpenOverlay();
@@ -605,6 +808,8 @@ function openRoadDrawingCrossSectionEditor() {
         profile: clone(profile),
         originalProfile: clone(profile),
         selected: 0,
+        dragIndex: null,
+        notice: null,
         dirty: false
     };
     corridorEditorOpenOverlay();

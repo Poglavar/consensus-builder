@@ -2370,7 +2370,11 @@ function getActiveMintTarget() {
         }
     } catch (_) { }
 
-    return { chain: null, label: 'Off-chain (this browser only)', onchain: false, identity: null };
+    // Chain names above are proper nouns; the off-chain label is prose, so it is translated.
+    const offchainLabel = (window.i18n && typeof window.i18n.t === 'function')
+        ? window.i18n.t('modal.createProposal.mintTarget.offchain')
+        : 'Off-chain (this browser only)';
+    return { chain: null, label: offchainLabel, onchain: false, identity: null };
 }
 
 window.getActiveMintTarget = getActiveMintTarget;

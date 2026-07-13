@@ -25,7 +25,7 @@
 
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('No parcel selected. Please select a parcel first.');
+                global.updateStatus(tParcel('panel.parcel.build.noParcelSelected', {}, 'No parcel selected. Please select a parcel first.'));
             }
             return;
         }
@@ -41,7 +41,7 @@
             } else {
                 console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
+                    global.updateStatus(tParcel('panel.parcel.build.useMainCreateButton', {}, 'Please use the main "Create Proposal" button when multiple parcels are selected.'));
                 }
             }
         }
@@ -55,7 +55,7 @@
 
         if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Enable multi-parcel selection to use this action.');
+                global.updateStatus(tParcel('panel.parcel.build.enableMultiSelect', {}, 'Enable multi-parcel selection to use this action.'));
             }
             return;
         }
@@ -63,7 +63,7 @@
         const hasSelection = global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.size > 0;
         if (!hasSelection) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select at least one parcel to create a proposal.');
+                global.updateStatus(tParcel('panel.parcel.build.selectAtLeastOne', {}, 'Select at least one parcel to create a proposal.'));
             }
             return;
         }
@@ -132,7 +132,7 @@
         const ids = parcelBuildSelectionIds();
         if (!ids.length) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel first.');
+                global.updateStatus(tParcel('panel.parcel.build.selectParcelFirst', {}, 'Select a parcel first.'));
             }
             return;
         }

@@ -4,9 +4,11 @@
 // left-to-right across the corridor. The total width is the sum of the lanes, so `definition.width`
 // becomes a derived cache rather than the truth, and every existing consumer of `width` keeps working.
 //
-// This separation is what lets a road's *content* be reshuffled (swap parking for trees, widen the
-// sidewalk) without moving its footprint: as long as the lanes still sum to the same total, the
-// corridor polygon — and therefore the parcel split and every descendant proposal — is untouched.
+// This separation is what lets a road's *content* be reshuffled (swap parking for trees, drag the seam
+// between two lanes): as long as the lanes still sum to the same total, the corridor polygon — and
+// therefore the parcel split and every descendant proposal — is untouched. When the lanes DO sum to
+// something else (a lane is added, removed or resized) the total moves with them and the footprint
+// follows, which is how a road is widened or narrowed. See the Editing section below.
 //
 // OSM COMPATIBILITY
 // The lane list is the same object OSM's own cross-section tagging describes, and the same one the
@@ -104,6 +106,26 @@ const OSM_CARRIAGEWAY_FREE_HIGHWAYS = {
 // Classes that carry a single lane unless the way says otherwise.
 const OSM_SINGLE_LANE_HIGHWAYS = new Set(['service', 'track']);
 
+// The width a lane of each type gets when it is added to a cross-section: the same numbers the OSM
+// defaults above already use, so a lane we create and a lane read off an untagged OSM way are the same
+// width. One standard per type, not per road class — a traffic lane is 3 m whether the street is a
+// local road or an avenue; the difference between those streets is how many lanes they have, not how
+// wide each one is, and the presets below carry that.
+const CORRIDOR_STANDARD_WIDTHS = {
+    driving: OSM_DEFAULT_LANE_WIDTH,
+    bus: OSM_LANE_WIDTH_BY_HIGHWAY.busway,
+    parking: OSM_DEFAULT_PARKING_WIDTH,
+    cycleway: OSM_DEFAULT_CYCLEWAY_WIDTH,
+    sidewalk: OSM_DEFAULT_SIDEWALK_WIDTH,
+    verge: OSM_DEFAULT_VERGE_WIDTH,
+    median: OSM_DEFAULT_MEDIAN_WIDTH,
+    rail: 3 // the width corridorProfileFromOsmTags gives an untagged single track
+};
+
+function corridorStandardWidth(type) {
+    return CORRIDOR_STANDARD_WIDTHS[type] || OSM_DEFAULT_LANE_WIDTH;
+}
+
 function isCorridorLaneType(type) {
     return Object.prototype.hasOwnProperty.call(CORRIDOR_LANE_TYPES, type);
 }
@@ -148,21 +170,38 @@ function roundStripWidth(width) {
 // ---------------------------------------------------------------------------
 // Editing
 //
-// Every edit here preserves the corridor's total width, and that is the whole point: the footprint is a
-// function of the total alone, so a profile-only edit cannot move the corridor, cannot change the parcel
-// split, and cannot invalidate a proposal derived from it. Whatever a lane gains or gives up is taken
-// from or handed to the traffic lanes, which are the only lanes with slack.
+// THE LANE LIST IS THE TRUTH. The total width is derived from it — `corridorProfileWidth` is a sum —
+// and the footprint follows the total. So you change a road's width by adding, removing, resizing and
+// reordering its lanes: add a bus lane and the road gets 3.5 m wider, delete the parking and it gets
+// 2.5 m narrower. There is nothing to "absorb" an edit and therefore nothing an edit can fail against;
+// a caller that wants a width ceiling (the editor caps corridors at the widest preset) enforces it on
+// the resulting total, where the user can be told about it.
 //
-// An edit that the traffic lanes cannot absorb returns null. That is a refusal, not a rounding problem:
-// the caller must reject the change rather than quietly widening the road.
+// The one deliberate exception is `withSeamMoved`: dragging the boundary between two neighbours moves
+// width from one to the other and holds the total — and therefore the footprint, the parcel split and
+// every proposal derived from it — exactly where it was. That is a distinct gesture, not the rule.
+//
+// `withSidewalkWidth` also still pays out of the traffic lanes, because it is not a user edit: it fits
+// a legacy corridor's recorded sidewalk number into a preset whose total is already the road's width.
+//
+// An edit returns null only when it is meaningless (no such lane, an unknown type, a width below the
+// minimum, removing the last lane). That is a refusal the caller must show, not swallow.
 // ---------------------------------------------------------------------------
 
 // A traffic lane narrower than this is not a traffic lane.
 const CORRIDOR_MIN_DRIVING_WIDTH = 2.5;
+// Any other lane narrower than this is a line, not a lane.
+const CORRIDOR_MIN_LANE_WIDTH = 0.5;
+
+// The smallest a lane of this type may be.
+function corridorMinLaneWidth(type) {
+    return type === 'driving' ? CORRIDOR_MIN_DRIVING_WIDTH : CORRIDOR_MIN_LANE_WIDTH;
+}
 
 // Take `delta` metres out of the driving lanes (negative gives metres back), in proportion to their
-// widths. `exceptIndex` holds one lane out of the redistribution — the lane being resized cannot pay
-// for its own change. Returns new strips, or null when the lanes have no room.
+// widths, holding the total. The one caller left is `withSidewalkWidth`, which fits a legacy corridor's
+// sidewalks into a preset without moving the width that corridor was drawn at. `exceptIndex` holds one
+// lane out of the redistribution. Returns new strips, or null when the lanes have no room.
 function redistributeToDriving(strips, delta, exceptIndex = -1) {
     if (Math.abs(delta) < 1e-9) return strips.map(strip => ({ ...strip }));
 
@@ -190,18 +229,19 @@ function redistributeToDriving(strips, delta, exceptIndex = -1) {
     });
 }
 
-// Drag the seam between two adjacent lanes: width moves from one side to the other, the
-// total stays put. Refused (null) when either lane would drop below half a metre.
+// Drag the seam between two adjacent lanes: width moves from one side to the other, the total stays put.
+// This is the ONE edit that deliberately holds the total constant — it reshuffles what the road contains
+// without touching its footprint, so nothing derived from that footprint is invalidated. Every other
+// edit is free to change the width. Refused (null) when either lane would drop below half a metre.
 function withSeamMoved(profile, seamIndex, delta) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return null;
     const left = normalized.strips[seamIndex];
     const right = normalized.strips[seamIndex + 1];
     if (!left || !right || !Number.isFinite(delta)) return null;
-    const MIN_LANE = 0.5;
     const widthLeft = roundStripWidth(left.width + delta);
     const widthRight = roundStripWidth(right.width - delta);
-    if (widthLeft < MIN_LANE || widthRight < MIN_LANE) return null;
+    if (widthLeft < CORRIDOR_MIN_LANE_WIDTH || widthRight < CORRIDOR_MIN_LANE_WIDTH) return null;
     return normalizeCorridorProfile(normalized.strips.map((strip, index) => {
         if (index === seamIndex) return { ...strip, width: widthLeft };
         if (index === seamIndex + 1) return { ...strip, width: widthRight };
@@ -209,7 +249,8 @@ function withSeamMoved(profile, seamIndex, delta) {
     }));
 }
 
-// Set one lane's width, paying for it out of the traffic lanes.
+// Set one lane's width. Nothing else moves: the road grows or shrinks by the difference.
+// Refused (null) below the type's minimum — a 1 m traffic lane is not a traffic lane.
 function withLaneWidth(profile, index, width) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !normalized.strips[index]) return null;
@@ -217,36 +258,11 @@ function withLaneWidth(profile, index, width) {
     if (!Number.isFinite(target) || target <= 0) return null;
 
     const lane = normalized.strips[index];
-    if (lane.type === 'driving' && target < CORRIDOR_MIN_DRIVING_WIDTH) return null;
+    if (target < corridorMinLaneWidth(lane.type)) return null;
 
-    const resized = normalized.strips.map((strip, i) => (i === index ? { ...strip, width: roundStripWidth(target) } : { ...strip }));
-    // A traffic lane cannot pay for its own widening, so it is held out of the redistribution.
-    const strips = redistributeToDriving(resized, target - lane.width, index);
-    return strips ? { strips } : null;
-}
-
-// Change the whole footprint while drawing. Roadside furniture keeps its real-world width; the traffic
-// lanes absorb the difference, just as they do for an individual strip edit.
-function withCorridorWidth(profile, width) {
-    const normalized = normalizeCorridorProfile(profile);
-    const target = Number(width);
-    if (!normalized || !Number.isFinite(target) || target <= 0) return null;
-    const current = corridorProfileWidth(normalized);
-    // No traffic lanes (a pedestrian footpath): every strip scales proportionally — there are
-    // no driving lanes to absorb the change, but the width must still be editable.
-    if (!normalized.strips.some(strip => strip.type === 'driving')) {
-        const scale = target / current;
-        let assigned = 0;
-        const scaled = normalized.strips.map((strip, index) => {
-            if (index === normalized.strips.length - 1) return { ...strip, width: roundStripWidth(target - assigned) };
-            const next = roundStripWidth(strip.width * scale);
-            assigned += next;
-            return { ...strip, width: next };
-        });
-        return normalizeCorridorProfile(scaled);
-    }
-    const strips = redistributeToDriving(normalized.strips, current - target);
-    return strips ? normalizeCorridorProfile(strips) : null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, width: roundStripWidth(target) } : { ...strip }
+    )));
 }
 
 // Change what a lane *is* without changing how wide it is — parking becomes trees, a lane becomes a
@@ -275,7 +291,8 @@ function withLaneLandscape(profile, index, landscape) {
     )));
 }
 
-// Insert a lane at `index`, taking its width out of the traffic lanes.
+// Insert a lane at `index`. The road gets that much wider — an insert cannot fail for want of room,
+// which is exactly why adding a lane is a thing the user can always do.
 function withLaneInserted(profile, index, lane) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !lane || !isCorridorLaneType(lane.type)) return null;
@@ -283,28 +300,19 @@ function withLaneInserted(profile, index, lane) {
     if (!Number.isFinite(width) || width <= 0) return null;
 
     const at = Math.max(0, Math.min(index, normalized.strips.length));
-    const strips = redistributeToDriving(normalized.strips, width);
-    if (!strips) return null;
+    const strips = normalized.strips.map(strip => ({ ...strip }));
     strips.splice(at, 0, { ...lane, width: roundStripWidth(width) });
     return normalizeCorridorProfile(strips);
 }
 
-// Remove a lane and hand its width back to the traffic lanes.
+// Remove a lane. The road gets that much narrower. A corridor with no lanes is not a corridor, so the
+// last one stays.
 function withLaneRemoved(profile, index) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !normalized.strips[index]) return null;
     if (normalized.strips.length < 2) return null;
 
-    const removed = normalized.strips[index];
-    const remaining = normalized.strips.filter((strip, i) => i !== index);
-    // Removing the last traffic lane leaves nothing to hand the width to; widen the neighbours instead.
-    const hasDriving = remaining.some(strip => strip.type === 'driving');
-    if (!hasDriving) {
-        const share = removed.width / remaining.length;
-        return normalizeCorridorProfile(remaining.map(strip => ({ ...strip, width: roundStripWidth(strip.width + share) })));
-    }
-    const strips = redistributeToDriving(remaining, -removed.width);
-    return strips ? normalizeCorridorProfile(strips) : null;
+    return normalizeCorridorProfile(normalized.strips.filter((strip, i) => i !== index).map(strip => ({ ...strip })));
 }
 
 // Reorder: move the lane at `from` to `to`. Pure permutation, so the total is untouched.
@@ -1191,8 +1199,10 @@ if (typeof window !== 'undefined') {
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
+    window.CORRIDOR_STANDARD_WIDTHS = CORRIDOR_STANDARD_WIDTHS;
+    window.corridorStandardWidth = corridorStandardWidth;
+    window.corridorMinLaneWidth = corridorMinLaneWidth;
     window.withSidewalkWidth = withSidewalkWidth;
-    window.withCorridorWidth = withCorridorWidth;
     window.withLaneWidth = withLaneWidth;
     window.withLaneType = withLaneType;
     window.withLaneLandscape = withLaneLandscape;
@@ -1232,14 +1242,17 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorCenterlineOf,
         corridorLandscapeOf,
         withSidewalkWidth,
-        withCorridorWidth,
         withLaneWidth,
         withLaneType,
         withLaneLandscape,
         withLaneInserted,
         withLaneRemoved,
         withLaneMoved,
+        CORRIDOR_STANDARD_WIDTHS,
+        corridorStandardWidth,
+        corridorMinLaneWidth,
         CORRIDOR_MIN_DRIVING_WIDTH,
+        CORRIDOR_MIN_LANE_WIDTH,
         offsetPolylinePlanar,
         corridorStripRingPlanar,
         corridorLaneSeparators,

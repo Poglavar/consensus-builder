@@ -1187,12 +1187,11 @@ function showUploadProposalModal(proposal) {
             const gate = await ensureAncestorProposalsUploaded(proposal);
             if (!gate.ok) {
                 const ancestorList = gate.missing.map(item => item.id || (item.hash ? item.hash.slice(0, 8) : '?')).filter(Boolean);
-                const suffix = ancestorList.length === 1 ? '' : 's';
                 uploadButton.disabled = true;
                 uploadButton.classList.add('disabled');
                 uploadButton.title = tShare('uploadAncestorsMissingTitle', 'Upload ancestor proposals first.');
-                uploadStatus.textContent = tShare('uploadAncestorsMissing', 'Upload ancestor proposal{{suffix}} first: {{list}}', {
-                    suffix,
+                uploadStatus.textContent = tShare('uploadAncestorsMissing', 'Upload ancestor proposals first: {{list}}', {
+                    count: ancestorList.length,
                     list: ancestorList.join(', ')
                 });
             } else {

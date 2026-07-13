@@ -814,7 +814,8 @@
             document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
             // Add event listeners
-            document.getElementById('parcelbased-close').addEventListener('click', closeParcelBasedModal);
+            document.getElementById('parcelbased-close').addEventListener('click', requestCloseParcelBasedModal);
+            document.addEventListener('keydown', handleParcelBasedKeydown);
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveParcelBasedDesignForProposal);
@@ -839,12 +840,8 @@
                 generateBuildingsInModal();
             });
 
-            // Close modal when clicking outside the container
-            modalDiv.addEventListener('click', (e) => {
-                if (e.target === modalDiv) {
-                    closeParcelBasedModal();
-                }
-            });
+            // No outside-click close: a stray click on the backdrop would throw the design away.
+            // The editor is left only via the X (discard, after confirming) or Done (save).
 
             // Ensure 3D canvas is interactive
             const threeDiv = document.getElementById('parcelbased-3d');
@@ -936,14 +933,32 @@
         try { initParcelBased3DSimple(); } catch (e) { console.warn('3D init failed', e); }
     }
 
+    // The X / Esc path. Closing NEVER saves — only "Done" (saveParcelBasedDesignForProposal) does.
+    // When the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette
+    // creation) the design would be lost, so ask first; declining keeps the editor open.
+    async function requestCloseParcelBasedModal() {
+        if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+            const proceed = await window.confirmDiscardProposalDesignSession({
+                hasDesign: Array.isArray(generatedParcelBasedFeatures) && generatedParcelBasedFeatures.length > 0
+            });
+            if (!proceed) return;
+        }
+        closeParcelBasedModal();
+    }
+
+    // Escape closes the editor exactly like the X does (discard, after confirming).
+    function handleParcelBasedKeydown(event) {
+        if (event.key !== 'Escape') return;
+        if (!document.getElementById('parcelbased-modal')) return;
+        event.preventDefault();
+        requestCloseParcelBasedModal();
+    }
+
+    // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
+    // X/Esc discards the design session first.
     function closeParcelBasedModal(options = {}) {
         const { preservePending = false } = options;
-        const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
-        if (!preservePending && generatedParcelBasedFeatures.length && activeDraft
-            && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
-            saveParcelBasedDesignForProposal();
-            return;
-        }
+        document.removeEventListener('keydown', handleParcelBasedKeydown);
 
         // Remove the map instance
         if (parcelBasedMap) {
@@ -992,7 +1007,12 @@
                 window.pendingParcelBasedFromModal = null;
             }
         }
-        if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
+        if (typeof window !== 'undefined') {
+            // Only "Done" commits — it tears down with preservePending after saving. Every other
+            // close abandons the design session, leaving the edited object exactly as it was.
+            if (!preservePending) window.discardProposalDraftDesignSession?.();
+            window.finishProposalDraftDesignSession?.();
+        }
     }
 
     // Save design for proposal

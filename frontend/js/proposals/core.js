@@ -94,6 +94,27 @@ function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {})
     return message;
 }
 
+// Does at least one replacement slice of this parent actually exist ON THIS DEVICE?
+//
+// Slice ids are derived from the parent (`<parent>#p-<proposalId>-N`, legacy `<parent>_N`), so a
+// live child is a key in the parcel-layer index carrying one of those prefixes.
+function hasLiveReplacementSlice(idStr) {
+    const layerIndex = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+        ? window.parcelLayerById
+        : null;
+    // Cannot verify (index not up yet) — keep the pre-guard behaviour and treat it as replaced.
+    if (!layerIndex) return true;
+
+    const derivedPrefix = idStr + '#p-';
+    const legacyPrefix = idStr + '_';
+    for (const key of layerIndex.keys()) {
+        if (typeof key === 'string' && (key.startsWith(derivedPrefix) || key.startsWith(legacyPrefix))) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function isParcelReplacedByChildren(parcelId) {
     if (!parcelId) return false;
     const idStr = String(parcelId);
@@ -106,7 +127,21 @@ function isParcelReplacedByChildren(parcelId) {
     }
 
     if (typeof proposalStorage === 'undefined') return false;
-    return proposalStorage.isParcelAncestorOfAppliedProposal(idStr);
+    if (!proposalStorage.isParcelAncestorOfAppliedProposal(idStr)) return false;
+
+    // A parent is only really replaced once a replacement slice actually exists here. Slice ids
+    // drift between devices, and a shared proposal arrives already marked applied with the
+    // SENDER's childParcelIds — so on a receiving browser this predicate would otherwise report
+    // "replaced" for a parent whose children were never (re)generated locally. Every consumer
+    // then drops that parent: the shared-link fetcher skips fetching it, the recovery paths
+    // refuse to rebuild it, ingest leaves it off the map. The proposal still draws (its visuals
+    // are interactive:false and come from proposal data), leaving a parcel-shaped hole with
+    // nothing to click — "visible but not clickable".
+    //
+    // This check used to live in ingest.js alone, which desynchronised the call sites: ingest kept
+    // the parent while every other consumer still dropped it. It belongs in the predicate, so all
+    // of them agree on one answer.
+    return hasLiveReplacementSlice(idStr);
 }
 
 function getProposalAreaMap(proposal) {

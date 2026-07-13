@@ -16,6 +16,12 @@
         "no": "Ne",
         "empty": "Još nema spremljenih skica prijedloga.",
         "confirmDiscard": "Odbaciti ovu lokalno spremljenu skicu? To se ne može poništiti.",
+        "discardDesign": {
+            "title": "Odbaciti ovaj dizajn?",
+            "body": "Zatvaranjem uređivača odbacujete izmjene koje ste ovdje napravili. Pritisnite „Gotovo” da ih zadržite.",
+            "confirm": "Odbaci",
+            "cancel": "Nastavi uređivati"
+        },
         "tabs": {
             "design": "Dizajn",
             "parcels": "Čestice",
@@ -148,12 +154,11 @@
             "valid": "Spremno"
         },
         "errors": {
-            "parcelsUnavailable": "Odabrane parcele nisu dostupne u ovom prikazu grada.",
+            "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
             "parcelsNotContiguous": "Jezero zahtijeva susjedne parcele.",
             "sourceMissing": "Izvorni prijedlog nije pronađen.",
             "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
             "readOnly": "Ovaj se prijedlog može samo pregledavati.",
-            "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
             "instantCreateFailed": "Novi objekt nije bilo moguće spremiti."
         },
         "publish": {
@@ -206,6 +211,19 @@
             "metricLength": "Duljina",
             "metricArea": "Površina",
             "hintFullMode": "Način cijele parcele koristi spojeni obris parcele kao geometriju koridora.",
+            "hintDrawMode": "Nacrtaj cestu ili stazu unutar spojenih parcela.",
+            "widthHeaderRoad": "Odaberi širinu ceste",
+            "widthHeaderTrack": "Odaberi širinu staze",
+            "sidewalkWidth": "Širina nogostupa",
+            "trackWidth": "Širina staze",
+            "roadWidths": {
+                "alley": "Prilaz ~7,5 m",
+                "local": "Lokalna ~10 m",
+                "collector": "Sabirna ~18 m",
+                "mainStreet": "Glavna ulica ~26 m",
+                "avenue": "Avenija ~40 m",
+                "boulevard": "Bulevar ~80 m"
+            },
             "done": "Gotovo"
         }
     },
@@ -291,6 +309,7 @@
             "listButton": "Popis prijedloga ({{count}})",
             "mintedButton": "Kovani prijedlozi",
             "shareButton": "Podijeli cijeli plan (svi prijedlozi)",
+            "shareButtonEmpty": "Nema primijenjenih planova. Prvo primijeni neki",
             "clearButton": "Obriši prijedloge iz lokalne pohrane",
             "planStats": {
                 "buttonLabel": "Statistika plana",
@@ -451,7 +470,7 @@
             "countProgress": "Obrađeno parcela: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Slobodna forma",
+            "title": "Zgrade",
             "showLayer": "Prikaži sloj zgrada",
             "showExisting": "Prikaži postojeće zgrade",
             "showProposed": "Prikaži predložene zgrade"
@@ -646,11 +665,16 @@
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
                 "single": "Slobodna forma",
-                "reparcel": "Preparcelacija",
+                "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
-            "offer": "Ponuda"
+                "offer": "Ponuda",
+                "noParcelSelected": "Nijedna parcela nije odabrana. Prvo odaberi parcelu.",
+                "useMainCreateButton": "Kada je odabrano više parcela, koristi glavni gumb \"Stvori prijedlog\".",
+                "enableMultiSelect": "Uključi odabir više parcela za ovu radnju.",
+                "selectAtLeastOne": "Odaberi barem jednu parcelu za stvaranje prijedloga.",
+                "selectParcelFirst": "Prvo odaberi parcelu."
             },
             "roadToggle": "Cesta",
             "nftStatusDefault": "NFT status: Još nije provjereno.",
@@ -916,7 +940,7 @@
         "road": {
             "title": "Nacrtaj cestu",
             "titleTrack": "Nacrtaj prugu",
-            "crossSectionButton": "Presjek",
+            "crossSectionButton": "Uredi poprečni presjek",
             "finishButton": "Završi cestu (F)",
             "cancelButton": "Otkaži cestu (Esc)",
             "widthLabel": "Širina ceste:",
@@ -936,7 +960,6 @@
             "acquiringDifficultyTooltip": "Manje je bolje. Težina stjecanja se izračunava na temelju tipa vlasništva uključenih parcela, s ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nTvrtka: 1\nPojedinačno: 2\nTržišna vrijednost svake parcele se množi s njezinim tipom vlasništva i sve se zbraja.",
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Završi cestu (F)",
-            "crossSectionButton": "Uredi poprečni presjek",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna",
@@ -957,7 +980,12 @@
             "splitStatus": "Cesta se razdvojila — sada su {{count}} zasebne ceste.",
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
             "bulldozedAllStatus": "Cesta srušena.",
-            "junctionHint": "Raskrižje — povucite za pomicanje svih krakova · ⌥-klik razdvaja"
+            "junctionHint": "Raskrižje — povucite za pomicanje svih krakova · ⌥-klik razdvaja",
+            "finishButtonShortTrack": "Završi prugu (F)",
+            "lengthLabelTrack": "Duljina pruge:",
+            "areaLabelTrack": "Površina pruge:",
+            "ownedByInstitutionLabel": "U vlasništvu institucija:",
+            "costLabel": "Cijena:"
         },
         "roadAnalysis": {
             "title": "Analiza širine ceste",
@@ -1037,6 +1065,9 @@
             "title": "Zgrade",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Odaberi zgradu",
+            "addLabel": "Dodaj zgradu",
+            "deleteLabel": "Obriši zgradu",
+            "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori prozor jedne zgrade",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
@@ -1101,7 +1132,7 @@
         },
         "corridor": {
             "title": "Poprečni presjek",
-            "subtitle": "Koridor zadržava širinu pa se cesta ne pomiče",
+            "subtitle": "Ukupna širina zbroj je traka — dodate li traku, cesta se proširi; uklonite li je, suzi se",
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
             "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",
             "totalWidth": "Ukupna širina",
@@ -1115,8 +1146,25 @@
             "save": "Spremi kao novi prijedlog",
             "applyDrawing": "Primijeni na crtež",
             "addLane": "Dodaj traku",
+            "addLaneOfType": "Dodaj: {{lane}} ({{width}} m)",
+            "presets": "Standardni presjeci",
+            "standardWidth": "Standardna širina: {{width}} m",
+            "resetStandard": "Vrati na standardnu širinu ({{width}} m)",
+            "dragReorder": "Povucite za promjenu redoslijeda traka",
+            "dragReorderHint": "Traku povucite za hvatište da promijenite redoslijed; povucite spoj na dijagramu da širinu prebacite iz jedne trake u susjednu.",
+            "maxWidthReached": "Koridor ne može biti širi od {{max}} m. Prvo uklonite ili suzite neku traku.",
             "grass": "Samo trava",
-            "trees": "Drvored"
+            "trees": "Drvored",
+            "laneTypes": {
+                "driving": "Vozna traka",
+                "bus": "Autobusna traka",
+                "parking": "Parkiranje",
+                "cycleway": "Biciklistička staza",
+                "sidewalk": "Nogostup",
+                "verge": "Zeleni pojas",
+                "median": "Razdjelni pojas",
+                "rail": "Tramvajska pruga"
+            }
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",
@@ -1135,8 +1183,8 @@
             "track": "pruga",
             "unapply": "Ukloni postojeći prijedlog s karte",
             "destroy": "Sruši zgrade",
-                "cut": "Prosijeci zgrade",
-                "confirm": "Tunel kroz zgradu",
+            "cut": "Prosijeci zgrade",
+            "confirm": "Tunel kroz zgradu",
             "cancel": "Odaberi drugu trasu"
         },
         "deleteProposal": {
@@ -1188,7 +1236,11 @@
                 "parcelArea": "({{area}} m²)",
                 "submit": "Kreiraj prijedlog",
                 "previewUnavailable": "Pregled nije dostupan",
-                "defaultDescription": "Ručni prijedlog ceste koji utječe na {{count}} parcel{{suffix}}."
+                "defaultDescription": {
+                    "one": "Ručni prijedlog ceste koji utječe na {{count}} parcelu.",
+                    "few": "Ručni prijedlog ceste koji utječe na {{count}} parcele.",
+                    "other": "Ručni prijedlog ceste koji utječe na {{count}} parcela."
+                }
             },
             "polygonError": {
                 "title": "Pogreška poligona",
@@ -1329,7 +1381,11 @@
             },
             "share": {
                 "sizeWarning": "Upozorenje: Ovaj link je blizu maksimalne veličine koju server prihvaća. Ako dođe do greške, podijeli manje parcela.",
-                "defaultIntro": "Podijeli ovaj link kako bi učitao {{count}} primijenjen{{suffix}} prijedlog{{suffix}}.",
+                "defaultIntro": {
+                    "one": "Podijeli ovaj link kako bi učitao {{count}} primijenjeni prijedlog.",
+                    "few": "Podijeli ovaj link kako bi učitao {{count}} primijenjena prijedloga.",
+                    "other": "Podijeli ovaj link kako bi učitao {{count}} primijenjenih prijedloga."
+                },
                 "singleIntro": "Podijeli ovaj link za prijedlog <strong>{{title}}</strong>.",
                 "authorLabel": "Autor:",
                 "cameraLabel": "Zum kamere:",
@@ -1366,14 +1422,27 @@
                 "stopIntro": "Zaustavljeno kod prijedloga: <strong>{{title}}</strong> · {{hash}}",
                 "stopMissingIntro": "Nedostaju prethodne parcele za ovaj prijedlog:",
                 "stopGenericFailure": "Prijedlog se nije mogao primijeniti. Provjeri konzolu za detalje.",
-                "stopSuccessCount": "Uspješno primijenjeno {{count}} prijedlog{{suffix}} do sada.",
+                "stopSuccessCount": {
+                    "one": "Do sada je uspješno primijenjen {{count}} prijedlog.",
+                    "few": "Do sada su uspješno primijenjena {{count}} prijedloga.",
+                    "other": "Do sada je uspješno primijenjeno {{count}} prijedloga."
+                },
+                "uploadAncestorsMissing": {
+                    "one": "Prvo prenesite nadređeni prijedlog: {{list}}",
+                    "few": "Prvo prenesite nadređene prijedloge: {{list}}",
+                    "other": "Prvo prenesite nadređene prijedloge: {{list}}"
+                },
                 "stopTitle": "Zaustavljeno primjenjivanje prijedloga",
                 "leaveAsIs": "Ostavi kako jest",
                 "unapplySuccessful": "Poništi primijenjene prijedloge",
                 "summary": {
                     "appliedFrom": "Primijenjeni prijedlozi od {{author}}.",
                     "appliedCount": "{{count}} primijenjeno.",
-                    "skippedCount": "Preskočeno {{count}} dupl{{suffix}} prijedlog{{suffix}} (već prisutni).",
+                    "skippedCount": {
+                        "one": "Preskočen {{count}} duplirani prijedlog (već prisutan).",
+                        "few": "Preskočena {{count}} duplirana prijedloga (već prisutni).",
+                        "other": "Preskočeno {{count}} dupliranih prijedloga (već prisutni)."
+                    },
                     "failedCount": "{{count}} nije uspjelo.",
                     "title": "Primijenjeni podijeljeni prijedlozi",
                     "unapplyApplied": "Poništi primijenjeno"
@@ -1416,7 +1485,11 @@
                     "applying": "Primjenjivanje prijedloga #{{id}}…",
                     "fetchingPlan": "Preuzimanje plana…",
                     "fetchingPlanTitle": "Preuzimanje prijedloga",
-                    "countHeading": "U trenutnom planu ima {{count}} prijedlog{{suffix}}",
+                    "countHeading": {
+                        "one": "U trenutnom planu je {{count}} prijedlog",
+                        "few": "U trenutnom planu su {{count}} prijedloga",
+                        "other": "U trenutnom planu je {{count}} prijedloga"
+                    },
                     "nameHeading": "Ili dajte ovom planu prepoznatljivo ime (ENS):",
                     "namePlaceholder": "npr. luka-obnova",
                     "nameButton": "Spremi ime",
@@ -1435,9 +1508,17 @@
                     "alreadyAppliedTitle": "Plan je već primijenjen",
                     "alreadyAppliedMessage": "Ovaj dijeljeni plan je već primijenjen na kartu.",
                     "alreadyAppliedWithOthersTitle": "Plan je već primijenjen",
-                    "alreadyAppliedWithOthersMessage": "Ovaj dijeljeni plan je već na karti, zajedno s {{count}} drugim prijedlogom{{suffix}}.",
+                    "alreadyAppliedWithOthersMessage": {
+                        "one": "Ovaj dijeljeni plan je već na karti, zajedno s još {{count}} prijedlogom.",
+                        "few": "Ovaj dijeljeni plan je već na karti, zajedno s još {{count}} prijedloga.",
+                        "other": "Ovaj dijeljeni plan je već na karti, zajedno s još {{count}} prijedloga."
+                    },
                     "otherProposalsAppliedTitle": "Drugi prijedlozi primijenjeni",
-                    "otherProposalsAppliedMessage": "Trenutno {{verb}} {{count}} drugi{{suffix}} prijedlog{{suffix}} primijenjen{{suffix}} na kartu.",
+                    "otherProposalsAppliedMessage": {
+                        "one": "Trenutno je na kartu primijenjen još {{count}} prijedlog.",
+                        "few": "Trenutno su na kartu primijenjena još {{count}} prijedloga.",
+                        "other": "Trenutno je na kartu primijenjeno još {{count}} prijedloga."
+                    },
                     "showMe": "Prikaži",
                     "addToThem": "Dodaj njima",
                     "clearThenAdd": "Očisti, pa dodaj",
@@ -1457,12 +1538,28 @@
                     "overlappedCountDetailed": "{{count}} prijedlog(a) ostaje neprimijenjeno — prostor je već zauzet. Pronađite ih u popisu prijedloga za pregled ili primjenu:",
                     "overlapsWith": "preklapa se s",
                     "overlappedToast": "{{count}} ostaje neprimijenjeno (prostor zauzet) — pogledajte popis prijedloga.",
-                    "appliedCountDetailed": "Primijenjeni prijedlozi ({{count}}):",
-                    "skippedCountDetailed": "Preskočeni duplikati ({{count}}) (već prisutni):",
-                    "failedCountDetailed": "Neuspješno primijenjeni prijedlozi ({{count}}):",
+                    "appliedCountDetailed": {
+                        "one": "Primijenjen {{count}} prijedlog:",
+                        "few": "Primijenjena {{count}} prijedloga:",
+                        "other": "Primijenjeno {{count}} prijedloga:"
+                    },
+                    "skippedCountDetailed": {
+                        "one": "Preskočen {{count}} duplirani prijedlog (već prisutan):",
+                        "few": "Preskočena {{count}} duplirana prijedloga (već prisutni):",
+                        "other": "Preskočeno {{count}} dupliranih prijedloga (već prisutni):"
+                    },
+                    "failedCountDetailed": {
+                        "one": "Nije primijenjen {{count}} prijedlog:",
+                        "few": "Nisu primijenjena {{count}} prijedloga:",
+                        "other": "Nije primijenjeno {{count}} prijedloga:"
+                    },
                     "applyBlockedByDependencies": "Blokirano: ovisnosti nisu zadovoljene nakon pokušaja.",
                     "summary": "Rezultat dijeljenog plana",
-                    "appliedToast": "Primijenjeno {{count}} prijedloga."
+                    "appliedToast": {
+                        "one": "Primijenjen {{count}} prijedlog.",
+                        "few": "Primijenjena {{count}} prijedloga.",
+                        "other": "Primijenjeno {{count}} prijedloga."
+                    }
                 },
                 "processingImageForUpload": "Obrada slike za prijenos...",
                 "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga"
@@ -1486,7 +1583,11 @@
             "trackProposal": {
                 "authorLabel": "Autor:",
                 "authorPlaceholder": "Vaše ime",
-                "defaultDescription": "Ručni prijedlog pruge koji zahvaća {{count}} čestica.",
+                "defaultDescription": {
+                    "one": "Ručni prijedlog pruge koji zahvaća {{count}} česticu.",
+                    "few": "Ručni prijedlog pruge koji zahvaća {{count}} čestice.",
+                    "other": "Ručni prijedlog pruge koji zahvaća {{count}} čestica."
+                },
                 "descriptionLabel": "Opis:",
                 "descriptionPlaceholder": "Opišite svoj prijedlog pruge...",
                 "nameLabel": "Naziv pruge:",
@@ -1711,7 +1812,12 @@
                 "message": "Kovanje na lancu nije uspjelo iz razloga:",
                 "unknown": "Nepoznata pogreška"
             },
-            "optionsSectionTitle": "Opcije"
+            "optionsSectionTitle": "Opcije",
+            "mintTarget": {
+                "offchain": "Izvan lanca (samo ovaj preglednik)",
+                "mintsOn": "Kuje se na",
+                "noWalletTooltip": "Novčanik nije povezan; prijedlog ostaje u ovom pregledniku."
+            }
         },
         "mintedProposals": {
             "acceptancePossible": "Prihvaćanje moguće",
@@ -1899,9 +2005,9 @@
     "reparcellization": {
         "modal": {
             "title": "Reparcelacija",
-            "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} vlasnik{{ownerSuffix}}",
-            "subtitleSingleOwner": "{{count}} parcel{{suffix}} · jedan vlasnik",
+            "subtitle": "{{algorithm}} · {{parcels}}",
+            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
+            "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
             "algorithms": {
                 "sweepLine": "Sweep line algoritam",
                 "borderPerpendicular": "Okomito na granicu",
@@ -1912,7 +2018,11 @@
             "closeAria": "Zatvori",
             "done": "Gotovo",
             "ownerLegend": "Legenda vlasnika",
-            "legendMeta": "{{percent}} · {{count}} parcel{{suffix}}",
+            "legendMeta": {
+                "one": "{{percent}} · {{count}} parcela",
+                "few": "{{percent}} · {{count}} parcele",
+                "other": "{{percent}} · {{count}} parcela"
+            },
             "selectedParcelsLabel": "odabranih parcela",
             "defaultDescription": "Prijedlog reparcelacije za {{label}}",
             "syntheticOwner": "Vlasnik {{parcel}}",
@@ -1978,7 +2088,7 @@
                 "uploadParseError": "Neuspješno čitanje GeoJSON datoteke.",
                 "uploadSuccess": "Učitano {{count}} poligona iz datoteke."
             },
-            "algorithmTitle": "Vrsta preparcelacije",
+            "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
             "colNewArea": "Novo",
             "colOrigArea": "Izvorno",
@@ -1989,7 +2099,17 @@
             "originalOwners": "Izvorni vlasnici",
             "shuffle": "Izmiješaj vlasništvo",
             "unassigned": "Nedodijeljeno",
-            "uploadGeojson": "Prenesi GeoJSON"
+            "uploadGeojson": "Prenesi GeoJSON",
+            "parcelCount": {
+                "one": "{{count}} parcela",
+                "few": "{{count}} parcele",
+                "other": "{{count}} parcela"
+            },
+            "ownerCount": {
+                "one": "{{count}} vlasnik",
+                "few": "{{count}} vlasnika",
+                "other": "{{count}} vlasnika"
+            }
         }
     },
     "status": {
@@ -2069,11 +2189,23 @@
             "fetching_gup_road_data": "Dohvaćanje GUP podataka o cestama...",
             "fetching_osm_road_data": "Dohvaćanje OSM podataka o cestama...",
             "fetching_buildings": "Dohvaćanje zgrada...",
-            "loaded_buildings_count": "Učitano {{count}} zgrad{{suffix}}",
+            "loaded_buildings_count": {
+                "one": "Učitana {{count}} zgrada",
+                "few": "Učitane {{count}} zgrade",
+                "other": "Učitano {{count}} zgrada"
+            },
             "fetching_data": "Dohvaćanje podataka...",
             "fetching_government_road_plan": "Dohvaćanje državnog plana cesta...",
-            "preparing_government_plan_summary": "Priprema državnog plana{{suffix}}: {{vertexCount}} točk{{pointSuffix}} plana…",
-            "applying_government_plan_summary": "Primjena državnog plana{{suffix}}: {{targetLabel}}, {{pieceCountLabel}}, {{vertexCount}} točk{{pointSuffix}} plana…",
+            "preparing_government_plan_summary": {
+                "one": "Priprema državnog plana{{descriptor}}: {{count}} točka plana…",
+                "few": "Priprema državnog plana{{descriptor}}: {{count}} točke plana…",
+                "other": "Priprema državnog plana{{descriptor}}: {{count}} točaka plana…"
+            },
+            "applying_government_plan_summary": {
+                "one": "Primjena državnog plana{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} točka plana…",
+                "few": "Primjena državnog plana{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} točke plana…",
+                "other": "Primjena državnog plana{{descriptor}}: {{targetLabel}}, {{pieceCountLabel}}, {{count}} točaka plana…"
+            },
             "processing_parcels_progress": "Obrada parcela: {{processed}}/{{total}} ({{percent}}%)…",
             "processing_parcels_progress_complete": "Obrada parcela: {{processed}}/{{total}} (100%)",
             "worker_processing_parcels_progress": "Radnik obrađuje parcele: {{processed}}/{{total}} ({{percent}}%)…",
@@ -2081,21 +2213,49 @@
             "drew_dgu_road_usage_polygons": "Iscrtano {{count}} DGU poligona namjene cesta",
             "fetched_roads_from_openstreetmap": "Dohvaćeno {{count}} cesta s OpenStreetMap",
             "filtering_visible_parcels": "Filtriranje vidljivih parcela...",
-            "showing_road_parcels_count_only": "Prikazujem samo {{count}} parcel{{suffix}} cesta",
+            "showing_road_parcels_count_only": {
+                "one": "Prikazujem samo {{count}} cestovnu parcelu",
+                "few": "Prikazujem samo {{count}} cestovne parcele",
+                "other": "Prikazujem samo {{count}} cestovnih parcela"
+            },
             "found_parcels_intersecting_viewport_building_edge_index": "Pronađeno {{count}} parcela koje se sijeku s prikazom. Gradim indeks rubova zgrada...",
             "counting_blocks_progress": "Brojanje blokova... {{percent}}%",
             "finished_block_count_summary": "Brojanje završeno. Pronađeno {{added}} novih blokova, uklonjeno {{removed}} blokova. Ukupno obrađeno parcela koje nisu ceste: {{processed}}.",
             "game_already_initialized": "Igra je već inicijalizirana",
-            "fetching_data_for_new_grid_cells_progress": "Dohvaćanje podataka za {{total}} novih ćelij{{cellSuffix}} rastera ({{completed}}/{{total}})...",
+            "fetching_data_for_new_grid_cells_progress": {
+                "one": "Dohvaćanje podataka za {{count}} novu ćeliju rastera ({{completed}}/{{count}})...",
+                "few": "Dohvaćanje podataka za {{count}} nove ćelije rastera ({{completed}}/{{count}})...",
+                "other": "Dohvaćanje podataka za {{count}} novih ćelija rastera ({{completed}}/{{count}})..."
+            },
             "fetching_ancestor_parcels_for_label": "Dohvaćanje prethodnih parcela za {{label}}...",
             "fetching_parcel_owners_for_label": "Dohvaćanje vlasnika parcela za {{label}}...",
             "ancestor_parcels_ready_for_label": "Prethodne parcele spremne za {{label}}.",
-            "added_new_parcels_summary": "Dodano {{newCount}} novih parcel{{newSuffix}} ({{total}} ukupno u sloju)",
-            "applying_shared_proposals_progress": "Primjena {{count}} podijeljen{{suffix}} prijedlog{{suffix}}...",
+            "added_new_parcels_summary": {
+                "one": "Dodana {{count}} nova parcela ({{total}} ukupno u sloju)",
+                "few": "Dodane {{count}} nove parcele ({{total}} ukupno u sloju)",
+                "other": "Dodano {{count}} novih parcela ({{total}} ukupno u sloju)"
+            },
+            "applying_shared_proposals_progress": {
+                "one": "Primjena {{count}} podijeljenog prijedloga...",
+                "few": "Primjena {{count}} podijeljena prijedloga...",
+                "other": "Primjena {{count}} podijeljenih prijedloga..."
+            },
             "applying_specific_shared_proposal": "Primjena podijeljenog prijedloga {{title}} #{{id}}...",
-            "no_new_parcels_to_load_summary": "Nema novih parcela za učitavanje ({{total}} parcel{{visibleSuffix}} vidljivo)",
-            "cleared_parcel_items_from_local_storage": "Obrisano {{count}} stavk{{suffix}} vezanih uz parcele iz lokalne pohrane",
-            "cleared_local_proposals_summary": "Obrisano {{count}} prijedlog{{suffix}} iz lokalne pohrane",
+            "no_new_parcels_to_load_summary": {
+                "one": "Nema novih parcela za učitavanje ({{count}} parcela vidljiva)",
+                "few": "Nema novih parcela za učitavanje ({{count}} parcele vidljive)",
+                "other": "Nema novih parcela za učitavanje ({{count}} parcela vidljivo)"
+            },
+            "cleared_parcel_items_from_local_storage": {
+                "one": "Obrisana {{count}} stavka vezana uz parcele iz lokalne pohrane",
+                "few": "Obrisane {{count}} stavke vezane uz parcele iz lokalne pohrane",
+                "other": "Obrisano {{count}} stavki vezanih uz parcele iz lokalne pohrane"
+            },
+            "cleared_local_proposals_summary": {
+                "one": "Obrisan {{count}} prijedlog iz lokalne pohrane",
+                "few": "Obrisana {{count}} prijedloga iz lokalne pohrane",
+                "other": "Obrisano {{count}} prijedloga iz lokalne pohrane"
+            },
             "game_initialized_summary": "Igra inicijalizirana: kreirano {{agents}} agenata, dodijeljeno {{parcels}} parcela",
             "game_state_reset_agent_preserved": "Stanje igre resetirano. Tvoj agent je sačuvan s osvježenim podacima.",
             "game_state_reset_all_deleted": "Stanje igre resetirano. Svi agenti i napredak obrisani.",
@@ -2104,11 +2264,19 @@
             "government_road_plan_has_no_geometry_overlapping_the_parcels_in_view": "Državni plan cesta nema geometriju koja se preklapa s parcelama u prikazu.",
             "government_road_plan_has_no_overlap_with_current_view": "Državni plan cesta nema preklapanja s trenutnim prikazom.",
             "government_road_plan_hidden": "Državni plan cesta sakriven.",
-            "government_road_plan_drawn_summary": "Državni plan cesta iscrtan{{suffix}}: {{count}} element{{featureSuffix}}.",
-            "government_road_plan_loaded_summary": "Državni plan cesta učitan{{suffix}}{{vertexSummary}}.",
+            "government_road_plan_drawn_summary": {
+                "one": "Državni plan cesta iscrtan{{descriptor}}: {{count}} element.",
+                "few": "Državni plan cesta iscrtan{{descriptor}}: {{count}} elementa.",
+                "other": "Državni plan cesta iscrtan{{descriptor}}: {{count}} elemenata."
+            },
+            "government_road_plan_loaded_summary": "Državni plan cesta učitan{{descriptor}}{{vertexSummary}}.",
             "government_road_plan_is_still_loading_try_again_in_a_moment": "Državni plan cesta se još učitava. Pokušaj za trenutak.",
-            "applying_government_road_plan": "Primjena državnog plana cesta{{suffix}}...",
-            "applied_government_road_plan_summary": "Primijenjen državni plan cesta{{suffix}}: dodano {{count}} novih segment{{segmentSuffix}}.",
+            "applying_government_road_plan": "Primjena državnog plana cesta{{descriptor}}...",
+            "applied_government_road_plan_summary": {
+                "one": "Primijenjen državni plan cesta{{descriptor}}: dodan {{count}} novi segment.",
+                "few": "Primijenjen državni plan cesta{{descriptor}}: dodana {{count}} nova segmenta.",
+                "other": "Primijenjen državni plan cesta{{descriptor}}: dodano {{count}} novih segmenata."
+            },
             "could_not_apply_government_road_plan_check_console": "Nije moguće primijeniti državni plan cesta. Provjeri konzolu za detalje.",
             "initializing_game_state": "Inicijalizacija stanja igre...",
             "focused_on_block": "Fokusirano na blok {{name}}",
@@ -2132,7 +2300,7 @@
             "no_government_plan_segments_overlap_this_view": "Nema segmenata državnog plana koji se preklapaju s ovim prikazom{{vertexSummary}}.",
             "no_government_plan_segments_remain_in_view": "Nema preostalih segmenata državnog plana u ovom prikazu.",
             "no_government_road_plan_data_available_for_this_view": "Nema podataka državnog plana cesta za ovaj prikaz.",
-            "no_unapplied_government_road_plan_segments_in_view": "Nema neprimijenjenih segmenata državnog plana u ovom prikazu{{suffix}}.",
+            "no_unapplied_government_road_plan_segments_in_view": "Nema neprimijenjenih segmenata državnog plana u ovom prikazu{{descriptor}}.",
             "no_parcel_selected_for_road_measurement": "Nije odabrana parcela za mjerenje ceste.",
             "no_parcel_selected_please_select_a_parcel_first": "Nije odabrana parcela. Odaberi parcelu.",
             "no_parcels_available_in_the_current_view": "Nema parcela u trenutnom prikazu.",
@@ -2154,7 +2322,11 @@
             "please_select_at_least_one_parcel_to_create_a_proposal": "Odaberi barem jednu parcelu za kreiranje prijedloga.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Koristi glavni gumb \"Kreiraj prijedlog\" kada je odabrano više parcela.",
             "proposal_not_found": "Prijedlog nije pronađen",
-            "proposal_created_with_parcel_count": "Prijedlog \"{{type}}\" uspješno kreiran s {{count}} parcel{{suffix}}.",
+            "proposal_created_with_parcel_count": {
+                "one": "Prijedlog \"{{type}}\" uspješno kreiran s {{count}} parcelom.",
+                "few": "Prijedlog \"{{type}}\" uspješno kreiran s {{count}} parcele.",
+                "other": "Prijedlog \"{{type}}\" uspješno kreiran s {{count}} parcela."
+            },
             "proposal_created_review_details_and_apply_when_ready": "Prijedlog \"{{title}}\" je kreiran. Pregledaj detalje i primijeni na kartu kada budeš spreman.",
             "proposal_deleted": "Prijedlog \"{{title}}\" obrisan",
             "applied_structure_proposal": "Primijenjen prijedlog strukture \"{{title}}\"",
@@ -2171,7 +2343,11 @@
             "analyzed_osm_road_segments_summary": "Analizirani OSM segmenti cesta. {{summary}}",
             "gup_detection_complete": "GUP detekcija dovršena. Označeno {{count}} parcela kao ceste.",
             "road_detection_complete_with_names": "Detekcija cesta dovršena. Pronađeno {{count}} parcela cesta i dodijeljena imena.",
-            "selected_proposal_summary": "Odabran prijedlog \"{{title}}\" (sadrži {{count}} parcel{{suffix}})",
+            "selected_proposal_summary": {
+                "one": "Odabran prijedlog \"{{title}}\" (sadrži {{count}} parcelu)",
+                "few": "Odabran prijedlog \"{{title}}\" (sadrži {{count}} parcele)",
+                "other": "Odabran prijedlog \"{{title}}\" (sadrži {{count}} parcela)"
+            },
             "selected_parcel_with_number": "Odabrana parcela {{number}}",
             "select_a_block_first": "Prvo odaberi blok",
             "select_a_parcel_before_attempting_to_claim_it": "Odaberi parcelu prije pokušaja preuzimanja.",
@@ -2333,10 +2509,22 @@
             "proposal_conflict_missing_title": "Nedostaju neke čestice",
             "proposal_conflict_intro": "Za primjenu prijedloga \"{{title}}\" potrebne su čestice koje nisu dostupne:",
             "proposal_conflict_overlaps": "Preklapa se s primijenjenim prijedlogom \"{{title}}\"",
-            "proposal_conflict_shares": "Dijeli {{count}} čestica s ovim prijedlogom.",
-            "proposal_conflict_shares_blocked": "Dijeli {{count}} čestica, ali se ne može samostalno poništiti — na njemu se temelje:",
+            "proposal_conflict_shares": {
+                "one": "Dijeli {{count}} česticu s ovim prijedlogom.",
+                "few": "Dijeli {{count}} čestice s ovim prijedlogom.",
+                "other": "Dijeli {{count}} čestica s ovim prijedlogom."
+            },
+            "proposal_conflict_shares_blocked": {
+                "one": "Dijeli {{count}} česticu, ali se ne može samostalno poništiti — na njemu se temelje:",
+                "few": "Dijeli {{count}} čestice, ali se ne može samostalno poništiti — na njemu se temelje:",
+                "other": "Dijeli {{count}} čestica, ali se ne može samostalno poništiti — na njemu se temelje:"
+            },
             "proposal_conflict_unapply_those_first": "Prvo poništite njih.",
-            "proposal_conflict_not_loaded": "{{count}} nadređenih čestica nije učitano. Primjena unatoč tome nastavit će se s dostupnim česticama.",
+            "proposal_conflict_not_loaded": {
+                "one": "{{count}} nadređena čestica nije učitana. Primjena unatoč tome nastavit će se s dostupnim česticama.",
+                "few": "{{count}} nadređene čestice nisu učitane. Primjena unatoč tome nastavit će se s dostupnim česticama.",
+                "other": "{{count}} nadređenih čestica nije učitano. Primjena unatoč tome nastavit će se s dostupnim česticama."
+            },
             "proposal_conflict_unapply_continue": "Poništi i nastavi",
             "proposal_conflict_unapplying": "Poništavanje…",
             "proposal_conflict_apply_anyway": "Ipak primijeni",
@@ -2345,7 +2533,11 @@
             "cannot_share_this_proposal_right_now": "Trenutačno nije moguće podijeliti ovaj prijedlog.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Primjena prijedloga ceste nije uspjela. Pregledaj prijedloge za detalje.",
             "failed_to_apply_shared_proposals": "Primjena podijeljenih prijedloga nije uspjela.",
-            "failed_to_apply_shared_proposals_summary": "Nije uspjelo primjenjivanje {{count}} podijeljen{{suffix}} prijedlog{{suffix}}. Provjeri konzolu za detalje.",
+            "failed_to_apply_shared_proposals_summary": {
+                "one": "Nije primijenjen {{count}} podijeljeni prijedlog. Provjeri konzolu za detalje.",
+                "few": "Nisu primijenjena {{count}} podijeljena prijedloga. Provjeri konzolu za detalje.",
+                "other": "Nije primijenjeno {{count}} podijeljenih prijedloga. Provjeri konzolu za detalje."
+            },
             "failed_to_encode_share_data": "Kodiranje podataka za dijeljenje nije uspjelo.",
             "failed_to_encode_shared_proposal_data": "Kodiranje podataka podijeljenog prijedloga nije uspjelo.",
             "failed_to_generate_share_link": "Generiranje linka za dijeljenje nije uspjelo.",
@@ -2420,5 +2612,31 @@
             "parcelsLabel": "Čestice",
             "avgPerParcel": "Prosjek / čestici"
         }
+    },
+    "structureEditor": {
+        "ariaLabel": "Uređivač geometrije strukture",
+        "titlePark": "Uređivanje parka",
+        "titleSquare": "Uređivanje trga",
+        "instructions": "Odaberi element, zatim klikni unutar granice. Točkaste elemente povuci da ih pomakneš.",
+        "closeLabel": "Zatvori",
+        "tools": {
+            "tree": "Stablo",
+            "flowerbed": "Cvjetnjak",
+            "pond": "Jezerce",
+            "path": "Staza",
+            "bench": "Klupa",
+            "fountain": "Fontana",
+            "stall": "Stol",
+            "statue": "Kip",
+            "erase": "Ukloni"
+        },
+        "finishPath": "Završi stazu",
+        "cancel": "Odustani",
+        "save": "Spremi dizajn",
+        "hintErase": "Klikni element da ga ukloniš.",
+        "hintPlace": "Klikni na kartu da postaviš odabrani element.",
+        "hintSelect": "Odaberi element za početak.",
+        "statusOutside": "Elemente postavljaj unutar granice strukture.",
+        "statusSaved": "Dizajn strukture je spremljen."
     }
 }
