@@ -182,16 +182,17 @@
         };
 
         var attachParcelEvents = function (feature, layer) {
-            var isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
-                ? global.isParcelDrawingModeActive()
-                : false;
-
             var events = {
                 mouseover: typeof global.highlightFeature === 'function' ? global.highlightFeature : function () { },
                 mouseout: typeof global.resetHighlight === 'function' ? global.resetHighlight : function () { }
             };
 
-            if (!isDrawingMode && global.onParcelClick) {
+            // Always attach the click handler — onParcelClick itself ignores clicks while a
+            // drawing tool is active (a CLICK-time decision). The old ingest-time gate baked the
+            // flag into the layer forever: every parcel fetched or sliced DURING a drawing
+            // session came out permanently unclickable (structures/blocks over such parcels
+            // looked dead, since their visuals are interactive:false and rely on parcel clicks).
+            if (global.onParcelClick) {
                 events.click = global.onParcelClick;
             }
 

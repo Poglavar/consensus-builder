@@ -278,18 +278,16 @@
 
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
-        // Check if drawing mode is active - if so, don't attach click handlers
-        const isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
-            ? global.isParcelDrawingModeActive()
-            : false;
-
         const events = {
             mouseover: highlightFeature,
             mouseout: resetHighlight
         };
 
-        // Only attach click handler if not in drawing mode
-        if (!isDrawingMode && global.onParcelClick) {
+        // Always attach the click handler — onParcelClick ignores clicks while a drawing tool
+        // is active (a CLICK-time decision). Gating the attach on the drawing flag baked it in
+        // forever: child slices applied MID-drawing (absorbs) and parcels fetched while drawing
+        // came out permanently unclickable.
+        if (global.onParcelClick) {
             events.click = global.onParcelClick;
         }
 
