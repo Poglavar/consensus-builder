@@ -190,6 +190,25 @@ function redistributeToDriving(strips, delta, exceptIndex = -1) {
     });
 }
 
+// Drag the seam between two adjacent lanes: width moves from one side to the other, the
+// total stays put. Refused (null) when either lane would drop below half a metre.
+function withSeamMoved(profile, seamIndex, delta) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized) return null;
+    const left = normalized.strips[seamIndex];
+    const right = normalized.strips[seamIndex + 1];
+    if (!left || !right || !Number.isFinite(delta)) return null;
+    const MIN_LANE = 0.5;
+    const widthLeft = roundStripWidth(left.width + delta);
+    const widthRight = roundStripWidth(right.width - delta);
+    if (widthLeft < MIN_LANE || widthRight < MIN_LANE) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, index) => {
+        if (index === seamIndex) return { ...strip, width: widthLeft };
+        if (index === seamIndex + 1) return { ...strip, width: widthRight };
+        return { ...strip };
+    }));
+}
+
 // Set one lane's width, paying for it out of the traffic lanes.
 function withLaneWidth(profile, index, width) {
     const normalized = normalizeCorridorProfile(profile);
@@ -1187,6 +1206,7 @@ if (typeof window !== 'undefined') {
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
     window.corridorStripRingPlanar = corridorStripRingPlanar;
     window.buildCorridorDecorations = buildCorridorDecorations;
+    window.withSeamMoved = withSeamMoved;
     window.buildCorridorJunctionTreatments = buildCorridorJunctionTreatments;
     window.buildCorridorJunctionTreatmentsForEntries = buildCorridorJunctionTreatmentsForEntries;
     window.buildCrossCorridorJunctionTreatments = buildCrossCorridorJunctionTreatments;
@@ -1198,6 +1218,7 @@ if (typeof window !== 'undefined') {
 // Node-visible for unit tests; the browser loads this file as a classic script.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        withSeamMoved,
         CORRIDOR_LANE_TYPES,
         corridorProfileFromOsmTags,
         corridorProfileToOsmTags,

@@ -842,3 +842,26 @@ describe('per-segment cross-sections', () => {
         }
     });
 });
+
+// Seam dragging: width moves between two adjacent lanes, the total stays put.
+describe('withSeamMoved', () => {
+    const { withSeamMoved, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
+    const profile = { strips: [{ type: 'sidewalk', width: 2 }, { type: 'driving', width: 6, direction: 'forward' }] };
+
+    it('moves width across the seam without changing the total', () => {
+        const moved = withSeamMoved(profile, 0, 1.5);
+        expect(moved).not.toBeNull();
+        expect(moved.strips[0].width).toBeCloseTo(3.5, 3);
+        expect(moved.strips[1].width).toBeCloseTo(4.5, 3);
+        expect(corridorProfileWidth(moved)).toBeCloseTo(8, 3);
+    });
+
+    it('refuses to shrink a lane below half a metre', () => {
+        expect(withSeamMoved(profile, 0, -1.6)).toBeNull();
+        expect(withSeamMoved(profile, 0, 5.6)).toBeNull();
+    });
+
+    it('refuses a seam index without two lanes around it', () => {
+        expect(withSeamMoved(profile, 1, 1)).toBeNull();
+    });
+});

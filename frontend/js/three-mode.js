@@ -39,6 +39,9 @@
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
     let lakeGroup = null; // lake decorations (fish)
+    let existingRailGroup = null; // elevated viaduct for existing rail lines (city-gated)
+    let elevatedRailData = null;  // fetched once per session; keyed by the config url
+    let elevatedRailDataUrl = null;
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
@@ -598,7 +601,7 @@
             c.visible = false;
         });
         // Planned decorations aren't parcel-specific; hide them while isolated.
-        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup].forEach(g => { if (g) g.visible = false; });
+        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, existingRailGroup].forEach(g => { if (g) g.visible = false; });
     }
 
     // Hide everything except the given parcel and the building footprint(s) on it.
@@ -1360,28 +1363,38 @@
                 const waterGeom = graphics && graphics.water ? graphics.water : null;
                 const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
 
-                // Render shore (sandy beach) well above ground to avoid z-fighting with parcels
+                // RECESSED basin: the parcel ground has the lake footprint cut out (see
+                // buildParcels3D), so the lake digs below grade instead of floating above it.
+                const SHELF_Z = -0.7;   // shallow shelf
+                const WATER_Z = -1.4;   // water surface depth
+                // Sandy beach stays at grade, as a solid going down to the water depth so its
+                // outer face closes the pit wall where it meets the surrounding ground.
                 if (shoreGeom) {
                     const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
-                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, 1.0, 0);
+                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, WATER_Z - 0.2, 0.26 - (WATER_Z - 0.2));
                     shoreMeshes.forEach(m => { m.userData.isLakeShore = true; flatTarget.add(m); });
                 }
 
-                // Render transition zone (shallow water) above shore
+                // Shallow shelf: a solid band from the deep floor up to the shelf level — its
+                // sides close the step down to the open water.
                 if (transitionGeom) {
                     const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
-                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, 2.0, 0);
+                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, WATER_Z - 0.2, (SHELF_Z - (WATER_Z - 0.2)));
                     transitionMeshes.forEach(m => flatTarget.add(m));
                 }
 
-                // Render water (deep water) above transition
+                // Open water surface, below grade, over a dark lake bed (the water is slightly
+                // transparent, so the bed is what reads as depth).
+                const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
                 if (waterGeom) {
                     const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
-                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, 3.0, 0);
+                    polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => flatTarget.add(m));
+                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
                     waterMeshes.forEach(m => flatTarget.add(m));
                 } else {
                     // Fallback: render entire lake as water if no water geometry
-                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, 3.0, 0);
+                    polygonFeatureToMeshes(lake, bedMat, WATER_Z - 0.2, 0).forEach(m => flatTarget.add(m));
+                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, WATER_Z, 0);
                     waterMeshes.forEach(m => flatTarget.add(m));
                 }
 
@@ -1394,12 +1407,50 @@
                         const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
                         const fish = new THREE.Mesh(fishGeo, fishMat);
                         fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
-                        fish.position.set(x, y, 0.08);
+                        fish.position.set(x, y, -1.32); // just above the recessed water surface
                         decoTarget.add(fish);
                     } catch (_) { }
                 });
             } catch (_) { }
         });
+    }
+
+    // Existing heavy-rail lines as an elevated viaduct (tram-sim look), for cities that ship
+    // a rail3d GeoJSON (city-config). Data is fetched once per session; the mesh is culled to
+    // the framed content so the whole national network never enters the scene.
+    function buildExistingRail3D(targetScene) {
+        const config = (typeof window.CityConfigManager?.getRail3dConfig === 'function')
+            ? window.CityConfigManager.getRail3dConfig()
+            : null;
+        if (!config || !config.url || typeof window.buildElevatedRail3D !== 'function') return;
+
+        const attach = data => {
+            if (!isActive || !scene || scene !== targetScene) return; // scene changed mid-fetch
+            const content = computeContentBoundsXY();
+            const diagonal = Math.max(1, Math.hypot(content.width || 0, content.height || 0));
+            const maxRadius = Math.min(7000, Math.max(2000, diagonal * 1.5));
+            const group = window.buildElevatedRail3D(data, coordsToXY, { maxRadius });
+            if (!group) return;
+            existingRailGroup = group;
+            existingRailGroup.visible = builtDisplay !== 'off' && isolatedParcelId === null && isolatedProposalId === null;
+            targetScene.add(existingRailGroup);
+        };
+
+        if (elevatedRailData && elevatedRailDataUrl === config.url) {
+            attach(elevatedRailData);
+            return;
+        }
+        fetch(config.url)
+            .then(response => {
+                if (!response.ok) throw new Error(`rail3d source responded ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                elevatedRailData = data;
+                elevatedRailDataUrl = config.url;
+                attach(data);
+            })
+            .catch(error => console.error('[three-mode] existing rail lines failed to load', error));
     }
 
     function estimateBuildingHeightMeters(feature) {
@@ -1479,8 +1530,34 @@
         });
     }
 
+    // Union of applied lake footprints: parcel ground must not cover the recessed basin,
+    // so parcels intersecting a lake are meshed with the lake cut out of them.
+    function lakeFootprintFeatures() {
+        const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
+        return lakes
+            .filter(lake => lake && lake.geometry)
+            .map(lake => ({ type: 'Feature', properties: {}, geometry: lake.geometry }));
+    }
+
+    function cutLakesOutOfFeature(feature, lakeFeatures) {
+        if (!lakeFeatures.length || typeof turf === 'undefined') return feature;
+        let current = feature;
+        for (const lake of lakeFeatures) {
+            try {
+                if (!turf.booleanIntersects(current, lake)) continue;
+                const remainder = turf.difference(current, lake);
+                if (!remainder) return null; // parcel fully under water
+                current = remainder;
+            } catch (error) {
+                console.error('[three-mode] lake cut failed for a parcel — ground may cover the basin', error);
+            }
+        }
+        return current;
+    }
+
     function buildParcels3D(targetGroup) {
         if (typeof parcelLayer === 'undefined' || !parcelLayer) return;
+        const lakeFeatures = lakeFootprintFeatures();
         // parcels at z=0
         parcelLayer.getLayers().forEach(l => {
             const f = l.feature;
@@ -1501,8 +1578,11 @@
                 obj.userData.isParcel = true;
                 if (parcelId) obj.userData.parcelId = parcelId;
             };
-            const meshes = polygonFeatureToMeshes(f, fillMat, 0, 0);
-            meshes.forEach(m => { tag(m); targetGroup.add(m); });
+            const groundFeature = cutLakesOutOfFeature(f, lakeFeatures);
+            if (groundFeature) {
+                const meshes = polygonFeatureToMeshes(groundFeature, fillMat, 0, 0);
+                meshes.forEach(m => { tag(m); targetGroup.add(m); });
+            }
             const borders = polygonFeatureToBorderLines(f, edgeMat, 0.5);
             borders.forEach(line => { tag(line); targetGroup.add(line); });
         });
@@ -2687,6 +2767,7 @@
         // Each family follows its own display state: solid, transparent, or hidden.
         const showExisting = builtDisplay !== 'off';
         const showProposed = plannedDisplay !== 'off';
+        if (existingRailGroup) existingRailGroup.visible = showExisting;
         const existingMaterial = builtDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
 
@@ -2804,6 +2885,7 @@
         scene.add(treesGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
+        existingRailGroup = null; // rebuilt per scene below (city-gated)
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -2830,6 +2912,7 @@
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
+        try { buildExistingRail3D(scene); } catch (error) { console.error('[three-mode] elevated rail failed', error); }
         // Apply initial visibility based on the current display states.
         applyModeVisibility();
         rebuild3DBuildingsOnly();

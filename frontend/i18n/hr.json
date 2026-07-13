@@ -1101,6 +1101,7 @@
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
             "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",
             "totalWidth": "Ukupna širina",
+            "dragSeam": "Povucite za promjenu širine traka s obje strane",
             "scopeLabel": "Primjenjuje se na",
             "scopeSegment": "Ovu dionicu",
             "scopeRoad": "Cijelu cestovnu mrežu",

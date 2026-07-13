@@ -1150,6 +1150,7 @@
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
             "totalWidth": "Ancho total",
+            "dragSeam": "Arrastra para cambiar el ancho de los carriles a ambos lados",
             "scopeLabel": "Se aplica a",
             "scopeSegment": "Este tramo",
             "scopeRoad": "Toda la red vial",

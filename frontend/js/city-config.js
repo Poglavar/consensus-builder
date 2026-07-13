@@ -131,6 +131,11 @@
             // auto-fetched after parcels load — instead of client-side OSM/GUP/WFS detection.
             curatedRoads: {
                 url: '/road-parcels'
+            },
+            // Existing heavy-rail lines rendered as an elevated viaduct in 3D mode (ported
+            // from the tram sim). Static OSM-derived GeoJSON shipped with the frontend.
+            rail3d: {
+                url: 'data/zagreb_rail_tracks.geojson'
             }
         },
         split: {
@@ -1284,6 +1289,7 @@
         getParcelBuilderConfig,
         getWalkConfig: () => getCurrentCityConfig().walk || null,
         getCuratedRoadsConfig: () => getCurrentCityConfig().curatedRoads || null,
+        getRail3dConfig: () => getCurrentCityConfig().rail3d || null,
         // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
         // city because it depends on city street data), driving a drawn track works at any
         // location — the track, rails and corridor come from the proposal itself — so every

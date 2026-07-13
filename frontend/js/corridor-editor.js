@@ -184,7 +184,41 @@ function corridorEditorSectionHtml(profile) {
                     data-lane-index="${index}" title="${laneType.label} · ${lane.width} m"
                     aria-label="${laneType.label}, ${lane.width} metres"></button>`;
     }).join('');
-    return `<div class="corridor-section">${cells}</div>`;
+    // Drag handles on the seams between lanes: dragging moves width from one side to the
+    // other (total unchanged) — the schematic IS the editor, not just a picture.
+    let cumulative = 0;
+    const seams = profile.strips.slice(0, -1).map((lane, index) => {
+        cumulative += (lane.width / total) * 100;
+        return `<span class="corridor-section-seam" data-seam-index="${index}" style="left:${cumulative}%"
+                    title="${corridorEditorI18n('modal.corridor.dragSeam', 'Drag to resize the lanes on both sides')}"></span>`;
+    }).join('');
+    return `<div class="corridor-section">${cells}${seams}</div>`;
+}
+
+// Cheap in-place width sync used DURING a seam drag: a full corridorEditorRender would replace
+// the seam element mid-drag and kill the pointer capture, so only widths/labels move here.
+function corridorEditorSyncWidthsInPlace(profile) {
+    const total = corridorProfileWidth(profile);
+    const section = document.querySelector('.corridor-section');
+    if (!section) return;
+    const cells = section.querySelectorAll('.corridor-section-lane');
+    let cumulative = 0;
+    profile.strips.forEach((lane, index) => {
+        const percent = (lane.width / total) * 100;
+        const cell = cells[index];
+        if (cell) cell.style.width = `${percent}%`;
+        if (index < profile.strips.length - 1) {
+            cumulative += percent;
+            const seam = section.querySelector(`.corridor-section-seam[data-seam-index="${index}"]`);
+            if (seam) seam.style.left = `${cumulative}%`;
+        }
+    });
+    document.querySelectorAll('.corridor-lane-width').forEach(input => {
+        const lane = profile.strips[Number(input.dataset.laneIndex)];
+        if (lane) input.value = lane.width;
+    });
+    const totalEl = document.querySelector('.corridor-editor-total');
+    if (totalEl) totalEl.textContent = `${Number(total.toFixed(1))} m`;
 }
 
 function corridorEditorRowsHtml(profile) {
@@ -251,6 +285,43 @@ function corridorEditorBindBody(body) {
         cell.addEventListener('click', () => {
             corridorEditorState.selected = Number(cell.dataset.laneIndex);
             corridorEditorRender();
+        });
+    });
+
+    body.querySelectorAll('.corridor-section-seam').forEach(seam => {
+        seam.addEventListener('pointerdown', event => {
+            const state = corridorEditorState;
+            const section = seam.closest('.corridor-section');
+            if (!state || !section || typeof withSeamMoved !== 'function') return;
+            event.preventDefault();
+            seam.setPointerCapture(event.pointerId);
+            const seamIndex = Number(seam.dataset.seamIndex);
+            const startX = event.clientX;
+            const sectionWidth = section.getBoundingClientRect().width || 1;
+            // Every move re-derives from the drag-start profile, so rounding never compounds.
+            const startProfile = JSON.parse(JSON.stringify(state.profile));
+            const startTotal = corridorProfileWidth(startProfile);
+            let moved = false;
+
+            const onMove = moveEvent => {
+                const delta = ((moveEvent.clientX - startX) / sectionWidth) * startTotal;
+                const next = withSeamMoved(startProfile, seamIndex, delta);
+                if (!next) return; // clamped at the half-metre lane minimum
+                state.profile = next;
+                moved = true;
+                corridorEditorSyncWidthsInPlace(next);
+            };
+            const onUp = () => {
+                seam.removeEventListener('pointermove', onMove);
+                seam.removeEventListener('pointerup', onUp);
+                seam.removeEventListener('pointercancel', onUp);
+                if (!moved) return;
+                // Commit like any other edit: map preview, dirty flag, full re-render, checks.
+                corridorEditorApply(() => state.profile);
+            };
+            seam.addEventListener('pointermove', onMove);
+            seam.addEventListener('pointerup', onUp);
+            seam.addEventListener('pointercancel', onUp);
         });
     });
 

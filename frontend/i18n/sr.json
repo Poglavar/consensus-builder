@@ -1101,6 +1101,7 @@
             "drawingSubtitle": "Promene se prikazuju na mapi pre pravljenja predloga",
             "proposalSubtitle": "Ovde pregledajte promene pa ih primenite na crtež puta koji se može uređivati",
             "totalWidth": "Ukupna širina",
+            "dragSeam": "Povucite za promenu širine traka sa obe strane",
             "scopeLabel": "Primenjuje se na",
             "scopeSegment": "Ovu deonicu",
             "scopeRoad": "Celu putnu mrežu",
