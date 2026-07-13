@@ -129,16 +129,24 @@
     }
 
     function buildPaletteHtml() {
-        const buttons = PARCEL_BUILD_TOOLS.map(tool => `
+        const buttonHtml = tool => `
             <button type="button" class="parcel-build-btn parcel-build-btn--${tool.key}" onclick="startParcelBuildTool('${tool.key}')"
                 title="${tParcel(tool.labelKey, {}, tool.fallback)}">
                 <i class="fas ${tool.icon}"></i>
                 <span>${tParcel(tool.labelKey, {}, tool.fallback)}</span>
             </button>
-        `).join('');
+        `;
+        // Block, Row and Detached are all RULES-based tools (form follows parameters); one
+        // thin frame groups them so the seam against the free-design tools reads at a glance.
+        const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
+        const ruleButtons = PARCEL_BUILD_TOOLS.filter(tool => RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
+        const otherButtons = PARCEL_BUILD_TOOLS.filter(tool => !RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         return `
             <div class="parcel-build-palette">
-                <div class="parcel-build-grid">${buttons}</div>
+                <div class="parcel-build-grid">
+                    <div class="parcel-build-rules-group">${ruleButtons}</div>
+                    ${otherButtons}
+                </div>
             </div>
         `;
     }

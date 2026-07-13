@@ -269,6 +269,18 @@
                 if (record) parcelProposals.push(record);
             });
         } catch (_) { }
+        // Roads get the same geometry rescue: id-based matching misses corridors whose declared
+        // parent/child ids drifted, so a road physically covering this parcel always lists.
+        try {
+            const roadCovering = (typeof global.roadProposalsCoveringFeature === 'function')
+                ? global.roadProposalsCoveringFeature(feature)
+                : [];
+            roadCovering.forEach(pid => {
+                if (parcelProposals.some(p => String(p.proposalId) === String(pid))) return;
+                const record = storage?.getProposal ? storage.getProposal(pid) : null;
+                if (record) parcelProposals.push(record);
+            });
+        } catch (_) { }
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)
@@ -368,6 +380,16 @@
                 const mapApplied = (typeof global.isProposalApplied === 'function') ? global.isProposalApplied(proposal) : false;
 
                 const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
+                // The proposal this parcel DESCENDS from (the road/rule that created it by
+                // splitting). Shown as a pill only when several proposals share the list, so
+                // it is clear which entry is the parcel's ancestor.
+                const isParcelAncestor = parcelProposals.length > 1 && (
+                    String(feature?.properties?.ancestorProposal ?? '') === String(proposal.proposalId)
+                    || (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.map(String).includes(String(parcelId)))
+                );
+                const ancestorPill = isParcelAncestor
+                    ? `<span class="proposal-item-ancestor-pill" data-i18n-key="panel.parcel.proposalsSection.ancestorPill">${tParcel('panel.parcel.proposalsSection.ancestorPill', {}, 'Ancestor')}</span>`
+                    : '';
 
                 const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
 
@@ -441,6 +463,7 @@
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
+                                ${ancestorPill}
                                 <span class="proposal-item-status ${statusClass}">${statusText}</span>
                                 ${mapApplied ? `<span class="proposal-item-map-badge applied">${appliedBadgeLabel}</span>` : ''}
                             </div>
@@ -611,21 +634,6 @@
             }
         }
 
-        const proposalCount = parcelProposals.length;
-        const proposalsTabButton = findParcelTabButton('proposals-tab');
-        if (proposalsTabButton) {
-            if (proposalCount > 0) {
-                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposalsWithCount');
-                proposalsTabButton.setAttribute('data-i18n-params', JSON.stringify({ count: proposalCount }));
-                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposalsWithCount', { count: proposalCount }, `Proposals (${proposalCount})`);
-            } else {
-                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposals');
-                proposalsTabButton.removeAttribute('data-i18n-params');
-                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposals', {}, 'Proposals');
-            }
-            applyParcelTranslations(proposalsTabButton);
-        }
-
         global.document.getElementById('info-content').innerHTML = infoContent;
 
         const ownersCountElement = global.document.getElementById('parcel-owners-count');
@@ -777,6 +785,22 @@
             });
         }
         global.document.getElementById('proposals-content').innerHTML = proposalsContent;
+        // The tab count updates ONLY after the list content is in the DOM — updating it earlier
+        // let a mid-render exception show "Proposals (1)" over a stale/empty list.
+        const proposalCount = parcelProposals.length;
+        const proposalsTabButton = findParcelTabButton('proposals-tab');
+        if (proposalsTabButton) {
+            if (proposalCount > 0) {
+                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposalsWithCount');
+                proposalsTabButton.setAttribute('data-i18n-params', JSON.stringify({ count: proposalCount }));
+                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposalsWithCount', { count: proposalCount }, `Proposals (${proposalCount})`);
+            } else {
+                proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposals');
+                proposalsTabButton.removeAttribute('data-i18n-params');
+                proposalsTabButton.textContent = tParcel('panel.parcel.tabProposals', {}, 'Proposals');
+            }
+            applyParcelTranslations(proposalsTabButton);
+        }
         const renderParcelProposalActions = uiProposals.renderParcelProposalActions || global.renderParcelProposalActions;
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);

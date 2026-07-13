@@ -787,3 +787,58 @@ describe('withCorridorWidth on lane-free footpaths', () => {
         expect(widened.strips[1].width).toBeCloseTo(2, 3);
     });
 });
+
+// Per-segment cross-sections: one road network, segments of different widths.
+describe('per-segment cross-sections', () => {
+    const {
+        corridorSegmentProfile,
+        corridorSegmentEntries,
+        corridorProfileWidth,
+        buildCorridorJunctionTreatmentsForEntries,
+        CORRIDOR_PROFILE_PRESETS
+    } = require('../../frontend/js/corridor-profile.js');
+    const wide = { strips: CORRIDOR_PROFILE_PRESETS[40] };
+    const narrow = { strips: [{ type: 'sidewalk', width: 2 }] };
+    const definition = {
+        points: [
+            [{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }],
+            [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]
+        ],
+        segmentIds: ['s1', 's2'],
+        profile: wide,
+        width: 40,
+        segmentProfiles: { s2: narrow }
+    };
+
+    it('resolves the override or the default per segment', () => {
+        expect(corridorProfileWidth(corridorSegmentProfile(definition, 's1'))).toBeCloseTo(40, 1);
+        expect(corridorProfileWidth(corridorSegmentProfile(definition, 's2'))).toBeCloseTo(2, 3);
+    });
+
+    it('enumerates entries with per-segment widths', () => {
+        const entries = corridorSegmentEntries(definition);
+        expect(entries.map(entry => entry.segmentId)).toEqual(['s1', 's2']);
+        expect(entries[0].width).toBeCloseTo(40, 1);
+        expect(entries[1].width).toBeCloseTo(2, 3);
+    });
+
+    it('sizes junction arms by their own segment profile', () => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try {
+            const junctions = buildCorridorJunctionTreatmentsForEntries([
+                { points: [{ lat: 0, lng: -50 }, { lat: 0, lng: 0 }, { lat: 0, lng: 50 }], profile: wide },
+                { points: [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }], profile: narrow }
+            ]);
+            expect(junctions).toHaveLength(1);
+            expect(junctions[0].degree).toBe(3);
+            expect(junctions[0].surfacePolygons).toHaveLength(3);
+            // The narrow footpath arm crosses at 2 m: exactly one zebra stripe fits; the two
+            // collector arms fit many. Per-arm sizing is what makes the counts differ.
+            expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
+        } finally {
+            delete global.wgs84ToHTRS96;
+            delete global.htrs96ToWGS84;
+        }
+    });
+});

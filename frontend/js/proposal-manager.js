@@ -944,13 +944,22 @@ class Proposal {
         // Tunnel spans are covered structures that acquire nothing: the corridor parcel and the
         // parcel cuts are built from the surface-only centerline (tunnelled edges skipped), so
         // parcels under a tunnel stay whole. The full centerline keeps driving the rendering.
-        let acquisitionCenterline = this.definition.points;
-        const tunnelRecords = Array.isArray(this.definition.tunnels) ? this.definition.tunnels.filter(Boolean) : [];
-        if (tunnelRecords.length && typeof corridorSurfaceRuns === 'function') {
-            const surfaceRuns = corridorSurfaceRuns(this.definition.points, tunnelRecords);
-            if (surfaceRuns.length) acquisitionCenterline = surfaceRuns;
+        // Per-segment cross-sections: the cut footprint honors each segment's own width
+        // (buildCorridorAcquisitionPolygon also skips tunnelled edges). The uniform-width
+        // path stays only for environments without road-drawing.js loaded.
+        let roadPolygon = null;
+        if (typeof buildCorridorAcquisitionPolygon === 'function') {
+            roadPolygon = buildCorridorAcquisitionPolygon(this.definition);
+        } else {
+            console.error('[ProposalManager] buildCorridorAcquisitionPolygon unavailable — cuts use the uniform width');
+            let acquisitionCenterline = this.definition.points;
+            const tunnelRecords = Array.isArray(this.definition.tunnels) ? this.definition.tunnels.filter(Boolean) : [];
+            if (tunnelRecords.length && typeof corridorSurfaceRuns === 'function') {
+                const surfaceRuns = corridorSurfaceRuns(this.definition.points, tunnelRecords);
+                if (surfaceRuns.length) acquisitionCenterline = surfaceRuns;
+            }
+            roadPolygon = _calculateRoadPolygon(acquisitionCenterline, this.definition.width);
         }
-        const roadPolygon = _calculateRoadPolygon(acquisitionCenterline, this.definition.width);
         if (!roadPolygon || this.parentFeatures.length === 0) {
             console.error('Invalid inputs to calculateChildFeatures');
             return;

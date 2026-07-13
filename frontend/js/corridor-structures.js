@@ -136,10 +136,36 @@
         return [...new Set(out)];
     }
 
+    // Same rescue for roads: an applied corridor whose declared parent/child ids drifted
+    // (old imports, cross-device slice drift) still lists on the parcels its footprint
+    // actually covers. Intersection AREA is required — merely touching a shared boundary
+    // must not put the road on every neighbouring parcel.
+    function roadProposalsCoveringFeature(parcelFeature) {
+        const out = [];
+        if (!parcelFeature || !parcelFeature.geometry || typeof global.turf === 'undefined') return out;
+        const proposals = global.proposalStorage?.getAllProposals?.() || [];
+        proposals.forEach(proposal => {
+            const road = proposal?.roadProposal;
+            const definition = road?.definition;
+            const polygon = definition?.polygon;
+            if (!polygon || !polygon.type) return;
+            const status = String(road.status || proposal.status || '').toLowerCase();
+            if (status !== 'applied' && status !== 'executed') return;
+            const proposalId = proposal.proposalId || proposal.id;
+            if (!proposalId) return;
+            try {
+                const intersection = global.turf.intersect(parcelFeature, { type: 'Feature', properties: {}, geometry: polygon });
+                if (intersection && (Number(global.turf.area(intersection)) || 0) > 2) out.push(proposalId);
+            } catch (_) { }
+        });
+        return [...new Set(out)];
+    }
+
     Object.assign(global, {
         detectStructureCrossings,
         resolveStructureCrossings,
         resetApprovedStructureCrossings,
-        structureProposalsCoveringFeature
+        structureProposalsCoveringFeature,
+        roadProposalsCoveringFeature
     });
 })(typeof window !== 'undefined' ? window : globalThis);

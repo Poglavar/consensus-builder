@@ -38,3 +38,13 @@
     font-size: 17px;
     text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
 }
+
+/* Selected road segment: the amber dashes crawl so the scoped segment is unmistakable.
+   Colors/weights come from the Leaflet path options; CSS only animates the dash offset. */
+.corridor-segment-selected {
+    animation: corridor-segment-ants 1.1s linear infinite;
+}
+
+@keyframes corridor-segment-ants {
+    to { stroke-dashoffset: -20; }
+}

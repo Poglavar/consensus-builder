@@ -169,6 +169,7 @@
             sidewalkWidth: definition?.sidewalkWidth,
             tunnels: clone(definition?.tunnels || []),
             demolishedBuildings: clone(definition?.demolishedBuildings || []),
+            segmentProfiles: clone(definition?.segmentProfiles || {}),
             trackSpeed: definition?.metadata?.trackSpeed,
             trackMinRadius: definition?.metadata?.trackMinRadius,
             kind
@@ -188,6 +189,7 @@
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: clone(seed?.tunnels || []),
             demolishedBuildings: clone(seed?.demolishedBuildings || sourceDefinition?.demolishedBuildings || []),
+            segmentProfiles: clone(seed?.segmentProfiles || sourceDefinition?.segmentProfiles || {}),
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
             latLngPairs: clone(seed?.latLngPairs !== undefined ? seed.latLngPairs : sourceDefinition?.latLngPairs || null),
             metadata: {

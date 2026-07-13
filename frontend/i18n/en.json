@@ -668,6 +668,7 @@
                 "agentMissing": "Agent not found ({{id}})"
             },
             "proposalsSection": {
+                "ancestorPill": "Ancestor",
                 "create": "Create proposal",
                 "empty": "No proposals",
                 "fallbackTitle": "Proposal",
@@ -1099,6 +1100,9 @@
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
             "totalWidth": "Total width",
+            "scopeLabel": "Applies to",
+            "scopeSegment": "This segment",
+            "scopeRoad": "Entire road network",
             "hitsBuildings": "Hits buildings (to tunnel through buildings, use drawing mode)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",

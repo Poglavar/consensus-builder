@@ -223,3 +223,18 @@
         height: 26px;
     }
 }
+
+/* Scope toggle: a cross-section edit applies to the clicked segment or the whole network. */
+.corridor-editor-scope {
+    display: flex;
+    gap: 14px;
+    padding: 8px 16px 0;
+    font-size: 13px;
+}
+
+.corridor-editor-scope-option {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+}

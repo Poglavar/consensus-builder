@@ -71,7 +71,11 @@ function corridorEditorApply(edit) {
     if (corridorEditorState.mode === 'drawing' && typeof setRoadDrawingProfile === 'function') {
         setRoadDrawingProfile(next);
     } else if (typeof setCorridorProfilePreview === 'function') {
-        setCorridorProfilePreview(corridorEditorState.proposalKey, next);
+        setCorridorProfilePreview(
+            corridorEditorState.proposalKey,
+            next,
+            corridorEditorState.scope === 'segment' ? corridorEditorState.segmentId : null
+        );
     }
     corridorEditorRender();
 }
@@ -92,7 +96,10 @@ function corridorEditorCollectWidthHits(width) {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !state.definition) return result;
     if (typeof calculateRoadPolygon !== 'function') return result;
-    const segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(state.definition) : [];
+    let segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(state.definition) : [];
+    if (state.scope === 'segment' && state.segmentId && Array.isArray(state.definition.segmentIds)) {
+        segments = segments.filter((_, index) => String(state.definition.segmentIds[index] || '') === state.segmentId);
+    }
     const tunnelled = new Set();
     const tunnelEdgeKeys = new Set();
     (state.definition.tunnels || []).forEach(record => {
@@ -326,7 +333,7 @@ async function corridorEditorSave() {
         corridorEditorFlashRefusal();
         return;
     }
-    const { source, profile } = corridorEditorState;
+    const { source, profile, scope, segmentId: scopedSegmentId } = corridorEditorState;
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();
@@ -337,7 +344,20 @@ async function corridorEditorSave() {
     const minted = typeof isProposalMinted === 'function' && isProposalMinted(source);
     if (!minted && typeof window.updateLocalCorridorGeometry === 'function') {
         const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
+            if (scope === 'segment' && scopedSegmentId) {
+                // One segment of the network takes the new cross-section; the rest is untouched.
+                definition.segmentProfiles = definition.segmentProfiles || {};
+                const defaultProfile = (typeof corridorProfileOf === 'function') ? corridorProfileOf(definition) : null;
+                if (defaultProfile && JSON.stringify(defaultProfile) === JSON.stringify(profile)) {
+                    delete definition.segmentProfiles[String(scopedSegmentId)];
+                } else {
+                    definition.segmentProfiles[String(scopedSegmentId)] = JSON.parse(JSON.stringify(profile));
+                }
+                return;
+            }
+            // Whole network: the new profile becomes the uniform cross-section again.
             definition.profile = JSON.parse(JSON.stringify(profile));
+            delete definition.segmentProfiles;
             if (typeof corridorProfileWidth === 'function') definition.width = corridorProfileWidth(profile);
             const sidewalks = (profile.strips || []).filter(strip => strip.type === 'sidewalk');
             definition.sidewalkWidth = sidewalks.length
@@ -372,6 +392,11 @@ function corridorEditorOpenOverlay() {
                    value="${totalWidth}" aria-label="Total corridor width in metres">
             <strong class="corridor-editor-total">${Number(totalWidth.toFixed(1))} m</strong>
         </span>`;
+    const scopeHtml = (!drawing && corridorEditorState.canScopeSegment) ? `
+            <div class="corridor-editor-scope" role="radiogroup" aria-label="${corridorEditorI18n('modal.corridor.scopeLabel', 'Applies to')}">
+                <label class="corridor-editor-scope-option"><input type="radio" name="corridor-editor-scope" value="segment"${corridorEditorState.scope === 'segment' ? ' checked' : ''}><span>${corridorEditorI18n('modal.corridor.scopeSegment', 'This segment')}</span></label>
+                <label class="corridor-editor-scope-option"><input type="radio" name="corridor-editor-scope" value="road"${corridorEditorState.scope === 'road' ? ' checked' : ''}><span>${corridorEditorI18n('modal.corridor.scopeRoad', 'Entire road network')}</span></label>
+            </div>` : '';
     const indicatorsHtml = drawing ? '' : `
             <div class="corridor-editor-indicators">
                 <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'Hits buildings (to tunnel through buildings, use drawing mode)')}</span>
@@ -391,6 +416,7 @@ function corridorEditorOpenOverlay() {
                 </div>
                 <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
             </div>
+            ${scopeHtml}
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
                 ${totalControl}
@@ -405,6 +431,30 @@ function corridorEditorOpenOverlay() {
         </div>
     `;
     document.body.appendChild(overlay);
+
+    overlay.querySelectorAll('input[name="corridor-editor-scope"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const state = corridorEditorState;
+            if (!state || !radio.checked) return;
+            state.scope = radio.value === 'segment' ? 'segment' : 'road';
+            state.profile = state.scope === 'segment' && typeof corridorSegmentProfile === 'function'
+                ? corridorSegmentProfile(state.definition, state.segmentId)
+                : corridorProfileOf(state.definition);
+            state.originalProfile = JSON.parse(JSON.stringify(state.profile));
+            state.baselineBuildingHitIds = null;
+            state.dirty = false;
+            if (typeof setCorridorProfilePreview === 'function') {
+                setCorridorProfilePreview(state.proposalKey, state.profile, state.scope === 'segment' ? state.segmentId : null);
+            }
+            const slider = document.querySelector('.corridor-editor-width-slider');
+            const totalEl = document.querySelector('.corridor-editor-total');
+            const widthNow = corridorProfileWidth(state.profile);
+            if (slider) slider.value = widthNow;
+            if (totalEl) totalEl.textContent = `${Number(widthNow.toFixed(1))} m`;
+            corridorEditorRender();
+            corridorEditorScheduleObstacleCheck();
+        });
+    });
 
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
@@ -430,17 +480,32 @@ function openCorridorProfileEditor(proposalIdOrHash) {
 
     const source = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalIdOrHash) : null;
     const definition = source ? corridorProposalDefinition(source) : null;
-    const profile = definition ? corridorProfileOf(definition) : null;
-    if (!profile) {
+    if (!definition || !corridorProfileOf(definition)) {
         console.warn('[corridorEditor] proposal has no corridor cross-section:', proposalIdOrHash);
         return;
     }
+
+    const proposalKey = String((typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId);
+    // The proposal is the whole network; the cross-section is a per-SEGMENT property. When the
+    // click that led here landed on a specific segment, the editor opens scoped to it.
+    const clicked = window.corridorLastClickedSegment;
+    const segmentIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.filter(Boolean).map(String) : [];
+    const segmentId = (clicked && clicked.proposalKey === proposalKey && segmentIds.includes(String(clicked.segmentId)))
+        ? String(clicked.segmentId)
+        : null;
+    const scope = (segmentId && segmentIds.length > 1) ? 'segment' : 'road';
+    const profile = (scope === 'segment' && typeof corridorSegmentProfile === 'function')
+        ? corridorSegmentProfile(definition, segmentId)
+        : corridorProfileOf(definition);
 
     corridorEditorState = {
         mode: 'proposal',
         source,
         definition,
-        proposalKey: String((typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId),
+        scope,
+        segmentId,
+        canScopeSegment: !!segmentId && segmentIds.length > 1,
+        proposalKey,
         profile,
         // The opening cross-section: widening is compared against ITS footprint, so a building
         // the road already touched when the editor opened never blocks an unrelated edit.

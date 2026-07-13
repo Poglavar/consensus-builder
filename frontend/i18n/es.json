@@ -716,6 +716,7 @@
                 "agentMissing": "Agente no encontrado ({{id}})"
             },
             "proposalsSection": {
+                "ancestorPill": "Ancestro",
                 "create": "Crear propuesta",
                 "empty": "Sin propuestas",
                 "fallbackTitle": "Propuesta",
@@ -1149,6 +1150,9 @@
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
             "totalWidth": "Ancho total",
+            "scopeLabel": "Se aplica a",
+            "scopeSegment": "Este tramo",
+            "scopeRoad": "Toda la red vial",
             "hitsBuildings": "Choca con edificios (para túneles a través de edificios, usa el modo de dibujo)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",

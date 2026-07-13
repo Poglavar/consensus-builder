@@ -637,7 +637,7 @@
                 "title": "Izgradi",
                 "block": "Blok",
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
-                "row": "Nizovi kuća",
+                "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
                 "single": "Slobodna forma",
                 "reparcel": "Preparcelacija",
@@ -693,6 +693,7 @@
                 "agentMissing": "Agent nije pronađen ({{id}})"
             },
             "proposalsSection": {
+                "ancestorPill": "Predak",
                 "create": "Kreiraj predlog",
                 "empty": "Nema predloga",
                 "fallbackTitle": "Predlog",
@@ -1100,6 +1101,9 @@
             "drawingSubtitle": "Promene se prikazuju na mapi pre pravljenja predloga",
             "proposalSubtitle": "Ovde pregledajte promene pa ih primenite na crtež puta koji se može uređivati",
             "totalWidth": "Ukupna širina",
+            "scopeLabel": "Primenjuje se na",
+            "scopeSegment": "Ovu deonicu",
+            "scopeRoad": "Celu putnu mrežu",
             "hitsBuildings": "Zahvata zgrade (za tunel kroz zgrade koristite crtanje)",
             "cutsStructures": "Preseca postavljene parkove/trgove/jezera",
             "cancel": "Otkaži",
