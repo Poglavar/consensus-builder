@@ -155,7 +155,7 @@
         const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
         const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
         const blockLabel = tParcel('panel.parcel.metrics.block', {}, 'Block:');
-        const detectBlockLabel = tParcel('panel.parcel.block.detect', {}, 'Detect');
+        const notPartOfBlockLabel = tParcel('panel.parcel.block.notPart', {}, 'Not part of a block');
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
         const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
@@ -245,7 +245,9 @@
                 blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             }
         } else {
-            blockHtml = `<button type="button" class="btn btn-primary btn-sm parcel-block-detect-btn" data-i18n-key="panel.parcel.block.detect" onclick="(window.animateFloodfillFromSelected || function(){} )();" style="box-sizing: border-box; margin: 0; padding: 0 8px; font-size: 12px; height: 22px; line-height: 22px; min-height: 0; background-color: #007bff; border-color: #007bff; color: #fff;">${detectBlockLabel}</button>`;
+            // The detect ACTION lives in the "Select multiple parcels" group at the top of the
+            // tab (Detect block button); this row only reports block membership.
+            blockHtml = `<span data-i18n-key="panel.parcel.block.notPart" style="color: #6c757d; font-size: 12px;">${notPartOfBlockLabel}</span>`;
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;

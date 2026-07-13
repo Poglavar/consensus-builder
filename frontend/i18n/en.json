@@ -609,6 +609,8 @@
             "tabProposalsWithCount": "Proposals ({{count}})",
             "tabTools": "Tools",
             "selectMultiple": "Select multiple parcels",
+            "selectManually": "Manually",
+            "detectBlock": "Detect block",
             "build": {
                 "title": "Build",
                 "block": "Block",
@@ -655,8 +657,7 @@
                 "mixed": "Mixed"
             },
             "block": {
-                "notPart": "Not part of a block",
-                "detect": "Detect"
+                "notPart": "Not part of a block"
             },
             "owner": {
                 "none": "No owner",

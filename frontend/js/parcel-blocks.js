@@ -1989,7 +1989,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
             const invalidParcel = floodResult ? floodResult.invalidParcel : null;
             const invalidParcelId = floodResult ? (floodResult.invalidParcelId || parcelIdFromLayer(invalidParcel)) : null;
             const unknownLabel = tBlock('common.unknown', {}, 'Unknown');
-            const actionLabel = tBlock('panel.parcel.block.detect', {}, 'Detect');
+            const actionLabel = tBlock('panel.parcel.detectBlock', {}, 'Detect block');
             const idLabel = invalidParcelId || unknownLabel;
 
             if (invalidParcel) {

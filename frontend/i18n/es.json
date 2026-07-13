@@ -657,6 +657,8 @@
             "tabProposalsWithCount": "Propuestas ({{count}})",
             "tabTools": "Herramientas",
             "selectMultiple": "Seleccionar múltiples parcelas",
+            "selectManually": "Manualmente",
+            "detectBlock": "Detectar bloque",
             "build": {
                 "title": "Construir",
                 "block": "Manzana",
@@ -703,8 +705,7 @@
                 "mixed": "Mixto"
             },
             "block": {
-                "notPart": "No forma parte de un bloque",
-                "detect": "Detectar"
+                "notPart": "No forma parte de un bloque"
             },
             "owner": {
                 "none": "Sin propietario",

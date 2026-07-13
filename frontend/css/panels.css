@@ -1086,6 +1086,38 @@ with a width of 400px, and a height of half of the map height minus 5px.
     justify-content: center;
 }
 
+/* "Select multiple parcels" group: title with the two selection modes side by side —
+   the Manually checkbox and the Detect block action (block floodfill from the selected parcel). */
+#parcel-info-panel #info-tab .multi-select-group {
+    gap: 4px;
+}
+
+#parcel-info-panel #info-tab .multi-select-title {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#parcel-info-panel #info-tab .multi-select-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#parcel-info-panel #info-tab .multi-select-detect-btn {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 8px;
+    font-size: 12px;
+    height: 22px;
+    line-height: 22px;
+    min-height: 0;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
 /* Parcel Info Panel Layout */
 .parcel-info-header {
     position: sticky;

@@ -633,6 +633,8 @@
             "tabProposalsWithCount": "Predlozi ({{count}})",
             "tabTools": "Alati",
             "selectMultiple": "Izaberi više parcela",
+            "selectManually": "Ručno",
+            "detectBlock": "Detektuj blok",
             "build": {
                 "title": "Izgradi",
                 "block": "Blok",
@@ -680,8 +682,7 @@
                 "mixed": "Mešovito"
             },
             "block": {
-                "notPart": "Nije deo bloka",
-                "detect": "Detektuj"
+                "notPart": "Nije deo bloka"
             },
             "owner": {
                 "none": "Bez vlasnika",

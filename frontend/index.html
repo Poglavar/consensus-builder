@@ -905,12 +905,19 @@
             <div class="panel-body">
                 <!-- Info Tab -->
                 <div id="info-tab" class="parcel-tab-content active">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="multiSelectCheckboxInfo"
-                                onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
-                            <span data-i18n-key="panel.parcel.selectMultiple">Select multiple parcels</span>
-                        </label>
+                    <div class="checkbox-group multi-select-group">
+                        <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
+                            parcels</span>
+                        <div class="multi-select-options">
+                            <label>
+                                <input type="checkbox" id="multiSelectCheckboxInfo"
+                                    onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
+                                <span data-i18n-key="panel.parcel.selectManually">Manually</span>
+                            </label>
+                            <button type="button" class="btn btn-primary btn-sm multi-select-detect-btn"
+                                data-i18n-key="panel.parcel.detectBlock"
+                                onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
+                        </div>
                     </div>
                     <div id="info-content"></div>
                 </div>

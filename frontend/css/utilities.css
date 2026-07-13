@@ -2718,16 +2718,6 @@ input:checked+.slider:before {
     display: none;
 }
 
-/* Parcel block detect button sizing */
-.parcel-block-detect-btn {
-    margin: 0;
-    padding: 0 8px;
-    height: 22px;
-    line-height: 22px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-
 /* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
    chip links to the ENS app, the name value is click-to-copy. Value
    ellipsis-truncates so the long name never overflows tight panels. */
