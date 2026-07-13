@@ -52,6 +52,94 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
 }
 
 test.describe('SimCity proposal lifecycle @core', () => {
+  test('the square geometry editor places furniture and persists bench orientation', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg');
+    await waitForMapReady(page);
+    const source = await addEditableSquare(page, 'square-geometry');
+
+    await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
+    const editor = page.locator('.structure-geometry-editor');
+    await expect(editor).toBeVisible();
+
+    const place = async (tool: string, lng: number, lat: number) => {
+      await editor.locator(`[data-tool="${tool}"]`).click();
+      await page.evaluate(({ lng, lat }) => {
+        const w = window as any;
+        w.map.fire('click', { latlng: w.L.latLng(lat, lng) });
+      }, { lng, lat });
+    };
+    await place('fountain', 15.98210, 45.80020);
+    await place('tree', 15.98225, 45.80025);
+    await place('bench', 15.98235, 45.80030);
+    await editor.locator('[data-role="bench-bearing"]').evaluate((input: HTMLInputElement) => {
+      input.value = '90';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await editor.locator('[data-action="save"]').click();
+    await expect(editor).toBeHidden();
+
+    await expect.poll(() => page.evaluate((sourceId) => {
+      const w = window as any;
+      return w.proposalStorage.getAllProposals().find((proposal: any) =>
+        proposal.proposalId !== sourceId
+        && proposal.structureProposal?.kind === 'square'
+        && proposal.structureProposal?.decorations?.benches?.length === 1
+      )?.structureProposal?.decorations?.benches?.[0]?.bearing || null;
+    }, source.proposalId)).toBe(90);
+  });
+
+  test('the park geometry editor places trees, flowerbeds, ponds, and footpaths', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg');
+    await waitForMapReady(page);
+    const source = await addEditableSquare(page, 'park-geometry');
+    await page.evaluate((proposalId) => {
+      const w = window as any;
+      const proposal = w.proposalStorage.getProposal(proposalId);
+      proposal.goal = 'park';
+      proposal.title = 'Source park geometry';
+      proposal.structureProposal.kind = 'park';
+      w.proposalStorage._indexProposal(proposal);
+      w.proposalStorage.save();
+    }, source.proposalId);
+
+    await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
+    const editor = page.locator('.structure-geometry-editor');
+    await expect(editor).toBeVisible();
+
+    const place = async (tool: string, lng: number, lat: number) => {
+      await editor.locator(`[data-tool="${tool}"]`).click();
+      await page.evaluate(({ lng, lat }) => {
+        const w = window as any;
+        w.map.fire('click', { latlng: w.L.latLng(lat, lng) });
+      }, { lng, lat });
+    };
+    await place('tree', 15.98205, 45.80020);
+    await place('flowerbed', 15.98218, 45.80020);
+    await place('pond', 15.98234, 45.80028);
+    await place('path', 15.98202, 45.80010);
+    await page.evaluate(() => {
+      const w = window as any;
+      w.map.fire('click', { latlng: w.L.latLng(45.80040, 15.98242) });
+    });
+    await editor.locator('[data-action="finish-path"]').click();
+    await editor.locator('[data-action="save"]').click();
+    await expect(editor).toBeHidden();
+
+    await expect.poll(() => page.evaluate((sourceId) => {
+      const w = window as any;
+      const replacement = w.proposalStorage.getAllProposals().find((proposal: any) =>
+        proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'park'
+      );
+      const decorations = replacement?.structureProposal?.decorations;
+      return decorations ? {
+        trees: decorations.trees?.length,
+        flowerbeds: decorations.flowerbeds?.length,
+        ponds: decorations.ponds?.length,
+        paths: decorations.paths?.length,
+      } : null;
+    }, source.proposalId)).toEqual({ trees: 1, flowerbeds: 1, ponds: 1, paths: 1 });
+  });
+
   test('the Build palette renders for a selected parcel and one-click creates an applied park', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);

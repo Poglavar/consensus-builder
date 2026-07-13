@@ -616,6 +616,7 @@ function prepareProposalForImport(sharedProposal) {
         base.structureProposal = {
             kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square' || sharedProposal.structureProposal.kind === 'lake') ? sharedProposal.structureProposal.kind : 'square',
             geometry: deepClone(sharedProposal.structureProposal.geometry),
+            decorations: deepClone(sharedProposal.structureProposal.decorations || null),
             blockName: sharedProposal.structureProposal.blockName || null,
             parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.parentParcelIds)
         };

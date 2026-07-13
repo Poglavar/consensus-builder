@@ -8,7 +8,8 @@ const {
     registry,
     corridorAdapter,
     buildBuildingAdapter,
-    reparcellizationAdapter
+    reparcellizationAdapter,
+    buildStructureAdapter
 } = require('../../frontend/js/proposal-editor-adapters.js');
 
 function draftFor(adapter, proposal, overrides = {}) {
@@ -35,6 +36,35 @@ describe('proposal editor adapter registry', () => {
         expect(registry.get('road')).toBe(registry.get('road-track'));
         expect(registry.get('parcel-based')).toBe(registry.get('parcelBased'));
         expect(registry.get('ownership-transfer-from-me')).toBe(registry.get('ownership-transfer'));
+    });
+});
+
+describe('park and square proposal adapters', () => {
+    const geometry = {
+        type: 'Polygon',
+        coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
+    };
+
+    it.each([
+        ['park', { trees: [[15.905, 45.805]], flowerbeds: [], ponds: [], paths: [], version: 3 }],
+        ['square', { fountains: [[15.905, 45.805]], trees: [], benches: [{ coordinate: [15.906, 45.806], bearing: 75 }], version: 2 }]
+    ])('round-trips %s furniture geometry and exposes the design section', (kind, decorations) => {
+        const adapter = buildStructureAdapter(kind);
+        const proposal = {
+            proposalId: `${kind}-1`,
+            city: 'zagreb',
+            goal: kind,
+            title: `Test ${kind}`,
+            parentParcelIds: ['p1'],
+            structureProposal: { kind, geometry, decorations, parentParcelIds: ['p1'] }
+        };
+        const draft = draftFor(adapter, proposal);
+        const replacement = adapter.serializeProposal(draft);
+
+        expect(adapter.sections).toContain('design');
+        expect(replacement.structureProposal.geometry).toEqual(geometry);
+        expect(replacement.structureProposal.decorations).toEqual(decorations);
+        expect(adapter.validate(draft).valid).toBe(true);
     });
 });
 

@@ -2752,7 +2752,17 @@ const ProposalManager = {
                 }
             }
 
-            const feature = { type: 'Feature', properties: { structureType: kind, blockName: blockName, proposalId, lakeGraphics: sp.lakeGraphics || null }, geometry: JSON.parse(JSON.stringify(geometry)) };
+            const feature = {
+                type: 'Feature',
+                properties: {
+                    structureType: kind,
+                    blockName: blockName,
+                    proposalId,
+                    lakeGraphics: sp.lakeGraphics || null,
+                    decorations: sp.decorations ? JSON.parse(JSON.stringify(sp.decorations)) : undefined
+                },
+                geometry: JSON.parse(JSON.stringify(geometry))
+            };
             if (kind === 'park') {
                 if (!Array.isArray(window.parks)) window.parks = [];
                 // Only remove if it's the same proposal (to avoid duplicates when re-applying)

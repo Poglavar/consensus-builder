@@ -218,6 +218,7 @@
         const decorations = (parkFeature.properties && parkFeature.properties.decorations) ? parkFeature.properties.decorations : null;
         if (!decorations) return;
         const ponds = Array.isArray(decorations.ponds) ? decorations.ponds : [];
+        const flowerbeds = Array.isArray(decorations.flowerbeds) ? decorations.flowerbeds : [];
         const paths = Array.isArray(decorations.paths) ? decorations.paths : [];
         const treePoints = Array.isArray(decorations.trees) ? decorations.trees : [];
 
@@ -240,6 +241,16 @@
                 L.polygon(latlngs, {
                     color: '#1e63b0', weight: 1.5, opacity: 0.95,
                     fillColor: '#2b6cb0', fillOpacity: 0.88, interactive: false, pane: PARKS_PANE
+                }).addTo(group);
+            } catch (_) { }
+        });
+
+        flowerbeds.forEach(ringCoords => {
+            try {
+                const latlngs = ringCoords.map(point => [point[1], point[0]]);
+                L.polygon(latlngs, {
+                    color: '#be185d', weight: 1.5, opacity: 0.95,
+                    fillColor: '#f472b6', fillOpacity: 0.82, interactive: false, pane: PARKS_PANE
                 }).addTo(group);
             } catch (_) { }
         });
@@ -277,6 +288,7 @@
                 const dec = props.decorations;
                 // Ensure structure of decorations object
                 dec.ponds = Array.isArray(dec.ponds) ? dec.ponds : [];
+                dec.flowerbeds = Array.isArray(dec.flowerbeds) ? dec.flowerbeds : [];
                 dec.paths = Array.isArray(dec.paths) ? dec.paths : [];
                 dec.trees = Array.isArray(dec.trees) ? dec.trees : [];
 
@@ -582,7 +594,7 @@
                 }
             }
 
-            props.decorations = { ponds, paths, trees, version: DECORATION_VERSION };
+            props.decorations = { ponds, flowerbeds: [], paths, trees, version: DECORATION_VERSION };
             saveParks();
         } catch (_) { }
     }
@@ -722,9 +734,9 @@
         // Subtle cobblestone texture first (under icons)
         drawSquareTexture(group, squareFeature);
 
-        // Fountain at center (skipped when it falls on a road cut through the square)
-        if (dec.fountain && Array.isArray(dec.fountain) && pointInFeature(turf.point(dec.fountain), squareFeature)) {
-            const [lng, lat] = dec.fountain;
+        // Fountains (legacy squares store one `fountain`, edited squares store `fountains`).
+        const fountains = Array.isArray(dec.fountains) ? dec.fountains : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
+        fountains.filter(coord => pointInFeature(turf.point(coord), squareFeature)).forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: 'square-fountain-emoji',
@@ -736,7 +748,34 @@
                 zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
-        }
+        });
+        (Array.isArray(dec.trees) ? dec.trees : [])
+            .filter(coord => pointInFeature(turf.point(coord), squareFeature))
+            .forEach(([lng, lat]) => {
+                L.marker([lat, lng], {
+                    icon: L.divIcon({ className: 'square-tree-emoji', html: '🌳', iconSize: [20, 20], iconAnchor: [10, 10] }),
+                    pane: SQUARES_ICON_PANE,
+                    zIndexOffset: 1000,
+                    interactive: false
+                }).addTo(group);
+            });
+        (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
+            const coord = Array.isArray(bench) ? bench : (bench && (bench.coordinate || bench.position));
+            if (!Array.isArray(coord) || !pointInFeature(turf.point(coord), squareFeature)) return;
+            const bearing = Number(bench && bench.bearing) || 0;
+            const [lng, lat] = coord;
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'square-bench-icon',
+                    html: `<span style="display:block;transform:rotate(${bearing}deg);">▰</span>`,
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
+                }),
+                pane: SQUARES_ICON_PANE,
+                zIndexOffset: 1000,
+                interactive: false
+            }).addTo(group);
+        });
         // Stalls / terraces (skipped when they fall on a road cut through the square)
         const stalls = (Array.isArray(dec.stalls) ? dec.stalls : [])
             .filter(coord => pointInFeature(turf.point(coord), squareFeature));
@@ -795,7 +834,7 @@
                 const pt = turf.point([lng, lat]);
                 if (pointInFeature(pt, squareFeature)) stalls.push([lng, lat]);
             }
-            props.decorations = { fountain, stalls, version: 1 };
+            props.decorations = { fountain, fountains: fountain ? [fountain] : [], trees: [], benches: [], stalls, version: 2 };
             saveSquares();
         } catch (_) { }
     }

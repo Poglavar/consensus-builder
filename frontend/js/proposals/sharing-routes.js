@@ -459,6 +459,7 @@ function buildSharedProposalsPayload(appliedProposals) {
             sanitizedProposal.structureProposal = {
                 kind: sp.kind || 'square',
                 geometry: deepClone(sp.geometry),
+                decorations: deepClone(sp.decorations || null),
                 blockName: sp.blockName || null,
                 parentParcelIds: parentIds
             };

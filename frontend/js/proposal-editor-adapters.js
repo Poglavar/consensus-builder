@@ -577,6 +577,77 @@
         };
     }
 
+    function structureGeometry(proposal) {
+        return clone(proposal?.structureProposal?.geometry
+            || proposal?.geometry?.parkGraphics
+            || proposal?.geometry?.squareGraphics
+            || (['Polygon', 'MultiPolygon'].includes(proposal?.geometry?.type) ? proposal.geometry : null)
+            || null);
+    }
+
+    function buildStructureAdapter(key) {
+        const adapter = buildGenericAdapter(key, {
+            hasDesign: true,
+            sections: ['design', 'parcels', 'ownership', 'terms', 'details']
+        });
+        adapter.draftFromProposal = function draftStructureFromProposal(proposal) {
+            const geometry = structureGeometry(proposal);
+            const structureProposal = clone(proposal?.structureProposal || {
+                kind: key,
+                status: 'unapplied',
+                geometry,
+                parentParcelIds: sourceParcels(proposal)
+            });
+            structureProposal.kind = key;
+            structureProposal.geometry = clone(geometry);
+            return {
+                adapterKey: key,
+                proposalType: proposal.primaryType || proposalTypeLabel(key),
+                fields: sourceFields(proposal),
+                editorPayload: {
+                    geometry: clone(geometry),
+                    structureProposal,
+                    facets: clone(proposal.facets || proposal.proposalFacets || null)
+                },
+                previewGeometry: clone(geometry)
+            };
+        };
+        adapter.validate = function validateStructure(draft) {
+            const { errors, warnings } = commonValidation(draft);
+            const geometry = draft?.editorPayload?.structureProposal?.geometry || draft?.editorPayload?.geometry;
+            if (!featureGeometryValid(geometry)) {
+                errors.push(issue('invalid-structure-geometry', 'The structure needs a valid parcel boundary.', 'editorPayload.structureProposal.geometry'));
+            }
+            return { valid: errors.length === 0, errors, warnings };
+        };
+        adapter.renderPreview = function renderStructurePreview(draft, viewMode) {
+            const structureProposal = clone(draft?.editorPayload?.structureProposal || {});
+            return {
+                kind: 'structure',
+                structureKind: key,
+                viewMode: viewMode || '2d',
+                parcelIds: clone(draft?.fields?.parentParcelIds || []),
+                geometry: clone(structureProposal.geometry || draft?.editorPayload?.geometry || null),
+                decorations: clone(structureProposal.decorations || null)
+            };
+        };
+        adapter.openDesignEditor = function openStructureDesignEditor(draft) {
+            if (typeof global.openStructureGeometryEditor !== 'function') return false;
+            return global.openStructureGeometryEditor(draft);
+        };
+        adapter.serializeProposal = function serializeStructure(draft) {
+            const output = commonProposalFromDraft(draft);
+            const structureProposal = clone(draft?.editorPayload?.structureProposal || {});
+            structureProposal.kind = key;
+            structureProposal.geometry = clone(structureProposal.geometry || draft?.editorPayload?.geometry || null);
+            structureProposal.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
+            output.structureProposal = structureProposal;
+            output.geometry = clone(draft?.editorPayload?.geometry || structureProposal.geometry);
+            return output;
+        };
+        return adapter;
+    }
+
     const corridorAdapter = {
         key: 'road-track',
         label: 'Road / Track',
@@ -962,8 +1033,8 @@
     registry.register('reparcellization', reparcellizationAdapter);
     registry.register('urban-rule', buildGenericAdapter('urban-rule'));
     registry.register('as-is', buildGenericAdapter('as-is'));
-    registry.register('park', buildGenericAdapter('park', { hasDesign: true }));
-    registry.register('square', buildGenericAdapter('square', { hasDesign: true }));
+    registry.register('park', buildStructureAdapter('park'));
+    registry.register('square', buildStructureAdapter('square'));
     registry.register('lake', buildGenericAdapter('lake', { hasDesign: true }));
     registry.register('decide-later', buildGenericAdapter('decide-later'));
     registry.register('ownership-transfer', buildGenericAdapter('ownership-transfer'), {
@@ -1028,6 +1099,7 @@
             buildBuildingAdapter,
             reparcellizationAdapter,
             buildGenericAdapter,
+            buildStructureAdapter,
             summarizeCommonChanges
         };
     }

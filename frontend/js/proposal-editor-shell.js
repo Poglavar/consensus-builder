@@ -257,6 +257,15 @@
                 algorithm: payload.plan?.algorithm || tDraft('proposalDrafts.design.manual', 'manual')
             });
         }
+        if (['park', 'square'].includes(draft.adapterKey || draft.goal)) {
+            const decorations = payload.structureProposal?.decorations || {};
+            const counts = draft.goal === 'park'
+                ? [decorations.trees?.length || 0, decorations.flowerbeds?.length || 0, decorations.ponds?.length || 0, decorations.paths?.length || 0]
+                : [decorations.fountains?.length || (decorations.fountain ? 1 : 0), decorations.trees?.length || 0, decorations.benches?.length || 0];
+            return draft.goal === 'park'
+                ? `${counts[0]} tree(s) · ${counts[1]} flowerbed(s) · ${counts[2]} pond(s) · ${counts[3]} footpath(s)`
+                : `${counts[0]} fountain(s) · ${counts[1]} tree(s) · ${counts[2]} bench(es)`;
+        }
         return tDraft('proposalDrafts.design.parcelSummary', '{{count}} affected parcel(s)', { count: draft.fields?.parentParcelIds?.length || 0 });
     }
 
@@ -755,7 +764,7 @@
     // committed as a new object and the old one is absorbed. Untouched sessions leave nothing.
     let geometryEditCommitDraftId = null;
 
-    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization']);
+    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square']);
 
     function canEditProposalGeometry(proposalOrId) {
         const proposal = typeof proposalOrId === 'object' ? proposalOrId : proposalById(proposalOrId);
@@ -1357,6 +1366,17 @@
             if (draft.goal !== 'reparcellization') return null;
             patch = { editorPayload: { plan: JSON.parse(JSON.stringify(payload)) }, previewGeometry: JSON.parse(JSON.stringify(payload.polygons || [])) };
             if (Array.isArray(payload.parcelIds)) fields.parentParcelIds = payload.parcelIds.map(String);
+        } else if (kind === 'structure') {
+            if (!['park', 'square'].includes(draft.adapterKey || draft.goal)) return null;
+            const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
+            const geometry = structureProposal.geometry || draft.editorPayload?.geometry || null;
+            patch = {
+                editorPayload: { ...draft.editorPayload, geometry, structureProposal },
+                previewGeometry: JSON.parse(JSON.stringify(geometry))
+            };
+            if (Array.isArray(structureProposal.parentParcelIds)) {
+                fields.parentParcelIds = structureProposal.parentParcelIds.map(String);
+            }
         } else {
             return null;
         }
