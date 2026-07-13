@@ -505,7 +505,7 @@ async function _rehydrateChildFeatures(proposal, childIds) {
     }
 
     // Re-apply track tagging if this is a track proposal
-    const isTrackProposal = (proposal?.roadProposal?.definition?.metadata?.isTrack === true)
+    const isTrackProposal = corridorIsTrack(proposal?.roadProposal?.definition)
         || (proposal?.roadProposal?.definition?.metadata?.type === 'track')
         || (proposal?.roadProposal?.definition?.type === 'track');
     if (isTrackProposal && features.length > 0) {
@@ -1048,8 +1048,8 @@ class Proposal {
         const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
         const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
 
-        // Check if this is a track proposal
-        const isTrack = this.definition?.metadata?.isTrack === true;
+        // A corridor is a track iff its cross-section carries rails (legacy ones say so in metadata).
+        const isTrack = corridorIsTrack(this.definition);
         console.debug('[Proposal.calculateChildFeatures] Creating corridor feature', {
             proposalId: this.id,
             isTrack,
@@ -1930,7 +1930,7 @@ const ProposalManager = {
             const primaryRootNumber = affectedParcels[0]?.rootNumber;
             const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
             const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
-            const isTrack = definition?.metadata?.isTrack === true || definition?.metadata?.type === 'track' || definition?.type === 'track';
+            const isTrack = corridorIsTrack(definition) || definition?.metadata?.type === 'track' || definition?.type === 'track';
             console.debug('[_buildChildFeaturesFromDefinition] Creating corridor feature', {
                 proposalId: safeId,
                 isTrack,
@@ -3760,7 +3760,7 @@ const ProposalManager = {
         }
 
         // Ensure track proposals carry track flags and points on all child features
-        const trackFromDefinition = (proposalData?.roadProposal?.definition?.metadata?.isTrack === true)
+        const trackFromDefinition = corridorIsTrack(proposalData?.roadProposal?.definition)
             || (proposalData?.roadProposal?.definition?.metadata?.type === 'track')
             || (proposalData?.roadProposal?.definition?.type === 'track');
 
@@ -4895,25 +4895,9 @@ const ProposalManager = {
             this._removeFeaturesFromMap(childFeatures);
         }
 
-        // Always remove by id to cover cases with no cached features
-        // But first, remove track rails layers if they exist (similar to _removeFeaturesFromMap)
+        // Always remove by id to cover cases with no cached features. A corridor's rails live on the
+        // applied-corridor overlay, not on the parcel layer, so there is nothing extra to detach here.
         allChildIds.forEach(id => {
-            // Remove track rails layers if they exist
-            // Get it from the parcel layer on the map (most reliable)
-            let trackRailsLayer = null;
-            if (typeof window.resolveParcelLayerById === 'function') {
-                const parcelLayer = window.resolveParcelLayerById(id);
-                if (parcelLayer && parcelLayer.feature && parcelLayer.feature._trackRailsLayer) {
-                    trackRailsLayer = parcelLayer.feature._trackRailsLayer;
-                }
-            }
-
-            // Remove the track rails layer if found
-            if (trackRailsLayer && window.map && window.map.hasLayer(trackRailsLayer)) {
-                window.map.removeLayer(trackRailsLayer);
-                trackRailsLayer = null;
-            }
-
             if (typeof window.removeParcelLayerById === 'function') {
                 window.removeParcelLayerById(id);
             }
@@ -5709,29 +5693,8 @@ const ProposalManager = {
         features.forEach(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             if (parcelId !== undefined && parcelId !== null) {
-                // Remove track rails layers if they exist
-                // First try to get it from the parcel layer on the map (most reliable)
-                // This handles the case where the feature object is a fresh load from storage
-                let trackRailsLayer = null;
-                if (typeof window.resolveParcelLayerById === 'function') {
-                    const parcelLayer = window.resolveParcelLayerById(parcelId);
-                    if (parcelLayer && parcelLayer.feature && parcelLayer.feature._trackRailsLayer) {
-                        trackRailsLayer = parcelLayer.feature._trackRailsLayer;
-                    }
-                }
-
-                // Fallback: try to get it from the feature object (if available)
-                if (!trackRailsLayer && feature._trackRailsLayer) {
-                    trackRailsLayer = feature._trackRailsLayer;
-                }
-
-                // Remove the track rails layer if found
-                if (trackRailsLayer && window.map && window.map.hasLayer(trackRailsLayer)) {
-                    window.map.removeLayer(trackRailsLayer);
-                    trackRailsLayer = null;
-                }
-
-                // Use the standard removal function
+                // A corridor's rails belong to the applied-corridor overlay, which is rebuilt wholesale
+                // whenever a corridor changes — the parcel layer carries no rails to detach.
                 if (typeof window.removeParcelLayerById === 'function') {
                     window.removeParcelLayerById(parcelId);
                 }
@@ -6309,92 +6272,12 @@ const ProposalManager = {
         featuresToProcess.forEach(feature => {
             // Check if this is a track - rely on the isTrack flag provided by upstream flow
             const isTrack = feature.properties.isTrack === true;
-            let trackPoints = feature.properties.trackPoints;
 
-            const roadProposal = proposalData?.roadProposal || proposalData;
-            const definition = roadProposal?.definition || proposalData?.definition;
-            let trackWidth = null;
-
+            // A track's corridor parcel gets the track's own fill. Its RAILS are not drawn here: rails
+            // belong to the rail lanes of the corridor's cross-section, and corridor-render.js lays them
+            // with the rest of the cross-section (see refreshAppliedCorridorStrips). Drawing them here
+            // too would double every sleeper.
             if (isTrack) {
-                if (!Number.isFinite(trackWidth)) {
-                    trackWidth = Number.isFinite(definition?.width) ? definition.width : null;
-                }
-                if (!Number.isFinite(trackWidth)) {
-                    trackWidth = Number.isFinite(trackDefinitionWidth) ? trackDefinitionWidth : 6;
-                }
-                if (!trackPoints && trackDefinitionPoints) {
-                    trackPoints = trackDefinitionPoints;
-                }
-
-                const parcelId = _getParcelIdFromFeature(feature);
-                console.debug('[_addFeaturesToMap] track candidate', {
-                    parcelId,
-                    trackPointsPresent: Array.isArray(trackPoints),
-                    trackPointCount: Array.isArray(trackPoints) ? trackPoints.length : 0,
-                    trackWidth
-                });
-            }
-
-            // For tracks, render with rails and sleepers plus a visible corridor polygon
-            if (isTrack) {
-                if (trackPoints && Array.isArray(trackPoints)) {
-                    const flattenedTrackPoints = flattenTrackPoints(trackPoints);
-                    if (Array.isArray(flattenedTrackPoints) && flattenedTrackPoints.length >= 2) {
-                        trackPoints = flattenedTrackPoints;
-                    }
-                }
-
-                if (trackPoints && Array.isArray(trackPoints) && trackPoints.length >= 2) {
-                    const renderFn = typeof renderTrackWithRails === 'function'
-                        ? renderTrackWithRails
-                        : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
-                            ? window.renderTrackWithRails
-                            : null;
-
-                    if (renderFn) {
-                        const normalizedPoints = trackPoints.map(p => {
-                            if (p && typeof p.lat === 'function' && typeof p.lng === 'function') {
-                                return p;
-                            }
-                            if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) {
-                                return L.latLng(Number(p.lat), Number(p.lng));
-                            }
-                            if (Array.isArray(p) && p.length >= 2) {
-                                const val1 = Number(p[0]);
-                                const val2 = Number(p[1]);
-                                if (Math.abs(val1) <= 90 && Math.abs(val2) <= 180) {
-                                    return L.latLng(val1, val2);
-                                }
-                                return L.latLng(val2, val1);
-                            }
-                            return null;
-                        }).filter(Boolean);
-
-                        if (normalizedPoints.length >= 2) {
-                            const trackRailsLayer = renderFn(normalizedPoints, false, {
-                                railColor: '#000000',
-                                sleeperColor: '#666666',
-                                trackWidth: trackWidth,
-                                pane: (window.__proposalHighlightPanes && window.__proposalHighlightPanes.highlight) || undefined
-                            });
-                            console.debug('[_addFeaturesToMap] rendering track rails', {
-                                pointCount: normalizedPoints.length,
-                                trackWidth
-                            });
-                            if (trackRailsLayer) {
-                                trackRailsLayer.addTo(window.map);
-                                feature._trackRailsLayer = trackRailsLayer;
-                            }
-                        } else {
-                            console.warn('[_addFeaturesToMap] trackPoints normalized but insufficient for rails', {
-                                originalCount: Array.isArray(trackPoints) ? trackPoints.length : 0,
-                                normalizedCount: normalizedPoints.length
-                            });
-                        }
-                    }
-                }
-
-                // Draw a visible corridor so applied tracks differ from roads
                 const onEachFeature = (window.Parcels && window.Parcels.selection && window.Parcels.selection.onEachFeature)
                     ? window.Parcels.selection.onEachFeature
                     : window.onEachFeature;
@@ -6405,9 +6288,6 @@ const ProposalManager = {
                 });
 
                 newLayer.eachLayer(layer => {
-                    if (feature._trackRailsLayer && layer.feature) {
-                        layer.feature._trackRailsLayer = feature._trackRailsLayer;
-                    }
                     const parcelId = _getParcelIdFromFeature(layer?.feature);
                     if (parcelId && layer?.feature?.properties) {
                         _ensureParcelIdOnProperties(layer.feature.properties, parcelId);

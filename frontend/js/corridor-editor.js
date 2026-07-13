@@ -1,4 +1,5 @@
-// The cross-section editor: add, remove, resize, retype and reorder the lanes of a road.
+// The cross-section editor: add, remove, resize, retype and reorder the lanes of a corridor — a road or
+// a track, which differ only in the lanes they are made of (a track is a corridor with a rail lane in it).
 //
 // THE LANE LIST IS THE ROAD. The total width shown at the top is a READOUT — the sum of the lanes —
 // not a control: you widen a street by giving it another lane, and narrow it by taking one away. There
@@ -267,16 +268,18 @@ function corridorEditorSyncWidthsInPlace(profile) {
     if (totalEl) totalEl.textContent = corridorEditorTotalText(total);
 }
 
-// A rail bed belongs to a track, not a road: it is only on offer where the profile already has one.
-function corridorEditorLaneTypes(profile) {
-    const hasRail = (profile.strips || []).some(strip => strip.type === 'rail');
-    return Object.keys(CORRIDOR_LANE_TYPES).filter(type => type !== 'rail' || hasRail);
+// Every lane type is on offer in every corridor. A tram track running down a street is a normal street
+// (this is Zagreb), and a track can have a platform, a verge or a service lane beside it — the corridor
+// is the cross-section, and nothing about a rail lane makes it belong to only one kind of corridor.
+function corridorEditorLaneTypes() {
+    return Object.keys(CORRIDOR_LANE_TYPES);
 }
 
 // The standard width for a lane's type, and — only when the lane deviates from it — the one-click way
 // back. A permanent reset button on every row would be clutter for something the user rarely wants.
+// A track's standard is ITS GAUGE's standard, so the reset takes the lane's gauge, not just its type.
 function corridorEditorStandardHtml(lane, index) {
-    const standard = corridorStandardWidth(lane.type);
+    const standard = corridorStandardWidth(lane.type, lane.gauge);
     const label = `${Number(standard)} m`;
     if (Math.abs(lane.width - standard) < 1e-6) {
         return `<span class="corridor-lane-standard" title="${corridorEditorI18n('modal.corridor.standardWidth', 'Standard width: {{width}} m', { width: Number(standard) })}">${label}</span>`;
@@ -287,7 +290,7 @@ function corridorEditorStandardHtml(lane, index) {
 }
 
 function corridorEditorRowsHtml(profile) {
-    const options = corridorEditorLaneTypes(profile);
+    const options = corridorEditorLaneTypes();
     const dragHint = corridorEditorI18n('modal.corridor.dragReorder', 'Drag to reorder the lanes');
 
     return profile.strips.map((lane, index) => {
@@ -299,6 +302,14 @@ function corridorEditorRowsHtml(profile) {
             <select class="corridor-lane-landscape" data-lane-index="${index}" aria-label="Green strip planting">
                 <option value="grass"${landscape === 'grass' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.grass', 'Grass only')}</option>
                 <option value="trees"${landscape === 'trees' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.trees', 'Tree grove')}</option>
+            </select>` : '';
+        // A track's gauge, the same shape the green strips' planting takes. Picking a gauge re-widths the
+        // lane (a gauge IS a width here), so the selector belongs next to the number it moves.
+        const gauge = corridorRailGaugeOf(lane);
+        const gaugeSelect = gauge ? `
+            <select class="corridor-lane-gauge" data-lane-index="${index}" aria-label="${corridorEditorI18n('modal.corridor.gauge', 'Track gauge')}">
+                <option value="1000"${gauge === 1000 ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.gauges.metre', '1000 mm (tram)')}</option>
+                <option value="1435"${gauge === 1435 ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.gauges.standard', '1435 mm (railway)')}</option>
             </select>` : '';
         return `
         <div class="corridor-lane-row${selected}" data-lane-index="${index}" tabindex="0">
@@ -314,15 +325,15 @@ function corridorEditorRowsHtml(profile) {
                 <button type="button" class="corridor-lane-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
                 <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
             </span>
-            ${landscapeSelect}
+            ${landscapeSelect}${gaugeSelect}
         </div>`;
     }).join('');
 }
 
 // The lane palette: one button per lane type, each inserting that type at its standard width. The road
 // grows by exactly that much — this is how a street is widened now that there is no width slider.
-function corridorEditorPaletteHtml(profile) {
-    const buttons = corridorEditorLaneTypes(profile).map(type => {
+function corridorEditorPaletteHtml() {
+    const buttons = corridorEditorLaneTypes().map(type => {
         const laneType = CORRIDOR_LANE_TYPES[type] || {};
         const width = Number(corridorStandardWidth(type));
         const label = corridorLaneTypeLabel(type);
@@ -401,7 +412,7 @@ function corridorEditorRender() {
         ${corridorEditorPresetsHtml()}
         ${corridorEditorSectionHtml(profile)}
         ${notice}
-        ${corridorEditorPaletteHtml(profile)}
+        ${corridorEditorPaletteHtml()}
         <div class="corridor-editor-hint">${corridorEditorI18n('modal.corridor.dragReorderHint', 'Drag a lane by its handle to reorder it; drag a seam in the diagram to move width from one lane to its neighbour.')}</div>
         <div class="corridor-editor-lanes">${corridorEditorRowsHtml(profile)}</div>
     `;
@@ -498,6 +509,16 @@ function corridorEditorBindBody(body) {
         });
     });
 
+    body.querySelectorAll('.corridor-lane-gauge').forEach(select => {
+        select.addEventListener('change', () => {
+            const index = Number(select.dataset.laneIndex);
+            corridorEditorState.selected = index;
+            // withLaneGauge also re-widths the lane to that gauge's standard, so the corridor's total
+            // moves with it — the same way any other width edit moves it.
+            corridorEditorApply(profile => withLaneGauge(profile, index, select.value));
+        });
+    });
+
     body.querySelectorAll('[data-move-up]').forEach(button => {
         const index = Number(button.dataset.moveUp);
         button.addEventListener('click', () => {
@@ -526,7 +547,10 @@ function corridorEditorBindBody(body) {
         const index = Number(button.dataset.resetStandard);
         button.addEventListener('click', () => {
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLaneWidth(profile, index, corridorStandardWidth(profile.strips[index].type)));
+            corridorEditorApply(profile => {
+                const lane = profile.strips[index];
+                return withLaneWidth(profile, index, corridorStandardWidth(lane.type, lane.gauge));
+            });
         });
     });
 
@@ -540,6 +564,8 @@ function corridorEditorBindBody(body) {
             const at = (state.selected >= 0 && state.selected < lanes) ? state.selected + 1 : lanes;
             const lane = { type, width: corridorStandardWidth(type) };
             if ((CORRIDOR_LANE_TYPES[type] || {}).directional) lane.direction = 'forward';
+            // A fresh track is a standard-gauge one; its row's gauge selector is how it becomes a tram.
+            if (type === 'rail') lane.gauge = CORRIDOR_DEFAULT_RAIL_GAUGE;
             state.selected = at; // the new lane lands at `at`, and the render below highlights it
             corridorEditorApply(profile => withLaneInserted(profile, at, lane));
         });
@@ -792,8 +818,9 @@ function openCorridorProfileEditor(proposalIdOrHash) {
     corridorEditorOpenOverlay();
 }
 
-// The same editor while the road is still geometry-in-progress. Every change is previewed immediately;
-// Cancel restores the opening profile, while Apply keeps the live profile and returns to drawing.
+// The same editor while the corridor is still geometry-in-progress — a road OR a track, since a track's
+// cross-section is a lane list like any other. Every change is previewed immediately; Cancel restores the
+// opening profile, while Apply keeps the live profile and returns to drawing.
 function openRoadDrawingCrossSectionEditor() {
     if (!window.roadDrawingMode || typeof getRoadDrawingProfile !== 'function') return;
     corridorEditorCancel();
@@ -815,10 +842,11 @@ function openRoadDrawingCrossSectionEditor() {
     corridorEditorOpenOverlay();
 }
 
-// Only a road with a cross-section can be edited this way; a track has no lanes to shuffle.
+// Any placed corridor can be re-sectioned from its details panel. A track is one of them: its lane list
+// is a cross-section like a road's, and the map draws it as one — rails and all — so an edit to it shows.
 function proposalHasEditableCorridor(proposal) {
     const definition = (typeof corridorProposalDefinition === 'function') ? corridorProposalDefinition(proposal) : null;
-    if (!definition || (definition.metadata && definition.metadata.isTrack)) return false;
+    if (!definition) return false;
     return !!corridorProfileOf(definition);
 }
 

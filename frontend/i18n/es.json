@@ -1111,6 +1111,7 @@
         },
         "singleBuilding": {
             "title": "Edificios",
+            "defaultName": "Edificio {{n}}",
             "buildingsTitle": "Edificios",
             "buildingsLabel": "Selecciona un edificio",
             "addLabel": "Añadir edificio",
@@ -1203,6 +1204,11 @@
             "maxWidthReached": "Un corredor no puede superar los {{max}} m. Quita o estrecha un carril primero.",
             "grass": "Solo césped",
             "trees": "Arboleda",
+            "gauge": "Ancho de vía",
+            "gauges": {
+                "metre": "1000 mm (tranvía)",
+                "standard": "1435 mm (ferrocarril)"
+            },
             "laneTypes": {
                 "driving": "Carril de circulación",
                 "bus": "Carril bus",
@@ -1211,7 +1217,7 @@
                 "sidewalk": "Acera",
                 "verge": "Franja verde",
                 "median": "Mediana",
-                "rail": "Plataforma ferroviaria"
+                "rail": "Vía"
             }
         },
         "corridorDraft": {
@@ -1365,6 +1371,22 @@
                     "areaAsc": "Área (menor a mayor)",
                     "authorAsc": "Autor (A → Z)",
                     "authorDesc": "Autor (Z → A)"
+                },
+                "goalLabels": {
+                    "road-track": "Carretera/Vía férrea",
+                    "road": "Carretera",
+                    "track": "Vía férrea",
+                    "buildings": "Edificios",
+                    "single": "Edificio único",
+                    "row": "Hilera",
+                    "park": "Parque",
+                    "square": "Plaza",
+                    "lake": "Lago",
+                    "urban-rule": "Regla urbana",
+                    "reparcellization": "Reparcelación",
+                    "decide-later": "Decidir después",
+                    "parcelBased": "Por parcela",
+                    "other": "Otro"
                 },
                 "typeLabels": {
                     "road": "Carretera",
@@ -1823,6 +1845,7 @@
             "rejected": "Transacción rechazada",
             "nameLabel": "Nombre:",
             "namePlaceholderProposal": "Nombre de la propuesta",
+            "defaultDescription": "{{type}} — nueva propuesta de {{author}}",
             "namePlaceholder": "Ponle nombre a tu {{kind}}",
             "typeLabel": "Tipo:",
             "typePark": "Parque",

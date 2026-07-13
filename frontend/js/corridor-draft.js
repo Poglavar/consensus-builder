@@ -80,7 +80,7 @@
     function legacyCorridorShape(draft) {
         if (!draft || draft.goal !== 'road-track') return null;
         const definition = draft.editorPayload?.definition || {};
-        const kind = draft.editorPayload?.kind || (definition.metadata?.isTrack ? 'track' : 'road');
+        const kind = draft.editorPayload?.kind || (global.corridorIsTrack(definition) ? 'track' : 'road');
         return {
             draftId: draft.id,
             kind,

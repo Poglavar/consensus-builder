@@ -1063,6 +1063,7 @@
         },
         "singleBuilding": {
             "title": "Zgrade",
+            "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Izaberi zgradu",
             "addLabel": "Dodaj zgradu",
@@ -1155,6 +1156,11 @@
             "maxWidthReached": "Koridor ne može biti širi od {{max}} m. Prvo uklonite ili suzite neku traku.",
             "grass": "Samo trava",
             "trees": "Drvored",
+            "gauge": "Širina koloseka",
+            "gauges": {
+                "metre": "1000 mm (tramvaj)",
+                "standard": "1435 mm (železnica)"
+            },
             "laneTypes": {
                 "driving": "Saobraćajna traka",
                 "bus": "Autobuska traka",
@@ -1163,7 +1169,7 @@
                 "sidewalk": "Trotoar",
                 "verge": "Zeleni pojas",
                 "median": "Razdelni pojas",
-                "rail": "Tramvajska pruga"
+                "rail": "Pruga"
             }
         },
         "corridorDraft": {
@@ -1321,6 +1327,22 @@
                     "areaAsc": "Površina (manja ka većoj)",
                     "authorAsc": "Autor (A → Š)",
                     "authorDesc": "Autor (Š → A)"
+                },
+                "goalLabels": {
+                    "road-track": "Put/Pruga",
+                    "road": "Put",
+                    "track": "Pruga",
+                    "buildings": "Zgrade",
+                    "single": "Jedna zgrada",
+                    "row": "Niz",
+                    "park": "Park",
+                    "square": "Trg",
+                    "lake": "Jezero",
+                    "urban-rule": "Urbano pravilo",
+                    "reparcellization": "Reparcelacija",
+                    "decide-later": "Odluči kasnije",
+                    "parcelBased": "Na nivou parcele",
+                    "other": "Ostalo"
                 },
                 "typeLabels": {
                     "road": "Put",
@@ -1778,6 +1800,7 @@
             "rejected": "Transakcija odbijena",
             "nameLabel": "Naziv:",
             "namePlaceholderProposal": "Naziv predloga",
+            "defaultDescription": "{{type}} — novi predlog korisnika {{author}}",
             "namePlaceholder": "Nazovi svoj {{kind}}",
             "typeLabel": "Tip:",
             "typePark": "Park",

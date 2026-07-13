@@ -1,8 +1,14 @@
 // Draws corridor cross-sections on the 2D map.
 //
 // One function turns lanes into Leaflet polygons, and everything that has a cross-section goes through
-// it: the road being drawn, an applied road proposal, and a street imported from OSM. The lane's
+// it: the corridor being drawn, an applied corridor proposal, and a street imported from OSM. The lane's
 // appearance comes from CORRIDOR_LANE_TYPES, so retexturing a lane type retextures all three at once.
+//
+// A ROAD AND A TRACK ARE THE SAME OBJECT. Both are a centerline plus a lane list, and both are drawn
+// here. What makes a corridor look like a railway is not a flag on the proposal but a `rail` lane in its
+// cross-section: a rail lane draws a pair of rails and their sleepers, on the lane's own centre, at the
+// lane's gauge. So a tram lane added to a street draws rails down that street, and a sidewalk added to a
+// track draws a pavement beside the rails — with no branch anywhere that asks "is this a track".
 
 const CORRIDOR_STRIPS_PANE = 'corridorStripsPane';
 const CORRIDOR_HIT_PANE = 'corridorHitPane';
@@ -114,8 +120,146 @@ function renderCorridorBuildingTunnels(tunnels, group, pane) {
     });
 }
 
-// Turn `[{type, polygons}]` into a LayerGroup. Surface, markings, junction treatment and repeated
+// ---------------------------------------------------------------------------
+// Rail lanes
+//
+// The sleepers of a single kilometre of track are thousands of little lines, so they are all drawn onto
+// ONE canvas element rather than becoming thousands of SVG paths.
+// ---------------------------------------------------------------------------
+
+let corridorRailCanvasRenderer = null;
+function corridorRailRenderer() {
+    if (!corridorRailCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
+        corridorRailCanvasRenderer = L.canvas({ padding: 0.5 });
+    }
+    return corridorRailCanvasRenderer;
+}
+
+const CORRIDOR_SLEEPER_SPACING = 0.6; // metres between sleepers
+const CORRIDOR_SLEEPER_LENGTH = 2.5;  // metres, across the track
+
+// One track: a pair of rails `gauge` apart, and the sleepers under them, laid along the centerline
+// offset by `centerlineOffset` (the rail lane's own centre).
+function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, layerGroup) {
+    const railOffset = corridorRailGauge(gauge) / 2000; // half the gauge, mm -> m
+    const renderer = corridorRailRenderer();
+    const pane = options.pane || undefined;
+
+    // Pre-compute segment directions.
+    const segmentDirs = [];
+    for (let i = 0; i < htrsPoints.length - 1; i++) {
+        const dx = htrsPoints[i + 1][0] - htrsPoints[i][0];
+        const dy = htrsPoints[i + 1][1] - htrsPoints[i][1];
+        const length = Math.hypot(dx, dy);
+        segmentDirs.push(length > 0.01 ? [dx / length, dy / length] : null);
+    }
+
+    const leftRailPoints = [];
+    const rightRailPoints = [];
+    for (let i = 0; i < htrsPoints.length; i++) {
+        const point = htrsPoints[i];
+        const previous = i > 0 ? segmentDirs[i - 1] : null;
+        const next = i < segmentDirs.length ? segmentDirs[i] : null;
+
+        let direction = next || previous;
+        if (previous && next) {
+            // Average the two directions so the rails turn a smooth corner.
+            const dx = previous[0] + next[0];
+            const dy = previous[1] + next[1];
+            const length = Math.hypot(dx, dy);
+            direction = length > 0.01 ? [dx / length, dy / length] : previous;
+        }
+        if (!direction) {
+            const [lat, lng] = htrs96ToWGS84(point[0], point[1]);
+            leftRailPoints.push(L.latLng(lat, lng));
+            rightRailPoints.push(L.latLng(lat, lng));
+            continue;
+        }
+
+        const perpendicular = [-direction[1], direction[0]];
+        const trackCenter = [
+            point[0] + perpendicular[0] * centerlineOffset,
+            point[1] + perpendicular[1] * centerlineOffset
+        ];
+        const [leftLat, leftLng] = htrs96ToWGS84(
+            trackCenter[0] + perpendicular[0] * railOffset,
+            trackCenter[1] + perpendicular[1] * railOffset
+        );
+        const [rightLat, rightLng] = htrs96ToWGS84(
+            trackCenter[0] - perpendicular[0] * railOffset,
+            trackCenter[1] - perpendicular[1] * railOffset
+        );
+        leftRailPoints.push(L.latLng(leftLat, leftLng));
+        rightRailPoints.push(L.latLng(rightLat, rightLng));
+    }
+
+    [leftRailPoints, rightRailPoints].forEach(railPoints => {
+        L.polyline(railPoints, {
+            pane, renderer, color: options.railColor, weight: 2, opacity: 0.9,
+            interactive: false, className: 'corridor-rail'
+        }).addTo(layerGroup);
+    });
+
+    // Every sleeper of this track becomes one polyline part of a single multi-polyline.
+    const sleepers = [];
+    for (let i = 0; i < htrsPoints.length - 1; i++) {
+        const start = htrsPoints[i];
+        const dx = htrsPoints[i + 1][0] - start[0];
+        const dy = htrsPoints[i + 1][1] - start[1];
+        const length = Math.hypot(dx, dy);
+        if (length < 0.01) continue;
+        const perpendicular = [-dy / length, dx / length];
+        const count = Math.floor(length / CORRIDOR_SLEEPER_SPACING);
+
+        for (let j = 0; j <= count; j++) {
+            const t = j / Math.max(count, 1);
+            const center = [
+                start[0] + dx * t + perpendicular[0] * centerlineOffset,
+                start[1] + dy * t + perpendicular[1] * centerlineOffset
+            ];
+            const half = CORRIDOR_SLEEPER_LENGTH / 2;
+            const [startLat, startLng] = htrs96ToWGS84(
+                center[0] + perpendicular[0] * half, center[1] + perpendicular[1] * half
+            );
+            const [endLat, endLng] = htrs96ToWGS84(
+                center[0] - perpendicular[0] * half, center[1] - perpendicular[1] * half
+            );
+            sleepers.push([L.latLng(startLat, startLng), L.latLng(endLat, endLng)]);
+        }
+    }
+    if (sleepers.length) {
+        L.polyline(sleepers, {
+            pane, renderer, color: options.sleeperColor, weight: 1, opacity: 0.7,
+            interactive: false, className: 'corridor-sleepers'
+        }).addTo(layerGroup);
+    }
+}
+
+// Every track of a corridor: one per RAIL LANE of its cross-section, at that lane's gauge, on that
+// lane's centre. A corridor with no rail lane has no rails — which is the whole rule.
+function renderCorridorRails(centerlines, profile, group, options = {}) {
+    if (typeof wgs84ToHTRS96 !== 'function' || typeof corridorStripSpans !== 'function') return;
+    const railLanes = corridorStripSpans(profile).filter(strip => strip.type === 'rail');
+    if (!railLanes.length) return;
+
+    const railOptions = {
+        pane: options.pane,
+        railColor: options.railColor || '#333333',
+        sleeperColor: options.sleeperColor || '#8B4513'
+    };
+    (centerlines || []).forEach(centerline => {
+        if (!Array.isArray(centerline) || centerline.length < 2) return;
+        const htrsPoints = centerline.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        railLanes.forEach(lane => {
+            renderCorridorRailLane(htrsPoints, (lane.left + lane.right) / 2, lane.gauge, railOptions, group);
+        });
+    });
+}
+
+// Turn `[{type, polygons}]` into a LayerGroup. Surface, rails, markings, junction treatment and repeated
 // symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
+// `centerlines` + `profile` are what the strips were built from; passing them lets the rail lanes among
+// them lay their rails, so no caller can draw a cross-section and forget its track.
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
@@ -137,6 +281,13 @@ function renderCorridorStrips(strips, options = {}) {
         });
     });
 
+    if (options.centerlines && options.profile) {
+        renderCorridorRails(options.centerlines, options.profile, group, {
+            pane: options.pane,
+            railColor: options.railColor,
+            sleeperColor: options.sleeperColor
+        });
+    }
     renderCorridorLaneMarkings(options.markings, group, options.pane);
     renderCorridorJunctions(options.junctions, group, options.pane);
     renderCorridorDecorations(options.decorations, group, options.pane);
@@ -144,11 +295,12 @@ function renderCorridorStrips(strips, options = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// Applied road proposals
+// Applied corridor proposals
 //
-// An applied road becomes a corridor parcel, which the parcel styler paints a single flat asphalt.
-// Its cross-section is drawn over it, from the profile stored on the proposal. Only roads: a track's
-// rails are already drawn by renderTrackWithRails.
+// An applied corridor becomes a corridor parcel, which the parcel styler paints a single flat surface.
+// Its cross-section is drawn over it, from the profile stored on the proposal. Every applied corridor
+// comes through here — a track is a corridor whose cross-section happens to contain rail lanes, so it
+// gets its strips, its rails, its hit targets and its 3D exactly as a road does.
 // ---------------------------------------------------------------------------
 
 let appliedCorridorLayer = null;
@@ -245,7 +397,7 @@ function forwardAppliedCorridorClick(proposal, event) {
     if (!proposal) return;
     // While a corridor tool is drawing, a click on an applied road places a drawing point on it
     // (that is how connectors reach existing roads and merge), never a selection.
-    if (window.roadDrawingMode === true || window.trackDrawingMode === true) {
+    if (window.roadDrawingMode === true) {
         try {
             if (event && event.latlng && typeof map !== 'undefined' && map) {
                 map.fire('click', {
@@ -333,7 +485,7 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
 function isAppliedCorridorProposal(proposal) {
     if (!proposal) return false;
     const definition = corridorProposalDefinition(proposal);
-    if (!definition || (definition.metadata && definition.metadata.isTrack)) return false;
+    if (!definition) return false;
 
     const status = String(proposal.status || '').toLowerCase();
     const roadStatus = String((proposal.roadProposal && proposal.roadProposal.status) || '').toLowerCase();
@@ -382,7 +534,12 @@ function refreshAppliedCorridorStrips() {
             // the map — lane meaning lives in the cross-section editor.
             const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
                 .filter(decoration => decoration.kind === 'tree');
-            const segmentGroup = renderCorridorStrips(strips, { pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [] });
+            const segmentGroup = renderCorridorStrips(strips, {
+                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [],
+                // A placed corridor's rails are black, like the asphalt it is laid in.
+                centerlines: [entry.points], profile: entry.profile,
+                railColor: '#000000', sleeperColor: '#666666'
+            });
             if (segmentGroup) {
                 segmentGroup.addTo(group);
                 allStrips.push(...strips);
@@ -413,8 +570,8 @@ function refreshAppliedCorridorStrips() {
         if (crossJunctions.length) renderCorridorJunctions(crossJunctions, layer, CORRIDOR_STRIPS_PANE);
     }
 
-    // Tracks have their own rail renderer and therefore do not enter the road-strip loop above, but
-    // their building passages use the same applied overlay and proposal definition.
+    // Building passages hang off the definition rather than the cross-section, so they are a pass of
+    // their own over every applied corridor — including ones whose strips failed to build.
     proposals.forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
         if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
@@ -462,6 +619,7 @@ function scheduleCorridorStripRefresh() {
 
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
+    window.renderCorridorRails = renderCorridorRails;
     window.renderCorridorBuildingTunnels = renderCorridorBuildingTunnels;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
     window.setCorridorProfilePreview = setCorridorProfilePreview;

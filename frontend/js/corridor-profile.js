@@ -29,12 +29,19 @@ const CORRIDOR_LANE_TYPES = {
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
     verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
-    rail: { label: 'Rail bed', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
+    // One TRACK — a single pair of rails and the ballast under it. A rail lane carries a `gauge`, the way
+    // a verge carries a `landscape`: it is a property of the lane, and it sets the lane's width.
+    rail: { label: 'Track', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
 const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
+
+// The gauges a rail lane can have, in millimetres: 1000 mm is metre gauge (Zagreb's trams), 1435 mm is
+// standard gauge (HŽ mainline). OSM spells this exactly the same way, in the `gauge=*` tag.
+const CORRIDOR_RAIL_GAUGES = [1000, 1435];
+const CORRIDOR_DEFAULT_RAIL_GAUGE = 1435;
 
 // Presets keyed by the total widths the width picker already offers, so an existing road keeps its
 // footprint exactly and only gains an interior. Every preset sums to its key.
@@ -111,6 +118,15 @@ const OSM_SINGLE_LANE_HIGHWAYS = new Set(['service', 'track']);
 // width. One standard per type, not per road class — a traffic lane is 3 m whether the street is a
 // local road or an avenue; the difference between those streets is how many lanes they have, not how
 // wide each one is, and the presets below carry that.
+// The width of the STRIP one track occupies in the cross-section — sleepers, ballast shoulder and the
+// clearance beside them — NOT the rail-to-rail distance the gauge names (that is 1.0 m and 1.435 m, and
+// no track is that narrow). A metre-gauge tram track takes 2.75 m of street; a standard-gauge railway
+// track takes 3.5 m. Two tracks side by side are two rail lanes, so a double track is 2 x this.
+const CORRIDOR_RAIL_GAUGE_WIDTHS = {
+    1000: 2.75,
+    1435: 3.5
+};
+
 const CORRIDOR_STANDARD_WIDTHS = {
     driving: OSM_DEFAULT_LANE_WIDTH,
     bus: OSM_LANE_WIDTH_BY_HIGHWAY.busway,
@@ -119,10 +135,16 @@ const CORRIDOR_STANDARD_WIDTHS = {
     sidewalk: OSM_DEFAULT_SIDEWALK_WIDTH,
     verge: OSM_DEFAULT_VERGE_WIDTH,
     median: OSM_DEFAULT_MEDIAN_WIDTH,
-    rail: 3 // the width corridorProfileFromOsmTags gives an untagged single track
+    // A rail lane has no single standard: its width follows its gauge (see corridorStandardWidth). This
+    // entry is the default-gauge one, and it is what an untagged single track gets, here and from OSM.
+    rail: CORRIDOR_RAIL_GAUGE_WIDTHS[CORRIDOR_DEFAULT_RAIL_GAUGE]
 };
 
-function corridorStandardWidth(type) {
+// The standard width of a lane of this type. Rail is the one type whose standard depends on a property
+// of the lane — its gauge — so callers that have a lane pass its gauge; callers that only have a type
+// (the palette, inserting a fresh lane) get the default gauge's width.
+function corridorStandardWidth(type, gauge) {
+    if (type === 'rail') return CORRIDOR_RAIL_GAUGE_WIDTHS[corridorRailGauge(gauge)];
     return CORRIDOR_STANDARD_WIDTHS[type] || OSM_DEFAULT_LANE_WIDTH;
 }
 
@@ -132,6 +154,17 @@ function isCorridorLaneType(type) {
 
 function corridorLandscapeOf(strip) {
     return strip && CORRIDOR_GREEN_TYPES.has(strip.type) && strip.landscape === 'trees' ? 'trees' : 'grass';
+}
+
+// A gauge value, coerced to one we know: anything unrecognised is standard gauge.
+function corridorRailGauge(gauge) {
+    const value = parseInt(gauge, 10);
+    return CORRIDOR_RAIL_GAUGES.includes(value) ? value : CORRIDOR_DEFAULT_RAIL_GAUGE;
+}
+
+// The gauge of a lane — only a rail lane has one, exactly as only a green lane has a landscape.
+function corridorRailGaugeOf(strip) {
+    return strip && strip.type === 'rail' ? corridorRailGauge(strip.gauge) : null;
 }
 
 const CORRIDOR_DIRECTIONS = ['forward', 'backward', 'both'];
@@ -151,6 +184,8 @@ function normalizeCorridorProfile(profile) {
         if (CORRIDOR_GREEN_TYPES.has(type) && CORRIDOR_LANDSCAPES.includes(strip && strip.landscape)) {
             lane.landscape = strip.landscape;
         }
+        // Every rail lane has a gauge; an unrecognised or missing one becomes the default.
+        if (type === 'rail') lane.gauge = corridorRailGauge(strip && strip.gauge);
         return lane;
     }).filter(strip => isCorridorLaneType(strip.type) && Number.isFinite(strip.width) && strip.width > 0);
     return strips.length ? { strips } : null;
@@ -278,6 +313,8 @@ function withLaneType(profile, index, type) {
         if (CORRIDOR_GREEN_TYPES.has(type)) {
             lane.landscape = CORRIDOR_GREEN_TYPES.has(strip.type) ? corridorLandscapeOf(strip) : 'grass';
         }
+        // Becoming a track means becoming a track OF A GAUGE; the width is the caller's to keep.
+        if (type === 'rail') lane.gauge = corridorRailGauge(strip.gauge);
         return lane;
     }));
 }
@@ -288,6 +325,19 @@ function withLaneLandscape(profile, index, landscape) {
     if (!CORRIDOR_LANDSCAPES.includes(landscape)) return null;
     return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
         i === index ? { ...strip, landscape } : { ...strip }
+    )));
+}
+
+// Re-gauge a track. The gauge IS the width of the strip a track occupies, so the lane takes its new
+// gauge's standard width — and the corridor gets wider or narrower by the difference, like any other
+// width edit. A hand-tuned width is deliberately overwritten: picking a gauge is picking a track.
+function withLaneGauge(profile, index, gauge) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || normalized.strips[index].type !== 'rail') return null;
+    const value = parseInt(gauge, 10);
+    if (!CORRIDOR_RAIL_GAUGES.includes(value)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, gauge: value, width: corridorStandardWidth('rail', value) } : { ...strip }
     )));
 }
 
@@ -348,12 +398,25 @@ function withSidewalkWidth(profile, sidewalkWidth) {
     return strips ? { strips } : null;
 }
 
+// The cross-section a NEWLY drawn track starts from: one track, at the standard gauge, occupying the
+// strip that gauge needs. Everything else — a second track, a platform-side sidewalk, a green verge —
+// is added in the cross-section editor, and the corridor's width follows the lanes as it does for a road.
+function corridorDefaultTrackProfile(gauge = CORRIDOR_DEFAULT_RAIL_GAUGE) {
+    const value = corridorRailGauge(gauge);
+    return { strips: [{ type: 'rail', width: corridorStandardWidth('rail', value), gauge: value }] };
+}
+
 // The profile a corridor should have when it predates this model (or was drawn by the older picker,
 // which only ever produced a total width and an unused sidewalk number).
+//
+// It must SUM TO THE WIDTH IT IS GIVEN: the footprint of an existing corridor — and every parcel split
+// and proposal derived from it — is that width. So a legacy track stays one rail lane stretched to its
+// recorded width, however far that is from a standard track. New tracks are seeded by the drawing tool
+// with corridorDefaultTrackProfile() instead; this function never sees them.
 function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
     const total = Number(width);
     if (!Number.isFinite(total) || total <= 0) return null;
-    if (isTrack) return { strips: [{ type: 'rail', width: total }] };
+    if (isTrack) return { strips: [{ type: 'rail', width: total, gauge: CORRIDOR_DEFAULT_RAIL_GAUGE }] };
 
     const preset = CORRIDOR_PROFILE_PRESETS[total];
     if (preset) {
@@ -436,9 +499,12 @@ function osmSidePresent(value) {
 function corridorProfileFromOsmTags(tags, fallbackWidth) {
     const source = tags || {};
     if (source.railway) {
-        const railWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || 3;
+        // OSM's `gauge` is the same millimetre figure a rail lane carries, so it maps straight across —
+        // and with no tagged width the gauge is what says how much street each track takes.
+        const gauge = corridorRailGauge(source.gauge);
         const tracks = Math.max(1, parseInt(source.tracks, 10) || 1);
-        return { strips: Array.from({ length: tracks }, () => ({ type: 'rail', width: railWidth / tracks })) };
+        const railWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || (corridorStandardWidth('rail', gauge) * tracks);
+        return { strips: Array.from({ length: tracks }, () => ({ type: 'rail', width: railWidth / tracks, gauge })) };
     }
 
     const taggedWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || 0;
@@ -533,6 +599,10 @@ function corridorProfileToOsmTags(profile) {
         const rails = lanes.filter(lane => lane.type === 'rail');
         const tags = { railway: 'rail', width: String(roundStripWidth(corridorProfileWidth(normalized))) };
         if (rails.length > 1) tags.tracks = String(rails.length);
+        // `gauge` is a way tag, so it can only speak for the way as a whole: emitted when every track
+        // on it has the same gauge, and dropped (rather than guessed) for a mixed tram/railway corridor.
+        const gauges = new Set(rails.map(lane => corridorRailGaugeOf(lane)));
+        if (gauges.size === 1) tags.gauge = String([...gauges][0]);
         return tags;
     }
 
@@ -598,6 +668,31 @@ function corridorProfileOf(definition) {
     if (stored) return stored;
     const isTrack = !!(definition.metadata && definition.metadata.isTrack);
     return corridorProfileFromLegacy(definition.width, definition.sidewalkWidth, isTrack);
+}
+
+// ---------------------------------------------------------------------------
+// Track-ness
+//
+// A road and a track are the SAME object — a centerline plus a cross-section — so "is this a track"
+// is not a property the object carries, it is a fact about its lanes: a corridor is a track iff its
+// cross-section contains a rail lane. Add a rail lane to a street in the cross-section editor and it
+// is a tram street; take the rails out of a track and what is left is a road. Everything that used to
+// branch on a stored `isTrack` flag asks these two instead.
+// ---------------------------------------------------------------------------
+
+function corridorProfileHasRail(profile) {
+    const normalized = normalizeCorridorProfile(profile);
+    return !!normalized && normalized.strips.some(strip => strip.type === 'rail');
+}
+
+// The same question of a stored corridor. Corridors created before rail was a lane type carry
+// `metadata.isTrack`; that flag still answers for them (their profile is synthesised from a bare
+// width, so it cannot be asked). It is honoured, never rewritten — the footprint is the width, and
+// nothing may move it under an existing proposal.
+function corridorIsTrack(definition) {
+    if (!definition) return false;
+    if (corridorProfileHasRail(corridorProfileOf(definition))) return true;
+    return !!(definition.metadata && definition.metadata.isTrack === true);
 }
 
 // ---------------------------------------------------------------------------
@@ -1200,12 +1295,20 @@ if (typeof window !== 'undefined') {
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
     window.CORRIDOR_STANDARD_WIDTHS = CORRIDOR_STANDARD_WIDTHS;
+    window.CORRIDOR_RAIL_GAUGES = CORRIDOR_RAIL_GAUGES;
+    window.CORRIDOR_RAIL_GAUGE_WIDTHS = CORRIDOR_RAIL_GAUGE_WIDTHS;
+    window.CORRIDOR_DEFAULT_RAIL_GAUGE = CORRIDOR_DEFAULT_RAIL_GAUGE;
     window.corridorStandardWidth = corridorStandardWidth;
     window.corridorMinLaneWidth = corridorMinLaneWidth;
+    window.corridorRailGaugeOf = corridorRailGaugeOf;
+    window.corridorProfileHasRail = corridorProfileHasRail;
+    window.corridorIsTrack = corridorIsTrack;
+    window.corridorDefaultTrackProfile = corridorDefaultTrackProfile;
     window.withSidewalkWidth = withSidewalkWidth;
     window.withLaneWidth = withLaneWidth;
     window.withLaneType = withLaneType;
     window.withLaneLandscape = withLaneLandscape;
+    window.withLaneGauge = withLaneGauge;
     window.withLaneInserted = withLaneInserted;
     window.withLaneRemoved = withLaneRemoved;
     window.withLaneMoved = withLaneMoved;
@@ -1237,18 +1340,26 @@ if (typeof module !== 'undefined' && module.exports) {
         normalizeCorridorProfile,
         corridorProfileWidth,
         corridorProfileFromLegacy,
+        corridorDefaultTrackProfile,
         corridorProfileOf,
+        corridorProfileHasRail,
+        corridorIsTrack,
         corridorStripSpans,
         corridorCenterlineOf,
         corridorLandscapeOf,
+        corridorRailGaugeOf,
         withSidewalkWidth,
         withLaneWidth,
         withLaneType,
         withLaneLandscape,
+        withLaneGauge,
         withLaneInserted,
         withLaneRemoved,
         withLaneMoved,
         CORRIDOR_STANDARD_WIDTHS,
+        CORRIDOR_RAIL_GAUGES,
+        CORRIDOR_RAIL_GAUGE_WIDTHS,
+        CORRIDOR_DEFAULT_RAIL_GAUGE,
         corridorStandardWidth,
         corridorMinLaneWidth,
         CORRIDOR_MIN_DRIVING_WIDTH,

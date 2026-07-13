@@ -480,15 +480,11 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: false });
     const _tCollect1 = performance.now();
 
-    // Check if this is a road proposal to style road geometry differently
+    // A corridor proposal (road or track — the same object) styles its geometry differently from a
+    // parcel-shaped one. There is no track branch: rails come from the rail lanes of its cross-section,
+    // drawn by the corridor renderer, not from the kind of proposal this is.
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-    const isTrack = isRoadProposal && (
-        proposal?.roadProposal?.definition?.metadata?.isTrack === true ||
-        proposal?.definition?.metadata?.isTrack === true
-    );
-
     const lifecycleStatus = (proposal?.status || proposal?.roadProposal?.status || '').toLowerCase();
-    const isAppliedTrack = lifecycleStatus === 'applied' || lifecycleStatus === 'executed';
 
     // Applied proposals should always be visible at all zoom levels, even when parcels are not shown
     // This allows users to see applied proposals regardless of zoom level
@@ -505,118 +501,11 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         className: 'proposal-parcel-outline'
     };
 
-    // For track proposals, render with rails and sleepers instead of polygon
-    if (isTrack) {
-        // Extract track points and width from proposal definition
-        const definition = proposal?.roadProposal?.definition || proposal?.definition;
-        const trackPoints = Array.isArray(definition?.points) ? definition.points : null;
-        const trackWidth = Number.isFinite(definition?.width) ? definition.width : DEFAULT_CORRIDOR_WIDTHS.track;
-
-        // Always draw a corridor fill and outline from primaryFeatures so the track body is visible even if centerline is missing
-        const trackFillStyle = {
-            color: '#0F5132',
-            weight: 2,
-            opacity: 0.9,
-            dashArray: null,
-            fillColor: '#16A34A',
-            fillOpacity: 0.25,
-            className: 'proposal-track-fill'
-        };
-        primaryFeatures.forEach(feature => {
-            addFeatureToGroup(feature, groups.border, trackFillStyle, blink ? 'proposal-blink-twice' : null);
-        });
-
-        if (trackPoints && trackPoints.length >= 2) {
-            // Convert points to L.latLng format if needed
-            // Points can be stored as L.latLng objects, {lat, lng} objects, or [lat, lng] arrays
-            const normalizedPoints = trackPoints.map(p => {
-                // If already a L.latLng object
-                if (p && typeof p.lat === 'function' && typeof p.lng === 'function') {
-                    return p;
-                }
-                // If it's an object with lat/lng properties
-                if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) {
-                    return L.latLng(Number(p.lat), Number(p.lng));
-                }
-                // If it's an array [lat, lng] or [lng, lat]
-                if (Array.isArray(p) && p.length >= 2) {
-                    const val1 = Number(p[0]);
-                    const val2 = Number(p[1]);
-                    // If first value is between -90 and 90, it's likely lat
-                    if (Math.abs(val1) <= 90 && Math.abs(val2) <= 180) {
-                        return L.latLng(val1, val2);
-                    } else {
-                        return L.latLng(val2, val1);
-                    }
-                }
-                return null;
-            }).filter(Boolean);
-
-            if (normalizedPoints.length >= 2) {
-                // Render track with distinct styling depending on whether it is applied
-                // Check if renderTrackWithRails is available
-                const renderFn = typeof renderTrackWithRails === 'function'
-                    ? renderTrackWithRails
-                    : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
-                        ? window.renderTrackWithRails
-                        : null;
-
-                // Render a green corridor fill so Proposal Details shows the track body, then overlay outline + rails
-                const trackFillStyle = {
-                    color: '#0F5132',
-                    weight: 2,
-                    opacity: 0.9,
-                    dashArray: null,
-                    fillColor: '#16A34A',
-                    fillOpacity: 0.25,
-                    className: 'proposal-track-fill'
-                };
-                primaryFeatures.forEach(feature => {
-                    addFeatureToGroup(feature, groups.border, trackFillStyle, blink ? 'proposal-blink-twice' : null);
-                });
-
-                if (renderFn) {
-                    const railColor = isAppliedTrack ? '#000000' : '#FF8A00';
-                    const sleeperColor = isAppliedTrack ? '#000000' : '#FFC266';
-                    const trackRailsLayer = renderFn(normalizedPoints, false, {
-                        railColor,
-                        sleeperColor,
-                        trackWidth: trackWidth,
-                        pane: groups.border?.__paneName || (window.__proposalHighlightPanes && window.__proposalHighlightPanes.highlight) || undefined
-                    });
-                    if (trackRailsLayer) {
-                        trackRailsLayer.addTo(groups.border);
-                    }
-                }
-            }
-        }
-
-        // Always draw corridor outline so Proposal Details shows boundaries like roads
-        const trackOutlineStyle = {
-            color: isAppliedTrack ? '#000000' : '#FF8A00',
-            weight: 4,
-            opacity: 1,
-            dashArray: '10 6',
-            fillOpacity: 0,
-            className: 'proposal-track-outline'
-        };
-        primaryFeatures.forEach(feature => {
-            addFeatureToGroup(feature, groups.border, trackOutlineStyle, blink ? 'proposal-blink-twice' : null);
-        });
-
-        // Parcel outlines via single-pass in-place style override — walks the viewport
-        // spatial index once, mutates matching parcel layers directly. No feature cloning,
-        // no overlay layer creation. Hidden ancestors (not in parcelLayerById because they
-        // were removed by this or another applied proposal) are skipped automatically since
-        // the spatial index only contains layers currently on the map.
-        const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
-        forEachProposalParcelInViewport(parcelIdSet, (layer) => {
-            proposalHighlightStyleOverride.apply(layer, parcelStyle);
-        });
-    } else if (isRoadProposal && (lifecycleStatus === 'applied' || lifecycleStatus === 'executed')) {
-        // A selected applied road gets ONE crisp selection outline around its footprint — the
+    if (isRoadProposal && (lifecycleStatus === 'applied' || lifecycleStatus === 'executed')) {
+        // A selected applied corridor gets ONE crisp selection outline around its footprint — the
         // same visual language as a selected parcel. The cross-section strips already show the
-        // road itself, and shading every parent parcel blue only buried the selection.
+        // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
+        // blue only buried the selection. A track takes this path like any other corridor.
         const roadSelectedStyle = {
             color: '#ff3300',
             weight: 3,
@@ -751,7 +640,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
     // (this is what painted the blue outline + panel over an active drawing session); refuse it
     // loudly and name the caller so the culprit path is visible in the console.
-    if (window.roadDrawingMode === true || window.trackDrawingMode === true) {
+    if (window.roadDrawingMode === true) {
         console.error('[selectAndHighlightProposal] BLOCKED during active drawing session', {
             proposalIdOrHash,
             stack: new Error('selection during drawing').stack

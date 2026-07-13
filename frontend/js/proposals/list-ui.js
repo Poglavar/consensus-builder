@@ -530,6 +530,16 @@ function getProposalDisplayTypeLabel(proposal, fallbackProposal = null) {
     if (!goalKey || goalKey === 'other' || goalKey === 'parcel') {
         return '';
     }
+    // 'road-track' is the goal *category*; a built corridor is one or the other, so name it.
+    // (goalKey has to be bypassed here: normalizeProposalGoalKey folds 'road' and 'track' back
+    // into 'road-track'.)
+    if (goalKey === 'road-track' && typeof isTrackProposal === 'function') {
+        const isTrack = isTrackProposal(subject) || (fallbackProposal ? isTrackProposal(fallbackProposal) : false);
+        const t = getProposalI18nHelper();
+        return isTrack
+            ? t('modal.roadWidth.proposalList.goalLabels.track', 'Track')
+            : t('modal.roadWidth.proposalList.goalLabels.road', 'Road');
+    }
     return formatProposalTypeLabel(goalKey);
 }
 

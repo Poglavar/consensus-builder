@@ -183,7 +183,7 @@
             const definition = proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition || null;
             if (!definition) return { kind: proposal?.primaryType === 'Track' ? 'track' : 'road', definition: null };
             return {
-                kind: definition?.metadata?.isTrack === true || proposal?.primaryType === 'Track' ? 'track' : 'road',
+                kind: global.corridorIsTrack(definition) || proposal?.primaryType === 'Track' ? 'track' : 'road',
                 definition: cloneDraftValue(definition)
             };
         }

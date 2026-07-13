@@ -80,16 +80,11 @@
         if (isMultiSelected) {
             return;
         }
-        // Do not apply hover styling if parcel is locked for road drawing (green highlighting)
+        // Do not apply hover styling if the parcel is locked for corridor drawing (green highlighting).
+        // One corridor tool draws roads and tracks alike, so one check covers both.
         const isLockedForRoad = typeof global.isParcelLockedForRoadDrawing === 'function' &&
             global.isParcelLockedForRoadDrawing(parcelId);
         if (isLockedForRoad) {
-            return;
-        }
-        // Do not apply hover styling if parcel is committed for track drawing (green highlighting)
-        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
-            global.isParcelCommittedForTrackDrawing(parcelId);
-        if (isCommittedForTrack) {
             return;
         }
         // Do not overwrite an active proposal highlight — the proposal style is sticky until
@@ -165,44 +160,12 @@
             global.isParcelLockedForRoadDrawing(parcelId);
 
         if (isLockedForRoad) {
-            // Keep green highlighting for committed road parcels
+            // Keep green highlighting for parcels the corridor being drawn has committed
             layer.setStyle({
                 fillColor: 'green',
                 fillOpacity: 0.6,
                 color: 'green',
                 weight: 3
-            });
-            return;
-        }
-
-        // Check if this parcel is committed for track drawing (green highlighting)
-        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
-            global.isParcelCommittedForTrackDrawing(parcelId);
-
-        if (isCommittedForTrack) {
-            // Keep green highlighting for committed track parcels
-            layer.setStyle({
-                fillColor: 'green',
-                fillOpacity: 0.6,
-                color: 'green',
-                weight: 3
-            });
-            return;
-        }
-
-        // Check if this parcel is in track preview (orange highlighting during track drawing)
-        // Use Set for O(1) lookup instead of array iteration for better performance
-        const isInTrackPreview = typeof global.trackPreviewAffectedParcelIds !== 'undefined' &&
-            global.trackPreviewAffectedParcelIds instanceof Set &&
-            global.trackPreviewAffectedParcelIds.has(parcelId);
-
-        if (isInTrackPreview) {
-            // Keep orange highlighting for track preview
-            layer.setStyle({
-                fillColor: '#ff6600', // Orange
-                fillOpacity: 0.4,
-                color: '#ff6600',
-                weight: 2
             });
             return;
         }

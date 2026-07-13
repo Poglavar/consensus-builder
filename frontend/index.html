@@ -1052,13 +1052,6 @@
 
         <!-- Road Info Panel -->
         <div id="road-info-panel" class="info-panel">
-            <button type="button" id="road-panel-minimize" class="close-circle-btn close-circle-btn--lg road-panel-minimize"
-                aria-label="Minimize" title="Minimize" aria-expanded="true"
-                data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title"
-                onclick="toggleRoadInfoPanelMinimized()">&#8722;</button>
-            <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label=""
-                data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
-                onclick="cancelRoadOrTrackDrawing()">×</button>
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
                 <button type="button" id="editRoadCrossSectionButton" class="road-cross-section-btn"
@@ -1066,6 +1059,17 @@
                     <span data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
                         class="road-cross-section-width"></span>
                 </button>
+                <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
+                     could not reserve their width and the Cross-section button slid underneath them. -->
+                <div class="road-panel-actions">
+                    <button type="button" id="road-panel-minimize" class="close-circle-btn close-circle-btn--lg road-panel-minimize"
+                        aria-label="Minimize" title="Minimize" aria-expanded="true"
+                        data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title"
+                        onclick="toggleRoadInfoPanelMinimized()">&#8722;</button>
+                    <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label=""
+                        data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
+                        onclick="cancelRoadOrTrackDrawing()">×</button>
+                </div>
             </div>
 
             <!-- Road/Track drawing controls (shown when drawing) -->
@@ -1569,15 +1573,8 @@
                 speed for this track. This determines the minimum curvature radius. Press Enter to start with the
                 default selection.</p>
             <div id="track-speed-grid" class="roadwidth-grid" aria-label="Track speed options"></div>
-            <div style="margin-top: 12px;">
-                <div class="parameter-group" style="margin-bottom: 12px;">
-                    <label for="track-width-slider">
-                        <span data-i18n-key="modal.track.widthLabel">Track Width:</span>
-                        <span id="track-width-value">3.0</span> m
-                    </label>
-                    <input type="range" id="track-width-slider" min="1" max="10" step="0.1" value="3.0">
-                </div>
-            </div>
+            <!-- No width slider: a track's width is the sum of its lanes, set in the cross-section editor
+                 (one standard-gauge track to start with), exactly as a road's is. -->
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="track-speed-cancel-btn" class="btn btn-secondary"
                     data-i18n-key="modal.track.cancel">Cancel</button>

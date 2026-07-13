@@ -274,7 +274,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
                     geometry: geometry,
                     properties: {
                         isRoad: true,
-                        isTrack: definition?.metadata?.isTrack === true,
+                        isTrack: corridorIsTrack(definition),
                         isProposed: true,
                         proposalId: proposal.proposalId || null,
                         source: 'road-definition'
@@ -315,7 +315,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
                     geometry: geometry,
                     properties: {
                         isRoad: true,
-                        isTrack: proposal?.roadProposal?.definition?.metadata?.isTrack === true,
+                        isTrack: corridorIsTrack(proposal?.roadProposal?.definition),
                         isProposed: true,
                         proposalId: proposal.proposalId || null,
                         source: 'road-geometry-stored'

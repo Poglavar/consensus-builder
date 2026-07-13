@@ -455,33 +455,20 @@ test.describe('Capture how-to screenshots', () => {
       if (!drawn.mode) throw new Error('road drawing mode is not active');
       if (!drawn.segments) throw new Error('no road segment was drawn by the map clicks');
 
-      // The panel's readouts ARE this figure, and at its shipped size they don't fit: the content
-      // is ~422 px tall against a 400 px max-height (Cijena/TEAD fall below the scroll fold) and
-      // ~433 px wide against a 400 px box (the Croatian labels push the right column's values —
-      // "243.006 m²" — past the edge). Grow it to its content for the shot, then hand the
-      // styling back. Nothing is added or faked; the same numbers are just all visible at once.
+      // The panel's readouts ARE this figure, so the shot is only honest if the SHIPPED panel shows
+      // them all: it sizes to its content, so nothing here touches its styling. Assert that — a
+      // regression that clips Cijena/TEAD again must fail the capture, not be papered over by it.
       const panel = await page.evaluate(() => {
         const el = document.getElementById('road-info-panel') as HTMLElement | null;
         if (!el) return null;
-        el.style.setProperty('width', '470px', 'important');
-        el.style.setProperty('max-width', '470px', 'important');
-        el.style.maxHeight = 'none';
-        el.scrollTop = 0;
         const r = el.getBoundingClientRect();
         return { top: r.top, left: r.left, clipped: el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight };
       });
       if (!panel) throw new Error('road panel not in the DOM');
       if (panel.top < 0 || panel.left < 0) throw new Error('road panel does not fit the viewport');
-      if (panel.clipped) throw new Error('road panel still clips its content');
+      if (panel.clipped) throw new Error('road panel clips its content');
       await page.waitForTimeout(400);
       await saveView('cesta-02-crtanje');
-      await page.evaluate(() => {
-        const el = document.getElementById('road-info-panel') as HTMLElement | null;
-        if (!el) return;
-        el.style.removeProperty('width');
-        el.style.removeProperty('max-width');
-        el.style.maxHeight = '';
-      });
     });
 
     await shot('cesta-03-presjek', async () => {

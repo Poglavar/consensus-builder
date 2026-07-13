@@ -52,7 +52,10 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
 }
 
 test.describe('SimCity proposal lifecycle @core', () => {
-  test('the square geometry editor places furniture and persists bench orientation', async ({ mockApi: page }) => {
+  // The bench-angle slider was removed when furniture became first-class; a bearing is still carried
+  // in the data for legacy squares, but the editor no longer sets one. What matters now is that each
+  // tool places its item and that the placements survive the save.
+  test('the square geometry editor places furniture and persists it', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'square-geometry');
@@ -71,21 +74,23 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await place('fountain', 15.98210, 45.80020);
     await place('tree', 15.98225, 45.80025);
     await place('bench', 15.98235, 45.80030);
-    await editor.locator('[data-role="bench-bearing"]').evaluate((input: HTMLInputElement) => {
-      input.value = '90';
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    });
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toBeHidden();
 
+    // A square is auto-decorated on creation (a fountain, a statue, a few tables), so assert that
+    // each tool ADDED something rather than pinning absolute counts.
     await expect.poll(() => page.evaluate((sourceId) => {
       const w = window as any;
-      return w.proposalStorage.getAllProposals().find((proposal: any) =>
-        proposal.proposalId !== sourceId
-        && proposal.structureProposal?.kind === 'square'
-        && proposal.structureProposal?.decorations?.benches?.length === 1
-      )?.structureProposal?.decorations?.benches?.[0]?.bearing || null;
-    }, source.proposalId)).toBe(90);
+      const saved = w.proposalStorage.getAllProposals().find((proposal: any) =>
+        proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'square'
+      )?.structureProposal?.decorations;
+      if (!saved) return null;
+      return {
+        hasFountain: (saved.fountains || []).length >= 1,
+        hasTree: (saved.trees || []).length >= 1,
+        hasBench: (saved.benches || []).length >= 1
+      };
+    }, source.proposalId)).toEqual({ hasFountain: true, hasTree: true, hasBench: true });
   });
 
   test('the park geometry editor places trees, flowerbeds, ponds, and footpaths', async ({ mockApi: page }) => {

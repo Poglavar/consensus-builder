@@ -177,7 +177,7 @@
     }
 
     function corridorPayloadFromSeed(seed, sourceDefinition) {
-        const kind = seed?.kind || (sourceDefinition?.metadata?.isTrack ? 'track' : 'road');
+        const kind = seed?.kind || (global.corridorIsTrack(sourceDefinition) ? 'track' : 'road');
         const segments = clone(seed?.centerline || []);
         return {
             ...(clone(sourceDefinition || {})),
@@ -663,7 +663,7 @@
         },
         draftFromProposal(proposal) {
             const definition = clone(corridorDefinition(proposal));
-            const kind = definition?.metadata?.isTrack === true || proposal.primaryType === 'Track' ? 'track' : 'road';
+            const kind = global.corridorIsTrack(definition) || proposal.primaryType === 'Track' ? 'track' : 'road';
             return {
                 adapterKey: 'road-track',
                 proposalType: kind === 'track' ? 'Track' : 'Road',
@@ -698,7 +698,7 @@
                 return global.requestCorridorDrawingTool(draft.editorPayload?.kind === 'track' ? 'track' : 'road');
             }
             if (!definition || typeof global.startSeededCorridorDrawing !== 'function') return false;
-            const kind = draft.editorPayload?.kind || (definition.metadata?.isTrack ? 'track' : 'road');
+            const kind = draft.editorPayload?.kind || (global.corridorIsTrack(definition) ? 'track' : 'road');
             const seed = corridorSeed(definition, kind);
             return global.startSeededCorridorDrawing(kind, seed, {
                 proposalId: draft.sourceProposalId,
@@ -710,7 +710,7 @@
         serializeProposal(draft) {
             const output = commonProposalFromDraft(draft);
             const definition = clone(draft.editorPayload?.definition || {});
-            const kind = draft.editorPayload?.kind || (definition.metadata?.isTrack ? 'track' : 'road');
+            const kind = draft.editorPayload?.kind || (global.corridorIsTrack(definition) ? 'track' : 'road');
             output.goal = 'road-track';
             output.primaryType = kind === 'track' ? 'Track' : 'Road';
             output.isCorridor = true;
@@ -746,7 +746,7 @@
             return summary;
         },
         payloadFromDrawingSeed(seed, sourceDefinition) {
-            return { kind: seed?.kind || (sourceDefinition?.metadata?.isTrack ? 'track' : 'road'), definition: corridorPayloadFromSeed(seed, sourceDefinition) };
+            return { kind: seed?.kind || (global.corridorIsTrack(sourceDefinition) ? 'track' : 'road'), definition: corridorPayloadFromSeed(seed, sourceDefinition) };
         }
     };
 

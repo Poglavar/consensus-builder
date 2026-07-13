@@ -97,7 +97,7 @@ describe('withSidewalkWidth', () => {
     });
 
     it('leaves profiles without sidewalks or without lanes alone', () => {
-        const rail = { strips: [{ type: 'rail', width: 3 }] };
+        const rail = { strips: [{ type: 'rail', width: 3, gauge: 1435 }] };
         expect(withSidewalkWidth(rail, 2)).toEqual(rail);
     });
 });
@@ -134,8 +134,10 @@ describe('corridorProfileFromLegacy', () => {
         expect(profile.strips.map(s => s.type)).toEqual(['driving', 'driving']);
     });
 
-    it('makes a track a single rail bed', () => {
-        expect(corridorProfileFromLegacy(3, null, true)).toEqual({ strips: [{ type: 'rail', width: 3 }] });
+    // A legacy track must keep summing to the width it was drawn at — its footprint is that width, and
+    // every parcel split under it. Only a NEW track gets the standard single-track section.
+    it('keeps a legacy track at the width it was drawn at, as one rail lane', () => {
+        expect(corridorProfileFromLegacy(6, null, true)).toEqual({ strips: [{ type: 'rail', width: 6, gauge: 1435 }] });
     });
 
     it('rejects a nonsensical width', () => {
@@ -542,8 +544,11 @@ describe('corridorProfileToOsmTags', () => {
         expect(tags['lanes:forward']).toBe(undefined);
     });
 
-    it('describes a track as a railway', () => {
-        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 3 }] })).toEqual({ railway: 'rail', width: '3' });
+    it('describes a track as a railway, with its gauge', () => {
+        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 3 }] }))
+            .toEqual({ railway: 'rail', width: '3', gauge: '1435' });
+        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 2.75, gauge: 1000 }] }))
+            .toEqual({ railway: 'rail', width: '2.75', gauge: '1000' });
     });
 
     it('refuses a profile with no carriageway to hang the tags on', () => {
@@ -888,5 +893,137 @@ describe('withSeamMoved', () => {
 
     it('refuses a seam index without two lanes around it', () => {
         expect(withSeamMoved(profile, 1, 1)).toBeNull();
+    });
+});
+
+// Railway tracks: a rail lane is one TRACK, and its gauge is what says how much of the corridor it takes.
+describe('rail lanes and their gauge', () => {
+    const {
+        corridorDefaultTrackProfile, withLaneGauge, corridorRailGaugeOf, corridorStandardWidth,
+        CORRIDOR_RAIL_GAUGE_WIDTHS
+    } = require('../../frontend/js/corridor-profile.js');
+
+    it('gives a new track one standard-gauge lane, at that gauge\'s width', () => {
+        const profile = corridorDefaultTrackProfile();
+        expect(profile.strips).toEqual([{ type: 'rail', width: 3.5, gauge: 1435 }]);
+        expect(corridorProfileWidth(profile)).toBe(3.5);
+    });
+
+    it('sizes a track lane by its gauge — a tram takes less street than a railway', () => {
+        expect(CORRIDOR_RAIL_GAUGE_WIDTHS[1000]).toBe(2.75);
+        expect(CORRIDOR_RAIL_GAUGE_WIDTHS[1435]).toBe(3.5);
+        expect(corridorStandardWidth('rail', 1000)).toBe(2.75);
+        expect(corridorStandardWidth('rail', 1435)).toBe(3.5);
+        expect(corridorStandardWidth('rail')).toBe(3.5); // no gauge given: the default one
+        expect(corridorStandardWidth('driving')).toBe(3); // every other type is unaffected by the gauge
+    });
+
+    it('changing the gauge re-widths the lane, and the corridor follows', () => {
+        const tram = withLaneGauge(corridorDefaultTrackProfile(), 0, 1000);
+        expect(tram.strips[0]).toEqual({ type: 'rail', width: 2.75, gauge: 1000 });
+        expect(corridorProfileWidth(tram)).toBe(2.75);
+        // ...even when the width had been hand-tuned: picking a gauge is picking a track.
+        const tuned = withLaneWidth(corridorDefaultTrackProfile(), 0, 5);
+        expect(corridorProfileWidth(withLaneGauge(tuned, 0, 1000))).toBe(2.75);
+    });
+
+    it('refuses a gauge we do not have a track for, or a lane that is not a track', () => {
+        expect(withLaneGauge(corridorDefaultTrackProfile(), 0, 1668)).toBe(null);
+        expect(withLaneGauge({ strips: [{ type: 'driving', width: 3 }] }, 0, 1000)).toBe(null);
+    });
+
+    it('normalize keeps a gauge on rail lanes, defaults a missing one, and puts none elsewhere', () => {
+        const normalized = normalizeCorridorProfile([
+            { type: 'rail', width: 2.75, gauge: 1000 },
+            { type: 'rail', width: 3.5 },
+            { type: 'rail', width: 3.5, gauge: 'nonsense' },
+            { type: 'sidewalk', width: 2, gauge: 1435 }
+        ]);
+        expect(normalized.strips.map(strip => strip.gauge)).toEqual([1000, 1435, 1435, undefined]);
+        expect(corridorRailGaugeOf(normalized.strips[0])).toBe(1000);
+        expect(corridorRailGaugeOf(normalized.strips[3])).toBe(null);
+    });
+
+    it('a second track is a second lane: two standard tracks are 7 m', () => {
+        const doubled = withLaneInserted(corridorDefaultTrackProfile(), 1, { type: 'rail', width: corridorStandardWidth('rail') });
+        expect(doubled.strips.map(strip => strip.type)).toEqual(['rail', 'rail']);
+        expect(corridorProfileWidth(doubled)).toBe(7);
+    });
+
+    it('a road can have a track in it — a street with trams is a street', () => {
+        const street = { strips: CORRIDOR_PROFILE_PRESETS[18].map(strip => ({ ...strip })) };
+        const before = corridorProfileWidth(street);
+        const withTram = withLaneInserted(street, 4, { type: 'rail', width: corridorStandardWidth('rail', 1000), gauge: 1000 });
+        expect(withTram.strips[4]).toEqual({ type: 'rail', width: 2.75, gauge: 1000 });
+        expect(close(corridorProfileWidth(withTram), before + 2.75)).toBe(true);
+    });
+
+    it('retyping a lane into a track gives it a gauge and leaves its width alone', () => {
+        const street = { strips: CORRIDOR_PROFILE_PRESETS[10].map(strip => ({ ...strip })) };
+        const retyped = withLaneType(street, 1, 'rail'); // the 3.5 m traffic lane
+        expect(retyped.strips[1]).toEqual({ type: 'rail', width: 3.5, gauge: 1435 });
+        expect(close(corridorProfileWidth(retyped), 10)).toBe(true);
+    });
+
+    it('reads a gauge off an OSM way, and sizes an untagged track by it', () => {
+        const tram = corridorProfileFromOsmTags({ railway: 'tram', gauge: '1000' });
+        expect(tram.strips).toEqual([{ type: 'rail', width: 2.75, gauge: 1000 }]);
+        const mainline = corridorProfileFromOsmTags({ railway: 'rail', tracks: '2' });
+        expect(mainline.strips.map(strip => strip.gauge)).toEqual([1435, 1435]);
+        expect(corridorProfileWidth(mainline)).toBe(7);
+        // A tagged width still wins: OSM's own number is the corridor's width.
+        expect(corridorProfileWidth(corridorProfileFromOsmTags({ railway: 'rail', width: '9', tracks: '2' }))).toBe(9);
+    });
+});
+
+// Track-ness is DERIVED, not stored: a corridor is a track iff its cross-section carries a rail lane.
+// This is the predicate the renderer, the drawing tool and the merge logic all branch on, so it has to
+// answer for corridors saved long before rail was a lane type as well as for ones drawn today.
+describe('corridorIsTrack / corridorProfileHasRail', () => {
+    const { corridorProfileHasRail, corridorIsTrack, corridorDefaultTrackProfile } = require('../../frontend/js/corridor-profile.js');
+
+    it('a profile has rails iff a lane is a rail lane', () => {
+        expect(corridorProfileHasRail(corridorDefaultTrackProfile())).toBe(true);
+        expect(corridorProfileHasRail({ strips: CORRIDOR_PROFILE_PRESETS[18] })).toBe(false);
+        expect(corridorProfileHasRail(null)).toBe(false);
+        expect(corridorProfileHasRail({ strips: [] })).toBe(false);
+    });
+
+    it('a street with a tram lane in it IS a track', () => {
+        const tramStreet = withLaneInserted(
+            { strips: CORRIDOR_PROFILE_PRESETS[18].map(strip => ({ ...strip })) },
+            4, { type: 'rail', width: 2.75, gauge: 1000 }
+        );
+        expect(corridorProfileHasRail(tramStreet)).toBe(true);
+        expect(corridorIsTrack({ profile: tramStreet, width: corridorProfileWidth(tramStreet) })).toBe(true);
+    });
+
+    it('a track whose rails are taken out is a road again', () => {
+        const platform = withLaneInserted(corridorDefaultTrackProfile(), 1, { type: 'sidewalk', width: 2 });
+        expect(corridorIsTrack({ profile: platform })).toBe(true);
+        const railless = withLaneRemoved(platform, 0);
+        expect(corridorProfileHasRail(railless)).toBe(false);
+        expect(corridorIsTrack({ profile: railless })).toBe(false);
+    });
+
+    it('a corridor drawn as a road is not a track', () => {
+        expect(corridorIsTrack({ profile: { strips: CORRIDOR_PROFILE_PRESETS[10] } })).toBe(false);
+        expect(corridorIsTrack({ width: 10, metadata: { isRoad: true } })).toBe(false);
+        expect(corridorIsTrack(null)).toBe(false);
+    });
+
+    // Compatibility: stored track proposals carry metadata.isTrack and (often) no profile at all. They
+    // must keep answering "track" — their footprint is their recorded width and nothing may move it.
+    it('honours a legacy metadata.isTrack, with or without a profile', () => {
+        expect(corridorIsTrack({ width: 6, metadata: { isTrack: true } })).toBe(true);
+        // The synthesised legacy profile is one rail lane as wide as the track was drawn.
+        expect(corridorProfileOf({ width: 6, metadata: { isTrack: true } }).strips)
+            .toEqual([{ type: 'rail', width: 6, gauge: 1435 }]);
+        // Even a stored profile with no rail lane loses to the flag: that is legacy data, not a
+        // contradiction to resolve — it says "track", so it is one.
+        expect(corridorIsTrack({
+            profile: { strips: [{ type: 'driving', width: 3 }] },
+            metadata: { isTrack: true }
+        })).toBe(true);
     });
 });

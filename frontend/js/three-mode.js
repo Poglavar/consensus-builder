@@ -1927,7 +1927,7 @@
     function addBuildingTunnelLiners3D(targetGroup, definition) {
         const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels : [];
         if (!tunnels.length) return;
-        const isTrack = definition?.metadata?.isTrack === true;
+        const isTrack = corridorIsTrack(definition);
         const clearHeight = isTrack ? 6 : 4.5;
         const clearWidth = Math.max(3, Number(definition?.width) || (isTrack ? 3 : 7.5)) + 0.8;
         const thickness = 0.25;

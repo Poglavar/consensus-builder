@@ -65,16 +65,21 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-direction: column;
 }
 
-/* 
-Road info panel should be in the bottom right corner of the map, 
-with a width of 400px, and a height of half of the map height minus 5px.
+/*
+Road info panel sits in the bottom right corner of the map. It sizes to its own content
+(never below 400px, never past a cap that would swallow the map) because label lengths vary
+per language — Croatian/Spanish labels need ~30-40px more than English, and pinning a width
+clipped the right-hand values. The height is capped against the viewport, not a fixed number,
+so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scroll fold.
 */
 #road-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: 400px;
-    max-height: 400px;
+    width: fit-content;
+    min-width: min(400px, calc(100vw - 20px));
+    max-width: min(560px, calc(100vw - 20px));
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
     display: none;
     border-radius: 12px;
@@ -98,15 +103,32 @@ with a width of 400px, and a height of half of the map height minus 5px.
     padding-right: 30px;
 }
 
-/* Header row: title + the Cross-section button (opens the width/lane editor while drawing). */
+/* Header row: title + the Cross-section button (opens the width/lane editor while drawing) + the
+   minimise/close circles. All three are IN the flex row, so the row sizes around them — no right
+   padding guessing at how much space the circles happen to occupy. */
 #road-info-panel .road-panel-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
     margin: 0 0 10px 0;
-    padding: 0 30px 8px 0; /* right padding keeps clear of the absolute close button */
+    padding: 0 0 8px 0;
     border-bottom: 1px solid #eee;
+}
+
+#road-info-panel .road-panel-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* .close-button is absolute by default (panels.css:18) — inside this flex row it must not be. */
+#road-info-panel .road-panel-actions .close-button,
+#road-info-panel .road-panel-actions .road-panel-minimize {
+    position: static;
+    top: auto;
+    right: auto;
 }
 
 #road-info-panel .road-panel-header h3 {
@@ -270,21 +292,10 @@ with a width of 400px, and a height of half of the map height minus 5px.
     color: #333;
 }
 
-#road-info-panel .close-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-}
-
-#road-info-panel .road-panel-minimize {
-    position: absolute;
-    top: 8px;
-    right: 54px;
-}
-
-/* Minimized: a slim strip — header (title + Cross-section) and the Undo/Finish controls stay,
-   metrics and ownership stats hide, so the map is visible while drawing on small screens. */
-#road-info-panel.is-minimized > :not(.road-panel-header):not(#road-drawing-controls):not(.close-button):not(.road-panel-minimize) {
+/* Minimized: a slim strip — header (title + Cross-section + the circles) and the Undo/Finish
+   controls stay, metrics and ownership stats hide, so the map is visible while drawing on small
+   screens. The circles ride along inside the header, so they need no exemption of their own. */
+#road-info-panel.is-minimized > :not(.road-panel-header):not(#road-drawing-controls) {
     display: none;
 }
 
@@ -1301,13 +1312,14 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 /* Proposal details panel now uses .panel-header and .panel-body structure */
 
-/* Responsive width for info panels */
+/* Responsive width for info panels.
+   #road-info-panel is deliberately NOT here: it sizes to its content (see its own rule above),
+   because its two-column metrics grid needs more room in longer languages than in English. */
 #proposal-details-panel,
 #parcel-info-panel,
 #block-info-panel,
 #area-monitor-detail-panel,
 #parcel-info-panel,
-#road-info-panel,
 #road-analysis-panel {
     width: min(90vw, 400px);
 }
@@ -1471,13 +1483,6 @@ with a width of 400px, and a height of half of the map height minus 5px.
     margin-top: 4px;
     font-size: 11px;
     color: #999;
-}
-
-/* Road info panel should always be 400px (not responsive) */
-#road-info-panel {
-    width: 400px !important;
-    max-width: 400px !important;
-    box-sizing: border-box;
 }
 
 #proposal-details-panel .panel-header {

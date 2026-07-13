@@ -54,12 +54,11 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
     const { parcelFeatures, primaryFeatures } = collectProposalFeatureSets(proposal);
     const hasPrimary = primaryFeatures.length > 0;
 
-    // Check if this is a road proposal to style road geometry differently
+    // Check if this is a corridor proposal, to style its geometry differently. Track-ness is a fact
+    // about the cross-section (does it carry rail lanes), not a flag on the proposal.
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-    const isTrack = isRoadProposal && (
-        proposal?.roadProposal?.definition?.metadata?.isTrack === true ||
-        proposal?.definition?.metadata?.isTrack === true
-    );
+    const corridorDefinition = proposal?.roadProposal?.definition || proposal?.definition;
+    const isTrack = isRoadProposal && typeof corridorIsTrack === 'function' && corridorIsTrack(corridorDefinition);
 
     // CRITICAL: Check zoom level before rendering parcel features
     // When zoomed out (below parcel display threshold), we should NOT render individual parcel outlines
@@ -120,40 +119,17 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
         });
     }
 
-    if (isTrack) {
-        const definition = proposal?.roadProposal?.definition || proposal?.definition;
-        const trackPoints = Array.isArray(definition?.points) ? definition.points : null;
-        const trackWidth = Number.isFinite(definition?.width) ? definition.width : DEFAULT_CORRIDOR_WIDTHS.track;
-        if (trackPoints && trackPoints.length >= 2) {
-            const normalizedPoints = trackPoints.map(p => {
-                if (p && typeof p.lat === 'function' && typeof p.lng === 'function') return p;
-                if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) return L.latLng(Number(p.lat), Number(p.lng));
-                if (Array.isArray(p) && p.length >= 2) {
-                    const val1 = Number(p[0]);
-                    const val2 = Number(p[1]);
-                    return Math.abs(val1) <= 90 && Math.abs(val2) <= 180 ? L.latLng(val1, val2) : L.latLng(val2, val1);
-                }
-                return null;
-            }).filter(Boolean);
-
-            if (normalizedPoints.length >= 2) {
-                const renderFn = typeof renderTrackWithRails === 'function'
-                    ? renderTrackWithRails
-                    : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
-                        ? window.renderTrackWithRails
-                        : null;
-                if (renderFn) {
-                    const trackRailsLayer = renderFn(normalizedPoints, false, {
-                        railColor: '#FF8A00',
-                        sleeperColor: '#FFC266',
-                        trackWidth: trackWidth,
-                        pane: groups.preview?.__paneName || (window.__proposalHighlightPanes && window.__proposalHighlightPanes.preview) || undefined
-                    });
-                    if (trackRailsLayer) {
-                        trackRailsLayer.addTo(groups.preview);
-                    }
-                }
-            }
+    // A previewed corridor lays one pair of rails per RAIL LANE of its cross-section — the same rule
+    // the map itself uses, so a proposed tram street shows its rails here too, not just a track.
+    if (isRoadProposal && typeof renderCorridorRails === 'function') {
+        const profile = (typeof corridorProfileOf === 'function') ? corridorProfileOf(corridorDefinition) : null;
+        const centerlines = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(corridorDefinition) : [];
+        if (profile && centerlines.length) {
+            renderCorridorRails(centerlines, profile, groups.preview, {
+                railColor: '#FF8A00',
+                sleeperColor: '#FFC266',
+                pane: groups.preview?.__paneName || (window.__proposalHighlightPanes && window.__proposalHighlightPanes.preview) || undefined
+            });
         }
     }
 

@@ -236,7 +236,7 @@
         const id = nextBuildingId++;
         const entry = {
             id,
-            name: `Building ${id}`,
+            name: translateSingleBuildingText('modal.singleBuilding.defaultName', 'Building {{n}}', { n: id }),
             color: pickBuildingColor(buildingEntries.length),
             feature,
             width,

@@ -238,18 +238,6 @@
             }
             layer._roadCenterlineLayer = null;
         }
-        // Remove track rails overlay if present
-        if (layer._trackRailsLayer) {
-            try {
-                if (global.map && global.map.hasLayer(layer._trackRailsLayer)) {
-                    global.map.removeLayer(layer._trackRailsLayer);
-                    console.log('[cleanupAttachedLayers] Removed track rails layer');
-                }
-            } catch (e) {
-                console.warn('[cleanupAttachedLayers] Error removing track rails:', e);
-            }
-            layer._trackRailsLayer = null;
-        }
     }
 
     function clearParcelLayerIndex() {
@@ -340,7 +328,7 @@
 
         // Helper: check if layer has attached overlays (like centerlines)
         const hasAttachedOverlays = (layer) => {
-            return !!(layer && (layer._roadCenterlineLayer || layer._trackRailsLayer));
+            return !!(layer && layer._roadCenterlineLayer);
         };
 
         // First pass: identify duplicates

@@ -93,43 +93,47 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
     return value || resolveProposalAuthorName();
 }
 
-function generateDefaultProposalName(proposalType) {
+// The type a proposal is born with is an internal English token ('Road', 'Track', 'Residences', …).
+// Both the default name and the default description are persisted, so they are localized HERE, at
+// creation time, in the language the author is actually using.
+const PROPOSAL_TYPE_TRANSLATION_KEYS = {
+    'residences': 'modal.createProposal.goalOptions.buildings',
+    'single building': 'modal.createProposal.goalOptions.single',
+    'building(s)': 'modal.createProposal.goalOptions.single',
+    'park': 'modal.createProposal.goalOptions.park',
+    'square': 'modal.createProposal.goalOptions.square',
+    'lake': 'modal.createProposal.goalOptions.lake',
+    // A drawn corridor knows whether it is a road or a track — say so, instead of the "Road/Track"
+    // category name the user never picked.
+    'road': 'modal.roadWidth.proposalList.goalLabels.road',
+    'track': 'modal.roadWidth.proposalList.goalLabels.track',
+    'road/track': 'modal.createProposal.goalOptions.roadTrack',
+    'decide later': 'modal.createProposal.goalOptions.decideLater',
+    'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
+    'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
+    'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
+    'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
+    'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
+    'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe',
+    'ownership-transfer-to-city': 'modal.createProposal.ownershipTransfer.nameToCity',
+    'ownership-transfer-third-party': 'modal.createProposal.ownershipTransfer.nameThirdParty',
+    'offer-to-sell': 'modal.createProposal.ownershipTransfer.nameOfferToSell'
+};
+
+function localizeProposalTypeLabel(proposalType) {
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
     const normalizedType = (proposalType || '').toString().trim();
-    const typeTranslationKeys = {
-        'residences': 'modal.createProposal.goalOptions.buildings',
-        'single building': 'modal.createProposal.goalOptions.single',
-        'building(s)': 'modal.createProposal.goalOptions.single',
-        'park': 'modal.createProposal.goalOptions.park',
-        'square': 'modal.createProposal.goalOptions.square',
-        'lake': 'modal.createProposal.goalOptions.lake',
-        'road/track': 'modal.createProposal.goalOptions.roadTrack',
-        'decide later': 'modal.createProposal.goalOptions.decideLater',
-        'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
-        'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
-        'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
-        'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
-        'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
-        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe',
-        'ownership-transfer-to-city': 'modal.createProposal.ownershipTransfer.nameToCity',
-        'ownership-transfer-third-party': 'modal.createProposal.ownershipTransfer.nameThirdParty',
-        'offer-to-sell': 'modal.createProposal.ownershipTransfer.nameOfferToSell'
-    };
-    let localizedType = normalizedType;
-    if (t && normalizedType) {
-        const key = normalizedType.toLowerCase();
-        const translationKey = typeTranslationKeys[key];
-        if (translationKey) {
-            localizedType = t(translationKey, normalizedType);
-        } else if (key === 'ownership-transfer-to-me') {
-            localizedType = t('modal.createProposal.ownershipTransfer.nameToMe', 'Ownership transfer to me');
-        } else if (key === 'ownership-transfer-from-me') {
-            localizedType = t('modal.createProposal.ownershipTransfer.nameFromMe', 'Ownership transfer from me');
-        } else if (typeof getProposalTypeLabel === 'function') {
-            localizedType = getProposalTypeLabel(normalizedType);
-        }
-    }
+    if (!t || !normalizedType) return normalizedType;
 
+    const key = normalizedType.toLowerCase();
+    const translationKey = PROPOSAL_TYPE_TRANSLATION_KEYS[key];
+    if (translationKey) return t(translationKey, normalizedType);
+    if (typeof getProposalTypeLabel === 'function') return getProposalTypeLabel(normalizedType);
+    return normalizedType;
+}
+
+function generateDefaultProposalName(proposalType) {
+    const localizedType = localizeProposalTypeLabel(proposalType);
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -141,44 +145,14 @@ function generateDefaultProposalName(proposalType) {
 function generateDefaultProposalDescription(proposalType, proposalName) {
     const authorName = resolveProposalAuthorName() || 'User';
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-    const normalizedType = (proposalType || '').toString().trim();
-    const typeTranslationKeys = {
-        'residences': 'modal.createProposal.goalOptions.buildings',
-        'single building': 'modal.createProposal.goalOptions.single',
-        'building(s)': 'modal.createProposal.goalOptions.single',
-        'park': 'modal.createProposal.goalOptions.park',
-        'square': 'modal.createProposal.goalOptions.square',
-        'lake': 'modal.createProposal.goalOptions.lake',
-        'road/track': 'modal.createProposal.goalOptions.roadTrack',
-        'decide later': 'modal.createProposal.goalOptions.decideLater',
-        'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
-        'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
-        'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
-        'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
-        'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
-        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe',
-        'ownership-transfer-to-city': 'modal.createProposal.ownershipTransfer.nameToCity',
-        'ownership-transfer-third-party': 'modal.createProposal.ownershipTransfer.nameThirdParty',
-        'offer-to-sell': 'modal.createProposal.ownershipTransfer.nameOfferToSell'
-    };
-    let localizedType = normalizedType;
-    if (t && normalizedType) {
-        const key = normalizedType.toLowerCase();
-        const translationKey = typeTranslationKeys[key];
-        if (translationKey) {
-            localizedType = t(translationKey, normalizedType);
-        } else if (key === 'ownership-transfer-to-me') {
-            localizedType = t('modal.createProposal.ownershipTransfer.nameToMe', 'Ownership transfer to me');
-        } else if (key === 'ownership-transfer-from-me') {
-            localizedType = t('modal.createProposal.ownershipTransfer.nameFromMe', 'Ownership transfer from me');
-        } else if (typeof getProposalTypeLabel === 'function') {
-            localizedType = getProposalTypeLabel(normalizedType);
-        }
-    }
+    const localizedType = localizeProposalTypeLabel(proposalType);
 
     // Generate simpler description without repeating the name
     // The name is shown separately in the proposal details
-    return `A new ${localizedType} proposal by ${authorName}`;
+    const fallback = `A new ${localizedType} proposal by ${authorName}`;
+    return t
+        ? t('modal.createProposal.defaultDescription', fallback, { type: localizedType, author: authorName })
+        : fallback;
 }
 
 function updateProposalNameAndDescription(proposalType, forceUpdate = false) {

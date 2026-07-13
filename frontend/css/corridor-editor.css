@@ -182,7 +182,8 @@
 
 .corridor-lane-type,
 .corridor-lane-width,
-.corridor-lane-landscape {
+.corridor-lane-landscape,
+.corridor-lane-gauge {
     height: 32px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -199,7 +200,10 @@
     flex: 0 0 62px;
 }
 
-.corridor-lane-landscape {
+/* The per-lane extras — a green strip's planting, a track's gauge — wrap onto their own line under the
+   row, so a 380 px panel keeps the type/width controls on one line and the extra never squeezes them. */
+.corridor-lane-landscape,
+.corridor-lane-gauge {
     flex: 1 0 100%;
     width: 100%;
     margin-bottom: 3px;

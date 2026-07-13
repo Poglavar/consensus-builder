@@ -10,7 +10,7 @@
     let busy = false;
 
     function drawingActive() {
-        return global.roadDrawingMode === true || global.trackDrawingMode === true;
+        return global.roadDrawingMode === true;
     }
 
     function selectedCorridorProposal() {
@@ -163,7 +163,7 @@
         global.proposalStorage.getAllProposals().forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
-            if ((definition.metadata?.isTrack === true) !== isTrack) return;
+            if (global.corridorIsTrack(definition) !== isTrack) return;
             const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
                 || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
             if (!applied) return;
@@ -231,7 +231,7 @@
         }
         handleGroup = global.L.layerGroup().addTo(map);
         activeKey = String(key);
-        const isTrack = proposal.roadProposal.definition?.metadata?.isTrack === true;
+        const isTrack = global.corridorIsTrack(proposal.roadProposal.definition);
 
         // ONE handle per unique position: a junction's coincident vertices (one per crossing
         // segment) share a handle, so dragging the junction moves every leg together.

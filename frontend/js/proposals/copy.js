@@ -108,7 +108,7 @@ function roadCenterlineOf(definition) {
 
 function isTrackProposal(source) {
     const definition = roadDefinitionOf(source);
-    if (definition && definition.metadata && definition.metadata.isTrack === true) return true;
+    if (corridorIsTrack(definition)) return true;
     return source && source.primaryType === 'Track';
 }
 

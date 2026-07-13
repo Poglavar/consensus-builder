@@ -1062,6 +1062,7 @@
         },
         "singleBuilding": {
             "title": "Buildings",
+            "defaultName": "Building {{n}}",
             "buildingsTitle": "Buildings",
             "buildingsLabel": "Select building",
             "addLabel": "Add building",
@@ -1154,6 +1155,11 @@
             "maxWidthReached": "A corridor cannot be wider than {{max}} m. Remove or narrow a lane first.",
             "grass": "Grass only",
             "trees": "Tree grove",
+            "gauge": "Track gauge",
+            "gauges": {
+                "metre": "1000 mm (tram)",
+                "standard": "1435 mm (railway)"
+            },
             "laneTypes": {
                 "driving": "Traffic lane",
                 "bus": "Bus lane",
@@ -1162,7 +1168,7 @@
                 "sidewalk": "Sidewalk",
                 "verge": "Green verge",
                 "median": "Median",
-                "rail": "Rail bed"
+                "rail": "Track"
             }
         },
         "corridorDraft": {
@@ -1345,6 +1351,22 @@
                     "areaAsc": "Area (small to large)",
                     "authorAsc": "Author (A → Z)",
                     "authorDesc": "Author (Z → A)"
+                },
+                "goalLabels": {
+                    "road-track": "Road/Track",
+                    "road": "Road",
+                    "track": "Track",
+                    "buildings": "Buildings",
+                    "single": "Single building",
+                    "row": "Row",
+                    "park": "Park",
+                    "square": "Square",
+                    "lake": "Lake",
+                    "urban-rule": "Urban rule",
+                    "reparcellization": "Reparcellization",
+                    "decide-later": "Decide later",
+                    "parcelBased": "Parcel-based",
+                    "other": "Other"
                 },
                 "typeLabels": {
                     "road": "Road",
@@ -1774,6 +1796,7 @@
             "rejected": "Transaction rejected",
             "nameLabel": "Name:",
             "namePlaceholderProposal": "Proposal name",
+            "defaultDescription": "A new {{type}} proposal by {{author}}",
             "namePlaceholder": "Name your {{kind}}",
             "typeLabel": "Type:",
             "typePark": "Park",

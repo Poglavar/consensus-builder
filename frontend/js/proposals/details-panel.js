@@ -583,7 +583,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // The drawn plan lives at geometry.roadPlan on newer proposals and only at
     // roadProposal.definition on older ones — both shapes exist in stored data.
     const drivePlan = driveProposal?.geometry?.roadPlan || driveProposal?.roadProposal?.definition;
-    const isDrivableTrack = drivePlan?.metadata?.isTrack === true;
+    const isDrivableTrack = corridorIsTrack(drivePlan);
     const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
         ? `
         <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim('${proposalKey}')">

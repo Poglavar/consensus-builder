@@ -9,6 +9,8 @@
         decorations: null,
         tool: null,
         pathPoints: [],
+        pathCursor: null,
+        rubberBand: null,
         layer: null,
         panel: null,
         reselectKey: null
@@ -183,6 +185,31 @@
                 color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE
             }).addTo(group);
         }
+        updateRubberBand();
+    }
+
+    // The segment from the last placed point to the pointer. Without it a half-drawn path just
+    // sits there and the editor gives no sign that it is waiting for the next click. Red while
+    // the pointer is outside the boundary, because finishing there is refused anyway.
+    function updateRubberBand() {
+        const live = state.tool === 'path' && state.pathPoints.length && state.pathCursor && state.layer;
+        if (!live) {
+            if (state.rubberBand && state.layer) state.layer.removeLayer(state.rubberBand);
+            state.rubberBand = null;
+            return;
+        }
+        const [fromLng, fromLat] = state.pathPoints[state.pathPoints.length - 1];
+        const [toLng, toLat] = state.pathCursor;
+        const latlngs = [[fromLat, fromLng], [toLat, toLng]];
+        const color = pointInside(state.pathCursor) ? '#f59e0b' : '#dc2626';
+        if (state.rubberBand) {
+            state.rubberBand.setLatLngs(latlngs);
+            state.rubberBand.setStyle({ color });
+            return;
+        }
+        state.rubberBand = global.L.polyline(latlngs, {
+            color, weight: 3, opacity: 0.9, dashArray: '4 6', interactive: false, pane: EDITOR_PANE
+        }).addTo(state.layer);
     }
 
     function renderSquare(group) {
@@ -199,6 +226,8 @@
     function render() {
         if (!state.layer || !global.map) return;
         state.layer.clearLayers();
+        // clearLayers just dropped it; renderPark rebuilds it from the live cursor.
+        state.rubberBand = null;
         global.L.geoJSON(state.boundary, {
             style: {
                 color: state.kind === 'park' ? '#15803d' : '#475569',
@@ -269,7 +298,16 @@
             else rejectOutside();
         }
         state.pathPoints = [];
+        state.pathCursor = null;
         render();
+    }
+
+    // Cheap: the rubber band is moved in place rather than through a full render, so dragging the
+    // pointer across the park does not rebuild every tree, bench and pond on every frame.
+    function onMapMouseMove(event) {
+        if (state.tool !== 'path' || !state.pathPoints.length) return;
+        state.pathCursor = [event.latlng.lng, event.latlng.lat];
+        updateRubberBand();
     }
 
     function setTool(tool) {
@@ -374,6 +412,7 @@
         state.reselectKey = null;
         if (global.map) {
             global.map.off('click', onMapClick);
+            global.map.off('mousemove', onMapMouseMove);
             if (state.layer) global.map.removeLayer(state.layer);
         }
         global.document?.removeEventListener('keydown', onKeyDown, true);
@@ -384,6 +423,8 @@
         state.decorations = null;
         state.tool = null;
         state.pathPoints = [];
+        state.pathCursor = null;
+        state.rubberBand = null;
         state.layer = null;
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
             global.finishProposalDraftDesignSession(draftId);
@@ -433,6 +474,8 @@
         state.decorations = normalizeDecorations(kind, sourceDecorations(draft));
         state.tool = null;
         state.pathPoints = [];
+        state.pathCursor = null;
+        state.rubberBand = null;
         ensureEditorPane();
         state.layer = global.L.layerGroup().addTo(global.map);
         // The editor owns the map and the UI for its duration: remember which proposal card was
@@ -452,6 +495,7 @@
         panel.innerHTML = panelMarkup();
         panel.classList.add('is-open');
         global.map.on('click', onMapClick);
+        global.map.on('mousemove', onMapMouseMove);
         global.document?.addEventListener('keydown', onKeyDown, true);
         render();
         try {

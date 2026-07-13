@@ -47,7 +47,6 @@
     function isParcelDrawingModeActive() {
         return Boolean(
             global.roadDrawingMode ||
-            global.trackDrawingMode ||
             (typeof global.isAreaMonitorDrawingActive === 'function' && global.isAreaMonitorDrawingActive()) ||
             global.areaMonitorDrawingMode
         );
