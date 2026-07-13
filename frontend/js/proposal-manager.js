@@ -774,6 +774,10 @@ function _buildAppliedDescendantIndex(excludeProposalId = null) {
         const appliedProposals = proposalStorage.getAllProposals().filter(p => {
             if (!p) return false;
             if (excludeProposalId && p.proposalId && String(p.proposalId) === String(excludeProposalId)) return false;
+            // Structures OVERLAY their parents (never hide them) — an applied park/lake/square
+            // must not block its parent slice from being (re)created, or the ground under it
+            // becomes an unclickable hole when the parent road re-applies after a geometry edit.
+            if (p.structureProposal && !p.roadProposal && !p.reparcellization && !p.buildingProposal && !p.decideLaterProposal) return false;
             const roadStatus = p.roadProposal && _isAppliedStatusLike(p.roadProposal.status);
             const decideLaterStatus = p.decideLaterProposal && _isAppliedStatusLike(p.decideLaterProposal.status);
             const structureStatus = p.structureProposal && _isAppliedStatusLike(p.structureProposal.status);

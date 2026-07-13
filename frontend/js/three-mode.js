@@ -1853,33 +1853,49 @@
 
         proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
             const definition = corridorProposalDefinition(proposal);
-            const profile = corridorProfileOf(definition);
+            const fallbackProfile = corridorProfileOf(definition);
             const centerline = corridorCenterlineOf(definition);
-            if (!profile || !centerline.length) return;
+            if (!fallbackProfile || !centerline.length) return;
 
-            buildCorridorStrips(centerline, profile).forEach(strip => {
-                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
-                const kerb = Number(lane.height) || 0;
-                strip.polygons.forEach(polygon => {
-                    const meshes = polygonFeatureToMeshes(
-                        corridorStripToFeature(polygon),
-                        corridorLaneMaterial(strip.type),
-                        CORRIDOR_STRIP_Z,
-                        kerb
-                    );
-                    meshes.forEach(mesh => {
-                        mesh.userData.isCorridorStrip = true;
-                        mesh.userData.laneType = strip.type;
-                        targetGroup.add(mesh);
+            // Per-segment cross-sections, same as the 2D renderer: each segment draws with ITS
+            // profile (width, lanes, tree groves). Rendering the whole centerline with the
+            // default profile flattened every network to one width and dropped override-only
+            // lanes (a segment's tree grove never made it into 3D).
+            const entries = ((typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [])
+                .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
+                .map(entry => entry.profile ? entry : { ...entry, profile: fallbackProfile });
+            const renderEntries = entries.length
+                ? entries
+                : centerline.map(points => ({ points, profile: fallbackProfile }));
+
+            renderEntries.forEach(entry => {
+                buildCorridorStrips([entry.points], entry.profile).forEach(strip => {
+                    const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                    const kerb = Number(lane.height) || 0;
+                    strip.polygons.forEach(polygon => {
+                        const meshes = polygonFeatureToMeshes(
+                            corridorStripToFeature(polygon),
+                            corridorLaneMaterial(strip.type),
+                            CORRIDOR_STRIP_Z,
+                            kerb
+                        );
+                        meshes.forEach(mesh => {
+                            mesh.userData.isCorridorStrip = true;
+                            mesh.userData.laneType = strip.type;
+                            targetGroup.add(mesh);
+                        });
                     });
                 });
+                const decorations = (typeof buildCorridorDecorations === 'function')
+                    ? buildCorridorDecorations([entry.points], entry.profile) : [];
+                addCorridorDecorations3D(targetGroup, decorations);
             });
-            const junctions = (typeof buildCorridorJunctionTreatments === 'function')
-                ? buildCorridorJunctionTreatments(centerline, profile) : [];
+            // Junction patches sized per arm cover the seams where different widths meet.
+            const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
+                ? buildCorridorJunctionTreatmentsForEntries(renderEntries)
+                : ((typeof buildCorridorJunctionTreatments === 'function')
+                    ? buildCorridorJunctionTreatments(centerline, fallbackProfile) : []);
             addCorridorJunctions3D(targetGroup, junctions);
-            const decorations = (typeof buildCorridorDecorations === 'function')
-                ? buildCorridorDecorations(centerline, profile) : [];
-            addCorridorDecorations3D(targetGroup, decorations);
         });
 
         // Track surfaces use a different renderer, but building-tunnel metadata is common to both
