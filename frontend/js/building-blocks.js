@@ -202,18 +202,10 @@ function setBlockify3DAnchor(lng, lat) {
     blockify3D.anchorLngLat = { lng: safeLng, lat: safeLat };
 }
 
+// The ground-metres frame lives in frontend/js/local-frame.js (loaded first). Same formula as
+// before — this is a de-dup, not a behaviour change.
 function projectToLocalMeters(lng, lat, anchor) {
-    const aLng = anchor?.lng ?? 0;
-    const aLat = anchor?.lat ?? 0;
-    const ln = Number(lng);
-    const lt = Number(lat);
-    if (!Number.isFinite(ln) || !Number.isFinite(lt)) return null;
-    const scaleX = 111320 * Math.cos(aLat * Math.PI / 180);
-    const scaleY = 110540;
-    return [
-        (ln - aLng) * scaleX,
-        (lt - aLat) * scaleY
-    ];
+    return window.LocalFrame.projectToLocalMeters(lng, lat, anchor);
 }
 
 const BLOCKIFY_ALGORITHMS = {
