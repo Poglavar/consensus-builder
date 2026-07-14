@@ -250,94 +250,27 @@
     // treated as the same when their vertex-mean centroids are within ~2 m and their vertical
     // extents (z_min/z_max) match within 1 m. A ~5 m spatial grid with a 3x3 neighbour scan keeps
     // this O(vertices) — no convex hulls — so even a multi-thousand-building response costs a few ms.
-    function dedupeCoincidentBuildings(buildings) {
-        if (!Array.isArray(buildings) || buildings.length < 2) return buildings || [];
-        const CELL_M = 5, MERGE_DIST_M = 2;
-        const grid = new Map();
-        const keep = [];
-        for (const bld of buildings) {
-            let sx = 0, sy = 0, n = 0;
-            if (Array.isArray(bld.faces)) {
-                for (const face of bld.faces) {
-                    const coords = face && face.coordinates;
-                    if (!Array.isArray(coords)) continue;
-                    for (const ring of coords) {
-                        if (!Array.isArray(ring)) continue;
-                        for (const c of ring) {
-                            if (c && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])) { sx += c[0]; sy += c[1]; n++; }
-                        }
-                    }
-                }
-            }
-            if (!n) { keep.push(bld); continue; }
-            const lng = sx / n, lat = sy / n;
-            const x = lng * 111320 * Math.cos(lat * Math.PI / 180);
-            const y = lat * 110540;
-            const ci = Math.floor(x / CELL_M), cj = Math.floor(y / CELL_M);
-            const zmin = Number(bld.z_min), zmax = Number(bld.z_max);
-            let dup = false;
-            for (let di = -1; di <= 1 && !dup; di++) {
-                for (let dj = -1; dj <= 1 && !dup; dj++) {
-                    const arr = grid.get((ci + di) + ':' + (cj + dj));
-                    if (!arr) continue;
-                    for (const e of arr) {
-                        if (Math.hypot(e.x - x, e.y - y) < MERGE_DIST_M
-                            && Math.abs(e.zmax - zmax) < 1 && Math.abs(e.zmin - zmin) < 1) { dup = true; break; }
-                    }
-                }
-            }
-            if (dup) continue;
-            const key = ci + ':' + cj;
-            let cell = grid.get(key);
-            if (!cell) { cell = []; grid.set(key, cell); }
-            cell.push({ x, y, zmin, zmax });
-            keep.push(bld);
-        }
-        return keep;
-    }
+    // dedupeCoincidentBuildings lives in frontend/js/proposals/gain.js (loaded first). Kept as a
+    // global there; the fetch-intake call below uses it unchanged.
 
-    // Built/proposed volume (m³), derived floor area (m²) and the € value gain for one parcel.
-    // Built volume comes from the existing 3D buildings (footprint ∩ parcel × their height);
-    // proposed volume from window.proposedBuildings the same way. Floor area = volume / storey
-    // height; gain = (proposed − built) floor area × price.
+    // Built/proposed volume (m³) and derived floor area (m²) for one parcel — the money math is in
+    // frontend/js/proposals/gain.js (unit-tested). This wrapper resolves the parcel feature and the
+    // built (nearbyProposalBuildings, deduped at intake) + proposed (window.proposedBuildings)
+    // building lists, and injects turf + the footprint/height lookups.
     function computeParcelMetrics(parcelId) {
         const parcel = getParcelFeatureById(parcelId);
         if (!parcel) return null;
-
-        let builtVolume = 0;
-        // nearbyProposalBuildings is deduped at fetch intake (dedupeCoincidentBuildings), so twin
-        // meshes no longer double-count here.
-        const builtList = Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [];
-        for (const bld of builtList) {
-            const h = (Number.isFinite(bld.z_max) && Number.isFinite(bld.z_min)) ? (bld.z_max - bld.z_min) : 0;
-            if (!(h > 0)) continue;
-            const fp = buildingFootprintPolygon(bld);
-            if (!fp) continue;
-            let inter = null;
-            try { inter = turf.intersect(fp, parcel); } catch (_) { inter = null; }
-            if (!inter) continue;
-            let a = 0;
-            try { a = turf.area(inter); } catch (_) { a = 0; }
-            builtVolume += a * h;
-        }
-
-        let proposedVolume = 0;
-        const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
-        for (const feat of proposed) {
-            if (!feat || !feat.geometry) continue;
-            const h = estimateBuildingHeightMeters(feat);
-            if (!(h > 0)) continue;
-            let inter = null;
-            try { inter = turf.intersect(feat, parcel); } catch (_) { inter = null; }
-            if (!inter) continue;
-            let a = 0;
-            try { a = turf.area(inter); } catch (_) { a = 0; }
-            proposedVolume += a * h;
-        }
-
-        const builtFloorArea = builtVolume / FLOOR_HEIGHT_M;
-        const proposedFloorArea = proposedVolume / FLOOR_HEIGHT_M;
-        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea };
+        return window.ProposalGain.computeParcelMetrics(
+            parcel,
+            Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [],
+            Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [],
+            {
+                floorHeightM: FLOOR_HEIGHT_M,
+                turf,
+                footprintOf: buildingFootprintPolygon,
+                heightOf: estimateBuildingHeightMeters
+            }
+        );
     }
 
     function threeI18n(key, fallback, params) {
@@ -413,7 +346,13 @@
     function renderValueAndGain(panel) {
         const built = lastFloorAreas ? lastFloorAreas.built : 0;
         const proposed = lastFloorAreas ? lastFloorAreas.proposed : 0;
-        const gain = (proposed - built) * priceEurPerM2;
+        // Money math from the shared, tested module.
+        const { gain, currentValue, hasProposed, avg } = window.ProposalGain.computeGain({
+            builtFloorArea: built,
+            proposedFloorArea: proposed,
+            priceEurPerM2,
+            parcelCount: lastParcelCount
+        });
 
         const titleEl = panel.querySelector('[data-role="value-title"]');
         if (titleEl) titleEl.textContent = threeI18n('threeMode.parcelPanel.valueTitle', 'Value @ €{{p}}/m²', { p: formatInt(priceEurPerM2) });
@@ -422,8 +361,7 @@
         if (gainEl) {
             // No proposed massing on this parcel → there's no "gain", just the current
             // built value. Show that as a positive figure instead of a negative delta.
-            if (proposed <= 0) {
-                const currentValue = built * priceEurPerM2;
+            if (!hasProposed) {
                 gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
                 gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: €${formatInt(currentValue)}`;
             } else {
@@ -437,8 +375,7 @@
         // Proposal panel only: average gain/loss per parcel (total gain ÷ parcel count).
         const avgEl = panel.querySelector('[data-role="avg-gain"]');
         if (avgEl) {
-            if (lastParcelCount && lastParcelCount > 0 && proposed > 0) {
-                const avg = gain / lastParcelCount;
+            if (avg !== null) {
                 const cls = avg > 0 ? 'gain-positive' : (avg < 0 ? 'gain-negative' : '');
                 const sign = avg > 0 ? '+' : '';
                 avgEl.className = 'parcel-panel-avg ' + cls;
