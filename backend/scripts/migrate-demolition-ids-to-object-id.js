@@ -43,6 +43,8 @@ Migrate demolition record ids from the DGU cadastre (zgrada_id) to GDI objects (
   --proposals <a,b,c>   Only these proposal ids (numeric id or proposal_id). Default: every
                         proposal that carries demolition records.
   --apply               Actually write. WITHOUT THIS NOTHING IS WRITTEN (dry run is the default).
+  --drop-unresolved     Remove records naming a cadastre building GDI has never surveyed. They
+                        cannot be migrated (no object_id exists) and nothing reads them any more.
   --help                Print this and exit.
 
 Reads the database from the usual PG* env vars (backend/.env).
@@ -52,11 +54,12 @@ re-run: already-migrated records are skipped, never re-mapped.
 }
 
 function parseArgs(argv) {
-    const args = { proposals: null, apply: false, help: false };
+    const args = { proposals: null, apply: false, dropUnresolved: false, help: false };
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         if (arg === '--help' || arg === '-h') args.help = true;
         else if (arg === '--apply') args.apply = true;
+        else if (arg === '--drop-unresolved') args.dropUnresolved = true;
         else if (arg === '--proposals') args.proposals = String(argv[++i] || '').split(',').map(s => s.trim()).filter(Boolean);
         else if (arg.startsWith('--proposals=')) args.proposals = arg.slice(12).split(',').map(s => s.trim()).filter(Boolean);
         else {
@@ -109,7 +112,7 @@ async function main() {
     const totals = {
         proposals: 0, proposalsChanged: 0,
         records: 0, cadastre: 0, alreadyMigrated: 0, nonCadastre: 0,
-        resolved: 0, unresolved: 0
+        resolved: 0, unresolved: 0, dropped: 0
     };
     const unresolvedList = [];
 
@@ -151,12 +154,17 @@ async function main() {
             let proposalRecords = 0;
             let proposalResolved = 0;
             let proposalUnresolved = 0;
+            let proposalDropped = 0;
 
             for (const site of RECORD_SITES) {
                 const records = readPath(row[site.column], site.path);
                 if (!records || !records.length) continue;
 
                 let siteChanged = false;
+                // Records naming a cadastre building GDI has never surveyed. They cannot be migrated
+                // (there is no object_id to migrate TO) and nothing reads them any more, so
+                // --drop-unresolved removes them rather than leaving a stale key space behind.
+                const unmigratable = [];
                 for (const record of records) {
                     if (!record || record.id === undefined || record.id === null) continue;
                     proposalRecords++;
@@ -182,6 +190,7 @@ async function main() {
                             site: site.label,
                             zgradaId: String(record.id)
                         });
+                        if (args.dropUnresolved) unmigratable.push(record);
                         continue;
                     }
 
@@ -192,6 +201,17 @@ async function main() {
                     siteChanged = true;
                     totals.resolved++;
                     proposalResolved++;
+                }
+
+                // Splice the unmigratable ones out of the live array (it is the one inside the JSONB
+                // that gets written back). Reverse order so the indices stay valid.
+                if (unmigratable.length) {
+                    for (let i = records.length - 1; i >= 0; i--) {
+                        if (unmigratable.includes(records[i])) records.splice(i, 1);
+                    }
+                    totals.dropped += unmigratable.length;
+                    proposalDropped += unmigratable.length;
+                    siteChanged = true;
                 }
 
                 if (siteChanged) updates.push(site);
@@ -209,6 +229,7 @@ async function main() {
             totals.proposalsChanged++;
             log(`  proposal ${row.proposal_id || row.id} [${row.status}]: ${proposalRecords} record(s) — `
                 + `${proposalResolved} rewritten, ${proposalUnresolved} unresolved`
+                + `${proposalDropped ? `, ${proposalDropped} DROPPED` : ''}`
                 + ` [${updates.map(u => u.label).join(', ')}]`);
 
             if (!args.apply) continue;
@@ -231,12 +252,14 @@ async function main() {
         log(`  cadastre-keyed       : ${totals.cadastre}`);
         log(`    → resolved         : ${totals.resolved}`);
         log(`    → UNRESOLVED       : ${totals.unresolved}`);
+        if (args.dropUnresolved) log(`    → DROPPED          : ${totals.dropped}  (--drop-unresolved)`);
         log(`  already migrated     : ${totals.alreadyMigrated}`);
         log(`  not cadastre ids     : ${totals.nonCadastre}  (proposal:…/geom:… — nothing to do)`);
 
         if (unresolvedList.length) {
             warn('---------------------------------------------------------------');
-            warn(`${unresolvedList.length} record(s) have NO row in dgu_gdi_building_match and were left as they are:`);
+            warn(`${unresolvedList.length} record(s) have NO row in dgu_gdi_building_match — `
+                + `${args.dropUnresolved ? 'DROPPED (GDI has no such building)' : 'left as they are (pass --drop-unresolved to remove them)'}:`);
             for (const item of unresolvedList) {
                 warn(`  proposal ${item.proposal} (db id ${item.proposalDbId}) ${item.site}: zgrada_id ${item.zgradaId}`);
             }
