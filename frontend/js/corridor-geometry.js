@@ -98,11 +98,417 @@
         return wgsCorners;
     }
 
-    const api = { createRectangularRoadSegment, isValidHtrsPoint };
+    // ---- Centerline graph geometry (moved out of road-drawing.js) ----------------------------
+    // These operate on {lat,lng} centerline segments. External deps (corridorTunnelEdgeKey,
+    // calculateSegmentLengthMeters, wgs84ToHTRS96) are resolved from the global scope at call time
+    // and every reference is typeof-guarded or try/caught, so the pure geometry is testable alone.
+
+    function planarSegmentIntersection(a1, a2, b1, b2) {
+        const d1x = a2.lng - a1.lng;
+        const d1y = a2.lat - a1.lat;
+        const d2x = b2.lng - b1.lng;
+        const d2y = b2.lat - b1.lat;
+        const denom = d1x * d2y - d1y * d2x;
+        if (Math.abs(denom) < 1e-18) return null;
+        const t = ((b1.lng - a1.lng) * d2y - (b1.lat - a1.lat) * d2x) / denom;
+        const u = ((b1.lng - a1.lng) * d1y - (b1.lat - a1.lat) * d1x) / denom;
+        if (t < -1e-9 || t > 1 + 1e-9 || u < -1e-9 || u > 1 + 1e-9) return null;
+        return { lat: a1.lat + t * d1y, lng: a1.lng + t * d1x };
+    }
+
+    // Wherever two centerline segments cross, both get a vertex at the crossing point. That makes
+    // junctions real graph nodes: draggable, bulldozable, and honest for connectivity checks.
+    function insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys = null) {
+        const EPS = 1e-7;
+        const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        // Tunnel records are keyed by their exact edge — inserting a vertex into a tunnelled edge
+        // would orphan the record (the stretch silently reverts to surface). Callers pass those keys.
+        const isProtectedEdge = (p, q) => {
+            if (!protectedEdgeKeys || !protectedEdgeKeys.size || typeof corridorTunnelEdgeKey !== 'function') return false;
+            const key = corridorTunnelEdgeKey(p, q);
+            return !!key && protectedEdgeKeys.has(key);
+        };
+        let changed = true;
+        let guard = 0;
+        while (changed && guard++ < 200) {
+            changed = false;
+            outer:
+            for (let i = 0; i < segments.length; i += 1) {
+                for (let j = i + 1; j < segments.length; j += 1) {
+                    const A = segments[i];
+                    const B = segments[j];
+                    for (let ai = 0; ai < A.length - 1; ai += 1) {
+                        for (let bi = 0; bi < B.length - 1; bi += 1) {
+                            const x = planarSegmentIntersection(A[ai], A[ai + 1], B[bi], B[bi + 1]);
+                            if (!x) continue;
+                            let inserted = false;
+                            // Inserting the crossing vertex does NOT change what the segment IS —
+                            // the id must survive, because per-segment cross-section overrides are
+                            // keyed by it. (Nulling it here orphaned every absorbed road's profile
+                            // at the junction step, repainting merges with the newest profile.)
+                            if (!near(x, A[ai]) && !near(x, A[ai + 1]) && !isProtectedEdge(A[ai], A[ai + 1])) {
+                                A.splice(ai + 1, 0, { lat: x.lat, lng: x.lng });
+                                inserted = true;
+                            }
+                            if (!near(x, B[bi]) && !near(x, B[bi + 1]) && !isProtectedEdge(B[bi], B[bi + 1])) {
+                                B.splice(bi + 1, 0, { lat: x.lat, lng: x.lng });
+                                inserted = true;
+                            }
+                            if (inserted) {
+                                changed = true;
+                                break outer;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Connected components of a segment set: segments sharing any coincident vertex belong to one
+    // body. Bodies are returned sorted by total length descending (the main run first).
+    function corridorConnectedComponents(segments, segmentIds) {
+        const EPS = 1e-7;
+        const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        const parent = segments.map((_, index) => index);
+        const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+        const union = (i, j) => { parent[find(j)] = find(i); };
+        for (let i = 0; i < segments.length; i += 1) {
+            for (let j = i + 1; j < segments.length; j += 1) {
+                if (find(i) === find(j)) continue;
+                const touches = segments[i].some(p => segments[j].some(q => near(p, q)));
+                if (touches) union(i, j);
+            }
+        }
+        const groups = new Map();
+        segments.forEach((segment, index) => {
+            const root = find(index);
+            if (!groups.has(root)) groups.set(root, { segments: [], segmentIds: [], length: 0 });
+            const group = groups.get(root);
+            group.segments.push(segment);
+            group.segmentIds.push(Array.isArray(segmentIds) ? (segmentIds[index] || null) : null);
+            group.length += (typeof calculateSegmentLengthMeters === 'function') ? calculateSegmentLengthMeters(segment) : segment.length;
+        });
+        return [...groups.values()].sort((a, b) => b.length - a.length);
+    }
+
+    // Do two centerline sets genuinely connect — sharing a vertex or crossing? Footprint overlap
+    // alone (two parallel roads grazing each other's width) is not a connection.
+    function centerlinesTouch(segmentsA, segmentsB) {
+        const EPS = 1e-7;
+        const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        for (const a of segmentsA) {
+            for (const b of segmentsB) {
+                if (a.some(p => b.some(q => near(p, q)))) return true;
+                for (let i = 0; i < a.length - 1; i += 1) {
+                    for (let j = 0; j < b.length - 1; j += 1) {
+                        if (planarSegmentIntersection(a[i], a[i + 1], b[j], b[j + 1])) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function segmentsIntersect(p1, q1, p2, q2) {
+        const EPS = 1e-9;
+
+        const orient = (a, b, c) => {
+            const val = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+            if (Math.abs(val) < EPS) return 0;
+            return val > 0 ? 1 : 2;
+        };
+
+        const onSegment = (a, b, c) => {
+            return b.x <= Math.max(a.x, c.x) + EPS && b.x + EPS >= Math.min(a.x, c.x)
+                && b.y <= Math.max(a.y, c.y) + EPS && b.y + EPS >= Math.min(a.y, c.y);
+        };
+
+        const o1 = orient(p1, q1, p2);
+        const o2 = orient(p1, q1, q2);
+        const o3 = orient(p2, q2, p1);
+        const o4 = orient(p2, q2, q1);
+
+        if (o1 !== o2 && o3 !== o4) return true;
+
+        // Colinear cases
+        if (o1 === 0 && onSegment(p1, p2, q1)) return true;
+        if (o2 === 0 && onSegment(p1, q2, q1)) return true;
+        if (o3 === 0 && onSegment(p2, p1, q2)) return true;
+        if (o4 === 0 && onSegment(p2, q1, q2)) return true;
+
+        return false;
+    }
+
+    // Does a road centerline cross itself? Works in planar metres (wgs84ToHTRS96) to dodge geodesic
+    // edge cases; a false negative would save a self-crossing road with an even-odd hole at the
+    // crossing, so parcels inside the loop are never acquired.
+    function polylineHasSelfIntersection(latLngPoints) {
+        if (!Array.isArray(latLngPoints) || latLngPoints.length < 4) return false;
+
+        const pts = [];
+        for (const p of latLngPoints) {
+            try {
+                const xy = wgs84ToHTRS96(p.lat, p.lng);
+                if (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) {
+                    pts.push({ x: xy[0], y: xy[1] });
+                } else {
+                    return false;
+                }
+            } catch (_) {
+                return false;
+            }
+        }
+
+        for (let i = 0; i < pts.length - 1; i++) {
+            const a = pts[i];
+            const b = pts[i + 1];
+            if (!a || !b) continue;
+            for (let j = i + 2; j < pts.length - 1; j++) {
+                if (j === i + 1) continue;
+                const c = pts[j];
+                const d = pts[j + 1];
+                if (!c || !d) continue;
+                if (segmentsIntersect(a, b, c, d)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Merge polylines that share an endpoint into single segments, keeping ids and per-segment
+    // profile overrides aligned. Pieces with DIFFERENT cross-section profiles stay separate.
+    function weldCorridorSegments(segments, segmentIds, segmentProfiles = null) {
+        const EPS = 1e-7; // ~1 cm — snap targets copy exact vertex coordinates
+        const same = (a, b) => a && b && Math.abs(a.lat - b.lat) < EPS && Math.abs(a.lng - b.lng) < EPS;
+        const profileKeyOf = id => {
+            if (!segmentProfiles || id === null || id === undefined) return '';
+            const override = segmentProfiles[String(id)];
+            return override ? JSON.stringify(override) : '';
+        };
+        const segs = segments.map(segment => segment.slice());
+        const ids = segmentIds.slice();
+        let joined = true;
+        while (joined) {
+            joined = false;
+            outer:
+            for (let i = 0; i < segs.length; i += 1) {
+                for (let j = 0; j < segs.length; j += 1) {
+                    if (i === j) continue;
+                    if (profileKeyOf(ids[i]) !== profileKeyOf(ids[j])) continue;
+                    const a = segs[i];
+                    const b = segs[j];
+                    if (same(a[a.length - 1], b[0])) segs[i] = a.concat(b.slice(1));
+                    else if (same(a[a.length - 1], b[b.length - 1])) segs[i] = a.concat(b.slice(0, -1).reverse());
+                    else if (same(a[0], b[b.length - 1])) segs[i] = b.concat(a.slice(1));
+                    else if (same(a[0], b[0])) segs[i] = b.slice(1).reverse().concat(a);
+                    else continue;
+                    ids[i] = profileKeyOf(ids[i]) ? ids[i] : (profileKeyOf(ids[j]) ? ids[j] : null);
+                    segs.splice(j, 1);
+                    ids.splice(j, 1);
+                    joined = true;
+                    break outer;
+                }
+            }
+        }
+        return { segments: segs, segmentIds: ids };
+    }
+
+    // ---- Road-footprint shape conversion (moved out of road-drawing.js) ----------------------
+    // Every corridor footprint passes through here on its way to persistence. The only coupling is
+    // an `instanceof L.LatLng` probe, guarded by `typeof L !== 'undefined'`, so the branch logic —
+    // which is where a MultiPolygon footprint was once misread as polygon-with-holes and lost — is
+    // testable without Leaflet.
+
+    // Normalize a road polygon (single ring / polygon-with-holes / MultiPolygon, of LatLng objects
+    // or numeric pairs) into [lat,lng] pair rings. Returns null if it can't form a valid ring.
+    function convertRoadPolygonToLatLngPairs(polygon) {
+        if (!Array.isArray(polygon) || !polygon.length) return null;
+
+        const isLatLngObj = (p) => {
+            if (!p) return false;
+            if (typeof p.lat === 'number' && typeof p.lng === 'number') return true;
+            if (typeof L !== 'undefined' && L.LatLng && p instanceof L.LatLng) return true;
+            const lat = typeof p.lat === 'function' ? p.lat() : p.lat;
+            const lng = typeof p.lng === 'function' ? p.lng() : p.lng;
+            return typeof lat === 'number' && typeof lng === 'number' && Number.isFinite(lat) && Number.isFinite(lng);
+        };
+
+        const extractLatLng = (p) => {
+            if (!p) return null;
+            if (typeof L !== 'undefined' && L.LatLng && p instanceof L.LatLng) return [p.lat, p.lng];
+            if (typeof p.lat === 'function' && typeof p.lng === 'function') return [p.lat(), p.lng()];
+            if (typeof p.lat === 'number' && typeof p.lng === 'number') return [p.lat, p.lng];
+            return null;
+        };
+
+        const toRingPairs = (ring) => {
+            if (!Array.isArray(ring) || !ring.length) return null;
+            const pairs = [];
+            for (const entry of ring) {
+                const extracted = extractLatLng(entry);
+                if (extracted) {
+                    pairs.push(extracted);
+                    continue;
+                }
+                if (Array.isArray(entry) && entry.length >= 2) {
+                    const a = Number(entry[0]);
+                    const b = Number(entry[1]);
+                    if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
+                    // Assume [lat, lng] but swap if first looks like lng
+                    if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
+                        pairs.push([b, a]);
+                    } else {
+                        pairs.push([a, b]);
+                    }
+                }
+            }
+            if (pairs.length < 3) return null;
+            const first = pairs[0];
+            const last = pairs[pairs.length - 1];
+            if (first[0] !== last[0] || first[1] !== last[1]) {
+                pairs.push([first[0], first[1]]);
+            }
+            return pairs.length >= 4 ? pairs : null;
+        };
+
+        // MultiPolygon FIRST: [ [ring, hole...], [ring, ...], ... ].
+        //
+        // This has to be tested before polygon-with-holes, and it has to accept rings made of LatLng
+        // OBJECTS, not just numeric pairs. combineRoadPolygons produces exactly that shape whenever the
+        // footprint is DISJOINT — which is what a corridor tunnelled through its MIDDLE is: two surface
+        // runs, one either side of the tunnel. The old order matched such a footprint as a
+        // polygon-with-holes, tried to read each ring as a coordinate pair, produced NaN, and returned
+        // null. Every consumer then silently lost the footprint: the 3D view carved nothing at all for
+        // a mid-corridor tunnel, and parcel parents under the tunnel were never re-derived.
+        //
+        // The giveaway is depth: in a MultiPolygon, polygon[0][0] is itself a list of POINTS (one level
+        // deeper than in a polygon-with-holes, where polygon[0][0] IS a point).
+        const isPoint = (value) => isLatLngObj(value)
+            || (Array.isArray(value) && value.length >= 2 && typeof value[0] === 'number');
+        if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && isPoint(polygon[0][0][0])) {
+            const polys = polygon
+                .map(poly => Array.isArray(poly) ? poly.map(toRingPairs).filter(Boolean) : [])
+                .filter(rings => rings.length);
+            return polys.length ? polys : null;
+        }
+
+        // Polygon with holes: [ring, hole1, ...]
+        if (Array.isArray(polygon[0]) && polygon[0].length) {
+            const firstRing = polygon[0];
+            if (isLatLngObj(firstRing[0]) || (Array.isArray(firstRing[0]) && firstRing[0].length >= 2)) {
+                const rings = polygon.map(toRingPairs).filter(Boolean);
+                return rings.length ? rings : null;
+            }
+        }
+
+        // Single ring
+        if (isLatLngObj(polygon[0]) || (Array.isArray(polygon[0]) && polygon[0].length >= 2)) {
+            return toRingPairs(polygon);
+        }
+
+        // (The MultiPolygon case is handled at the top — it must be tested before polygon-with-holes.)
+        return null;
+    }
+
+    // [lat,lng] pair rings → a GeoJSON Polygon/MultiPolygon ([lng,lat] order).
+    function convertLatLngPairsToGeoJSON(pairs) {
+        if (!Array.isArray(pairs) || pairs.length === 0) return null;
+
+        const toLngLatRing = (ring) => {
+            if (!Array.isArray(ring)) return null;
+            const coords = ring
+                .map(entry => {
+                    if (!entry || !Array.isArray(entry) || entry.length < 2) return null;
+                    const lat = Number(entry[0]);
+                    const lng = Number(entry[1]);
+                    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                    return [lng, lat];
+                })
+                .filter(Boolean);
+            return coords.length >= 4 ? coords : null;
+        };
+
+        // MultiPolygon
+        if (Array.isArray(pairs[0]) && Array.isArray(pairs[0][0]) && Array.isArray(pairs[0][0][0])) {
+            const polygons = pairs
+                .map(poly => Array.isArray(poly) ? poly.map(toLngLatRing).filter(Boolean) : [])
+                .filter(rings => rings.length);
+            return polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null;
+        }
+
+        // Polygon with holes
+        if (Array.isArray(pairs[0]) && Array.isArray(pairs[0][0]) && typeof pairs[0][0][0] === 'number') {
+            const rings = pairs.map(toLngLatRing).filter(Boolean);
+            return rings.length ? { type: 'Polygon', coordinates: rings } : null;
+        }
+
+        // Ring only
+        if (Array.isArray(pairs[0]) && typeof pairs[0][0] === 'number') {
+            const ring = toLngLatRing(pairs);
+            return ring ? { type: 'Polygon', coordinates: [ring] } : null;
+        }
+
+        return null;
+    }
+
+    function isValidPolygonLatLngPairs(polygon) {
+        if (!Array.isArray(polygon) || polygon.length === 0) return false;
+
+        // Ring: [ [lat,lng], ... ]
+        if (Array.isArray(polygon[0]) && polygon[0].length >= 2 && Number.isFinite(Number(polygon[0][0])) && Number.isFinite(Number(polygon[0][1]))) {
+            return polygon.length >= 3;
+        }
+
+        // Polygon with holes: [ ring, hole... ]
+        if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0])) {
+            const ring = polygon[0];
+            if (Array.isArray(ring[0]) && ring[0].length >= 2 && Number.isFinite(Number(ring[0][0])) && Number.isFinite(Number(ring[0][1]))) {
+                return ring.length >= 3;
+            }
+        }
+
+        // MultiPolygon: [ [rings...], [rings...] ... ]
+        if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && Array.isArray(polygon[0][0][0])) {
+            for (const poly of polygon) {
+                if (!Array.isArray(poly) || poly.length === 0) continue;
+                const outer = poly[0];
+                if (Array.isArray(outer) && outer.length >= 3) return true;
+            }
+        }
+
+        return false;
+    }
+
+    const api = {
+        createRectangularRoadSegment,
+        isValidHtrsPoint,
+        planarSegmentIntersection,
+        insertCorridorCrossingNodes,
+        corridorConnectedComponents,
+        centerlinesTouch,
+        segmentsIntersect,
+        polylineHasSelfIntersection,
+        weldCorridorSegments,
+        convertRoadPolygonToLatLngPairs,
+        convertLatLngPairsToGeoJSON,
+        isValidPolygonLatLngPairs
+    };
 
     if (typeof window !== 'undefined') {
         window.CorridorGeometry = api;
         window.createRectangularRoadSegment = createRectangularRoadSegment;
+        window.planarSegmentIntersection = planarSegmentIntersection;
+        window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
+        window.corridorConnectedComponents = corridorConnectedComponents;
+        window.centerlinesTouch = centerlinesTouch;
+        window.segmentsIntersect = segmentsIntersect;
+        window.polylineHasSelfIntersection = polylineHasSelfIntersection;
+        window.weldCorridorSegments = weldCorridorSegments;
+        window.convertRoadPolygonToLatLngPairs = convertRoadPolygonToLatLngPairs;
+        window.convertLatLngPairsToGeoJSON = convertLatLngPairsToGeoJSON;
+        window.isValidPolygonLatLngPairs = isValidPolygonLatLngPairs;
     }
 
     if (typeof module !== 'undefined' && module.exports) {

@@ -6,7 +6,19 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { createRectangularRoadSegment } = require('../../frontend/js/corridor-geometry.js');
+const {
+    createRectangularRoadSegment,
+    planarSegmentIntersection,
+    insertCorridorCrossingNodes,
+    corridorConnectedComponents,
+    centerlinesTouch,
+    segmentsIntersect,
+    polylineHasSelfIntersection,
+    weldCorridorSegments,
+    convertRoadPolygonToLatLngPairs,
+    convertLatLngPairsToGeoJSON,
+    isValidPolygonLatLngPairs
+} = require('../../frontend/js/corridor-geometry.js');
 
 // Identity-ish projection: treat (lat,lng) as (x=lng, y=lat) metres and back. Enough to exercise
 // the geometry deterministically without proj4.
@@ -59,5 +71,177 @@ describe('createRectangularRoadSegment', () => {
 
     it('returns null when projection functions are unavailable', () => {
         expect(createRectangularRoadSegment({ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, 4, {})).toBeNull();
+    });
+});
+
+const P = (lat, lng) => ({ lat, lng });
+
+describe('planarSegmentIntersection', () => {
+    it('finds the crossing of two segments that cross', () => {
+        const x = planarSegmentIntersection(P(0, 0), P(0, 10), P(-5, 5), P(5, 5));
+        expect(x.lat).toBeCloseTo(0, 9);
+        expect(x.lng).toBeCloseTo(5, 9);
+    });
+    it('returns null for parallel / disjoint segments', () => {
+        expect(planarSegmentIntersection(P(0, 0), P(0, 10), P(1, 0), P(1, 10))).toBeNull();
+        expect(planarSegmentIntersection(P(0, 0), P(0, 1), P(0, 5), P(0, 6))).toBeNull();
+    });
+});
+
+describe('insertCorridorCrossingNodes', () => {
+    it('inserts a shared vertex into both segments at a crossing', () => {
+        const segs = [[P(0, -5), P(0, 5)], [P(-5, 0), P(5, 0)]];
+        insertCorridorCrossingNodes(segs, [1, 2]);
+        // Each segment should now contain the (0,0) crossing vertex.
+        expect(segs[0].some(p => Math.abs(p.lat) < 1e-9 && Math.abs(p.lng) < 1e-9)).toBe(true);
+        expect(segs[1].some(p => Math.abs(p.lat) < 1e-9 && Math.abs(p.lng) < 1e-9)).toBe(true);
+    });
+
+    it('inserts NOTHING into a protected (tunnelled) edge (the destructive-orphan guard)', () => {
+        // Provide corridorTunnelEdgeKey so protection is active, and protect segment 1's edge.
+        global.corridorTunnelEdgeKey = (a, b) =>
+            `${a.lat},${a.lng}|${b.lat},${b.lng}`;
+        const protectedKey = global.corridorTunnelEdgeKey(P(0, -5), P(0, 5));
+        const segs = [[P(0, -5), P(0, 5)], [P(-5, 0), P(5, 0)]];
+        const before = segs[0].length;
+        insertCorridorCrossingNodes(segs, [1, 2], new Set([protectedKey]));
+        expect(segs[0].length).toBe(before); // protected edge untouched
+        delete global.corridorTunnelEdgeKey;
+    });
+});
+
+describe('corridorConnectedComponents', () => {
+    it('groups segments sharing a vertex and splits disjoint ones', () => {
+        // Two touching segments (share (0,0)) + one disjoint far away.
+        const segs = [[P(0, 0), P(0, 1)], [P(0, 0), P(1, 0)], [P(9, 9), P(9, 10)]];
+        const comps = corridorConnectedComponents(segs, ['a', 'b', 'c']);
+        expect(comps).toHaveLength(2);
+        const sizes = comps.map(c => c.segments.length).sort();
+        expect(sizes).toEqual([1, 2]);
+    });
+
+    it('carries each body its own segmentIds', () => {
+        const segs = [[P(0, 0), P(0, 1)], [P(5, 5), P(5, 6)]];
+        const comps = corridorConnectedComponents(segs, ['x', 'y']);
+        const idSets = comps.map(c => c.segmentIds.join(''));
+        expect(idSets.sort()).toEqual(['x', 'y']);
+    });
+});
+
+describe('centerlinesTouch', () => {
+    it('is true when centerlines share a vertex or cross, false when merely parallel', () => {
+        expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(0, 5), P(5, 5)]])).toBe(true); // shared vertex
+        expect(centerlinesTouch([[P(0, -5), P(0, 5)]], [[P(-5, 0), P(5, 0)]])).toBe(true); // crossing
+        expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(1, 0), P(1, 5)]])).toBe(false); // parallel
+    });
+});
+
+describe('segmentsIntersect (planar {x,y})', () => {
+    const Q = (x, y) => ({ x, y });
+    it('detects a genuine crossing and rejects a miss', () => {
+        expect(segmentsIntersect(Q(0, 0), Q(10, 10), Q(0, 10), Q(10, 0))).toBe(true);
+        expect(segmentsIntersect(Q(0, 0), Q(1, 1), Q(5, 5), Q(6, 6))).toBe(false);
+    });
+});
+
+describe('polylineHasSelfIntersection', () => {
+    const proj = { wgs84ToHTRS96: (lat, lng) => [lng, lat] };
+    it('flags a bowtie centerline and clears a simple one', () => {
+        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
+        // A self-crossing "bowtie": (0,0)->(2,2)->(0,2)->(2,0)
+        const bowtie = [P(0, 0), P(2, 2), P(2, 0), P(0, 2)];
+        expect(polylineHasSelfIntersection(bowtie)).toBe(true);
+        // A simple open path
+        const simple = [P(0, 0), P(0, 1), P(0, 2), P(0, 3)];
+        expect(polylineHasSelfIntersection(simple)).toBe(false);
+        delete global.wgs84ToHTRS96;
+    });
+});
+
+describe('weldCorridorSegments', () => {
+    it('welds two segments sharing an endpoint into one and keeps counts aligned', () => {
+        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
+        const out = weldCorridorSegments(segs, ['a', 'b']);
+        expect(out.segments).toHaveLength(1);
+        expect(out.segmentIds).toHaveLength(1); // length invariant
+        expect(out.segments[0]).toHaveLength(3); // shared vertex not duplicated
+    });
+
+    it('keeps segments with DIFFERENT profiles separate', () => {
+        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
+        const profiles = { a: { width: 4 }, b: { width: 8 } };
+        const out = weldCorridorSegments(segs, ['a', 'b'], profiles);
+        expect(out.segments).toHaveLength(2); // different cross-sections don't weld
+    });
+
+    it('preserves a profile override carried by the SECOND segment', () => {
+        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
+        // Only the second segment carries a profile; both must share the same key to weld, so give
+        // both the same override and confirm the surviving id is the one that carries it.
+        const profiles = { b: { width: 6 }, a: { width: 6 } };
+        const out = weldCorridorSegments(segs, ['a', 'b'], profiles);
+        expect(out.segments).toHaveLength(1);
+        expect(out.segmentIds[0]).toBeTruthy(); // an id carrying the override survives, not null
+    });
+});
+
+describe('convertRoadPolygonToLatLngPairs', () => {
+    it('converts a single ring of {lat,lng} objects to [lat,lng] pairs and closes it', () => {
+        const ring = [{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, { lat: 1, lng: 1 }];
+        const out = convertRoadPolygonToLatLngPairs(ring);
+        expect(out[0]).toEqual([0, 0]);
+        expect(out[out.length - 1]).toEqual(out[0]); // closed
+        expect(out.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('keeps a DISJOINT MultiPolygon of LatLng objects as a MultiPolygon (the tunnel-through-middle bug)', () => {
+        // Two disjoint surface runs (what a corridor tunnelled through its middle produces), as
+        // rings of {lat,lng} objects. The old order misread this as polygon-with-holes → null.
+        const runA = [{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, { lat: 1, lng: 1 }, { lat: 1, lng: 0 }];
+        const runB = [{ lat: 0, lng: 5 }, { lat: 0, lng: 6 }, { lat: 1, lng: 6 }, { lat: 1, lng: 5 }];
+        const multi = [[runA], [runB]];
+        const out = convertRoadPolygonToLatLngPairs(multi);
+        expect(out).not.toBeNull();
+        expect(out).toHaveLength(2);      // two polygons preserved, not collapsed to null
+        expect(out[0][0]).toHaveLength(5); // ring of pairs, closed
+    });
+
+    it('returns null for junk', () => {
+        expect(convertRoadPolygonToLatLngPairs(null)).toBeNull();
+        expect(convertRoadPolygonToLatLngPairs([])).toBeNull();
+    });
+});
+
+describe('convertLatLngPairsToGeoJSON', () => {
+    it('emits a Polygon in [lng,lat] order from a single ring', () => {
+        const pairs = [[0, 0], [0, 1], [1, 1], [0, 0]];
+        const geo = convertLatLngPairsToGeoJSON(pairs);
+        expect(geo.type).toBe('Polygon');
+        expect(geo.coordinates[0][0]).toEqual([0, 0]); // [lng,lat]
+    });
+
+    it('emits a MultiPolygon from disjoint runs', () => {
+        const a = [[0, 0], [1, 0], [1, 1], [0, 0]];
+        const b = [[5, 0], [6, 0], [6, 1], [5, 0]];
+        const geo = convertLatLngPairsToGeoJSON([[a], [b]]);
+        expect(geo.type).toBe('MultiPolygon');
+        expect(geo.coordinates).toHaveLength(2);
+    });
+
+    it('round-trips a ring through pairs → geojson', () => {
+        const ring = [{ lat: 0, lng: 0 }, { lat: 0, lng: 2 }, { lat: 2, lng: 2 }, { lat: 2, lng: 0 }];
+        const geo = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(ring));
+        expect(geo.type).toBe('Polygon');
+        expect(geo.coordinates[0].length).toBeGreaterThanOrEqual(4);
+    });
+});
+
+describe('isValidPolygonLatLngPairs', () => {
+    it('accepts rings, polygons-with-holes and multipolygons; rejects junk', () => {
+        expect(isValidPolygonLatLngPairs([[0, 0], [0, 1], [1, 1]])).toBe(true);
+        expect(isValidPolygonLatLngPairs([[[0, 0], [0, 1], [1, 1]]])).toBe(true); // holes shape
+        expect(isValidPolygonLatLngPairs([[[[0, 0], [0, 1], [1, 1]]]])).toBe(true); // multipolygon
+        expect(isValidPolygonLatLngPairs([])).toBe(false);
+        expect(isValidPolygonLatLngPairs(null)).toBe(false);
     });
 });

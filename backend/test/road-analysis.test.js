@@ -10,7 +10,9 @@ const {
     findIntersections,
     lineIntersection,
     isPointInPolygon,
-    closestPointOnLineSegment
+    closestPointOnLineSegment,
+    filterWidthOutliers,
+    createRoadWidthHistogramBuckets
 } = require('../../frontend/js/road-analysis.js');
 
 describe('lineIntersection', () => {
@@ -97,5 +99,50 @@ describe('closestPointOnLineSegment', () => {
 
     it('returns the segment point when the segment is degenerate', () => {
         expect(closestPointOnLineSegment([5, 5], [2, 2], [2, 2])).toEqual([2, 2]);
+    });
+});
+
+describe('filterWidthOutliers', () => {
+    const emptyMeta = (n) => ({ positions: Array(n).fill(null), widthLines: Array(n).fill(null), segment: null });
+
+    it('passes through small samples (< 3) with basic stats', () => {
+        const out = filterWidthOutliers({ widths: [3, 4], ...emptyMeta(2) });
+        expect(out.avgWidth).toBe(3.5);
+        expect(out.minWidth).toBe(3);
+        expect(out.maxWidth).toBe(4);
+        expect(out.outlierPercentage).toBe(0);
+    });
+
+    it('drops a high outlier so the average reflects the real road', () => {
+        // A cluster around 3 m with one absurd 30 m reading — the 30 must be rejected.
+        const widths = [3, 3.1, 3.2, 3.0, 3.1, 2.9, 3.0, 30];
+        const out = filterWidthOutliers({ widths, ...emptyMeta(widths.length) });
+        expect(out.filteredWidths).not.toContain(30);
+        expect(out.avgWidth).toBeLessThan(4);
+        expect(out.outlierPercentage).toBeGreaterThan(0);
+    });
+
+    it('keeps a tight distribution intact (no false outliers)', () => {
+        const widths = [3, 3.1, 3.2, 3.0, 3.1, 2.9];
+        const out = filterWidthOutliers({ widths, ...emptyMeta(widths.length) });
+        expect(out.filteredWidths).toHaveLength(widths.length);
+        expect(out.outlierPercentage).toBe(0);
+    });
+});
+
+describe('createRoadWidthHistogramBuckets', () => {
+    it('covers 0..maxWidth in steps plus an overflow bucket', () => {
+        const buckets = createRoadWidthHistogramBuckets(1, 0.5);
+        // 0-0.5, 0.5-1, then the "1+ " overflow
+        expect(buckets).toHaveLength(3);
+        expect(buckets[0]).toMatchObject({ min: 0, max: 0.5 });
+        expect(buckets[buckets.length - 1]).toMatchObject({ min: 1, max: Infinity });
+    });
+
+    it('every non-overflow bucket is contiguous with the next', () => {
+        const buckets = createRoadWidthHistogramBuckets(2, 0.5);
+        for (let i = 0; i < buckets.length - 2; i++) {
+            expect(buckets[i].max).toBeCloseTo(buckets[i + 1].min, 6);
+        }
     });
 });

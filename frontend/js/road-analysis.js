@@ -2499,6 +2499,9 @@ if (typeof module !== 'undefined' && module.exports) {
         findIntersections,
         lineIntersection,
         isPointInPolygon,
-        closestPointOnLineSegment
+        closestPointOnLineSegment,
+        filterWidthOutliers,
+        createRoadWidthHistogramBuckets,
+        formatWidthBucketValue
     };
 }
