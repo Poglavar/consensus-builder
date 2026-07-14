@@ -535,6 +535,15 @@ export function setupProposalsRoute(app, pool) {
                 -- road / ...); type is the lossy backend column. Serving goal here stops the client
                 -- re-deriving it from type and mis-badging building/structure/parcel rows.
                 COALESCE(proposal_data->>'goal', type) AS goal,
+                -- The stored status is whatever browser last wrote; a proposal past expires_at can
+                -- still read 'Active'. Derive the effective status server-side so every client
+                -- agrees (case-insensitive — the DB carries both 'Executed' and 'executed').
+                CASE
+                    WHEN LOWER(COALESCE(status, '')) NOT IN ('executed', 'cancelled', 'expired')
+                        AND expires_at IS NOT NULL AND expires_at <= now()
+                    THEN 'Expired'
+                    ELSE status
+                END AS effective_status,
                 status,
                 created_at,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
@@ -553,7 +562,9 @@ export function setupProposalsRoute(app, pool) {
                 author: row.author || null,
                 type: row.type || null,
                 goal: row.goal || null,
-                status: row.status || null,
+                // Prefer the server-derived effective status (expired proposals read 'Expired'
+                // even if the stored value is stale).
+                status: row.effective_status || row.status || null,
                 createdAt: row.created_at ? row.created_at.toISOString() : null,
                 screenshotUrl: row.screenshot_url || null
             }));

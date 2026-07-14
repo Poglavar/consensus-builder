@@ -1011,6 +1011,23 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].sql).toMatch(/AS goal/);
     });
 
+    it('reports the server-derived effective status (expired reads Expired, not the stale value)', async () => {
+        pool.setResult({
+            rows: [
+                summaryDbRow({ id: 1, proposal_id: 'p-1', status: 'Active', effective_status: 'Expired' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', status: 'Active', effective_status: 'Active' }),
+            ],
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(p => p.status)).toEqual(['Expired', 'Active']);
+        // The SELECT must derive it server-side.
+        expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
+        expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
+    });
+
     it('prefers display_title when display_name is absent', async () => {
         pool.setResult({
             rows: [{
