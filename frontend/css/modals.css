@@ -4236,18 +4236,22 @@
         flex: 0 0 auto;
     }
     
+    /* The 2D map and 3D preview both capture touch (pan/zoom), so the page can only be scrolled by
+       dragging on a non-map area. Size them so header + map + 3D leave the top of the slider section
+       peeking below the fold: that peek is the scroll grip. No margin "strip" between them — the strip
+       was the old, fiddly scroll handle this replaces. */
     #blockify-map {
         order: 2;
         flex: 0 0 auto;
-        height: 40vh;
-        min-height: 200px;
-        margin-bottom: 40px; /* Space for scrolling */
+        height: 36vh;
+        min-height: 180px;
     }
-    
+
     #blockify-3d {
         order: 3;
         flex: 0 0 auto;
-        height: 250px;
+        height: 28vh;
+        min-height: 160px;
     }
     
     #blockify-sidebar {
@@ -4558,17 +4562,20 @@
         flex: 0 0 auto;
     }
 
+    /* Same as blockify: size map + 3D so the slider section peeks below the fold and becomes the
+       scroll grip, rather than relying on a margin "strip" between two touch-capturing views. */
     #rowhouse-map {
         order: 2;
         flex: 0 0 auto;
+        height: 36vh;
         min-height: 180px;
-        margin-bottom: 40px; /* Space for scrolling */
     }
 
     #rowhouse-3d {
         order: 3;
         flex: 0 0 auto;
-        height: 200px;
+        height: 26vh;
+        min-height: 150px;
     }
 
     #rowhouse-sidebar {

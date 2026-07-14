@@ -1923,7 +1923,38 @@
     }
 
     // Save design for proposal
-    function saveRowHouseDesignForProposal() {
+    // Gentle nudge before proposing row houses across parcels that vary a lot in size/shape. Returns
+    // true to proceed (similar enough, user accepted, or measurement/confirm unavailable), false only
+    // when the user backs out. Never throws — a warning must not block a valid save.
+    async function confirmRowHouseParcelSimilarity(block) {
+        try {
+            if (typeof window === 'undefined' || typeof window.ProposalWarnings === 'undefined'
+                || typeof turf === 'undefined' || typeof window.showStyledConfirm !== 'function') return true;
+            const measured = (block.parcels || []).map(parcel => {
+                const feature = parcel && parcel.feature;
+                if (!feature || !feature.geometry) return null;
+                try {
+                    return { area: turf.area(feature), perimeter: turf.length(feature, { units: 'kilometers' }) * 1000 };
+                } catch (_) { return null; }
+            }).filter(Boolean);
+            const assessment = window.ProposalWarnings.assessRowHouseSimilarity(measured);
+            if (!assessment.dissimilar) return true;
+            const message = translateRowHouseText(
+                'rowHouses.modal.warnings.dissimilarParcels',
+                'Row houses can be defined on any parcels, but the {{count}} selected parcels vary a lot in size and shape. It will still work — row houses typically sit on similar-sized, similar-shaped parcels. Do you want to proceed?',
+                { count: assessment.count }
+            );
+            return await window.showStyledConfirm(message, {
+                okText: translateRowHouseText('rowHouses.modal.warnings.proceed', 'Proceed anyway'),
+                cancelText: translateRowHouseText('rowHouses.modal.warnings.cancel', 'Go back')
+            });
+        } catch (err) {
+            console.warn('[row-house] parcel-similarity check failed', err);
+            return true;
+        }
+    }
+
+    async function saveRowHouseDesignForProposal() {
         if (!generatedRowHouseFeature) {
             setRowHouseInfo('rowHouses.modal.messages.generateBeforeFinishing', 'Generate a row house before finishing.');
             return;
@@ -1934,6 +1965,8 @@
             setRowHouseInfo('rowHouses.modal.messages.blockHasNoParcels', 'Block has no parcels.');
             return;
         }
+
+        if (!(await confirmRowHouseParcelSimilarity(block))) return;
 
         const parentDetails = [];
         const normalizedParcelIds = [];

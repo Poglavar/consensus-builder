@@ -47,6 +47,7 @@ let blockifyLiveLayer = null;    // transient dashed outline shown while draggin
 // parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
 let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
+let manualBuildSucceeded = false; // has any manual build produced a shape? gates the trapped-state recovery
 // Design to restore when the modal next opens, instead of starting from the defaults. Set by
 // openUrbanRuleForParcels({ initialState }) — used by "Copy into new proposal" so a fork reopens
 // the editor showing the original design, with every control live. Consumed once, then cleared.
@@ -639,7 +640,9 @@ function showErrorPopup(message) {
     modal.style.display = 'flex';
     modal.style.justifyContent = 'center';
     modal.style.alignItems = 'center';
-    modal.style.zIndex = '2000';
+    // Must sit ABOVE the blockify/urban-rule modal (z-index 12050) — at the old 2000 this "too
+    // complex" dialog rendered behind the editor, so the user only saw it after closing the editor.
+    modal.style.zIndex = '30050';
 
     // Create modal content
     const modalContent = document.createElement('div');
@@ -2329,6 +2332,53 @@ function simplifyAndClipOutline(feature, simplifyM, parcel) {
     return outline;
 }
 
+// The most vertices a manually-editable outline may carry. Manual mode drops a draggable handle on
+// every vertex, so the raw parametric outline (a negative buffer rounds every corner into
+// GEOM_BUFFER_STEPS segments — a big block's ring runs to tens of thousands of points) is unusable:
+// the browser would try to create that many Leaflet markers and freeze. This is the editable budget.
+const MANUAL_MAX_VERTICES = 60;
+
+// Reduce a [lng,lat] ring to at most `target` vertices by raising the Douglas–Peucker tolerance until
+// it fits (binary search on tolerance in metres). Rings already within budget are returned untouched
+// so a small parcel keeps its exact corners. Returns a ring (open — no closing dup); on any failure
+// returns the input unchanged so manual mode still gets *something* to edit.
+function simplifyRingToVertexTarget(ring, target = MANUAL_MAX_VERTICES) {
+    if (!Array.isArray(ring) || ring.length <= target) return ring;
+    try {
+        const closed = ring.slice();
+        const f = closed[0], l = closed[closed.length - 1];
+        if (!l || f[0] !== l[0] || f[1] !== l[1]) closed.push([f[0], f[1]]);
+        const feature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [closed] } };
+
+        let best = null;
+        let lo = 0.25, hi = 50; // metres
+        for (let i = 0; i < 18; i++) {
+            const mid = (lo + hi) / 2;
+            let simplified;
+            try {
+                simplified = turf.simplify(feature, { tolerance: mid / 111320, highQuality: false, mutate: false });
+            } catch (_) { break; }
+            const coords = simplified && simplified.geometry && simplified.geometry.coordinates[0];
+            const n = Array.isArray(coords) ? coords.length : Infinity;
+            if (n > target) {
+                lo = mid; // still too many → simplify harder
+            } else {
+                best = coords;
+                hi = mid; // fits → try to keep more detail
+            }
+        }
+        if (Array.isArray(best) && best.length >= 4) {
+            const out = best.map(c => [c[0], c[1]]);
+            const of = out[0], ol = out[out.length - 1];
+            if (ol && of[0] === ol[0] && of[1] === ol[1]) out.pop(); // drop closing dup
+            return out;
+        }
+    } catch (err) {
+        console.warn('Ring simplification to vertex target failed', err);
+    }
+    return ring;
+}
+
 // Resize a positions array (fractions 0..1 along the ring) to `count`, preserving existing entries:
 // remove from the end when shrinking, and when growing insert each new one at the middle of the
 // currently-largest free span so additions spread out. Used to keep gap/wing placement in sync with
@@ -3164,10 +3214,22 @@ function enterManualMode() {
         const f = ring[0], l = ring[ring.length - 1];
         if (l && f[0] === l[0] && f[1] === l[1]) ring.pop();
     }
-    manualOuterRing = ring.map(c => [c[0], c[1]]);
+    // Cap the handle count: a large block's outline carries tens of thousands of vertices, which would
+    // make manual mode drop that many draggable markers (a tab-freezing amount) and leaves nothing a
+    // person could actually drag. Simplify to an editable budget first; the subsequent build re-clips
+    // it inside the parcel so the simplification can't push an edge out.
+    const rawVertices = ring.length;
+    manualOuterRing = simplifyRingToVertexTarget(ring.map(c => [c[0], c[1]]));
+    manualBuildSucceeded = false;
     setFootprintSlidersEnabled(false);
     updateManualToggleLabel();
-    setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+    if (rawVertices > manualOuterRing.length) {
+        setBlockifyInfo('blockify.modal.manual.hintSimplified',
+            'Manual mode: outline simplified to {{count}} draggable points so you can reshape it. Drag any point; height stays adjustable.',
+            { count: manualOuterRing.length });
+    } else {
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+    }
     generateManualBuilding();
 }
 
@@ -3481,6 +3543,7 @@ function generateManualBuilding() {
         }
 
         generatedBuildingFeature = buildingFeature;
+        manualBuildSucceeded = true;
         displayBuildingInModal(buildingFeature);
         renderManualVertexHandles();
 
@@ -3488,6 +3551,23 @@ function generateManualBuilding() {
         if (doneButton) doneButton.disabled = false;
     } catch (err) {
         console.error('Manual building generation failed:', err);
+        // If the outline was never buildable in the first place (the failure happened on entry, before
+        // any successful manual build), don't strand the user in a manual mode with dead sliders and an
+        // unactionable "move the vertex back" — there's no good vertex to move back to. Drop straight
+        // back to the parametric sliders, which produced a working shape, and say why.
+        if (!manualBuildSucceeded) {
+            blockifyMode = 'parametric';
+            manualOuterRing = [];
+            setFootprintSlidersEnabled(true);
+            updateManualToggleLabel();
+            clearGapWingHandles();
+            setBlockifyInfo('blockify.modal.manual.entryFailed',
+                'This outline is too complex to edit by hand — back to the sliders. Tip: raise "Simplify (m)" to smooth it, then try editing again.');
+            try { generateBuildingInModal(); } catch (_) { }
+            return;
+        }
+        // Mid-edit failure (a bad drag off a previously-good shape): the vertex-back hint is right, and
+        // the last good shape is still on screen.
         setBlockifyInfo('blockify.modal.manual.error', 'Could not build from the manual outline. Try moving the vertex back.');
     }
 }
@@ -3699,7 +3779,38 @@ window.openUrbanRuleForParcels = openUrbanRuleForParcels;
 window.openBlockifyForParcels = openBlockifyForParcels;
 
 // Function to capture current blockify configuration for later proposal creation
-function saveBlockifyDesignForProposal() {
+// Measure the block footprint and, if it's larger than the recommended size, ask the user to confirm.
+// Returns true to proceed (not oversized, user accepted, or the measurement/confirm was unavailable),
+// false only when the user actively backs out. Never throws — a warning must not block a valid save.
+async function confirmBlockSizeIfOversized(block) {
+    try {
+        if (typeof ProposalWarnings === 'undefined' || typeof turf === 'undefined') return true;
+        let outline = (lastSuperparcel && lastSuperparcel.geometry) ? lastSuperparcel : null;
+        if (!outline && block && Array.isArray(block.parcels)) {
+            outline = robustUnion(block.parcels.map(p => p && p.feature).filter(Boolean));
+        }
+        if (!outline || !outline.geometry) return true;
+        const perimeterM = turf.length(outline, { units: 'kilometers' }) * 1000;
+        const assessment = ProposalWarnings.assessBlockSize(perimeterM);
+        if (!assessment.oversized) return true;
+        const confirmFn = (typeof window !== 'undefined') ? window.showStyledConfirm : null;
+        if (typeof confirmFn !== 'function') return true; // no styled confirm → don't stand in the way
+        const message = translateBuildingText(
+            'blockify.modal.warnings.oversizedBlock',
+            'This block is large — walking around it would take about {{minutes}} minutes. Recommended blocks are between 50×50 m and 200×200 m, so they can be walked around in about 2½ to 10 minutes. Do you want to proceed?',
+            { minutes: assessment.roundedMinutes }
+        );
+        return await confirmFn(message, {
+            okText: translateBuildingText('blockify.modal.warnings.proceed', 'Proceed anyway'),
+            cancelText: translateBuildingText('blockify.modal.warnings.cancel', 'Go back')
+        });
+    } catch (err) {
+        console.warn('[blockify] oversized-block check failed', err);
+        return true;
+    }
+}
+
+async function saveBlockifyDesignForProposal() {
     const existingModeFeatures = (blockifyMode === 'existing' && Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length)
         ? generatedBuildingFeatures
         : null;
@@ -3715,6 +3826,10 @@ function saveBlockifyDesignForProposal() {
         if (info) setBlockifyInfo('blockify.modal.messages.blockHasNoParcels', 'Block has no parcels.');
         return;
     }
+
+    // Gentle nudge before committing an oversized block: quote how long it would take to walk around
+    // and let the user proceed anyway. Best-effort — a measurement hiccup must never block the save.
+    if (!(await confirmBlockSizeIfOversized(block))) return;
 
     const parentDetails = [];
     const normalizedParcelIds = [];

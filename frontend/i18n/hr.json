@@ -1937,13 +1937,20 @@
                 "loadFailed": "Učitavanje postojećih zgrada nije uspjelo. Pokušajte ponovno.",
                 "summary": "Povisuje se {{count}} od {{total}} postojećih zgrada."
             },
+            "warnings": {
+                "oversizedBlock": "Ovaj blok je velik — obilazak pješice trajao bi oko {{minutes}} minuta. Preporučeni blokovi su između 50×50 m i 200×200 m, tako da se mogu obići za otprilike 2½ do 10 minuta. Želite li nastaviti?",
+                "proceed": "Ipak nastavi",
+                "cancel": "Natrag"
+            },
             "manual": {
                 "edit": "Ručno uredi oblik",
                 "back": "Natrag na klizače",
                 "hint": "Ručni način: povucite vrhove za promjenu obrisa. Visina se i dalje može podešavati.",
+                "hintSimplified": "Ručni način: obris je pojednostavljen na {{count}} točaka koje se povlače kako biste ga oblikovali. Povucite bilo koju točku; visina se i dalje može podešavati.",
                 "needShape": "Prvo generirajte oblik klizačima, zatim ga uredite ručno.",
                 "confirmReset": "Odbaciti ručne izmjene i vratiti se na klizače?",
                 "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte vratiti vrh.",
+                "entryFailed": "Ovaj obris je prekompleksan za ručno uređivanje — natrag na klizače. Savjet: povećajte „Pojednostavi (m)“ da ga izgladite, zatim pokušajte ponovno.",
                 "vertex": "Povucite za oblikovanje",
                 "uploadGeojson": "Učitaj GeoJSON",
                 "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
@@ -1982,6 +1989,11 @@
                 "selectedParcels": "Odabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela"
+            },
+            "warnings": {
+                "dissimilarParcels": "Kuće u nizu mogu se definirati na bilo kojim parcelama, ali {{count}} odabranih parcela znatno se razlikuju po veličini i obliku. I dalje će raditi — kuće u nizu obično idu na parcele sličnih veličina i oblika. Želite li nastaviti?",
+                "proceed": "Ipak nastavi",
+                "cancel": "Natrag"
             }
         }
     },

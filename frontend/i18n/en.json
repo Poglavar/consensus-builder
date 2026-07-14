@@ -1907,13 +1907,20 @@
                 "loadFailed": "Could not load existing buildings. Try again.",
                 "summary": "Raising {{count}} of {{total}} existing buildings."
             },
+            "warnings": {
+                "oversizedBlock": "This block is large — walking around it would take about {{minutes}} minutes. Recommended blocks are between 50×50 m and 200×200 m, so they can be walked around in about 2½ to 10 minutes. Do you want to proceed?",
+                "proceed": "Proceed anyway",
+                "cancel": "Go back"
+            },
             "manual": {
                 "edit": "Edit shape manually",
                 "back": "Back to sliders",
                 "hint": "Manual mode: drag the vertices to reshape the outline. Height stays adjustable.",
+                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points so you can reshape it. Drag any point; height stays adjustable.",
                 "needShape": "Generate a shape with the sliders first, then edit it manually.",
                 "confirmReset": "Discard manual edits and go back to the sliders?",
                 "error": "Could not build from the manual outline. Try moving the vertex back.",
+                "entryFailed": "This outline is too complex to edit by hand — back to the sliders. Tip: raise \"Simplify (m)\" to smooth it, then try editing again.",
                 "vertex": "Drag to reshape",
                 "uploadGeojson": "Upload GeoJSON",
                 "uploadNoPolygon": "No usable polygon found in that file.",
@@ -1952,6 +1959,11 @@
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} Parcels"
+            },
+            "warnings": {
+                "dissimilarParcels": "Row houses can be defined on any parcels, but the {{count}} selected parcels vary a lot in size and shape. It will still work — row houses typically sit on similar-sized, similar-shaped parcels. Do you want to proceed?",
+                "proceed": "Proceed anyway",
+                "cancel": "Go back"
             }
         }
     },

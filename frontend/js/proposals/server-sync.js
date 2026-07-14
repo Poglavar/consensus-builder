@@ -43,6 +43,10 @@ function normalizeServerProposalSummary(raw, cityCode) {
         status: raw.status || 'Active',
         createdAt: raw.createdAt || raw.created_at || null,
         updatedAt: raw.updatedAt || raw.updated_at || null,
+        // The summary endpoint serves the server-rendered thumbnail (COALESCE(screenshot_url,
+        // onchain_data->>'imageUrl')). Dropping it here is what made the server tab fall back to
+        // the goal emoji for every row, even though almost all of them have a picture.
+        screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
         parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
         childParcelIds: Array.isArray(raw.childParcelIds) ? raw.childParcelIds : [],
         acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],

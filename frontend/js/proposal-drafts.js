@@ -378,7 +378,17 @@
                 if (isEmpty && typeof storage.getItem === 'function' && storage.getItem(storageKey) === null) {
                     return true;
                 }
-                storage.setItem(storageKey, JSON.stringify(envelope));
+                // A storage write can fail — most often QuotaExceededError when a draft carries a very
+                // large/complex geometry. This is a background autosave: losing the persisted copy is
+                // not fatal to editing, and it must NEVER throw into the caller (a live autosave firing
+                // mid-build once surfaced the raw "Failed to execute 'setItem'… exceeded the quota" in
+                // the status bar and aborted the flow). Swallow it, warn, and report the failure.
+                try {
+                    storage.setItem(storageKey, JSON.stringify(envelope));
+                } catch (error) {
+                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', error);
+                    return false;
+                }
             }
             return true;
         }

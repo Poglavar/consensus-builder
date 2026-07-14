@@ -257,4 +257,24 @@ describe('ProposalDraftStore', () => {
         expect(store.getDraft(draft.id)).toBeNull();
         expect(store.consumeAfterPublish(draft.id, 'replacement-9')).toEqual(receipt);
     });
+
+    // A live autosave carrying a very large/complex geometry can blow the localStorage quota. That
+    // must degrade to "kept in memory only", never throw into the caller — a raw QuotaExceededError
+    // once reached the status bar and aborted the block-building flow mid-edit.
+    it('does not throw when the storage write fails (e.g. quota exceeded)', () => {
+        const quotaStorage = memoryStorage();
+        quotaStorage.setItem = () => {
+            const err = new Error("Setting the value of 'consensus-builder.proposal-drafts.v1' exceeded the quota.");
+            err.name = 'QuotaExceededError';
+            throw err;
+        };
+        const { store } = harness({ storage: quotaStorage });
+
+        let draft;
+        expect(() => { draft = store.createDraft({ cityId: 'zagreb', goal: 'buildings', fields: { name: 'Huge block' } }); }).not.toThrow();
+        // The draft still exists in memory — editing is unaffected, only persistence was lost.
+        expect(store.getDraft(draft.id)).not.toBeNull();
+        expect(() => store.updateDraft(draft.id, { editorPayload: { giant: 'x'.repeat(1000) } })).not.toThrow();
+        expect(store.getDraft(draft.id).editorPayload.giant).toHaveLength(1000);
+    });
 });

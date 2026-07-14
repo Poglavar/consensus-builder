@@ -1956,13 +1956,20 @@
                 "loadFailed": "No se pudieron cargar los edificios existentes. Inténtalo de nuevo.",
                 "summary": "Se elevan {{count}} de {{total}} edificios existentes."
             },
+            "warnings": {
+                "oversizedBlock": "Este bloque es grande — dar la vuelta caminando tardaría unos {{minutes}} minutos. Los bloques recomendados miden entre 50×50 m y 200×200 m, de modo que se pueden rodear a pie en unos 2½ a 10 minutos. ¿Quieres continuar?",
+                "proceed": "Continuar de todos modos",
+                "cancel": "Volver"
+            },
             "manual": {
                 "edit": "Editar forma manualmente",
                 "back": "Volver a los controles",
                 "hint": "Modo manual: arrastra los vértices para remodelar el contorno. La altura sigue ajustable.",
+                "hintSimplified": "Modo manual: contorno simplificado a {{count}} puntos arrastrables para que puedas remodelarlo. Arrastra cualquier punto; la altura sigue ajustable.",
                 "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
                 "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
                 "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
+                "entryFailed": "Este contorno es demasiado complejo para editarlo a mano — vuelta a los controles. Consejo: sube «Simplificar (m)» para suavizarlo y prueba a editarlo de nuevo.",
                 "vertex": "Arrastra para remodelar",
                 "uploadGeojson": "Subir GeoJSON",
                 "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
@@ -2001,6 +2008,11 @@
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas"
+            },
+            "warnings": {
+                "dissimilarParcels": "Las casas en hilera se pueden definir sobre cualquier parcela, pero las {{count}} parcelas seleccionadas varían mucho en tamaño y forma. Funcionará igual, pero las casas en hilera suelen ir sobre parcelas de tamaño y forma similares. ¿Quieres continuar?",
+                "proceed": "Continuar de todos modos",
+                "cancel": "Volver"
             }
         }
     },
