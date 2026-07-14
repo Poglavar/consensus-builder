@@ -1,10 +1,18 @@
-// Unit tests for the frontend's share-link encoding helpers (pure byte/string work — no DOM).
+// Unit tests for the frontend's share helpers (pure byte/string work — no DOM).
 // These used to live in e2e/tests/share-roundtrip.spec.ts and e2e/tests/proposals-sharing.spec.ts,
 // which booted Chromium to base64-encode five bytes.
 //
-// NOTE: compressBytes/inflateBytes are deliberately NOT covered here — they delegate to `pako`,
-// which the app loads from a CDN and which is not an npm dependency, so in node they take their
-// no-compression fallback path. Their real round-trip stays in the Playwright suite.
+// IMPORTANT — which copy is under test. Sharing is now "upload to the server and hand out a
+// /proposals/<ids> URL"; NOTHING in the app still produces an encoded ?shared= / ?proposalShare=
+// link. What remains is the READER for legacy links already in the wild, and it lives in
+// proposals/sharing-routes.js, which has its own private copies of these helpers. (proposals/
+// sharing.js carries a duplicate set that it publishes on `window`; no live code path calls those.)
+// So the base64 tests below target sharing-routes.js — the copy that actually runs.
+//
+// decodeSharedPayload itself is not unit-tested: it reads SHARE_ENCODING_PREFIX_* and
+// decodeBytesToJson as cross-file globals that only resolve because the browser loads these as
+// classic scripts sharing one global scope. It is a legacy reader on its way out; shimming those
+// globals in to test it would be busywork.
 
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
@@ -12,7 +20,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     base64UrlEncodeBytes,
-    base64UrlDecodeToBytes,
+    base64UrlDecodeToBytes
+} = require('../../frontend/js/proposals/sharing-routes.js');
+const {
     deepClone,
     deepCloneArray,
     ensureArrayOfStrings,
@@ -50,6 +60,7 @@ describe('base64url encoding', () => {
         expect(base64UrlEncodeBytes([1, 2, 3])).toBe('');
     });
 });
+
 
 describe('escapeHtml', () => {
     it('neutralises an injected script tag', () => {

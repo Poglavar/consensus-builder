@@ -13,30 +13,9 @@ import { waitForMapReady } from '../helpers/app';
  */
 
 test.describe('Government road plan worker @features', () => {
-  test('Web Worker is accessible for government plan processing', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      // Test that Web Workers are available in this environment
-      const hasWorker = typeof Worker !== 'undefined';
-
-      const w = window as any;
-      // Check if worker was disabled (e.g., file:// protocol)
-      const workerDisabledReason = w.planWorkerDisabledReason || null;
-      const workerAvailable = hasWorker && !workerDisabledReason;
-
-      return {
-        hasWorkerAPI: hasWorker,
-        workerDisabledReason,
-        workerAvailable,
-      };
-    });
-
-    expect(result.hasWorkerAPI).toBe(true);
-    // Worker should be available when served via HTTP
-    expect(result.workerAvailable).toBe(true);
-  });
+  // A 'Web Worker is accessible' test used to sit here. It read `window.planWorkerDisabledReason`,
+  // which is a module-scoped `let` inside government-roads.js and has never been on `window` — so
+  // it was always null and the test collapsed to asserting that Chromium supports Web Workers.
 
   test('drawing the government plan does not eagerly union the plan on the main thread', async ({ mockApi: page }) => {
     await page.route('**/planned-road**', (route) => {

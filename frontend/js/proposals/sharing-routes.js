@@ -2597,3 +2597,17 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
         console.error('handleStandalone3DModeFromUrl failed', error);
     }
 }
+
+// Export the base64url helpers for node unit tests (backend/test/proposals-sharing-utils.test.js).
+// These are this file's OWN copies — the ones the legacy ?shared= / ?proposalShare= reader above
+// actually calls. (proposals/sharing.js carries a duplicate set that it puts on `window`; no live
+// code path calls those.) decodeSharedPayload itself is NOT exported: it reads
+// SHARE_ENCODING_PREFIX_* and decodeBytesToJson as cross-file globals, which only resolve because
+// the browser loads these as classic scripts sharing one global scope.
+// The browser is unaffected by this block.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        base64UrlEncodeBytes,
+        base64UrlDecodeToBytes
+    };
+}

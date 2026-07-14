@@ -18,10 +18,12 @@ test.describe('Data source switching @features', () => {
 
     const result = await page.evaluate(() => {
       const w = window as any;
+      // NB: `getDataSource` is module-private inside data-source.js and is NOT on window; the old
+      // version of this test read it anyway and quietly got undefined. getBackendBase is the real
+      // exposed entry point.
       return {
         environment: w.current_environment,
         backendBase: typeof w.getBackendBase === 'function' ? w.getBackendBase() : null,
-        dataSource: typeof w.getDataSource === 'function' ? w.getDataSource() : null,
       };
     });
 
