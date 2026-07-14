@@ -531,6 +531,10 @@ export function setupProposalsRoute(app, pool) {
                 COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS display_title,
                 COALESCE(author, proposal_data->>'author') AS author,
                 COALESCE(type, proposal_data->>'type') AS type,
+                -- The goal is the specific proposal kind (building / structure / reparcellization /
+                -- road / ...); type is the lossy backend column. Serving goal here stops the client
+                -- re-deriving it from type and mis-badging building/structure/parcel rows.
+                COALESCE(proposal_data->>'goal', type) AS goal,
                 status,
                 created_at,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
@@ -548,6 +552,7 @@ export function setupProposalsRoute(app, pool) {
                 title: row.display_title || row.display_name || null,
                 author: row.author || null,
                 type: row.type || null,
+                goal: row.goal || null,
                 status: row.status || null,
                 createdAt: row.created_at ? row.created_at.toISOString() : null,
                 screenshotUrl: row.screenshot_url || null

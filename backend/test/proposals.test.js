@@ -995,6 +995,22 @@ describe('GET /proposals/summary', () => {
         expect(call.params).toContain(10);
     });
 
+    it('serves the goal so the client does not re-derive it from the lossy type', async () => {
+        pool.setResult({
+            rows: [
+                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'building-blockify' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park-square' }),
+            ],
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(p => p.goal)).toEqual(['building-blockify', 'park-square']);
+        // The SELECT must expose goal for the client mapper.
+        expect(pool.getCalls()[0].sql).toMatch(/AS goal/);
+    });
+
     it('prefers display_title when display_name is absent', async () => {
         pool.setResult({
             rows: [{

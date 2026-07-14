@@ -88,6 +88,7 @@ export function summaryDbRow(overrides = {}) {
         display_title: 'Test Proposal Title',
         author: '0xABCDEF',
         type: 'parcel',
+        goal: 'parcel',
         status: 'unapplied',
         created_at: now,
         total_count: '3',
