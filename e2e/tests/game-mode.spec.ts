@@ -1,60 +1,15 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 
+/**
+ * Game mode. gameState.save()/load() go through PersistentStorage (IndexedDB) and executeGameTurn()
+ * drives agents against the live map, so both need a browser.
+ *
+ * Two `typeof x === 'function'` roll-calls were dropped from this file — every function they named
+ * is now called for real by the two tests below.
+ */
+
 test.describe('Game mode @features', () => {
-  test('gameState object is initialized', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const state = await page.evaluate(() => {
-      const w = window as any;
-      if (!w.gameState) return { exists: false };
-      return {
-        exists: true,
-        hasCurrentTurn: typeof w.gameState.currentTurn === 'number',
-        hasGameLog: Array.isArray(w.gameState.gameLog),
-        hasIsRunning: typeof w.gameState.isRunning === 'boolean',
-        hasSave: typeof w.gameState.save === 'function',
-        hasLoad: typeof w.gameState.load === 'function',
-        hasAddLogEntry: typeof w.gameState.addLogEntry === 'function',
-        hasReset: typeof w.gameState.reset === 'function',
-      };
-    });
-
-    test.skip(!state.exists, 'Game module not loaded');
-    expect(state.hasCurrentTurn).toBe(true);
-    expect(state.hasGameLog).toBe(true);
-    expect(state.hasIsRunning).toBe(true);
-    expect(state.hasSave).toBe(true);
-    expect(state.hasLoad).toBe(true);
-  });
-
-  test('game control functions are available', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const fns = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasInitialize: typeof w.initializeGame === 'function',
-        hasStartLoop: typeof w.startGameLoop === 'function',
-        hasStopLoop: typeof w.stopGameLoop === 'function',
-        hasExecuteTurn: typeof w.executeGameTurn === 'function',
-        hasToggle: typeof w.toggleGamePlayPause === 'function',
-        hasResetState: typeof w.resetGameState === 'function',
-        hasShowLog: typeof w.showGameLogDialog === 'function',
-        hasShowStats: typeof w.showAgentsStatistics === 'function',
-        hasUpdateInterval: typeof w.updateTurnInterval === 'function',
-      };
-    });
-
-    const hasSome = Object.values(fns).some(v => v === true);
-    test.skip(!hasSome, 'Game functions not loaded');
-    expect(fns.hasInitialize).toBe(true);
-    expect(fns.hasExecuteTurn).toBe(true);
-    expect(fns.hasToggle).toBe(true);
-  });
-
   test('gameState.save and load round-trip', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);

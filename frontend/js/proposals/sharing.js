@@ -915,3 +915,23 @@ if (typeof window !== 'undefined') {
     window.ensureArrayOfStrings = ensureArrayOfStrings;
     window.escapeHtml = escapeHtml;
 }
+
+// Also export the pure encoding/escaping/cloning helpers for node, so they can be unit-tested without
+// a browser (backend/test/proposals-sharing-utils.test.js). compressBytes/inflateBytes are NOT unit-
+// tested here: they delegate to `pako`, which is a CDN global in the browser and is not an npm
+// dependency, so their round-trip stays in the Playwright suite.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        base64UrlEncodeBytes,
+        base64UrlDecodeToBytes,
+        compressBytes,
+        inflateBytes,
+        deepClone,
+        deepCloneArray,
+        ensureArrayOfStrings,
+        escapeHtml,
+        buildCityQueryParam,
+        resolveBackendBaseUrl,
+        resolveFrontendBaseUrl
+    };
+}

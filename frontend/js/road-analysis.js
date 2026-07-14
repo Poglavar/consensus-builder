@@ -1579,7 +1579,10 @@ function formatNumber(value) {
 }
 
 // Add a global variable to store the latest OSM GeoJSON
-window.osmRoadGeoJSON = null;
+// (guarded so node/vitest can require this file for the pure geometry helpers at the top)
+if (typeof window !== 'undefined') {
+    window.osmRoadGeoJSON = null;
+}
 
 // --- OSM-based road width analysis ---
 function analyzeRoadWidthWithOSM(parcelFeature) {
@@ -1846,11 +1849,13 @@ function analyzeRoadWidthWithOSM(parcelFeature) {
 }
 
 // Patch OSM road fetch to store GeoJSON globally
-const originalDisplayOSMRoads = window.displayOSMRoads;
-window.displayOSMRoads = function (osmGeoJSON) {
-    window.osmRoadGeoJSON = osmGeoJSON;
-    if (originalDisplayOSMRoads) originalDisplayOSMRoads(osmGeoJSON);
-};
+if (typeof window !== 'undefined') {
+    const originalDisplayOSMRoads = window.displayOSMRoads;
+    window.displayOSMRoads = function (osmGeoJSON) {
+        window.osmRoadGeoJSON = osmGeoJSON;
+        if (originalDisplayOSMRoads) originalDisplayOSMRoads(osmGeoJSON);
+    };
+}
 
 // Analyze all visible road parcels in the current map view and classify by width
 async function analyzeAllRoadsInView() {
@@ -2083,7 +2088,7 @@ function showOSMRoadSegmentListPopup(segments) {
     popup.style.display = 'block';
 }
 
-window.highlightOSMSegment = function (idx) {
+function highlightOSMSegment(idx) {
     // Remove previous highlight
     if (currentHighlightedOSMSegment) {
         if (Array.isArray(currentHighlightedOSMSegment)) {
@@ -2115,7 +2120,11 @@ window.highlightOSMSegment = function (idx) {
     currentHighlightedOSMSegment = [blackLine, purpleLine];
     // Pan/zoom to segment
     map.fitBounds(purpleLine.getBounds(), { padding: [40, 40] });
-};
+}
+
+if (typeof window !== 'undefined') {
+    window.highlightOSMSegment = highlightOSMSegment;
+}
 
 async function analyzeAllOSMRoadSegmentsInView() {
     const button = document.getElementById('analyzeAllRoadsButton');
@@ -2478,4 +2487,18 @@ function toggleRoadAnalysisVisibility() {
     }
 }
 
-window.toggleRoadAnalysisVisibility = toggleRoadAnalysisVisibility;
+if (typeof window !== 'undefined') {
+    window.toggleRoadAnalysisVisibility = toggleRoadAnalysisVisibility;
+}
+
+// The geometry helpers above are pure and are unit-tested in node (backend/test/road-analysis.test.js).
+// The browser keeps loading this file as a classic script, where these are already globals; this export
+// block only exists so `require()` can reach them.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        findIntersections,
+        lineIntersection,
+        isPointInPolygon,
+        closestPointOnLineSegment
+    };
+}

@@ -13,28 +13,8 @@ test.describe('City switching @core', () => {
     expect(cityId).toBe('new_york');
   });
 
-  test('CityConfigManager exposes city switching API', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const api = await page.evaluate(() => {
-      const w = window as any;
-      const mgr = w.CityConfigManager;
-      return {
-        hasGetCurrentCityId: typeof mgr?.getCurrentCityId === 'function',
-        hasSetCurrentCityId: typeof mgr?.setCurrentCityId === 'function',
-        hasSwitchCity: typeof mgr?.switchCity === 'function',
-        hasGetCurrentCityConfig: typeof mgr?.getCurrentCityConfig === 'function',
-        hasGetAvailableCities: typeof mgr?.getAvailableCities === 'function',
-      };
-    });
-
-    expect(api.hasGetCurrentCityId).toBe(true);
-    expect(api.hasSetCurrentCityId).toBe(true);
-    expect(api.hasSwitchCity).toBe(true);
-    expect(api.hasGetCurrentCityConfig).toBe(true);
-    expect(api.hasGetAvailableCities).toBe(true);
-  });
+  // A five-way `typeof mgr.x === 'function'` roll-call used to sit here. Every method it named is
+  // called for real by the tests below, so its only unique contribution was a browser boot.
 
   test('setCurrentCityId updates internal city and dispatches event', async ({ mockApi: page }) => {
     await page.goto('/');

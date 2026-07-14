@@ -39,4 +39,10 @@
 
     global.ensureParcelId = ensureParcelId;
     global.getParcelId = getParcelId;
+
+    // Also export for node, so these pure helpers can be unit-tested without a browser
+    // (backend/test/parcel-id.test.js). The browser path above is unchanged.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { ensureParcelId, getParcelId };
+    }
 })(typeof window !== 'undefined' ? window : globalThis);

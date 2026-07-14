@@ -3,6 +3,12 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+
+// The corridor adapter reaches for `global.corridorIsTrack`, which in the browser is put there by
+// corridor-profile.js loading as a classic script. Under node nothing does that, so seed the corridor
+// helpers onto globalThis before requiring the adapters — otherwise draftFromProposal throws.
+Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
+
 const {
     CREATABLE_PROPOSAL_GOALS,
     registry,

@@ -29,31 +29,14 @@ test.describe('Parcel selection and ownership @core', () => {
     expect(result.colorCount).toBeGreaterThan(0);
   });
 
-  test('ownership classification functions exist', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  // Ownership CLASSIFICATION itself is pure string matching and is unit-tested in node
+  // (backend/test/parcel-ownership-type.test.js). What needs a browser is the test above — that the
+  // classification actually reaches the rendered Leaflet layer styles.
 
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasClassify: typeof w.classifyOwnership === 'function',
-        hasGetType: typeof w.getOwnershipType === 'function',
-        hasClassifyType: typeof w.classifyOwnershipType === 'function',
-        hasOwnershipModule: typeof w.GOVERNMENT_KEYWORDS !== 'undefined',
-      };
-    });
-
-    // These are set by ownership-type.js which is an IIFE on window
-    const hasSome = Object.values(result).some(v => v === true);
-    // Skip if the module didn't load (CDN dependency chain)
-    test.skip(!hasSome, 'Ownership module not loaded in this environment');
-    expect(hasSome).toBe(true);
-  });
-
-  // Regression: the rest of this file only asserts that functions EXIST, and the panel spec only
-  // asserts the panel opens — which showParcelInfoPanel() does before the tail of onParcelClick
-  // runs. A ReferenceError in that tail therefore left the panel visible while `currentParcel` was
-  // never set (build palette empty, every proposal flow dead) and the whole suite stayed green.
+  // Regression: the panel spec only asserts the panel opens — which showParcelInfoPanel() does
+  // before the tail of onParcelClick runs. A ReferenceError in that tail therefore left the panel
+  // visible while `currentParcel` was never set (build palette empty, every proposal flow dead) and
+  // the whole suite stayed green.
   // Selecting a parcel must complete WITHOUT throwing, and must leave currentParcel behind.
   test('clicking a parcel completes without a page error and sets currentParcel', async ({ mockApi: page }) => {
     const pageErrors: string[] = [];

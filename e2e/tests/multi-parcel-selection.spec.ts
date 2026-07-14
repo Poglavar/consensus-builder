@@ -49,24 +49,8 @@ async function injectParcelsAndClick(page: any, featureIndex = 0) {
 }
 
 test.describe('Multi-parcel selection @core', () => {
-  test('multiParcelSelection module exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        exists: typeof w.multiParcelSelection === 'object' && w.multiParcelSelection !== null,
-        hasToggle: typeof w.multiParcelSelection?.toggle === 'function',
-        hasIsActive: typeof w.multiParcelSelection?.isActive === 'function',
-        hasGetSelected: typeof w.multiParcelSelection?.getSelectedParcels === 'function' ||
-          typeof w.multiParcelSelection?.getSelected === 'function',
-      };
-    });
-
-    test.skip(!result.exists, 'multiParcelSelection not available');
-    expect(result.exists).toBe(true);
-  });
+  // A `typeof multiParcelSelection.x === 'function'` roll-call used to sit here. Every method it
+  // named is called for real by the tests below.
 
   test('multi-select checkbox exists in parcel info panel', async ({ mockApi: page }) => {
     await page.goto('/');

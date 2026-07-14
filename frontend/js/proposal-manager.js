@@ -8458,4 +8458,20 @@ function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
 
 
 // Make it accessible globally
-window.ProposalManager = ProposalManager;
+if (typeof window !== 'undefined') {
+    window.ProposalManager = ProposalManager;
+}
+
+// Also export for node, so the pure id-composition and remainder-guard helpers can be unit-tested
+// without a browser (backend/test/proposal-manager-ids.test.js). Everything above is unchanged for
+// the browser, which still loads this as a classic script; the two IIFEs above already no-op when
+// `window` is absent.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        ProposalManager,
+        _buildSyntheticToken,
+        _composeSyntheticParcelId,
+        _composeSyntheticParcelNumber,
+        _shouldSkipUncutRemainder
+    };
+}

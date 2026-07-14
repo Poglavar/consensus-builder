@@ -34,24 +34,9 @@ test.describe('Basemap and layer controls @features', () => {
     expect(values).toContain('openstreetmap');
   });
 
-  test('applyBasemap function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasApply: typeof w.applyBasemap === 'function',
-        hasInit: typeof w.initBasemapSelector === 'function',
-        hasSync: typeof w.syncBasemapSelector === 'function',
-      };
-    });
-
-    const hasSome = result.hasApply || result.hasInit || result.hasSync;
-    test.skip(!hasSome, 'Basemap module not loaded');
-    expect(result.hasApply).toBe(true);
-  });
-
+  // These two used to call a bare `window.applyBasemap`, which the app has not exposed since
+  // basemap.js moved behind the `BasemapManager` namespace — so they skipped themselves on every
+  // run and the basemap switch was in truth untested. They now call the real entry point.
   test('switching tile source updates map tiles', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
@@ -65,48 +50,47 @@ test.describe('Basemap and layer controls @features', () => {
     // Switch to a different basemap programmatically
     const switched = await page.evaluate(() => {
       const w = window as any;
-      if (typeof w.applyBasemap !== 'function') return { switched: false, reason: 'no-function' };
-
       const select = document.getElementById('tile-source-select') as HTMLSelectElement | null;
       const currentVal = select?.value ?? 'openstreetmap';
       const newVal = currentVal === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
 
-      w.applyBasemap(w.map, newVal);
-      return { switched: true, from: currentVal, to: newVal };
+      w.BasemapManager.applyBasemap(w.map, newVal);
+      return { from: currentVal, to: newVal };
     });
 
-    test.skip(!switched.switched, `Could not switch basemap: ${(switched as any).reason}`);
-    await page.waitForTimeout(2000);
+    // Tiles for the new source have to actually reach the tile pane.
+    await expect
+      .poll(async () => page.evaluate(() => {
+        const imgs = document.querySelectorAll('.leaflet-tile-pane img');
+        return Array.from(imgs).map((img: any) => img.src);
+      }), { timeout: 15_000 })
+      .not.toEqual(beforeTiles);
 
-    // Check that tile URLs changed
     const afterTiles = await page.evaluate(() => {
       const imgs = document.querySelectorAll('.leaflet-tile-pane img');
       return Array.from(imgs).slice(0, 3).map((img: any) => img.src);
     });
-
-    // At least the tile source should differ (different URL pattern)
-    const tilesChanged = afterTiles.length > 0 && (
-      beforeTiles.length === 0 ||
-      afterTiles[0] !== beforeTiles[0]
-    );
-    expect(tilesChanged).toBe(true);
+    expect(afterTiles.length).toBeGreaterThan(0);
+    expect(afterTiles[0]).not.toBe(beforeTiles[0]);
+    expect(switched.to).not.toBe(switched.from);
   });
 
-  test('tile source selector syncs with applyBasemap', async ({ mockApi: page }) => {
+  test('applyBasemap syncs the tile source selector back to the applied key', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
     const result = await page.evaluate(() => {
       const w = window as any;
-      if (typeof w.applyBasemap !== 'function') return { synced: false, reason: 'no-function' };
-
-      w.applyBasemap(w.map, 'openstreetmap');
-      const select = document.getElementById('tile-source-select') as HTMLSelectElement | null;
-      return { synced: true, value: select?.value ?? '' };
+      // Start from maptiler so the switch back to openstreetmap is a real change, not a no-op.
+      w.BasemapManager.applyBasemap(w.map, 'maptiler');
+      const afterMaptiler = (document.getElementById('tile-source-select') as HTMLSelectElement | null)?.value ?? '';
+      w.BasemapManager.applyBasemap(w.map, 'openstreetmap');
+      const afterOsm = (document.getElementById('tile-source-select') as HTMLSelectElement | null)?.value ?? '';
+      return { afterMaptiler, afterOsm };
     });
 
-    test.skip(!result.synced, `Basemap function not available: ${(result as any).reason}`);
-    expect(result.value).toBe('openstreetmap');
+    expect(result.afterMaptiler).toBe('maptiler');
+    expect(result.afterOsm).toBe('openstreetmap');
   });
 
   test('buildings checkbox exists', async ({ mockApi: page }) => {

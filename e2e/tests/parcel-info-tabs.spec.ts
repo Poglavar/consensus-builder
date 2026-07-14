@@ -79,19 +79,8 @@ test.describe('Parcel info panel tabs @core', () => {
     expect(tabState.toolsActive).toBe(false);
   });
 
-  test('switchParcelTab function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      const fn = w.Parcels?.proposals?.switchParcelTab || w.switchParcelTab;
-      return { exists: typeof fn === 'function' };
-    });
-
-    test.skip(!result.exists, 'switchParcelTab not available');
-    expect(result.exists).toBe(true);
-  });
+  // A `typeof switchParcelTab === 'function'` check used to sit here. The tab tests below click the
+  // real tab buttons, which is what actually exercises it.
 
   test('clicking Proposals tab shows proposals content', async ({ mockApi: page }) => {
     await page.goto('/');

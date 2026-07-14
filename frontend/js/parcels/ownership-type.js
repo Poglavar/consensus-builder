@@ -169,6 +169,21 @@
         classifyOwnershipLabel,
         getOwnershipType
     });
+
+    // Also export for node, so ownership classification can be unit-tested without a browser
+    // (backend/test/parcel-ownership-type.test.js). The browser path above is unchanged.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            GOVERNMENT_KEYWORDS,
+            INSTITUTION_KEYWORDS,
+            COMPANY_MARKERS,
+            normalizeOwnerLabel,
+            normalizeOwnerLabelLoose,
+            isCityOwnedLabel,
+            classifyOwnershipLabel,
+            getOwnershipType
+        };
+    }
 })(typeof window !== 'undefined' ? window : globalThis);
 
 
