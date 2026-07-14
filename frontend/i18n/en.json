@@ -423,7 +423,8 @@
         "buildings": {
             "title": "Buildings",
             "showLayer": "Show buildings",
-            "showExisting": "Show Existing Buildings",
+            "showGdi": "GDI buildings (3D model)",
+            "showDgu": "DGU cadastre (legal reference)",
             "showProposed": "Show Proposed Buildings"
         },
         "roads": {
@@ -1164,6 +1165,16 @@
             "discard": "Discard draft",
             "discardAndWipe": "Discard and wipe",
             "keep": "Keep draft"
+        },
+        "buildingLayers": {
+            "title": "Which buildings to show?",
+            "intro": "Two surveys of the same city — they disagree, and that is worth seeing.",
+            "gdi": "GDI buildings (3D model)",
+            "gdiHint": "Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.",
+            "dgu": "DGU cadastre (legal reference)",
+            "dguHint": "The cadastre: what is officially registered. Reference only — nothing is ever cut against it.",
+            "both": "Both",
+            "cancel": "Cancel"
         },
         "corridorTunnel": {
             "offer": "This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?",

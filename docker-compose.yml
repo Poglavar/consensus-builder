@@ -30,6 +30,12 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      # backend/buildings/carve.js requires ../../frontend/js/corridor-carve.js — the ONE module
+      # that decides whether a proposal demolished, cut or tunnelled under an existing building, so
+      # the server and the browser cannot disagree. On the server the whole repo is checked out and
+      # that relative path just works; here the backend is mounted alone at /app, so the frontend
+      # sources have to be mounted at the path the require resolves to.
+      - ./frontend:/frontend:ro
     # Sync deps into the mounted node_modules volume before starting nodemon.
     command: sh -c "npm install && npx nodemon server.js"
 

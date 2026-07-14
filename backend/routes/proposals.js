@@ -3,6 +3,11 @@
 // GET /proposals/:id - Get a proposal by proposal_id (unique globally)
 
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
+import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+
+// Rendering a thumbnail means fetching ~10-40 basemap tiles. That is normally under a second, but it
+// is a third party on the request path, so it gets a hard deadline: an upload must never hang on it.
+const THUMBNAIL_DEADLINE_MS = 20000;
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -33,6 +38,38 @@ export function normalizeCityCode(code) {
     if (!raw) return null;
     // Already a full city id (or an unknown value) — pass it through unchanged.
     return CITY_CODE_TO_ID[raw] || raw;
+}
+
+// The stored thumbnail URL has to be absolute. In production the API sits behind a proxy on a fixed
+// origin (PUBLIC_API_BASE_URL); otherwise fall back to the origin the request came in on.
+function resolveThumbnailBaseUrl(req) {
+    if (process.env.PUBLIC_API_BASE_URL) {
+        return process.env.PUBLIC_API_BASE_URL.replace(/\/$/, '');
+    }
+    return `${req.protocol}://${req.get('host')}`;
+}
+
+async function generateProposalThumbnailForRequest(pool, proposal, { city, proposalId, req }) {
+    const render = generateAndStoreProposalThumbnail(pool, proposal, {
+        city,
+        proposalId,
+        baseUrl: resolveThumbnailBaseUrl(req)
+    });
+
+    let timer = null;
+    const deadline = new Promise((_, reject) => {
+        timer = setTimeout(
+            () => reject(new Error(`Thumbnail render exceeded ${THUMBNAIL_DEADLINE_MS}ms`)),
+            THUMBNAIL_DEADLINE_MS
+        );
+        if (typeof timer.unref === 'function') timer.unref();
+    });
+
+    try {
+        return await Promise.race([render, deadline]);
+    } finally {
+        if (timer) clearTimeout(timer);
+    }
 }
 
 function validateIdentifierField(fieldLabel) {
@@ -379,10 +416,40 @@ export function setupProposalsRoute(app, pool) {
             `;
             await pool.query(updateSql, [dbId]);
 
+            // Thumbnails are rendered here, on the server, so that every uploaded proposal has one —
+            // the old client-side capture only ran for whoever happened to have the proposal open in
+            // the right city with tiles loaded, which is why almost nothing had a thumbnail.
+            //
+            // This runs AFTER the insert has committed and can never fail the upload: a proposal
+            // whose picture cannot be drawn is still a proposal. On failure we log loudly and return
+            // the proposal without a screenshotUrl; the backfill script can pick it up later.
+            let generatedScreenshotUrl = null;
+            if (!screenshotUrl) {
+                try {
+                    const result = await generateProposalThumbnailForRequest(pool, proposalData, {
+                        city,
+                        proposalId: dbId,
+                        req
+                    });
+                    if (result) {
+                        await pool.query(
+                            `UPDATE proposal SET screenshot_url = $1 WHERE id = $2 AND screenshot_url IS NULL`,
+                            [result.url, dbId]
+                        );
+                        generatedScreenshotUrl = result.url;
+                        console.log(`[proposal ${dbId}] thumbnail rendered: ${result.url} ` +
+                            `(zoom ${result.frame.zoom}, ${result.tiles.loaded}/${result.tiles.total} tiles, ${result.bytes} bytes)`);
+                    }
+                } catch (thumbErr) {
+                    console.error(`[proposal ${dbId}] THUMBNAIL GENERATION FAILED (proposal was still created):`, thumbErr);
+                }
+            }
+
             res.status(201).json({
                 id: dbId,
                 proposalId: inserted.proposal_id,
-                createdAt: inserted.created_at
+                createdAt: inserted.created_at,
+                screenshotUrl: screenshotUrl || generatedScreenshotUrl || null
             });
         } catch (err) {
             console.error('Error in POST /proposals:', err);

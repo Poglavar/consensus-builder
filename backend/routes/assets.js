@@ -1,32 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import { randomUUID } from 'crypto';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
+import {
+    saveImageBuffer,
+    sanitizeFileName,
+    decodeImageDataUrl,
+    ensureImageDirectories,
+    METADATA_DIR
+} from '../utils/image-store.js';
 
-const UPLOAD_ROOT = path.resolve('uploads');
-const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
-const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
 const STATIC_PROPOSAL_IMAGE_URL = 'https://urbangametheory.xyz/images/consensus-builder-logo.png';
 const MAX_FILE_NAME_LENGTH = 255;
-
-function sanitizeFileName(raw, fallbackPrefix) {
-    const base = (raw || '').toString().trim();
-    const safe = base
-        .toLowerCase()
-        .replace(/[^a-z0-9-_]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-    if (safe) return safe;
-    return `${fallbackPrefix}-${Date.now()}-${randomUUID()}`;
-}
-
-function ensureUploadDirectories() {
-    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    });
-}
 
 function resolveBaseUrl(req) {
     const protocol = req.protocol;
@@ -64,42 +48,28 @@ const assetsUploadBodyValidator = createJsonBodyValidator({
 });
 
 export function setupAssetsRoute(app) {
-    ensureUploadDirectories();
+    ensureImageDirectories();
 
     app.post('/assets/upload', assetsUploadBodyValidator, async (req, res) => {
         try {
             const { imageData, metadata, fileName } = req.validatedBody;
 
-            const matches = imageData.match(/^data:(.+);base64,(.+)$/);
-            if (!matches || matches.length < 3) {
+            // Same decode + write helpers the server-side thumbnail renderer uses, so images land in
+            // one place with one URL scheme no matter who produced them.
+            const decoded = decodeImageDataUrl(imageData);
+            if (!decoded) {
                 return res.status(400).json({ error: 'imageData must be a base64 data URL.' });
             }
-
-            const contentType = matches[1];
-            const base64Payload = matches[2];
-            const buffer = Buffer.from(base64Payload, 'base64');
-            if (!buffer.length) {
+            if (!decoded.buffer.length) {
                 return res.status(400).json({ error: 'Decoded image data is empty.' });
             }
 
-            const extension = (() => {
-                const typeParts = contentType.split('/');
-                if (typeParts.length === 2 && typeParts[1]) {
-                    const ext = typeParts[1].split('+')[0];
-                    if (ext) return ext.toLowerCase();
-                }
-                return 'png';
-            })();
-
             const safeBase = sanitizeFileName(fileName, 'road-proposal');
-            const imageFilename = `${safeBase}.${extension}`;
             const metadataFilename = `${safeBase}.json`;
-
-            ensureUploadDirectories();
-            fs.writeFileSync(path.join(IMAGE_DIR, imageFilename), buffer);
+            const { imagePath } = saveImageBuffer(decoded.buffer, safeBase, decoded.extension);
 
             const baseUrl = resolveBaseUrl(req);
-            const uploadedImageUrl = `${baseUrl}/uploads/images/${imageFilename}`;
+            const uploadedImageUrl = `${baseUrl}${imagePath}`;
             const imageUrl = uploadedImageUrl || STATIC_PROPOSAL_IMAGE_URL;
             const existingProperties = isPlainObject(metadata.properties)
                 ? metadata.properties

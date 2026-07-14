@@ -2254,8 +2254,6 @@ const PROPOSAL_SCREENSHOT_SKIP_GOALS = new Set([
     'ownership-transfer-from-me'
 ]);
 
-const _proposalScreenshotInFlight = new Set();
-
 const DEFAULT_CORRIDOR_WIDTHS = {
     road: 7.5,
     track: 3.0

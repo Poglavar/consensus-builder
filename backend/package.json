@@ -13,6 +13,8 @@
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs"
     },
     "dependencies": {
+        "@turf/turf": "^6.5.0",
+        "canvas": "^3.2.3",
         "cors": "^2.8.5",
         "dotenv": "^17.2.3",
         "ethers": "^6.16.0",

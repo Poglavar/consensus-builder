@@ -448,7 +448,8 @@
         "buildings": {
             "title": "Zgrade",
             "showLayer": "Prikaži sloj zgrada",
-            "showExisting": "Prikaži postojeće zgrade",
+            "showGdi": "GDI zgrade (3D model)",
+            "showDgu": "DGU katastar (pravna evidencija)",
             "showProposed": "Prikaži predložene zgrade"
         },
         "roads": {
@@ -1165,6 +1166,16 @@
             "discard": "Odbaci nacrt",
             "discardAndWipe": "Odbaci i izbriši",
             "keep": "Zadrži nacrt"
+        },
+        "buildingLayers": {
+            "title": "Koje zgrade prikazati?",
+            "intro": "Dva izmjera istoga grada — ne slažu se, i to se isplati vidjeti.",
+            "gdi": "GDI zgrade (3D model)",
+            "gdiHint": "Fotogrametrija: ono što stvarno postoji. Na tome se temelji 3D model, i po tome se ruši i prosijeca.",
+            "dgu": "DGU katastar (pravna evidencija)",
+            "dguHint": "Katastar: ono što je službeno upisano. Samo referenca — po njemu se ništa ne ruši.",
+            "both": "Oboje",
+            "cancel": "Odustani"
         },
         "corridorTunnel": {
             "offer": "Ova {{kind}} prolazila bi kroz {{count}} zgradu/zgrade. Prosjeći ih, srušiti ili prokopati tunel?",

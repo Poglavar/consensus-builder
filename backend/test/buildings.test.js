@@ -112,7 +112,7 @@ describe('GET /buildings', () => {
         pool.setResult({
             rows: [{
                 geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] },
-                properties: { building_id: 5 }
+                properties: { object_id: 5 }
             }],
             rowCount: 1
         });
@@ -122,12 +122,66 @@ describe('GET /buildings', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
             type: 'FeatureCollection',
+            source: 'gdi',
+            truncated: false,
             features: [{
                 type: 'Feature',
-                properties: { building_id: 5 },
+                properties: { object_id: 5 },
                 geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] }
             }]
         });
+    });
+
+    // The bbox layer is the WORKING SET — the buildings detection scans and the 3D view renders.
+    // It must be the GDI objects (object_id), because those are the ones gdi_building_3d meshes.
+    // Serving the DGU cadastre here is the original bug: we cut one dataset and rendered another.
+    it('serves the GDI footprints by default, keyed by object_id', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).get('/buildings?bbox=1,2,3,4');
+
+        expect(res.status).toBe(200);
+        expect(res.body.source).toBe('gdi');
+        const { sql } = pool.getCalls()[0];
+        expect(sql).toContain('gdi_building_footprint');
+        expect(sql).toContain('f.object_id');
+        expect(sql).not.toContain('dgu_building');
+    });
+
+    it('serves the DGU cadastre as an explicit, separate reference layer', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).get('/buildings?bbox=1,2,3,4&source=dgu');
+
+        expect(res.status).toBe(200);
+        expect(res.body.source).toBe('dgu');
+        const { sql } = pool.getCalls()[0];
+        expect(sql).toContain('dgu_building');
+        expect(sql).toContain('b.current');
+        expect(sql).not.toContain('gdi_building_footprint');
+    });
+
+    it('rejects an unknown source rather than quietly serving the wrong survey', async () => {
+        const res = await request(app).get('/buildings?bbox=1,2,3,4&source=overture');
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/source/);
+        expect(pool.getCalls().length).toBe(0);
+    });
+
+    it('flags a truncated response — an uncovered bbox means buildings that can never be detected', async () => {
+        pool.setResult({
+            rows: Array.from({ length: 4000 }, (_, i) => ({
+                geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] },
+                properties: { object_id: i }
+            })),
+            rowCount: 4000
+        });
+
+        const res = await request(app).get('/buildings?bbox=1,2,3,4');
+
+        expect(res.status).toBe(200);
+        expect(res.body.truncated).toBe(true);
     });
 });
 describe('POST /buildings/footprints', () => {
@@ -159,11 +213,17 @@ describe('POST /buildings/footprints', () => {
         expect(res.body.footprints[1].height_m).toBe(null);
 
         // The provider query filters to mostly-inside current buildings and joins measured heights.
+        // The urban-rule "existing buildings" mode reasons about the LEGAL stock, so it stays on the
+        // cadastre — but height is a property of the GDI OBJECT, so it is read off gdi_building via
+        // the match table, not off the match table itself (the rename migration moved the column).
         const { sql, params } = pool.getCalls()[0];
         expect(sql).toContain('ST_Intersects(b.geom, q.g)');
         expect(sql).toContain('0.5 * ST_Area(b.geom)');
         expect(sql).toContain('b.current');
-        expect(sql).toContain('LEFT JOIN building_3d_match');
+        expect(sql).toContain('FROM dgu_building b');
+        expect(sql).toContain('LEFT JOIN dgu_gdi_building_match m');
+        expect(sql).toContain('LEFT JOIN gdi_building g');
+        expect(sql).toContain('g.height_m');
         expect(params[0]).toBe(JSON.stringify(geometry));
     });
 

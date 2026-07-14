@@ -537,11 +537,20 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <!-- Two surveys of the same city, and they disagree. GDI is the working set —
+                         the objects the 3D model, the carve and every demolition record use. DGU is
+                         the cadastre, a legal reference only. Both can be ticked at once: overlaying
+                         them is how the disagreement becomes visible. Neither toggle changes what a
+                         corridor cuts. -->
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
-                                <span data-i18n-key="sidebar.buildings.showExisting">Show Existing Buildings</span>
+                                <span data-i18n-key="sidebar.buildings.showGdi">GDI buildings (3D model)</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showBuildingsDgu" onchange="toggleLayer('buildingsDgu')">
+                                <span data-i18n-key="sidebar.buildings.showDgu">DGU cadastre (legal reference)</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="showProposedBuildings"
@@ -1317,7 +1326,6 @@
             'js/road-node-edit.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
-            'js/proposals/screenshot-refresh.js',
             'js/proposals/dialog-share.js',
             'js/proposals/sharing-routes.js',
             'js/proposals/core.js',
@@ -1387,6 +1395,7 @@
             'js/road-analysis.js',
             'js/road-detection.js',
             'js/corridor-profile.js',
+            'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',
             'js/corridor-tunnel.js',

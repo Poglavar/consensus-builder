@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { normalizeCityCode } from '../routes/proposals.js';
+import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import {
     validProposalBody,
     insertResult,
@@ -10,6 +11,12 @@ import {
     proposalDbRow,
     summaryDbRow,
 } from './helpers/fixtures.js';
+
+// The route renders a thumbnail on upload, which would otherwise fetch real basemap tiles over the
+// network. These are route tests: the renderer itself is covered in proposal-thumbnail.test.js.
+vi.mock('../thumbnails/proposal-thumbnail.js', () => ({
+    generateAndStoreProposalThumbnail: vi.fn(async () => null)
+}));
 
 let pool;
 let app;
@@ -27,6 +34,8 @@ function getRouteHandler(appInstance, routePath, method) {
 beforeEach(() => {
     pool = createMockPool();
     app = createTestApp(pool);
+    vi.mocked(generateAndStoreProposalThumbnail).mockReset();
+    vi.mocked(generateAndStoreProposalThumbnail).mockResolvedValue(null);
 });
 
 describe('POST /proposals', () => {
@@ -70,6 +79,59 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(500);
         expect(res.body.error).toMatch(/Internal server error/);
+    });
+
+    it('renders a thumbnail on upload and stores it on the proposal', async () => {
+        vi.mocked(generateAndStoreProposalThumbnail).mockResolvedValue({
+            url: 'http://api.test/uploads/images/proposal-thumb-1-123.png',
+            fileName: 'proposal-thumb-1-123.png',
+            frame: { zoom: 19 },
+            tiles: { loaded: 9, total: 9 },
+            bytes: 12345
+        });
+        pool.setResults([insertResult(), updateResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        expect(res.status).toBe(201);
+        expect(res.body.screenshotUrl).toBe('http://api.test/uploads/images/proposal-thumb-1-123.png');
+
+        const screenshotUpdate = pool.getCalls().find(call => call.sql.includes('SET screenshot_url'));
+        expect(screenshotUpdate).toBeTruthy();
+        expect(screenshotUpdate.params).toEqual([
+            'http://api.test/uploads/images/proposal-thumb-1-123.png',
+            1
+        ]);
+    });
+
+    it('still creates the proposal when thumbnail rendering fails', async () => {
+        vi.mocked(generateAndStoreProposalThumbnail).mockRejectedValue(new Error('all basemap tiles failed'));
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        // The proposal is the thing being uploaded; a picture of it is not worth failing an upload for.
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty('id', 1);
+        expect(res.body).toHaveProperty('proposalId', 'test-proposal-001');
+        expect(res.body.screenshotUrl).toBeNull();
+        expect(pool.getCalls().some(call => call.sql.includes('SET screenshot_url'))).toBe(false);
+    });
+
+    it('does not re-render when the client already supplied a screenshot url', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ screenshotUrl: 'https://gateway.pinata.cloud/ipfs/abc' }));
+
+        expect(res.status).toBe(201);
+        expect(res.body.screenshotUrl).toBe('https://gateway.pinata.cloud/ipfs/abc');
+        expect(generateAndStoreProposalThumbnail).not.toHaveBeenCalled();
     });
 
     it('returns 409 on duplicate proposal_id', async () => {

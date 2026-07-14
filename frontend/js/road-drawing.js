@@ -469,10 +469,30 @@ function corridorSurfaceFootprintForDefinition(definition) {
     return (geo && geo.type) ? geo : null;
 }
 
+// Persist the surface footprint on the definition, next to the `polygon` cache it already carries:
+// the corridor's extent MINUS its tunnelled spans, i.e. the ground it actually clears and actually
+// buys. Written only when tunnels exist; with no tunnels the full polygon already is it.
+//
+// Both are DERIVED through the city's metric projection (proj4 via CityConfigManager), which only
+// the browser has — so a consumer that is not the browser cannot re-derive it and has to be handed it.
+//
+// NOTE: the building carve no longer reads this. It used to be load-bearing there — the server had
+// to know which ground a tunnelled corridor did NOT clear, or it would demolish the building the
+// road passes under. Now a tunnel simply writes no demolition record, and no record means no carve,
+// so tunnelled buildings are safe by construction. What still depends on this footprint is PARCEL
+// ACQUISITION: a tunnelled stretch acquires no parcels (see collectParcelsIntersectingFootprint).
+function attachCorridorSurfaceFootprint(definition) {
+    if (!definition) return definition;
+    const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels.filter(Boolean) : [];
+    definition.surfaceFootprint = tunnels.length ? corridorSurfaceFootprintForDefinition(definition) : null;
+    return definition;
+}
+
 if (typeof window !== 'undefined') {
     window.buildRoadUnionPolygonForDefinition = buildRoadUnionPolygonForDefinition;
     window.buildCorridorAcquisitionPolygon = buildCorridorAcquisitionPolygon;
     window.corridorSurfaceFootprintForDefinition = corridorSurfaceFootprintForDefinition;
+    window.attachCorridorSurfaceFootprint = attachCorridorSurfaceFootprint;
 }
 
 // Every geometry change re-derives the parcels the corridor now touches. Runs against the
@@ -714,6 +734,9 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         polygon: (polygon && polygon.type) ? polygon : null,
         latLngPairs
     };
+    // The spread above carried the base corridor's surface footprint in; this piece has no tunnels
+    // of its own, so clear it rather than let a footprint from another geometry linger.
+    attachCorridorSurfaceFootprint(definition);
 
     const clone = JSON.parse(JSON.stringify(baseProposal));
     ['proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
@@ -749,7 +772,6 @@ async function createRoadProposalFromComponent(baseProposal, component) {
     } catch (error) {
         console.warn('[createRoadProposalFromComponent] Apply of split-off road failed', error);
     }
-    try { window.scheduleProposalScreenshotRefresh?.(newId); } catch (_) { }
     return newId;
 }
 
@@ -1034,6 +1056,7 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
             definition.polygon = geoPolygon;
             definition.latLngPairs = latLngPairs;
         }
+        attachCorridorSurfaceFootprint(definition);
     }
 
     // Mirror the definition everywhere the proposal stores it.
@@ -1094,8 +1117,6 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         for (const component of splitOff) {
             await createRoadProposalFromComponent(proposal, component);
         }
-        // The stored thumbnail shows the OLD footprint now — regenerate it quietly.
-        try { window.scheduleProposalScreenshotRefresh?.(key); } catch (_) { }
         if (splitOff.length && typeof updateStatus === 'function') {
             updateStatus(translateRoadText('panel.road.splitStatus', 'The road came apart — now {{count}} separate roads.', {
                 count: splitOff.length + 1
@@ -2601,18 +2622,82 @@ function isAnyModalOpen() {
     return false;
 }
 
+// The reference layers B last had ON, so pressing B again brings back the SAME choice instead of
+// re-asking. null until the user has picked once.
+let lastBuildingLayerChoice = null;
+
+function setBuildingReferenceLayers(gdi, dgu) {
+    const gdiBox = document.getElementById('showBuildings');
+    const dguBox = document.getElementById('showBuildingsDgu');
+    if (gdiBox && gdiBox.checked !== gdi) {
+        gdiBox.checked = gdi;
+        if (typeof toggleLayer === 'function') toggleLayer('buildings');
+    }
+    if (dguBox && dguBox.checked !== dgu) {
+        dguBox.checked = dgu;
+        if (typeof toggleLayer === 'function') toggleLayer('buildingsDgu');
+    }
+}
+
+// B with NOTHING on and no remembered choice: explain the two surveys once and let the user pick.
+// This is the only path that opens a dialog — see handleRoadDrawHotkey.
+async function promptBuildingLayerChoice() {
+    const message = `${translateRoadText('modal.buildingLayers.title', 'Which buildings to show?')}\n`
+        + `${translateRoadText('modal.buildingLayers.intro', 'Two surveys of the same city — they disagree, and that is worth seeing.')}\n\n`
+        + `${translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)')} — `
+        + `${translateRoadText('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.')}\n\n`
+        + `${translateRoadText('modal.buildingLayers.dgu', 'DGU cadastre (legal reference)')} — `
+        + `${translateRoadText('modal.buildingLayers.dguHint', 'The cadastre: what is officially registered. Reference only — nothing is ever cut against it.')}`;
+
+    const choices = [
+        { value: 'gdi', label: translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)') },
+        { value: 'dgu', label: translateRoadText('modal.buildingLayers.dgu', 'DGU cadastre (legal reference)') },
+        { value: 'both', label: translateRoadText('modal.buildingLayers.both', 'Both') },
+        { value: 'cancel', label: translateRoadText('modal.buildingLayers.cancel', 'Cancel') }
+    ];
+
+    const answer = (typeof window.showStyledChoice === 'function')
+        ? await window.showStyledChoice(message, choices)
+        : 'gdi';
+    if (!answer || answer === 'cancel') return;
+
+    const gdi = answer === 'gdi' || answer === 'both';
+    const dgu = answer === 'dgu' || answer === 'both';
+    lastBuildingLayerChoice = { gdi, dgu };
+    setBuildingReferenceLayers(gdi, dgu);
+}
+
+// B toggles the building REFERENCE layers — flipped constantly while drawing roads through fabric,
+// so it must stay instant. It never changes what a corridor cuts: detection reads the feature pool,
+// not these layers.
+//
+//   something on  → remember it, turn everything off. INSTANT, no dialog.
+//   nothing on    → restore the remembered choice. INSTANT, no dialog.
+//   nothing on and nothing ever chosen → the one and only dialog: DGU / GDI / both.
+function toggleBuildingReferenceLayers() {
+    const gdiOn = !!document.getElementById('showBuildings')?.checked;
+    const dguOn = !!document.getElementById('showBuildingsDgu')?.checked;
+
+    if (gdiOn || dguOn) {
+        lastBuildingLayerChoice = { gdi: gdiOn, dgu: dguOn };
+        setBuildingReferenceLayers(false, false);
+        return;
+    }
+    if (lastBuildingLayerChoice) {
+        setBuildingReferenceLayers(lastBuildingLayerChoice.gdi, lastBuildingLayerChoice.dgu);
+        return;
+    }
+    promptBuildingLayerChoice();
+}
+
 function handleRoadDrawHotkey(event) {
     if (!event) return;
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (isEditableTarget(event.target)) return;
     if (isAnyModalOpen()) return;
-    // B toggles the existing-buildings layer — flipped often while drawing roads through fabric.
     if (event.key === 'b' || event.key === 'B') {
-        const checkbox = document.getElementById('showBuildings');
-        if (!checkbox) return;
         event.preventDefault();
-        checkbox.checked = !checkbox.checked;
-        if (typeof toggleLayer === 'function') toggleLayer('buildings');
+        toggleBuildingReferenceLayers();
         return;
     }
     if (event.key !== 'r' && event.key !== 'R') return;
@@ -2626,6 +2711,11 @@ function attachRoadDrawHotkey() {
     if (roadDrawHotkeyAttached) return;
     document.addEventListener('keydown', handleRoadDrawHotkey);
     roadDrawHotkeyAttached = true;
+}
+
+if (typeof window !== 'undefined') {
+    window.toggleBuildingReferenceLayers = toggleBuildingReferenceLayers;
+    window.setBuildingReferenceLayers = setBuildingReferenceLayers;
 }
 
 if (typeof document !== 'undefined') {
@@ -3893,6 +3983,27 @@ function convertRoadPolygonToLatLngPairs(polygon) {
         return pairs.length >= 4 ? pairs : null;
     };
 
+    // MultiPolygon FIRST: [ [ring, hole...], [ring, ...], ... ].
+    //
+    // This has to be tested before polygon-with-holes, and it has to accept rings made of LatLng
+    // OBJECTS, not just numeric pairs. combineRoadPolygons produces exactly that shape whenever the
+    // footprint is DISJOINT — which is what a corridor tunnelled through its MIDDLE is: two surface
+    // runs, one either side of the tunnel. The old order matched such a footprint as a
+    // polygon-with-holes, tried to read each ring as a coordinate pair, produced NaN, and returned
+    // null. Every consumer then silently lost the footprint: the 3D view carved nothing at all for
+    // a mid-corridor tunnel, and parcel parents under the tunnel were never re-derived.
+    //
+    // The giveaway is depth: in a MultiPolygon, polygon[0][0] is itself a list of POINTS (one level
+    // deeper than in a polygon-with-holes, where polygon[0][0] IS a point).
+    const isPoint = (value) => isLatLngObj(value)
+        || (Array.isArray(value) && value.length >= 2 && typeof value[0] === 'number');
+    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && isPoint(polygon[0][0][0])) {
+        const polys = polygon
+            .map(poly => Array.isArray(poly) ? poly.map(toRingPairs).filter(Boolean) : [])
+            .filter(rings => rings.length);
+        return polys.length ? polys : null;
+    }
+
     // Polygon with holes: [ring, hole1, ...]
     if (Array.isArray(polygon[0]) && polygon[0].length) {
         const firstRing = polygon[0];
@@ -3907,14 +4018,7 @@ function convertRoadPolygonToLatLngPairs(polygon) {
         return toRingPairs(polygon);
     }
 
-    // MultiPolygon: [ [rings...], [rings...] ... ]
-    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && Array.isArray(polygon[0][0][0])) {
-        const polys = polygon
-            .map(poly => Array.isArray(poly) ? poly.map(toRingPairs).filter(Boolean) : [])
-            .filter(rings => rings.length);
-        return polys.length ? polys : null;
-    }
-
+    // (The MultiPolygon case is handled at the top — it must be tested before polygon-with-holes.)
     return null;
 }
 
@@ -5128,7 +5232,10 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         },
         editorPayload: {
             kind,
-            definition: {
+            // The merged corridor inherits the absorbed roads' tunnels, so its surface footprint
+            // has to be rebuilt from the MERGED centerline — a stale one would carve buildings the
+            // merged road now passes under.
+            definition: attachCorridorSurfaceFootprint({
                 ...JSON.parse(JSON.stringify(draftDefinition)),
                 points: mergedSegments,
                 segments: mergedSegments,
@@ -5141,7 +5248,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
                 segmentProfiles: mergedProfiles,
                 polygon: (mergedPolygon && mergedPolygon.type) ? mergedPolygon : draftDefinition.polygon || null,
                 latLngPairs
-            }
+            })
         }
     }, { recordHistory: false });
 

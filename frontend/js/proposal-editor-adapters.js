@@ -179,7 +179,7 @@
     function corridorPayloadFromSeed(seed, sourceDefinition) {
         const kind = seed?.kind || (global.corridorIsTrack(sourceDefinition) ? 'track' : 'road');
         const segments = clone(seed?.centerline || []);
-        return {
+        const payload = {
             ...(clone(sourceDefinition || {})),
             points: segments,
             segments,
@@ -201,6 +201,17 @@
                 trackMinRadius: seed?.trackMinRadius
             }
         };
+        // Every editor-built corridor definition passes through here on its way to the draft and,
+        // from there, to the API. Re-derive the surface footprint from the payload's OWN tunnels
+        // and centerline: the spread above would otherwise carry a stale one over from the source
+        // definition. It is the ground the corridor actually clears and actually buys, and only the
+        // browser can compute it (city projection) — see attachCorridorSurfaceFootprint.
+        if (typeof global.attachCorridorSurfaceFootprint === 'function') {
+            global.attachCorridorSurfaceFootprint(payload);
+        } else {
+            payload.surfaceFootprint = null;
+        }
+        return payload;
     }
 
     function proposalBuildingContext(proposal) {

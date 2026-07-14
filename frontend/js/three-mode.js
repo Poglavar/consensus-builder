@@ -229,33 +229,22 @@
         return found;
     }
 
-    // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull
-    // of all its face vertices. Cached on the building object since it never changes.
+    // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull of all
+    // its face vertices. Cached on the building object since it never changes.
+    //
+    // NOT used by the carve — that matches records to meshes by object_id and takes its polygons
+    // from the record. This hull is an approximation (it fills in the notch of an L-shaped block),
+    // which is fine for the parcel VOLUME estimate below, its only remaining caller.
     function buildingFootprintPolygon(bld) {
         if (!bld || !Array.isArray(bld.faces)) return null;
         if (bld.__footprintPolygon !== undefined) return bld.__footprintPolygon;
-        const pts = [];
-        for (const face of bld.faces) {
-            if (!face || !Array.isArray(face.coordinates)) continue;
-            for (const ring of face.coordinates) {
-                if (!Array.isArray(ring)) continue;
-                for (const c of ring) {
-                    if (c && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])) {
-                        pts.push(turf.point([c[0], c[1]]));
-                    }
-                }
-            }
-        }
-        let hull = null;
-        if (pts.length >= 3) {
-            try { hull = turf.convex(turf.featureCollection(pts)); } catch (_) { hull = null; }
-        }
+        const hull = window.buildingFootprintFromFaces(bld.faces, turf);
         bld.__footprintPolygon = hull;
         return hull;
     }
 
     // Drop coincident duplicate meshes from a nearby-buildings response. Some city 3D models
-    // (notably Zagreb building_3d) store a building twice under different object_ids with the same
+    // (notably Zagreb gdi_building_3d) store a building twice under different object_ids with the same
     // footprint — this causes z-fighting in the 3D view and double-counts existing volume in the
     // gain calc. Deduping once at fetch intake gives every consumer a clean list. Two buildings are
     // treated as the same when their vertex-mean centroids are within ~2 m and their vertical
@@ -2033,121 +2022,30 @@
     }
 
     function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, hideDemolished = false) {
-        // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
-        // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
-        // via WFS) is no longer used here — it has only 2D footprints with no heights.
-        // Buildings demolished by applied corridors are matched by FOOTPRINT (the 2D and 3D
-        // datasets have different id spaces) and drawn as condemned ghosts — they follow the
-        // Built control like every existing building, but never look like surviving fabric.
+        // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
+        // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
+        // that the 2D map serves and that cut/tunnel/demolish detection scans. So a demolished or
+        // cut building is found here by ID, exactly. They are drawn as condemned ghosts: they
+        // follow the Built control like every existing building, but never look like surviving fabric.
         try {
-            // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-            const demolitionRecords = window.collectDemolishedBuildingRecords().filter(record => record && record.geometry);
-            // Each record's demolished REGION: the whole footprint for a full demolition, the
-            // accumulated cut for a partial one. Matching is by OVERLAP, not centroid — the 2D
-            // (DKP) and 3D (building_3d) datasets subdivide buildings differently, so one 3D hall
-            // can be hit by several 2D records and a record can clip only a wing of a 3D mesh;
-            // centroid containment missed those and left roads vanishing into uncut meshes.
-            const demolitionRegions = [];
-            if (typeof turf !== 'undefined') {
-                demolitionRecords.forEach(record => {
-                    try {
-                        const region = { type: 'Feature', properties: {}, geometry: record.demolishedPart || record.geometry };
-                        demolitionRegions.push({ region, bbox: turf.bbox(region) });
-                    } catch (error) {
-                        console.error('[three-mode] demolition record has unusable geometry — ignored in 3D', record.id, error);
-                    }
-                });
-            }
-            const bboxesOverlap = (a, b) => a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
-            // Applied corridors ALSO carve their surface footprint out of every mesh they cross
-            // even without a matching record: the 2D and 3D datasets genuinely disagree in places
-            // (a mesh with no DKP footprint can never earn a record), and Cut-through is the
-            // corridor default. Tunnel spans are excluded via the surface footprint. A higher
-            // area bar than record carving — max(15 m², 5%) — keeps facade-grazing dataset
-            // offsets from turning whole street fronts into prisms.
-            const corridorRegions = [];
-            if (typeof turf !== 'undefined' && typeof proposalStorage !== 'undefined') {
-                const pushRegion = (geometry) => {
-                    const geom = geometry?.geometry || geometry; // accept Feature or raw geometry
-                    if (!geom || !geom.type || !Array.isArray(geom.coordinates)) return;
-                    const region = { type: 'Feature', properties: {}, geometry: geom };
-                    try { corridorRegions.push({ region, bbox: turf.bbox(region) }); } catch (_) { }
-                };
-                try {
-                    (proposalStorage.getAllProposals() || []).forEach(proposal => {
-                        const appliedLike = (...statuses) => statuses
-                            .some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
-                        const definition = corridorProposalDefinition(proposal);
-                        if (definition && appliedLike(proposal.status, proposal.roadProposal?.status)) {
-                            pushRegion((Array.isArray(definition.tunnels) && definition.tunnels.length
-                                && typeof window.corridorSurfaceFootprintForDefinition === 'function')
-                                ? window.corridorSurfaceFootprintForDefinition(definition)
-                                : definition.polygon);
-                        }
-                        // Parks/squares/lakes clear their ground by default — their footprint is a
-                        // clearance region even when the 2D scan missed a building (coverage gaps,
-                        // meshes with no DKP counterpart).
-                        const sp = proposal?.structureProposal;
-                        if (sp && appliedLike(proposal.status, sp.status)) {
-                            pushRegion(sp.geometry);
-                        }
-                    });
-                } catch (error) {
-                    console.error('[three-mode] carve regions could not be collected', error);
-                }
-            }
+            // The carve lives in corridor-carve.js — the SAME module the server runs, so the 3D
+            // view here and the walk sim's carved meshes cannot disagree about which buildings
+            // survive. Hard dependency: a missing export is a load-order bug, fail loud.
+            //
+            // There is no geometry matching here any more, and no thresholds. A demolition record
+            // NAMES its mesh (record.id === object_id) and carries the polygons the draw-time
+            // subtraction produced against that object's own footprint. Lookup, not guesswork.
+            // A TUNNELLED building simply has no record, so it comes back untouched.
+            const carveRecords = window.collectCarveRecords(
+                (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || []
+            );
             // null → untouched; { remainder: null, demolished } → whole building razed;
-            // { remainder, demolished } → partial: prisms for both parts.
-            const demolitionCarveFor = (bld) => {
-                if ((!demolitionRegions.length && !corridorRegions.length) || typeof turf === 'undefined') return null;
-                try {
-                    const footprint = buildingFootprintPolygon(bld);
-                    if (!footprint) return null;
-                    const footprintBbox = turf.bbox(footprint);
-                    const footprintArea0 = Number(turf.area(footprint)) || 0;
-                    let demolishedUnion = null;
-                    const absorb = (part) => {
-                        if (!demolishedUnion) {
-                            demolishedUnion = part;
-                        } else {
-                            try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (_) { }
-                        }
-                    };
-                    for (const { region, bbox } of demolitionRegions) {
-                        if (!bboxesOverlap(footprintBbox, bbox)) continue;
-                        let part = null;
-                        try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
-                        if (!part || (Number(turf.area(part)) || 0) < 2) continue;
-                        absorb(part);
-                    }
-                    // The graze bar (15 m² / 5%) keeps dataset offsets from prism-ifying street
-                    // fronts — but it must never exceed HALF the building, or small sheds fully
-                    // inside a park/lake could never clear it and survived as leftovers.
-                    const clearBar = Math.max(2, Math.min(Math.max(15, footprintArea0 * 0.05), footprintArea0 * 0.5));
-                    for (const { region, bbox } of corridorRegions) {
-                        if (!bboxesOverlap(footprintBbox, bbox)) continue;
-                        let part = null;
-                        try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
-                        if (!part || (Number(turf.area(part)) || 0) < clearBar) continue;
-                        absorb(part);
-                    }
-                    if (!demolishedUnion) return null;
-                    let remainder = null;
-                    try { remainder = turf.difference(footprint, demolishedUnion); } catch (_) { remainder = null; }
-                    // Same thresholds as the 2D cut (upsertCutRecord): a sliver remainder is not
-                    // worth keeping — the whole building reads as demolished.
-                    const footprintArea = Number(turf.area(footprint)) || 0;
-                    const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
-                    if (!remainder || remainderArea < Math.max(10, footprintArea * 0.15)) {
-                        return { remainder: null, demolished: footprint };
-                    }
-                    return { remainder, demolished: demolishedUnion };
-                } catch (_) { return null; }
-            };
+            // { remainder, demolished } → partial: prisms for both parts. Both are raw geometries.
+            const asFeature = (geometry) => (geometry ? { type: 'Feature', properties: {}, geometry } : null);
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
                     try {
-                        const carve = demolitionCarveFor(bld);
+                        const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords);
                         if (!carve) {
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
                             if (mesh) targetGroup.add(mesh);
@@ -2159,10 +2057,14 @@
                             // its measured height: the surviving remainder in normal material,
                             // the demolished part as the condemned ghost (absent in Surviving).
                             const height = building3DHeightMeters(bld);
-                            polygonFeatureToMeshes(carve.remainder, buildingMaterial, 0, height)
-                                .forEach(m => targetGroup.add(m));
-                            if (!hideDemolished) {
-                                polygonFeatureToMeshes(carve.demolished, buildingMaterials.demolished, 0, height)
+                            const remainder = asFeature(carve.remainder);
+                            const demolished = asFeature(carve.demolished);
+                            if (remainder) {
+                                polygonFeatureToMeshes(remainder, buildingMaterial, 0, height)
+                                    .forEach(m => targetGroup.add(m));
+                            }
+                            if (!hideDemolished && demolished) {
+                                polygonFeatureToMeshes(demolished, buildingMaterials.demolished, 0, height)
                                     .forEach(m => targetGroup.add(m));
                             }
                             return;
@@ -2310,7 +2212,7 @@
         return mesh;
     }
 
-    // --- Nearby buildings (sourced from building_3d via POST /buildings/near) ---
+    // --- Nearby buildings (sourced from gdi_building_3d via POST /buildings/near) ---
     // Query preference:
     //   1. Union-bbox of `window.proposedBuildings` (which already aggregates a chain of
     //      applied proposals). The backend uses ST_DWithin so this loads everything within

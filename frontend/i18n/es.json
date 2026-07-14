@@ -416,7 +416,8 @@
         "buildings": {
             "title": "Edificios",
             "showLayer": "Mostrar edificios",
-            "showExisting": "Mostrar edificios existentes",
+            "showGdi": "Edificios GDI (modelo 3D)",
+            "showDgu": "Catastro DGU (referencia legal)",
             "showProposed": "Mostrar edificios propuestos"
         },
         "roads": {
@@ -1213,6 +1214,16 @@
             "discard": "Descartar borrador",
             "discardAndWipe": "Descartar y borrar",
             "keep": "Conservar borrador"
+        },
+        "buildingLayers": {
+            "title": "¿Qué edificios mostrar?",
+            "intro": "Dos levantamientos de la misma ciudad: no coinciden, y vale la pena verlo.",
+            "gdi": "Edificios GDI (modelo 3D)",
+            "gdiHint": "Fotogrametría: lo que realmente existe. El modelo 3D usa esto, y también cada corte y demolición.",
+            "dgu": "Catastro DGU (referencia legal)",
+            "dguHint": "El catastro: lo que está registrado oficialmente. Solo referencia: nunca se corta sobre él.",
+            "both": "Ambos",
+            "cancel": "Cancelar"
         },
         "corridorTunnel": {
             "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Cortarlos, demolerlos o hacer un túnel?",

@@ -23,10 +23,17 @@
         if (props.proposalId !== undefined && props.proposalId !== null) {
             return `proposal:${props.proposalId}:${props.buildingIndex ?? 0}`;
         }
-        // ZGRADA_ID is the id the Zagreb DKP WFS actually ships (it has no object_id/id at all,
-        // and convertGeoJSON drops the feature-level id); the rest cover the other city sources.
-        const direct = props.ZGRADA_ID ?? props.zgrada_id ?? props.object_id ?? props.objectId
-            ?? props.OBJECT_ID ?? props.building_id ?? props.buildingId ?? props.id ?? feature?.id;
+        // object_id FIRST, and it is not a preference — it is the whole design. The buildings we
+        // work with ARE the GDI objects: `gdi_building_footprint` (what detection scans, and what
+        // GET /buildings?bbox= serves) and `gdi_building_3d` (what the 3D view and the walk sim
+        // render) are the same 357,683 features under the same object_id. Keying records on it is
+        // what lets every downstream consumer match a record to a mesh EXACTLY, by id.
+        //
+        // ZGRADA_ID is the DGU CADASTRE id — a different survey in a different key space. It is a
+        // reference layer only and must never be cut, tunnelled or demolished against, so it is
+        // NOT accepted here. The remaining keys cover the other city sources (NYC, Overture).
+        const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID
+            ?? props.building_id ?? props.buildingId ?? props.id ?? feature?.id;
         if (direct !== undefined && direct !== null && String(direct)) return String(direct);
         // No id property at all: derive a stable key from the geometry. Never key by pool index —
         // the pool is rebuilt between calls (fetch merges, demolition filtering), so index-based
@@ -83,16 +90,23 @@
         return hits;
     }
 
+    // The GDI buildings detection works with. This reads the POOL (`buildingFeaturePool`) — the
+    // data — and NEVER `buildingLayer` — the Leaflet DISPLAY layer.
+    //
+    // That distinction is the whole point. The reference layers (GDI footprints, DGU footprints)
+    // are cosmetic checkboxes the user flips constantly, and B is hammered mid-draw. Reading the
+    // display layer meant an unticked box literally removed buildings from the set that could be
+    // cut, so what a corridor demolished depended on what was switched on when it was drawn.
+    // The pool is filled by fetchBuildings() regardless of any checkbox (rebuildBuildingLayerFromPool
+    // is the only thing that consults visibility), so cutting is now independent of display.
     function collectLoadedCorridorBuildings() {
         const buildings = [];
         const seenProposalBuildings = new Set();
         const demolished = collectDemolishedBuildingIds();
-        const layer = global.buildingLayer;
-        if (layer && typeof layer.eachLayer === 'function') {
-            layer.eachLayer(entry => {
-                if (entry && entry.feature && entry.feature.geometry) buildings.push(entry.feature);
-            });
-        }
+        const pool = Array.isArray(global.buildingFeaturePool) ? global.buildingFeaturePool : [];
+        pool.forEach(feature => {
+            if (feature && feature.geometry) buildings.push(feature);
+        });
         if (Array.isArray(global.proposedBuildings)) {
             global.proposedBuildings.forEach(feature => {
                 if (feature && feature.geometry) buildings.push(feature);
@@ -176,8 +190,10 @@
             if (!Number.isFinite(zoom) || zoom < 17 || zoom > 19) return false;
             if (typeof global.fetchBuildings !== 'function') return false;
             await global.fetchBuildings();
-            // Footprint DATA is what tunnel detection needs; layer VISIBILITY follows the
-            // sidebar checkbox inside rebuildBuildingLayerFromPool, so nothing to undo here.
+            // Footprint DATA is what detection needs, and fetchBuildings always fills the pool.
+            // Reference-layer VISIBILITY is decided separately (rebuildBuildingLayerFromPool reads
+            // the sidebar checkboxes), so there is nothing to undo here and nothing a toggle can
+            // take away from the corridor.
             return collectLoadedCorridorBuildings().length > 0;
         } catch (error) {
             console.warn('[corridor-tunnel] building footprints could not be prepared', error);
@@ -382,8 +398,9 @@
     // Walks the user through the buildings a new corridor edge collides with.
     // Returns { action: 'destroy' | 'tunnel' | 'cancel', removedProposalIds, demolishedBuildings }.
     // Destroy: proposal-owned buildings are unapplied (the proposal survives in the list);
-    // real buildings are recorded as demolished — id AND footprint, because the 2D (DKP) and
-    // 3D (building_3d) datasets have different id spaces, so 3D hides them by geometry.
+    // real buildings are recorded as demolished — the object_id AND the footprint. The id is what
+    // the 3D view and the walk sim match on (same GDI object_id, exactly); the footprint is what
+    // the cut geometry is subtracted from, and what the 2D layer redraws a partial demolition with.
     async function resolveBuildingObstacles(hits, corridorKind = 'road') {
         const removedProposalIds = [];
         const demolishedBuildings = [];
@@ -443,45 +460,23 @@
 
     // Demolition records of every currently APPLIED corridor. Unapplying or deleting the
     // corridor takes its demolitions with it — the buildings come back.
+    //
+    // The walk of the proposals lives in corridor-carve.js (demolishedBuildingRecordsFrom) because
+    // the server needs the same list without a proposalStorage; this stays as the browser's
+    // storage-bound entry point. Roads, parks/squares/lakes and building typologies all clear
+    // their ground the same way and all park their records on `<kind>Proposal.demolishedBuildings`.
     function collectDemolishedBuildingRecords() {
-        const records = [];
         try {
-            (global.proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
-                const rp = proposal?.roadProposal;
-                if (rp?.definition) {
-                    const status = String(rp.status || proposal.status || '').toLowerCase();
-                    if (status === 'applied' || status === 'executed') {
-                        (rp.definition.demolishedBuildings || []).forEach(record => {
-                            if (record && record.id) records.push(record);
-                        });
-                    }
-                }
-                // Parks/squares/lakes clear their ground by default — their demolitions ride
-                // on structureProposal and count exactly like a road's.
-                const sp = proposal?.structureProposal;
-                if (sp && Array.isArray(sp.demolishedBuildings)) {
-                    const status = String(sp.status || proposal.status || '').toLowerCase();
-                    if (status === 'applied' || status === 'executed') {
-                        sp.demolishedBuildings.forEach(record => {
-                            if (record && record.id) records.push(record);
-                        });
-                    }
-                }
-                // Building typologies redevelop their parcels: same default, same records.
-                const bp = proposal?.buildingProposal;
-                if (bp && Array.isArray(bp.demolishedBuildings)) {
-                    const status = String(bp.status || proposal.status || '').toLowerCase();
-                    if (status === 'applied' || status === 'executed') {
-                        bp.demolishedBuildings.forEach(record => {
-                            if (record && record.id) records.push(record);
-                        });
-                    }
-                }
-            });
+            const from = global.demolishedBuildingRecordsFrom;
+            if (typeof from !== 'function') {
+                console.error('[corridor-tunnel] corridor-carve.js not loaded — no demolition records');
+                return [];
+            }
+            return from(global.proposalStorage?.getAllProposals?.() || []);
         } catch (error) {
             console.error('[corridor-tunnel] demolished-building scan failed', error);
+            return [];
         }
-        return records;
     }
 
     // PARTIAL demolition split: a building straddling the demolition region loses only the

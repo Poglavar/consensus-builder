@@ -1342,21 +1342,18 @@ function buildProposalThumbHtml(proposal) {
         `;
     }
 
+    // No image: show the goal badge and nothing else. Thumbnails are rendered server-side when a
+    // proposal is uploaded, so there is no "generate" action left for the user to take here — a
+    // proposal without one is either purely local or one the backfill has yet to reach.
     const goalKey = (typeof normalizeGoalKey === 'function')
         ? normalizeGoalKey(proposal.goal || proposal.proposalType || '')
         : '';
     const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
     const icon = badge ? badge.text : '🖼';
-    const t = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : ((_, fallback) => fallback);
-    const tooltip = t('modal.roadWidth.proposalList.thumb.generateTooltip', 'Click to generate a thumbnail (this may take a few seconds)');
-    const generateLabel = t('modal.roadWidth.proposalList.thumb.generateLabel', 'Generate');
     return `
         <div class="proposal-thumb proposal-thumb-empty" data-proposal-id="${safeProposalId}"
-             title="${escapeHtml(tooltip)}"
-             onclick="event.stopPropagation(); if (window.triggerProposalScreenshotRegeneration) window.triggerProposalScreenshotRegeneration('${safeProposalId.replace(/'/g, "\\'")}');">
+             ${badge ? `title="${escapeHtml(badge.label)}"` : ''}>
             <span class="proposal-thumb-icon" aria-hidden="true">${escapeHtml(icon)}</span>
-            <span class="proposal-thumb-label">${escapeHtml(generateLabel)}</span>
-            <div class="proposal-thumb-spinner" aria-hidden="true"></div>
         </div>
     `;
 }

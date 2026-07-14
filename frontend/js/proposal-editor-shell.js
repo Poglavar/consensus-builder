@@ -1330,8 +1330,6 @@
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         global.__openProposalDetailsCollapsed = true;
         try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
-        // Capture (or refresh, after a geometry edit) the thumbnail in the background.
-        try { global.scheduleProposalScreenshotRefresh?.(proposalId); } catch (_) { }
         return proposalId;
     }
 
@@ -1362,7 +1360,6 @@
         }
         global.__openProposalDetailsCollapsed = true;
         try { global.selectAndHighlightProposal?.(restoredId, (restored.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
-        try { global.scheduleProposalScreenshotRefresh?.(restoredId); } catch (_) { }
         if (typeof global.showEphemeralMessage === 'function') {
             global.showEphemeralMessage(tDraft('proposalDrafts.reverted', 'Restored the previous version.'), 4000, 'success');
         }

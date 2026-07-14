@@ -291,38 +291,25 @@
         };
     }
 
-    // Return URL for buildings depending on selected data source
-    function buildBuildingRequestParams(bbox) {
-        const dataSource = getDataSource();
+    // Return URL for building footprints. `source` picks WHICH SURVEY:
+    //
+    //   'gdi' (default) — the photogrammetric objects, keyed by object_id. This is the WORKING SET:
+    //                     the same features gdi_building_3d meshes, so it is what detection scans
+    //                     and what the 3D view renders.
+    //   'dgu'           — the cadastre (DKP_ZGRADE), keyed by zgrada_id. Reference layer only.
+    //
+    // Both come from OUR backend, on every data source. The OSS WFS is not an option here even in
+    // `oss.uredjenazemlja.hr` mode: it serves DKP_ZGRADE (cadastre) only, and it cannot serve the
+    // GDI objects at all — they exist solely in our database. Routing the working set through a
+    // source that can only ever return the OTHER survey is exactly the bug this all came from.
+    function buildBuildingRequestParams(bbox, source = 'gdi') {
         const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
         if (cityConfig && cityConfig.buildings && cityConfig.buildings.source === 'none') {
             return null;
         }
-        if (dataSource === 'oss.uredjenazemlja.hr') {
-            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-            const search = new URLSearchParams({
-                token: token,
-                service: 'WFS',
-                version: '1.0.0',
-                request: 'GetFeature',
-                maxFeatures: '2000',
-                outputFormat: 'json',
-                typeName: 'oss:DKP_ZGRADE',
-                srsName: 'EPSG:3765',
-                bbox: bbox
-            });
-            const url = `${OSS_BASE}?${search.toString()}`;
-            return { url, isOSS: true };
-        }
-
-        if (dataSource === 'localhost') {
-            const url = `${LOCAL_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
-            return { url, isOSS: false };
-        }
-
-        // api.urbangametheory.xyz
-        const url = `${UGT_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
-        return { url, isOSS: false };
+        const base = (getDataSource() === 'localhost') ? LOCAL_BASE : UGT_BASE;
+        const search = new URLSearchParams({ bbox, source: source === 'dgu' ? 'dgu' : 'gdi' });
+        return { url: `${base}/buildings?${search.toString()}`, isOSS: false };
     }
 
     function initDataSourceUI() {

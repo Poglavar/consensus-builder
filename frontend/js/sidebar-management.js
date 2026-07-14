@@ -91,6 +91,13 @@ function toggleAccordion(checkbox, options = {}) {
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
         }
+    } else if (layerName === 'buildingsDgu') {
+        const showDgu = document.getElementById('showBuildingsDgu').checked;
+        if (showDgu) {
+            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
+        } else if (typeof hideDguBuildingLayer === 'function') {
+            hideDguBuildingLayer();
+        }
     }
     // Proposals section no longer has a checkbox - proposals are always shown
     // Update interactivity of this section controls if it's expanded
@@ -602,7 +609,10 @@ function toggleBlocksVisibility() {
     }
 }
 
-// Toggle layer visibility
+// Toggle layer visibility.
+// `buildings` = the GDI footprints (the model). `buildingsDgu` = the DGU cadastre reference.
+// They are independent — both can be on at once — and NEITHER changes what a corridor cuts:
+// detection reads window.buildingFeaturePool (the data), never a Leaflet layer.
 function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
     const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
@@ -619,6 +629,15 @@ function toggleLayer(layerType) {
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
+        }
+    }
+
+    if (layerType === 'buildingsDgu') {
+        const showDgu = document.getElementById('showBuildingsDgu')?.checked;
+        if (showDgu) {
+            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
+        } else if (typeof hideDguBuildingLayer === 'function') {
+            hideDguBuildingLayer();
         }
     }
 
@@ -932,8 +951,9 @@ function updateParcelsCheckboxByZoom(within) {
 
         // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible
         const showBuildingsCheckbox = document.getElementById('showBuildings');
+        const showBuildingsDguCheckbox = document.getElementById('showBuildingsDgu');
         const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        [showBuildingsCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
+        [showBuildingsCheckbox, showBuildingsDguCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
             if (!cb) return;
             cb.disabled = !within;
         });
