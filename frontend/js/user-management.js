@@ -759,15 +759,6 @@ function handleTakeoverNo() {
     takeoverSection.style.display = 'none';
 }
 
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
 function getLocalizedTakeoverMessage(agentId, agentName) {
     const i18nApi = typeof window !== 'undefined' ? window.i18n : null;
     const safeName = escapeHtml(agentName || '');

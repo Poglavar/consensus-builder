@@ -35,15 +35,6 @@
         return output;
     }
 
-    function escapeHtml(value) {
-        return String(value === undefined || value === null ? '' : value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
     function currentCityId() {
         try {
             return global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityId === 'function'

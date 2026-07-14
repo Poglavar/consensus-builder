@@ -2,12 +2,10 @@
 // These used to live in e2e/tests/share-roundtrip.spec.ts and e2e/tests/proposals-sharing.spec.ts,
 // which booted Chromium to base64-encode five bytes.
 //
-// IMPORTANT — which copy is under test. Sharing is now "upload to the server and hand out a
-// /proposals/<ids> URL"; NOTHING in the app still produces an encoded ?shared= / ?proposalShare=
-// link. What remains is the READER for legacy links already in the wild, and it lives in
-// proposals/sharing-routes.js, which has its own private copies of these helpers. (proposals/
-// sharing.js carries a duplicate set that it publishes on `window`; no live code path calls those.)
-// So the base64 tests below target sharing-routes.js — the copy that actually runs.
+// Which copy is under test: there is now exactly one of each. The share codec lives in
+// proposals/sharing.js, and the generic escape/clone helpers in shared-utils.js. Both files used to
+// have duplicate twins (in proposals/sharing-routes.js and proposals/core.js respectively) that the
+// browser silently resolved by load order, so the copy under test was not always the copy that ran.
 //
 // decodeSharedPayload itself is not unit-tested: it reads SHARE_ENCODING_PREFIX_* and
 // decodeBytesToJson as cross-file globals that only resolve because the browser loads these as
@@ -20,15 +18,15 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     base64UrlEncodeBytes,
-    base64UrlDecodeToBytes
-} = require('../../frontend/js/proposals/sharing-routes.js');
+    base64UrlDecodeToBytes,
+    buildCityQueryParam
+} = require('../../frontend/js/proposals/sharing.js');
 const {
     deepClone,
     deepCloneArray,
     ensureArrayOfStrings,
-    escapeHtml,
-    buildCityQueryParam
-} = require('../../frontend/js/proposals/sharing.js');
+    escapeHtml
+} = require('../../frontend/js/shared-utils.js');
 
 describe('base64url encoding', () => {
     it('round-trips arbitrary bytes, including 0x00 and 0xFF', () => {
@@ -77,6 +75,17 @@ describe('escapeHtml', () => {
 
     it('escapes the ampersand first, so an entity is not double-escaped into nonsense', () => {
         expect(escapeHtml('a & b')).toBe('a &amp; b');
+    });
+
+    // Regression: three global copies of escapeHtml disagreed here, and the one that won by load
+    // order stringified null into the literal text "null" (and undefined into "undefined"), which
+    // is what callers passing an absent name/description were actually rendering.
+    it('renders null and undefined as an empty string, not "null"/"undefined"', () => {
+        expect(escapeHtml(null)).toBe('');
+        expect(escapeHtml(undefined)).toBe('');
+        expect(escapeHtml('')).toBe('');
+        expect(escapeHtml(0)).toBe('0');
+        expect(escapeHtml(false)).toBe('false');
     });
 });
 

@@ -801,46 +801,8 @@ function sortProposalIdsForShare(ids) {
     });
 }
 
-function deepClone(value) {
-    try {
-        if (value === undefined) return undefined;
-        return JSON.parse(JSON.stringify(value));
-    } catch (_) {
-        return null;
-    }
-}
-
-function deepCloneArray(values) {
-    if (!Array.isArray(values)) return [];
-    return values.map(item => deepClone(item));
-}
-
-function ensureArrayOfStrings(list) {
-    if (!Array.isArray(list)) return [];
-    return list
-        .map(value => {
-            if (value === null || value === undefined) return '';
-            try {
-                return value.toString();
-            } catch (_) {
-                return '';
-            }
-        })
-        .filter(Boolean);
-}
-
-function escapeHtml(str) {
-    try {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    } catch (_) {
-        return '';
-    }
-}
+// deepClone, deepCloneArray, ensureArrayOfStrings and escapeHtml live in js/shared-utils.js and
+// are used here as globals.
 
 function computeSharedBoundingBoxFromFeatures(features) {
     if (!Array.isArray(features) || features.length === 0) {

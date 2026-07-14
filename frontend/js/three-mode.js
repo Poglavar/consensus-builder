@@ -364,10 +364,6 @@
         try { return v.toLocaleString('en-US'); } catch (_) { return String(v); }
     }
 
-    function escapeHtml(s) {
-        return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-    }
-
     // --- Proposal lookup helpers (for the "Proposal info" view) ---
     function getProposalForParcel(parcelId) {
         try {

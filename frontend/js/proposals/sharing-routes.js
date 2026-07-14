@@ -1,82 +1,9 @@
-// proposals/sharing-routes.js — proposal share actions, payload encode/decode, and URL route
-// handlers (handleSharedPlanRoute etc.). Extracted from proposals.js. NOTE: 8 low-level helpers
-// (base64/compress/decode) are also defined in the pre-existing sharing.js (loaded after, wins) —
-// pre-existing duplication preserved as-is; dedup is a pass-2 cleanup.
-
-function base64UrlEncodeBytes(bytes) {
-    if (!(bytes instanceof Uint8Array) || bytes.length === 0) {
-        return '';
-    }
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-        binary += String.fromCharCode.apply(null, chunk);
-    }
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function base64UrlDecodeToBytes(input) {
-    let working = input || '';
-    working = working.replace(/-/g, '+').replace(/_/g, '/');
-    while (working.length % 4 !== 0) {
-        working += '=';
-    }
-    const binary = atob(working);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-}
-
-function compressBytes(bytes) {
-    if (!(bytes instanceof Uint8Array)) {
-        return { bytes, compressed: false };
-    }
-    if (typeof pako === 'undefined' || typeof pako.deflate !== 'function') {
-        return { bytes, compressed: false };
-    }
-    try {
-        const compressedBytes = pako.deflate(bytes, { level: 9 });
-        return { bytes: compressedBytes, compressed: true };
-    } catch (error) {
-        console.warn('pako.deflate failed, falling back to raw payload', error);
-        return { bytes, compressed: false };
-    }
-}
-
-function inflateBytes(bytes, { strict = false } = {}) {
-    if (typeof pako === 'undefined' || typeof pako.inflate !== 'function') {
-        if (strict) {
-            throw new Error('Compressed share links require compression support.');
-        }
-        return null;
-    }
-    try {
-        return pako.inflate(bytes);
-    } catch (error) {
-        if (strict) {
-            throw error;
-        }
-        console.warn('pako.inflate failed, falling back to raw payload', error);
-        return null;
-    }
-}
-
-function decodeBytesToJson(bytes) {
-    if (typeof TextDecoder !== 'undefined') {
-        const decoder = new TextDecoder();
-        return decoder.decode(bytes);
-    }
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-        binary += String.fromCharCode.apply(null, chunk);
-    }
-    return decodeURIComponent(escape(binary));
-}
+// proposals/sharing-routes.js — proposal share actions and URL route handlers
+// (handleSharedPlanRoute etc.). Extracted from proposals.js. The share codec it uses
+// (base64UrlEncodeBytes/base64UrlDecodeToBytes/compressBytes/inflateBytes/decodeBytesToJson/
+// decodeSharedPayload) and the SHARE_* constants live in proposals/sharing.js and are used here as
+// globals; this file used to carry a duplicate set of them, which sharing.js (loaded later) shadowed
+// so they never actually ran.
 
 function focusMapOnSharedProposal(proposal, payload) {
     if (!proposal || typeof map === 'undefined' || !map) {
@@ -179,75 +106,6 @@ function focusMapOnSharedProposal(proposal, payload) {
     }
 
     return false;
-}
-
-function collectProposalParentParcelIdsForShare(proposal) {
-    const ids = new Set();
-    const normalize = (value) => {
-        if (value === undefined || value === null) return null;
-        const str = value && value.toString ? value.toString() : String(value);
-        return str.trim() || null;
-    };
-    const addValue = (value) => {
-        const normalized = normalize(value);
-        if (normalized) ids.add(normalized);
-    };
-    const addMany = (list) => {
-        if (!list) return;
-        (Array.isArray(list) ? list : [list]).forEach(addValue);
-    };
-
-    if (!proposal) return [];
-
-    addMany(proposal.parentParcelIds);
-
-    if (proposal.roadProposal) {
-        addMany(proposal.roadProposal.parentParcelIds);
-    }
-
-    if (proposal.buildingProposal) {
-        addMany(proposal.buildingProposal.parentParcelIds);
-    }
-
-    if (proposal.structureProposal) {
-        addMany(proposal.structureProposal.parentParcelIds);
-    }
-
-    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parcelIds)) {
-        addMany(proposal.reparcellization.parcelIds);
-    }
-
-    if (ids.size === 0) {
-        addMany(proposal.parentParcelIds);
-    }
-
-    return Array.from(ids);
-}
-
-function getSerialProposalId(proposal) {
-    if (!proposal) return null;
-    // Prefer serverProposalId if it's numeric (serial ID)
-    if (proposal.serverProposalId) {
-        const id = String(proposal.serverProposalId);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    // Check if proposalId is numeric
-    if (proposal.proposalId) {
-        const id = String(proposal.proposalId);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    // Check if id is numeric
-    if (proposal.id) {
-        const id = String(proposal.id);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    return null;
 }
 
 function shareAppliedProposals() {
@@ -543,45 +401,6 @@ function buildSharedProposalsPayload(appliedProposals) {
         bbox,
         camera
     };
-}
-
-function decodeSharedPayload(encoded) {
-    if (!encoded) return null;
-    let working = encoded.trim();
-    let compressionMode = 'legacy';
-    if (working.startsWith(SHARE_ENCODING_PREFIX_COMPRESSED)) {
-        compressionMode = 'compressed';
-        working = working.slice(SHARE_ENCODING_PREFIX_COMPRESSED.length);
-    } else if (working.startsWith(SHARE_ENCODING_PREFIX_RAW)) {
-        compressionMode = 'raw';
-        working = working.slice(SHARE_ENCODING_PREFIX_RAW.length);
-    }
-    try {
-        if (SHARE_BASE64_ALLOWED.test(working)) {
-            const bytes = base64UrlDecodeToBytes(working);
-            let decodedBytes = bytes;
-            if (compressionMode === 'compressed') {
-                decodedBytes = inflateBytes(bytes, { strict: true });
-            } else if (compressionMode === 'legacy') {
-                const inflated = inflateBytes(bytes, { strict: false });
-                if (inflated && inflated.length) {
-                    decodedBytes = inflated;
-                }
-            }
-            const json = decodeBytesToJson(decodedBytes);
-            return JSON.parse(json);
-        }
-
-        if (compressionMode === 'compressed') {
-            throw new Error('Compressed shared payload is not base64 encoded.');
-        }
-
-        const json = decodeURIComponent(working);
-        return JSON.parse(json);
-    } catch (error) {
-        console.error('decodeSharedPayload failed', error);
-        throw error;
-    }
 }
 
 function isTruthyUrlFlag(params, key) {
@@ -2596,18 +2415,4 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
     } catch (error) {
         console.error('handleStandalone3DModeFromUrl failed', error);
     }
-}
-
-// Export the base64url helpers for node unit tests (backend/test/proposals-sharing-utils.test.js).
-// These are this file's OWN copies — the ones the legacy ?shared= / ?proposalShare= reader above
-// actually calls. (proposals/sharing.js carries a duplicate set that it puts on `window`; no live
-// code path calls those.) decodeSharedPayload itself is NOT exported: it reads
-// SHARE_ENCODING_PREFIX_* and decodeBytesToJson as cross-file globals, which only resolve because
-// the browser loads these as classic scripts sharing one global scope.
-// The browser is unaffected by this block.
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        base64UrlEncodeBytes,
-        base64UrlDecodeToBytes
-    };
 }

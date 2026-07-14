@@ -504,18 +504,21 @@ function getServerProposalId(proposal) {
 
 function getSerialProposalId(proposal) {
     if (!proposal) return null;
+    // Prefer serverProposalId if it's numeric (serial ID)
     if (proposal.serverProposalId) {
         const id = String(proposal.serverProposalId);
         if (/^\d+$/.test(id)) {
             return id;
         }
     }
+    // Check if proposalId is numeric
     if (proposal.proposalId) {
         const id = String(proposal.proposalId);
         if (/^\d+$/.test(id)) {
             return id;
         }
     }
+    // Check if id is numeric
     if (proposal.id) {
         const id = String(proposal.id);
         if (/^\d+$/.test(id)) {
@@ -541,47 +544,8 @@ function sortProposalIdsForShare(ids) {
 // ============================================================================
 // Clone Helpers
 // ============================================================================
-
-function deepClone(value) {
-    try {
-        if (value === undefined) return undefined;
-        return JSON.parse(JSON.stringify(value));
-    } catch (_) {
-        return null;
-    }
-}
-
-function deepCloneArray(values) {
-    if (!Array.isArray(values)) return [];
-    return values.map(item => deepClone(item));
-}
-
-function ensureArrayOfStrings(list) {
-    if (!Array.isArray(list)) return [];
-    return list
-        .map(value => {
-            if (value === null || value === undefined) return '';
-            try {
-                return value.toString();
-            } catch (_) {
-                return '';
-            }
-        })
-        .filter(Boolean);
-}
-
-function escapeHtml(str) {
-    try {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    } catch (_) {
-        return '';
-    }
-}
+// deepClone, deepCloneArray, ensureArrayOfStrings and escapeHtml live in js/shared-utils.js and
+// are used here as globals.
 
 // ============================================================================
 // Parcel Display Helpers
@@ -910,26 +874,20 @@ if (typeof window !== 'undefined') {
     window.inflateBytes = inflateBytes;
     window.getShareI18nHelper = getShareI18nHelper;
     window.collectProposalParentParcelIdsForShare = collectProposalParentParcelIdsForShare;
-    window.deepClone = deepClone;
-    window.deepCloneArray = deepCloneArray;
-    window.ensureArrayOfStrings = ensureArrayOfStrings;
-    window.escapeHtml = escapeHtml;
 }
 
-// Also export the pure encoding/escaping/cloning helpers for node, so they can be unit-tested without
-// a browser (backend/test/proposals-sharing-utils.test.js). compressBytes/inflateBytes are NOT unit-
-// tested here: they delegate to `pako`, which is a CDN global in the browser and is not an npm
-// dependency, so their round-trip stays in the Playwright suite.
+// Also export the pure encoding helpers for node, so they can be unit-tested without a browser
+// (backend/test/proposals-sharing-utils.test.js). This file holds the ONLY copy of the share codec;
+// proposals/sharing-routes.js used to carry a duplicate set that was shadowed by these and never ran.
+// compressBytes/inflateBytes are NOT unit-tested here: they delegate to `pako`, which is a CDN global
+// in the browser and is not an npm dependency, so their round-trip stays in the Playwright suite.
+// The clone/escape helpers moved to js/shared-utils.js, which exports them for node itself.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         base64UrlEncodeBytes,
         base64UrlDecodeToBytes,
         compressBytes,
         inflateBytes,
-        deepClone,
-        deepCloneArray,
-        ensureArrayOfStrings,
-        escapeHtml,
         buildCityQueryParam,
         resolveBackendBaseUrl,
         resolveFrontendBaseUrl

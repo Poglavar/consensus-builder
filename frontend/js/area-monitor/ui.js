@@ -613,12 +613,6 @@
         setTimeout(() => toast.remove(), 3500);
     }
 
-    function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str || '';
-        return div.innerHTML;
-    }
-
     function escapeAttr(str) {
         return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
