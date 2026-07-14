@@ -1571,18 +1571,9 @@
             .catch(error => console.error('[three-mode] existing rail lines failed to load', error));
     }
 
-    function estimateBuildingHeightMeters(feature) {
-        try {
-            const props = feature.properties || {};
-            if (typeof props.height === 'number' && isFinite(props.height) && props.height > 0) return props.height;
-            if (typeof props.HEIGHT === 'number' && isFinite(props.HEIGHT) && props.HEIGHT > 0) return props.HEIGHT;
-            if (typeof props.elevation === 'number' && isFinite(props.elevation) && props.elevation > 0) return props.elevation;
-            // stories/levels fallback
-            const levels = props.levels || props.storeys || props.stories || props.LEVELS || props.STORIES;
-            if (typeof levels === 'number' && isFinite(levels) && levels > 0) return levels * 3.3;
-        } catch (_) { }
-        return 10; // default 3 stories ~10 meters
-    }
+    // estimateBuildingHeightMeters is the shared estimator in frontend/js/building-height.js
+    // (loaded first). It accepts a feature or props, so the call sites below pass unchanged. It
+    // used to live here with a NUMBER-only height check that dropped string heights to the default.
 
     // Reparcellization plans that have NOT been applied to the map. An applied plan has already
     // replaced its parent parcels inside parcelLayer, so buildParcels3D draws the new parcels and

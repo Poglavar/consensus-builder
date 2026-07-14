@@ -240,43 +240,11 @@
             || source === 'api.urbangametheory.xyz';
     }
 
-    function formatPercentValue(value) {
-        if (!Number.isFinite(value)) {
-            return '';
-        }
-        const abs = Math.abs(value);
-        const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
-        const formatted = value.toFixed(decimals);
-        // Remove trailing zeros only after the decimal point, not from whole numbers
-        const cleaned = formatted.includes('.') ? formatted.replace(/\.?0+$/, '') : formatted;
-        return `${cleaned}%`;
-    }
-
-    function formatSharePercent(shareText) {
-        const share = (shareText || '').toString().trim();
-        if (!share) {
-            return '';
-        }
-        if (share.endsWith('%')) {
-            return share;
-        }
-        const parse = typeof global.parseFraction === 'function' ? global.parseFraction : null;
-        if (parse && share.includes('/')) {
-            const fraction = parse(share);
-            if (fraction && Number.isFinite(fraction.numerator) && Number.isFinite(fraction.denominator) && fraction.denominator !== 0) {
-                const pct = (fraction.numerator / fraction.denominator) * 100;
-                if (Number.isFinite(pct)) {
-                    return formatPercentValue(pct);
-                }
-            }
-        }
-        const num = Number(share);
-        if (Number.isFinite(num)) {
-            const pct = num <= 1 ? num * 100 : num;
-            return formatPercentValue(pct);
-        }
-        return share;
-    }
+    // The formatters live in frontend/js/parcels/share-format.js (loaded first) so the panel and
+    // this file cannot drift. Bind to the shared globals; delegation reads them at IIFE-run time,
+    // after that script has run.
+    const formatPercentValue = global.formatPercentValue;
+    const formatSharePercent = global.formatSharePercent;
 
     function normalizeOwnerTypeString(raw = '') {
         const value = raw.toString().trim();
@@ -994,8 +962,7 @@
     global.getParcelOwnerSlots = getParcelOwnerSlots;
     global.mapOwnerRecordsToSlots = mapOwnerRecordsToSlots;
     global.extractOwnersFromOwnershipPayload = extractOwnersFromOwnershipPayload;
-    global.formatSharePercent = formatSharePercent;
-    global.formatPercentValue = formatPercentValue;
+    // formatSharePercent / formatPercentValue are owned by share-format.js (loaded first).
     global.getOwnershipType = getOwnershipType;
     global.shouldUseRealParcelOwners = shouldUseRealParcelOwners;
 

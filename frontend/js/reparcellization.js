@@ -2170,52 +2170,9 @@
         }
     }
 
-    function parseShareValue(rawValue) {
-        if (!rawValue && rawValue !== 0) return NaN;
-        const value = String(rawValue).trim();
-        if (!value) return NaN;
-        const percentMatch = value.match(/^(\d+(?:\.\d+)?)\s*%$/);
-        if (percentMatch) {
-            const pct = parseFloat(percentMatch[1]);
-            return Number.isFinite(pct) ? pct / 100 : NaN;
-        }
-        const fractionMatch = value.match(/^(\d+)\s*\/\s*(\d+)$/);
-        if (fractionMatch) {
-            const numerator = parseFloat(fractionMatch[1]);
-            const denominator = parseFloat(fractionMatch[2]);
-            if (denominator === 0) return NaN;
-            return numerator / denominator;
-        }
-        const asNumber = parseFloat(value);
-        if (Number.isFinite(asNumber)) {
-            if (asNumber > 1) {
-                return asNumber;
-            }
-            if (asNumber >= 0 && asNumber <= 1) {
-                return asNumber;
-            }
-        }
-        return NaN;
-    }
-
-    function normalizeOwnerSlots(slots) {
-        if (!Array.isArray(slots) || !slots.length) return [];
-        const parsed = slots.map(slot => {
-            const fromText = parseShareValue(slot.shareText);
-            const fromDetail = parseShareValue(slot.shareDetail);
-            let value = Number.isFinite(fromDetail) ? fromDetail : fromText;
-            if (!Number.isFinite(value) || value <= 0) {
-                value = 0;
-            }
-            return { slot, value };
-        });
-        let total = parsed.reduce((sum, entry) => sum + entry.value, 0);
-        if (total <= 0) {
-            const equalShare = 1 / parsed.length;
-            return parsed.map(entry => ({ slot: entry.slot, fraction: equalShare }));
-        }
-        return parsed.map(entry => ({ slot: entry.slot, fraction: entry.value / total }));
-    }
+    // Share parsing / normalization lives in frontend/js/reparcellization-shares.js (loaded first)
+    // so it is unit-tested headless. It fixed the bare-"50" bug (see that file).
+    const { parseShareValue, normalizeOwnerSlots } = window.ReparcellizationShares;
 
     // Land value for a parcel: explicit estimatedMarketPrice when present,
     // otherwise area × average €/m². This is the contribution basis for

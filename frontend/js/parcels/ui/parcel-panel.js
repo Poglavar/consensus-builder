@@ -314,13 +314,13 @@
                 ownershipHtml = ownershipListFromProps.map(owner => {
                     const name = (owner.name || owner.ownerLabel || owner.possessorName || fallbackOwnerName).trim();
                     let share = owner.actualShareText || owner.ownership || owner.shareText;
-                    // Handle percentageShare if actualShareText is not available
+                    // Handle percentageShare if actualShareText is not available. Route through the
+                    // shared formatter — the old inline copy stripped zeros from whole numbers too,
+                    // so 100 rendered as "1%".
                     if (!share && Number.isFinite(owner.percentageShare)) {
-                        const value = owner.percentageShare;
-                        const abs = Math.abs(value);
-                        const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
-                        const formatted = value.toFixed(decimals).replace(/\.?0+$/, '');
-                        share = `${formatted}%`;
+                        share = (typeof global.formatPercentValue === 'function')
+                            ? global.formatPercentValue(owner.percentageShare)
+                            : `${owner.percentageShare}%`;
                     }
                     share = share || '100%';
                     const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
@@ -426,12 +426,14 @@
                     ? Number(proposal.offer)
                     : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null);
                 const offerCurrencyRaw = proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH';
-                const offerCurrency = typeof offerCurrencyRaw === 'string' ? offerCurrencyRaw.toUpperCase() : offerCurrencyRaw;
-                const currencySymbol = offerCurrency === 'EUR' ? '€' : '';
-                const currencySuffix = offerCurrency && offerCurrency !== 'EUR' ? ` ${offerCurrency}` : '';
-                const formattedOfferValue = rawOfferValue !== null && rawOfferValue > 0
-                    ? Math.round(rawOfferValue).toLocaleString('hr-HR')
+                // Shared formatter — the old Math.round path collapsed every sub-1-ETH agent offer
+                // (budgets are 0.01–0.05 ETH) to "0 ETH".
+                const offerParts = (typeof global.formatOffer === 'function')
+                    ? global.formatOffer(rawOfferValue, offerCurrencyRaw)
                     : null;
+                const currencySymbol = offerParts ? offerParts.symbol : '';
+                const currencySuffix = offerParts ? offerParts.suffix : '';
+                const formattedOfferValue = offerParts ? offerParts.value : null;
 
                 const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (goalKey || 'other');
                 const proposalTypeLabel = tParcel(

@@ -355,15 +355,10 @@
         return Cesium.Cartesian3.fromDegreesArray(flat);
     }
 
-    // Mirror three-mode.js estimateBuildingHeightMeters priority.
-    function buildingHeightM(props) {
-        if (!props) return 10;
-        const h = (props.height != null) ? props.height : (props.HEIGHT != null ? props.HEIGHT : props.elevation);
-        if (isFinite(+h) && +h > 0) return +h;
-        const lv = (props.levels != null) ? props.levels : (props.storeys != null ? props.storeys : props.stories);
-        if (isFinite(+lv) && +lv > 0) return +lv * 3.3;
-        return 10;
-    }
+    // Height comes from the shared estimator in frontend/js/building-height.js (loaded first) so
+    // this view and the 3D view cannot disagree about a building's massing. It accepts a feature or
+    // a props object.
+    const buildingHeightM = (props) => window.estimateBuildingHeightMeters(props);
 
     // Uploaded buildings carry a glTF model URL — render the real mesh (legacy's
     // placeUploadedModel branch) instead of an extruded box. Cesium is geographic, so the model

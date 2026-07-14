@@ -7892,66 +7892,11 @@ function _buildOffsetRoadPolygon(points, width) {
     }
 }
 
+// _createRectangularRoadSegment was a second, DIVERGED copy of road-drawing.js's function. Both are
+// now the shared, deterministic one in frontend/js/corridor-geometry.js. Keep the thin alias so the
+// two call sites below are unchanged.
 function _createRectangularRoadSegment(point1, point2, width) {
-    // Validate input
-    if (!point1 || !point2 || !isFinite(width) || width <= 0) {
-        console.warn('Invalid inputs to createRectangularRoadSegment');
-        return null;
-    }
-
-    if (!isFinite(point1.lat) || !isFinite(point1.lng) ||
-        !isFinite(point2.lat) || !isFinite(point2.lng)) {
-        console.warn('Invalid coordinates in createRectangularRoadSegment');
-        return null;
-    }
-
-    // Convert to HTRS96/TM for accurate distance calculations
-    const htrsPoint1 = wgs84ToHTRS96(point1.lat, point1.lng);
-    const htrsPoint2 = wgs84ToHTRS96(point2.lat, point2.lng);
-
-    // Validate converted points
-    if (!_isValidPoint(htrsPoint1) || !_isValidPoint(htrsPoint2)) {
-        console.warn('Invalid HTRS points in createRectangularRoadSegment');
-        return null;
-    }
-
-    // Calculate segment direction
-    const dx = htrsPoint2[0] - htrsPoint1[0];
-    const dy = htrsPoint2[1] - htrsPoint1[1];
-    const length = Math.sqrt(dx * dx + dy * dy);
-
-    // Skip if segment has near-zero length
-    if (length < 0.001) {
-        return null;
-    }
-
-    // Calculate perpendicular vector (normalized)
-    const perpX = -dy / length;
-    const perpY = dx / length;
-    const halfWidth = width / 2;
-
-    const corners = [
-        [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth],
-        [htrsPoint2[0] + perpX * halfWidth, htrsPoint2[1] + perpY * halfWidth],
-        [htrsPoint2[0] - perpX * halfWidth, htrsPoint2[1] - perpY * halfWidth],
-        [htrsPoint1[0] - perpX * halfWidth, htrsPoint1[1] - perpY * halfWidth],
-        [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth]
-    ];
-
-    const wgsCorners = [];
-    for (const corner of corners) {
-        const [lat, lng] = htrs96ToWGS84(corner[0], corner[1]);
-        if (isFinite(lat) && isFinite(lng)) {
-            wgsCorners.push(L.latLng(lat, lng));
-        }
-    }
-
-    if (wgsCorners.length < 4) {
-        console.warn('Not enough valid corners for rectangle');
-        return null;
-    }
-
-    return wgsCorners;
+    return window.createRectangularRoadSegment(point1, point2, width);
 }
 
 function _createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {

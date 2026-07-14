@@ -32,6 +32,8 @@
         'DRUŠTVENO VLASNIŠTVO',
         'ELEKTROPRIVREDA',
         'GRAD ZAGREB',
+        'GRAD KAŠTELA',
+        'GRAD TROGIR',
         'GRADSKA PLINARA',
         'HEP D.D.',
         'HOLDING',
@@ -52,6 +54,7 @@
         'REPUBLIKA HRVATSKA',
         'STUDENTSKI CENTAR',
         'STUDENTSKI DOM',
+        'SREDNJA ŠKOLA',
         'ŠUME',
         'SVEUČILIŠTE',
         'TEHNIČKA ŠKOLA',
@@ -139,7 +142,9 @@
             return 'private individual';
         }
         if (isCityOwnedLabel(normalizedLabel, options)) {
-            return 'government';
+            // The backend distinguishes the owning city from other government when it needs to
+            // (preserveCity); the map UI collapses both to 'government'.
+            return options.preserveCity === true ? 'city' : 'government';
         }
         if (includesAnyKeyword(normalizedLabel, GOVERNMENT_KEYWORDS)) {
             return 'government';

@@ -50,82 +50,16 @@ export function buildOwnershipDetailBatchQuery() {
     `;
 }
 
-const GOVERNMENT_OWNERSHIP_KEYWORDS_RAW = [
-    'AUTOBUSNI KOLODVOR',
-    'BOLNICA',
-    'CISTOCA',
-    'ČISTOĆA',
-    'DIOKI',
-    'DOM ZDRAVLJA',
-    'DRUSTVENO VLASNISTVO',
-    'DRUŠTVENO VLASNIŠTVO',
-    'ELEKTROPRIVREDA',
-    'GRAD ZAGREB',
-    'GRAD KAŠTELA',
-    'GRAD TROGIR',
-    'GRADSKA PLINARA',
-    'HEP D.D.',
-    'HOLDING',
-    'HRVATSKA RADIOTELEVIZIJA',
-    'HRVATSKE VODE',
-    'HRVATSKI OPERATOR',
-    'INA MAZIVA',
-    'INA-INDUSTRIJA NAFTE',
-    'INA - INDUSTRIJA NAFTE',
-    'INA, D.D.',
-    'INFRASTRUKTURA',
-    'JADRANSKI NAFTOVOD',
-    'JAVNA',
-    'JAVNO',
-    'KLINIKA',
-    'MINISTARSTVO',
-    'OSNOVNA SKOLA',
-    'OSNOVNA ŠKOLA',
-    'REPUBLIKA HRVATSKA',
-    'STUDENTSKI CENTAR',
-    'STUDENTSKI DOM',
-    'SREDNJA ŠKOLA',
-    'SUME',
-    'ŠUME',
-    'SVEUCILISTE',
-    'SVEUČILIŠTE',
-    'TEHNICKA SKOLA',
-    'TEHNIČKA ŠKOLA',
-    'TVORNICA ZELJEZNICKIH VOZILA GREDELJ',
-    'TVORNICA ŽELJEZNIČKIH VOZILA GREDELJ',
-    'TZV GREDELJ',
-    'TŽV GREDELJ',
-    'VELESAJAM',
-    'VODOOPSKRBA',
-    'VODOPRIVREDA ZAGREB',
-    'ZAGREBACKI ELEKTRICNI',
-    'ZAGREBAČKI ELEKTRIČNI',
-    'ZELJEZNICE',
-    'ŽELJEZNICE',
-    'ZRINJEVAC KOMUNALNA',
-    'ZUPANIJA',
-    'ŽUPANIJA'
-];
-
-const INSTITUTION_OWNERSHIP_KEYWORDS_RAW = [
-    'KAPTOL',
-    'CRKVA',
-    'UDRUGA',
-    'ASOCIJACIJA',
-    'SAVEZ',
-    'NADBISKUPIJA',
-    'BISKUPIJA',
-    'ŽUPA'
-];
-
-const COMPANY_OWNERSHIP_MARKERS_RAW = [
-    'D.D.',
-    'D.D',
-    'D.O.O.',
-    'D.O.O',
-    'J.D.O.O.',
-    'J.D.O.O'
-];
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+// The owner classifier and its keyword lists live in the frontend module, and the backend loads
+// THAT copy so the two cannot drift — they had (GRAD TROGIR read 'government' via the API and
+// 'private individual' in the browser). Same createRequire-a-classic-frontend-script pattern as
+// backend/buildings/carve.js.
+const {
+    classifyOwnershipLabel,
+    isCityOwnedLabel
+} = require('../../frontend/js/parcels/ownership-type.js');
 
 const FRACTION_REGEX = /^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/;
 
@@ -303,103 +237,16 @@ function normalizeShareDistribution(rawOwners) {
     return working;
 }
 
-function normalizeOwnerLabel(value) {
-    return sanitizeOwnershipString(value)
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase()
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function normalizeOwnerLabelLoose(value) {
-    return normalizeOwnerLabel(value)
-        .replace(/[^A-Z0-9]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function createNormalizedKeywordList(values = []) {
-    return Object.freeze(values.map(normalizeOwnerLabelLoose).filter(Boolean));
-}
-
-function includesAnyKeyword(label, keywords) {
-    if (!label) return false;
-    return keywords.some(keyword => label.includes(keyword));
-}
-
-const CITY_OWNERSHIP_MAPPERS = Object.freeze({
-    zagreb: Object.freeze({
-        exact: createNormalizedKeywordList([
-            'GRAD ZAGREB'
-        ]),
-        contains: createNormalizedKeywordList([
-            'GRAD ZAGREB',
-            'GRADA ZAGREBA',
-            'U VLASNISTVU GRADA ZAGREBA',
-            'U NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
-            'VLASNISTVU GRADA ZAGREBA',
-            'NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
-            'TRG STJEPANA RADICA 1 ZAGREB',
-            'OIB 61817894937'
-        ]),
-        regexes: Object.freeze([
-            /\bGRAD(?:A)? ZAGREB(?:A)?\b/
-        ])
-    })
-});
-
-const GOVERNMENT_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(GOVERNMENT_OWNERSHIP_KEYWORDS_RAW);
-const INSTITUTION_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(INSTITUTION_OWNERSHIP_KEYWORDS_RAW);
-const COMPANY_OWNERSHIP_MARKERS = createNormalizedKeywordList(COMPANY_OWNERSHIP_MARKERS_RAW);
-
-function getCityOwnershipMapper(options = {}) {
-    const cityKey = normalizeOwnerLabelLoose(options?.city || 'zagreb').toLowerCase();
-    return CITY_OWNERSHIP_MAPPERS[cityKey] || CITY_OWNERSHIP_MAPPERS.zagreb;
-}
-
-function isCityOwnedNormalizedLabel(normalizedLabel, options = {}) {
-    if (!normalizedLabel) {
-        return false;
-    }
-
-    const mapper = getCityOwnershipMapper(options);
-    if (mapper.exact.includes(normalizedLabel)) {
-        return true;
-    }
-    if (mapper.contains.some(keyword => normalizedLabel.includes(keyword))) {
-        return true;
-    }
-    return mapper.regexes.some(regex => regex.test(normalizedLabel));
-}
-
+// The classifier itself, its keyword lists and the city mapper now live in
+// frontend/js/parcels/ownership-type.js (imported above). These two thin wrappers keep the names
+// the rest of this file and its exports use.
 export function isCityOwnedOwnerLabel(ownerLabel, options = {}) {
-    return isCityOwnedNormalizedLabel(normalizeOwnerLabelLoose(ownerLabel), options);
-}
-
-function classifyOwnershipType(ownerLabel, options = {}) {
-    const normalizedLabel = normalizeOwnerLabelLoose(ownerLabel);
-    if (!normalizedLabel) {
-        return 'private individual';
-    }
-    if (isCityOwnedNormalizedLabel(normalizedLabel, options)) {
-        return options?.preserveCity === true ? 'city' : 'government';
-    }
-    if (includesAnyKeyword(normalizedLabel, GOVERNMENT_OWNERSHIP_KEYWORDS)) {
-        return 'government';
-    }
-    if (includesAnyKeyword(normalizedLabel, INSTITUTION_OWNERSHIP_KEYWORDS)) {
-        return 'institution';
-    }
-    if (includesAnyKeyword(normalizedLabel, COMPANY_OWNERSHIP_MARKERS)) {
-        return 'company';
-    }
-    return 'private individual';
+    return isCityOwnedLabel(ownerLabel, options);
 }
 
 function computeOwnershipTypeFromLabels(ownerLabels) {
     const types = (ownerLabels || [])
-        .map(label => classifyOwnershipType(label))
+        .map(label => classifyOwnershipLabel(label))
         .filter(Boolean);
 
     if (!types.length) {

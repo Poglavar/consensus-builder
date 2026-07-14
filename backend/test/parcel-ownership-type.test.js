@@ -62,6 +62,21 @@ describe('classifyOwnershipLabel', () => {
         expect(classifyOwnershipLabel('HEP d.d.')).toBe('government');
     });
 
+    it('classifies the coastal city owners the backend list carried (the drift bug)', () => {
+        // These three keywords lived only in the backend copy, so a GRAD TROGIR parcel read as
+        // government via the API and as a private individual in the browser.
+        expect(classifyOwnershipLabel('GRAD TROGIR')).toBe('government');
+        expect(classifyOwnershipLabel('Grad Kaštela')).toBe('government');
+        expect(classifyOwnershipLabel('Srednja škola Ban Josip Jelačić')).toBe('government');
+    });
+
+    it('preserveCity distinguishes the owning city from other government', () => {
+        expect(classifyOwnershipLabel('Grad Zagreb', { preserveCity: true })).toBe('city');
+        expect(classifyOwnershipLabel('Grad Zagreb')).toBe('government');
+        // A non-city government owner stays government even with preserveCity.
+        expect(classifyOwnershipLabel('REPUBLIKA HRVATSKA', { preserveCity: true })).toBe('government');
+    });
+
     it('getOwnershipType is the single-argument alias', () => {
         expect(getOwnershipType('REPUBLIKA HRVATSKA')).toBe('government');
         expect(getOwnershipType('Ivan Horvat')).toBe('private individual');
