@@ -481,9 +481,126 @@
         return false;
     }
 
+    // ---- Track curvature constraints (moved out of road-drawing.js) --------------------------
+    // A track vertex must not create a turn tighter than its speed allows. Pure projection math
+    // (wgs84ToHTRS96 / htrs96ToWGS84 from the runtime global); the audio feedback stays in the UI.
+
+    // Track speed (km/h) → minimum curvature radius (m), from railway engineering standards.
+    const TRACK_SPEED_TO_MIN_RADIUS = {
+        50: 300, 80: 500, 120: 1000, 160: 2000, 200: 3500, 250: 5000
+    };
+
+    function getMinCurvatureRadius(speed) {
+        return TRACK_SPEED_TO_MIN_RADIUS[speed] || 1000;
+    }
+
+    // Radius (m) of the circle through three lat/lng points. Infinity when the points are collinear
+    // or too close (treated as straight).
+    function calculateCurvatureRadius(p1, p2, p3) {
+        const toMeters = (latLng) => {
+            const [x, y] = wgs84ToHTRS96(latLng.lat, latLng.lng);
+            return [x, y];
+        };
+        const a = toMeters(p1);
+        const b = toMeters(p2);
+        const c = toMeters(p3);
+        const ab = [b[0] - a[0], b[1] - a[1]];
+        const bc = [c[0] - b[0], c[1] - b[1]];
+        const ac = [c[0] - a[0], c[1] - a[1]];
+        const abLen = Math.hypot(ab[0], ab[1]);
+        const bcLen = Math.hypot(bc[0], bc[1]);
+        const acLen = Math.hypot(ac[0], ac[1]);
+        if (abLen < 0.1 || bcLen < 0.1 || acLen < 0.1) {
+            return Infinity; // Points too close, treat as straight
+        }
+        const area = Math.abs(ab[0] * bc[1] - ab[1] * bc[0]) / 2;
+        if (area < 0.1) {
+            return Infinity; // Collinear, treat as straight
+        }
+        return (abLen * bcLen * acLen) / (4 * area);
+    }
+
+    // Would appending newPoint after `points` violate the minimum radius? Returns
+    // { valid, adjustedPoint, violatesConstraint, wasAdjusted }. May nudge the point outward to
+    // satisfy the constraint when a small extension fixes it.
+    function checkCurvatureConstraint(points, newPoint, minRadius, deps = {}) {
+        if (points.length < 2) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+        }
+        const lastPoint = points[points.length - 1];
+        const secondLastPoint = points.length >= 2 ? points[points.length - 2] : null;
+        if (!secondLastPoint) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+        }
+
+        const [prevX, prevY] = wgs84ToHTRS96(secondLastPoint.lat, secondLastPoint.lng);
+        const [lastX, lastY] = wgs84ToHTRS96(lastPoint.lat, lastPoint.lng);
+        const [newX, newY] = wgs84ToHTRS96(newPoint.lat, newPoint.lng);
+
+        const prevDx = lastX - prevX;
+        const prevDy = lastY - prevY;
+        const prevDist = Math.hypot(prevDx, prevDy);
+        const dx = newX - lastX;
+        const dy = newY - lastY;
+        const dist = Math.hypot(dx, dy);
+        if (prevDist < 0.1 || dist < 0.1) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+        }
+
+        const prevAngle = Math.atan2(prevDy, prevDx);
+        const newAngle = Math.atan2(dy, dx);
+        let angleDiff = newAngle - prevAngle;
+        while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+        while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+        const absAngleDiff = Math.abs(angleDiff);
+        if (absAngleDiff < 0.01) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+        }
+
+        const radius = calculateCurvatureRadius(secondLastPoint, lastPoint, newPoint);
+        if (radius >= minRadius) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+        }
+
+        // L = 2·R·sin(θ/2): the minimum chord for this turn angle at the minimum radius.
+        const chordDx = newX - prevX;
+        const chordDy = newY - prevY;
+        const chordLength = Math.hypot(chordDx, chordDy);
+        const minRequiredChordLength = 2 * minRadius * Math.sin(absAngleDiff / 2);
+
+        if (chordLength < minRequiredChordLength) {
+            const cosAngleDiff = Math.cos(absAngleDiff);
+            const qa = 1;
+            const qb = -2 * prevDist * cosAngleDiff;
+            const qc = prevDist * prevDist - minRequiredChordLength * minRequiredChordLength;
+            const discriminant = qb * qb - 4 * qa * qc;
+            if (discriminant < 0) {
+                return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+            }
+            const requiredDist = (-qb + Math.sqrt(discriminant)) / (2 * qa);
+            if (requiredDist > dist * 2 || requiredDist < dist * 0.5) {
+                return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+            }
+            const scale = requiredDist / dist;
+            const adjustedX = lastX + dx * scale;
+            const adjustedY = lastY + dy * scale;
+            const [adjustedLat, adjustedLng] = htrs96ToWGS84(adjustedX, adjustedY);
+            const adjustedPoint = makeLatLng(deps, adjustedLat, adjustedLng);
+            const adjustedRadius = calculateCurvatureRadius(secondLastPoint, lastPoint, adjustedPoint);
+            if (adjustedRadius >= minRadius * 0.98) {
+                return { valid: true, adjustedPoint: adjustedPoint, violatesConstraint: false, wasAdjusted: true };
+            }
+        }
+
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+    }
+
     const api = {
         createRectangularRoadSegment,
         isValidHtrsPoint,
+        getMinCurvatureRadius,
+        calculateCurvatureRadius,
+        checkCurvatureConstraint,
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
         corridorConnectedComponents,
@@ -509,6 +626,9 @@
         window.convertRoadPolygonToLatLngPairs = convertRoadPolygonToLatLngPairs;
         window.convertLatLngPairsToGeoJSON = convertLatLngPairsToGeoJSON;
         window.isValidPolygonLatLngPairs = isValidPolygonLatLngPairs;
+        window.getMinCurvatureRadius = getMinCurvatureRadius;
+        window.calculateCurvatureRadius = calculateCurvatureRadius;
+        window.checkCurvatureConstraint = checkCurvatureConstraint;
     }
 
     if (typeof module !== 'undefined' && module.exports) {

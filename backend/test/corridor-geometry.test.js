@@ -17,7 +17,10 @@ const {
     weldCorridorSegments,
     convertRoadPolygonToLatLngPairs,
     convertLatLngPairsToGeoJSON,
-    isValidPolygonLatLngPairs
+    isValidPolygonLatLngPairs,
+    getMinCurvatureRadius,
+    calculateCurvatureRadius,
+    checkCurvatureConstraint
 } = require('../../frontend/js/corridor-geometry.js');
 
 // Identity-ish projection: treat (lat,lng) as (x=lng, y=lat) metres and back. Enough to exercise
@@ -243,5 +246,53 @@ describe('isValidPolygonLatLngPairs', () => {
         expect(isValidPolygonLatLngPairs([[[[0, 0], [0, 1], [1, 1]]]])).toBe(true); // multipolygon
         expect(isValidPolygonLatLngPairs([])).toBe(false);
         expect(isValidPolygonLatLngPairs(null)).toBe(false);
+    });
+});
+
+describe('curvature constraints', () => {
+    // Identity projection so metres == coordinate units; space points >0.1 apart.
+    const proj = { wgs84ToHTRS96: (lat, lng) => [lng, lat], htrs96ToWGS84: (x, y) => [y, x] };
+    const LL = (lat, lng) => ({ lat, lng });
+
+    it('getMinCurvatureRadius maps speed → radius with a 1000 m fallback', () => {
+        expect(getMinCurvatureRadius(200)).toBe(3500);
+        expect(getMinCurvatureRadius(50)).toBe(300);
+        expect(getMinCurvatureRadius(999)).toBe(1000); // unknown speed
+    });
+
+    it('calculateCurvatureRadius is Infinity for collinear/too-close, finite for a real bend', () => {
+        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
+        // Collinear (straight) → Infinity
+        expect(calculateCurvatureRadius(LL(0, 0), LL(0, 10), LL(0, 20))).toBe(Infinity);
+        // Too close → Infinity
+        expect(calculateCurvatureRadius(LL(0, 0), LL(0, 0.01), LL(0, 0.02))).toBe(Infinity);
+        // A right-angle bend → finite positive radius
+        const r = calculateCurvatureRadius(LL(0, 0), LL(0, 20), LL(20, 20));
+        expect(Number.isFinite(r)).toBe(true);
+        expect(r).toBeGreaterThan(0);
+        delete global.wgs84ToHTRS96;
+    });
+
+    it('checkCurvatureConstraint accepts a straight run and a gentle curve', () => {
+        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
+        global.htrs96ToWGS84 = proj.htrs96ToWGS84;
+        // Fewer than 2 prior points → trivially valid
+        expect(checkCurvatureConstraint([LL(0, 0)], LL(0, 10), 300).valid).toBe(true);
+        // A straight continuation → not violating
+        const straight = checkCurvatureConstraint([LL(0, 0), LL(0, 100)], LL(0, 200), 300);
+        expect(straight.valid).toBe(true);
+        expect(straight.violatesConstraint).toBe(false);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
+    });
+
+    it('checkCurvatureConstraint flags or adjusts a too-sharp turn', () => {
+        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
+        global.htrs96ToWGS84 = proj.htrs96ToWGS84;
+        // A sharp near-right-angle turn against a large min radius: either flagged or nudged.
+        const res = checkCurvatureConstraint([LL(0, 0), LL(0, 20)], LL(20, 20), 3500);
+        expect(res.violatesConstraint || res.wasAdjusted).toBe(true);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
     });
 });
