@@ -147,7 +147,6 @@
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
 
-        const step2Time = performance.now();
         plan.applied = true;
         plan.appliedAt = new Date().toISOString();
         plan.parentParcelIds = parentIds;
@@ -156,27 +155,8 @@
         proposalData.childParcelIds = childParcelIds;
         proposalData.reparcellization = plan;
 
-        proposalData.applied = true;
-        proposalData.updatedAt = new Date().toISOString();
-
-        proposalData.proposalId = proposalData.proposalId || proposalId;
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(proposalData);
-        } else {
-            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
-        }
-        if (typeof proposalStorage.save === 'function') {
-            proposalStorage.save();
-        }
-        console.debug(`[_applyReparcellizationProposal] Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
-
-        const step3Time = performance.now();
-        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
-        }
-        console.debug(`[_applyReparcellizationProposal] Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
+        persistAppliedProposal(proposalData, proposalId);
+        refreshProposalUIAfterApply(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
 
         const totalTime = performance.now() - startTime;
         console.debug(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);
@@ -694,24 +674,8 @@
         };
         proposalData.parentParcelIds = parentIds;
         proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...(shouldAddChild ? [String(childParcelId)] : [])]));
-        proposalData.applied = true;
-        proposalData.updatedAt = new Date().toISOString();
-
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(proposalData);
-        } else {
-            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
-        }
-        if (proposalStorage.save) proposalStorage.save();
-
-        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-            refreshParcelStylesForAppliedProposals();
-        }
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Applied decide later proposal ${proposalData.title || idLabel}`);
-        }
+        persistAppliedProposal(proposalData, proposalId);
+        refreshProposalUIAfterApply(`Applied decide later proposal ${proposalData.title || idLabel}`);
 
         console.debug(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
         return true;

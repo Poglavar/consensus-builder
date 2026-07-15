@@ -28,17 +28,25 @@ the duplicate-globals guard + existing tests + a manual browser smoke-check via 
    geometry cluster to `proposal-road-geometry.js`. Verified: byte-identical bodies, node method-presence,
    `frontend-duplicate-globals` guard, and in-browser (boot, all 10 methods `this`-bound, route/geometry
    globals intact).
-2. **[TODO — low risk] Pure helper extraction**: the synthetic-id / owner / parcel-feature module-level
-   helpers still in `proposal-manager.js` (and the child-feature filtering inside the apply modules) →
-   their own tested modules. Deferred here only because several are exported for
-   `proposal-manager-ids.test.js` and overlap `synthetic-parcel-identity.js`, so it needs a careful
-   export/require re-wire — not a blind move.
-3. **[TODO — risk-gated] Collapse the shared skeleton** into one `applyProposalPipeline(kind, hooks)`.
-   This restructures the CONTROL FLOW of the core apply methods, which have no node-runnable test net
-   (they need map/storage/DOM). Do NOT do this blind: first stand up a characterization harness (stub
-   map/proposalStorage/DOM and assert observable effects) OR drive a real apply/unapply per type in the
-   browser (needs proposals loaded — this profile's storage was empty). Until then the per-type files are
-   the safe unit of edit; the duplication stays but is at least isolated and findable.
+2. **[DONE] Helper extraction**: the synthetic-id / parcel-id / ownership module-level helpers →
+   `proposal-parcel-identity.js` (15 functions), with the export/test re-wire handled. `proposal-manager.js`
+   now 4,821 lines.
+3. **[DONE — but NOT as a pipeline]** Investigating the apply methods showed the original premise was
+   wrong: they do **not** share a large collapsible skeleton — the per-type work (road geometry, building
+   rendering, park/lake surfaces, reparcellization) is genuinely distinct, and even the tails differ
+   (road persists/indexes differently and mid-method). A rigid `applyProposalPipeline(kind, hooks)` would
+   have been the wrong abstraction (conditional soup). What IS shared is small boilerplate, now extracted
+   to `proposals/apply/finalize.js`: `persistAppliedProposal` (applied→save) and `refreshProposalUIAfterApply`
+   (the guarded UI refresh). Used by buildings/structures/reparcellization/decide-later; road keeps its
+   custom tail. Safety net stood up first: `apply-buildings.characterization.test.js` runs `_applyBuildingProposal`
+   end-to-end in node (stubbed collaborators as spies, asserts observable effects) — it stayed green across
+   the extraction — plus `apply-finalize.test.js` unit-tests the helpers.
+
+## Outcome
+`proposal-manager.js`: **8,210 → 4,821 lines**. The monolith is decomposed into focused, context-sized,
+load-order-correct modules; the genuinely-duplicated apply boilerplate is extracted and (for the first
+time) has node-runnable behavioral coverage. Remaining apply-method internals are legitimately
+type-specific and belong where they are.
 
 ## Guardrails
 - Never declare a bare top-level `function`/`const` that another file already declares — the

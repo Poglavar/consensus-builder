@@ -221,29 +221,12 @@
             uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
             console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
-            const step6Time = performance.now();
             // The structure is now on the map. Applying only moves the map-application axis; the
             // lifecycle (Active/Executed) is left as-is (executed structures stay executed).
             sp.applied = true;
             proposalData.structureProposal = sp;
-            proposalData.applied = true;
-            proposalData.proposalId = proposalData.proposalId || proposalId;
-            if (typeof proposalStorage._indexProposal === 'function') {
-                proposalStorage._indexProposal(proposalData);
-            } else {
-                proposalStorage.proposals.set(proposalData.proposalId, proposalData);
-            }
-            if (proposalStorage.save) proposalStorage.save();
-            console.debug(`[_applyStructureProposal] Step 6: Updated and saved proposal status (${(performance.now() - step6Time).toFixed(2)}ms)`);
-
-            const step7Time = performance.now();
-            try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-            try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-            try { if (typeof updateStatus === 'function') updateStatus(`Applied ${kind} proposal ${proposalData.title || idLabel}`); } catch (_) { }
-            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-                refreshParcelStylesForAppliedProposals();
-            }
-            console.debug(`[_applyStructureProposal] Step 7: Updated UI (${(performance.now() - step7Time).toFixed(2)}ms)`);
+            persistAppliedProposal(proposalData, proposalId);
+            refreshProposalUIAfterApply(`Applied ${kind} proposal ${proposalData.title || idLabel}`);
 
             const totalTime = performance.now() - startTime;
             console.debug(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);

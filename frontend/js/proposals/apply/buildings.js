@@ -171,16 +171,7 @@
         }
         proposalData.geometry.buildings = preparedFeatures.map(cloneFeature).filter(Boolean);
 
-        proposalData.applied = true;
-        proposalData.updatedAt = new Date().toISOString();
-
-        proposalData.proposalId = proposalData.proposalId || proposalId;
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(proposalData);
-        } else {
-            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
-        }
-        proposalStorage.save();
+        persistAppliedProposal(proposalData, proposalId);
 
         this._setDescendantProposalOnParcels(uniqueParentIds, proposalId);
 
@@ -188,22 +179,7 @@
         this._linkProposalToAncestors(proposalId, uniqueParentIds);
         console.debug(`[_applyBuildingProposal] Step 7: Linked to ${uniqueParentIds.length} ancestors (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
-        const step8Time = performance.now();
-        if (typeof updateShowProposalsButton === 'function') {
-            updateShowProposalsButton();
-        }
-        if (typeof updateProposalList === 'function') {
-            updateProposalList();
-        }
-
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Applied building proposal ${proposalData.title || idLabel}`);
-        }
-
-        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-            refreshParcelStylesForAppliedProposals();
-        }
-        console.debug(`[_applyBuildingProposal] Step 8: Updated UI (${(performance.now() - step8Time).toFixed(2)}ms)`);
+        refreshProposalUIAfterApply(`Applied building proposal ${proposalData.title || idLabel}`);
 
         const totalTime = performance.now() - startTime;
         console.debug(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
