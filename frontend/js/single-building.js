@@ -804,48 +804,17 @@
         const dX = Math.min(Math.max(0, chamferM || 0), maxChamferX);
         const dY = Math.min(Math.max(0, chamferM || 0), maxChamferY);
 
-        // Helper to rotate a point around origin
-        const rotatePoint = (x, y, angleDeg) => {
-            const angleRad = (angleDeg * Math.PI) / 180;
-            const cos = Math.cos(angleRad);
-            const sin = Math.sin(angleRad);
-            return [x * cos - y * sin, x * sin + y * cos];
-        };
-
         let ring;
 
         if (projector) {
-            const [cx, cy] = projector.project(centerLL);
-            const left = -halfW, right = halfW, bottom = -halfL, top = halfL;
-            let pts = [];
-            if (dX > 0 || dY > 0) {
-                pts.push(
-                    [left + dX, bottom],
-                    [right - dX, bottom],
-                    [right, bottom + dY],
-                    [right, top - dY],
-                    [right - dX, top],
-                    [left + dX, top],
-                    [left, top - dY],
-                    [left, bottom + dY]
-                );
-            } else {
-                pts.push(
-                    [left, bottom],
-                    [right, bottom],
-                    [right, top],
-                    [left, top]
-                );
-            }
-            // Apply rotation around center (0,0) then translate to actual center
-            pts = pts.map(([x, y]) => {
-                const [rx, ry] = rotatePoint(x, y, rotationDeg);
-                return [cx + rx, cy + ry];
-            });
-            ring = pts.map(([x, y]) => {
-                const [lat, lng] = projector.unproject([x, y]);
-                return [lng, lat];
-            });
+            // The projected ring math lives in frontend/js/single-building-geometry.js (tested). It
+            // scales the ground-metre size by 1/cos(lat) before offsetting in Mercator space — the
+            // fix for buildings coming out cos(φ) too small (a "20 m" building was ~14 m at Zagreb).
+            ring = window.SingleBuildingGeometry.buildRectangleRing(
+                projector,
+                { lat: centerLL.lat, lng: centerLL.lng },
+                { widthM, lengthM, chamferM, rotationDeg }
+            );
         } else {
             // Rhumb fallback
             const centerPt = turf.point([centerLL.lng, centerLL.lat]);
