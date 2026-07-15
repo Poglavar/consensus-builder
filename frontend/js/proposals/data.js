@@ -2296,7 +2296,9 @@ const serverProposalCache = {
     loading: false,
     error: null,
     lastCity: null,
-    lastFetchedAt: 0
+    lastFetchedAt: 0,
+    // Signature of the search/sort the cached rows answer; a change re-queries the server.
+    lastQuery: null
 };
 
 const PROPOSAL_SORT_OPTIONS = [

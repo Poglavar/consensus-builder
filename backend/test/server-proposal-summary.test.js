@@ -67,3 +67,44 @@ describe('normalizeServerProposalSummary', () => {
         expect(normalized.city).toBe('zagreb');
     });
 });
+
+describe('serverListQuery (server-side search/sort mapping)', () => {
+    // Load the script into a context we can mutate proposalListState on.
+    function loadWithState(state) {
+        const context = createContext({
+            window: undefined,
+            console,
+            normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
+            getCurrentCityId: () => 'zagreb',
+            proposalListState: state
+        });
+        runInContext(readFileSync(scriptPath, 'utf8'), context);
+        return context;
+    }
+
+    it('passes the trimmed search text as q', () => {
+        const ctx = loadWithState({ source: 'server', searchText: '  ilica  ', sortKey: 'created-desc' });
+        expect(ctx.serverListQuery().q).toBe('ilica');
+    });
+
+    it('only forwards DB-derivable sort keys; computed ones stay client-side', () => {
+        expect(loadWithState({ sortKey: 'value-desc' }).serverListQuery().sort).toBe('value-desc');
+        expect(loadWithState({ sortKey: 'created-asc' }).serverListQuery().sort).toBe('created-asc');
+        // area/acceptance/parcels are computed client-side → not sent (empty = server default)
+        expect(loadWithState({ sortKey: 'area-desc' }).serverListQuery().sort).toBe('');
+        expect(loadWithState({ sortKey: 'acceptance-desc' }).serverListQuery().sort).toBe('');
+    });
+
+    it('signature changes when the query changes, and is stable otherwise', () => {
+        const a = loadWithState({ searchText: 'foo', sortKey: 'value-desc' }).serverListQuerySignature();
+        const b = loadWithState({ searchText: 'foo', sortKey: 'value-desc' }).serverListQuerySignature();
+        const c = loadWithState({ searchText: 'bar', sortKey: 'value-desc' }).serverListQuerySignature();
+        expect(a).toBe(b);
+        expect(a).not.toBe(c);
+    });
+
+    it('isServerListTab reflects the active source', () => {
+        expect(loadWithState({ source: 'server' }).isServerListTab()).toBe(true);
+        expect(loadWithState({ source: 'local' }).isServerListTab()).toBe(false);
+    });
+});
