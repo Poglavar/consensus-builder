@@ -33,18 +33,24 @@ Split the overloaded proposal \`status\` into \`lifecycle_status\` + \`applied\`
 
   --proposals <a,b,c>   Only these proposal ids (numeric id or proposal_id). Default: every proposal.
   --apply               Actually write. WITHOUT THIS NOTHING IS WRITTEN (dry run is the default).
+  --drop-status         After backfilling, DROP the legacy \`status\` column (+ index) and make
+                        lifecycle_status NOT NULL. Leave this OFF for the first prod pass so the new
+                        columns land while the old code still runs; deploy the code, then re-run
+                        WITH --drop-status. Ignored for a --proposals subset.
   --help                Print this and exit.
 
 Reads the database from the usual PG* env vars (backend/.env). Idempotent and safe to re-run.
+Safe deploy order: (1) --apply  (2) deploy new backend  (3) --apply --drop-status.
 `);
 }
 
 function parseArgs(argv) {
-    const args = { proposals: null, apply: false, help: false };
+    const args = { proposals: null, apply: false, dropStatus: false, help: false };
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         if (arg === '--help' || arg === '-h') args.help = true;
         else if (arg === '--apply') args.apply = true;
+        else if (arg === '--drop-status') args.dropStatus = true;
         else if (arg === '--proposals') args.proposals = String(argv[++i] || '').split(',').map(s => s.trim()).filter(Boolean);
         else if (arg.startsWith('--proposals=')) args.proposals = arg.slice(12).split(',').map(s => s.trim()).filter(Boolean);
         else { console.error(`Unknown argument: ${arg}`); usage(); process.exit(1); }
@@ -202,17 +208,21 @@ async function main() {
             log(`WROTE ${label}`);
         }
 
-        // Drop the legacy overloaded column for good — only after every row has been backfilled, and
-        // only for a full run (a --proposals subset must not drop the column out from under the rest).
-        if (args.apply && !args.proposals) {
+        // Drop the legacy overloaded column — only when explicitly asked (--drop-status), only after
+        // every row is backfilled, and only for a full run (a --proposals subset must not drop the
+        // column out from under the rest). Keeping the drop as a deliberate second pass means the new
+        // columns can land while old code still runs; you deploy, THEN drop with no incompatible window.
+        if (args.apply && args.dropStatus && !args.proposals) {
             await pool.query(`ALTER TABLE proposal ALTER COLUMN lifecycle_status SET DEFAULT 'Active'`);
             await pool.query(`UPDATE proposal SET lifecycle_status = 'Active' WHERE lifecycle_status IS NULL`);
             await pool.query(`ALTER TABLE proposal ALTER COLUMN lifecycle_status SET NOT NULL`);
             await pool.query(`DROP INDEX IF EXISTS idx_proposals_status`);
             await pool.query(`ALTER TABLE proposal DROP COLUMN IF EXISTS status`);
             log('Dropped the legacy `status` column and its index. lifecycle_status is now NOT NULL.');
+        } else if (args.apply && args.dropStatus) {
+            log('Subset run (--proposals): left the legacy `status` column in place. Re-run without --proposals to drop it.');
         } else if (args.apply) {
-            log('Subset run (--proposals): left the legacy `status` column in place. Run without --proposals to drop it.');
+            log('Columns backfilled. Legacy `status` column LEFT IN PLACE — deploy the new code, then re-run with --drop-status.');
         }
 
         log(`Done. proposals=${totals.proposals} applied=true:${totals.appliedTrue} applied=false:${totals.appliedFalse} rescued(demolitions):${totals.rescued}`);
