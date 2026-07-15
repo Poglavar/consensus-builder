@@ -34,7 +34,14 @@ export function setupOsmRoadRoute(app, pool) {
 
             const params = [];
             if (hasBbox) {
-                sql += ` AND r.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID})`;
+                // The incoming bbox is EPSG:3765 (POSTGIS_SRID), but osm_road.geom is stored in a
+                // DIFFERENT SRID depending on the environment — 3765 on the dev DB, 4326 on prod. So the
+                // envelope is transformed into whatever SRID the table actually uses (read once from the
+                // data), keeping the && index-usable in the geom's native SRID instead of matching nothing.
+                sql += ` AND r.geom && ST_Transform(
+                    ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}),
+                    (SELECT ST_SRID(geom) FROM osm_road WHERE current AND geom IS NOT NULL LIMIT 1)
+                )`;
                 params.push(bboxParts[0], bboxParts[1], bboxParts[2], bboxParts[3]);
             }
 
