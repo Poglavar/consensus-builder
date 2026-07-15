@@ -198,6 +198,66 @@
     // mid-span). Metres — a couple of lane-widths short of touching is still clearly a junction.
     const NEAR_MISS_JUNCTION_METERS = 2.5;
 
+    // Fuse vertices that sit within `toleranceMeters` of one another onto ONE shared position, so a
+    // node placed close to an existing one BECOMES the same node — a genuine shared junction when the
+    // two vertices belong to different legs — instead of two near-coincident duplicates. There is no
+    // legitimate "two vertices almost in the same spot": either the user meant one node (weld them) or
+    // they are far enough apart to stay distinct. Runs BEFORE crossing-node insertion and connectivity
+    // so the welded coincidence is what those see. Mutates `segments` in place; segment COUNT is
+    // preserved (a leg that collapses to a single distinct point is left for the caller's usual
+    // length>=2 filter). Zero-length edges the weld creates inside a leg are dropped.
+    function weldNearbyVertices(segments, toleranceMeters = NEAR_MISS_JUNCTION_METERS) {
+        if (!Array.isArray(segments) || typeof wgs84ToHTRS96 !== 'function') return;
+        const project = (p) => {
+            try {
+                const xy = wgs84ToHTRS96(p.lat, p.lng);
+                return (Array.isArray(xy) && isFinite(xy[0]) && isFinite(xy[1])) ? xy : null;
+            } catch (_) { return null; }
+        };
+        const tolSq = toleranceMeters * toleranceMeters;
+        // Each vertex snaps onto the nearest EARLIER vertex within tolerance — earlier ones are the
+        // anchors and never move, which makes the result deterministic and convergent (two near nodes
+        // don't chase each other). A vertex is NEVER welded to its own immediate neighbour in the same
+        // leg: that gap is a real edge (a bend, a finely-sampled curve) and collapsing it would eat
+        // geometry. Cross-leg proximity, and a leg looping back onto a non-adjacent part of itself,
+        // ARE welded — that is the "I placed this node on that one to join them" case.
+        const anchors = []; // { si, pi, xy, point }
+        segments.forEach((segment, si) => {
+            if (!Array.isArray(segment)) return;
+            segment.forEach((point, pi) => {
+                if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+                const xy = project(point);
+                if (!xy) return;
+                let best = null;
+                for (const anchor of anchors) {
+                    if (anchor.si === si && Math.abs(anchor.pi - pi) === 1) continue; // same-leg neighbour
+                    const dx = xy[0] - anchor.xy[0];
+                    const dy = xy[1] - anchor.xy[1];
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq <= tolSq && (!best || distSq < best.distSq)) best = { distSq, point: anchor.point };
+                }
+                if (best) {
+                    point.lat = best.point.lat;
+                    point.lng = best.point.lng;
+                }
+                anchors.push({ si, pi, xy: project(point) || xy, point });
+            });
+        });
+        // Drop any EXACT zero-length edge (consecutive identical vertices) the weld produced. A
+        // non-consecutive self-touch (a leg that loops back onto itself) is left intact.
+        const EPS = 1e-9;
+        segments.forEach(segment => {
+            if (!Array.isArray(segment)) return;
+            for (let i = segment.length - 1; i > 0; i -= 1) {
+                const a = segment[i];
+                const b = segment[i - 1];
+                if (a && b && Math.abs(a.lat - b.lat) < EPS && Math.abs(a.lng - b.lng) < EPS) {
+                    segment.splice(i, 1);
+                }
+            }
+        });
+    }
+
     // Closest point on segment [a,b] to p, in planar metres. Returns { dist, t } with t the clamped
     // position along the segment (0 at a, 1 at b), or null if the projection is unavailable. Uses the
     // runtime's wgs84ToHTRS96 (bare global, like polylineHasSelfIntersection) so metres are honest.
@@ -238,11 +298,13 @@
         return false;
     }
 
-    // Do two centerline sets genuinely connect — sharing a vertex, crossing, or a near-miss
-    // T-junction where one road's endpoint stopped a couple of metres short of the other's
-    // centerline (footprints overlap, so it LOOKS connected)? Two parallel roads merely grazing each
-    // other's width are still not a connection.
-    function centerlinesTouch(segmentsA, segmentsB) {
+    // Do two centerline sets genuinely connect — sharing a vertex or crossing? With
+    // `allowNearMiss` (a deliberate drag-time join), a near-miss T-junction — one road's endpoint
+    // stopped a couple of metres short of the other's mid-span — also counts. That near-miss match is
+    // OPT-IN: auto-merge on drawing/absorbing must NOT fuse roads that merely came close (joining is a
+    // willing act the user makes by dragging), so those callers leave it off. Two parallel roads
+    // grazing each other's width are never a connection.
+    function centerlinesTouch(segmentsA, segmentsB, allowNearMiss = false) {
         const EPS = 1e-7;
         const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
         for (const a of segmentsA) {
@@ -255,6 +317,7 @@
                 }
             }
         }
+        if (!allowNearMiss) return false;
         if (endpointNearMidSpan(segmentsA, segmentsB, NEAR_MISS_JUNCTION_METERS)) return true;
         if (endpointNearMidSpan(segmentsB, segmentsA, NEAR_MISS_JUNCTION_METERS)) return true;
         return false;
@@ -802,6 +865,7 @@
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
         healNearMissJunctions,
+        weldNearbyVertices,
         corridorConnectedComponents,
         centerlinesTouch,
         segmentsIntersect,
@@ -818,6 +882,7 @@
         window.planarSegmentIntersection = planarSegmentIntersection;
         window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
         window.healNearMissJunctions = healNearMissJunctions;
+        window.weldNearbyVertices = weldNearbyVertices;
         window.corridorConnectedComponents = corridorConnectedComponents;
         window.centerlinesTouch = centerlinesTouch;
         window.segmentsIntersect = segmentsIntersect;

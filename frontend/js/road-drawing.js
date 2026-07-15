@@ -539,7 +539,7 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
 
 // Applied LOCAL corridors of the given kind whose geometry genuinely connects to the given
 // centerline — the merge candidates. Minted corridors are immutable and never merge.
-function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], centerlineSegments = null) {
+function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], centerlineSegments = null, allowNearMiss = false) {
     if (!footprintGeometry || typeof turf === 'undefined' || typeof turf.booleanIntersects !== 'function') return [];
     if (typeof proposalStorage === 'undefined') return [];
     const excluded = new Set((excludeKeys || []).map(String));
@@ -563,7 +563,7 @@ function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], c
         } catch (_) { return false; }
         if (Array.isArray(centerlineSegments) && centerlineSegments.length) {
             const targetSegments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(definition) : [];
-            return centerlinesTouch(centerlineSegments, targetSegments);
+            return centerlinesTouch(centerlineSegments, targetSegments, allowNearMiss);
         }
         return true;
     });
@@ -948,8 +948,11 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         Number(definition.width) || 10
     );
     const prelimPolygon = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(prelimUnion));
+    // allowNearMiss: this is the drag/edit path, where the user deliberately drops a node onto (or a
+    // hair short of) another road — a willing join, so a near-miss merge is honoured here. Drawing and
+    // absorbing (the finish path) use the strict default and never fuse roads that merely came close.
     const touchingRoads = (prelimPolygon && prelimPolygon.type)
-        ? findTouchingLocalCorridors(kind, prelimPolygon, [key0], normalizedSegments)
+        ? findTouchingLocalCorridors(kind, prelimPolygon, [key0], normalizedSegments, true)
         : [];
     let mergedName = null;
     if (touchingRoads.length) {
@@ -1006,9 +1009,11 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
     }
 
-    // A dragged endpoint that came to rest just short of another stretch's centerline is snapped
-    // onto it here, so a move can FORM a junction (not only preserve existing ones) before crossings
-    // are noded and connectivity is judged.
+    // A dragged node dropped near another vertex is welded onto it (they become one shared node), and
+    // an endpoint that came to rest just short of another stretch's centerline is snapped onto it — so
+    // a move can FORM a junction (not only preserve existing ones) before crossings are noded and
+    // connectivity is judged. Welding also erases any near-duplicate a drag/weld may have left behind.
+    if (typeof weldNearbyVertices === 'function') weldNearbyVertices(normalizedSegments);
     if (typeof healNearMissJunctions === 'function') healNearMissJunctions(normalizedSegments);
     insertCorridorCrossingNodes(
         normalizedSegments,
@@ -4740,10 +4745,9 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     mergedSegments.push(...welded.segments);
     mergedSegmentIds.length = 0;
     mergedSegmentIds.push(...welded.segmentIds);
-    // Heal near-miss T-junctions (an endpoint that stopped short of another road's centerline) into
-    // real shared nodes before turning every crossing into one — otherwise the absorbed road looks
-    // joined but stays graph-disconnected.
-    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(mergedSegments);
+    // Only genuine crossings become shared nodes when absorbing a touching road; near-miss snapping
+    // (welding nearby vertices / healing an endpoint onto a nearby centerline) is a deliberate drag-time
+    // action, not something the auto-merge performs.
     insertCorridorCrossingNodes(
         mergedSegments,
         mergedSegmentIds,
@@ -4852,13 +4856,11 @@ async function finishRoadDrawing() {
     roadDemolishedBuildings = tunnelCheck.demolished;
     refreshRoadBuildingTunnelLayer();
 
-    // A stroke that stops a couple of metres short of another (its width band overlapping, so it
-    // LOOKS joined) gets its endpoint snapped onto that centerline first, turning a near-miss into a
-    // real shared node. Then every true crossing INSIDE the session becomes a shared graph node at
-    // first placement — not only after a later drag. Snap-absorbing an existing network pulls its
-    // segments into the session, so a new stroke crossing them mid-span otherwise finished without
-    // junction nodes. Runs after the tunnel check; tunnelled edges are protected (records key by edge).
-    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(segments);
+    // A genuine crossing — a stroke drawn straight THROUGH another — becomes a shared graph node here:
+    // passing through a road is unambiguous intent to intersect it. But near-miss SNAPPING (fusing an
+    // endpoint that stopped short of another centerline, or welding two nearby nodes) is NOT done on
+    // finish — joining roads that merely came close is a deliberate act the user makes by dragging one
+    // onto another, not something drawing a road should decide for them. Tunnelled edges are protected.
     insertCorridorCrossingNodes(
         segments,
         segmentIds,

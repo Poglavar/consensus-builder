@@ -11,6 +11,7 @@ const {
     planarSegmentIntersection,
     insertCorridorCrossingNodes,
     healNearMissJunctions,
+    weldNearbyVertices,
     corridorConnectedComponents,
     centerlinesTouch,
     segmentsIntersect,
@@ -140,7 +141,7 @@ describe('centerlinesTouch', () => {
         expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(1, 0), P(1, 5)]])).toBe(false); // parallel
     });
 
-    describe('near-miss T-junctions (needs the metric projection)', () => {
+    describe('near-miss T-junctions are OPT-IN (allowNearMiss)', () => {
         beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
         afterEach(() => { delete global.wgs84ToHTRS96; });
 
@@ -148,19 +149,65 @@ describe('centerlinesTouch', () => {
         const A = () => [P(0, 0), P(0, 10)];
         const nearMissB = () => [P(5, 5), P(1, 5)]; // endpoint P(1,5) is 1 m from A's point P(0,5)
 
-        it('treats an endpoint that stops just short of the other mid-span as touching', () => {
-            expect(centerlinesTouch([A()], [nearMissB()])).toBe(true);
+        it('does NOT treat a near-miss as touching by default (drawing/absorbing must not auto-join)', () => {
+            expect(centerlinesTouch([A()], [nearMissB()])).toBe(false);
         });
 
-        it('still rejects two parallel roads whose ends merely align', () => {
+        it('treats an endpoint that stops just short of the other mid-span as touching WHEN opted in', () => {
+            expect(centerlinesTouch([A()], [nearMissB()], true)).toBe(true);
+        });
+
+        it('still rejects two parallel roads whose ends merely align, even opted in', () => {
             // Endpoints land at the OTHER road's endpoints (t=0/1), not its mid-span — not a junction.
-            expect(centerlinesTouch([[P(0, 0), P(5, 0)]], [[P(0, 1), P(5, 1)]])).toBe(false);
+            expect(centerlinesTouch([[P(0, 0), P(5, 0)]], [[P(0, 1), P(5, 1)]], true)).toBe(false);
         });
 
-        it('does not merge an endpoint that is too far short', () => {
+        it('does not merge an endpoint that is too far short, even opted in', () => {
             const farB = [P(5, 5), P(3, 5)]; // 3 m short, beyond the 2.5 m tolerance
-            expect(centerlinesTouch([A()], [farB])).toBe(false);
+            expect(centerlinesTouch([A()], [farB], true)).toBe(false);
         });
+    });
+});
+
+describe('weldNearbyVertices', () => {
+    beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
+    afterEach(() => { delete global.wgs84ToHTRS96; });
+
+    it('fuses two vertices of different legs that sit within tolerance into one shared node', () => {
+        const s1 = [P(0, 0), P(0, 10)];
+        const s2 = [P(5, 10), P(0, 10.5)]; // its endpoint is 0.5 m from s1's endpoint P(0,10)
+        weldNearbyVertices([s1, s2], 2.5);
+        // s2's endpoint snaps exactly onto the first-seen representative (s1's P(0,10)).
+        expect(s2[1]).toEqual({ lat: 0, lng: 10 });
+        // Which means the two legs now share a vertex — one connected road, a real junction.
+        expect(corridorConnectedComponents([s1, s2], [1, 2]).length).toBe(1);
+    });
+
+    it('preserves a short consecutive edge (curve/bend detail is not collapsed)', () => {
+        const seg = [P(0, 0), P(0, 1), P(0, 10)]; // 1 m first edge — within tolerance but ADJACENT
+        weldNearbyVertices([seg], 2.5);
+        expect(seg).toEqual([P(0, 0), P(0, 1), P(0, 10)]); // untouched — an edge is not a duplicate
+    });
+
+    it('drops an exact zero-length edge (a true duplicate vertex)', () => {
+        const seg = [P(0, 0), P(0, 0), P(0, 10)];
+        weldNearbyVertices([seg], 2.5);
+        expect(seg).toEqual([P(0, 0), P(0, 10)]);
+    });
+
+    it('welds a leg that loops back onto a NON-adjacent part of itself (self-junction)', () => {
+        // Last vertex lands 0.5 m from the first (a closed-ish loop) — non-adjacent, so it fuses.
+        const seg = [P(0, 0), P(0, 5), P(5, 5), P(5, 0), P(0, 0.4)];
+        weldNearbyVertices([seg], 2.5);
+        expect(seg[seg.length - 1]).toEqual({ lat: 0, lng: 0 });
+    });
+
+    it('leaves vertices that are farther apart than the tolerance untouched', () => {
+        const s1 = [P(0, 0), P(0, 10)];
+        const s2 = [P(9, 10), P(0, 20)];
+        weldNearbyVertices([s1, s2], 2.5);
+        expect(s2).toEqual([P(9, 10), P(0, 20)]);
+        expect(corridorConnectedComponents([s1, s2], [1, 2]).length).toBe(2);
     });
 });
 
