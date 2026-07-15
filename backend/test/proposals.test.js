@@ -941,17 +941,17 @@ describe('GET /proposals/count', () => {
         pool.setResult({ rows: [{ count: '42' }] });
 
         const res = await request(app)
-            .get('/proposals/count?city=zg&status=applied');
+            .get('/proposals/count?city=zg&lifecycle=Active');
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(42);
         expect(res.body.city).toBe('zagreb');
-        expect(res.body.status).toBe('applied');
+        expect(res.body.lifecycle).toBe('Active');
 
         const call = pool.getCalls()[0];
         expect(call.sql).toContain('COUNT(*)');
         expect(call.params).toContain('zagreb');
-        expect(call.params).toContain('applied');
+        expect(call.params).toContain('Active');
     });
 
     it('returns count with no filters', async () => {
@@ -973,7 +973,7 @@ describe('GET /proposals/count', () => {
         expect(res.body).toEqual({
             count: 0,
             city: 'custom-city',
-            status: null,
+            lifecycle: null,
             type: 'road',
             author: 'bob'
         });
@@ -1131,11 +1131,11 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
     });
 
-    it('filters by EFFECTIVE status (expired-but-stale rows excluded from ?status=Active)', async () => {
+    it('filters by EFFECTIVE lifecycle (expired-but-stale rows excluded from ?lifecycle=Active)', async () => {
         pool.setResult({ rows: [] });
-        await request(app).get('/proposals/summary?status=Active');
+        await request(app).get('/proposals/summary?lifecycle=Active');
         const call = pool.getCalls()[0];
-        // The WHERE clause derives the status, not a raw column compare.
+        // The WHERE clause derives the lifecycle, not a raw column compare.
         expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*= \$1/);
         expect(call.params).toContain('Active');
     });

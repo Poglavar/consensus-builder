@@ -236,7 +236,7 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 export function setupProposalsRoute(app, pool) {
     // The marketplace/on-chain LIFECYCLE status, past-expiry-aware. A proposal past expires_at reads
     // as 'Expired' even if the stored value is stale. This one expression is used both for the
-    // returned lifecycleStatus and for the ?status= FILTER, so filtering and display agree
+    // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
     // (case-insensitive — the DB may carry both 'Executed' and 'executed').
     const EFFECTIVE_STATUS_SQL = `
         CASE
@@ -260,7 +260,8 @@ export function setupProposalsRoute(app, pool) {
 
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
-        const status = req.query.status;
+        // The lifecycle-phase filter (Active/Executed/Cancelled/Expired). Named `?lifecycle=`.
+        const lifecycle = req.query.lifecycle;
         const type = req.query.type;
         const author = req.query.author;
         const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
@@ -271,7 +272,7 @@ export function setupProposalsRoute(app, pool) {
 
         return {
             city,
-            status,
+            lifecycle,
             type,
             author,
             goal,
@@ -284,7 +285,7 @@ export function setupProposalsRoute(app, pool) {
 
     const buildFilterQuery = ({
         city,
-        status,
+        lifecycle,
         type,
         author,
         goal,
@@ -304,11 +305,11 @@ export function setupProposalsRoute(app, pool) {
             params.push(city);
         }
 
-        if (status) {
-            // Filter on the EFFECTIVE status so ?status=Active excludes expired-but-stale rows and
-            // ?status=Expired finds them — matching what the summary returns.
+        if (lifecycle) {
+            // Filter on the EFFECTIVE lifecycle so ?lifecycle=Active excludes expired-but-stale rows
+            // and ?lifecycle=Expired finds them — matching what the summary returns.
             clauses.push(`${EFFECTIVE_STATUS_SQL} = $${params.length + 1}`);
-            params.push(status);
+            params.push(lifecycle);
         }
 
         if (type) {
@@ -600,7 +601,7 @@ export function setupProposalsRoute(app, pool) {
             res.json({
                 count,
                 city: filters.city || null,
-                status: filters.status || null,
+                lifecycle: filters.lifecycle || null,
                 type: filters.type || null,
                 author: filters.author || null
             });
