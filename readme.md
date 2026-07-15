@@ -3,6 +3,16 @@ https://urbangametheory.xyz
 
 This is a toolkit for collaborative urban planning.
 
+Experimental satellite-image parcel recognition lives in
+[`parcel_recognition/`](parcel_recognition/README.md): a vision LLM proposes
+parcel seeds, SAM 3 extracts pixel masks, and the CLI writes an image with the
+inferred boundaries overlaid.
+
+The UI also has an **Anywhere (AI parcels)** city mode. Enter WGS84 coordinates
+or use geolocation; at zoom 16+ the normal parcel grid requests provisional
+boundaries from `GET /parcels/inferred`. Configure the backend with
+`PARCEL_INFERENCE_URL` to connect the viewport to an imagery/model service.
+
 The design goal is to use crypto tools and learnings to create a tool that allows users to collaboratively plan and design their urban spaces.
 
 The application is a very light web application with optional and minimal use of its own backend server.

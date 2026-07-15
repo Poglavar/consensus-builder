@@ -76,6 +76,14 @@
         color: 'red',
         weight: 1
     };
+    const inferredParcelStyle = {
+        fillColor: '#f59e0b',
+        fillOpacity: 0.08,
+        color: '#f59e0b',
+        opacity: 0.95,
+        weight: 2,
+        dashArray: '6 5'
+    };
     const selectedParcelStyle = {
         fillColor: '#ff3300',
         fillOpacity: 0.4,
@@ -159,6 +167,11 @@
             : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
         if (roadFlag) {
             return { ...roadStyle };
+        }
+
+        const layerProps = layer?.feature?.properties || {};
+        if (layerProps.provenance === 'inferred' || layerProps.planningStatus === 'provisional') {
+            return { ...inferredParcelStyle };
         }
 
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));

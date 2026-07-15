@@ -32,7 +32,9 @@
     let parcelsTimeout;
     const PARCEL_FETCH_LATLNG_PADDING = PARCELS_LATLNG_PADDING;
     const PARCEL_FETCH_DEBOUNCE_MS = 500;
-    const PARCEL_FETCH_GRID_RADIUS = 1;
+    const PARCEL_FETCH_GRID_RADIUS = ParcelCityConfigManager && typeof ParcelCityConfigManager.getParcelGridRadius === 'function'
+        ? ParcelCityConfigManager.getParcelGridRadius()
+        : 1;
     const parcelCache = {
         grid: new Map(),
         gridSize: PARCELS_GRID_SIZE,
@@ -190,4 +192,3 @@
 
     global.ParcelsState = api;
 })(typeof window !== 'undefined' ? window : globalThis);
-

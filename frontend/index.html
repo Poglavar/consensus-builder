@@ -201,6 +201,16 @@
                     </button>
                 </div>
             </div>
+            <div id="anywhere-location-controls" class="city-selector-row" hidden>
+                <label data-i18n-key="sidebar.city.coordinates">Coordinates:</label>
+                <div class="city-selector-controls">
+                    <input id="anywhere-latitude" type="number" min="-85" max="85" step="any" inputmode="decimal"
+                        placeholder="Latitude" data-i18n-key="sidebar.city.latitude" data-i18n-attr="placeholder">
+                    <input id="anywhere-longitude" type="number" min="-180" max="180" step="any" inputmode="decimal"
+                        placeholder="Longitude" data-i18n-key="sidebar.city.longitude" data-i18n-attr="placeholder">
+                    <button type="button" id="anywhere-go-button" class="btn" data-i18n-key="sidebar.city.go">Go</button>
+                </div>
+            </div>
             <!-- Data Section -->
             <div class="accordion-section" data-section="data">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">

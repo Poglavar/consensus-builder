@@ -178,7 +178,7 @@
             const propertyIsRoad = feature?.properties?.isRoad === true || feature?.properties?.isRoad === 'true';
             const storedIsRoad = parcelId && typeof global.isRoad === 'function' ? global.isRoad(parcelId) : false;
             const isRoad = propertyIsRoad || storedIsRoad;
-            return global.getParcelBaseStyle(parcelId, { isRoad: isRoad });
+            return global.getParcelBaseStyle(parcelId, { feature: feature }, { isRoad: isRoad });
         };
 
         var attachParcelEvents = function (feature, layer) {

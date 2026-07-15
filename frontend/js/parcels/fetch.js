@@ -183,7 +183,12 @@
                 let requestInfo = null;
 
                 while (more) {
-                    const req = builder ? builder(bbox, { count, startIndex, latLonBbox }) : null;
+                    const req = builder ? builder(bbox, {
+                        count,
+                        startIndex,
+                        latLonBbox,
+                        zoom: global.map && typeof global.map.getZoom === 'function' ? global.map.getZoom() : undefined
+                    }) : null;
                     requestInfo = req; // Store for later use
                     const useParcelBa = req && req.source === 'parcel-ba';
                     const useParcelBg = req && req.source === 'parcel-bg';

@@ -83,11 +83,27 @@ const map = L.map('map', {
 
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
+const queryView = (() => {
+    if (CURRENT_CITY_CONFIG?.id !== 'world' || typeof window === 'undefined') return null;
+    try {
+        const params = new URLSearchParams(window.location.search || '');
+        if (!params.has('lat') || !params.has('lng')) return null;
+        const lat = Number(params.get('lat'));
+        const lng = Number(params.get('lng'));
+        const zoom = Number(params.get('zoom') || 18);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -85 || lat > 85 || lng < -180 || lng > 180) return null;
+        return { center: [lat, lng], zoom: Number.isFinite(zoom) ? Math.max(3, Math.min(22, zoom)) : 18 };
+    } catch (_) {
+        return null;
+    }
+})();
 
 if (IS_PROPOSAL_DEEP_LINK) {
     // Keep parcels idle but start from city context so coverage/debug tools don't blow up
     const fallbackCenter = CITY_MAP_CONFIG.defaultCenter || DEFAULT_FALLBACK_LATLNG;
     map.setView(fallbackCenter, resolveInitialZoom());
+} else if (queryView) {
+    map.setView(queryView.center, queryView.zoom);
 } else if (INITIAL_VIEW && INITIAL_VIEW.type === 'bounds' && Array.isArray(INITIAL_VIEW.value) && INITIAL_VIEW.value.length === 2) {
     map.fitBounds(INITIAL_VIEW.value);
 } else if (INITIAL_VIEW && INITIAL_VIEW.type === 'center' && (Array.isArray(INITIAL_VIEW.center) || hasDefaultCenter)) {
@@ -681,4 +697,4 @@ window.blockLayer = blockLayer;
 window.currentCenterline = currentCenterline;
 window.currentWidthLines = currentWidthLines;
 window.TOTAL_SPENT = TOTAL_SPENT;
-window.SQM_AVG_PRICE = SQM_AVG_PRICE; 
+window.SQM_AVG_PRICE = SQM_AVG_PRICE;

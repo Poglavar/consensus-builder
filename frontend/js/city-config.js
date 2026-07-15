@@ -9,7 +9,9 @@
         st: 'split',
         lj: 'ljubljana',
         co: 'colorado',
-        ny: 'new_york'
+        ny: 'new_york',
+        world: 'world',
+        anywhere: 'world'
     };
 
     const SHARED_DEFAULT_ZOOM = 19;
@@ -80,6 +82,37 @@
     }
 
     const CITY_CONFIGS = {
+        world: {
+            id: 'world',
+            label: translateCityText('city.labels.anywhere', 'Anywhere (AI parcels)'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: 3 },
+                defaultCenter: [20, 0],
+                defaultZoom: 3,
+                parcelZoomRange: { min: 16, max: Infinity },
+                latLngPadding: 0
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                // Global planning measurements use Web Mercator as a fast approximation.
+                metricCrs: 'EPSG:3857',
+                metricDefinition: '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs',
+                fallbackLatLng: [20, 0],
+                fallbackDataset: [0, 20]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.005,
+                gridRadius: 0,
+                source: 'parcel-inferred',
+                requiresBackend: true
+            },
+            buildings: { source: 'none' },
+            sidebar: { disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         zagreb: {
             id: 'zagreb',
             label: 'Zagreb, Croatia',
@@ -704,6 +737,11 @@
         return getParcelSettings().gridSize || 500;
     }
 
+    function getParcelGridRadius() {
+        const radius = Number(getParcelSettings().gridRadius);
+        return Number.isFinite(radius) ? Math.max(0, Math.floor(radius)) : 1;
+    }
+
     function getLatLngPadding() {
         const { map } = getCurrentCityConfig();
         return typeof map?.latLngPadding === 'number' ? map.latLngPadding : 0.12;
@@ -1273,6 +1311,7 @@
         let best = null;
         let bestDistance = Infinity;
         Object.values(CITY_CONFIGS).forEach(config => {
+            if (config.id === 'world') return;
             const center = getCityCenter(config);
             if (!center) return;
             const d = haversineDistance(lat, lon, center[0], center[1]);
@@ -1302,6 +1341,15 @@
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
+                    if (currentCityId === 'world') {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('city', 'world');
+                        url.searchParams.set('lat', latitude.toFixed(6));
+                        url.searchParams.set('lng', longitude.toFixed(6));
+                        url.searchParams.set('zoom', '18');
+                        window.location.href = url.toString();
+                        return;
+                    }
                     const nearest = findNearestCity(latitude, longitude);
                     if (!nearest) {
                         showCityAlert('unable_to_determine_the_nearest_city', 'Unable to determine the nearest city.');
@@ -1334,10 +1382,51 @@
         });
     }
 
+    function setupAnywhereLocationControls() {
+        if (typeof document === 'undefined') return;
+        const controls = document.getElementById('anywhere-location-controls');
+        const latInput = document.getElementById('anywhere-latitude');
+        const lngInput = document.getElementById('anywhere-longitude');
+        const goButton = document.getElementById('anywhere-go-button');
+        if (!controls || !latInput || !lngInput || !goButton) return;
+        controls.hidden = currentCityId !== 'world';
+        if (controls.hidden) return;
+
+        try {
+            const params = new URLSearchParams(window.location.search || '');
+            if (params.has('lat')) latInput.value = params.get('lat');
+            if (params.has('lng')) lngInput.value = params.get('lng');
+        } catch (_) { /* ignore */ }
+
+        const navigate = () => {
+            if (!latInput.value.trim() || !lngInput.value.trim()) {
+                showCityAlert('invalid_world_coordinates', 'Enter valid coordinates (latitude ±85, longitude ±180).');
+                return;
+            }
+            const lat = Number(latInput.value);
+            const lng = Number(lngInput.value);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -85 || lat > 85 || lng < -180 || lng > 180) {
+                showCityAlert('invalid_world_coordinates', 'Enter valid coordinates (latitude ±85, longitude ±180).');
+                return;
+            }
+            const url = new URL(window.location.href);
+            url.searchParams.set('city', 'world');
+            url.searchParams.set('lat', lat.toFixed(6));
+            url.searchParams.set('lng', lng.toFixed(6));
+            url.searchParams.set('zoom', '18');
+            window.location.href = url.toString();
+        };
+        goButton.addEventListener('click', navigate);
+        [latInput, lngInput].forEach(input => input.addEventListener('keydown', event => {
+            if (event.key === 'Enter') navigate();
+        }));
+    }
+
     if (typeof document !== 'undefined') {
         document.addEventListener('DOMContentLoaded', () => {
             populateCitySelect();
             setupDetectCityButton();
+            setupAnywhereLocationControls();
         }, { once: true });
     }
 
@@ -1369,6 +1458,7 @@
         formatCurrency,
         getParcelStrategy,
         getParcelGridSize,
+        getParcelGridRadius,
         getLatLngPadding,
         getParcelZoomRange,
         requiresBackendDataSource,

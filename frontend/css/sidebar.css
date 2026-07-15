@@ -295,6 +295,34 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
+#anywhere-location-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#anywhere-location-controls .city-selector-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 6px;
+    min-width: 0;
+    width: 100%;
+}
+
+#anywhere-location-controls input {
+    min-width: 0;
+    width: 100%;
+    min-height: 34px;
+    padding: 6px 8px;
+    border: 1px solid #cbd5f5;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+#anywhere-location-controls button {
+    min-height: 34px;
+}
+
 /* Custom city dropdown: replaces the native select popup (which macOS anchors at the selected
    option and opens upward near the screen top) with a menu that always opens DOWNWARD. The
    native select stays in the DOM, hidden, as the source of truth. */

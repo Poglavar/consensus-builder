@@ -121,6 +121,22 @@
         // Force backend when on production host to avoid OSS fetches and ExceptionReports
         const forcedBackend = isProdHost();
 
+        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-inferred') {
+            const base = getBackendBase().replace(/\/$/, '');
+            const params = new URLSearchParams();
+            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim()) {
+                params.set('bbox', options.latLonBbox.trim());
+            }
+            params.set('zoom', String(Number.isFinite(Number(options.zoom)) ? Number(options.zoom) : 18));
+            return {
+                url: `${base}/parcels/inferred?${params.toString()}`,
+                isOSS: false,
+                source: 'parcel-inferred',
+                disablePagination: true,
+                returnsWGS84: true
+            };
+        }
+
         if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-ba') {
             const base = getBackendBase().replace(/\/$/, '');
             const params = new URLSearchParams();
@@ -390,5 +406,4 @@
     window.getBackendBase = getBackendBase;
     window.getCurrentDataSource = getDataSource;
 })();
-
 

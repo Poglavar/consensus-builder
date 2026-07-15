@@ -316,7 +316,11 @@
         },
         "city": {
             "label": "Grad:",
-            "detectTooltip": "Koristi moju lokaciju za odabir najbližeg grada"
+            "detectTooltip": "Koristi moju lokaciju za odabir najbližeg grada",
+            "coordinates": "Koordinate:",
+            "latitude": "Geografska širina",
+            "longitude": "Geografska dužina",
+            "go": "Idi"
         },
         "data": {
             "title": "Podaci",
@@ -612,6 +616,7 @@
     "panel": {
         "parcel": {
             "title": "Informacije o parceli",
+            "inferredNotice": "AI procijenjena planska granica — privremena, nije pravni katastar.",
             "titleWithNumber": "Informacije o parceli ({{number}})",
             "multiSelectionTitle": "Višestruki odabir parcela",
             "forSale": "Na prodaju",
@@ -2214,7 +2219,8 @@
     },
     "city": {
         "labels": {
-            "denver": "Denver, SAD"
+            "denver": "Denver, SAD",
+            "anywhere": "Bilo gdje (AI parcele)"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",
@@ -2243,6 +2249,7 @@
             "failed_to_wipe_local_data": "Brisanje lokalnih podataka nije uspjelo:",
             "geolocation_is_not_supported_by_this_browser": "Geolokacija nije podržana u ovom pregledniku.",
             "invalid_parcel_identifier": "Nevažeći identifikator parcele.",
+            "invalid_world_coordinates": "Unesite valjane koordinate (geografska širina ±85, dužina ±180).",
             "invalid_road_shape_please_try_drawing_the_road_again": "Nevažeći oblik ceste. Pokušaj ponovno nacrtati cestu.",
             "missing_parcels_or_geometry_for_this_proposal": "Nedostaju parcele ili geometrija za ovaj prijedlog.",
             "no_agents_exist_yet_start_the_game_to_create_agents": "Još nema agenata. Pokreni igru da ih kreiraš.",

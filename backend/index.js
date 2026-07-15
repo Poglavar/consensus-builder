@@ -18,6 +18,7 @@ import { setupParcelBgRoute } from './routes/parcel-bg.js';
 import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
 import { setupParcelNycRoute } from './routes/parcel-nyc.js';
+import { setupParcelInferenceRoute } from './routes/parcel-inferred.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
@@ -305,6 +306,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupParcelLjRoute(app, activePool);
     setupParcelCoRoute(app, activePool);
     setupParcelNycRoute(app, activePool);
+    setupParcelInferenceRoute(app, { env });
     setupBuildingsRoute(app, activePool);
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);

@@ -288,7 +288,11 @@
         },
         "city": {
             "label": "City:",
-            "detectTooltip": "Use my location to choose the closest city"
+            "detectTooltip": "Use my location to choose the closest city",
+            "coordinates": "Coordinates:",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "go": "Go"
         },
         "data": {
             "title": "Data",
@@ -587,6 +591,7 @@
     "panel": {
         "parcel": {
             "title": "Parcel Info",
+            "inferredNotice": "AI-inferred planning boundary — provisional, not legal cadastre.",
             "titleWithNumber": "Parcel Info ({{number}})",
             "multiSelectionTitle": "Multiparcel selection",
             "forSale": "For sale",
@@ -2184,7 +2189,8 @@
     },
     "city": {
         "labels": {
-            "denver": "Denver, USA"
+            "denver": "Denver, USA",
+            "anywhere": "Anywhere (AI parcels)"
         },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
@@ -2213,6 +2219,7 @@
             "failed_to_wipe_local_data": "Failed to wipe local data:",
             "geolocation_is_not_supported_by_this_browser": "Geolocation is not supported by this browser.",
             "invalid_parcel_identifier": "Invalid parcel identifier.",
+            "invalid_world_coordinates": "Enter valid coordinates (latitude ±85, longitude ±180).",
             "invalid_road_shape_please_try_drawing_the_road_again": "Invalid road shape. Please try drawing the road again.",
             "missing_parcels_or_geometry_for_this_proposal": "Missing parcels or geometry for this proposal.",
             "no_agents_exist_yet_start_the_game_to_create_agents": "No agents exist yet. Start the game to create agents.",

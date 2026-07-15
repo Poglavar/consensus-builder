@@ -528,8 +528,18 @@
 
         // Determine ownership type for display - will be updated when owners are fetched
         const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
+        const inferredConfidence = props.confidence !== null && props.confidence !== undefined && props.confidence !== ''
+            ? Number(props.confidence)
+            : Number.NaN;
+        const inferredNoticeHtml = props.provenance === 'inferred' || props.planningStatus === 'provisional'
+            ? `<div class="metric-group" style="border-color:#f59e0b;background:rgba(245,158,11,.1);">
+                <div class="metric-label" data-i18n-key="panel.parcel.inferredNotice">AI-inferred planning boundary — provisional, not legal cadastre.</div>
+                ${Number.isFinite(inferredConfidence) ? `<div class="metric-value">${Math.round(inferredConfidence * 100)}%</div>` : ''}
+            </div>`
+            : '';
 
         const infoContent = `
+        ${inferredNoticeHtml}
         <div class="parcel-owner-section">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>

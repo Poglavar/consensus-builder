@@ -4,6 +4,11 @@
 .claude
 tmp
 node_modules
+__pycache__/
+.venv/
+*-parcel-seeds.json
+*-parcels.json
+*-parcels.png
 uploads
 frontend/.deploy-build-counter
 blockchain/solana/.anchor

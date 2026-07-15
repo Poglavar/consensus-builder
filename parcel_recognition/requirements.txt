@@ -1,0 +1,8 @@
+# Runtime dependencies for the satellite-image parcel recognition CLI.
+Pillow>=11.0
+numpy>=2.0
+opencv-python-headless>=4.10
+torch>=2.7
+transformers>=5.0
+accelerate>=1.6
+
