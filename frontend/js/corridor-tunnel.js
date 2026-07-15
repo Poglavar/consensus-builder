@@ -402,16 +402,15 @@
     // the 3D view and the walk sim match on (same GDI object_id, exactly); the footprint is what
     // the cut geometry is subtracted from, and what the 2D layer redraws a partial demolition with.
     // Set aside a proposal whose building sits under the corridor: unapply it (kept in its parcels'
-    // list, recoverable), recording its id in `removedProposalIds`. This is the ONLY thing done to an
-    // occupying proposal today — a proposal is never sliced.
+    // list, recoverable), recording its id in `removedProposalIds`.
     //
-    // Phase-2 seam (deliberately not built yet): a purely LOCAL (mutable) proposal could instead be
-    // CUT/RESHAPED in place, and SPLIT into two proposals where the road bisects it. Two blockers keep
-    // that deferred — non-contiguous proposals are a firm no-go (so a bisect must split, not stretch one
-    // proposal across a gap), and a bisected BUILDING has no natural two-piece meaning. When it is built,
-    // the branch goes RIGHT HERE, gated on `!isProposalImmutable(proposal)`. An IMMUTABLE proposal
-    // (minted OR server-uploaded — see isProposalImmutable) must ALWAYS be set aside: its published
-    // geometry can never be rewritten by us.
+    // DECISION (2026-07-15, see impact-resolver.md): a proposal a road runs into is only ever set aside
+    // (unapply), tunnelled under, or destroyed — NEVER cut in place or split into two. This holds for
+    // every kind and both mutability classes. Splitting a bisected proposal is the only contiguity-
+    // preserving alternative to unapply (non-contiguous proposals are a firm no-go), but a bisected
+    // BUILDING has no natural two-piece meaning, so splitting is deferred and cut-in-place with it. An
+    // IMMUTABLE proposal (minted OR server-uploaded — see isProposalImmutable) could never be rewritten
+    // anyway. If a local cut/split is ever built, its branch goes RIGHT HERE gated on !isProposalImmutable.
     async function setAsideObstacleProposal(owner, removedProposalIds) {
         if (removedProposalIds.includes(owner)) return;
         try {
