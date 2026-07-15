@@ -73,9 +73,36 @@ describe('loadChainProposalFromRef (EVM)', () => {
 });
 
 describe('loadChainProposalFromRef (dispatch)', () => {
-    it('reports not-yet-wired for solana/canton and bad refs', async () => {
-        expect((await loadChainProposalFromRef({ chainType: 'solana' })).reason).toBe('chain-not-supported');
+    it('reports not-yet-wired for canton and bad refs (solana is wired now)', async () => {
         expect((await loadChainProposalFromRef({ chainType: 'canton' })).reason).toBe('chain-not-supported');
         expect((await loadChainProposalFromRef(null)).reason).toBe('bad-ref');
+        // solana with no loader present → chain-unavailable (wired, but needs the Solana wallet).
+        expect((await loadChainProposalFromRef({ chainType: 'solana', chainId: 'devnet', contract: 'P', tokenId: 'A' })).reason).toBe('chain-unavailable');
+    });
+});
+
+describe('loadChainProposalFromRef (Solana)', () => {
+    const SOL_REF = { chainType: 'solana', chainId: 'devnet', contract: 'PROG', tokenId: 'ACCT' };
+
+    it('reads the account, pulls metadata, and imports the reconstructed proposal', async () => {
+        const calls = {};
+        global.solanaWeb3 = { PublicKey: function (a) { this.a = a; } };
+        global.SolanaChainDataLoader = {
+            getConnection: () => ({ getAccountInfo: async (pk) => { calls.addr = pk.a; return { data: new Uint8Array(32) }; } }),
+            parseProposalAccount: (data, address) => ({ proposalId: address, parentParcelIds: ['HR-9'], metadataUri: 'ipfs://m', lens: [] })
+        };
+        global.fetch = async (url) => { calls.fetched = url; return { ok: true, json: async () => ({ properties: {} }) }; };
+        global.proposalStorage = { importOnChainProposal: (arg) => { calls.imported = arg; return { proposalId: 'ACCT' }; } };
+
+        const result = await loadChainProposalFromRef(SOL_REF);
+        expect(result.ok).toBe(true);
+        expect(calls.addr).toBe('ACCT');
+        expect(calls.fetched).toBe('https://ipfs.io/ipfs/m');
+        expect(calls.imported.onchain.chainType).toBe('solana');
+        delete global.solanaWeb3; delete global.SolanaChainDataLoader;
+    });
+
+    it('reports chain-unavailable without the Solana loader/wallet', async () => {
+        expect((await loadChainProposalFromRef(SOL_REF)).reason).toBe('chain-unavailable');
     });
 });

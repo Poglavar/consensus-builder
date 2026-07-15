@@ -62,6 +62,51 @@
         return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
     }
 
+    // Solana: proposals are program accounts read by address. ref.chainId = cluster (e.g. 'devnet'),
+    // ref.contract = the proposal program id, ref.tokenId = the proposal account address (PDA). The
+    // metadata + reconstruct step is the SAME as EVM — importOnChainProposal is metadata-driven.
+    async function loadSolanaProposal(ref) {
+        const loader = global.SolanaChainDataLoader;
+        const storage = global.proposalStorage;
+        if (!loader || typeof loader.getConnection !== 'function' || typeof loader.parseProposalAccount !== 'function'
+            || !global.solanaWeb3 || !storage || typeof storage.importOnChainProposal !== 'function') {
+            return { ok: false, reason: 'chain-unavailable' };
+        }
+
+        let parsed;
+        try {
+            const connection = loader.getConnection(ref.chainId);
+            const accountInfo = await connection.getAccountInfo(new global.solanaWeb3.PublicKey(ref.tokenId));
+            if (!accountInfo || !accountInfo.data) return { ok: false, reason: 'not-found' };
+            parsed = loader.parseProposalAccount(accountInfo.data, ref.tokenId);
+        } catch (error) {
+            return { ok: false, reason: 'read-failed', error };
+        }
+        if (!parsed) return { ok: false, reason: 'not-found' };
+
+        const metaUri = parsed.metadataUri || parsed.metadataURI || '';
+        let metadata = null;
+        const metaUrl = resolveMetadataUrl(metaUri);
+        if (metaUrl && typeof fetch === 'function') {
+            try {
+                const resp = await fetch(metaUrl);
+                if (resp.ok) metadata = await resp.json();
+            } catch (_) { /* reconstruct with what the chain gave us */ }
+        }
+
+        const imported = storage.importOnChainProposal({
+            proposalId: parsed.proposalId || ref.tokenId,
+            parentParcelIds: parsed.parentParcelIds || [],
+            imageURI: metaUri,
+            metadata,
+            lens: parsed.lens || [],
+            chainId: ref.chainId,
+            contractAddress: ref.contract,
+            onchain: { chainType: 'solana', chainId: ref.chainId, contractAddress: ref.contract, proposalId: ref.tokenId, metadata }
+        });
+        return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
+    }
+
     // Dispatch by chain type → { ok, proposal?, reason? }.
     async function loadChainProposalFromRef(ref) {
         if (!ref || !ref.chainType) return { ok: false, reason: 'bad-ref' };
@@ -69,6 +114,7 @@
             case 'evm':
                 return loadEvmProposal(ref);
             case 'solana':
+                return loadSolanaProposal(ref);
             case 'canton':
                 console.warn('[chain-proposal] chain type not wired yet:', ref.chainType);
                 return { ok: false, reason: 'chain-not-supported' };

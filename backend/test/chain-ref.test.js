@@ -58,3 +58,14 @@ describe('chainRefFromProposal', () => {
         expect(chainRefFromProposal(null)).toBeNull();
     });
 });
+
+describe('chainRefFromProposal — Solana detection', () => {
+    it('infers solana from a "solana-<cluster>" chainId and strips the prefix', () => {
+        const p = { onchain: { chainId: 'solana-devnet', contractAddress: 'PROG', proposalId: 'ACCT' } };
+        expect(chainRefFromProposal(p)).toEqual({ chainType: 'solana', chainId: 'devnet', contract: 'PROG', tokenId: 'ACCT' });
+    });
+    it('respects an explicit chainType over inference', () => {
+        const p = { chainType: 'evm', onchain: { chainId: '84532', contractAddress: '0xC', proposalId: '3' } };
+        expect(chainRefFromProposal(p).chainType).toBe('evm');
+    });
+});

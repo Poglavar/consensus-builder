@@ -34,17 +34,30 @@
     }
 
     // Build a ChainRef from a proposal's stored on-chain fields (nft.* preferred, then onchain.*).
+    // Chain type is explicit if the proposal carries it; otherwise it's inferred from the chainId —
+    // Solana stores it as "solana-<cluster>" (see create.js), everything else is treated as EVM.
     function chainRefFromProposal(proposal) {
         if (!proposal) return null;
         const nft = proposal.nft || {};
         const onchain = proposal.onchain || {};
-        const chainId = nft.chain ?? nft.chainId ?? onchain.chainId ?? proposal.chainId ?? null;
+        const rawChainId = nft.chain ?? nft.chainId ?? onchain.chainId ?? proposal.chainId ?? null;
         const contract = nft.contract ?? onchain.contractAddress ?? proposal.contractAddress ?? null;
         const tokenId = nft.tokenId ?? onchain.proposalId ?? onchain.tokenId ?? proposal.tokenId ?? null;
-        if (chainId == null || !contract || tokenId == null || tokenId === '') return null;
-        // Only EVM coordinates are inferable here; Solana/Canton adapters will set chainType explicitly.
-        const chainType = proposal.chainType || onchain.chainType || 'evm';
-        return { chainType, chainId: String(chainId), contract: String(contract), tokenId: String(tokenId) };
+        if (rawChainId == null || !contract || tokenId == null || tokenId === '') return null;
+
+        const chainIdStr = String(rawChainId);
+        let chainType = proposal.chainType || onchain.chainType || null;
+        let chainId = chainIdStr;
+        if (!chainType) {
+            if (/^solana/i.test(chainIdStr)) {
+                chainType = 'solana';
+                chainId = chainIdStr.replace(/^solana-/i, ''); // the cluster (devnet / mainnet-beta)
+            } else {
+                chainType = 'evm';
+            }
+        }
+        if (!CHAIN_TYPES.includes(chainType)) return null;
+        return { chainType, chainId, contract: String(contract), tokenId: String(tokenId) };
     }
 
     const api = { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal, CHAIN_TYPES };
