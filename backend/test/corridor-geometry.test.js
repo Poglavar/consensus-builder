@@ -2,7 +2,7 @@
 // footprint used to pick its direction with Math.random() for coincident points, so the same
 // centerline saved a different polygon and geometryHash each run. Projection is injected (identity),
 // matching the pattern in corridor-profile.test.js.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -10,6 +10,7 @@ const {
     createRectangularRoadSegment,
     planarSegmentIntersection,
     insertCorridorCrossingNodes,
+    healNearMissJunctions,
     corridorConnectedComponents,
     centerlinesTouch,
     segmentsIntersect,
@@ -137,6 +138,61 @@ describe('centerlinesTouch', () => {
         expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(0, 5), P(5, 5)]])).toBe(true); // shared vertex
         expect(centerlinesTouch([[P(0, -5), P(0, 5)]], [[P(-5, 0), P(5, 0)]])).toBe(true); // crossing
         expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(1, 0), P(1, 5)]])).toBe(false); // parallel
+    });
+
+    describe('near-miss T-junctions (needs the metric projection)', () => {
+        beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
+        afterEach(() => { delete global.wgs84ToHTRS96; });
+
+        // A: horizontal centerline along lat=0. B: an endpoint that stops 1 metre short of A's mid-span.
+        const A = () => [P(0, 0), P(0, 10)];
+        const nearMissB = () => [P(5, 5), P(1, 5)]; // endpoint P(1,5) is 1 m from A's point P(0,5)
+
+        it('treats an endpoint that stops just short of the other mid-span as touching', () => {
+            expect(centerlinesTouch([A()], [nearMissB()])).toBe(true);
+        });
+
+        it('still rejects two parallel roads whose ends merely align', () => {
+            // Endpoints land at the OTHER road's endpoints (t=0/1), not its mid-span — not a junction.
+            expect(centerlinesTouch([[P(0, 0), P(5, 0)]], [[P(0, 1), P(5, 1)]])).toBe(false);
+        });
+
+        it('does not merge an endpoint that is too far short', () => {
+            const farB = [P(5, 5), P(3, 5)]; // 3 m short, beyond the 2.5 m tolerance
+            expect(centerlinesTouch([A()], [farB])).toBe(false);
+        });
+    });
+});
+
+describe('healNearMissJunctions', () => {
+    beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
+    afterEach(() => { delete global.wgs84ToHTRS96; });
+
+    it('snaps a near-miss endpoint onto the span and inserts the shared node, joining the graph', () => {
+        const segments = [[P(0, 0), P(0, 10)], [P(5, 5), P(1, 5)]];
+        healNearMissJunctions(segments, 2.5);
+        // The dangling endpoint is snapped exactly onto the horizontal centerline (lat 0).
+        expect(segments[1][segments[1].length - 1]).toEqual({ lat: 0, lng: 5 });
+        // The target segment gains a matching vertex there, so the two now share a node.
+        expect(segments[0]).toEqual([P(0, 0), P(0, 5), P(0, 10)]);
+        // Which means union-find now sees ONE connected road, not two.
+        expect(corridorConnectedComponents(segments, [1, 2]).length).toBe(1);
+    });
+
+    it('leaves an endpoint that is too far short untouched (no spurious node)', () => {
+        const segments = [[P(0, 0), P(0, 10)], [P(5, 5), P(3, 5)]];
+        healNearMissJunctions(segments, 2.5);
+        expect(segments[1][segments[1].length - 1]).toEqual({ lat: 3, lng: 5 });
+        expect(segments[0]).toEqual([P(0, 0), P(0, 10)]);
+        expect(corridorConnectedComponents(segments, [1, 2]).length).toBe(2);
+    });
+
+    it('does not disturb an endpoint that already shares a vertex with the other road', () => {
+        // B ends exactly at A's vertex P(0,0): already a shared node, so nothing is snapped or inserted.
+        const segments = [[P(0, 0), P(0, 10)], [P(5, 0), P(0, 0)]];
+        healNearMissJunctions(segments, 2.5);
+        expect(segments[0]).toEqual([P(0, 0), P(0, 10)]);
+        expect(segments[1]).toEqual([P(5, 0), P(0, 0)]);
     });
 });
 

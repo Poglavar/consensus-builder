@@ -484,3 +484,47 @@ button.corridor-lane-standard--reset:hover {
 .corridor-section-seam:hover::after {
     background: #f59e0b;
 }
+
+/* Non-blocking "Applying…" indicator shown while an applied corridor edit (node drag, bulldoze,
+   profile change) is re-applying. It does NOT block the map — the user keeps dragging; edits made
+   mid-apply are coalesced and re-applied when the current one finishes (road-node-edit). pointer-events
+   is none so it never intercepts a drag. It fades in only after a short delay (animation-delay), so
+   quick edits never flash it and only genuinely slow applies show the spinner. */
+.corridor-apply-indicator {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1200;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(28, 28, 30, 0.82);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    animation: corridor-apply-indicator-appear 0.18s ease 0.15s forwards;
+}
+
+.corridor-apply-indicator__spinner {
+    width: 15px;
+    height: 15px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: corridor-apply-indicator-spin 0.7s linear infinite;
+}
+
+@keyframes corridor-apply-indicator-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes corridor-apply-indicator-appear {
+    to { opacity: 1; }
+}

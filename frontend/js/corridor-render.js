@@ -629,4 +629,15 @@ if (typeof window !== 'undefined') {
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;
     window.CORRIDOR_STRIPS_PANE = CORRIDOR_STRIPS_PANE;
+
+    // Drop the amber selected-segment highlight the moment the selection changes to anything else
+    // (another road, a parcel/building, or nothing). renderSelectedCorridorSegmentHighlight already
+    // clears itself when the remembered segment's proposal is no longer the selected one, so
+    // re-running it on every selection change is all that is needed — without this the amber outline
+    // survived deselecting the road because nothing re-invoked it.
+    if (window.ProposalSelection?.subscribe) {
+        window.ProposalSelection.subscribe(() => {
+            try { renderSelectedCorridorSegmentHighlight(); } catch (_) { }
+        });
+    }
 }

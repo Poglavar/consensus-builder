@@ -21,6 +21,7 @@ const {
     withLaneMoved,
     offsetPolylinePlanar,
     corridorStripRingPlanar,
+    ringSelfIntersectsXY,
     corridorProfileFromOsmTags,
     corridorProfileToOsmTags,
     corridorProfileFromOsmFeature,
@@ -381,6 +382,30 @@ describe('corridorStripRingPlanar', () => {
     it('rejects a degenerate strip', () => {
         expect(corridorStripRingPlanar(straight, 3, 3)).toBe(null);
         expect(corridorStripRingPlanar([[0, 0]], 3, 1)).toBe(null);
+    });
+
+    // A strip whose offset exceeds a bend's turn radius folds into a bowtie ring. In 2D that fills
+    // fine (even-odd), so it is NOT dropped here — the 3D mesh builder guards it (ringSelfIntersectsXY),
+    // and the ring must still be RETURNED so the 2D asphalt renders.
+    it('returns a bowtie ring rather than dropping it (2D fills it; 3D guards separately)', () => {
+        expect(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8)).not.toBe(null);
+        // But it IS a self-intersecting ring, which the 3D-side detector recognises.
+        expect(ringSelfIntersectsXY(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8))).toBe(true);
+    });
+});
+
+describe('ringSelfIntersectsXY (guard used by the 3D mesh builder)', () => {
+    it('passes a simple convex band ring', () => {
+        expect(ringSelfIntersectsXY([[0, 4], [100, 4], [100, 3], [0, 3]])).toBe(false);
+    });
+
+    it('flags a bowtie / figure-eight ring', () => {
+        expect(ringSelfIntersectsXY([[0, 0], [2, 2], [2, 0], [0, 2]])).toBe(true);
+    });
+
+    it('ignores shared endpoints between adjacent edges', () => {
+        // A concave but simple polygon — adjacent edges share a vertex but nothing crosses.
+        expect(ringSelfIntersectsXY([[0, 0], [4, 0], [4, 4], [2, 1], [0, 4]])).toBe(false);
     });
 });
 

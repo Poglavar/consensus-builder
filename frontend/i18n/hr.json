@@ -955,6 +955,7 @@
             "bulldozeHint": "🚜 Sruši ovu dionicu",
             "splitStatus": "Cesta se razdvojila — sada su {{count}} zasebne ceste.",
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
+            "applyingEdit": "Primjenjujem…",
             "bulldozedAllStatus": "Cesta srušena.",
             "junctionHint": "Raskrižje — povucite za pomicanje svih krakova · ⌥-klik razdvaja",
             "finishButtonShortTrack": "Završi prugu (F)",

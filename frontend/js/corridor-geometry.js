@@ -192,8 +192,56 @@
         return [...groups.values()].sort((a, b) => b.length - a.length);
     }
 
-    // Do two centerline sets genuinely connect — sharing a vertex or crossing? Footprint overlap
-    // alone (two parallel roads grazing each other's width) is not a connection.
+    // How close a T-junction endpoint may stop short of the other road's centerline and still be
+    // healed into a shared node. Two ordinary roads meant to connect land within this; two parallel
+    // roads that merely graze by their widths do not (their endpoints sit at each other's ENDS, not
+    // mid-span). Metres — a couple of lane-widths short of touching is still clearly a junction.
+    const NEAR_MISS_JUNCTION_METERS = 2.5;
+
+    // Closest point on segment [a,b] to p, in planar metres. Returns { dist, t } with t the clamped
+    // position along the segment (0 at a, 1 at b), or null if the projection is unavailable. Uses the
+    // runtime's wgs84ToHTRS96 (bare global, like polylineHasSelfIntersection) so metres are honest.
+    function pointToSegmentMetric(p, a, b) {
+        if (typeof wgs84ToHTRS96 !== 'function') return null;
+        let P, A, B;
+        try {
+            P = wgs84ToHTRS96(p.lat, p.lng);
+            A = wgs84ToHTRS96(a.lat, a.lng);
+            B = wgs84ToHTRS96(b.lat, b.lng);
+        } catch (_) { return null; }
+        if (![P, A, B].every(v => Array.isArray(v) && isFinite(v[0]) && isFinite(v[1]))) return null;
+        const abx = B[0] - A[0], aby = B[1] - A[1];
+        const lenSq = abx * abx + aby * aby;
+        if (lenSq < 1e-12) return null;
+        let t = ((P[0] - A[0]) * abx + (P[1] - A[1]) * aby) / lenSq;
+        const tc = Math.max(0, Math.min(1, t));
+        const cx = A[0] + tc * abx, cy = A[1] + tc * aby;
+        return { dist: Math.hypot(P[0] - cx, P[1] - cy), t: tc };
+    }
+
+    // Does an ENDPOINT of one set stop just short of the MID-SPAN of the other's edge — a near-miss
+    // T-junction? (t strictly interior, so an endpoint landing near the other's ENDPOINT — parallel
+    // roads grazing — does not count.) This is the merge-gate half of near-miss healing.
+    function endpointNearMidSpan(segmentsA, segmentsB, toleranceMeters) {
+        for (const a of segmentsA) {
+            if (!Array.isArray(a) || a.length < 1) continue;
+            for (const endpoint of [a[0], a[a.length - 1]]) {
+                for (const b of segmentsB) {
+                    if (!Array.isArray(b) || b.length < 2) continue;
+                    for (let j = 0; j < b.length - 1; j += 1) {
+                        const hit = pointToSegmentMetric(endpoint, b[j], b[j + 1]);
+                        if (hit && hit.t > 1e-6 && hit.t < 1 - 1e-6 && hit.dist <= toleranceMeters) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Do two centerline sets genuinely connect — sharing a vertex, crossing, or a near-miss
+    // T-junction where one road's endpoint stopped a couple of metres short of the other's
+    // centerline (footprints overlap, so it LOOKS connected)? Two parallel roads merely grazing each
+    // other's width are still not a connection.
     function centerlinesTouch(segmentsA, segmentsB) {
         const EPS = 1e-7;
         const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
@@ -207,7 +255,75 @@
                 }
             }
         }
+        if (endpointNearMidSpan(segmentsA, segmentsB, NEAR_MISS_JUNCTION_METERS)) return true;
+        if (endpointNearMidSpan(segmentsB, segmentsA, NEAR_MISS_JUNCTION_METERS)) return true;
         return false;
+    }
+
+    // Heal near-miss T-junctions in a segment set: an endpoint that stopped just short of another
+    // segment's mid-span is snapped exactly onto that span, and the snap point is inserted into the
+    // span as a vertex — so the two roads share a real graph node (draggable, connected, a junction
+    // dot) instead of merely overlapping by their widths. Without this, `insertCorridorCrossingNodes`
+    // finds no true crossing, `corridorConnectedComponents` sees no shared vertex, and the roads stay
+    // two objects that look joined but are not. Mutates `segments` in place; run it BEFORE crossing
+    // nodes are inserted. `segmentIds` stays index-aligned (endpoints move, no segment is added).
+    function healNearMissJunctions(segments, toleranceMeters = NEAR_MISS_JUNCTION_METERS) {
+        if (!Array.isArray(segments) || segments.length < 2) return;
+        if (typeof wgs84ToHTRS96 !== 'function') return;
+        const EPS = 1e-7;
+        const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        // Collect first, apply after: inserting a vertex shifts later indices, so gather every heal
+        // then splice in descending order per target segment.
+        const inserts = []; // { targetSeg, insertAfter, point }
+        for (let si = 0; si < segments.length; si += 1) {
+            const seg = segments[si];
+            if (!Array.isArray(seg) || seg.length < 2) continue;
+            for (const endIdx of [0, seg.length - 1]) {
+                const endpoint = seg[endIdx];
+                let best = null;
+                for (let ti = 0; ti < segments.length; ti += 1) {
+                    if (ti === si) continue;
+                    const other = segments[ti];
+                    if (!Array.isArray(other) || other.length < 2) continue;
+                    // Already a shared node with this segment: nothing to heal.
+                    if (other.some(v => near(v, endpoint))) { best = null; break; }
+                    for (let k = 0; k < other.length - 1; k += 1) {
+                        const hit = pointToSegmentMetric(endpoint, other[k], other[k + 1]);
+                        if (!hit || hit.t <= 1e-6 || hit.t >= 1 - 1e-6 || hit.dist > toleranceMeters) continue;
+                        if (best && hit.dist >= best.dist) continue;
+                        // Snap point in lat/lng: interpolate the target edge at the metric parameter t
+                        // (close enough over a metres-long edge to avoid a second projection round-trip).
+                        const A = other[k], B = other[k + 1];
+                        const point = { lat: A.lat + hit.t * (B.lat - A.lat), lng: A.lng + hit.t * (B.lng - A.lng) };
+                        best = { dist: hit.dist, targetSeg: ti, insertAfter: k, point };
+                    }
+                }
+                if (best) {
+                    // Move the endpoint exactly onto the target span, and remember to give the target a
+                    // matching vertex there so the two share the node.
+                    endpoint.lat = best.point.lat;
+                    endpoint.lng = best.point.lng;
+                    inserts.push(best);
+                }
+            }
+        }
+        // Apply insertions per target segment, descending by position so earlier indices stay valid.
+        const byTarget = new Map();
+        inserts.forEach(entry => {
+            if (!byTarget.has(entry.targetSeg)) byTarget.set(entry.targetSeg, []);
+            byTarget.get(entry.targetSeg).push(entry);
+        });
+        byTarget.forEach((entries, targetSeg) => {
+            const other = segments[targetSeg];
+            entries.sort((a, b) => b.insertAfter - a.insertAfter);
+            entries.forEach(entry => {
+                const A = other[entry.insertAfter];
+                const B = other[entry.insertAfter + 1];
+                // Skip if the span already carries this vertex (a second endpoint healed to the same spot).
+                if (near(A, entry.point) || near(B, entry.point)) return;
+                other.splice(entry.insertAfter + 1, 0, { lat: entry.point.lat, lng: entry.point.lng });
+            });
+        });
     }
 
     function segmentsIntersect(p1, q1, p2, q2) {
@@ -685,6 +801,7 @@
         pickSnapTarget,
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
+        healNearMissJunctions,
         corridorConnectedComponents,
         centerlinesTouch,
         segmentsIntersect,
@@ -700,6 +817,7 @@
         window.createRectangularRoadSegment = createRectangularRoadSegment;
         window.planarSegmentIntersection = planarSegmentIntersection;
         window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
+        window.healNearMissJunctions = healNearMissJunctions;
         window.corridorConnectedComponents = corridorConnectedComponents;
         window.centerlinesTouch = centerlinesTouch;
         window.segmentsIntersect = segmentsIntersect;

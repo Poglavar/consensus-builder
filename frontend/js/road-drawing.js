@@ -669,14 +669,85 @@ async function createRoadProposalFromComponent(baseProposal, component) {
     return newId;
 }
 
-async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
+// A non-blocking "Applying…" spinner shown while any applied-corridor edit re-applies. Ref-counted so
+// overlapping edits keep it up until the last one settles. It never blocks input (pointer-events:none in
+// CSS) — road-node-edit coalesces edits made mid-apply instead. The CSS animation-delay means a fast
+// edit removes it before it ever becomes visible, so only genuinely slow applies flash the spinner.
+let corridorApplyIndicatorCount = 0;
+let corridorApplyIndicatorEl = null;
+function beginCorridorApplyIndicator() {
+    corridorApplyIndicatorCount += 1;
+    if (corridorApplyIndicatorEl || typeof document === 'undefined') return;
+    const host = (typeof map !== 'undefined' && map && typeof map.getContainer === 'function') ? map.getContainer() : document.body;
+    if (!host) return;
+    const el = document.createElement('div');
+    el.className = 'corridor-apply-indicator';
+    const spinner = document.createElement('div');
+    spinner.className = 'corridor-apply-indicator__spinner';
+    const label = document.createElement('span');
+    label.textContent = (typeof translateRoadText === 'function')
+        ? translateRoadText('panel.road.applyingEdit', 'Applying…')
+        : 'Applying…';
+    el.appendChild(spinner);
+    el.appendChild(label);
+    host.appendChild(el);
+    corridorApplyIndicatorEl = el;
+}
+function endCorridorApplyIndicator() {
+    corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
+    if (corridorApplyIndicatorCount > 0) return;
+    if (corridorApplyIndicatorEl && corridorApplyIndicatorEl.parentNode) {
+        corridorApplyIndicatorEl.parentNode.removeChild(corridorApplyIndicatorEl);
+    }
+    corridorApplyIndicatorEl = null;
+}
+// True while any corridor re-apply is in flight — the exit/deselect paths wait on this.
+function isCorridorApplyInFlight() {
+    return corridorApplyIndicatorCount > 0;
+}
+
+// Wrapper: every corridor geometry edit (node drag, bulldoze, delete, profile change) funnels through
+// here, so the "Applying…" spinner brackets all of them uniformly. The heavy work is in the impl below.
+async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
+    beginCorridorApplyIndicator();
+    try {
+        return await runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, options);
+    } finally {
+        endCorridorApplyIndicator();
+    }
+}
+
+async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, options = {}) {
     const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalIdOrHash) : null;
     if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return false;
     if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
 
     const definition = proposal.roadProposal.definition;
-    // Taken BEFORE the mutation: a rejected edit (reroute in the obstacle prompt) restores this.
-    const definitionSnapshot = JSON.parse(JSON.stringify(definition));
+    // The TRUE pre-edit shape. A node DRAG streams its live positions straight into this same
+    // `definition` (road-node-edit's liveMoveNode) before we ever get here, so snapshotting `definition`
+    // now would capture the DRAGGED geometry, not the original — which quietly poisoned the reroute
+    // rollback (reverted to the wrong spot) and the changed-edge detection below (an edge "looked
+    // unchanged" so a new building collision went unprompted). The drag hands us its dragstart snapshot
+    // via options.preEditSnapshot; every other caller mutates inside mutateDefinition, so `definition`
+    // is still pristine here and snapshotting it is correct.
+    const definitionSnapshot = options.preEditSnapshot
+        ? JSON.parse(JSON.stringify(options.preEditSnapshot))
+        : JSON.parse(JSON.stringify(definition));
+    // Every building this road demolished before the edit — partial cuts (records carry a `remainder`)
+    // AND full demolitions (a cut that ate >85% of a building is stored as a whole-building record with
+    // no remainder). On a move ALL of them must be undone and re-carved at the new footprint: the road
+    // is the sole cause of the demolitions it owns, so they follow it. Restricting this to `remainder`
+    // records froze the heavily-cut buildings near a junction (several converging legs tip a building
+    // into the no-remainder branch) — they stayed as ghost slices at the old position. `geometry` is
+    // each record's own original footprint. priorDemolitionIds covers EVERY prior record (even ones
+    // whose footprint capture failed and stored geometry:null) so the drop below restores them all;
+    // only the geometry-bearing ones can be re-carved.
+    const priorDemolitionIds = new Set((definitionSnapshot.demolishedBuildings || [])
+        .filter(record => record && record.id !== undefined && record.id !== null)
+        .map(record => String(record.id)));
+    const priorRoadDemolitions = (definitionSnapshot.demolishedBuildings || [])
+        .filter(record => record && record.geometry)
+        .map(record => ({ id: String(record.id), geometry: record.geometry }));
     if (typeof mutateDefinition === 'function') mutateDefinition(definition);
 
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
@@ -790,9 +861,21 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
             edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
             const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind);
             if (resolution.action === 'cancel') {
-                // Reroute: put the definition back exactly as it was and drop the edit.
+                // Reroute: put the definition back exactly as it was and drop the edit. A node drag
+                // has already streamed its live positions into `definition` and repainted the strips
+                // there, so reverting the data is not enough — repaint from the restored geometry, or
+                // the road (and its node handles) stay stuck at the abandoned drop position.
                 Object.keys(definition).forEach(field => { delete definition[field]; });
                 Object.assign(definition, definitionSnapshot);
+                try {
+                    proposal.definition = JSON.parse(JSON.stringify(definition));
+                    proposal.geometry = { ...(proposal.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
+                    if (definition.polygon) proposal.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
+                    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                } catch (_) { }
+                try { ProposalManager._refreshUIAfterProposalChange?.(proposal); } catch (_) { }
+                try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+                try { if (typeof refreshRoadNodeHandles === 'function') refreshRoadNodeHandles(); } catch (_) { }
                 return false;
             }
             if (resolution.action === 'destroy' && (resolution.demolishedBuildings || []).length) {
@@ -923,11 +1006,62 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         }
     }
 
+    // A dragged endpoint that came to rest just short of another stretch's centerline is snapped
+    // onto it here, so a move can FORM a junction (not only preserve existing ones) before crossings
+    // are noded and connectivity is judged.
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(normalizedSegments);
     insertCorridorCrossingNodes(
         normalizedSegments,
         normalizedIds,
         new Set((definition.tunnels || []).map(record => record?.edgeKey).filter(Boolean))
     );
+
+    // Re-carve this road's own demolitions at the MOVED geometry: drop the stale records (restoring
+    // those buildings) and re-carve whichever the new footprint still crosses. A demolished building
+    // is filtered out of the global detection pool the moment it has a record, so this can't go
+    // through detectLoadedBuildingTunnelIntersections — it re-carves directly from each record's own
+    // stored footprint against the road's WHOLE new footprint in one pass. Doing it whole (not
+    // edge-by-edge) means a building crossed by several converging legs gets one correct combined cut,
+    // and upsertCutRecord derives cut-vs-full-demolition afresh at the new position. Runs on the full
+    // welded network (before the component split) so a cut migrating onto a split-off piece is
+    // redistributed to it by the split below.
+    if (priorDemolitionIds.size && typeof upsertCutRecord === 'function') {
+        const recutWidths = normalizedSegments.map((_, segIndex) => {
+            const id = Array.isArray(normalizedIds) ? normalizedIds[segIndex] : null;
+            const override = (definition.segmentProfiles && id !== null && id !== undefined)
+                ? definition.segmentProfiles[String(id)] : null;
+            const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
+            return overrideWidth > 0 ? overrideWidth : (Number(definition.width) || 10);
+        });
+        // Tunnelled spans acquire nothing at the surface, so a building under a tunnel must not be
+        // re-carved — cut only against the surface runs when this road tunnels anywhere.
+        const cutSegments = (Array.isArray(definition.tunnels) && definition.tunnels.length && typeof corridorSurfaceRuns === 'function')
+            ? corridorSurfaceRuns(normalizedSegments, definition.tunnels)
+            : normalizedSegments;
+        const cutWidths = cutSegments === normalizedSegments
+            ? recutWidths
+            : cutSegments.map(() => Number(definition.width) || 10);
+        const unionPolygon = buildRoadUnionPolygonWithWidths(cutSegments, cutWidths, Number(definition.width) || 10);
+        const roadGeo = unionPolygon ? convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(unionPolygon)) : null;
+        // Only touch the records if we have a valid new footprint to re-carve against: dropping them
+        // first and then failing to build the region would silently un-cut every building (over-heal).
+        if (roadGeo && roadGeo.type) {
+            definition.demolishedBuildings = (definition.demolishedBuildings || [])
+                .filter(record => !(record && priorDemolitionIds.has(String(record.id))));
+            const regionFeature = { type: 'Feature', properties: {}, geometry: roadGeo };
+            priorRoadDemolitions.forEach(prior => {
+                const footprintFeature = { type: 'Feature', properties: {}, geometry: prior.geometry };
+                try {
+                    if (typeof turf !== 'undefined' && typeof turf.booleanIntersects === 'function'
+                        && !turf.booleanIntersects(footprintFeature, regionFeature)) return;
+                } catch (_) { }
+                upsertCutRecord(definition.demolishedBuildings, { id: prior.id, feature: footprintFeature }, regionFeature);
+            });
+        } else {
+            console.warn('[updateLocalCorridorGeometry] Could not rebuild the road footprint — leaving building cuts at their previous position.');
+        }
+    }
+
     const components = corridorConnectedComponents(normalizedSegments, normalizedIds);
     const splitOff = components.slice(1);
     definition.points = components[0].segments;
@@ -2221,6 +2355,7 @@ async function startSeededCorridorDrawing(kind, seed, copySource) {
 if (typeof window !== 'undefined') {
     window.requestRoadDrawTool = () => requestCorridorDrawingTool('road');
     window.updateLocalCorridorGeometry = updateLocalCorridorGeometry;
+    window.isCorridorApplyInFlight = isCorridorApplyInFlight;
     window.requestTrackDrawTool = () => requestCorridorDrawingTool('track');
     window.startSeededCorridorDrawing = startSeededCorridorDrawing;
 }
@@ -4605,6 +4740,10 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     mergedSegments.push(...welded.segments);
     mergedSegmentIds.length = 0;
     mergedSegmentIds.push(...welded.segmentIds);
+    // Heal near-miss T-junctions (an endpoint that stopped short of another road's centerline) into
+    // real shared nodes before turning every crossing into one — otherwise the absorbed road looks
+    // joined but stays graph-disconnected.
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(mergedSegments);
     insertCorridorCrossingNodes(
         mergedSegments,
         mergedSegmentIds,
@@ -4713,10 +4852,13 @@ async function finishRoadDrawing() {
     roadDemolishedBuildings = tunnelCheck.demolished;
     refreshRoadBuildingTunnelLayer();
 
-    // Every crossing INSIDE the session becomes a shared graph node at first placement — not
-    // only after a later drag. Snap-absorbing an existing network pulls its segments into the
-    // session, so a new stroke crossing them mid-span otherwise finished without junction nodes.
-    // Runs after the tunnel check; tunnelled edges are protected (their records key by edge).
+    // A stroke that stops a couple of metres short of another (its width band overlapping, so it
+    // LOOKS joined) gets its endpoint snapped onto that centerline first, turning a near-miss into a
+    // real shared node. Then every true crossing INSIDE the session becomes a shared graph node at
+    // first placement — not only after a later drag. Snap-absorbing an existing network pulls its
+    // segments into the session, so a new stroke crossing them mid-span otherwise finished without
+    // junction nodes. Runs after the tunnel check; tunnelled edges are protected (records key by edge).
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(segments);
     insertCorridorCrossingNodes(
         segments,
         segmentIds,
@@ -4797,32 +4939,6 @@ async function finishRoadDrawing() {
         .map(p => getParcelIdFromAny(p))
         .filter(Boolean)
         .map(id => id.toString());
-
-    // Seed multi-parcel selection with the affected parcels so the generalized modal can open
-    try {
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
-            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
-            }
-            if (typeof multiParcelSelection.clearSelection === 'function') {
-                multiParcelSelection.clearSelection();
-            }
-            parentParcelIds.forEach(id => {
-                if (!id) return;
-                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
-                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
-                multiParcelSelection.selectedParcels.add(id);
-                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
-                    multiParcelSelection.addParcelHighlight(layer);
-                }
-            });
-            if (typeof multiParcelSelection.updateUI === 'function') {
-                multiParcelSelection.updateUI();
-            }
-        }
-    } catch (selectionError) {
-        console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
-    }
 
     // Keep the ids paired with the geometry through the coordinate cleaning, so a road reopened later
     // continues its segments under the same ids rather than as anonymous new ones.
@@ -4963,6 +5079,34 @@ async function finishRoadDrawing() {
     }
 
     // Legacy path (drawing started without a design draft): the classic create dialog.
+    // Seed multi-parcel selection with the affected parcels so the generalized modal can open.
+    // ONLY the legacy dialog reads it; the instant-create path above never opened a modal, so
+    // seeding there just left multi-select stuck ON — the next map clicks then entered add-mode.
+    try {
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
+            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
+                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
+            }
+            if (typeof multiParcelSelection.clearSelection === 'function') {
+                multiParcelSelection.clearSelection();
+            }
+            parentParcelIds.forEach(id => {
+                if (!id) return;
+                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
+                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
+                multiParcelSelection.selectedParcels.add(id);
+                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
+                    multiParcelSelection.addParcelHighlight(layer);
+                }
+            });
+            if (typeof multiParcelSelection.updateUI === 'function') {
+                multiParcelSelection.updateUI();
+            }
+        }
+    } catch (selectionError) {
+        console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
+    }
+
     showProposalDialog({
         goal: 'road-track',
         lockGoal: true,

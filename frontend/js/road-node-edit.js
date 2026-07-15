@@ -85,15 +85,33 @@
         definition.segmentIds = kept.map((_, index) => ids[index] || null);
     }
 
-    function mutateGeometry(proposalKey, mutator) {
-        if (busy || typeof global.updateLocalCorridorGeometry !== 'function') return;
+    // Corridor re-apply is stateful (unapply→apply + parcel/building re-cut) and cannot safely run
+    // twice at once. Rather than DROP an edit that arrives mid-apply (which lost the drag and orphaned
+    // its node), edits are serialized and COALESCED: the newest queued edit wins, because liveMoveNode
+    // has already written every drag into the live definition, so one final re-apply captures them all.
+    // A non-blocking "Applying…" spinner (in updateLocalCorridorGeometry) tells the user work is running.
+    let pendingEdit = null;
+    function runExclusiveEdit(runFn) {
+        if (typeof runFn !== 'function') return;
+        if (busy) { pendingEdit = runFn; return; } // coalesce: only the latest matters
         busy = true;
-        Promise.resolve(global.updateLocalCorridorGeometry(proposalKey, mutator)).catch(error => {
+        Promise.resolve(runFn()).catch(error => {
             console.warn('[roadNodeEdit] Geometry edit failed', error);
         }).finally(() => {
             busy = false;
-            refresh();
+            if (pendingEdit) {
+                const next = pendingEdit;
+                pendingEdit = null;
+                runExclusiveEdit(next);
+            } else {
+                refresh();
+            }
         });
+    }
+
+    function mutateGeometry(proposalKey, mutator) {
+        if (typeof global.updateLocalCorridorGeometry !== 'function') return;
+        runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, mutator));
     }
 
     // Bulldoze one stretch: the edge disappears, the segment splits around it, and if the body
@@ -192,6 +210,11 @@
     // Live feedback mid-drag: mutate the stored centerline and redraw the cross-section strips.
     // The expensive part (footprint rebuild, parcel re-cut, re-apply) waits for the drop.
     function liveMoveNode(proposalKey, targets, latlng) {
+        // A re-apply may be in flight (non-blocking) and reading this very definition across its awaits;
+        // mutating it here would race the unapply→apply. Skip the live write while that runs — the
+        // Leaflet marker still tracks the cursor natively, and the drop's commit re-applies the final
+        // position. The strips simply pause until the apply finishes.
+        if (global.isCorridorApplyInFlight?.()) return;
         const proposal = global.getProposalByIdOrHash?.(proposalKey) || null;
         const definition = proposal?.roadProposal?.definition;
         if (!definition) return;
@@ -200,18 +223,17 @@
         }
     }
 
-    function commitNodeMove(proposalKey, targets, latlng, origin, isTrack) {
-        if (busy || typeof global.updateLocalCorridorGeometry !== 'function') return;
-        busy = true;
+    function commitNodeMove(proposalKey, targets, latlng, origin, isTrack, preEditSnapshot) {
+        if (typeof global.updateLocalCorridorGeometry !== 'function') return;
+        // Snap at drop time (the snap targets are read from the map as it is now), then serialize the
+        // re-apply. Hand over the geometry captured at dragstart: liveMoveNode has already streamed the
+        // drag into the live definition, so updateLocalCorridorGeometry can no longer snapshot the true
+        // original itself — without it, changed-edge detection and the reroute-rollback baseline would
+        // be the dragged shape, not the starting one.
         const snapped = snapDropLatLng(latlng, origin, isTrack);
-        Promise.resolve(global.updateLocalCorridorGeometry(proposalKey, definition => {
+        runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, definition => {
             moveNodeTargets(definition, targets, snapped);
-        })).catch(error => {
-            console.warn('[roadNodeEdit] Node move failed', error);
-        }).finally(() => {
-            busy = false;
-            refresh();
-        });
+        }, { preEditSnapshot: preEditSnapshot || null }));
     }
 
     function refresh() {
@@ -247,7 +269,12 @@
         });
 
         nodesByPosition.forEach(node => {
-            const isJunction = node.targets.length > 1;
+            // A junction is where two or more DISTINCT legs meet — count distinct segments, not raw
+            // coincident vertices. A single segment can leave two vertices at one spot (a loop that
+            // closes on itself, or a stray duplicate from a drag/weld); that is one leg, not a
+            // junction, and must render like every other plain node instead of the emphasised amber
+            // handle. The drag still carries every coincident vertex (all `targets`) regardless.
+            const isJunction = new Set(node.targets.map(target => target.segIndex)).size > 1;
             const marker = global.L.marker([node.lat, node.lng], {
                 draggable: true,
                 icon: isJunction ? junctionIcon() : handleIcon(),
@@ -261,13 +288,24 @@
             ), { sticky: true, pane: 'road-node-handles' });
             const origin = { lat: node.lat, lng: node.lng };
             let lastLiveUpdate = 0;
+            // The TRUE pre-drag geometry, frozen before liveMoveNode starts mutating the live
+            // definition — handed to commitNodeMove so the re-apply reasons from the original shape.
+            let dragStartSnapshot = null;
+            marker.on('dragstart', () => {
+                const proposal = global.getProposalByIdOrHash?.(activeKey) || null;
+                const definition = proposal?.roadProposal?.definition;
+                dragStartSnapshot = definition ? JSON.parse(JSON.stringify(definition)) : null;
+            });
             marker.on('drag', () => {
                 const now = Date.now();
                 if (now - lastLiveUpdate < 120) return;
                 lastLiveUpdate = now;
                 liveMoveNode(activeKey, node.targets, marker.getLatLng());
             });
-            marker.on('dragend', () => commitNodeMove(activeKey, node.targets, marker.getLatLng(), origin, isTrack));
+            marker.on('dragend', () => {
+                commitNodeMove(activeKey, node.targets, marker.getLatLng(), origin, isTrack, dragStartSnapshot);
+                dragStartSnapshot = null;
+            });
             marker.on('click', (event) => {
                 if (event.originalEvent && (event.originalEvent.altKey || event.originalEvent.metaKey)) {
                     try { global.L.DomEvent.stop(event.originalEvent); } catch (_) { }

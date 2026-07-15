@@ -769,6 +769,15 @@
 
         const outer = toCleanVecs(rings[0]);
         if (outer.length < 3) return null;
+        // A self-intersecting outer ring (a bowtie strip from a sharp bend, or a degenerate footprint
+        // from a dragged node) triangulates into overlapping faces with degenerate normals — the flat
+        // black area + radiating spikes seen in 3D. It renders fine in 2D, so the guard is HERE (3D
+        // only): skip the mesh rather than draw the artifact. `ringSelfIntersectsXY` takes [x,y] pairs.
+        if (typeof window !== 'undefined' && typeof window.ringSelfIntersectsXY === 'function') {
+            try {
+                if (window.ringSelfIntersectsXY(outer.map(v => [v.x, v.y]))) return null;
+            } catch (_) { /* fall through and mesh it */ }
+        }
         const shape = new THREE.Shape(outer);
         for (let i = 1; i < rings.length; i++) {
             const holePts = toCleanVecs(rings[i]);

@@ -977,6 +977,7 @@
             "bulldozeHint": "🚜 Demoler este tramo",
             "splitStatus": "La carretera se separó — ahora son {{count}} carreteras independientes.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
+            "applyingEdit": "Aplicando…",
             "bulldozedAllStatus": "Carretera demolida.",
             "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta",
             "finishButtonShortTrack": "Terminar vía (F)",

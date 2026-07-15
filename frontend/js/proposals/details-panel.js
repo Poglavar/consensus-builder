@@ -2055,6 +2055,20 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     if (clearHighlights && typeof clearProposalHighlights === 'function') {
         clearProposalHighlights();
     }
+
+    // Drop the amber selected-segment corridor outline: closing the panel means the road is no
+    // longer selected. This path (panel close / a parcel taking over the selection) clears proposal
+    // highlights but never touched ProposalSelection, so the ProposalSelection subscription that
+    // normally repaints/clears the amber never fired here — the outline lingered. Nulling the
+    // remembered segment also stops a later strip refresh from repainting it.
+    try {
+        if (typeof window !== 'undefined') {
+            window.corridorLastClickedSegment = null;
+            if (typeof window.refreshSelectedCorridorSegmentHighlight === 'function') {
+                window.refreshSelectedCorridorSegmentHighlight();
+            }
+        }
+    } catch (_) { }
 }
 
 function getProposalDetailsPanelLabels() {

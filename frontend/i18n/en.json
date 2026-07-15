@@ -930,6 +930,7 @@
             "bulldozeHint": "🚜 Bulldoze this stretch",
             "splitStatus": "The road came apart — now {{count}} separate roads.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
+            "applyingEdit": "Applying…",
             "bulldozedAllStatus": "Road bulldozed.",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
             "finishButtonShortTrack": "Finish track (F)",

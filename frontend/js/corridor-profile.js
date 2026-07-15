@@ -865,6 +865,38 @@ function offsetPolylinePlanar(pointsXY, offset) {
     return result;
 }
 
+// Do two planar segments [a1,a2] and [b1,b2] properly cross? Endpoints touching don't count —
+// we only care about a genuine interior crossing, which is what makes a strip ring a bowtie.
+function planarSegmentsCross(a1, a2, b1, b2) {
+    const cross = (o, p, q) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
+    const d1 = cross(a1, a2, b1);
+    const d2 = cross(a1, a2, b2);
+    const d3 = cross(b1, b2, a1);
+    const d4 = cross(b1, b2, a2);
+    // Strictly opposite signs on both tests = the segments straddle each other (interior crossing).
+    return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+}
+
+// Does a closed ring of planar [x,y] points cross itself? A self-intersecting strip ring (a bowtie
+// from an offset larger than a bend's turn radius — exactly what dragging a road node can create)
+// extrudes into degenerate, black-lit 3D geometry, so the caller drops such a strip rather than mesh it.
+function ringSelfIntersectsXY(ring) {
+    const n = ring.length;
+    if (n < 4) return false;
+    for (let i = 0; i < n; i += 1) {
+        const a1 = ring[i];
+        const a2 = ring[(i + 1) % n];
+        // Compare against every later edge that shares no vertex with edge i (skip i's neighbours).
+        for (let j = i + 2; j < n; j += 1) {
+            if (i === 0 && j === n - 1) continue; // edge (n-1,0) is adjacent to edge (0,1)
+            const b1 = ring[j];
+            const b2 = ring[(j + 1) % n];
+            if (planarSegmentsCross(a1, a2, b1, b2)) return true;
+        }
+    }
+    return false;
+}
+
 // The ring for one strip, in whatever coordinate system `pointsXY` is in (metres, x east, y north):
 // the left boundary forward, the right boundary back. Kept free of the projection so it can be unit
 // tested without a map.
@@ -875,6 +907,10 @@ function corridorStripRingPlanar(pointsXY, left, right) {
     const leftSide = offsetPolylinePlanar(pointsXY, Math.max(left, right));
     const rightSide = offsetPolylinePlanar(pointsXY, Math.min(left, right));
     if (!leftSide || !rightSide) return null;
+    // NOTE: a sharp bend can fold this ring into a bowtie. That renders FINE in 2D (Leaflet fills it
+    // with the even-odd rule), so the ring is returned as-is here — dropping it stripped the asphalt
+    // off legitimate roads. The bowtie only misbehaves in 3D (ExtrudeGeometry → black faces), so the
+    // self-intersection guard (ringSelfIntersectsXY) lives in the 3D mesh builder, not here.
     return [...leftSide, ...rightSide.reverse()];
 }
 
@@ -1390,6 +1426,7 @@ if (typeof module !== 'undefined' && module.exports) {
         CORRIDOR_MIN_LANE_WIDTH,
         offsetPolylinePlanar,
         corridorStripRingPlanar,
+        ringSelfIntersectsXY,
         corridorLaneSeparators,
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
