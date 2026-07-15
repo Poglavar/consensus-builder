@@ -56,6 +56,7 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
+    const aiBtn = document.getElementById('mode-ai-toggle'); // AI photorealistic render — 3D-only
 
     // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
     // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
@@ -3544,6 +3545,8 @@
         updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
+        if (aiBtn) aiBtn.hidden = false; // AI render works from any 3D scene
+
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -3565,6 +3568,7 @@
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
+        if (aiBtn) aiBtn.hidden = true;
         if (threeContainer) threeContainer.classList.remove('active');
         // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
         // and the transition guard would otherwise leak and jam future entries.
@@ -4007,6 +4011,30 @@
             return { targetLng: tgtLL.lng, targetLat: tgtLL.lat, headingDeg: headingDeg, pitchRad: pitchRad, range: range };
         } catch (_) { return null; }
     }
+
+    // Capture the current 3D scene as a PNG data URL, for the AI photorealistic render.
+    // The renderer is created without preserveDrawingBuffer, so we force a fresh synchronous
+    // render and read the drawing buffer in the same tick (before the browser swaps/clears it).
+    function captureSceneDataURL() {
+        if (!isActive || !renderer || !scene || !camera) return null;
+        try {
+            renderer.render(scene, camera);
+            return renderer.domElement.toDataURL('image/png');
+        } catch (_) { return null; }
+    }
+    window.captureThreeSceneDataURL = captureSceneDataURL;
+
+    // Lightweight scene semantics for building the AI caption. Kept minimal on purpose —
+    // the screenshot already carries the geometry; this only adds what the pixels can't say.
+    window.getThreeSceneSummary = function () {
+        let cityLabel = null;
+        try { cityLabel = window.CityConfigManager?.getCurrentCityConfig?.().label || null; } catch (_) { }
+        return {
+            cityLabel,
+            isolatedProposal: isolatedProposalId !== null,
+            parcelCount: lastParcelCount || 0
+        };
+    };
 
     // Expose globals for debugging/manual control
     window.enterThreeMode = enter3D;

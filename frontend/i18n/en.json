@@ -2604,7 +2604,8 @@
             "switchTo3d": "Switch to 3D",
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
-            "realistic": "Realistic context (Google Photorealistic 3D)"
+            "realistic": "Realistic context (Google Photorealistic 3D)",
+            "ai": "AI photorealistic render"
         },
         "parcelPanel": {
             "title": "Parcel",
@@ -2624,6 +2625,23 @@
             "title": "Proposal info",
             "parcelsLabel": "Parcels",
             "avgPerParcel": "Avg / parcel"
+        },
+        "ai": {
+            "title": "AI photorealistic render",
+            "sourceLabel": "Captured scene",
+            "promptLabel": "Prompt (editable)",
+            "costHint": "~{{c}} per image",
+            "resultLabel": "Result",
+            "download": "Download",
+            "sessionTotal": "Session spend: {{c}}",
+            "generate": "Generate",
+            "generating": "Generating…",
+            "working": "Sending scene to the model…",
+            "done": "Done in {{s}}s — this render cost {{c}}",
+            "error": "Render failed: {{m}}",
+            "need3d": "Enter 3D mode first to render the scene.",
+            "captureFailed": "Could not capture the 3D scene.",
+            "emptyPrompt": "Prompt is empty."
         }
     },
     "structureEditor": {

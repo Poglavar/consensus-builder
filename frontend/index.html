@@ -103,7 +103,8 @@
                 'css/road-analysis.css',
                 'css/utilities.css',
                 'css/canton-mode.css',
-                'css/photoreal-mode.css'
+                'css/photoreal-mode.css',
+                'css/ai-scene.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -888,6 +889,9 @@
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Realistic context (Google Photorealistic 3D)" aria-label="Realistic context (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
             <i class="fas fa-globe" aria-hidden="true"></i>
         </button>
+        <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+        </button>
         <div id="three-container" aria-hidden="true"></div>
         <div id="cesium-container" aria-hidden="true"></div>
 
@@ -1433,6 +1437,7 @@
             'js/proposals/gain.js',
             'js/three-mode.js',
             'js/photoreal-mode.js',
+            'js/ai-scene.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',
             'js/parcel-blocks.js',

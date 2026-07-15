@@ -2653,7 +2653,8 @@
             "switchTo3d": "Cambiar a 3D",
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
-            "realistic": "Contexto realista (Google 3D fotorrealista)"
+            "realistic": "Contexto realista (Google 3D fotorrealista)",
+            "ai": "Renderizado fotorrealista con IA"
         },
         "parcelPanel": {
             "title": "Parcela",
@@ -2673,6 +2674,23 @@
             "title": "Información de la propuesta",
             "parcelsLabel": "Parcelas",
             "avgPerParcel": "Media / parcela"
+        },
+        "ai": {
+            "title": "Renderizado fotorrealista con IA",
+            "sourceLabel": "Escena capturada",
+            "promptLabel": "Instrucción (editable)",
+            "costHint": "~{{c}} por imagen",
+            "resultLabel": "Resultado",
+            "download": "Descargar",
+            "sessionTotal": "Gasto de la sesión: {{c}}",
+            "generate": "Generar",
+            "generating": "Generando…",
+            "working": "Enviando la escena al modelo…",
+            "done": "Listo en {{s}}s — este render costó {{c}}",
+            "error": "El renderizado falló: {{m}}",
+            "need3d": "Entra primero en modo 3D para renderizar la escena.",
+            "captureFailed": "No se pudo capturar la escena 3D.",
+            "emptyPrompt": "La instrucción está vacía."
         }
     },
     "structureEditor": {

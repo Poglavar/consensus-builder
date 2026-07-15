@@ -2634,7 +2634,8 @@
             "switchTo3d": "Prebaci na 3D",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmene",
-            "realistic": "Realističan kontekst (Google fotorealistični 3D)"
+            "realistic": "Realističan kontekst (Google fotorealistični 3D)",
+            "ai": "AI fotorealistični prikaz"
         },
         "parcelPanel": {
             "title": "Parcela",
@@ -2654,6 +2655,23 @@
             "title": "Podaci o predlogu",
             "parcelsLabel": "Parcele",
             "avgPerParcel": "Prosek / parceli"
+        },
+        "ai": {
+            "title": "AI fotorealistični prikaz",
+            "sourceLabel": "Snimljena scena",
+            "promptLabel": "Uputstvo (izmenjivo)",
+            "costHint": "~{{c}} po slici",
+            "resultLabel": "Rezultat",
+            "download": "Preuzmi",
+            "sessionTotal": "Potrošnja u sesiji: {{c}}",
+            "generate": "Generiši",
+            "generating": "Generisanje…",
+            "working": "Slanje scene modelu…",
+            "done": "Gotovo za {{s}}s — ovaj prikaz koštao je {{c}}",
+            "error": "Generisanje nije uspelo: {{m}}",
+            "need3d": "Prvo uđite u 3D režim za prikaz scene.",
+            "captureFailed": "Nije moguće snimiti 3D scenu.",
+            "emptyPrompt": "Uputstvo je prazno."
         }
     },
     "structureEditor": {
