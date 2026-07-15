@@ -573,12 +573,16 @@
                 ? global.getCityConfig()
                 : null;
 
-            if (!cityConfig || !cityConfig.blockchain || !cityConfig.blockchain.proposalContracts) {
-                console.log('No blockchain proposal contracts configured for current city');
+            // Per-city contracts if configured, else the global Base Sepolia fallback (so sync works
+            // everywhere). Wallet-gated by the isWalletConnected() check upstream.
+            const contracts = (global.ProposalContracts && typeof global.ProposalContracts.resolveProposalContracts === 'function')
+                ? global.ProposalContracts.resolveProposalContracts(cityConfig)
+                : (cityConfig && cityConfig.blockchain && cityConfig.blockchain.proposalContracts) || [];
+            if (!contracts.length) {
+                console.log('No blockchain proposal contracts resolved for current city');
                 return { totalSynced: 0, contracts: [] };
             }
 
-            const contracts = cityConfig.blockchain.proposalContracts;
             const results = [];
 
             for (const { chainId, contractAddress } of contracts) {
@@ -717,11 +721,12 @@
                 ? global.getCityConfig()
                 : null;
 
-            if (!cityConfig || !cityConfig.blockchain || !cityConfig.blockchain.proposalContracts) {
+            const contracts = (global.ProposalContracts && typeof global.ProposalContracts.resolveProposalContracts === 'function')
+                ? global.ProposalContracts.resolveProposalContracts(cityConfig)
+                : (cityConfig && cityConfig.blockchain && cityConfig.blockchain.proposalContracts) || [];
+            if (!contracts.length) {
                 return;
             }
-
-            const contracts = cityConfig.blockchain.proposalContracts;
 
             for (const { chainId, contractAddress } of contracts) {
                 await setupContractEventListeners(chainId, contractAddress);
