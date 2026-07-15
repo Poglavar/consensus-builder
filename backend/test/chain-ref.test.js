@@ -69,3 +69,10 @@ describe('chainRefFromProposal — Solana detection', () => {
         expect(chainRefFromProposal(p).chainType).toBe('evm');
     });
 });
+
+describe('chainRefFromProposal — Canton detection', () => {
+    it('infers canton from a "canton-<network>" chainId and strips the prefix', () => {
+        const p = { onchain: { chainId: 'canton-devnet', contractAddress: 'canton', proposalId: 'CID123' } };
+        expect(chainRefFromProposal(p)).toEqual({ chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'CID123' });
+    });
+});

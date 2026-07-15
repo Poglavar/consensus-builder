@@ -193,11 +193,25 @@ function renderProposalListModal() {
     // Blockchain source: the MINTED (on-chain) proposals. Same data the wallet's Minted modal shows,
     // just surfaced in the list. Read from local storage (own mints + anything chain-sync pulled in);
     // activating the tab with a wallet triggers a sync to refresh (handled in the source switch).
+    // Canton proposals are EXCLUDED here — they're private to their ledger parties, live in their own
+    // purple-badge/explorer lane, and are called out with a note below rather than silently dropped.
+    const cantonModeApi = (typeof window !== 'undefined') ? window.CantonMode : null;
+    const isCantonProposal = (cantonModeApi && typeof cantonModeApi.isCantonProposal === 'function')
+        ? (p) => cantonModeApi.isCantonProposal(p)
+        : () => false;
     const blockchainAugmented = allProposals
-        .filter(proposal => (typeof isProposalMinted === 'function') ? isProposalMinted(proposal) : !!(proposal && proposal.isMinted))
+        .filter(proposal => {
+            const minted = (typeof isProposalMinted === 'function') ? isProposalMinted(proposal) : !!(proposal && proposal.isMinted);
+            return minted && !isCantonProposal(proposal);
+        })
         .map(proposal => ({ proposal, metrics: computeProposalMetrics(proposal) }));
     const blockchainDatasets = buildDatasets(blockchainAugmented);
     const blockchainCount = blockchainAugmented.length;
+    // When Canton mode is active, tell the user why their private proposals aren't in this list.
+    const cantonActiveNow = cantonModeApi && typeof cantonModeApi.isActive === 'function' && cantonModeApi.isActive();
+    const blockchainCantonNote = (source === 'blockchain' && cantonActiveNow)
+        ? `<p class="proposal-list-note canton-empty">${escapeHtml('On Canton, proposals are private, so they are not listed here.')}</p>`
+        : '';
 
     const chosen = source === 'server' ? serverDatasets
         : source === 'blockchain' ? blockchainDatasets
@@ -340,6 +354,7 @@ function renderProposalListModal() {
                 <button type="button" class="proposal-list-modal-close close-circle-btn close-circle-btn--lg" aria-label="${escapeHtml(modalStrings.closeAria)}" data-i18n-key="modal.roadWidth.proposalList.closeAria" data-i18n-attr="aria-label" onclick="closeProposalList()">&times;</button>
             </div>
             ${sourceToggleHtml}
+            ${blockchainCantonNote}
             ${controlsHtml}
             <div class="proposal-list-tabs">
                 <button class="proposal-tab-btn ${proposalListState.activeTab === 'active' ? 'active' : ''}" data-tab="active" data-i18n-key="modal.roadWidth.proposalList.tabs.active">

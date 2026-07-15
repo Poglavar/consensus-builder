@@ -52,6 +52,9 @@
             if (/^solana/i.test(chainIdStr)) {
                 chainType = 'solana';
                 chainId = chainIdStr.replace(/^solana-/i, ''); // the cluster (devnet / mainnet-beta)
+            } else if (/^canton/i.test(chainIdStr)) {
+                chainType = 'canton';
+                chainId = chainIdStr.replace(/^canton-/i, ''); // the Canton network/domain (e.g. devnet)
             } else {
                 chainType = 'evm';
             }

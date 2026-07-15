@@ -73,11 +73,12 @@ describe('loadChainProposalFromRef (EVM)', () => {
 });
 
 describe('loadChainProposalFromRef (dispatch)', () => {
-    it('reports not-yet-wired for canton and bad refs (solana is wired now)', async () => {
-        expect((await loadChainProposalFromRef({ chainType: 'canton' })).reason).toBe('chain-not-supported');
+    it('handles bad refs and unknown chains; evm/solana/canton are all wired now', async () => {
         expect((await loadChainProposalFromRef(null)).reason).toBe('bad-ref');
-        // solana with no loader present → chain-unavailable (wired, but needs the Solana wallet).
+        expect((await loadChainProposalFromRef({ chainType: 'dogecoin' })).reason).toBe('unknown-chain');
+        // Wired chains with no environment present → chain-unavailable (they need their wallet/loader).
         expect((await loadChainProposalFromRef({ chainType: 'solana', chainId: 'devnet', contract: 'P', tokenId: 'A' })).reason).toBe('chain-unavailable');
+        expect((await loadChainProposalFromRef({ chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'C' })).reason).toBe('chain-unavailable');
     });
 });
 
@@ -104,5 +105,48 @@ describe('loadChainProposalFromRef (Solana)', () => {
 
     it('reports chain-unavailable without the Solana loader/wallet', async () => {
         expect((await loadChainProposalFromRef(SOL_REF)).reason).toBe('chain-unavailable');
+    });
+});
+
+describe('loadChainProposalFromRef (Canton)', () => {
+    const CANTON_REF = { chainType: 'canton', chainId: 'devnet', contract: 'canton', tokenId: 'CID123' };
+
+    it('is canton-private when there is no identity', async () => {
+        global.CantonMode = { getParty: () => null };
+        global.proposalStorage = { importOnChainProposal: () => ({}) };
+        global.getBackendBase = () => 'http://api';
+        global.fetch = async () => ({ ok: true, json: async () => ({ proposals: [] }) });
+        expect((await loadChainProposalFromRef(CANTON_REF)).reason).toBe('canton-private');
+        delete global.CantonMode; delete global.getBackendBase;
+    });
+
+    it('is canton-private when the identity is not a party to this proposal (absent)', async () => {
+        global.CantonMode = { getParty: () => 'party::abc' };
+        global.proposalStorage = { importOnChainProposal: () => ({}) };
+        global.getBackendBase = () => 'http://api';
+        global.fetch = async () => ({ ok: true, json: async () => ({ proposals: [{ contractId: 'OTHER' }] }) });
+        expect((await loadChainProposalFromRef(CANTON_REF)).reason).toBe('canton-private');
+        delete global.CantonMode; delete global.getBackendBase;
+    });
+
+    it('reconstructs when the identity IS a party (contractId matches)', async () => {
+        const calls = {};
+        global.CantonMode = { getParty: () => 'party::abc' };
+        global.getBackendBase = () => 'http://api';
+        global.fetch = async (url) => {
+            if (String(url).includes('/canton/proposals')) {
+                calls.read = url;
+                return { ok: true, json: async () => ({ proposals: [{ contractId: 'CID123', parcelId: 'HR-7', price: '100', imageUri: 'ipfs://m' }] }) };
+            }
+            return { ok: true, json: async () => ({ properties: {} }) };
+        };
+        global.proposalStorage = { importOnChainProposal: (arg) => { calls.imported = arg; return { proposalId: 'CID123' }; } };
+
+        const result = await loadChainProposalFromRef(CANTON_REF);
+        expect(result.ok).toBe(true);
+        expect(String(calls.read)).toContain('/canton/proposals?party=party%3A%3Aabc');
+        expect(calls.imported.onchain.chainType).toBe('canton');
+        expect(calls.imported.parentParcelIds).toEqual(['HR-7']);
+        delete global.CantonMode; delete global.getBackendBase;
     });
 });

@@ -1333,6 +1333,13 @@ async function handleChainProposalRoute(ref) {
         }
         return;
     }
+    // Canton proposals are private to their parties: a non-party (or no identity) can't see them.
+    if (result && result.reason === 'canton-private') {
+        if (typeof updateStatus === 'function') {
+            updateStatus('This is a private Canton proposal — you can only see it if you are logged in as a party to it.');
+        }
+        return;
+    }
     // No wallet connected → the read can't run; prompt to connect. Other failures get a generic note.
     if (result && result.reason === 'chain-unavailable') {
         if (typeof updateStatus === 'function') updateStatus('Connect a wallet to open this on-chain proposal.');

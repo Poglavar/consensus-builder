@@ -107,6 +107,61 @@
         return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
     }
 
+    // Canton is privacy-first: proposals are visible ONLY to their ledger parties, and a non-party
+    // read returns an EMPTY list (never a 403). So this reads the current identity's proposals and
+    // matches by contract id; no identity, or the id absent, means the viewer is not a party →
+    // reason 'canton-private' (the caller shows the "log in as a party" message). ref.tokenId is the
+    // proposal contract id; ref.chainId is the Canton network. Reuses GET /canton/proposals?party=.
+    async function loadCantonProposal(ref) {
+        const cantonMode = global.CantonMode;
+        const storage = global.proposalStorage;
+        const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
+        if (!cantonMode || typeof cantonMode.getParty !== 'function'
+            || !storage || typeof storage.importOnChainProposal !== 'function'
+            || typeof fetch !== 'function' || !base) {
+            return { ok: false, reason: 'chain-unavailable' };
+        }
+
+        const party = cantonMode.getParty();
+        if (!party) return { ok: false, reason: 'canton-private' }; // no identity → can't see private proposals
+
+        let proposals;
+        try {
+            const url = `${base.replace(/\/$/, '')}/canton/proposals?party=${encodeURIComponent(party)}`;
+            const resp = await fetch(url);
+            if (!resp.ok) return { ok: false, reason: 'read-failed' };
+            const data = await resp.json();
+            proposals = Array.isArray(data && data.proposals) ? data.proposals : [];
+        } catch (error) {
+            return { ok: false, reason: 'read-failed', error };
+        }
+
+        const match = proposals.find(p => p && String(p.contractId) === String(ref.tokenId));
+        if (!match) return { ok: false, reason: 'canton-private' }; // not a party to THIS proposal
+
+        let metadata = null;
+        const metaUrl = resolveMetadataUrl(match.imageUri || match.metadataUri);
+        if (metaUrl && typeof fetch === 'function') {
+            try {
+                const r = await fetch(metaUrl);
+                if (r.ok) metadata = await r.json();
+            } catch (_) { /* reconstruct with what the ledger gave us */ }
+        }
+
+        const cantonChainId = `canton-${ref.chainId}`;
+        const imported = storage.importOnChainProposal({
+            proposalId: ref.tokenId,
+            parentParcelIds: match.parcelId != null ? [String(match.parcelId)] : [],
+            imageURI: match.imageUri || match.metadataUri || '',
+            metadata,
+            offer: match.price,
+            chainId: cantonChainId,
+            contractAddress: ref.contract || 'canton',
+            onchain: { chainType: 'canton', chainId: cantonChainId, contractAddress: ref.contract || 'canton', proposalId: ref.tokenId, metadata }
+        });
+        return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
+    }
+
     // Dispatch by chain type → { ok, proposal?, reason? }.
     async function loadChainProposalFromRef(ref) {
         if (!ref || !ref.chainType) return { ok: false, reason: 'bad-ref' };
@@ -116,8 +171,7 @@
             case 'solana':
                 return loadSolanaProposal(ref);
             case 'canton':
-                console.warn('[chain-proposal] chain type not wired yet:', ref.chainType);
-                return { ok: false, reason: 'chain-not-supported' };
+                return loadCantonProposal(ref);
             default:
                 return { ok: false, reason: 'unknown-chain' };
         }
