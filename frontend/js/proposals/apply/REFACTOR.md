@@ -14,21 +14,31 @@ node-runnable test net** and browser (Playwright) tests are off by default. Ever
 extract **pure** logic that *can* be unit-tested, or move code verbatim (verified by `node --check` +
 the duplicate-globals guard + existing tests + a manual browser smoke-check via claude-in-chrome).
 
-## Staged plan (each step ships independently, suite stays green)
+## Progress
+`proposal-manager.js`: **8,210 → 5,085 lines** so far. New sibling modules:
+`proposal-road-geometry.js` (718) and `proposals/apply/{route,road,buildings,structures,parcels,unapply}.js`.
+
+## Staged plan
 1. **[DONE] Pure apply-routing** → `proposals/apply/route.js` (`normalizeGoalKey`, `isBuildingGoal`,
-   `classifyApplyRoute`). The dispatcher and `_normalizeGoalKey`/`_isBuildingProposal` now delegate.
+   `classifyApplyRoute`). The dispatcher and `_normalizeGoalKey`/`_isBuildingProposal` delegate.
    Locked by `backend/test/apply-route.test.js`. UMD-wrapped (`window.__applyRoute`) so it declares no
    globals — a bare top-level `normalizeGoalKey` would shadow the existing one in `proposals/core.js`.
-2. **Pure geometry/decision helpers** still inline in the `_apply*` methods (child-feature filtering,
-   the uncut-remainder guard already at `_shouldSkipUncutRemainder`, parent/child id resolution) →
-   `proposals/apply/*.js`, each unit-tested. Shrinks the giant methods without touching their I/O.
-3. **The shared 10-step skeleton** → one `applyProposalPipeline(kind, hooks)` where each type supplies
-   only its init/geometry/link differences. Collapses ~1,500 duplicated lines and makes "touch every
-   apply path" a one-line change. Do this only once steps 1–2 have carved out enough pure surface that
-   the per-type residue is small.
-4. **Move the per-type methods** into `proposals/apply/<type>.js` modules mixed into `ProposalManager`
-   via `Object.assign` (they use `this`, so binding is preserved). The global `ProposalManager` facade
-   and load order stay intact.
+4. **[DONE] Move the per-type methods** into `proposals/apply/<type>.js` UMD mixins, each `Object.assign`ed
+   onto `ProposalManager` (they use `this`, so binding is preserved). Also moved the road-polygon
+   geometry cluster to `proposal-road-geometry.js`. Verified: byte-identical bodies, node method-presence,
+   `frontend-duplicate-globals` guard, and in-browser (boot, all 10 methods `this`-bound, route/geometry
+   globals intact).
+2. **[TODO — low risk] Pure helper extraction**: the synthetic-id / owner / parcel-feature module-level
+   helpers still in `proposal-manager.js` (and the child-feature filtering inside the apply modules) →
+   their own tested modules. Deferred here only because several are exported for
+   `proposal-manager-ids.test.js` and overlap `synthetic-parcel-identity.js`, so it needs a careful
+   export/require re-wire — not a blind move.
+3. **[TODO — risk-gated] Collapse the shared skeleton** into one `applyProposalPipeline(kind, hooks)`.
+   This restructures the CONTROL FLOW of the core apply methods, which have no node-runnable test net
+   (they need map/storage/DOM). Do NOT do this blind: first stand up a characterization harness (stub
+   map/proposalStorage/DOM and assert observable effects) OR drive a real apply/unapply per type in the
+   browser (needs proposals loaded — this profile's storage was empty). Until then the per-type files are
+   the safe unit of edit; the duplication stays but is at least isolated and findable.
 
 ## Guardrails
 - Never declare a bare top-level `function`/`const` that another file already declares — the

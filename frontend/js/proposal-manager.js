@@ -4917,12 +4917,12 @@ const ProposalManager = {
     },
 };
 
-// Per-type apply/unapply live in proposals... proposal-apply.js and are mixed in here. Browser
+// Per-type apply/unapply live in proposals/apply/*.js and are mixed in here. Browser
 // global or node require, same pattern as the status/route helpers above.
-const __proposalApplyMethods = (typeof window !== 'undefined' && window.ProposalManagerApplyMethods)
-    ? window.ProposalManagerApplyMethods
-    : require('./proposal-apply.js');
-Object.assign(ProposalManager, __proposalApplyMethods);
+const __applyMixins = (typeof window !== 'undefined' && window.ProposalApplyRoad)
+    ? [window.ProposalApplyRoad, window.ProposalApplyBuildings, window.ProposalApplyStructures, window.ProposalApplyParcels, window.ProposalApplyUnapply]
+    : [require('./proposals/apply/road.js'), require('./proposals/apply/buildings.js'), require('./proposals/apply/structures.js'), require('./proposals/apply/parcels.js'), require('./proposals/apply/unapply.js')];
+__applyMixins.forEach(m => Object.assign(ProposalManager, m));
 
 // --- HELPER FUNCTIONS (moved from road-drawing.js) ---
 
