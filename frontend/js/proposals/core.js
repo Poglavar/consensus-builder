@@ -1284,6 +1284,16 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             return;
         }
 
+        // On-chain proposal location: /proposals/<chainType>/<chainId>:<contract>:<tokenId>.
+        // Only the LOCATION is in the URL — reconstruct the proposal from the NFT + its metadata.
+        const chainRef = (window.ChainProposalRef && typeof window.ChainProposalRef.parseChainProposalRef === 'function')
+            ? window.ChainProposalRef.parseChainProposalRef(pathname)
+            : null;
+        if (chainRef) {
+            await handleChainProposalRoute(chainRef);
+            return;
+        }
+
         // Check if URL matches /proposals/:id or comma-separated ids
         const pathMatch = pathname.match(/^\/proposals\/([0-9,]+)$/);
         if (!pathMatch) {
@@ -1304,6 +1314,30 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         await handleSharedPlanRoute(idParts);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
+    }
+}
+
+// Open a proposal from its on-chain location: reconstruct it from the NFT (wallet-gated read via the
+// connected wallet's provider), add it to local storage, and focus it. Never touches the server.
+async function handleChainProposalRoute(ref) {
+    const loader = window.ChainProposalLoader;
+    if (!loader || typeof loader.loadChainProposalFromRef !== 'function') {
+        if (typeof updateStatus === 'function') updateStatus('On-chain proposals are unavailable.');
+        return;
+    }
+    const result = await loader.loadChainProposalFromRef(ref);
+    if (result && result.ok && result.proposal) {
+        const key = (typeof getProposalKey === 'function' && getProposalKey(result.proposal)) || result.proposal.proposalId;
+        if (key && typeof selectAndHighlightProposal === 'function') {
+            selectAndHighlightProposal(key, null, true);
+        }
+        return;
+    }
+    // No wallet connected → the read can't run; prompt to connect. Other failures get a generic note.
+    if (result && result.reason === 'chain-unavailable') {
+        if (typeof updateStatus === 'function') updateStatus('Connect a wallet to open this on-chain proposal.');
+    } else if (typeof updateStatus === 'function') {
+        updateStatus('Could not load the on-chain proposal.');
     }
 }
 
