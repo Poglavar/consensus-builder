@@ -96,10 +96,18 @@
     //   (at low opacity over near-white tiles the buildings looked invisible).
     const buildingMaterials = {
         solid: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
+        // depthWrite:true (not the usual false for transparent) is deliberate: the GDI survey
+        // meshes are complex DoubleSide solids with internal/coincident faces, and adjacent
+        // buildings share near-coplanar walls. With depthWrite off, those overlapping ghost
+        // surfaces blend in three.js's per-frame distance sort, which reorders as the camera
+        // moves (and through the damping tail) → shimmer/z-fighting. Writing depth resolves
+        // coincident surfaces via the depth buffer instead, so the result is order-independent
+        // and stable. Trade-off: two ghost buildings no longer stack/x-ray through each other,
+        // which for a massing view reads cleaner anyway.
+        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: true, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
         // Buildings an applied corridor demolishes: still drawn (they exist until the proposal
         // executes) but as reddish condemned ghosts, so they never read as surviving fabric.
-        demolished: new THREE.MeshPhongMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12, transparent: true, opacity: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+        demolished: new THREE.MeshPhongMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12, transparent: true, opacity: 0.3, depthWrite: true, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
     };
 
     const materials = {
@@ -2638,7 +2646,10 @@
                     if (!m) return;
                     m.transparent = ghost;
                     m.opacity = opacity;
-                    m.depthWrite = !ghost;
+                    // Always write depth (even for ghosts) — see buildingMaterials.ghost note:
+                    // stops coincident/overlapping transparent surfaces flickering under the
+                    // per-frame transparent sort as the camera moves.
+                    m.depthWrite = true;
                     m.needsUpdate = true;
                 });
             });
@@ -3326,15 +3337,33 @@
             console.log('[3D] Starting intro auto-rotate');
             startIntroAutoRotate();
         }
+        // Hysteresis for the depth-plane retune. With logarithmicDepthBuffer enabled the
+        // per-fragment depth is scaled by camera.far, so mutating far EVERY frame rescales
+        // every surface's depth and makes near-coplanar ghost walls z-fight while the camera
+        // (and its damping tail) is still moving — flicker that settles only once motion stops.
+        // Retune only on a meaningful distance change so small orbit/pan/damping moves leave
+        // the planes — and thus the depth encoding — stable.
+        let lastPlaneDist = 0;
         const loop = (now) => {
             stepManualAutoRotate(now);
+            // Keep the canvas locked to its container every frame. The window 'resize'
+            // listener misses box changes that don't fire a window resize (sidebar toggle,
+            // browser UI showing/hiding, a layout reflow after entering 3D before it settled),
+            // which left the canvas stale and shorter than the viewport — the 2D map then
+            // showed through along the bottom edge. This is size-only (no camera re-framing,
+            // unlike handleResize) so it never disturbs the user's current orbit/pan/zoom.
+            syncRendererSize();
             if (controls) controls.update();
-            // Dynamically adjust near/far planes based on camera distance to maintain depth precision
+            // Adjust near/far planes only when camera distance has changed enough to matter,
+            // to keep depth precision across big zooms without churning the depth buffer per frame.
             if (camera) {
                 const dist = camera.position.length();
-                camera.near = Math.max(1, dist * 0.001);
-                camera.far = Math.max(1000, dist * 10);
-                camera.updateProjectionMatrix();
+                if (lastPlaneDist === 0 || Math.abs(dist - lastPlaneDist) > lastPlaneDist * 0.15) {
+                    camera.near = Math.max(1, dist * 0.001);
+                    camera.far = Math.max(1000, dist * 10);
+                    camera.updateProjectionMatrix();
+                    lastPlaneDist = dist;
+                }
             }
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
@@ -3347,6 +3376,22 @@
             try { cancelAnimationFrame(frameId); } catch (_) { }
             frameId = null;
         }
+    }
+
+    // Lightweight per-frame guard that the drawing buffer matches the container box.
+    // Only touches renderer size + camera aspect when they actually drift — no camera
+    // re-placement — so it's safe to call every frame and never resets the user's view.
+    const _rendererSize = (typeof THREE !== 'undefined') ? new THREE.Vector2() : null;
+    function syncRendererSize() {
+        if (!renderer || !camera || !threeContainer) return;
+        const w = Math.max(1, threeContainer.clientWidth || 0);
+        const h = Math.max(1, threeContainer.clientHeight || 0);
+        if (w <= 1 || h <= 1) return; // container not laid out yet; don't clamp to a fallback
+        renderer.getSize(_rendererSize);
+        if (Math.round(_rendererSize.x) === w && Math.round(_rendererSize.y) === h) return;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
     }
 
     function handleResize() {
