@@ -8,20 +8,20 @@ const { parseChainProposalRef, buildChainProposalPath, chainRefFromProposal } = 
 
 describe('parseChainProposalRef', () => {
     it('parses an EVM proposal location', () => {
-        expect(parseChainProposalRef('/proposals/evm/84532:0x6c3AdE19:5')).toEqual({
+        expect(parseChainProposalRef('/proposals/evm/84532/0x6c3AdE19/5')).toEqual({
             chainType: 'evm', chainId: '84532', contract: '0x6c3AdE19', tokenId: '5'
         });
     });
 
     it('accepts solana and canton chain types', () => {
-        expect(parseChainProposalRef('/proposals/solana/devnet:PROG:MINT').chainType).toBe('solana');
-        expect(parseChainProposalRef('/proposals/canton/net:pkg:cid').chainType).toBe('canton');
+        expect(parseChainProposalRef('/proposals/solana/devnet/PROG/MINT').chainType).toBe('solana');
+        expect(parseChainProposalRef('/proposals/canton/net/pkg/cid').chainType).toBe('canton');
     });
 
     it('returns null for a server path or an unknown chain type', () => {
         expect(parseChainProposalRef('/proposals/12')).toBeNull();
         expect(parseChainProposalRef('/proposals/1,2,3')).toBeNull();
-        expect(parseChainProposalRef('/proposals/bitcoin/a:b:c')).toBeNull();
+        expect(parseChainProposalRef('/proposals/bitcoin/a/b/c')).toBeNull();
         expect(parseChainProposalRef('/proposals/evm/onlyone')).toBeNull(); // needs 3 coords
         expect(parseChainProposalRef('/other')).toBeNull();
     });
@@ -29,7 +29,7 @@ describe('parseChainProposalRef', () => {
     it('round-trips with buildChainProposalPath', () => {
         const ref = { chainType: 'evm', chainId: '84532', contract: '0xabc', tokenId: '9' };
         const path = buildChainProposalPath(ref);
-        expect(path).toBe('/proposals/evm/84532:0xabc:9');
+        expect(path).toBe('/proposals/evm/84532/0xabc/9');
         expect(parseChainProposalRef(path)).toEqual(ref);
     });
 });
