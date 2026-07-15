@@ -257,8 +257,35 @@ function initializeDecayCountdown() {
     decayCountdownInterval = setInterval(updateDecay, 1000);
 }
 
+// A proposal is a non-binding VOTE when it changes neither ownership nor parcel boundaries:
+// facets.ownership === 'no-change' AND facets.parcels === 'as-is'. Such a proposal alters
+// nobody's property, so owners cast yes-votes instead of binding acceptances — nothing transfers
+// or executes. Note: 'no-change' ownership alone is NOT sufficient (a reparcellization keeps
+// ownership 'no-change' while reshaping parcels — that is a binding change, not a vote).
+// Chain-loaded proposals carry an explicit boolean `isVote` (from getVoteInfo) which wins.
+function isVoteProposal(proposal) {
+    if (!proposal) return false;
+    if (typeof proposal.isVote === 'boolean') return proposal.isVote;
+    const facets = proposal.facets || {};
+    return facets.ownership === 'no-change' && facets.parcels === 'as-is';
+}
+
+// Status label for a vote proposal: "Open for voting" until the expiry deadline, then "Vote concluded".
+function getProposalVoteStatusLabel(proposal) {
+    const t = getProposalI18nHelper();
+    if (isProposalExpired(proposal)) {
+        return t('panel.proposal.voting.concluded', 'Vote concluded');
+    }
+    return t('panel.proposal.voting.open', 'Open for voting');
+}
+
 function getProposalLifecycleKey(proposal) {
     if (!proposal) return 'active';
+    // Vote proposals have their own lifecycle: "Open for voting" until the deadline, then
+    // "Vote concluded". They never execute, so this is checked before the executed/active keys.
+    if (isVoteProposal(proposal)) {
+        return isProposalExpired(proposal) ? 'vote-concluded' : 'vote-open';
+    }
     // Check for ownership-transfer-from-me proposals which are accepted but not funded
     if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
         return 'accepted-not-funded';
@@ -273,6 +300,10 @@ function getProposalLifecycleKey(proposal) {
 function getProposalLifecycleLabel(key) {
     const t = getProposalI18nHelper();
     switch (key) {
+        case 'vote-open':
+            return t('panel.proposal.voting.open', 'Open for voting');
+        case 'vote-concluded':
+            return t('panel.proposal.voting.concluded', 'Vote concluded');
         case 'executed':
             return t('panel.proposal.lifecycle.executed', 'Executed');
         case 'expired':
@@ -288,6 +319,10 @@ function getProposalLifecycleLabel(key) {
 
 function getProposalLifecycleClass(key) {
     switch (key) {
+        case 'vote-open':
+            return 'active';
+        case 'vote-concluded':
+            return 'expired';
         case 'executed':
             return 'executed';
         case 'expired':
@@ -323,4 +358,10 @@ function parseProposalOfferValue(value) {
     if (!value) return 0;
     const cleanValue = value.toString().replace(/\D/g, '');
     return parseInt(cleanValue, 10) || 0;
+}
+
+// Export the pure classification helper for headless unit tests (browser leaves `module` undefined,
+// so this is a no-op there and the functions remain plain globals).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { isVoteProposal };
 }

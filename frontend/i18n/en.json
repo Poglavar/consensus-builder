@@ -466,6 +466,8 @@
             "gupLinesToggle": "GUP road lines",
             "dguPolygonsTooltip": "Show or hide DGU usage polygons",
             "dguPolygonsToggle": "DGU usage polygons",
+            "centerlinesTooltip": "Show or hide centrelines of existing roads (viewport only; zoom in)",
+            "centerlinesToggle": "Existing road centrelines",
             "progressText": "Processing...",
             "analyzeOsm": "Analyze Roads OSM",
             "analyzeOsmTooltip": "Analyze widths of visible OSM roads",
@@ -772,6 +774,14 @@
                 "undo": "Undo",
                 "accepted": "Accepted",
                 "pending": "Pending"
+            },
+            "voting": {
+                "voteYes": "Vote yes",
+                "rescind": "Rescind",
+                "open": "Open for voting",
+                "concluded": "Vote concluded",
+                "submit": "Submit for voting",
+                "parcelTitle": "Parcel Support:"
             },
             "ownerAcceptance": {
                 "statusLabel": "Owner Acceptance Status:",
@@ -1753,6 +1763,8 @@
                 "conditionalHelperOff": "Payout only when all parcels accept",
                 "expireAfter": "Expire after",
                 "expiryPlaceholder": "00h:05m:00s",
+                "voteExpiry": "Voting period",
+                "voteExpiryDaysSuffix": "days (max 365)",
                 "decay": "Offer Decay",
                 "decayHelper": "Offer amount will decrease with time to entice acceptance.",
                 "decayPercentSuffix": "% over",

@@ -85,6 +85,11 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     // Check if proposal is expired - disable buttons if so
     const proposalExpired = isProposalExpired(proposal);
 
+    // Vote proposals relabel the owner-row actions: Accept -> Vote yes, Undo -> Rescind.
+    // The onclick handlers are unchanged (handleUserAcceptProposal / handleUserRejectProposal
+    // detect the vote proposal and route to castVote / rescindVote on-chain).
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
     // Compute parcel and owner payout shares
     const offerAmount = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : 0;
     const offerCurrency = proposal.offerCurrency || proposal.currency || '';
@@ -117,33 +122,48 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const tProposalUI = getProposalI18nHelper();
         if (proposalExpired) {
             // Show disabled buttons for expired proposals
+            const expiredTitle = isVote
+                ? tProposalUI('panel.proposal.voting.concluded', 'Vote concluded')
+                : tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired');
             if (entry.accepted) {
+                const undoLabel = isVote
+                    ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
+                    : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired')}">
-                        ${tProposalUI('panel.proposal.acceptance.undo', 'Undo')}
+                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                        ${undoLabel}
                     </button>`;
             }
             else {
+                const acceptLabel = isVote
+                    ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
+                    : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired')}">
-                        ${tProposalUI('panel.proposal.acceptance.accept', 'Accept')}
+                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                        ${acceptLabel}
                     </button>`;
             }
         } else if (entry.accepted && entry.canUndo) {
             const rejectCall = skipParcelPanelFocus
                 ? `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
+            const undoLabel = isVote
+                ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
+                : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
             buttonsHtml = `
                 <button class="btn btn-sm btn-outline-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
-                    Undo
+                    ${undoLabel}
                 </button>`;
         } else if (!entry.accepted && entry.canAccept) {
             const acceptCall = skipParcelPanelFocus
                 ? `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
+            const acceptLabel = isVote
+                ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
+                : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
             buttonsHtml = `
-                <button class="btn btn-sm btn-success" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
-                    ${tProposalUI('panel.proposal.acceptance.accept', 'Accept')}
+                <button class="btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                    ${acceptLabel}
                 </button>`;
         }
 
@@ -200,7 +220,12 @@ function buildParcelAcceptanceStatusHtml(proposal) {
         total
     );
 
-    const labelText = `${tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:')} (${acceptedCount}/${total})`;
+    // For vote proposals this same bar reads as support: parcels where every owner voted yes.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+    const titleText = isVote
+        ? tProposalUI('panel.proposal.voting.parcelTitle', 'Parcel Support:')
+        : tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
+    const labelText = `${titleText} (${acceptedCount}/${total})`;
 
     // If more than 65 parcels, show progress bar instead of circles
     if (total > 65) {
@@ -1305,8 +1330,12 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const parcelNumber = parcelLayer?.feature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
         let proposalExecuted = false;
-        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed
-        const canExecute = proposal.funded !== false && proposalRecipientConsentSatisfied(proposal);
+        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed.
+        // Vote proposals never execute or transfer — they only accumulate yes-votes in this same
+        // structure (so the tally UI is shared), staying "Open for voting" until they conclude.
+        const canExecute = proposal.funded !== false
+            && !isVoteProposal(proposal)
+            && proposalRecipientConsentSatisfied(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.status = 'Executed';
             proposal.executedAt = new Date().toISOString();
@@ -1432,37 +1461,45 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
-    // Check if this proposal is minted on-chain — if so, withdraw on-chain first
+    // A vote proposal rescinds its yes-vote (rescindVote) instead of withdrawing an acceptance;
+    // rescission is always allowed while voting is open, so the conditional/executed guards don't apply.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
+    // Check if this proposal is minted on-chain — if so, withdraw/rescind on-chain first
     const rejectNftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const isOnChain = rejectNftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.withdrawAcceptance === 'function';
+    const rejectBridge = window.ProposalChainBridge;
+    const rejectMethod = isVote ? 'rescindVote' : 'withdrawAcceptance';
+    const isOnChain = rejectNftInfo && rejectBridge && typeof rejectBridge[rejectMethod] === 'function';
     const normalizedParcelIdForChain = normalizeParcelId(parcelId);
 
     if (isOnChain) {
-        // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
-        if (proposalStatus === 'executed' || proposalStatus === 'applied') {
-            showProposalAlertMessage('cannot_withdraw_executed_proposal',
-                'This acceptance cannot be withdrawn because the proposal has been executed.');
-            return;
-        }
-        if (!proposal.isConditional) {
-            showProposalAlertMessage('cannot_withdraw_non_conditional',
-                'This acceptance cannot be withdrawn because the proposal is not conditional.');
-            return;
+        if (!isVote) {
+            // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
+            if (proposalStatus === 'executed' || proposalStatus === 'applied') {
+                showProposalAlertMessage('cannot_withdraw_executed_proposal',
+                    'This acceptance cannot be withdrawn because the proposal has been executed.');
+                return;
+            }
+            if (!proposal.isConditional) {
+                showProposalAlertMessage('cannot_withdraw_non_conditional',
+                    'This acceptance cannot be withdrawn because the proposal is not conditional.');
+                return;
+            }
         }
         try {
             if (typeof updateStatus === 'function') {
-                updateStatus('Withdrawing acceptance on chain...');
+                updateStatus(isVote ? 'Rescinding vote on chain...' : 'Withdrawing acceptance on chain...');
             }
-            await window.ProposalChainBridge.withdrawAcceptance({
+            await rejectBridge[rejectMethod]({
                 proposalId: rejectNftInfo.tokenId,
                 parcelId: normalizedParcelIdForChain,
                 chainId: rejectNftInfo.chain,
                 contractAddress: rejectNftInfo.contract
             });
         } catch (onchainErr) {
-            console.warn('On-chain withdrawal failed:', onchainErr);
+            console.warn(isVote ? 'On-chain vote rescind failed:' : 'On-chain withdrawal failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage('on_chain_withdrawal_failed', friendlyMessage);
+            showProposalAlertMessage(isVote ? 'on_chain_vote_rescind_failed' : 'on_chain_withdrawal_failed', friendlyMessage);
             return;
         }
     }
@@ -1474,7 +1511,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus('Acceptance withdrawn on chain.');
+        updateStatus(isVote ? 'Vote rescinded on chain.' : 'Acceptance withdrawn on chain.');
     }
 
     const ownerLabel = targetEntry.shareText
@@ -1482,11 +1519,16 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         : targetEntry.displayName;
 
     if (typeof addUserActionToGameLog === 'function') {
-        addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`);
+        const logMsg = isVote
+            ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> rescinded the yes-vote as ${ownerLabel} on proposal ${proposalId}.`
+            : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`;
+        addUserActionToGameLog(logMsg);
     }
 
     if (typeof updateStatus === 'function') {
-        updateStatus(`Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
+        updateStatus(isVote
+            ? `Rescinded vote for ${ownerLabel}.`
+            : `Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
     }
 
     // Preserve exact scroll/anchor position before update

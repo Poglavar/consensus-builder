@@ -65,6 +65,13 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         uint256 acceptanceCount;
         uint256 expiryTimestamp; // 0 means no expiry
         uint256 expiringPercentage; // Amount of reward that expires (not implemented yet)
+        // --- Voting (non-binding sentiment) proposals ---
+        // A vote proposal carries no funds, never Executes, and never transfers ownership.
+        // isVote and acceptancePossible are mutually exclusive: accept path is gated on
+        // acceptancePossible, vote path on isVote, so the two flows can never cross over.
+        bool isVote;
+        uint256 voteCount; // running tally of distinct yes votes (one per owner per parcel)
+        mapping(string => mapping(address => bool)) voted; // parcelId => voter => voted yes
     }
 
     ParcelNFT public parcelNFT;
@@ -83,6 +90,9 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     event ProposalAcceptanceWithdrawn(uint256 indexed proposalId, string parcelId, address owner);
     event FundsContributed(uint256 indexed proposalId, address tokenAddress, uint256 amount);
     event FundsDistributed(uint256 indexed proposalId, uint256 ethAmount, uint256 tokenAmount);
+    event VoteProposalMinted(uint256 indexed proposalId, address to, uint256 expiryTimestamp);
+    event VoteCast(uint256 indexed proposalId, string parcelId, address voter);
+    event VoteRescinded(uint256 indexed proposalId, string parcelId, address voter);
 
     constructor(
         address _parcelNFTAddress,
@@ -159,6 +169,106 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         return tokenId;
     }
 
+    /**
+     * @dev Mint a non-binding VOTE proposal — no funds, no ownership transfer, never executes.
+     *      Owners of the affected parcels cast/rescind yes-votes; the tally is a public,
+     *      wallet-attributable record of support. The proposal stays "Open for voting" (Active)
+     *      until expiryTimestamp, after which it is "Vote concluded" (Expired) and immutable.
+     * @param expiryTimestamp Unix time when voting concludes. Must be in the future (0 not allowed —
+     *        a vote with no deadline could never be concluded; the app caps this at ~1 year).
+     */
+    function mintVote(
+        address to,
+        string[] memory parcelIds,
+        string memory imageURI,
+        uint256 expiryTimestamp,
+        address[] memory lens
+    ) public returns (uint256) {
+        require(parcelIds.length > 0, "ProposalNFT: Must include at least one parcel");
+        require(lens.length > 0, "ProposalNFT: Must include at least one lens address");
+        require(expiryTimestamp > block.timestamp, "ProposalNFT: Vote expiry must be in the future");
+
+        uint256 tokenId = _tokenIdCounter;
+        _tokenIdCounter++;
+
+        _safeMint(to, tokenId);
+
+        Proposal storage newProposal = proposals[tokenId];
+        newProposal.parcelIds = parcelIds;
+        newProposal.imageURI = imageURI;
+        newProposal.isVote = true;
+        newProposal.acceptancePossible = false; // vote proposals are never accepted/executed
+        newProposal.status = ProposalStatus.Active;
+        newProposal.expiryTimestamp = expiryTimestamp;
+
+        // Populate reverse mapping: add this proposal to each parcel's proposal list
+        for (uint256 i = 0; i < parcelIds.length; i++) {
+            parcelIdToProposals[parcelIds[i]].push(tokenId);
+        }
+
+        // Store lens members (trusted endorsers) for this proposal
+        for (uint256 i = 0; i < lens.length; i++) {
+            address lensMember = lens[i];
+            require(lensMember != address(0), "ProposalNFT: Invalid lens address");
+            require(!newProposal.isLens[lensMember], "ProposalNFT: Duplicate lens address");
+            newProposal.isLens[lensMember] = true;
+            newProposal.lens.push(lensMember);
+        }
+
+        emit VoteProposalMinted(tokenId, to, expiryTimestamp);
+        return tokenId;
+    }
+
+    /**
+     * @dev Cast a yes-vote on a vote proposal as an attested owner of `parcelId`.
+     *      Reuses the same claim + lens-endorsement ownership proof as single-owner acceptance,
+     *      so each distinct owner address of the parcel gets exactly one vote. No funds move.
+     */
+    function castVote(uint256 proposalId, string memory parcelId, bytes32 claimUid, bytes32 endorsementUid) public {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        Proposal storage proposal = proposals[proposalId];
+        require(proposal.isVote, "ProposalNFT: Not a vote proposal");
+
+        // Conclude the vote if the deadline has passed
+        if (proposal.expiryTimestamp > 0 && block.timestamp >= proposal.expiryTimestamp) {
+            proposal.status = ProposalStatus.Expired;
+            revert("ProposalNFT: Voting has concluded");
+        }
+        require(proposal.status == ProposalStatus.Active, "ProposalNFT: Proposal is not active");
+
+        _requireParcelInProposal(proposal, parcelId);
+        uint256 parcelTokenId = parcelNFT.tokenIdForParcelId(parcelId);
+        _validateOwnershipAttestations(proposal, parcelTokenId, claimUid, endorsementUid, msg.sender);
+
+        require(!proposal.voted[parcelId][msg.sender], "ProposalNFT: Already voted");
+        proposal.voted[parcelId][msg.sender] = true;
+        proposal.voteCount++;
+
+        emit VoteCast(proposalId, parcelId, msg.sender);
+    }
+
+    /**
+     * @dev Rescind a previously cast yes-vote. Only the voter can rescind their own vote
+     *      (the tally is keyed by msg.sender), and only while voting is still open.
+     */
+    function rescindVote(uint256 proposalId, string memory parcelId) public {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        Proposal storage proposal = proposals[proposalId];
+        require(proposal.isVote, "ProposalNFT: Not a vote proposal");
+
+        if (proposal.expiryTimestamp > 0 && block.timestamp >= proposal.expiryTimestamp) {
+            proposal.status = ProposalStatus.Expired;
+            revert("ProposalNFT: Voting has concluded");
+        }
+        require(proposal.status == ProposalStatus.Active, "ProposalNFT: Proposal is not active");
+
+        require(proposal.voted[parcelId][msg.sender], "ProposalNFT: No vote to rescind");
+        proposal.voted[parcelId][msg.sender] = false;
+        proposal.voteCount--;
+
+        emit VoteRescinded(proposalId, parcelId, msg.sender);
+    }
+
     function acceptProposal(
         uint256 proposalId,
         string memory parcelId,
@@ -179,14 +289,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         }
 
         // Verify parcel is part of the proposal
-        bool isValidParcel = false;
-        for (uint256 i = 0; i < proposal.parcelIds.length; i++) {
-            if (keccak256(bytes(proposal.parcelIds[i])) == keccak256(bytes(parcelId))) {
-                isValidParcel = true;
-                break;
-            }
-        }
-        require(isValidParcel, "ProposalNFT: Parcel not part of proposal");
+        _requireParcelInProposal(proposal, parcelId);
 
         // Resolve parcel NFT token id from the external parcel identifier
         uint256 parcelTokenId = parcelNFT.tokenIdForParcelId(parcelId);
@@ -244,14 +347,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         require(proposal.acceptancePossible, "ProposalNFT: Proposal acceptance is not possible");
 
         // Verify parcel is part of the proposal
-        bool isValidParcel = false;
-        for (uint256 i = 0; i < proposal.parcelIds.length; i++) {
-            if (keccak256(bytes(proposal.parcelIds[i])) == keccak256(bytes(parcelId))) {
-                isValidParcel = true;
-                break;
-            }
-        }
-        require(isValidParcel, "ProposalNFT: Parcel not part of proposal");
+        _requireParcelInProposal(proposal, parcelId);
 
         // Resolve parcel NFT token id from the external parcel identifier
         uint256 parcelTokenId = parcelNFT.tokenIdForParcelId(parcelId);
@@ -440,6 +536,26 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     }
 
     /**
+     * @dev Vote-proposal summary. `concluded` is true once the deadline has passed
+     *      (the status field is only flipped to Expired lazily on the next write).
+     */
+    function getVoteInfo(uint256 proposalId)
+        public
+        view
+        returns (bool isVote, uint256 voteCount, uint256 expiryTimestamp, bool concluded)
+    {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        Proposal storage proposal = proposals[proposalId];
+        bool isConcluded = proposal.expiryTimestamp > 0 && block.timestamp >= proposal.expiryTimestamp;
+        return (proposal.isVote, proposal.voteCount, proposal.expiryTimestamp, isConcluded);
+    }
+
+    function hasVoted(uint256 proposalId, string memory parcelId, address voter) public view returns (bool) {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        return proposals[proposalId].voted[parcelId][voter];
+    }
+
+    /**
      * @dev Get all proposal IDs that include a specific parcel
      * @param parcelId The parcel ID to query
      * @return An array of proposal token IDs that include this parcel
@@ -546,6 +662,15 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
+    }
+
+    function _requireParcelInProposal(Proposal storage proposal, string memory parcelId) internal view {
+        for (uint256 i = 0; i < proposal.parcelIds.length; i++) {
+            if (keccak256(bytes(proposal.parcelIds[i])) == keccak256(bytes(parcelId))) {
+                return;
+            }
+        }
+        revert("ProposalNFT: Parcel not part of proposal");
     }
 
     function _validateOwnershipAttestations(

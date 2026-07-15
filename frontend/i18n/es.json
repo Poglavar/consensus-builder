@@ -442,6 +442,8 @@
             "gupLinesToggle": "Líneas viales de GUP",
             "dguPolygonsTooltip": "Mostrar u ocultar los polígonos de uso DGU",
             "dguPolygonsToggle": "Polígonos de uso DGU",
+            "centerlinesTooltip": "Mostrar u ocultar los ejes de las vías existentes (solo el área visible; acerca)",
+            "centerlinesToggle": "Ejes de vías existentes",
             "progressText": "Procesando...",
             "analyzeOsm": "Analizar carreteras OSM",
             "analyzeOsmTooltip": "Analizar los anchos de las carreteras visibles de OSM",
@@ -819,6 +821,14 @@
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
                 "pending": "Pendiente"
+            },
+            "voting": {
+                "voteYes": "Votar sí",
+                "rescind": "Retirar",
+                "open": "Abierto a votación",
+                "concluded": "Votación concluida",
+                "submit": "Enviar a votación",
+                "parcelTitle": "Apoyo de parcelas:"
             },
             "ownerAcceptance": {
                 "statusLabel": "Estado de aceptación de propietarios:",
@@ -1802,6 +1812,8 @@
                 "conditionalHelperOff": "Pagar solo cuando todas las parcelas acepten",
                 "expireAfter": "Expira después",
                 "expiryPlaceholder": "00h:05m:00s",
+                "voteExpiry": "Período de votación",
+                "voteExpiryDaysSuffix": "días (máx. 365)",
                 "decay": "Disminución de la oferta",
                 "decayHelper": "El monto de la oferta disminuirá con el tiempo para incentivar la aceptación.",
                 "decayPercentSuffix": "% durante",

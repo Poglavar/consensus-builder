@@ -23,9 +23,34 @@ function updateCreateProposalSubmitState() {
 
     if (btn) {
         btn.disabled = !hasGeometry;
+        // Relabel the submit action for vote proposals (no ownership/parcel change), so the
+        // proposer sees the outcome ("Submit for voting" → status "Open for voting").
+        const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
+        const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
+        const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+        btn.textContent = isVote
+            ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
+            : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal');
     }
     if (hint) {
         hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';
+    }
+    // Show/hide the vote expiry field alongside the relabel.
+    if (typeof updateVoteExpiryFieldVisibility === 'function') {
+        updateVoteExpiryFieldVisibility();
+    }
+}
+
+// Show the "voting period (days)" input only for vote proposals, and clamp it to 1..365.
+function updateVoteExpiryFieldVisibility() {
+    const wrap = document.getElementById('proposalVoteExpiryWrap');
+    if (!wrap) return;
+    const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
+    const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
+    wrap.style.display = isVote ? '' : 'none';
+    const input = document.getElementById('proposalVoteExpiryDays');
+    if (input && !input.value) {
+        input.value = '365';
     }
 }
 
@@ -543,6 +568,20 @@ async function createProposal() {
             }
         }
 
+        // A proposal that changes neither ownership nor parcels is a non-binding VOTE. It gets a
+        // voting deadline (default and max 1 year) instead of the short auction-style expiry above,
+        // and carries no offer/budget — the tally is a public record of support, nothing settles.
+        const voteFacets = (typeof window !== 'undefined' && window.proposalFacets) || {};
+        const isVoteCreate = voteFacets.ownership === 'no-change' && voteFacets.parcels === 'as-is';
+        const VOTE_MAX_DAYS = 365;
+        let voteExpiryDays = 0;
+        if (isVoteCreate) {
+            const voteExpiryInput = document.getElementById('proposalVoteExpiryDays');
+            const rawDays = voteExpiryInput ? parseInt(voteExpiryInput.value, 10) : NaN;
+            voteExpiryDays = (Number.isFinite(rawDays) && rawDays > 0) ? Math.min(rawDays, VOTE_MAX_DAYS) : VOTE_MAX_DAYS;
+            expiresAt = new Date(Date.now() + voteExpiryDays * 86400000).toISOString();
+        }
+
         // Check for decay option
         const decayCheckbox = document.getElementById('proposalDecayCheckbox');
         const decayPercentInput = document.getElementById('proposalDecayPercent');
@@ -621,6 +660,8 @@ async function createProposal() {
             depositPercent: depositPercent, // Percentage of offer deposited (10-200%)
             isConditional: isConditional,
             disbursementMode: isConditional ? 'conditional' : 'partial', // conditional = all must accept; partial = per-acceptance payouts
+            isVote: isVoteCreate, // non-binding vote proposal (no ownership/parcel change, no funds)
+            voteExpiryDays: isVoteCreate ? voteExpiryDays : undefined, // voting period in days (≤365)
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
             // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
             // and so a shared link can be recognised as cross-city even without a ?city= param.
@@ -1586,7 +1627,10 @@ async function createProposal() {
                                 ethAmount: nativeAmount,
                                 tokenAmount: 0n,
                                 imageURI: metadataUri,
-                                lens: lensAddressesForMint
+                                lens: lensAddressesForMint,
+                                // Vote proposals mint fund-less via mintVote with a voting deadline (EVM only).
+                                isVote: proposal.isVote === true,
+                                expiryDays: proposal.isVote === true ? proposal.voteExpiryDays : undefined
                             });
                         }
                         console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
@@ -1752,6 +1796,15 @@ async function createProposal() {
                     proposalStorage.save();
                 }
             }
+        }
+
+        // Vote proposals are applied to the map by default — they change no one's property, so
+        // showing them is harmless. Any client can remove them locally afterward via the usual
+        // remove-from-map action. Fire-and-forget so it never blocks the create flow.
+        if (proposal.isVote === true && typeof applyProposalToMap === 'function') {
+            Promise.resolve()
+                .then(() => applyProposalToMap(proposalId))
+                .catch(err => console.warn('[createProposal] auto-apply of vote proposal failed', err));
         }
 
         // Update the show proposals button count

@@ -474,6 +474,8 @@
             "gupLinesToggle": "GUP linije puteva",
             "dguPolygonsTooltip": "Prikaži ili sakrij DGU poligone korišćenja",
             "dguPolygonsToggle": "DGU poligoni korišćenja",
+            "centerlinesTooltip": "Prikaži ili sakrij ose postojećih puteva (samo vidljivo područje; približi)",
+            "centerlinesToggle": "Ose postojećih puteva",
             "progressText": "Obrada...",
             "analyzeOsm": "Analiziraj puteve OSM",
             "analyzeOsmTooltip": "Analiziraj širine vidljivih OSM puteva",
@@ -797,6 +799,14 @@
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju"
+            },
+            "voting": {
+                "voteYes": "Glasaj za",
+                "rescind": "Povuci",
+                "open": "Otvoreno za glasanje",
+                "concluded": "Glasanje završeno",
+                "submit": "Pošalji na glasanje",
+                "parcelTitle": "Podrška parcela:"
             },
             "ownerAcceptance": {
                 "statusLabel": "Status prihvatanja vlasnika:",
@@ -1757,6 +1767,8 @@
                 "conditionalHelperOff": "Isplata vlasniku kada/ako prihvati",
                 "expireAfter": "Ističe posle",
                 "expiryPlaceholder": "00h:05m:00s",
+                "voteExpiry": "Period glasanja",
+                "voteExpiryDaysSuffix": "dana (maks. 365)",
                 "decay": "Opadanje ponude",
                 "decayHelper": "Iznos ponude će se smanjivati tokom vremena da podstakne prihvatanje.",
                 "decayPercentSuffix": "% tokom",

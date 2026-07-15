@@ -9,6 +9,12 @@
         'function contributeFunds(uint256 proposalId, address tokenAddress, uint256 amount) payable',
         'function acceptProposal(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
         'function withdrawAcceptance(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
+        // Non-binding vote proposals (no funds, never executes)
+        'function mintVote(address to, string[] parcelIds, string imageURI, uint256 expiryTimestamp, address[] lens) returns (uint256)',
+        'function castVote(uint256 proposalId, string parcelId, bytes32 claimUid, bytes32 endorsementUid)',
+        'function rescindVote(uint256 proposalId, string parcelId)',
+        'function getVoteInfo(uint256 proposalId) view returns (bool isVote, uint256 voteCount, uint256 expiryTimestamp, bool concluded)',
+        'function hasVoted(uint256 proposalId, string parcelId, address voter) view returns (bool)',
         'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
     ];
 
@@ -323,6 +329,28 @@
         }
     }
 
+    // Resolve a vote proposal's expiry as a unix-seconds BigInt. Accepts an explicit
+    // options.expiryTimestamp (unix seconds) or options.expiryDays; defaults to and caps at
+    // ~1 year, matching the create dialog. The contract independently requires expiry > now.
+    const VOTE_MAX_DAYS = 365;
+    function resolveVoteExpiry(options) {
+        const nowSec = Math.floor(Date.now() / 1000);
+        let expirySec;
+        if (options.expiryTimestamp !== undefined && options.expiryTimestamp !== null) {
+            expirySec = Math.floor(Number(options.expiryTimestamp));
+        } else {
+            const days = Number(options.expiryDays);
+            const useDays = (Number.isFinite(days) && days > 0) ? Math.min(days, VOTE_MAX_DAYS) : VOTE_MAX_DAYS;
+            expirySec = nowSec + Math.round(useDays * 86400);
+        }
+        const maxSec = nowSec + (VOTE_MAX_DAYS * 86400) + 86400; // 1-year cap (+1 day grace)
+        if (expirySec > maxSec) expirySec = maxSec;
+        if (!Number.isFinite(expirySec) || expirySec <= nowSec) {
+            throw new Error('Vote expiry must be in the future.');
+        }
+        return BigInt(expirySec);
+    }
+
     async function mintProposal(options = {}) {
         if (!haveEthers()) {
             throw new Error('Blockchain library is not available.');
@@ -394,48 +422,77 @@
         if (!lensAddresses.length) {
             throw new Error('Lens list is required for minting proposals on-chain.');
         }
-        const args = [
-            recipient,
-            uniqueParcelIds,
-            isConditional,
-            imageURI,
-            ethAmountWei,
-            tokenAmount,
-            lensAddresses
-        ];
-
-        // Pre-flight simulation to surface revert reasons (helps when estimateGas returns "missing revert data")
-        try {
-            await contract.mintAndFund.staticCall(...args, { value: ethAmountWei });
-        } catch (error) {
-            const friendlyReason = error?.reason || error?.shortMessage || error?.message;
-            throw new Error(friendlyReason
-                ? `On-chain mint simulation failed: ${friendlyReason}`
-                : 'On-chain mint simulation failed: the ProposalNFT contract reverted. Check contract address, lens list, and funding amount.');
-        }
-
+        // A vote proposal (facets.ownership === 'no-change') mints fund-less via mintVote:
+        // no ETH/token, an expiry deadline instead, and it never executes. Both paths share
+        // the receipt/proposalId handling below.
+        const isVote = Boolean(options.isVote);
         let tx;
-        try {
-            tx = await contract.mintAndFund(
-                ...args,
-                { value: ethAmountWei }
-            );
-            if (typeof options.onSubmitted === 'function') {
-                try {
-                    options.onSubmitted(tx);
-                } catch (_) {
-                    // Non-fatal; continue to wait for receipt
+        if (isVote) {
+            const expiryTimestampArg = resolveVoteExpiry(options);
+            const voteArgs = [recipient, uniqueParcelIds, imageURI, expiryTimestampArg, lensAddresses];
+            try {
+                await contract.mintVote.staticCall(...voteArgs);
+            } catch (error) {
+                const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+                throw new Error(friendlyReason
+                    ? `On-chain vote mint simulation failed: ${friendlyReason}`
+                    : 'On-chain vote mint simulation failed: the ProposalNFT contract reverted. Check contract address and lens list.');
+            }
+            try {
+                tx = await contract.mintVote(...voteArgs);
+                if (typeof options.onSubmitted === 'function') {
+                    try { options.onSubmitted(tx); } catch (_) { /* Non-fatal; continue to wait for receipt */ }
                 }
+            } catch (error) {
+                if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                    throw new Error('Transaction rejected in wallet.');
+                }
+                const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+                throw new Error(friendlyReason || 'On-chain vote mint failed.');
             }
-        } catch (error) {
-            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
-                throw new Error('Transaction rejected in wallet.');
+        } else {
+            const args = [
+                recipient,
+                uniqueParcelIds,
+                isConditional,
+                imageURI,
+                ethAmountWei,
+                tokenAmount,
+                lensAddresses
+            ];
+
+            // Pre-flight simulation to surface revert reasons (helps when estimateGas returns "missing revert data")
+            try {
+                await contract.mintAndFund.staticCall(...args, { value: ethAmountWei });
+            } catch (error) {
+                const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+                throw new Error(friendlyReason
+                    ? `On-chain mint simulation failed: ${friendlyReason}`
+                    : 'On-chain mint simulation failed: the ProposalNFT contract reverted. Check contract address, lens list, and funding amount.');
             }
-            const friendlyReason = error?.reason || error?.shortMessage || error?.message;
-            if (!friendlyReason || /missing revert data/i.test(friendlyReason)) {
-                throw new Error('On-chain mint failed: the configured ProposalNFT contract likely does not support minting on this network. Verify the contract address and that lens addresses and funding amounts are valid.');
+
+            try {
+                tx = await contract.mintAndFund(
+                    ...args,
+                    { value: ethAmountWei }
+                );
+                if (typeof options.onSubmitted === 'function') {
+                    try {
+                        options.onSubmitted(tx);
+                    } catch (_) {
+                        // Non-fatal; continue to wait for receipt
+                    }
+                }
+            } catch (error) {
+                if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                    throw new Error('Transaction rejected in wallet.');
+                }
+                const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+                if (!friendlyReason || /missing revert data/i.test(friendlyReason)) {
+                    throw new Error('On-chain mint failed: the configured ProposalNFT contract likely does not support minting on this network. Verify the contract address and that lens addresses and funding amounts are valid.');
+                }
+                throw new Error(friendlyReason);
             }
-            throw new Error(friendlyReason);
         }
 
         const receipt = await tx.wait();
@@ -856,6 +913,159 @@
         };
     }
 
+    // Shared wallet + network + contract resolution for vote write calls (cast/rescind).
+    // Mirrors the preamble of acceptProposalOnChain; returns a ready-to-call contract.
+    async function resolveProposalContractForWrite(options, connectMessage) {
+        if (!haveEthers()) {
+            throw new Error('Blockchain library is not available.');
+        }
+        if (!globalScope.walletManager || typeof globalScope.walletManager.getProvider !== 'function') {
+            const err = new Error('Wallet manager is not ready.');
+            err.code = 'WALLET_NOT_READY';
+            throw err;
+        }
+        const provider = globalScope.walletManager.getProvider();
+        if (!provider) {
+            const err = new Error(connectMessage);
+            err.code = 'WALLET_NOT_CONNECTED';
+            throw err;
+        }
+
+        const { BrowserProvider, Contract, getAddress } = globalScope.ethers;
+        const browserProvider = new BrowserProvider(provider);
+        const signer = await browserProvider.getSigner();
+        const network = await browserProvider.getNetwork();
+        const walletChainId = normalizeChainIdValue(network.chainId);
+        const targetChainId = normalizeChainIdValue(options.chainId || walletChainId);
+
+        if (!targetChainId) {
+            const err = new Error('Target network is missing.');
+            err.code = 'CHAIN_ID_MISSING';
+            throw err;
+        }
+        if (walletChainId && targetChainId && walletChainId !== targetChainId) {
+            const err = new Error(`Wrong network. Switch to chain ${targetChainId}.`);
+            err.code = 'WRONG_NETWORK';
+            err.expectedChainId = targetChainId;
+            err.walletChainId = walletChainId;
+            throw err;
+        }
+
+        const resolvedAddress = options.contractAddress || await resolveConfiguredAddress(targetChainId);
+        if (!resolvedAddress) {
+            const err = new Error('ProposalNFT contract address is not configured for this network.');
+            err.code = 'CONTRACT_MISSING';
+            throw err;
+        }
+        let contractAddress;
+        try {
+            contractAddress = getAddress(resolvedAddress);
+        } catch (_) {
+            const err = new Error('Configured ProposalNFT address is invalid.');
+            err.code = 'CONTRACT_INVALID';
+            throw err;
+        }
+        const deployedCode = await browserProvider.getCode(contractAddress);
+        if (!deployedCode || deployedCode === '0x') {
+            const err = new Error('ProposalNFT contract not found on the connected network.');
+            err.code = 'CONTRACT_NOT_FOUND';
+            throw err;
+        }
+
+        const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
+        return { signer, contract, contractAddress, targetChainId, browserProvider };
+    }
+
+    function parseProposalIdArg(rawProposalId) {
+        try {
+            return BigInt(rawProposalId);
+        } catch (_) {
+            return rawProposalId;
+        }
+    }
+
+    async function castVoteOnChain(options = {}) {
+        const { contract, contractAddress, targetChainId } =
+            await resolveProposalContractForWrite(options, 'Connect a wallet to vote on-chain.');
+
+        const parcelId = options.parcelId ? String(options.parcelId).trim() : '';
+        if (!parcelId) {
+            const err = new Error('Parcel id is required to vote on-chain.');
+            err.code = 'PARCEL_ID_MISSING';
+            throw err;
+        }
+        if (options.proposalId === undefined || options.proposalId === null) {
+            const err = new Error('Proposal id is required to vote on-chain.');
+            err.code = 'PROPOSAL_ID_MISSING';
+            throw err;
+        }
+
+        const proposalIdArg = parseProposalIdArg(options.proposalId);
+        const claimUid = options.claimUid || ZERO_BYTES32;
+        const endorsementUid = options.endorsementUid || ZERO_BYTES32;
+
+        let tx;
+        try {
+            tx = await contract.castVote(proposalIdArg, parcelId, claimUid, endorsementUid);
+        } catch (error) {
+            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                const err = new Error('Transaction rejected in wallet.');
+                err.code = 'USER_REJECTED';
+                throw err;
+            }
+            throw error;
+        }
+
+        const receipt = await tx.wait();
+        const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : null);
+        return {
+            transactionHash: finalHash,
+            chainId: targetChainId,
+            contractAddress,
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
+        };
+    }
+
+    async function rescindVoteOnChain(options = {}) {
+        const { contract, contractAddress, targetChainId } =
+            await resolveProposalContractForWrite(options, 'Connect a wallet to rescind your vote on-chain.');
+
+        const parcelId = options.parcelId ? String(options.parcelId).trim() : '';
+        if (!parcelId) {
+            const err = new Error('Parcel id is required to rescind a vote on-chain.');
+            err.code = 'PARCEL_ID_MISSING';
+            throw err;
+        }
+        if (options.proposalId === undefined || options.proposalId === null) {
+            const err = new Error('Proposal id is required to rescind a vote on-chain.');
+            err.code = 'PROPOSAL_ID_MISSING';
+            throw err;
+        }
+
+        const proposalIdArg = parseProposalIdArg(options.proposalId);
+
+        let tx;
+        try {
+            tx = await contract.rescindVote(proposalIdArg, parcelId);
+        } catch (error) {
+            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                const err = new Error('Transaction rejected in wallet.');
+                err.code = 'USER_REJECTED';
+                throw err;
+            }
+            throw error;
+        }
+
+        const receipt = await tx.wait();
+        const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : null);
+        return {
+            transactionHash: finalHash,
+            chainId: targetChainId,
+            contractAddress,
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
+        };
+    }
+
     function isSolanaWalletConnected() {
         const wm = globalScope.solanaWalletManager;
         if (!wm || !wm.getState) return false;
@@ -913,6 +1123,26 @@
         return withdrawAcceptanceOnChain(options);
     }
 
+    async function castVoteWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('On-chain voting is not wired on Canton yet.');
+        }
+        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.castVote === 'function') {
+            return globalScope.SolanaProposalChainBridge.castVote(options);
+        }
+        return castVoteOnChain(options);
+    }
+
+    async function rescindVoteWithRouting(options = {}) {
+        if (isCantonActive()) {
+            throw new Error('Rescinding a vote is not wired on Canton yet.');
+        }
+        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.rescindVote === 'function') {
+            return globalScope.SolanaProposalChainBridge.rescindVote(options);
+        }
+        return rescindVoteOnChain(options);
+    }
+
     async function distributeFundsWithRouting(options = {}) {
         if (isCantonActive()) {
             throw new Error('Proposal fund distribution is not supported on Canton.');
@@ -949,6 +1179,8 @@
         contributeToProposal: contributeToProposalWithRouting,
         acceptProposal: acceptProposalWithRouting,
         withdrawAcceptance: withdrawAcceptanceWithRouting,
+        castVote: castVoteWithRouting,
+        rescindVote: rescindVoteWithRouting,
         distributeFunds: distributeFundsWithRouting,
         cancelAndRefund: cancelAndRefundWithRouting
     };

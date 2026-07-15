@@ -616,6 +616,8 @@ function showProposalDialog(overrides = null) {
     const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Payout only when all parcels accept');
     const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
     const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
+    const voteExpiryLabel = t('modal.createProposal.options.voteExpiry', 'Voting period');
+    const voteExpiryDaysSuffix = t('modal.createProposal.options.voteExpiryDaysSuffix', 'days (max 365)');
     const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
     const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
     const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
@@ -881,6 +883,15 @@ function showProposalDialog(overrides = null) {
                         </div>
                         <div>
                             <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" id="proposalVoteExpiryWrap" style="display:none; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:6px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <label for="proposalVoteExpiryDays" style="margin:0;">${voteExpiryLabel}</label>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
+                            <input type="number" id="proposalVoteExpiryDays" min="1" max="365" value="365" style="width:64px; text-align:center;">
+                            <span style="color:#666;">${voteExpiryDaysSuffix}</span>
                         </div>
                     </div>
                     <div class="proposal-option-row" id="proposalOptionDecay" style="display:flex; align-items:center; gap:8px; margin-top:6px;">

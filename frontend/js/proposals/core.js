@@ -1435,25 +1435,31 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // A vote proposal (no ownership/parcel change) collects non-binding yes-votes instead of
+    // binding acceptances: on-chain it calls castVote, and it never executes or transfers.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
     // Check if this proposal is minted on-chain — if so, submit on-chain first
     const nftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const isOnChain = nftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.acceptProposal === 'function';
+    const bridge = window.ProposalChainBridge;
+    const bridgeMethod = isVote ? 'castVote' : 'acceptProposal';
+    const isOnChain = nftInfo && bridge && typeof bridge[bridgeMethod] === 'function';
 
     if (isOnChain) {
         try {
             if (typeof updateStatus === 'function') {
-                updateStatus('Submitting acceptance on chain...');
+                updateStatus(isVote ? 'Submitting vote on chain...' : 'Submitting acceptance on chain...');
             }
-            await window.ProposalChainBridge.acceptProposal({
+            await bridge[bridgeMethod]({
                 proposalId: nftInfo.tokenId,
                 parcelId: normalizedParcelId,
                 chainId: nftInfo.chain,
                 contractAddress: nftInfo.contract
             });
         } catch (onchainErr) {
-            console.warn('On-chain acceptance failed:', onchainErr);
+            console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage('on_chain_acceptance_failed', friendlyMessage);
+            showProposalAlertMessage(isVote ? 'on_chain_vote_failed' : 'on_chain_acceptance_failed', friendlyMessage);
             return;
         }
     }
@@ -1469,7 +1475,7 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus('Acceptance recorded on chain.');
+        updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
     }
 
     const ownerLabel = targetSlot.shareText
@@ -1500,7 +1506,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         }
     } else {
         if (typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`);
+            const logMsg = isVote
+                ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
+                : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
+            addUserActionToGameLog(logMsg);
         }
         if (!userAgent.proposalsAccepted) {
             userAgent.proposalsAccepted = [];
