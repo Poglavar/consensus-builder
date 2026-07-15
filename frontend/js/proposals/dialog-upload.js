@@ -731,6 +731,20 @@ function showUploadProposalModal(proposal) {
                 const joiner = cityQueryParam ? '&' : '?';
                 return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}${joiner}3d${shareLangParam()}`;
             }
+            // Minted but NOT uploaded → share the on-chain LOCATION. The recipient reconstructs the
+            // proposal from the NFT + its metadata (no server upload needed). This is the blockchain
+            // share path: it carries only the location, not a geometry blob.
+            const chainRefApi = window.ChainProposalRef;
+            const ref = (chainRefApi && typeof chainRefApi.chainRefFromProposal === 'function')
+                ? chainRefApi.chainRefFromProposal(proposal)
+                : null;
+            const chainPath = (ref && typeof chainRefApi.buildChainProposalPath === 'function')
+                ? chainRefApi.buildChainProposalPath(ref)
+                : null;
+            if (chainPath) {
+                const joiner = cityQueryParam ? '&' : '?';
+                return `${resolveFrontendBaseUrl()}${chainPath}${cityQueryParam}${joiner}3d${shareLangParam()}`;
+            }
             return null;
         } catch (err) {
             console.warn('Failed to compute share URL', err);
