@@ -20,7 +20,8 @@ const {
     isValidPolygonLatLngPairs,
     getMinCurvatureRadius,
     calculateCurvatureRadius,
-    checkCurvatureConstraint
+    checkCurvatureConstraint,
+    pickSnapTarget
 } = require('../../frontend/js/corridor-geometry.js');
 
 // Identity-ish projection: treat (lat,lng) as (x=lng, y=lat) metres and back. Enough to exercise
@@ -294,5 +295,64 @@ describe('curvature constraints', () => {
         expect(res.violatesConstraint || res.wasAdjusted).toBe(true);
         delete global.wgs84ToHTRS96;
         delete global.htrs96ToWGS84;
+    });
+});
+
+describe('pickSnapTarget (pixel space)', () => {
+    const px = (x, y) => ({ x, y });
+    // A vertical local segment (x=0) and a horizontal local segment (y=100), plus room for external.
+    const local = () => [
+        [px(0, 0), px(0, 50), px(0, 100)],   // segment 0
+        [px(20, 100), px(120, 100)]          // segment 1 (a long edge)
+    ];
+
+    it('snaps to a nearby VERTEX in preference to an edge', () => {
+        // Cursor is 3px from segment0's vertex (0,50) AND within range of segment1's edge (y=100).
+        const snap = pickSnapTarget(px(3, 50), local(), [], -1, 12);
+        expect(snap.source).toBe('local');
+        expect(snap.kind).toBe('vertex');
+        expect(snap.segmentIndex).toBe(0);
+        expect(snap.vertexIndex).toBe(1);
+    });
+
+    it('labels first/last vertices as endpoints', () => {
+        expect(pickSnapTarget(px(1, 0), local(), [], -1, 12).kind).toBe('endpoint');
+        expect(pickSnapTarget(px(1, 100), [[px(0, 0), px(0, 100)]], [], -1, 12).atStart).toBe(false);
+    });
+
+    it('does NOT snap to the active segment\'s growing tip', () => {
+        // Active segment 0, cursor right on its last vertex (0,100). It must be ignored, so the
+        // nearest remaining target is segment1's edge / endpoint.
+        const snap = pickSnapTarget(px(0, 100), local(), [], 0, 12);
+        expect(snap === null || !(snap.segmentIndex === 0 && snap.vertexIndex === 2)).toBe(true);
+    });
+
+    it('never edge-inserts into the active segment', () => {
+        // Cursor on the middle of the active segment 0's edge — must not return an edge insert there.
+        const snap = pickSnapTarget(px(1, 25), [[px(0, 0), px(0, 50)]], [], 0, 12);
+        // Only the endpoints (0,0)/(0,50) remain; (1,25) is >12px from both → no snap.
+        expect(snap).toBeNull();
+    });
+
+    it('falls back to an EDGE insert when no vertex is near', () => {
+        const snap = pickSnapTarget(px(60, 103), local(), [], -1, 12);
+        expect(snap.kind).toBe('edge');
+        expect(snap.segmentIndex).toBe(1);
+        expect(snap.insertAfter).toBe(0);
+    });
+
+    it('uses EXTERNAL corridors only when no local snap wins', () => {
+        const external = [{ points: [px(200, 200), px(300, 200)] }];
+        // Cursor near the external corridor, far from all local geometry → an external snap wins.
+        const snap = pickSnapTarget(px(201, 201), local(), external, -1, 12);
+        expect(snap.source).toBe('external');
+        expect(snap.externalIndex).toBe(0);
+        // Snapping BEFORE the edge start clamps to the endpoint (projection t < 0).
+        const atEnd = pickSnapTarget(px(198, 200), local(), external, -1, 12);
+        expect(atEnd.kind).toBe('external-endpoint');
+    });
+
+    it('returns null when nothing is within the radius', () => {
+        expect(pickSnapTarget(px(500, 500), local(), [], -1, 12)).toBeNull();
     });
 });

@@ -1102,6 +1102,15 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
     });
 
+    it('filters by EFFECTIVE status (expired-but-stale rows excluded from ?status=Active)', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?status=Active');
+        const call = pool.getCalls()[0];
+        // The WHERE clause derives the status, not a raw column compare.
+        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*= \$1/);
+        expect(call.params).toContain('Active');
+    });
+
     it('filters by goal (against the stored goal, falling back to type)', async () => {
         pool.setResult({ rows: [] });
         const res = await request(app).get('/proposals/summary?goal=park-square');

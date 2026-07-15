@@ -1069,15 +1069,8 @@ const ROAD_SNAP_PIXELS = (typeof window !== 'undefined' && window.matchMedia?.('
 let roadSnapMarker = null;
 
 // Closest point to `p` on the pixel segment ab, clamped to the segment.
-function projectPointOnPixelSegment(p, a, b) {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const lengthSq = dx * dx + dy * dy;
-    if (lengthSq === 0) return L.point(a.x, a.y);
-    let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSq;
-    t = Math.max(0, Math.min(1, t));
-    return L.point(a.x + t * dx, a.y + t * dy);
-}
+// projectPointOnPixelSegment + the snap priority ladder (pickSnapTarget) moved to
+// frontend/js/corridor-geometry.js (loaded first) — pure pixel-space geometry, now unit-tested.
 
 // Nearest snap candidate to `latlng`, or null. Vertices win over edges: a click near a corner should
 // join that corner rather than plant a second node a few centimetres along one of its edges.
@@ -1105,77 +1098,39 @@ function appliedCorridorSnapSegments() {
 
 function findRoadSnapTarget(latlng) {
     if (typeof map === 'undefined' || !map || !latlng) return null;
-    const p = map.latLngToLayerPoint(latlng);
+    const cursor = map.latLngToLayerPoint(latlng);
+    const cursorPx = { x: cursor.x, y: cursor.y };
     const activeIndex = roadHasStarted ? roadSegments.indexOf(roadPoints) : -1;
-    let best = null;
 
-    roadSegments.forEach((segment, segmentIndex) => {
-        if (!Array.isArray(segment) || !segment.length) return;
-        segment.forEach((vertex, vertexIndex) => {
-            // The vertex we are drawing from is not a snap target — it would add a zero-length edge.
-            if (segmentIndex === activeIndex && vertexIndex === segment.length - 1) return;
-            const distance = p.distanceTo(map.latLngToLayerPoint(vertex));
-            if (distance > ROAD_SNAP_PIXELS) return;
-            if (best && distance >= best.distance) return;
-            const isEndpoint = vertexIndex === 0 || vertexIndex === segment.length - 1;
-            best = {
-                distance,
-                latlng: L.latLng(vertex.lat, vertex.lng),
-                segmentIndex,
-                vertexIndex,
-                type: isEndpoint ? 'endpoint' : 'vertex',
-                atStart: vertexIndex === 0
-            };
-        });
-    });
-    if (best) return best;
+    // Project every candidate vertex to screen pixels; the pure ladder decides the winner.
+    const toPx = (v) => { const pt = map.latLngToLayerPoint(v); return { x: pt.x, y: pt.y }; };
+    const localSegments = roadSegments.map(seg => (Array.isArray(seg) ? seg : []).map(toPx));
+    const externalEntries = appliedCorridorSnapSegments();
+    const externalSegments = externalEntries.map(e => ({ points: e.segment.map(toPx) }));
 
-    roadSegments.forEach((segment, segmentIndex) => {
-        if (!Array.isArray(segment) || segment.length < 2) return;
-        // Never insert a node into the segment being drawn: it is about to grow anyway, and a
-        // self-insertion would renumber the vertices under the active pointer.
-        if (segmentIndex === activeIndex) return;
-        for (let i = 0; i < segment.length - 1; i++) {
-            const a = map.latLngToLayerPoint(segment[i]);
-            const b = map.latLngToLayerPoint(segment[i + 1]);
-            const projected = projectPointOnPixelSegment(p, a, b);
-            const distance = p.distanceTo(projected);
-            if (distance > ROAD_SNAP_PIXELS) continue;
-            if (best && distance >= best.distance) continue;
-            best = {
-                distance,
-                latlng: map.layerPointToLatLng(projected),
-                segmentIndex,
-                insertAfter: i,
-                type: 'edge'
-            };
+    const raw = window.CorridorGeometry.pickSnapTarget(
+        cursorPx, localSegments, externalSegments, activeIndex, ROAD_SNAP_PIXELS
+    );
+    if (!raw) return null;
+
+    // Resolve the pixel result back to a latlng and the original return shape. Vertex snaps reuse
+    // the exact original vertex latlng; edge snaps unproject the projected pixel point.
+    const pixelToLatLng = (px) => map.layerPointToLatLng(L.point(px.x, px.y));
+
+    if (raw.source === 'local') {
+        if (raw.kind === 'edge') {
+            return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), segmentIndex: raw.segmentIndex, insertAfter: raw.insertAfter, type: 'edge' };
         }
-    });
-    if (best) return best;
+        const vertex = roadSegments[raw.segmentIndex][raw.vertexIndex];
+        return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), segmentIndex: raw.segmentIndex, vertexIndex: raw.vertexIndex, type: raw.kind, atStart: raw.atStart };
+    }
 
-    // Placed roads on the map: snap onto their centerlines so a connector attaches exactly.
-    // External snaps carry the touched proposal — clicking one absorbs a local road into the
-    // drawing session on the spot (minted roads only donate the snap position).
-    appliedCorridorSnapSegments().forEach(({ segment, proposalId, minted }) => {
-        segment.forEach((vertex, vertexIndex) => {
-            const isEndpoint = vertexIndex === 0 || vertexIndex === segment.length - 1;
-            if (!isEndpoint) return;
-            const distance = p.distanceTo(map.latLngToLayerPoint(vertex));
-            if (distance > ROAD_SNAP_PIXELS) return;
-            if (best && distance >= best.distance) return;
-            best = { distance, latlng: L.latLng(vertex.lat, vertex.lng), type: 'external-endpoint', proposalId, minted };
-        });
-        for (let i = 0; i < segment.length - 1; i++) {
-            const a = map.latLngToLayerPoint(segment[i]);
-            const b = map.latLngToLayerPoint(segment[i + 1]);
-            const projected = projectPointOnPixelSegment(p, a, b);
-            const distance = p.distanceTo(projected);
-            if (distance > ROAD_SNAP_PIXELS) continue;
-            if (best && distance >= best.distance) continue;
-            best = { distance, latlng: map.layerPointToLatLng(projected), type: 'external-edge', proposalId, minted };
-        }
-    });
-    return best;
+    const entry = externalEntries[raw.externalIndex];
+    if (raw.kind === 'external-edge') {
+        return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), type: 'external-edge', proposalId: entry.proposalId, minted: entry.minted };
+    }
+    const vertex = entry.segment[raw.vertexIndex];
+    return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), type: 'external-endpoint', proposalId: entry.proposalId, minted: entry.minted };
 }
 
 // Clicking a snap on a LOCAL applied road while drawing pulls that road into the drawing

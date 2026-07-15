@@ -224,6 +224,17 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 });
 
 export function setupProposalsRoute(app, pool) {
+    // A proposal past expires_at reads as 'Expired' even if the stored status is stale. This one
+    // expression is used both for the returned status and for the ?status= FILTER, so filtering and
+    // display agree (case-insensitive — the DB carries both 'Executed' and 'executed').
+    const EFFECTIVE_STATUS_SQL = `
+        CASE
+            WHEN LOWER(COALESCE(status, '')) NOT IN ('executed', 'cancelled', 'expired')
+                AND expires_at IS NOT NULL AND expires_at <= now()
+            THEN 'Expired'
+            ELSE status
+        END`;
+
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
     // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
     // does not do, so they stay client-side; these are the DB-derivable ones.
@@ -283,7 +294,9 @@ export function setupProposalsRoute(app, pool) {
         }
 
         if (status) {
-            clauses.push(`status = $${params.length + 1}`);
+            // Filter on the EFFECTIVE status so ?status=Active excludes expired-but-stale rows and
+            // ?status=Expired finds them — matching what the summary returns.
+            clauses.push(`${EFFECTIVE_STATUS_SQL} = $${params.length + 1}`);
             params.push(status);
         }
 
@@ -618,15 +631,7 @@ export function setupProposalsRoute(app, pool) {
                 -- road / ...); type is the lossy backend column. Serving goal here stops the client
                 -- re-deriving it from type and mis-badging building/structure/parcel rows.
                 COALESCE(proposal_data->>'goal', type) AS goal,
-                -- The stored status is whatever browser last wrote; a proposal past expires_at can
-                -- still read 'Active'. Derive the effective status server-side so every client
-                -- agrees (case-insensitive — the DB carries both 'Executed' and 'executed').
-                CASE
-                    WHEN LOWER(COALESCE(status, '')) NOT IN ('executed', 'cancelled', 'expired')
-                        AND expires_at IS NOT NULL AND expires_at <= now()
-                    THEN 'Expired'
-                    ELSE status
-                END AS effective_status,
+                ${EFFECTIVE_STATUS_SQL} AS effective_status,
                 status,
                 created_at,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,

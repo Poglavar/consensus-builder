@@ -595,12 +595,94 @@
         return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
     }
 
+    // ---- Snap-target selection (moved out of road-drawing.js) --------------------------------
+    // Pure pixel-space geometry: which existing vertex/edge should a cursor snap to. The UI projects
+    // lat/lng to screen pixels and resolves the result back; this decides the priority.
+
+    function projectPointOnPixelSegment(p, a, b) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const lengthSq = dx * dx + dy * dy;
+        if (lengthSq === 0) return { x: a.x, y: a.y };
+        let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSq;
+        t = Math.max(0, Math.min(1, t));
+        return { x: a.x + t * dx, y: a.y + t * dy };
+    }
+
+    function pixelDistance(p, q) {
+        return Math.hypot(p.x - q.x, p.y - q.y);
+    }
+
+    // Tiered nearest-snap. localSegments: [[{x,y}...], ...]; externalSegments: [{points:[{x,y}...]}].
+    // Priority: any LOCAL VERTEX within radius beats any LOCAL EDGE beats any EXTERNAL (placed road).
+    // The active segment's growing tip is skipped (snapping to it makes a zero-length edge) and the
+    // active segment is never edge-inserted (that renumbers vertices under the pointer). Returns a
+    // raw descriptor (indices + winning pixel) the UI resolves back to a latlng; null if nothing near.
+    function pickSnapTarget(cursorPx, localSegments, externalSegments, activeIndex, radiusPx) {
+        let best = null;
+
+        // Tier 1: local vertices
+        localSegments.forEach((seg, segmentIndex) => {
+            if (!Array.isArray(seg) || !seg.length) return;
+            seg.forEach((vertex, vertexIndex) => {
+                if (segmentIndex === activeIndex && vertexIndex === seg.length - 1) return;
+                const distance = pixelDistance(cursorPx, vertex);
+                if (distance > radiusPx) return;
+                if (best && distance >= best.distance) return;
+                const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
+                best = {
+                    distance, source: 'local', kind: isEndpoint ? 'endpoint' : 'vertex',
+                    segmentIndex, vertexIndex, atStart: vertexIndex === 0, pixel: vertex
+                };
+            });
+        });
+        if (best) return best;
+
+        // Tier 2: local edges
+        localSegments.forEach((seg, segmentIndex) => {
+            if (!Array.isArray(seg) || seg.length < 2) return;
+            if (segmentIndex === activeIndex) return;
+            for (let i = 0; i < seg.length - 1; i++) {
+                const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
+                const distance = pixelDistance(cursorPx, projected);
+                if (distance > radiusPx) continue;
+                if (best && distance >= best.distance) continue;
+                best = { distance, source: 'local', kind: 'edge', segmentIndex, insertAfter: i, pixel: projected };
+            }
+        });
+        if (best) return best;
+
+        // Tier 3: placed (external) corridors — endpoints and edges compete on distance
+        externalSegments.forEach((entry, externalIndex) => {
+            const seg = entry && entry.points;
+            if (!Array.isArray(seg) || seg.length < 2) return;
+            seg.forEach((vertex, vertexIndex) => {
+                const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
+                if (!isEndpoint) return;
+                const distance = pixelDistance(cursorPx, vertex);
+                if (distance > radiusPx) return;
+                if (best && distance >= best.distance) return;
+                best = { distance, source: 'external', kind: 'external-endpoint', externalIndex, vertexIndex, pixel: vertex };
+            });
+            for (let i = 0; i < seg.length - 1; i++) {
+                const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
+                const distance = pixelDistance(cursorPx, projected);
+                if (distance > radiusPx) continue;
+                if (best && distance >= best.distance) continue;
+                best = { distance, source: 'external', kind: 'external-edge', externalIndex, insertAfter: i, pixel: projected };
+            }
+        });
+        return best;
+    }
+
     const api = {
         createRectangularRoadSegment,
         isValidHtrsPoint,
         getMinCurvatureRadius,
         calculateCurvatureRadius,
         checkCurvatureConstraint,
+        projectPointOnPixelSegment,
+        pickSnapTarget,
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
         corridorConnectedComponents,
@@ -629,6 +711,7 @@
         window.getMinCurvatureRadius = getMinCurvatureRadius;
         window.calculateCurvatureRadius = calculateCurvatureRadius;
         window.checkCurvatureConstraint = checkCurvatureConstraint;
+        window.pickSnapTarget = pickSnapTarget;
     }
 
     if (typeof module !== 'undefined' && module.exports) {
