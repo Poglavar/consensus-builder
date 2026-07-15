@@ -25,8 +25,42 @@ const {
     deepClone,
     deepCloneArray,
     ensureArrayOfStrings,
-    escapeHtml
+    escapeHtml,
+    stableStringify
 } = require('../../frontend/js/shared-utils.js');
+
+describe('stableStringify (proposal hash seed)', () => {
+    // The bug: JSON.stringify(obj, sortedKeysArray) uses an array replacer, which drops nested keys.
+    const oldSerializer = (o) => JSON.stringify(o, Object.keys(o).sort());
+
+    it('is key-order independent', () => {
+        expect(stableStringify({ b: 1, a: 2 })).toBe(stableStringify({ a: 2, b: 1 }));
+    });
+
+    it('yields the SAME string as the old array-replacer for a flat object (ids unchanged)', () => {
+        const flat = { width: 20, length: 30, typology: 'single', height: 10, chamfer: 2, rotation: 45 };
+        expect(stableStringify(flat)).toBe(oldSerializer(flat));
+    });
+
+    it('distinguishes objects that differ only in a NESTED value (the fix)', () => {
+        const a = { width: 20, opts: { k: 1 } };
+        const b = { width: 20, opts: { k: 2 } };
+        // Old serializer collapses both nested objects to {} → same string (the bug).
+        expect(oldSerializer(a)).toBe(oldSerializer(b));
+        // stableStringify keeps the nested value → different strings.
+        expect(stableStringify(a)).not.toBe(stableStringify(b));
+    });
+
+    it('sorts nested keys and preserves array order', () => {
+        expect(stableStringify({ x: { b: 1, a: 2 } })).toBe('{"x":{"a":2,"b":1}}');
+        expect(stableStringify([3, 1, 2])).toBe('[3,1,2]');
+    });
+
+    it('handles null/undefined deterministically', () => {
+        expect(stableStringify({ a: null, b: undefined })).toBe('{"a":null,"b":null}');
+        expect(stableStringify(null)).toBe('null');
+    });
+});
 
 describe('base64url encoding', () => {
     it('round-trips arbitrary bytes, including 0x00 and 0xFF', () => {

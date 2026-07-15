@@ -51,6 +51,24 @@ function ensureArrayOfStrings(list) {
         .filter(Boolean);
 }
 
+// Deterministic JSON: object keys sorted at every nesting level, array order preserved. Unlike
+// `JSON.stringify(obj, keysArray)` — an array replacer is an allowlist applied at ALL levels, so it
+// silently DROPS any nested key not in the top-level list — this keeps nested keys, so two objects
+// that differ only in a nested value serialize differently. Used for stable proposal hash seeds.
+// (For a FLAT object it yields exactly the same string the old array-replacer did, so existing
+// hashes/ids are unchanged.)
+function stableStringify(value) {
+    if (value === undefined) return 'null';
+    if (value === null || typeof value !== 'object') {
+        return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+        return '[' + value.map(stableStringify).join(',') + ']';
+    }
+    const keys = Object.keys(value).sort();
+    return '{' + keys.map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+}
+
 // Node-only: lets backend/test/proposals-sharing-utils.test.js unit-test these without a browser.
 // The browser is unaffected by this block (`module` is undefined there).
 if (typeof module !== 'undefined' && module.exports) {
@@ -58,6 +76,7 @@ if (typeof module !== 'undefined' && module.exports) {
         escapeHtml,
         deepClone,
         deepCloneArray,
-        ensureArrayOfStrings
+        ensureArrayOfStrings,
+        stableStringify
     };
 }

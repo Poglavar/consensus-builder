@@ -1165,7 +1165,12 @@ const proposalStorage = {
         if (proposal.buildingProposal) {
             parts.push(`buildingParents:${normalizeParcelIdList(proposal.buildingProposal.parentParcelIds || parentIds).join(',')}`);
             if (proposal.buildingProposal.parameters) {
-                try { parts.push(`buildingParams:${JSON.stringify(proposal.buildingProposal.parameters, Object.keys(proposal.buildingProposal.parameters).sort())}`); } catch (_) { }
+                // stableStringify (shared-utils.js) sorts keys at every level and keeps nested keys.
+                // The old JSON.stringify(params, sortedKeys) used an array replacer, which drops any
+                // nested key not in the top-level list — so two building proposals differing only in
+                // a nested param hashed identically and one silently overwrote the other. For today's
+                // flat params it yields the identical string, so existing ids are unchanged.
+                try { parts.push(`buildingParams:${stableStringify(proposal.buildingProposal.parameters)}`); } catch (_) { }
             }
         }
         if (proposal.buildingGeometry) {
