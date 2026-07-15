@@ -2594,23 +2594,24 @@ function updateUndoButtonState() {
 // everything placed earlier stays. A stub left with fewer than 2 points is dropped entirely.
 function cancelActiveRoadStroke() {
     if (!roadHasStarted || !Array.isArray(roadPoints)) return false;
-    while (roadPoints.length > Math.max(roadStrokeBaseCount, 0)) {
-        const removedPoint = roadPoints[roadPoints.length - 1];
-        const previousPoint = roadPoints[roadPoints.length - 2];
-        if (previousPoint && typeof removeBuildingTunnelEdge === 'function') {
-            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
-        }
-        roadPoints.pop();
+    // The array surgery (pop to base, drop the stub, keep segmentIds aligned) is the pure reducer in
+    // road-stroke-state.js; here we apply its removed edges to the tunnel records and re-alias
+    // roadPoints. segments/segmentIds are mutated in place, so their identity is preserved.
+    const result = window.RoadStrokeState.applyStrokeCancel({
+        segments: roadSegments,
+        segmentIds: roadSegmentIds,
+        activeIndex: roadSegments.indexOf(roadPoints),
+        hasStarted: roadHasStarted,
+        strokeBaseCount: roadStrokeBaseCount
+    });
+    if (typeof removeBuildingTunnelEdge === 'function') {
+        result.removedEdges.forEach(([from, to]) => {
+            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
+        });
     }
-    if (roadPoints.length < 2) {
-        const stubIndex = roadSegments.indexOf(roadPoints);
-        if (stubIndex !== -1) {
-            roadSegments.splice(stubIndex, 1);
-            roadSegmentIds.splice(stubIndex, 1);
-        }
-    }
-    roadPoints = [];
-    roadHasStarted = false;
+    roadHasStarted = result.hasStarted;
+    roadStrokeBaseCount = result.strokeBaseCount;
+    roadPoints = result.activeIndex >= 0 ? roadSegments[result.activeIndex] : [];
     if (roadPreviewLine) {
         roadPreviewLine.removeFrom(map);
         roadPreviewLine = null;
@@ -2632,41 +2633,27 @@ function cancelActiveRoadStroke() {
 
 // Undo last road segment
 function undoLastRoadSegment() {
-    const existingSegments = getAllRoadSegments(true);
-    if (!roadHasStarted && (!existingSegments.length || (existingSegments[existingSegments.length - 1]?.length || 0) <= 1)) {
+    // The resume/pop/drop-empty logic (and keeping roadSegmentIds aligned) is the pure reducer in
+    // road-stroke-state.js. It mutates segments/segmentIds in place and returns the removed edge(s)
+    // and the new pen state; here we apply the tunnel cleanup and re-alias roadPoints.
+    const result = window.RoadStrokeState.applyRoadUndo({
+        segments: roadSegments,
+        segmentIds: roadSegmentIds,
+        activeIndex: roadHasStarted ? roadSegments.indexOf(roadPoints) : -1,
+        hasStarted: roadHasStarted,
+        strokeBaseCount: roadStrokeBaseCount
+    });
+    if (!result.undone) {
         return; // Nothing to undo
     }
-
-    if (!roadHasStarted && existingSegments.length) {
-        // Resume editing the last committed segment
-        roadPoints = existingSegments[existingSegments.length - 1];
-        roadHasStarted = true;
-        roadStrokeBaseCount = roadPoints.length;
-    }
-
-    if (!roadHasStarted || roadPoints.length <= 1) {
-        return; // Can't undo if there's only one point or none
-    }
-
-    // Remove tunnel metadata paired with this edge before its endpoint disappears.
-    const removedPoint = roadPoints[roadPoints.length - 1];
-    const previousPoint = roadPoints[roadPoints.length - 2];
     if (typeof removeBuildingTunnelEdge === 'function') {
-        roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
+        result.removedEdges.forEach(([from, to]) => {
+            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
+        });
     }
-    roadPoints.pop();
-
-    if (roadPoints.length === 0) {
-        // Drop the now-empty segment by index so `roadSegmentIds` stays aligned, and put the pen up:
-        // the next click starts a new segment (or resumes an old one by snapping to its end).
-        const emptyIndex = roadSegments.indexOf(roadPoints);
-        if (emptyIndex !== -1) {
-            roadSegments.splice(emptyIndex, 1);
-            roadSegmentIds.splice(emptyIndex, 1);
-        }
-        roadPoints = [];
-        roadHasStarted = false;
-    }
+    roadHasStarted = result.hasStarted;
+    roadStrokeBaseCount = result.strokeBaseCount;
+    roadPoints = result.activeIndex >= 0 ? roadSegments[result.activeIndex] : [];
 
     // Markers are rebuilt from the segments below, so nothing to pop here.
 
