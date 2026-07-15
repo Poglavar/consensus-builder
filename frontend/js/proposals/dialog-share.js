@@ -109,7 +109,8 @@ function renderProposalListModal() {
         },
         sources: {
             local: t('modal.roadWidth.proposalList.sources.local', 'Local'),
-            server: t('modal.roadWidth.proposalList.sources.server', 'Server')
+            server: t('modal.roadWidth.proposalList.sources.server', 'Server'),
+            blockchain: t('modal.roadWidth.proposalList.sources.blockchain', 'Blockchain')
         },
         loadingServer: t('modal.roadWidth.proposalList.loadingServer', 'Loading server proposals...'),
         serverError: t('modal.roadWidth.proposalList.serverError', 'Failed to load server proposals.'),
@@ -189,7 +190,18 @@ function renderProposalListModal() {
     }));
     const serverDatasets = buildDatasets(serverAugmented);
 
-    const chosen = source === 'server' ? serverDatasets : localDatasets;
+    // Blockchain source: the MINTED (on-chain) proposals. Same data the wallet's Minted modal shows,
+    // just surfaced in the list. Read from local storage (own mints + anything chain-sync pulled in);
+    // activating the tab with a wallet triggers a sync to refresh (handled in the source switch).
+    const blockchainAugmented = allProposals
+        .filter(proposal => (typeof isProposalMinted === 'function') ? isProposalMinted(proposal) : !!(proposal && proposal.isMinted))
+        .map(proposal => ({ proposal, metrics: computeProposalMetrics(proposal) }));
+    const blockchainDatasets = buildDatasets(blockchainAugmented);
+    const blockchainCount = blockchainAugmented.length;
+
+    const chosen = source === 'server' ? serverDatasets
+        : source === 'blockchain' ? blockchainDatasets
+        : localDatasets;
 
     const selectedId = proposalListState.selectedId;
     if (selectedId) {
@@ -296,6 +308,9 @@ function renderProposalListModal() {
             <button class="proposal-source-btn ${source === 'server' ? 'active' : ''}" data-source="server">
                 ${escapeHtml(modalStrings.sources.server)} (${serverCountLabel !== null ? serverCountLabel : '0'})
             </button>
+            <button class="proposal-source-btn ${source === 'blockchain' ? 'active' : ''}" data-source="blockchain">
+                ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
+            </button>
         </div>
     `;
 
@@ -367,6 +382,7 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.sources.local', modalStrings.sources.local);
         fallbackMap.set('modal.roadWidth.proposalList.sources.server', modalStrings.sources.server);
+        fallbackMap.set('modal.roadWidth.proposalList.sources.blockchain', modalStrings.sources.blockchain);
         fallbackMap.set('modal.roadWidth.proposalList.loadingServer', modalStrings.loadingServer);
         fallbackMap.set('modal.roadWidth.proposalList.serverError', modalStrings.serverError);
         fallbackMap.set('modal.roadWidth.proposalList.retry', modalStrings.retry);
@@ -444,6 +460,14 @@ function renderProposalListModal() {
             proposalListState.source = nextSource;
             if (nextSource === 'server') {
                 ensureServerProposals(resolveCurrentCityCode());
+            } else if (nextSource === 'blockchain') {
+                // Refresh on-chain proposals from the wallet (best-effort, wallet-gated). No wallet →
+                // the tab still shows locally-held minted proposals; the Sync button reflects state.
+                try {
+                    if (isWalletConnected && runtimeGlobal.BlockchainSync && typeof runtimeGlobal.BlockchainSync.sync === 'function') {
+                        runtimeGlobal.BlockchainSync.sync().then(() => renderProposalListModal()).catch(() => { });
+                    }
+                } catch (_) { /* ignore */ }
             }
             renderProposalListModal();
         });

@@ -1342,7 +1342,8 @@
                 },
                 "sources": {
                     "local": "Locales",
-                    "server": "Servidor"
+                    "server": "Servidor",
+                    "blockchain": "Blockchain"
                 },
                 "actions": {
                     "download": "Descargar",

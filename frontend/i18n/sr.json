@@ -1294,7 +1294,8 @@
                 },
                 "sources": {
                     "local": "Lokalni",
-                    "server": "Server"
+                    "server": "Server",
+                    "blockchain": "Blockchain"
                 },
                 "actions": {
                     "download": "Preuzmi",
