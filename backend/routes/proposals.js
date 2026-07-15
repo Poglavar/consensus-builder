@@ -224,11 +224,26 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 });
 
 export function setupProposalsRoute(app, pool) {
+    // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
+    // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
+    // does not do, so they stay client-side; these are the DB-derivable ones.
+    const SORT_ORDER_BY = {
+        'created-desc': 'created_at DESC',
+        'created-asc': 'created_at ASC',
+        'author-asc': "COALESCE(author, proposal_data->>'author', '') ASC",
+        'author-desc': "COALESCE(author, proposal_data->>'author', '') DESC",
+        'value-desc': "NULLIF(proposal_data->>'offer', '')::numeric DESC NULLS LAST",
+        'value-asc': "NULLIF(proposal_data->>'offer', '')::numeric ASC NULLS LAST"
+    };
+
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
         const status = req.query.status;
         const type = req.query.type;
         const author = req.query.author;
+        const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
+        const q = typeof req.query.q === 'string' && req.query.q.trim() ? req.query.q.trim() : null;
+        const sort = Object.prototype.hasOwnProperty.call(SORT_ORDER_BY, req.query.sort) ? req.query.sort : null;
         const limit = parseInt(req.query.limit, 10);
         const offset = parseInt(req.query.offset, 10);
 
@@ -237,6 +252,9 @@ export function setupProposalsRoute(app, pool) {
             status,
             type,
             author,
+            goal,
+            q,
+            sort,
             limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
             offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
         };
@@ -247,6 +265,9 @@ export function setupProposalsRoute(app, pool) {
         status,
         type,
         author,
+        goal,
+        q,
+        sort,
         baseSelect,
         includePagination = true,
         limit,
@@ -276,12 +297,29 @@ export function setupProposalsRoute(app, pool) {
             params.push(author);
         }
 
+        if (goal) {
+            clauses.push(`COALESCE(proposal_data->>'goal', type) = $${params.length + 1}`);
+            params.push(goal);
+        }
+
+        if (q) {
+            // Free-text over the display name/title and author — the same fields the client search
+            // box matches, but across ALL rows instead of only the fetched page.
+            const p = params.length + 1;
+            clauses.push(
+                `(COALESCE(name, title, proposal_data->>'name', proposal_data->>'title', '') ILIKE $${p}`
+                + ` OR COALESCE(author, proposal_data->>'author', '') ILIKE $${p})`
+            );
+            params.push(`%${q}%`);
+        }
+
         if (clauses.length) {
             sql += `\n            WHERE ${clauses.join(' AND ')}`;
         }
 
         if (includePagination) {
-            sql += `\n            ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+            const orderBy = SORT_ORDER_BY[sort] || SORT_ORDER_BY['created-desc'];
+            sql += `\n            ORDER BY ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
             params.push(limit, offset);
         }
 
@@ -512,6 +550,51 @@ export function setupProposalsRoute(app, pool) {
             });
         } catch (err) {
             console.error('Error in GET /proposals/count:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // Per-parcel proposal counts for the map badges. The client passes the parcel ids it can see
+    // (?parcel_ids=a,b,c) and gets { counts: { a: 2, c: 1 } } back — one query over the ancestor +
+    // descendant id arrays, so every user sees the same badge instead of a count of only what their
+    // browser happens to have downloaded. Ids with no proposals are simply absent (treat as 0).
+    app.get('/proposals/counts', async (req, res) => {
+        try {
+            const raw = typeof req.query.parcel_ids === 'string' ? req.query.parcel_ids : '';
+            const parcelIds = Array.from(new Set(
+                raw.split(',').map(s => s.trim()).filter(Boolean)
+            )).slice(0, 5000); // cap the array so a huge querystring can't blow up the query
+            if (!parcelIds.length) {
+                return res.status(400).json({ error: 'parcel_ids query parameter is required' });
+            }
+            const city = normalizeCityCode(req.query.city);
+
+            const params = [parcelIds];
+            const cityClause = city ? `AND p.city = $${params.push(city)}` : '';
+
+            // Pre-filter with ?| (GIN-indexed) so only proposals touching a requested id are scanned,
+            // then unnest each proposal's ancestor+descendant ids and count per requested id.
+            const sql = `
+                SELECT ids.pid AS parcel_id, COUNT(DISTINCT p.id)::int AS n
+                FROM proposal p
+                CROSS JOIN LATERAL (
+                    SELECT DISTINCT e AS pid
+                    FROM jsonb_array_elements_text(
+                        COALESCE(p.ancestor_parcel_ids, '[]'::jsonb) || COALESCE(p.descendant_parcel_ids, '[]'::jsonb)
+                    ) AS e
+                ) ids
+                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.descendant_parcel_ids ?| $1::text[])
+                  AND ids.pid = ANY($1::text[])
+                  ${cityClause}
+                GROUP BY ids.pid
+            `;
+
+            const result = await pool.query(sql, params);
+            const counts = {};
+            result.rows.forEach(row => { counts[row.parcel_id] = row.n; });
+            res.json({ counts });
+        } catch (err) {
+            console.error('Error in GET /proposals/counts:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     });

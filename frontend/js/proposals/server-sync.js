@@ -81,25 +81,18 @@ async function fetchServerProposalSummaries(cityCode) {
     renderProposalListModal();
 
     const backendBase = resolveBackendBaseUrl();
-    const countUrl = `${backendBase}/proposals/count${city ? `?city=${encodeURIComponent(city)}` : ''}`;
+    // The summary already returns the full total via COUNT(*) OVER(), so the separate
+    // /proposals/count round-trip was redundant — one request, not two.
     const summaryUrl = `${backendBase}/proposals/summary?limit=${SERVER_PROPOSAL_SUMMARY_LIMIT}&offset=0${city ? `&city=${encodeURIComponent(city)}` : ''}`;
 
     try {
-        const [countResp, summaryResp] = await Promise.all([
-            fetch(countUrl),
-            fetch(summaryUrl)
-        ]);
+        const summaryResp = await fetch(summaryUrl);
 
-        if (!countResp.ok) {
-            const text = await countResp.text();
-            throw new Error(text || 'Failed to fetch proposal count');
-        }
         if (!summaryResp.ok) {
             const text = await summaryResp.text();
             throw new Error(text || 'Failed to fetch proposal summaries');
         }
 
-        const countPayload = await countResp.json();
         const summaryPayload = await summaryResp.json();
 
         const summaries = Array.isArray(summaryPayload?.proposals)
@@ -110,9 +103,9 @@ async function fetchServerProposalSummaries(cityCode) {
             .map(item => normalizeServerProposalSummary(item, city))
             .filter(Boolean);
 
-        serverProposalCache.count = Number.isFinite(countPayload?.count)
-            ? Number(countPayload.count)
-            : (Number.isFinite(summaryPayload?.count) ? Number(summaryPayload.count) : serverProposalCache.proposals.length);
+        serverProposalCache.count = Number.isFinite(summaryPayload?.count)
+            ? Number(summaryPayload.count)
+            : serverProposalCache.proposals.length;
     } catch (error) {
         serverProposalCache.error = error?.message || 'Unable to load server proposals';
     } finally {

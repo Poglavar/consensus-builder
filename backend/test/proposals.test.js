@@ -972,6 +972,45 @@ describe('GET /proposals/count', () => {
     });
 });
 
+describe('GET /proposals/counts', () => {
+    it('returns per-parcel counts as a { counts } map', async () => {
+        pool.setResult({
+            rows: [
+                { parcel_id: 'HR-1-100', n: 2 },
+                { parcel_id: 'HR-1-101', n: 1 },
+            ],
+        });
+
+        const res = await request(app).get('/proposals/counts?parcel_ids=HR-1-100,HR-1-101,HR-1-102&city=zg');
+
+        expect(res.status).toBe(200);
+        expect(res.body.counts).toEqual({ 'HR-1-100': 2, 'HR-1-101': 1 }); // 102 absent → 0
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/ancestor_parcel_ids \?\| \$1/);
+        expect(call.params[0]).toEqual(['HR-1-100', 'HR-1-101', 'HR-1-102']);
+        expect(call.params).toContain('zagreb'); // normalized city
+    });
+
+    it('dedupes the requested ids', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/counts?parcel_ids=A,A,B,B,B');
+        expect(pool.getCalls()[0].params[0]).toEqual(['A', 'B']);
+    });
+
+    it('400s when parcel_ids is missing or empty', async () => {
+        const res = await request(app).get('/proposals/counts');
+        expect(res.status).toBe(400);
+        const res2 = await request(app).get('/proposals/counts?parcel_ids=%20,%20');
+        expect(res2.status).toBe(400);
+    });
+
+    it('returns 500 when the count query fails', async () => {
+        pool.query = async () => { throw new Error('counts failed'); };
+        const res = await request(app).get('/proposals/counts?parcel_ids=A');
+        expect(res.status).toBe(500);
+    });
+});
+
 describe('GET /proposals/summary', () => {
     it('returns paginated proposals', async () => {
         pool.setResult({
@@ -1061,6 +1100,36 @@ describe('GET /proposals/summary', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ proposals: [], count: 0, limit: 100, offset: 0 });
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
+    });
+
+    it('filters by goal (against the stored goal, falling back to type)', async () => {
+        pool.setResult({ rows: [] });
+        const res = await request(app).get('/proposals/summary?goal=park-square');
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/COALESCE\(proposal_data->>'goal', type\) = \$1/);
+        expect(call.params).toContain('park-square');
+    });
+
+    it('free-text search matches name/title and author across all rows', async () => {
+        pool.setResult({ rows: [] });
+        const res = await request(app).get('/proposals/summary?q=ilica');
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/ILIKE/);
+        expect(call.params).toContain('%ilica%');
+    });
+
+    it('honours a whitelisted sort and ignores an unknown one', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?sort=value-desc');
+        expect(pool.getCalls()[0].sql).toMatch(/ORDER BY NULLIF\(proposal_data->>'offer', ''\)::numeric DESC NULLS LAST/);
+
+        pool.reset?.();
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?sort=; DROP TABLE proposal');
+        // Unknown/injection sort falls back to the safe default.
+        expect(pool.getCalls().at(-1).sql).toMatch(/ORDER BY created_at DESC/);
     });
 
     it('uses result length when total_count is absent', async () => {
