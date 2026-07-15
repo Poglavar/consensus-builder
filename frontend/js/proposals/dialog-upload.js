@@ -1197,6 +1197,13 @@ function showUploadProposalModal(proposal) {
                         const proposalAuthor = proposal.author || '';
                         const isConditional = Boolean(proposal.conditional || proposal.isConditional);
 
+                        // Record the FULL geometry (and offer) in the metadata, matching the primary
+                        // create.js mint. Without it, a proposal minted through this share dialog
+                        // could not be reconstructed from the NFT alone (only its parcel ids survive) —
+                        // the blockchain path is meant to carry all proposal-pertinent data on-chain.
+                        const geometryPayload = (typeof buildGeometryMetadataPayload === 'function')
+                            ? buildGeometryMetadataPayload(proposal)
+                            : null;
                         const metadataPayload = {
                             name: proposalName,
                             title: proposalName,
@@ -1215,9 +1222,14 @@ function showUploadProposalModal(proposal) {
                                 parcelIds: parcelIds,
                                 conditional: isConditional,
                                 lens: lensAddresses,
+                                offer: {
+                                    amount: (proposal.offer ?? proposal.budget ?? null),
+                                    currency: (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || null)
+                                },
                                 createdAt: createdAtIso,
                                 author: proposalAuthor,
-                                description: proposalDescription
+                                description: proposalDescription,
+                                ...(geometryPayload ? { geometry: geometryPayload } : {})
                             }
                         };
 
