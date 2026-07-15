@@ -10,11 +10,13 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     ProposalManager,
-    _buildSyntheticToken,
-    _composeSyntheticParcelId,
-    _composeSyntheticParcelNumber,
     _shouldSkipUncutRemainder
 } = require('../../frontend/js/proposal-manager.js');
+const {
+    _buildSyntheticToken,
+    _composeSyntheticParcelId,
+    _composeSyntheticParcelNumber
+} = require('../../frontend/js/proposal-parcel-identity.js');
 
 describe('synthetic descendant id composition', () => {
     it('strips an inherited synthetic suffix so ids never nest', () => {
