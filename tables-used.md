@@ -79,6 +79,7 @@ that is deleted. `dgu_gdi_building_match` stays in the schema (it still relates 
 - public.parcel_lj
 - public.parcel_lj_owner
 - public.parcel_nyc_unit
+- public.osm_road
 - public.parcel_ownership
 - public.planned_land_use
 - public.planned_road

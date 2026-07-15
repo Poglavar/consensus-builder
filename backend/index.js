@@ -22,6 +22,7 @@ import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
+import { setupOsmRoadRoute } from './routes/osm-road.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
@@ -310,6 +311,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
+    setupOsmRoadRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);

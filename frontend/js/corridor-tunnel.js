@@ -401,6 +401,28 @@
     // real buildings are recorded as demolished — the object_id AND the footprint. The id is what
     // the 3D view and the walk sim match on (same GDI object_id, exactly); the footprint is what
     // the cut geometry is subtracted from, and what the 2D layer redraws a partial demolition with.
+    // Set aside a proposal whose building sits under the corridor: unapply it (kept in its parcels'
+    // list, recoverable), recording its id in `removedProposalIds`. This is the ONLY thing done to an
+    // occupying proposal today — a proposal is never sliced.
+    //
+    // Phase-2 seam (deliberately not built yet): a purely LOCAL (mutable) proposal could instead be
+    // CUT/RESHAPED in place, and SPLIT into two proposals where the road bisects it. Two blockers keep
+    // that deferred — non-contiguous proposals are a firm no-go (so a bisect must split, not stretch one
+    // proposal across a gap), and a bisected BUILDING has no natural two-piece meaning. When it is built,
+    // the branch goes RIGHT HERE, gated on `!isProposalImmutable(proposal)`. An IMMUTABLE proposal
+    // (minted OR server-uploaded — see isProposalImmutable) must ALWAYS be set aside: its published
+    // geometry can never be rewritten by us.
+    async function setAsideObstacleProposal(owner, removedProposalIds) {
+        if (removedProposalIds.includes(owner)) return;
+        try {
+            const done = await global.ProposalManager?.unapplyProposal?.(owner, { skipConfirm: true, skipRestoreSource: true });
+            if (done !== false) removedProposalIds.push(owner);
+            else console.error('[corridor-tunnel] unapply refused for obstacle proposal', owner);
+        } catch (error) {
+            console.error('[corridor-tunnel] could not unapply obstacle proposal', owner, error);
+        }
+    }
+
     async function resolveBuildingObstacles(hits, corridorKind = 'road') {
         const removedProposalIds = [];
         const demolishedBuildings = [];
@@ -419,14 +441,7 @@
                 for (const hit of hits) {
                     const owner = tunnelHitProposalId(hit);
                     if (owner) {
-                        if (removedProposalIds.includes(owner)) continue;
-                        try {
-                            const done = await global.ProposalManager?.unapplyProposal?.(owner, { skipConfirm: true, skipRestoreSource: true });
-                            if (done !== false) removedProposalIds.push(owner);
-                            else console.error('[corridor-tunnel] unapply refused for obstacle proposal', owner);
-                        } catch (error) {
-                            console.error('[corridor-tunnel] could not unapply obstacle proposal', owner, error);
-                        }
+                        await setAsideObstacleProposal(owner, removedProposalIds);
                     } else {
                         cutHits.push(hit);
                     }
@@ -436,14 +451,7 @@
             for (const hit of hits) {
                 const owner = tunnelHitProposalId(hit);
                 if (owner) {
-                    if (removedProposalIds.includes(owner)) continue;
-                    try {
-                        const done = await global.ProposalManager?.unapplyProposal?.(owner, { skipConfirm: true, skipRestoreSource: true });
-                        if (done !== false) removedProposalIds.push(owner);
-                        else console.error('[corridor-tunnel] unapply refused for obstacle proposal', owner);
-                    } catch (error) {
-                        console.error('[corridor-tunnel] could not unapply obstacle proposal', owner, error);
-                    }
+                    await setAsideObstacleProposal(owner, removedProposalIds);
                 } else {
                     let geometry = null;
                     try { geometry = JSON.parse(JSON.stringify(hit.feature?.geometry || null)); } catch (error) {

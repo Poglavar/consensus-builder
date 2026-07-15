@@ -657,6 +657,12 @@
                             <span data-i18n-key="sidebar.roads.dguPolygonsToggle">DGU usage polygons</span>
                         </label>
                     </div>
+                    <div class="checkbox-group">
+                        <label data-i18n-key="sidebar.roads.centerlinesTooltip" data-i18n-attr="title">
+                            <input type="checkbox" id="showLegacyRoadCenterlines" onchange="toggleLegacyRoadCenterlines()">
+                            <span data-i18n-key="sidebar.roads.centerlinesToggle">Existing road centrelines</span>
+                        </label>
+                    </div>
                     <!-- Progress container for road detection -->
                     <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
                         <div class="progress-bar">
@@ -1403,6 +1409,7 @@
         window.writeVersionedLocalScripts([
             'js/road-analysis.js',
             'js/road-detection.js',
+            'js/legacy-road-centerlines.js',
             'js/corridor-profile.js',
             'js/corridor-carve.js',
             'js/corridor-render.js',
