@@ -4,6 +4,7 @@
 
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+import { recomputeCorridorStats } from './road-corridor.js';
 
 // Rendering a thumbnail means fetching ~10-40 basemap tiles. That is normally under a second, but it
 // is a third party on the request path, so it gets a hard deadline: an upload must never hang on it.
@@ -386,6 +387,20 @@ export function setupProposalsRoute(app, pool) {
             const bounds = validated.bounds ?? null;
             const onchainData = validated.onchain ?? validated.onchainData ?? null;
             const screenshotUrl = validated.screenshotUrl ?? validated.screenshot_url ?? null;
+
+            // Corridor acquisition stats were scraped from the client's DOM and trusted. Recompute
+            // them from PostGIS and overwrite the client copy (best-effort + Zagreb-only inside;
+            // returns null on any failure, so a bad recompute never blocks proposal creation).
+            if (roadProposal) {
+                const serverStats = await recomputeCorridorStats(pool, proposal);
+                if (serverStats) {
+                    proposal.ownershipAndAcquisitionStats = serverStats;
+                    if (roadProposal.definition && typeof roadProposal.definition === 'object') {
+                        roadProposal.definition.metadata = roadProposal.definition.metadata || {};
+                        roadProposal.definition.metadata.ownershipAndAcquisitionStats = serverStats;
+                    }
+                }
+            }
 
             const proposalData = { ...proposal };
 
