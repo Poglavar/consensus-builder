@@ -56,7 +56,7 @@
             author: onchainData.owner || 'Unknown',
             type: 'Purchase',
             proposalMainType: 'Purchase',
-            status: statusStr,
+            lifecycleStatus: statusStr,
             acquisitionStrategy: onchainData.isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {

@@ -146,8 +146,8 @@ function renderProposalListModal() {
     });
 
     const buildDatasets = (augmentedList) => {
-        const active = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() !== 'executed');
-        const executed = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() === 'executed');
+        const active = augmentedList.filter(entry => getLifecycleStatus(entry.proposal) !== 'Executed');
+        const executed = augmentedList.filter(entry => getLifecycleStatus(entry.proposal) === 'Executed');
         const filteredActive = applyProposalListFilters(active);
         const filteredExecuted = applyProposalListFilters(executed);
         const sortedActive = sortProposalDataset(filteredActive);

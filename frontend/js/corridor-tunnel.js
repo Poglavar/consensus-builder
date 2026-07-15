@@ -3,6 +3,9 @@
 (function attachCorridorTunnel(global) {
     let promptActive = false;
 
+    // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
+    const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./proposals/status.js').isApplied;
+
     function pointOf(value) {
         if (!value) return null;
         const lat = Number(value.lat !== undefined ? value.lat : value[1]);
@@ -118,8 +121,7 @@
             (global.proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
                 const bp = proposal?.buildingProposal;
                 if (!bp) return;
-                const status = String(bp.status || proposal.status || '').toLowerCase();
-                if (status !== 'applied' && status !== 'executed') return;
+                if (!appliedOf(proposal, bp)) return;
                 const proposalId = proposal.proposalId || proposal.id;
                 if (!proposalId) return;
                 const features = Array.isArray(proposal.geometry?.buildings) && proposal.geometry.buildings.length

@@ -708,7 +708,7 @@ function agentDecideAction(agent, turnContext = null) {
             if (typeof proposalStorage !== 'undefined') {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
-                    if (proposal.status !== 'Executed') {
+                    if (getLifecycleStatus(proposal) !== 'Executed') {
                         const parcelIds = Array.isArray(proposal.parentParcelIds)
                             ? proposal.parentParcelIds
                             : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
@@ -820,7 +820,7 @@ function agentDecideAction(agent, turnContext = null) {
             if (typeof proposalStorage !== 'undefined') {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
-                    if (proposal.status !== 'Executed' && proposal.author !== agent.name) {
+                    if (getLifecycleStatus(proposal) !== 'Executed' && proposal.author !== agent.name) {
                         donatableProposals.push(proposal);
                     }
                 }
@@ -2412,7 +2412,7 @@ function getUserPendingProposals(agentId, chainId = null) {
     // Get proposals that affect user's parcels, sorted by creation date (newest first)
     const relevantProposals = allProposals
         .filter(proposal =>
-            proposal.status === 'Active' &&
+            getLifecycleStatus(proposal) === 'Active' &&
             (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [])).some(parcelId => userParcelIds.includes(parcelId)) &&
             (
                 proposal.isMinted !== true ||

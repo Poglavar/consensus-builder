@@ -154,8 +154,7 @@
                 const rp = p && p.roadProposal;
                 const polygon = rp && rp.definition && rp.definition.polygon;
                 if (!polygon || !polygon.type) return;
-                const status = String(rp.status || p.status || '').toLowerCase();
-                if (status !== 'applied' && status !== 'executed') return;
+                if (!isApplied(p, rp)) return;
                 cutters.push({ type: 'Feature', properties: {}, geometry: polygon });
             });
         } catch (_) { }

@@ -1102,7 +1102,7 @@ async function ensureProposalMetadataLoaded(proposal) {
             isConditional: proposal.isConditional === true,
             imageURI: proposal.imageURI || proposal.onchain?.imageURI || metadataUrl,
             acceptancePossible: proposal.acceptancePossible !== false,
-            status: proposal.status || 'Active',
+            lifecycleStatus: getLifecycleStatus(proposal),
             ethBalance: proposal.ethBalance || proposal.onchain?.ethBalance || '0',
             tokenBalance: proposal.tokenBalance || proposal.onchain?.tokenBalance || '0',
             acceptanceCount: proposal.acceptanceCount || proposal.onchain?.acceptanceCount || '0',

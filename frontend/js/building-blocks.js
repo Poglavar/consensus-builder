@@ -1098,9 +1098,7 @@ function hydrateProposedBuildingsFromProposals() {
     proposals.forEach(p => {
         if (!p || !p.buildingProposal) return;
 
-        const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-        const isActive = status === 'applied' || status === 'executed';
-        if (!isActive) return;
+        if (!isApplied(p, p.buildingProposal)) return;
 
         if (cityId && isInCityFn) {
             const cityIds = (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
@@ -1184,9 +1182,7 @@ function loadExecutedBuildingsFromStorage() {
                 const activeBuildingCounts = new Map(); // proposalId -> count (0 means unknown)
                 proposals.forEach(p => {
                     if (!p || !p.buildingProposal) return;
-                    const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-                    const isActive = status === 'applied' || status === 'executed';
-                    if (!isActive) return;
+                    if (!isApplied(p, p.buildingProposal)) return;
                     const pid = p.proposalId || p.id;
                     if (!pid) return;
                     const count = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings.length : 0;

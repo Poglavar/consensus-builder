@@ -92,6 +92,22 @@ describe('demolishedBuildingRecordsFrom', () => {
 
         expect(records).toEqual([]);
     });
+
+    it('keys on the applied boolean, not the legacy status — the 474 fix', () => {
+        // After the split, applied=true carves even though the road sub still reads status:'unapplied'
+        // and the proposal lifecycle is 'Active'. This is exactly proposal 474's shape.
+        const records = demolishedBuildingRecordsFrom([
+            { applied: true, lifecycleStatus: 'Active', roadProposal: { applied: true, status: 'unapplied', definition: { demolishedBuildings: [record] } } }
+        ]);
+        expect(records.map(r => r.id)).toEqual(['b1']);
+    });
+
+    it('applied:false suppresses records even when the legacy status says applied', () => {
+        const records = demolishedBuildingRecordsFrom([
+            { applied: false, roadProposal: { applied: false, status: 'applied', definition: { demolishedBuildings: [record] } } }
+        ]);
+        expect(records).toEqual([]);
+    });
 });
 
 describe('collectCarveRecords', () => {

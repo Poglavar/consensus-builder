@@ -293,11 +293,8 @@
             if (!store || typeof store.getProposalsForParcel !== 'function') return null;
             const list = store.getProposalsForParcel(parcelId) || [];
             if (!list.length) return null;
-            // Prefer an applied/executed proposal; else the first match.
-            const applied = list.find(p => {
-                const s = ((p && p.status) || '').toString().toLowerCase();
-                return s === 'applied' || s === 'executed';
-            });
+            // Prefer an applied proposal; else the first match.
+            const applied = list.find(p => isApplied(p));
             return applied || list[0];
         } catch (_) { return null; }
     }
@@ -595,6 +592,7 @@
         const radiusLabel = document.createElement('span');
         radiusLabel.className = 'three-mode-emphasis-label';
         radiusLabel.textContent = threeI18n('threeMode.controls.radius', 'Radius');
+        radiusLabel.title = threeI18n('threeMode.controls.radiusTooltip', 'Radius');
         const radiusValue = document.createElement('span');
         radiusValue.className = 'three-mode-radius-value';
         radiusValue.textContent = `${buildingLoadRadiusM} m`;
@@ -623,9 +621,19 @@
             const label = document.createElement('span');
             label.className = 'three-mode-emphasis-label';
             label.textContent = labelText;
+            // Full explanation on hover — the row label is short but its meaning isn't obvious.
+            label.title = threeI18n('threeMode.controls.' + kind + 'Tooltip', labelText);
             row.appendChild(label);
             const wrap = document.createElement('div');
             wrap.className = 'three-mode-segmented';
+            // Tooltip per state: the segment labels truncate with an ellipsis on a narrow
+            // panel, so the title carries the full name plus what the state actually does.
+            const stateTooltips = {
+                solid: threeI18n('threeMode.controls.stateSolidTooltip', 'Solid'),
+                ghost: threeI18n('threeMode.controls.stateGhostTooltip', 'Transparent'),
+                surviving: threeI18n('threeMode.controls.stateSurvivingTooltip', 'Surviving'),
+                off: threeI18n('threeMode.controls.stateOffTooltip', 'Off')
+            };
             const states = [
                 ['solid', threeI18n('threeMode.controls.stateSolid', 'Solid')],
                 ['ghost', threeI18n('threeMode.controls.stateGhost', 'Transparent')],
@@ -641,6 +649,7 @@
                 btn.type = 'button';
                 btn.className = 'three-mode-segment';
                 btn.textContent = stateLabel;
+                if (stateTooltips[state]) btn.title = stateTooltips[state];
                 btn.addEventListener('click', () => setBuildingDisplay(kind, state));
                 displayStateButtons[kind][state] = btn;
                 wrap.appendChild(btn);
@@ -999,14 +1008,10 @@
     }
 
     function proposalApplied3D(proposal) {
-        return [
-            proposal?.status,
-            proposal?.roadProposal?.status,
-            proposal?.buildingProposal?.status,
-            proposal?.structureProposal?.status,
-            proposal?.reparcellization?.status,
-            proposal?.decideLaterProposal?.status
-        ].some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
+        if (!proposal) return false;
+        if (isApplied(proposal)) return true;
+        return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+            .some(k => proposal[k] && isApplied(proposal, proposal[k]));
     }
 
     function proposalParcelFeatures3D(proposal) {
@@ -1529,14 +1534,10 @@
         try {
             const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
             if (!storage || typeof storage.getAllProposals !== 'function') return [];
-            const isAppliedLike = (status) => {
-                const s = (status || '').toString().toLowerCase();
-                return s === 'applied' || s === 'executed';
-            };
             return storage.getAllProposals().filter(p => {
                 if (!p || !p.reparcellization) return false;
                 if (!Array.isArray(p.reparcellization.polygons) || !p.reparcellization.polygons.length) return false;
-                if (isAppliedLike(p.status) || isAppliedLike(p.reparcellization.status)) return false;
+                if (isApplied(p, p.reparcellization)) return false;
                 return true;
             });
         } catch (error) {
@@ -1951,9 +1952,7 @@
         proposalStorage.getAllProposals().forEach(proposal => {
             const definition = corridorProposalDefinition(proposal);
             if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
-            const status = String(proposal.status || '').toLowerCase();
-            const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
-            if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
+            if (!isApplied(proposal, proposal.roadProposal)) return;
             addBuildingTunnelLiners3D(targetGroup, definition);
         });
     }
@@ -3736,19 +3735,11 @@
         try {
             const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
             if (!storage || typeof storage.getAllProposals !== 'function') return [];
-            const isAppliedLike = (status) => {
-                const s = (status || '').toString().toLowerCase();
-                return s === 'applied' || s === 'executed';
-            };
             return storage.getAllProposals().filter(p => {
                 if (!p) return false;
-                if (isAppliedLike(p.status)) return true;
-                if (p.roadProposal && isAppliedLike(p.roadProposal.status)) return true;
-                if (p.buildingProposal && isAppliedLike(p.buildingProposal.status)) return true;
-                if (p.structureProposal && isAppliedLike(p.structureProposal.status)) return true;
-                if (p.reparcellization && isAppliedLike(p.reparcellization.status)) return true;
-                if (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status)) return true;
-                return false;
+                if (isApplied(p)) return true;
+                return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                    .some(key => p[key] && isApplied(p, p[key]));
             });
         } catch (e) {
             console.warn('[walk] failed to enumerate applied proposals:', e);

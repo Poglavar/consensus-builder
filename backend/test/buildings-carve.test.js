@@ -172,7 +172,7 @@ describe('POST /buildings/near with `proposals`', () => {
     it('carves nothing when the proposal is not applied', async () => {
         pool.setResults([
             { rows: BUILDINGS, rowCount: 3 },
-            { rows: [{ ...PROPOSAL_ROW, status: 'Active', roadProposal: { status: 'unapplied', definition: CORRIDOR } }], rowCount: 1 }
+            { rows: [{ ...PROPOSAL_ROW, status: 'Active', applied: false, roadProposal: { status: 'unapplied', applied: false, definition: CORRIDOR } }], rowCount: 1 }
         ]);
 
         const res = await request(app)
@@ -181,6 +181,24 @@ describe('POST /buildings/near with `proposals`', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(3);
+    });
+
+    it('carves when applied=true even though the legacy status still reads unapplied (the 474 fix)', async () => {
+        // Proposal 474's exact shape after the backfill: lifecycle Active, road sub status still
+        // 'unapplied', but the new applied boolean is true. The cut/razed buildings must resolve.
+        pool.setResults([
+            { rows: BUILDINGS, rowCount: 3 },
+            { rows: [{ ...PROPOSAL_ROW, status: 'Active', applied: true, roadProposal: { status: 'unapplied', applied: true, definition: CORRIDOR } }], rowCount: 1 }
+        ]);
+
+        const res = await request(app)
+            .post('/buildings/near')
+            .send({ ...NEAR_BODY, proposals: ['p-carve-test'] });
+
+        expect(res.status).toBe(200);
+        // 63 razed (gone), 61 tunnelled + 62 cut remain → 2 buildings back.
+        expect(res.body.count).toBe(2);
+        expect(res.body.buildings.find(b => b.object_id === 63)).toBeUndefined();
     });
 
     it('never touches a mesh no record names, however much the corridor overlaps it', async () => {

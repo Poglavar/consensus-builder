@@ -886,7 +886,7 @@
             editorPayload: {
                 structureProposal: {
                     kind,
-                    status: 'unapplied',
+                    applied: false,
                     geometry: structureGeometry,
                     parentParcelIds: ids.slice(),
                     blockName: null,
@@ -1300,10 +1300,10 @@
                     try {
                         const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
                         ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
-                        snapshot.status = 'unapplied';
+                        snapshot.applied = false;
                         ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
                             if (snapshot[kind] && typeof snapshot[kind] === 'object') {
-                                snapshot[kind].status = 'unapplied';
+                                snapshot[kind].applied = false;
                                 if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
                             }
                         });

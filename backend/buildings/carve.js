@@ -24,11 +24,12 @@ import { extrudeFootprint } from './extrude.js';
 const require = createRequire(import.meta.url);
 const { collectCarveRecords, carveBuildingByObjectId } = require('../../frontend/js/corridor-carve.js');
 
-// The proposal columns the carve reads. Statuses live both on the proposal and on its sub-object,
-// and corridor-carve.js checks both (a proposal row is 'Applied' while its roadProposal carries its
-// own status), so hand it the same shape GET /proposals/:id returns.
+// The proposal columns the carve reads. The map-application axis is the boolean `applied` (on the
+// proposal, mirrored on each sub-proposal JSONB); corridor-carve.js reads it via isApplied() and
+// falls back to the legacy `status`/`lifecycle_status` only for rows the split has not upgraded yet.
+// Hand it the same shape GET /proposals/:id returns.
 const PROPOSAL_SQL = `
-    SELECT proposal_id, id, status, city,
+    SELECT proposal_id, id, lifecycle_status AS "lifecycleStatus", applied, city,
            road_proposal AS "roadProposal",
            structure_proposal AS "structureProposal",
            building_proposal AS "buildingProposal"

@@ -821,7 +821,7 @@
             ? aggregatedSnapshot.parentParcelIds.slice()
             : [];
         batchProposal.tags = Object.assign({}, aggregatedSnapshot.tags || {});
-        batchProposal.status = 'Active';
+        batchProposal.applied = false; // freshly (re)built batch; applyProposal below stamps it on the map
         batchProposal.updatedAt = new Date().toISOString();
         const parentIdsFromBatch = newParentFeatures
             .map(feature => resolveParcelId(feature))
@@ -836,7 +836,7 @@
                     : []));
 
         batchProposal.roadProposal = Object.assign({}, batchProposal.roadProposal || {}, {
-            status: 'unapplied',
+            applied: false,
             planDescriptor: aggregatedSnapshot.roadProposal?.planDescriptor,
             planSource: aggregatedSnapshot.roadProposal?.planSource,
             planHash: aggregatedSnapshot.roadProposal?.planHash || planHash,
@@ -871,11 +871,10 @@
         const normalizedAggregated = normalizeProposalForStorage(aggregatedSnapshot) || aggregatedSnapshot;
         normalizedAggregated.proposalId = proposalId;
         normalizedAggregated.createdAt = storedProposal.createdAt;
-        const nextStatus = (typeof PROPOSAL_STATUS_APPLIED !== 'undefined') ? PROPOSAL_STATUS_APPLIED : 'Applied';
-        normalizedAggregated.status = nextStatus;
+        normalizedAggregated.applied = true;
         normalizedAggregated.updatedAt = new Date().toISOString();
         if (normalizedAggregated.roadProposal) {
-            normalizedAggregated.roadProposal.status = 'applied';
+            normalizedAggregated.roadProposal.applied = true;
         }
 
         if (typeof proposalStorage._indexProposal === 'function') {
@@ -1854,7 +1853,7 @@
             definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
-            status: 'unapplied',
+            applied: false,
             planDescriptor: descriptor,
             planSource: source,
             planHash,
@@ -2215,7 +2214,7 @@
             definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
-            status: 'unapplied',
+            applied: false,
             planDescriptor: descriptor,
             planSource: source,
             planHash,
@@ -2295,7 +2294,7 @@
 
         const existing = planHash ? findExistingGovernmentPlanProposal(planHash) : null;
 
-        if (existing && existing.roadProposal && existing.roadProposal.status === 'applied') {
+        if (existing && existing.roadProposal && isApplied(existing, existing.roadProposal)) {
             governmentPlanProposalId = existing.proposalId;
             return {
                 proposalId: existing.proposalId,
@@ -2325,18 +2324,19 @@
                 const merged = Object.assign({}, existing, build.proposalData, { proposalId: existing.proposalId });
                 merged.tags = Object.assign({}, existing.tags || {}, build.proposalData.tags || {});
                 merged.updatedAt = new Date().toISOString();
-                merged.status = existing.status === 'Applied' ? 'Applied' : 'Active';
-                if (existing.roadProposal && existing.roadProposal.status === 'applied') {
-                    merged.roadProposal = Object.assign({}, existing.roadProposal, { status: 'applied' });
+                const mergedApplied = isApplied(existing, existing.roadProposal);
+                merged.applied = mergedApplied;
+                if (mergedApplied) {
+                    merged.roadProposal = Object.assign({}, existing.roadProposal, { applied: true });
                 } else {
-                    merged.roadProposal = Object.assign({}, build.roadProposal, { status: 'unapplied' });
+                    merged.roadProposal = Object.assign({}, build.roadProposal, { applied: false });
                 }
                 if (typeof proposalStorage._normalizeProposal === 'function') {
                     const normalized = proposalStorage._normalizeProposal(merged);
                     normalized.proposalId = existing.proposalId;
                     normalized.updatedAt = new Date().toISOString();
-                    normalized.status = merged.status;
-                    normalized.roadProposal.status = merged.roadProposal.status;
+                    normalized.applied = merged.applied;
+                    normalized.roadProposal.applied = merged.roadProposal.applied;
                     if (typeof proposalStorage._indexProposal === 'function') {
                         proposalStorage._indexProposal(normalized);
                     } else {
@@ -2357,7 +2357,7 @@
                     parcelCount: build.parcelCount,
                     segmentCount: build.segmentCount,
                     wasExisting: true,
-                    isApplied: merged.roadProposal.status === 'applied'
+                    isApplied: merged.roadProposal.applied === true
                 };
             } catch (err) {
                 console.warn('Failed to update existing government plan proposal', err);

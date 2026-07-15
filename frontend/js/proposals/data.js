@@ -415,7 +415,7 @@ const proposalStorage = {
             isConditional: !!raw.isConditional,
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
-            status: raw.status || 'Active',
+            lifecycleStatus: raw.lifecycleStatus || raw.status || 'Active',
             ethBalance: raw.ethBalance || '0',
             tokenBalance: raw.tokenBalance || '0',
             acceptanceCount: raw.acceptanceCount || '0',
@@ -868,16 +868,21 @@ const proposalStorage = {
         const normalized = this._normalizeProposal({ ...proposal });
 
         if (!preserveStatus) {
-            normalized.status = normalized.status === 'Executed' ? 'Executed' : 'Active';
+            const executed = getLifecycleStatus(normalized) === 'Executed';
+            normalized.lifecycleStatus = executed ? 'Executed' : 'Active';
+            // Downloading a server proposal never applies it to THIS map, so reset the application
+            // axis. Executed geometry is a global on-chain fact and stays applied; everything else
+            // becomes not-on-my-map — otherwise the details panel claims it is on the map while no
+            // geometry was ever drawn (parcels untouched, nothing in 2D or 3D).
+            normalized.applied = executed;
             // Every kind of nested proposal has to be reset, not just roads and buildings.
-            // Downloading a server proposal never applies it to this map, so a nested status left
-            // saying "applied" makes the details panel claim it is on the map while no geometry was
-            // ever drawn — the parcels are untouched and nothing shows in 2D or 3D.
             ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
                 .forEach(key => {
                     const nested = normalized[key];
                     if (!nested || typeof nested !== 'object') return;
-                    nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
+                    // Executed geometry is a global on-chain fact and stays applied; everything else
+                    // becomes not-on-my-map on import.
+                    nested.applied = executed;
                     if (nested.appliedAt) delete nested.appliedAt;
                 });
             // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
@@ -940,20 +945,25 @@ const proposalStorage = {
         }
     },
 
+    // Legacy entry point: callers still pass one overloaded token ('Applied'/'Active'/'Executed').
+    // It is split here onto both axes — lifecycleStatus (the marketplace phase) and the boolean
+    // applied — while the legacy `status` and sub-proposal `.status` strings are kept written for
+    // any reader not yet repointed. New code should set proposal.applied / proposal.lifecycleStatus
+    // directly instead of routing through here.
     updateProposalStatus(proposalId, status) {
         const proposal = this.getProposal(proposalId);
         if (proposal) {
-            proposal.status = status;
+            proposal.lifecycleStatus = getLifecycleStatus({ status });
+            const applied = isApplied({ status });
+            proposal.applied = applied;
             proposal.updatedAt = new Date().toISOString();
 
             if (proposal.roadProposal) {
-                const nextStatus = status === 'Applied' ? 'applied' : status === 'Executed' ? 'executed' : 'unapplied';
-                proposal.roadProposal.status = nextStatus;
+                proposal.roadProposal.applied = applied;
             }
 
             if (proposal.buildingProposal) {
-                const nextStatus = status === 'Executed' ? 'executed' : status === 'Applied' ? 'applied' : 'unapplied';
-                proposal.buildingProposal.status = nextStatus;
+                proposal.buildingProposal.applied = applied;
             }
 
             this._indexProposal(proposal);
@@ -999,7 +1009,32 @@ const proposalStorage = {
         }
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
-        proposal.status = proposal.status || 'Active';
+        // Two INDEPENDENT status axes (see proposals/status.js). Upgrade every proposal that passes
+        // through storage to carry the new fields, deriving from the legacy `status` when absent so
+        // old localStorage rows fix themselves on first read. The legacy `status` is left untouched
+        // so any not-yet-repointed reader keeps working until the split is finished everywhere.
+        proposal.lifecycleStatus = getLifecycleStatus(proposal);
+        if (typeof proposal.applied !== 'boolean') {
+            // Spatial proposals are applied-by-default (a drawn road/building/park is on the map).
+            // Legacy applied/executed status still wins; superseded/terminated are never applied.
+            const life = getLifecycleStatus(proposal);
+            const spatial = !!(proposal.roadProposal || proposal.buildingProposal || proposal.structureProposal || proposal.reparcellization);
+            proposal.applied = isApplied(proposal)
+                || (spatial && !proposal.supersededByProposalId && life !== 'Cancelled' && life !== 'Expired');
+        }
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(k => {
+            const sub = proposal[k];
+            if (sub && typeof sub === 'object') {
+                if (typeof sub.applied !== 'boolean') {
+                    sub.applied = (typeof proposal.applied === 'boolean') ? proposal.applied : isApplied(proposal, sub);
+                }
+                // The overloaded legacy `status` field is dead — scrub it from every sub-proposal so
+                // stale localStorage rows upgraded on load can never resurrect it.
+                delete sub.status;
+            }
+        });
+        // Same purge at the proposal level: applied + lifecycleStatus fully replace it.
+        delete proposal.status;
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
         proposal.lens = normalizeLensEntries(
             proposal.lens
@@ -1076,7 +1111,6 @@ const proposalStorage = {
                     number: entry && entry.number ? String(entry.number) : (normalizeParcelId(entry?.id) || null)
                 })).filter(entry => entry.id);
             }
-            bp.status = bp.status === 'executed' ? 'executed' : (bp.status === 'applied' ? 'applied' : 'unapplied');
             bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
             Object.keys(bp.parameters).forEach(key => {
                 if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
@@ -1109,7 +1143,7 @@ const proposalStorage = {
             proposal.buildingProposal = {
                 parentParcelIds: parentIds,
                 parentParcelNumbers: parentIds.map(id => ({ id, number: id })),
-                status: (proposal.status === 'Applied' || proposal.status === 'Executed') ? 'applied' : 'unapplied',
+                applied: proposal.applied === true,
                 ancestorKey: parentIds.join('|'),
                 parameters: {}
             };

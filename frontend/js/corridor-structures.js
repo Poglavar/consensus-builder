@@ -3,6 +3,9 @@
 // which stays ONE proposal), or reroute. Approvals are remembered per drawing session.
 (function attachCorridorStructures(global) {
     let promptActive = false;
+
+    // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
+    const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./proposals/status.js').isApplied;
     // Structures the user already agreed to build through in the current drawing session.
     const approvedStructureIds = new Set();
 
@@ -149,8 +152,7 @@
             const definition = road?.definition;
             const polygon = definition?.polygon;
             if (!polygon || !polygon.type) return;
-            const status = String(road.status || proposal.status || '').toLowerCase();
-            if (status !== 'applied' && status !== 'executed') return;
+            if (!appliedOf(proposal, road)) return;
             const proposalId = proposal.proposalId || proposal.id;
             if (!proposalId) return;
             try {

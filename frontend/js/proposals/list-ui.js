@@ -158,9 +158,9 @@ function handleProposalParcelClick(parcelId, event) {
             multiParcelSelection.clearSingleParcelSelection();
         }
 
-        let proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => p.status !== 'Executed');
+        let proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => getLifecycleStatus(p) !== 'Executed');
         if (proposals.length === 0) {
-            proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
+            proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
         }
 
         if (proposals.length === 1) {
@@ -689,7 +689,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const areaText = formatAreaMetric(metrics.area);
         const offerText = formatCurrencyMetric(metrics.offerValue);
         const createdDate = metrics.createdAt ? new Date(metrics.createdAt).toLocaleDateString() : '—';
-        const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
+        const isExecuted = getLifecycleStatus(proposal) === 'Executed';
         const classes = ['proposal-list-item'];
 
         if (metrics.isApplied) classes.push('is-applied');

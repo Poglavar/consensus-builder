@@ -276,7 +276,6 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         type: 'structure',
         structureProposal: {
             kind: (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square',
-            status: 'unapplied',
             geometry: structureGeometry,
             parentParcelIds,
             blockName: blockName || null,
@@ -682,8 +681,7 @@ async function createProposal() {
         if (selectedTool === 'decide-later') {
             proposal.decideLaterProposal = {
                 parentParcelIds: normalizedParentParcelIds.slice(),
-                childParcelIds: [],
-                status: 'unapplied'
+                childParcelIds: []
             };
         }
 
@@ -761,7 +759,6 @@ async function createProposal() {
 
             proposal.structureProposal = {
                 kind,
-                status: 'unapplied',
                 geometry: structureGeometry || null,
                 parentParcelIds: normalizedParentParcelIds,
                 blockName: formatParcelSelectionLabel(normalizedParentParcelIds),
@@ -864,7 +861,6 @@ async function createProposal() {
                     definition: safeClone(roadDefinition),
                     parentParcelIds: parentIds.slice(),
                     childParcelIds: [],
-                    status: 'unapplied',
                     mode: resolvedMetadata.mode,
                     isCorridor: true,
                     ownershipAndAcquisitionStats: roadDrawingContext.stats ? safeClone(roadDrawingContext.stats) : null
@@ -921,7 +917,6 @@ async function createProposal() {
                     definition: safeClone(roadDefinition),
                     parentParcelIds: corridorParents.slice(),
                     childParcelIds: [],
-                    status: 'unapplied',
                     mode: corridor.mode || 'draw',
                     isCorridor: true
                 };
@@ -1040,7 +1035,6 @@ async function createProposal() {
             proposal.buildingProposal = {
                 parentParcelIds: normalizedParentParcelIds.slice(),
                 parentParcelNumbers: parentDetails,
-                status: 'unapplied',
                 createdFrom: resolvedTypology === 'row' ? 'rowHouse' : (resolvedTypology === 'parcelBased' ? 'parcelBased' : 'blockify'),
                 blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(normalizedParentParcelIds),
                 parameters: safeClone(pendingBuildingContext.parameters) || {},
@@ -1883,10 +1877,10 @@ async function createProposal() {
                     try {
                         const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
                         ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
-                        snapshot.status = 'unapplied';
+                        snapshot.applied = false;
                         ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
                             if (snapshot[kind] && typeof snapshot[kind] === 'object') {
-                                snapshot[kind].status = 'unapplied';
+                                snapshot[kind].applied = false;
                                 if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
                             }
                         });
@@ -1973,15 +1967,14 @@ function buildUploadReadyProposal(proposal) {
     // Nested proposals are replaced with copies rather than mutated: uploadProposal is a shallow
     // copy of the caller's stored proposal, so writing through them would un-apply the user's own
     // proposal on their own map.
-    if (uploadProposal.status === 'Applied') {
-        uploadProposal.status = 'Active';
-    }
+    const uploadExecuted = getLifecycleStatus(uploadProposal) === 'Executed';
+    uploadProposal.applied = uploadExecuted;
     ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
         .forEach(key => {
             const nested = uploadProposal[key];
             if (!nested || typeof nested !== 'object') return;
             const sanitized = { ...nested };
-            if (sanitized.status !== 'executed') sanitized.status = 'unapplied';
+            sanitized.applied = uploadExecuted;
             delete sanitized.appliedAt;
             uploadProposal[key] = sanitized;
         });

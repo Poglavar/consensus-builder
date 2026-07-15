@@ -7,14 +7,20 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Legacy fallback only: pre-split in-memory records that never carried the `applied` boolean.
     const appliedLike = status => {
         const normalized = String(status || '').toLowerCase();
         return normalized === 'applied' || normalized === 'executed';
     };
 
+    // Map-application axis. The explicit boolean wins on either the sub-proposal or the proposal
+    // (mirrors proposals/status.js isApplied); only pre-split rows with no boolean fall to legacy.
     function roadProposalIsApplied(proposal) {
         if (!proposal || !proposal.roadProposal) return false;
-        return appliedLike(proposal.roadProposal.status) || appliedLike(proposal.status);
+        const rp = proposal.roadProposal;
+        if (typeof rp.applied === 'boolean') return rp.applied;
+        if (typeof proposal.applied === 'boolean') return proposal.applied;
+        return appliedLike(rp.status) || appliedLike(proposal.status);
     }
 
     function roadProposalKey(proposal, fallback = null) {
@@ -35,10 +41,13 @@
         const sourceId = String(roadProposalKey(source, copiedFrom) || copiedFrom);
         if (!resolvedReplacementId || sourceId === resolvedReplacementId) return null;
 
-        source.roadProposal.statusBeforeSuperseded = source.roadProposal.status || 'applied';
-        source.statusBeforeSuperseded = source.status || 'Applied';
-        source.roadProposal.status = 'unapplied';
-        source.status = 'Active';
+        source.appliedBeforeSuperseded = typeof source.applied === 'boolean' ? source.applied : true;
+        // Save the lifecycle so an Executed road comes back Executed, then park it. Superseding is an
+        // application-axis event: the road leaves the map (applied=false) while parked.
+        source.lifecycleBeforeSuperseded = source.lifecycleStatus || 'Active';
+        source.roadProposal.applied = false;
+        source.lifecycleStatus = 'Active';
+        source.applied = false; // superseded roads leave the map until restored
         source.roadProposal.supersededByProposalId = resolvedReplacementId;
         source.supersededByProposalId = resolvedReplacementId;
 
@@ -64,10 +73,13 @@
             if (!source || !source.roadProposal) return;
             const marker = source.roadProposal.supersededByProposalId || source.supersededByProposalId;
             if (String(marker || '') !== resolvedReplacementId) return;
-            source.roadProposal.status = source.roadProposal.statusBeforeSuperseded || 'applied';
-            source.status = source.statusBeforeSuperseded || 'Applied';
-            delete source.roadProposal.statusBeforeSuperseded;
-            delete source.statusBeforeSuperseded;
+            const restoredApplied = typeof source.appliedBeforeSuperseded === 'boolean' ? source.appliedBeforeSuperseded : true;
+            source.applied = restoredApplied;
+            // Restore the lifecycle we parked (Executed stays Executed; Applied → Active).
+            source.lifecycleStatus = source.lifecycleBeforeSuperseded || 'Active';
+            source.roadProposal.applied = restoredApplied;
+            delete source.appliedBeforeSuperseded;
+            delete source.lifecycleBeforeSuperseded;
             delete source.roadProposal.supersededByProposalId;
             delete source.supersededByProposalId;
             restored.push(source);

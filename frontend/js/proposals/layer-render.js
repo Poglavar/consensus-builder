@@ -484,7 +484,6 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // parcel-shaped one. There is no track branch: rails come from the rail lanes of its cross-section,
     // drawn by the corridor renderer, not from the kind of proposal this is.
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-    const lifecycleStatus = (proposal?.status || proposal?.roadProposal?.status || '').toLowerCase();
 
     // Applied proposals should always be visible at all zoom levels, even when parcels are not shown
     // This allows users to see applied proposals regardless of zoom level
@@ -501,7 +500,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         className: 'proposal-parcel-outline'
     };
 
-    if (isRoadProposal && (lifecycleStatus === 'applied' || lifecycleStatus === 'executed')) {
+    if (isRoadProposal && isApplied(proposal, proposal?.roadProposal)) {
         // A selected applied corridor gets ONE crisp selection outline around its footprint — the
         // same visual language as a selected parcel. The cross-section strips already show the
         // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
@@ -906,8 +905,9 @@ async function removeProposalFromMap(proposalId, options = {}) {
         : null;
     if (proposalSnapshot) {
         console.log('[removeProposalFromMap] Current proposal status', {
-            status: proposalSnapshot.status,
-            roadStatus: proposalSnapshot.roadProposal?.status,
+            lifecycleStatus: getLifecycleStatus(proposalSnapshot),
+            applied: isApplied(proposalSnapshot),
+            roadApplied: isApplied(proposalSnapshot, proposalSnapshot.roadProposal),
             childIds: Array.isArray(proposalSnapshot.childParcelIds) ? proposalSnapshot.childParcelIds.slice() : [],
             parentIds: Array.isArray(proposalSnapshot.parentParcelIds) ? proposalSnapshot.parentParcelIds.slice() : []
         });

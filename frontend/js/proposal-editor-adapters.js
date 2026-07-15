@@ -2,6 +2,12 @@
 (function attachProposalEditorAdapters(global) {
     'use strict';
 
+    // Canonical map-application accessor from proposals/status.js. Global in the browser (status.js
+    // loads first), required directly in node tests. The require branch never runs in the browser.
+    const appliedOf = (typeof isApplied === 'function')
+        ? isApplied
+        : require('./proposals/status.js').isApplied;
+
     const CREATABLE_PROPOSAL_GOALS = [
         'as-is',
         'square',
@@ -86,15 +92,10 @@
     }
 
     function sourceIsApplied(proposal) {
-        const statuses = [
-            proposal?.status,
-            proposal?.roadProposal?.status,
-            proposal?.buildingProposal?.status,
-            proposal?.structureProposal?.status,
-            proposal?.reparcellization?.status,
-            proposal?.decideLaterProposal?.status
-        ];
-        return statuses.some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
+        if (!proposal) return false;
+        if (appliedOf(proposal)) return true;
+        return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+            .some(k => proposal[k] && appliedOf(proposal, proposal[k]));
     }
 
     function sourceFields(proposal) {
@@ -368,7 +369,7 @@
         const output = stripImmutableProposalIdentity(draft.sourceSnapshot || {});
         output.goal = draft.goal;
         output.city = draft.cityId || output.city || null;
-        output.status = 'unapplied';
+        output.applied = false;
         return applyFieldsToProposal(output, draft);
     }
 
@@ -605,7 +606,7 @@
             const geometry = structureGeometry(proposal);
             const structureProposal = clone(proposal?.structureProposal || {
                 kind: key,
-                status: 'unapplied',
+                applied: false,
                 geometry,
                 parentParcelIds: sourceParcels(proposal)
             });
@@ -733,7 +734,7 @@
                 definition: clone(definition),
                 parentParcelIds: clone(draft.fields?.parentParcelIds || []),
                 childParcelIds: [],
-                status: 'unapplied',
+                applied: false,
                 isCorridor: true
             };
             return output;
@@ -855,7 +856,7 @@
                 output.buildingProperties = clone(features[0]?.properties || {});
                 output.buildingProposal = {
                     ...(clone(output.buildingProposal || {})),
-                    status: 'unapplied',
+                    applied: false,
                     typologyType: typology,
                     parentParcelIds: clone(draft.fields?.parentParcelIds || []),
                     parameters: clone(context.parameters || {}),

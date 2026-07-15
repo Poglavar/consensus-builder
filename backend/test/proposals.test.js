@@ -258,10 +258,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
-        expect(insertParams[21]).toBeNull();
         expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
+        expect(insertParams[25]).toBeNull();
     });
 
     it('falls back to a generated local proposal id when no id field is supplied', async () => {
@@ -328,13 +328,42 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
 
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[10]).toBe(0);
-        expect(insertParams[14]).toBe(false);
-        expect(insertParams[15]).toBe(0);
+        expect(insertParams[11]).toBe(0);
+        expect(insertParams[15]).toBe(false);
         expect(insertParams[16]).toBe(0);
-        expect(insertParams[17]).toBe(false);
-        expect(insertParams[18]).toBe(0);
-        expect(insertParams[19]).toBe(false);
+        expect(insertParams[17]).toBe(0);
+        expect(insertParams[18]).toBe(false);
+        expect(insertParams[19]).toBe(0);
+        expect(insertParams[20]).toBe(false);
+    });
+
+    it('writes the two status axes (lifecycle_status + applied) — the legacy status column is gone', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ status: undefined, lifecycleStatus: 'Active', applied: true, type: 'road' }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        // $8 lifecycle_status, $9 applied. There is no legacy `status` column in the INSERT any more.
+        expect(insertParams[7]).toBe('Active');
+        expect(insertParams[8]).toBe(true);
+        expect(pool.getCalls()[0].sql).not.toMatch(/\bstatus\b(?!_)/); // no bare `status` column
+    });
+
+    it('defaults applied=true and derives lifecycle for an older client that sends only legacy status', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ status: 'Applied', lifecycleStatus: undefined, applied: undefined, type: 'road' }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        // Legacy 'Applied' is the leaked application word → lifecycle collapses to 'Active'; applied defaults true.
+        expect(insertParams[7]).toBe('Active');
+        expect(insertParams[8]).toBe(true);
     });
 
     it('serializes only non-empty collections and nested proposal objects into insert params', async () => {
@@ -361,19 +390,19 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
 
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-child-1']));
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
-        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[31]).toBe(JSON.stringify(['parent-1']));
-        expect(insertParams[32]).toBeNull();
-        expect(insertParams[33]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[34]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[35]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[22]).toBeNull();
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-child-1']));
+        expect(insertParams[24]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[25]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[27]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[29]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[32]).toBe(JSON.stringify(['parent-1']));
+        expect(insertParams[33]).toBeNull();
+        expect(insertParams[34]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[35]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[36]).toBe(JSON.stringify({ txHash: '0x1' }));
     });
 
     it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
@@ -391,8 +420,8 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
 
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[9]).toBe('USD');
-        expect(insertParams[11]).toBe('EUR');
+        expect(insertParams[10]).toBe('USD');
+        expect(insertParams[12]).toBe('EUR');
     });
 
     it('prefers camelCase currency fields over snake_case aliases', async () => {
@@ -411,9 +440,9 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
 
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[9]).toBe('ETH');
-        expect(insertParams[10]).toBe(42);
-        expect(insertParams[11]).toBe('CITY');
+        expect(insertParams[10]).toBe('ETH');
+        expect(insertParams[11]).toBe(42);
+        expect(insertParams[12]).toBe('CITY');
     });
 
     it('rejects malformed proposal field types', async () => {
@@ -527,7 +556,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[35]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[36]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 
@@ -723,7 +752,7 @@ describe('GET /proposals/:id', () => {
                     description: 'JSON description',
                     author: 'json-author',
                     type: 'road',
-                    status: 'draft',
+                    lifecycleStatus: 'draft',
                     offer: 12,
                     offerCurrency: 'USD',
                     budget: 34,
@@ -759,7 +788,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            status: 'draft',
+            lifecycleStatus: 'draft',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -1061,7 +1090,7 @@ describe('GET /proposals/summary', () => {
         const res = await request(app).get('/proposals/summary');
 
         expect(res.status).toBe(200);
-        expect(res.body.proposals.map(p => p.status)).toEqual(['Expired', 'Active']);
+        expect(res.body.proposals.map(p => p.lifecycleStatus)).toEqual(['Expired', 'Active']);
         // The SELECT must derive it server-side.
         expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
         expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
@@ -1107,7 +1136,7 @@ describe('GET /proposals/summary', () => {
         await request(app).get('/proposals/summary?status=Active');
         const call = pool.getCalls()[0];
         // The WHERE clause derives the status, not a raw column compare.
-        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*= \$1/);
+        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*= \$1/);
         expect(call.params).toContain('Active');
     });
 
@@ -1188,7 +1217,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            status: null,
+            lifecycleStatus: null,
             createdAt: null
         });
     });

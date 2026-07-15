@@ -19,6 +19,9 @@
  * - ProposalManager (from proposal-manager.js)
  */
 
+// Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
+const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./status.js').isApplied;
+
 // ============================================================================
 // Constants
 // ============================================================================
@@ -832,18 +835,9 @@ async function ensureAncestorProposalsUploaded(proposal) {
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
-    const isAppliedLike = (value) => {
-        const normalized = (value || '').toString().toLowerCase();
-        return normalized === 'applied' || normalized === 'executed';
-    };
-
-    if (isAppliedLike(proposal.status)) return true;
-    if (proposal.roadProposal && isAppliedLike(proposal.roadProposal.status)) return true;
-    if (proposal.buildingProposal && isAppliedLike(proposal.buildingProposal.status)) return true;
-    if (proposal.structureProposal && isAppliedLike(proposal.structureProposal.status)) return true;
-    if (proposal.reparcellization && isAppliedLike(proposal.reparcellization.status)) return true;
-    if (proposal.decideLaterProposal && isAppliedLike(proposal.decideLaterProposal.status)) return true;
-    return false;
+    if (appliedOf(proposal)) return true;
+    return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        .some(key => proposal[key] && appliedOf(proposal, proposal[key]));
 }
 
 // ============================================================================

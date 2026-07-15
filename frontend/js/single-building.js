@@ -1584,7 +1584,7 @@
         const buildingProposalMetadata = {
             parentParcelIds: uniqueParcelIds,
             parentParcelNumbers: parentDetails,
-            status: 'unapplied',
+            applied: false,
             createdFrom: 'single-building',
             blockName: blockName,
             parameters: {
@@ -1636,7 +1636,8 @@
             author,
             createdAt: nowIso,
             updatedAt: nowIso,
-            status: 'draft',
+            lifecycleStatus: 'draft',
+            applied: false,
             tags: ['buildings'],
             lens: undefined,
             parentParcelIds: uniqueParcelIds,

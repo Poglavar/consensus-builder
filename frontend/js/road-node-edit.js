@@ -18,9 +18,7 @@
         if (!key) return null;
         const proposal = global.getProposalByIdOrHash?.(key) || null;
         if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return null;
-        const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-            || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-        if (!applied) return null;
+        if (!isApplied(proposal, proposal.roadProposal)) return null;
         if (typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal)) return null;
         return proposal;
     }
@@ -182,9 +180,7 @@
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
             if (global.corridorIsTrack(definition) !== isTrack) return;
-            const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-                || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-            if (!applied) return;
+            if (!isApplied(proposal, proposal.roadProposal)) return;
             (global.corridorCenterlineOf?.(definition) || []).forEach(segment => {
                 segment.forEach(vertex => {
                     if (!nearOrigin(vertex)) consider(global.L.latLng(vertex.lat, vertex.lng));

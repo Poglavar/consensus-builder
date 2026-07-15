@@ -375,7 +375,7 @@
                 const lifecycleKey = (typeof global.getProposalLifecycleKey === 'function') ? global.getProposalLifecycleKey(proposal) : null;
                 const statusText = (typeof global.getProposalLifecycleLabel === 'function' && lifecycleKey)
                     ? global.getProposalLifecycleLabel(lifecycleKey)
-                    : (proposal.status || activeStatusLabel);
+                    : (typeof global.getLifecycleStatus === 'function' ? global.getLifecycleStatus(proposal) : activeStatusLabel);
                 const statusClass = (typeof global.getProposalLifecycleClass === 'function' && lifecycleKey)
                     ? global.getProposalLifecycleClass(lifecycleKey)
                     : 'active';
@@ -393,7 +393,7 @@
                     ? `<span class="proposal-item-ancestor-pill" data-i18n-key="panel.parcel.proposalsSection.ancestorPill">${tParcel('panel.parcel.proposalsSection.ancestorPill', {}, 'Ancestor')}</span>`
                     : '';
 
-                const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
+                const isActive = (typeof global.getLifecycleStatus !== 'function' || global.getLifecycleStatus(proposal) !== 'Executed') && !mapApplied;
 
                 let actionButtons = '';
 

@@ -553,9 +553,7 @@ function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], c
         if ((kind === 'track') !== corridorIsTrack(definition)) return false;
         const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
         if (excluded.has(String(key))) return false;
-        const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-            || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-        if (!applied) return false;
+        if (!isApplied(proposal, proposal.roadProposal)) return false;
         if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
         try {
             const target = definition.polygon.type ? definition.polygon : { type: 'Polygon', coordinates: definition.polygon };
@@ -644,7 +642,7 @@ async function createRoadProposalFromComponent(baseProposal, component) {
     clone.title = name;
     clone.name = name;
     clone.proposalName = name;
-    clone.status = 'unapplied';
+    clone.applied = false;
     clone.definition = JSON.parse(JSON.stringify(definition));
     clone.geometry = { ...(clone.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
     if (definition.polygon) clone.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
@@ -655,7 +653,7 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         definition: JSON.parse(JSON.stringify(definition)),
         parentParcelIds: parents.slice(),
         childParcelIds: [],
-        status: 'unapplied'
+        applied: false
     };
 
     const newId = (typeof proposalStorage !== 'undefined') ? proposalStorage.addProposal(clone) : null;
@@ -1222,9 +1220,7 @@ function appliedCorridorSnapSegments() {
         (proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
-            const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-                || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-            if (!applied) return;
+            if (!isApplied(proposal, proposal.roadProposal)) return;
             const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
             const minted = typeof isProposalMinted === 'function' && isProposalMinted(proposal);
             (corridorCenterlineOf(definition) || []).forEach(segment => {

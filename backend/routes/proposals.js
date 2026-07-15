@@ -2,8 +2,14 @@
 // POST /proposals - Store a proposal and get back an id
 // GET /proposals/:id - Get a proposal by proposal_id (unique globally)
 
+import { createRequire } from 'node:module';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+
+// The canonical two-axis status accessors (proposals/status.js is a classic script with a CommonJS
+// export). Used to derive lifecycleStatus/applied for older clients that still send only `status`.
+const require = createRequire(import.meta.url);
+const { getLifecycleStatus } = require('../../frontend/js/proposals/status.js');
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 
@@ -181,6 +187,8 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         author: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_AUTHOR_LENGTH, label: 'author', disallowControlChars: true })) },
         type: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TYPE_LENGTH, label: 'type', disallowControlChars: true })) },
         status: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'status', disallowControlChars: true })) },
+        lifecycleStatus: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'lifecycleStatus', disallowControlChars: true })) },
+        applied: { required: false, validate: validators.optional(validators.boolean({ label: 'applied' })) },
         offer: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'offer' })) },
         offerCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offerCurrency', disallowControlChars: true })) },
         offer_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offer_currency', disallowControlChars: true })) },
@@ -226,15 +234,16 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 });
 
 export function setupProposalsRoute(app, pool) {
-    // A proposal past expires_at reads as 'Expired' even if the stored status is stale. This one
-    // expression is used both for the returned status and for the ?status= FILTER, so filtering and
-    // display agree (case-insensitive — the DB carries both 'Executed' and 'executed').
+    // The marketplace/on-chain LIFECYCLE status, past-expiry-aware. A proposal past expires_at reads
+    // as 'Expired' even if the stored value is stale. This one expression is used both for the
+    // returned lifecycleStatus and for the ?status= FILTER, so filtering and display agree
+    // (case-insensitive — the DB may carry both 'Executed' and 'executed').
     const EFFECTIVE_STATUS_SQL = `
         CASE
-            WHEN LOWER(COALESCE(status, '')) NOT IN ('executed', 'cancelled', 'expired')
+            WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
                 AND expires_at IS NOT NULL AND expires_at <= now()
             THEN 'Expired'
-            ELSE status
+            ELSE lifecycle_status
         END`;
 
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
@@ -353,7 +362,11 @@ export function setupProposalsRoute(app, pool) {
             const description = validated.description ?? null;
             const author = validated.author ?? null;
             const type = validated.type ?? null;
-            const status = validated.status ?? null;
+            // Two independent axes. Prefer the explicit fields; for any client that still sends only
+            // the old `status`, derive the lifecycle canonically (getLifecycleStatus reads it) and
+            // default `applied` to true (spatial proposals are applied-by-default).
+            const lifecycleStatus = validated.lifecycleStatus ?? getLifecycleStatus(req.body);
+            const applied = typeof validated.applied === 'boolean' ? validated.applied : true;
             const offer = validated.offer ?? null;
             const offerCurrency = validated.offerCurrency ?? validated.offer_currency ?? null;
             const budget = validated.budget ?? null;
@@ -418,7 +431,8 @@ export function setupProposalsRoute(app, pool) {
 
             const sql = `
                 INSERT INTO proposal (
-                    proposal_id, city, name, title, description, author, type, status,
+                    proposal_id, city, name, title, description, author, type,
+                    lifecycle_status, applied,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at,
                     decay_enabled, decay_percent, decay_duration_ms,
@@ -430,23 +444,25 @@ export function setupProposalsRoute(app, pool) {
                     parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, screenshot_url, proposal_data
                 ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8,
-                    $9, $10, $11, $12,
-                    $13, $14,
-                    $15, $16, $17,
-                    $18, $19,
-                    $20, $21,
-                    $22, $23, $24, $25,
-                    $26, $27, $28, $29,
-                    $30, $31,
-                    $32, $33,
-                    $34, $35, $36, $37, $38
+                    $1, $2, $3, $4, $5, $6, $7,
+                    $8, $9,
+                    $10, $11, $12, $13,
+                    $14, $15,
+                    $16, $17, $18,
+                    $19, $20,
+                    $21, $22,
+                    $23, $24, $25, $26,
+                    $27, $28, $29, $30,
+                    $31, $32,
+                    $33, $34,
+                    $35, $36, $37, $38, $39
                 )
                 RETURNING id, proposal_id, created_at
             `;
 
             const params = [
-                proposalId, city, name, title, description, author, type, status,
+                proposalId, city, name, title, description, author, type,
+                lifecycleStatus, applied,
                 offer, offerCurrency, budget, budgetCurrency,
                 createdAt, expiresAt,
                 decayEnabled, decayPercent, decayDurationMs,
@@ -659,7 +675,7 @@ export function setupProposalsRoute(app, pool) {
                 -- re-deriving it from type and mis-badging building/structure/parcel rows.
                 COALESCE(proposal_data->>'goal', type) AS goal,
                 ${EFFECTIVE_STATUS_SQL} AS effective_status,
-                status,
+                applied,
                 created_at,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
                 COUNT(*) OVER() AS total_count
@@ -677,9 +693,10 @@ export function setupProposalsRoute(app, pool) {
                 author: row.author || null,
                 type: row.type || null,
                 goal: row.goal || null,
-                // Prefer the server-derived effective status (expired proposals read 'Expired'
-                // even if the stored value is stale).
-                status: row.effective_status || row.status || null,
+                // The two axes: lifecycleStatus is the server-derived effective phase (expired reads
+                // 'Expired' even if stale); applied is the map-application boolean.
+                lifecycleStatus: row.effective_status || null,
+                applied: row.applied === undefined ? undefined : row.applied,
                 createdAt: row.created_at ? row.created_at.toISOString() : null,
                 screenshotUrl: row.screenshot_url || null
             }));
@@ -740,7 +757,8 @@ export function setupProposalsRoute(app, pool) {
 
             const sql = `
                 SELECT
-                    id, proposal_id, city, name, title, description, author, type, status,
+                    id, proposal_id, city, name, title, description, author, type,
+                    lifecycle_status, applied,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
                     decay_enabled, decay_percent, decay_duration_ms,
@@ -771,7 +789,11 @@ export function setupProposalsRoute(app, pool) {
             proposal.description = row.description ?? proposal.description;
             proposal.author = row.author ?? proposal.author;
             proposal.type = row.type ?? proposal.type;
-            proposal.status = row.status ?? proposal.status;
+            // The two split axes, authoritative from their columns. The legacy `status` is gone, so
+            // scrub any stale copy the stored proposal_data may still carry.
+            proposal.lifecycleStatus = row.lifecycle_status ?? proposal.lifecycleStatus ?? 'Active';
+            if (row.applied !== null && row.applied !== undefined) proposal.applied = row.applied;
+            delete proposal.status;
             proposal.offer = row.offer !== null ? parseFloat(row.offer) : proposal.offer;
             proposal.offerCurrency = row.offer_currency ?? proposal.offerCurrency;
             proposal.budget = row.budget !== null ? parseFloat(row.budget) : proposal.budget;
@@ -839,7 +861,8 @@ export function setupProposalsRoute(app, pool) {
 
             const sql = `
                 SELECT
-                    id, proposal_id, city, name, title, description, author, type, status,
+                    id, proposal_id, city, name, title, description, author, type,
+                    lifecycle_status, applied,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
                     ancestor_parcel_ids, descendant_parcel_ids,
@@ -864,7 +887,9 @@ export function setupProposalsRoute(app, pool) {
                     p.description = row.description ?? p.description;
                     p.author = row.author ?? p.author;
                     p.type = row.type ?? p.type;
-                    p.status = row.status ?? p.status;
+                    p.lifecycleStatus = row.lifecycle_status ?? p.lifecycleStatus ?? 'Active';
+                    if (row.applied !== null && row.applied !== undefined) p.applied = row.applied;
+                    delete p.status;
                     p.offer = row.offer !== null ? parseFloat(row.offer) : p.offer;
                     p.offerCurrency = row.offer_currency ?? p.offerCurrency;
                     p.budget = row.budget !== null ? parseFloat(row.budget) : p.budget;
@@ -890,7 +915,8 @@ export function setupProposalsRoute(app, pool) {
                     description: row.description,
                     author: row.author,
                     type: row.type,
-                    status: row.status,
+                    lifecycleStatus: row.lifecycle_status ?? 'Active',
+                    applied: row.applied === undefined ? undefined : row.applied,
                     offer: row.offer !== null ? parseFloat(row.offer) : null,
                     offerCurrency: row.offer_currency,
                     budget: row.budget !== null ? parseFloat(row.budget) : null,

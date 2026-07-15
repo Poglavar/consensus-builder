@@ -1476,20 +1476,14 @@ function buildBlockProposalListItem(proposal) {
     const isBuildingProposal = !isRoadProposal && (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey) || !!proposal.buildingProposal);
     const isStructureProposal = !isRoadProposal && !isBuildingProposal && (['park', 'square', 'lake'].includes(goalKey) || !!proposal.structureProposal);
 
-    const roadStatus = isRoadProposal
-        ? (proposal.roadProposal.status || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
-        : null;
-    const buildingStatus = isBuildingProposal
-        ? ((proposal.buildingProposal && proposal.buildingProposal.status) || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
-        : null;
-    const structureStatus = isStructureProposal
-        ? ((proposal.structureProposal && proposal.structureProposal.status) || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
-        : null;
+    const roadApplied = isRoadProposal && isApplied(proposal, proposal.roadProposal);
+    const buildingApplied = isBuildingProposal && isApplied(proposal, proposal.buildingProposal);
+    const structureApplied = isStructureProposal && isApplied(proposal, proposal.structureProposal);
 
     let actionButtons = '';
     if (typeof ProposalManager !== 'undefined') {
         if (isRoadProposal) {
-            if (roadStatus === 'applied') {
+            if (roadApplied) {
                 actionButtons = `
                     <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this road proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
@@ -1503,7 +1497,7 @@ function buildBlockProposalListItem(proposal) {
                 `;
             }
         } else if (isBuildingProposal) {
-            if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+            if (buildingApplied) {
                 actionButtons = `
                     <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this building proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
@@ -1517,7 +1511,7 @@ function buildBlockProposalListItem(proposal) {
                 `;
             }
         } else if (isStructureProposal) {
-            if (structureStatus === 'applied' || structureStatus === 'executed') {
+            if (structureApplied) {
                 actionButtons = `
                     <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this structure proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
@@ -1565,7 +1559,7 @@ function buildBlockProposalListItem(proposal) {
     const lifecycleKey = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(proposal) : null;
     const statusLabel = (typeof getProposalLifecycleLabel === 'function' && lifecycleKey)
         ? getProposalLifecycleLabel(lifecycleKey)
-        : (proposal.status || 'Active');
+        : getLifecycleStatus(proposal);
     const statusClass = (typeof getProposalLifecycleClass === 'function' && lifecycleKey)
         ? getProposalLifecycleClass(lifecycleKey)
         : 'active';

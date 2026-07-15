@@ -323,18 +323,10 @@ function getPendingReparcellizationSeedFor(parcelIds) {
 
 // An applied proposal has already rewritten the map: its parents are gone, its children are there.
 function isProposalAppliedToMap(proposal) {
-    const statuses = [
-        proposal.status,
-        proposal.roadProposal && proposal.roadProposal.status,
-        proposal.buildingProposal && proposal.buildingProposal.status,
-        proposal.structureProposal && proposal.structureProposal.status,
-        proposal.reparcellization && proposal.reparcellization.status,
-        proposal.decideLaterProposal && proposal.decideLaterProposal.status
-    ];
-    return statuses.some(status => {
-        const value = String(status || '').toLowerCase();
-        return value === 'applied' || value === 'executed';
-    });
+    if (!proposal) return false;
+    if (isApplied(proposal)) return true;
+    return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        .some(key => proposal[key] && isApplied(proposal, proposal[key]));
 }
 
 function copyProposalI18n(key, fallback, params) {

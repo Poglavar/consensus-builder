@@ -487,9 +487,7 @@ function isAppliedCorridorProposal(proposal) {
     const definition = corridorProposalDefinition(proposal);
     if (!definition) return false;
 
-    const status = String(proposal.status || '').toLowerCase();
-    const roadStatus = String((proposal.roadProposal && proposal.roadProposal.status) || '').toLowerCase();
-    return status === 'applied' || status === 'executed' || roadStatus === 'applied' || roadStatus === 'executed';
+    return isApplied(proposal, proposal.roadProposal);
 }
 
 function clearAppliedCorridorStrips() {
@@ -575,9 +573,7 @@ function refreshAppliedCorridorStrips() {
     proposals.forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
         if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
-        const status = String(proposal.status || '').toLowerCase();
-        const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
-        if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
+        if (!isApplied(proposal, proposal.roadProposal)) return;
         renderCorridorBuildingTunnels(definition.tunnels, layer, CORRIDOR_STRIPS_PANE);
         drawn += 1;
     });

@@ -12,7 +12,11 @@ CREATE TABLE IF NOT EXISTS proposals (
     description TEXT,
     author VARCHAR(255),
     type VARCHAR(50) NOT NULL, -- 'parcel', 'road', 'building', 'structure'
-    status VARCHAR(50) DEFAULT 'unapplied', -- 'unapplied', 'applied', 'executed', 'cancelled', 'expired'
+    -- Two INDEPENDENT status axes (the old overloaded `status` column is GONE):
+    --   lifecycle_status: marketplace/on-chain phase — 'Active', 'Executed', 'Cancelled', 'Expired', 'draft'
+    --   applied:          whether the geometry is stamped on the map and cutting the buildings under it
+    lifecycle_status VARCHAR(50) NOT NULL DEFAULT 'Active',
+    applied BOOLEAN NOT NULL DEFAULT true, -- spatial proposals are applied-by-default on create
     
     -- Financial information
     offer NUMERIC(20, 8),
@@ -77,7 +81,8 @@ CREATE TABLE IF NOT EXISTS proposals (
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_proposals_city ON proposals(city);
 CREATE INDEX IF NOT EXISTS idx_proposals_type ON proposals(type);
-CREATE INDEX IF NOT EXISTS idx_proposals_status ON proposals(status);
+CREATE INDEX IF NOT EXISTS idx_proposals_lifecycle_status ON proposals(lifecycle_status);
+CREATE INDEX IF NOT EXISTS idx_proposals_applied ON proposals(applied);
 CREATE INDEX IF NOT EXISTS idx_proposals_author ON proposals(author);
 CREATE INDEX IF NOT EXISTS idx_proposals_created_at ON proposals(created_at);
 CREATE INDEX IF NOT EXISTS idx_proposals_expires_at ON proposals(expires_at);
@@ -99,4 +104,8 @@ COMMENT ON COLUMN proposals.screenshot_url IS 'Static map screenshot URL used as
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
+--
+-- Status split — run backend/scripts/split-status-applied.js --apply, which:
+--   ADDs applied + lifecycle_status, backfills them, strips the legacy nested `status` from JSONB,
+--   then DROPs the old overloaded `status` column and its index. No dual-write, no transition.
 

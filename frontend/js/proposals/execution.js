@@ -34,8 +34,7 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         if (isAccepted && currentUser && acceptanceMeta.agentId === currentUser.id) {
             canUndo = true;
             // If proposal is executed, only allow undo if there are no descendants
-            const proposalStatus = (proposal.status || '').toLowerCase();
-            if (proposalStatus === 'executed') {
+            if (getLifecycleStatus(proposal) === 'Executed') {
                 if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
                     const descendants = ProposalManager._getProposalDescendants(proposal.proposalId);
                     if (descendants && descendants.length > 0) {
@@ -482,7 +481,9 @@ function claimSaleOffer(proposalId, buyerAgentId) {
         recipientAddress: buyer, buyer, status: 'sold'
     };
     proposal.funded = true;
-    proposal.status = 'Executed';
+    // Executing advances the lifecycle AND materialises the geometry, so both axes move together.
+    proposal.lifecycleStatus = 'Executed';
+    proposal.applied = true;
     proposal.executedAt = new Date().toISOString();
 
     const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
@@ -1026,45 +1027,14 @@ function isProposalApplied(proposal) {
         || proposal.decideLaterProposal
     );
 
-    const globalStatus = (proposal.status || '').toLowerCase();
-    if (hasSpatialComponent && (globalStatus === 'applied' || globalStatus === 'executed')) {
-        return true;
-    }
+    if (!hasSpatialComponent) return false;
 
-    const roadStatus = (proposal.roadProposal && proposal.roadProposal.status) ? proposal.roadProposal.status.toLowerCase() : '';
-    if (roadStatus === 'applied' || roadStatus === 'executed') {
-        return true;
-    }
-
-    const buildingStatus = (proposal.buildingProposal && proposal.buildingProposal.status)
-        ? proposal.buildingProposal.status.toLowerCase()
-        : '';
-    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
-        return true;
-    }
-
-    const structureStatus = structureData && structureData.status
-        ? structureData.status.toLowerCase()
-        : '';
-    if (structureStatus === 'applied' || structureStatus === 'executed') {
-        return true;
-    }
-
-    const reparcelStatus = (proposal.reparcellization && proposal.reparcellization.status)
-        ? proposal.reparcellization.status.toLowerCase()
-        : '';
-    if (reparcelStatus === 'applied' || reparcelStatus === 'executed') {
-        return true;
-    }
-
-    const decideLaterStatus = (proposal.decideLaterProposal && proposal.decideLaterProposal.status)
-        ? proposal.decideLaterProposal.status.toLowerCase()
-        : '';
-    if (decideLaterStatus === 'applied' || decideLaterStatus === 'executed') {
-        return true;
-    }
-
-    return false;
+    // Canonical map-application axis (proposals/status.js). Prefers the explicit `applied` boolean on
+    // the proposal or any of its sub-proposals; falls back to the legacy applied/executed status for
+    // rows the split has not upgraded. isApplied is a global defined by status.js, loaded first.
+    if (isApplied(proposal)) return true;
+    return [proposal.roadProposal, proposal.buildingProposal, structureData, proposal.reparcellization, proposal.decideLaterProposal]
+        .some(sub => sub && isApplied(proposal, sub));
 }
 
 function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
@@ -1145,19 +1115,10 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
-    const isAppliedLike = (value) => {
-        const normalized = (value || '').toString().toLowerCase();
-        return normalized === 'applied' || normalized === 'executed';
-    };
-
-    // Executed proposals are considered immutable and should be skipped for re-apply.
-    if (isAppliedLike(proposal.status)) return true;
-    if (proposal.roadProposal && isAppliedLike(proposal.roadProposal.status)) return true;
-    if (proposal.buildingProposal && isAppliedLike(proposal.buildingProposal.status)) return true;
-    if (proposal.structureProposal && isAppliedLike(proposal.structureProposal.status)) return true;
-    if (proposal.reparcellization && isAppliedLike(proposal.reparcellization.status)) return true;
-    if (proposal.decideLaterProposal && isAppliedLike(proposal.decideLaterProposal.status)) return true;
-    return false;
+    // Canonical map-application axis: the boolean on the proposal or any sub-proposal.
+    if (isApplied(proposal)) return true;
+    return [proposal.roadProposal, proposal.buildingProposal, proposal.structureProposal, proposal.reparcellization, proposal.decideLaterProposal]
+        .some(sub => sub && isApplied(proposal, sub));
 }
 
 function isProposalAppliedAndMaterialized(proposal) {
@@ -1337,7 +1298,8 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             && !isVoteProposal(proposal)
             && proposalRecipientConsentSatisfied(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
-            proposal.status = 'Executed';
+            proposal.lifecycleStatus = 'Executed';
+            proposal.applied = true;
             proposal.executedAt = new Date().toISOString();
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposal);
@@ -1383,7 +1345,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                 }
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
                 if (proposal.buildingProposal) {
-                    proposal.buildingProposal.status = 'executed';
+                    proposal.buildingProposal.applied = true;
                 }
                 if (typeof markProposedBuildingState === 'function') {
                     markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true, save: true });
@@ -1392,7 +1354,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                 }
             } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square' || proposal.structureProposal.kind === 'lake')) {
                 if (proposal.structureProposal) {
-                    proposal.structureProposal.status = 'executed';
+                    proposal.structureProposal.applied = true;
                 }
             }
 
@@ -1429,8 +1391,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // Check if proposal is executed and has descendants
-    const proposalStatus = (proposal.status || '').toLowerCase();
-    if (proposalStatus === 'executed') {
+    if (getLifecycleStatus(proposal) === 'Executed') {
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
             const descendants = ProposalManager._getProposalDescendants(proposalId);
             if (descendants && descendants.length > 0) {
@@ -1475,7 +1436,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     if (isOnChain) {
         if (!isVote) {
             // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
-            if (proposalStatus === 'executed' || proposalStatus === 'applied') {
+            if (getLifecycleStatus(proposal) === 'Executed' || isApplied(proposal)) {
                 showProposalAlertMessage('cannot_withdraw_executed_proposal',
                     'This acceptance cannot be withdrawn because the proposal has been executed.');
                 return;
@@ -1613,13 +1574,13 @@ function rejectProposal(proposalId, parcelId, ownerKey = null) {
             proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
         }
 
-        // If proposal was executed and now has no descendants, change status back to Active
-        const proposalStatus = (proposal.status || '').toLowerCase();
-        if (proposalStatus === 'executed') {
+        // If proposal was executed and now has no descendants, revert the LIFECYCLE to Active.
+        // Pure lifecycle change — leave `applied` (the map-application axis) untouched.
+        if (getLifecycleStatus(proposal) === 'Executed') {
             if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
                 const descendants = ProposalManager._getProposalDescendants(proposalId);
                 if (!descendants || descendants.length === 0) {
-                    proposal.status = 'Active';
+                    proposal.lifecycleStatus = 'Active';
                     delete proposal.executedAt;
                 }
             }

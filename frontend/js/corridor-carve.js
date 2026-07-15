@@ -34,9 +34,13 @@
 const CARVE_MIN_REMAINDER_AREA_M2 = 10;
 const CARVE_MIN_REMAINDER_FRACTION = 0.15;
 
-function carveAppliedLike(...statuses) {
-    return statuses.some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
-}
+// Whether a proposal's geometry is stamped on the map (drawn + cutting buildings) is the APPLICATION
+// axis, read through the canonical isApplied() in proposals/status.js. In the browser that file loads
+// first and defines the global isApplied(); in node (the server carve + unit tests) we require it.
+// `typeof` on an undeclared identifier is safe, so this resolves in both without shadowing the global.
+const carveIsApplied = (typeof isApplied === 'function')
+    ? isApplied
+    : require('./proposals/status.js').isApplied;
 
 // Demolition records of every APPLIED proposal in `proposals`. Unapplying or deleting a proposal
 // takes its demolitions with it — the buildings come back. Roads, parks/squares/lakes and building
@@ -47,7 +51,7 @@ function demolishedBuildingRecordsFrom(proposals) {
     (proposals || []).forEach(proposal => {
         if (!proposal) return;
         const rp = proposal.roadProposal;
-        if (rp && rp.definition && carveAppliedLike(rp.status, proposal.status)) {
+        if (rp && rp.definition && carveIsApplied(proposal, rp)) {
             (rp.definition.demolishedBuildings || []).forEach(record => {
                 if (record && record.id) records.push(record);
             });
@@ -55,7 +59,7 @@ function demolishedBuildingRecordsFrom(proposals) {
         ['structureProposal', 'buildingProposal'].forEach(key => {
             const sub = proposal[key];
             if (!sub || !Array.isArray(sub.demolishedBuildings)) return;
-            if (!carveAppliedLike(sub.status, proposal.status)) return;
+            if (!carveIsApplied(proposal, sub)) return;
             sub.demolishedBuildings.forEach(record => {
                 if (record && record.id) records.push(record);
             });

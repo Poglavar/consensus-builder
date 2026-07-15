@@ -1,3 +1,14 @@
+// Canonical two-axis status accessors from proposals/status.js. Globals in the browser (status.js
+// loads first); required directly in node tests. `typeof` on the undeclared global is safe, and the
+// require branch is never evaluated in the browser. Named with an -Of suffix so they never shadow
+// (and thereby re-declare / throw over) the browser globals themselves.
+const appliedOf = (typeof isApplied === 'function')
+    ? isApplied
+    : require('./proposals/status.js').isApplied;
+const lifecycleOf = (typeof getLifecycleStatus === 'function')
+    ? getLifecycleStatus
+    : require('./proposals/status.js').getLifecycleStatus;
+
 function _buildSyntheticToken(value, fallback = 'proposal') {
     const base = (value !== undefined && value !== null) ? String(value) : String(fallback || 'proposal');
     const sanitize = (raw) => String(raw || '')
@@ -772,11 +783,6 @@ function _getProposalRecord(proposalId) {
     return null;
 }
 
-function _isAppliedStatusLike(status) {
-    const normalized = (status || '').toString().toLowerCase();
-    return normalized === 'applied' || normalized === 'executed';
-}
-
 function _buildAppliedDescendantIndex(excludeProposalId = null) {
     const index = new Map();
     try {
@@ -790,12 +796,12 @@ function _buildAppliedDescendantIndex(excludeProposalId = null) {
             // must not block its parent slice from being (re)created, or the ground under it
             // becomes an unclickable hole when the parent road re-applies after a geometry edit.
             if (p.structureProposal && !p.roadProposal && !p.reparcellization && !p.buildingProposal && !p.decideLaterProposal) return false;
-            const roadStatus = p.roadProposal && _isAppliedStatusLike(p.roadProposal.status);
-            const decideLaterStatus = p.decideLaterProposal && _isAppliedStatusLike(p.decideLaterProposal.status);
-            const structureStatus = p.structureProposal && _isAppliedStatusLike(p.structureProposal.status);
-            const reparcelStatus = p.reparcellization && _isAppliedStatusLike(p.reparcellization.status);
-            const buildingStatus = p.buildingProposal && _isAppliedStatusLike(p.buildingProposal.status);
-            const globalStatus = _isAppliedStatusLike(p.status);
+            const roadStatus = p.roadProposal && appliedOf(p, p.roadProposal);
+            const decideLaterStatus = p.decideLaterProposal && appliedOf(p, p.decideLaterProposal);
+            const structureStatus = p.structureProposal && appliedOf(p, p.structureProposal);
+            const reparcelStatus = p.reparcellization && appliedOf(p, p.reparcellization);
+            const buildingStatus = p.buildingProposal && appliedOf(p, p.buildingProposal);
+            const globalStatus = appliedOf(p);
             return roadStatus || decideLaterStatus || structureStatus || reparcelStatus || buildingStatus || globalStatus;
         });
 
@@ -916,7 +922,7 @@ class Proposal {
         this.id = proposalId || id || `local-temp-${Date.now()}`;
         this.name = name;
         this.type = type; // 'road', 'building', etc.
-        this.status = 'unapplied'; // 'applied' or 'unapplied'
+        this.applied = false; // map-application axis; set true when drawn onto the map
 
         // Data to recreate the proposal's geometry, e.g., points and width for a road
         this.definition = definition || {};
@@ -1378,7 +1384,7 @@ const ProposalManager = {
                 parentParcelIds: parentParcelIds,
                 // Child parcels are derived from the proposal definition and persisted storage; avoid storing geometry blobs
                 childParcelIds: [],
-                status: proposal.status
+                applied: appliedOf(proposal)
             },
             createdAt: new Date().toISOString()
         };
@@ -1460,12 +1466,12 @@ const ProposalManager = {
 
             const proposals = proposalStorage.getAllProposals() || [];
             const applied = proposals.filter(p => {
-                const roadStatus = p.roadProposal && _isAppliedStatusLike(p.roadProposal.status);
-                const decideLaterStatus = p.decideLaterProposal && _isAppliedStatusLike(p.decideLaterProposal.status);
-                const structureStatus = p.structureProposal && _isAppliedStatusLike(p.structureProposal.status);
-                const reparcelStatus = p.reparcellization && _isAppliedStatusLike(p.reparcellization.status);
-                const buildingStatus = p.buildingProposal && _isAppliedStatusLike(p.buildingProposal.status);
-                const globalStatus = _isAppliedStatusLike(p.status);
+                const roadStatus = p.roadProposal && appliedOf(p, p.roadProposal);
+                const decideLaterStatus = p.decideLaterProposal && appliedOf(p, p.decideLaterProposal);
+                const structureStatus = p.structureProposal && appliedOf(p, p.structureProposal);
+                const reparcelStatus = p.reparcellization && appliedOf(p, p.reparcellization);
+                const buildingStatus = p.buildingProposal && appliedOf(p, p.buildingProposal);
+                const globalStatus = appliedOf(p);
                 return roadStatus || decideLaterStatus || structureStatus || reparcelStatus || buildingStatus || globalStatus;
             });
 
@@ -2297,7 +2303,7 @@ const ProposalManager = {
             kind: inferredKind,
             parentParcelIds: parentIds,
             blockName: proposalData.blockName || null,
-            status: proposalData.status && proposalData.status.toLowerCase() === 'applied' ? 'applied' : 'unapplied'
+            applied: appliedOf(proposalData)
         };
         const canonicalGeometry = this._getCanonicalStructureGeometry(proposalData, inferredKind);
         const geometry = canonicalGeometry && canonicalGeometry.type && Array.isArray(canonicalGeometry.coordinates)
@@ -2450,18 +2456,12 @@ const ProposalManager = {
             }
         }
 
-        // Check if already applied to prevent duplicate applies
-        // Note: We check status here rather than relying on isProposalApplied to avoid
-        // race conditions where status hasn't been updated yet
-        const roadStatus = proposalData.roadProposal?.status?.toLowerCase();
-        const decideLaterState = proposalData.decideLaterProposal || {};
-        const decideLaterStatus = decideLaterState.status ? decideLaterState.status.toLowerCase() : '';
-        const globalStatus = (proposalData.status || '').toLowerCase();
-        // Note: 'executed' means all parcels accepted but not yet drawn on map.
-        // Only 'applied' means the proposal has been rendered on the map.
-        const isAlreadyApplied = roadStatus === 'applied'
-            || globalStatus === 'applied'
-            || decideLaterStatus === 'applied';
+        // Check if already applied to prevent duplicate applies. The `applied` boolean is the
+        // on-the-map axis: an executed-but-not-yet-drawn proposal is applied=false, so it still
+        // proceeds to draw; only a rendered proposal reads applied=true and short-circuits.
+        const isAlreadyApplied = appliedOf(proposalData, proposalData.roadProposal)
+            || appliedOf(proposalData, proposalData.decideLaterProposal)
+            || appliedOf(proposalData);
 
         const isDecideLater = this._isDecideLaterProposal(proposalData);
 
@@ -2610,8 +2610,6 @@ const ProposalManager = {
         try {
             const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
-            const structureStatus = (sp.status || '').toLowerCase();
-            const proposalStatus = (proposalData.status || '').toLowerCase();
             const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
 
             // Structures clear their ground by default. A structure with NO demolition list
@@ -2637,8 +2635,7 @@ const ProposalManager = {
             const alreadyInLayer = Array.isArray(collection)
                 ? collection.some(feature => feature && feature.properties && feature.properties.proposalId === proposalId)
                 : false;
-            const alreadyAppliedStatus = (structureStatus === 'applied' || structureStatus === 'executed'
-                || proposalStatus === 'applied' || proposalStatus === 'executed');
+            const alreadyAppliedStatus = appliedOf(proposalData, sp) || lifecycleOf(proposalData) === 'Executed';
             if (alreadyAppliedStatus && alreadyInLayer) {
                 return true;
             }
@@ -2712,8 +2709,7 @@ const ProposalManager = {
                     const all = proposalStorage.getAllProposals();
                     all.filter(p => p.proposalId !== proposalId && p.structureProposal && p.structureProposal.blockName === blockName)
                         .forEach(p => {
-                            const st = p.structureProposal.status || (p.status === 'Applied' ? 'applied' : 'unapplied');
-                            if (st === 'applied' || p.status === 'Applied') {
+                            if (appliedOf(p, p.structureProposal)) {
                                 const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
                                 if (hasFamilyUnapply) {
                                     this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
@@ -2821,17 +2817,11 @@ const ProposalManager = {
             console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
             const step6Time = performance.now();
-            // Update status
-            const wasExecuted = structureStatus === 'executed' || proposalStatus === 'executed';
-            sp.status = wasExecuted ? 'executed' : 'applied';
+            // The structure is now on the map. Applying only moves the map-application axis; the
+            // lifecycle (Active/Executed) is left as-is (executed structures stay executed).
+            sp.applied = true;
             proposalData.structureProposal = sp;
-            if (wasExecuted) {
-                proposalData.status = 'Executed';
-            } else if (typeof isAppliedStatus === 'function') {
-                if (!isAppliedStatus(proposalData.status)) proposalData.status = 'Applied';
-            } else if (proposalData.status !== 'Applied') {
-                proposalData.status = 'Applied';
-            }
+            proposalData.applied = true;
             proposalData.proposalId = proposalData.proposalId || proposalId;
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposalData);
@@ -2972,10 +2962,7 @@ const ProposalManager = {
             }
         }
 
-        const proposalStatus = (proposalData.status || '').toLowerCase();
-        const alreadyApplied = proposalStatus === 'applied' || proposalStatus === 'executed'
-            || (decideLaterState.status || '').toLowerCase() === 'applied'
-            || (decideLaterState.status || '').toLowerCase() === 'executed';
+        const alreadyApplied = appliedOf(proposalData, decideLaterState) || lifecycleOf(proposalData) === 'Executed';
 
         const restoreFromExistingChildren = () => {
             if (!childIdsExisting.length) return null;
@@ -3149,15 +3136,13 @@ const ProposalManager = {
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...childIdsOnMap]);
                 proposalData.decideLaterProposal = {
-                    status: decideLaterState.status || 'applied',
+                    applied: true,
                     parentParcelIds: parentIds,
                     childParcelIds: childIdsExisting.map(String),
                     _restored: true
                 };
                 proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...childIdsExisting.map(String)]));
-                if (!proposalData.status || proposalStatus === 'active') {
-                    proposalData.status = 'Applied';
-                }
+                proposalData.applied = true;
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
                 console.debug(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
@@ -3178,15 +3163,13 @@ const ProposalManager = {
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...restoredChildIds]);
                 proposalData.decideLaterProposal = {
-                    status: decideLaterState.status || 'applied',
+                    applied: true,
                     parentParcelIds: parentIds,
                     childParcelIds: restoredChildIds.map(String),
                     _restored: true
                 };
                 proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...restoredChildIds.map(String)]));
-                if (!proposalData.status || proposalStatus === 'active') {
-                    proposalData.status = 'Applied';
-                }
+                proposalData.applied = true;
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
                 console.debug(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
@@ -3370,14 +3353,14 @@ const ProposalManager = {
         this._hideFeaturesFromMap(parentFeatures);
 
         proposalData.decideLaterProposal = {
-            status: 'applied',
+            applied: true,
             parentParcelIds: parentIds,
             childParcelIds: shouldAddChild ? [String(childParcelId)] : [],
             _restored: true
         };
         proposalData.parentParcelIds = parentIds;
         proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...(shouldAddChild ? [String(childParcelId)] : [])]));
-        proposalData.status = 'Applied';
+        proposalData.applied = true;
         proposalData.updatedAt = new Date().toISOString();
 
         if (typeof proposalStorage._indexProposal === 'function') {
@@ -3540,7 +3523,7 @@ const ProposalManager = {
         }
 
         const step2Time = performance.now();
-        plan.status = 'applied';
+        plan.applied = true;
         plan.appliedAt = new Date().toISOString();
         plan.parentParcelIds = parentIds;
         plan.childParcelIds = childParcelIds;
@@ -3548,13 +3531,7 @@ const ProposalManager = {
         proposalData.childParcelIds = childParcelIds;
         proposalData.reparcellization = plan;
 
-        if (typeof isAppliedStatus === 'function') {
-            if (!isAppliedStatus(proposalData.status)) {
-                proposalData.status = 'Applied';
-            }
-        } else if (proposalData.status !== 'Applied') {
-            proposalData.status = 'Applied';
-        }
+        proposalData.applied = true;
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -3601,7 +3578,7 @@ const ProposalManager = {
                 childParcelIds: canonicalChildIds.slice(),
                 definition: canonicalRoadPlan,
                 roadGeometry: canonicalRoadGeometry,
-                status: proposalData?.status || 'unapplied'
+                applied: appliedOf(proposalData)
             };
 
         proposalData.roadProposal = roadProposal;
@@ -3630,7 +3607,7 @@ const ProposalManager = {
         }
 
         // Determine if we're restoring an already-applied proposal
-        const isRestoring = roadProposal.status === 'applied';
+        const isRestoring = appliedOf(proposalData, roadProposal);
         console.debug(`[_applyRoadProposal] Mode: ${isRestoring ? 'restoring' : 'new application'}`);
 
         const step1Time = performance.now();
@@ -4208,8 +4185,8 @@ const ProposalManager = {
         if (roadProposal.roadGeometry) {
             proposalData.geometry.roadGeometry = roadProposal.roadGeometry;
         }
-        roadProposal.status = 'applied';
-        proposalData.status = 'Applied';
+        roadProposal.applied = true;
+        proposalData.applied = true;
         proposalStorage.save();
         console.debug(`[_applyRoadProposal] Step 7: Saved proposal status (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
@@ -4373,9 +4350,7 @@ const ProposalManager = {
                 .filter(p => p.proposalId !== proposalId && this._isBuildingProposal(p))
                 .forEach(p => {
                     const otherKey = this._getBuildingAncestorKey(p);
-                    const fallbackStatus = (typeof isAppliedStatus === 'function' ? isAppliedStatus(p.status) : (p.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied';
-                    const otherStatus = (p.buildingProposal && p.buildingProposal.status) || fallbackStatus;
-                    if (otherKey === ancestorKey && (otherStatus === 'applied' || otherStatus === 'executed')) {
+                    if (otherKey === ancestorKey && appliedOf(p, p.buildingProposal)) {
                         const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
                         if (hasFamilyUnapply) {
                             this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
@@ -4417,7 +4392,7 @@ const ProposalManager = {
             ...(proposalData.buildingProperties || {}),
             ...(proposalData.properties || {})
         };
-        const proposalState = buildingProposal.status === 'executed' ? 'executed' : 'applied';
+        const proposalState = lifecycleOf(proposalData) === 'Executed' ? 'executed' : 'applied';
 
         const preparedFeatures = candidateFeatures
             .map((raw, index) => {
@@ -4478,7 +4453,7 @@ const ProposalManager = {
             showBuildingsCheckbox.checked = true;
         }
 
-        buildingProposal.status = proposalState;
+        buildingProposal.applied = true;
         buildingProposal.appliedAt = new Date().toISOString();
         buildingProposal.parentParcelIds = uniqueParentIds;
         buildingProposal.ancestorKey = ancestorKey;
@@ -4489,13 +4464,7 @@ const ProposalManager = {
         }
         proposalData.geometry.buildings = preparedFeatures.map(cloneFeature).filter(Boolean);
 
-        if (typeof isAppliedStatus === 'function') {
-            if (!isAppliedStatus(proposalData.status)) {
-                proposalData.status = 'Applied';
-            }
-        } else if (proposalData.status !== 'Applied') {
-            proposalData.status = 'Applied';
-        }
+        proposalData.applied = true;
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -4553,34 +4522,14 @@ const ProposalManager = {
 
         if (!isRoad && !isBuilding && !isStructure && !isReparcellization && !isDecideLater) return false;
 
-        let currentStatus;
-        if (isRoad) {
-            currentStatus = proposalData.roadProposal.status;
-        } else if (isBuilding) {
-            currentStatus = (proposalData.buildingProposal && proposalData.buildingProposal.status)
-                || ((typeof isAppliedStatus === 'function'
-                    ? isAppliedStatus(proposalData.status)
-                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
-        } else if (isStructure) {
-            currentStatus = (proposalData.structureProposal && proposalData.structureProposal.status)
-                || ((typeof isAppliedStatus === 'function'
-                    ? isAppliedStatus(proposalData.status)
-                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
-        } else if (isReparcellization) {
-            currentStatus = proposalData.reparcellization.status
-                || ((typeof isAppliedStatus === 'function'
-                    ? isAppliedStatus(proposalData.status)
-                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
-        } else if (isDecideLater) {
-            currentStatus = (proposalData.decideLaterProposal && proposalData.decideLaterProposal.status)
-                || ((typeof isAppliedStatus === 'function'
-                    ? isAppliedStatus(proposalData.status)
-                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
-        }
+        let currentSub = null;
+        if (isRoad) currentSub = proposalData.roadProposal;
+        else if (isBuilding) currentSub = proposalData.buildingProposal;
+        else if (isStructure) currentSub = proposalData.structureProposal;
+        else if (isReparcellization) currentSub = proposalData.reparcellization;
+        else if (isDecideLater) currentSub = proposalData.decideLaterProposal;
 
-        const normalizedStatus = (currentStatus || '').toLowerCase();
-
-        if (normalizedStatus === 'unapplied') {
+        if (!appliedOf(proposalData, currentSub)) {
             if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
             return true;
         }
@@ -4676,17 +4625,14 @@ const ProposalManager = {
         const isReparcellization = !!proposalData.reparcellization;
         const isDecideLater = this._isDecideLaterProposal(proposalData);
 
-        const currentStatus = (() => {
-            if (isRoad) return proposalData.roadProposal?.status;
-            if (isBuilding) return proposalData.buildingProposal?.status || proposalData.status;
-            if (isStructure) return proposalData.structureProposal?.status || proposalData.status;
-            if (isReparcellization) return proposalData.reparcellization?.status || proposalData.status;
-            if (isDecideLater) return proposalData.decideLaterProposal?.status || proposalData.status;
-            return proposalData.status;
-        })();
+        const currentSub = isRoad ? proposalData.roadProposal
+            : isBuilding ? proposalData.buildingProposal
+            : isStructure ? proposalData.structureProposal
+            : isReparcellization ? proposalData.reparcellization
+            : isDecideLater ? proposalData.decideLaterProposal
+            : null;
 
-        const normalizedStatus = (currentStatus || '').toLowerCase();
-        if (normalizedStatus === 'unapplied') {
+        if (!appliedOf(proposalData, currentSub)) {
             if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
             return;
         }
@@ -4797,7 +4743,7 @@ const ProposalManager = {
             if (visited.has(String(childId))) continue;
             const childProposal = _getProposalRecord(childId);
             if (!childProposal || !childProposal.roadProposal) continue;
-            if (childProposal.roadProposal.status === 'applied') {
+            if (appliedOf(childProposal, childProposal.roadProposal)) {
                 await this._unapplyProposalConfirmed(childId, visited);
             }
         }
@@ -4882,8 +4828,8 @@ const ProposalManager = {
 
         // If we still have no child ids, nothing to remove; treat as already unapplied
         if (allChildIds.length === 0) {
-            roadProposal.status = 'unapplied';
-            proposalData.status = 'Active';
+            roadProposal.applied = false;
+            proposalData.applied = false;
             this._restoreSupersededRoadSources(proposalId, proposalData);
             proposalStorage.save();
             console.warn('[_unapplyProposalConfirmed] No child parcel ids resolved; skipping removal', { proposalId, proposalHasChildIds: Array.isArray(proposalData.childParcelIds) && proposalData.childParcelIds.length });
@@ -4966,8 +4912,8 @@ const ProposalManager = {
         this._removeChildParcels(proposalId, allChildIds);
         roadProposal.childParcelIds = Array.from(new Set(allChildIds));
 
-        roadProposal.status = 'unapplied';
-        proposalData.status = 'Active'; // Update overall proposal status
+        roadProposal.applied = false;
+        proposalData.applied = false; // leaves the map
         this._restoreSupersededRoadSources(proposalId, proposalData);
         proposalStorage.save();
 
@@ -5039,14 +4985,14 @@ const ProposalManager = {
         this._removeChildParcels(proposalId, childIds, proposalData);
 
         proposalData.decideLaterProposal = {
-            status: 'unapplied',
+            applied: false,
             parentParcelIds: parentIds,
             childParcelIds: []
         };
         proposalData.childParcelIds = Array.isArray(proposalData.childParcelIds)
             ? proposalData.childParcelIds.filter(id => !childIds.includes(id && id.toString ? id.toString() : String(id)))
             : [];
-        proposalData.status = 'Active';
+        proposalData.applied = false;
         proposalData.updatedAt = new Date().toISOString();
 
         if (typeof proposalStorage._indexProposal === 'function') {
@@ -5105,14 +5051,14 @@ const ProposalManager = {
             if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
         }
 
-        buildingProposal.status = 'unapplied';
+        buildingProposal.applied = false;
         buildingProposal.appliedAt = null;
         proposalData.buildingProposal = buildingProposal;
 
         if (proposalData.executedAt) {
             delete proposalData.executedAt;
         }
-        proposalData.status = 'Active';
+        proposalData.applied = false;
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -5203,10 +5149,10 @@ const ProposalManager = {
             this._clearDescendantProposalOnParcels(uniqueParents, proposalId);
             uniqueParents.forEach(id => this._unmarkParcelModified(id));
 
-            // Update status
-            sp.status = 'unapplied';
+            // The structure leaves the map (application axis only).
+            sp.applied = false;
             proposalData.structureProposal = sp;
-            proposalData.status = 'Active';
+            proposalData.applied = false;
             proposalData.proposalId = proposalData.proposalId || proposalId;
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposalData);
@@ -5300,20 +5246,14 @@ const ProposalManager = {
         this._removeReparcellizationLayer(proposalId);
         this._removeChildParcels(proposalId, childIds, proposalData);
 
-        plan.status = 'unapplied';
+        plan.applied = false;
         if (plan.appliedAt) {
             delete plan.appliedAt;
         }
         plan.childParcelIds = [];
         proposalData.childParcelIds = [];
 
-        if (typeof isAppliedStatus === 'function') {
-            if (isAppliedStatus(proposalData.status)) {
-                proposalData.status = 'Active';
-            }
-        } else if ((proposalData.status || '').toLowerCase() === 'applied') {
-            proposalData.status = 'Active';
-        }
+        proposalData.applied = false;
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -5384,7 +5324,7 @@ const ProposalManager = {
             // If road proposal is applied, unapply FIRST and await completion.
             // Otherwise we can end up deleting the proposal record while unapply is still running,
             // leaving road geometries orphaned on the map and/or duplicating restored parent parcels.
-            if (isRoad && roadProposal && _isAppliedStatusLike(roadProposal.status)) {
+            if (isRoad && roadProposal && appliedOf(proposalData, roadProposal)) {
                 try {
                     await this._unapplyProposalConfirmed(proposalId);
                 } catch (err) {
@@ -5396,7 +5336,7 @@ const ProposalManager = {
                 }
             }
 
-            if (isBuilding && proposalData.buildingProposal && proposalData.buildingProposal.status !== 'unapplied') {
+            if (isBuilding && proposalData.buildingProposal && appliedOf(proposalData, proposalData.buildingProposal)) {
                 try {
                     this._unapplyBuildingProposalConfirmed(proposalId);
                 } catch (err) {
@@ -5406,7 +5346,7 @@ const ProposalManager = {
 
             if (isStructure && proposalData.structureProposal) {
                 try {
-                    if ((proposalData.structureProposal.status || '').toLowerCase() === 'applied') {
+                    if (appliedOf(proposalData, proposalData.structureProposal)) {
                         this._unapplyStructureProposalConfirmed(proposalId);
                     }
                     // Remove lingering graphics even if status got out of sync
@@ -5416,7 +5356,7 @@ const ProposalManager = {
                 }
             }
 
-            if (isReparcellization && proposalData.reparcellization && (proposalData.reparcellization.status || '').toLowerCase() === 'applied') {
+            if (isReparcellization && proposalData.reparcellization && appliedOf(proposalData, proposalData.reparcellization)) {
                 try {
                     this._unapplyReparcellizationProposalConfirmed(proposalId);
                 } catch (err) {
@@ -6999,10 +6939,7 @@ const ProposalManager = {
                         return;
                     }
                     const road = proposal.roadProposal;
-                    const roadStatus = road.status ? String(road.status).toLowerCase() : '';
-                    const proposalStatus = proposal.status ? String(proposal.status).toLowerCase() : '';
-                    const isApplied = roadStatus === 'applied' || proposalStatus === 'applied' || proposalStatus === 'executed';
-                    if (!isApplied) {
+                    if (!appliedOf(proposal, road)) {
                         return;
                     }
                     let childIds = Array.isArray(road.childParcelIds) ? road.childParcelIds.slice() : [];
@@ -8241,8 +8178,7 @@ function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
             const proposals = proposalStorage.getAllProposals();
             proposals.forEach(proposal => {
                 if (!proposal || !proposal.reparcellization) return;
-                const status = (proposal.reparcellization.status || '').toLowerCase();
-                if (status === 'applied') {
+                if (appliedOf(proposal, proposal.reparcellization)) {
                     ProposalManager._renderReparcellizationPlan(proposal.reparcellization, proposal.proposalId);
                 }
             });

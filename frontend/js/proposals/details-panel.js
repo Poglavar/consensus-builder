@@ -719,8 +719,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
-    const proposalStatus = (proposal.status || '').toLowerCase();
-    if (proposal.expiresAt && proposalStatus !== 'executed') {
+    if (proposal.expiresAt && getLifecycleStatus(proposal) !== 'Executed') {
         const expiresAt = new Date(proposal.expiresAt).getTime();
         const now = Date.now();
         const isExpired = expiresAt <= now;
@@ -2214,10 +2213,6 @@ function driveTrackProposalIn3DSim(proposalKey) {
         return;
     }
 
-    const isAppliedLike = (status) => {
-        const s = (status || '').toString().toLowerCase();
-        return s === 'applied' || s === 'executed';
-    };
     const appliedSerialIds = [];
     const seenSerialIds = new Set();
     try {
@@ -2225,12 +2220,9 @@ function driveTrackProposalIn3DSim(proposalKey) {
         const all = (storage && typeof storage.getAllProposals === 'function') ? storage.getAllProposals() : [];
         for (const p of all) {
             if (!p) continue;
-            const applied = isAppliedLike(p.status)
-                || (p.roadProposal && isAppliedLike(p.roadProposal.status))
-                || (p.buildingProposal && isAppliedLike(p.buildingProposal.status))
-                || (p.structureProposal && isAppliedLike(p.structureProposal.status))
-                || (p.reparcellization && isAppliedLike(p.reparcellization.status))
-                || (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status));
+            const applied = isApplied(p)
+                || ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                    .some(key => p[key] && isApplied(p, p[key]));
             if (!applied) continue;
             const sid = window.getSerialProposalId(p);
             if (sid && !seenSerialIds.has(sid)) {
