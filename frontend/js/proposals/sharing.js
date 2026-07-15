@@ -20,7 +20,10 @@
  */
 
 // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
-const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./status.js').isApplied;
+// File-unique name: `appliedOf` is already declared at top level in proposal-manager.js, and classic
+// scripts share one global lexical scope — reusing the name there would redeclare/throw and abort
+// whichever file loads second (it did: "Identifier 'appliedOf' has already been declared").
+const appliedStateOf = (typeof isApplied === 'function') ? isApplied : require('./status.js').isApplied;
 
 // ============================================================================
 // Constants
@@ -835,9 +838,9 @@ async function ensureAncestorProposalsUploaded(proposal) {
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
-    if (appliedOf(proposal)) return true;
+    if (appliedStateOf(proposal)) return true;
     return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
-        .some(key => proposal[key] && appliedOf(proposal, proposal[key]));
+        .some(key => proposal[key] && appliedStateOf(proposal, proposal[key]));
 }
 
 // ============================================================================

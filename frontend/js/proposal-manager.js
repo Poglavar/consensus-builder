@@ -9,6 +9,13 @@ const lifecycleOf = (typeof getLifecycleStatus === 'function')
     ? getLifecycleStatus
     : require('./proposals/status.js').getLifecycleStatus;
 
+// Pure apply-routing (goal normalisation + which apply path a proposal takes), extracted to
+// proposals/apply/route.js as the first decomposition of this file. It exposes a namespaced
+// window.__applyRoute in the browser (no global-shadowing) and a CommonJS export in node.
+const applyRoute = (typeof window !== 'undefined' && window.__applyRoute)
+    ? window.__applyRoute
+    : require('./proposals/apply/route.js');
+
 function _buildSyntheticToken(value, fallback = 'proposal') {
     const base = (value !== undefined && value !== null) ? String(value) : String(fallback || 'proposal');
     const sanitize = (raw) => String(raw || '')
@@ -2544,28 +2551,21 @@ const ProposalManager = {
             return true; // Already applied for other types
         }
 
-        const goalKey = this._normalizeGoalKey(proposalData.goal);
+        // Route decision lives in the pure proposals/apply/route.js (unit-tested); this method keeps
+        // only the I/O around it.
+        const { route, goalKey } = applyRoute.classifyApplyRoute(proposalData);
         let result = false;
 
-        // Ownership-transfer proposals (generic "parcel", ownership-transfer-to-me/from-me,
-        // and the post-sale "to-buyer") have no visual map payload — ownership is moved at
-        // execute time by the chokepoint, not here — so apply is an idempotent no-op success.
-        // Without this, every parcel load re-applies these executed proposals and logs
-        // "Unsupported proposal goal" once per proposal per pan.
-        if (goalKey === 'parcel'
-            || goalKey === 'to-buyer'
-            || (typeof goalKey === 'string' && goalKey.startsWith('ownership-transfer'))) {
+        // Ownership-transfer proposals (generic "parcel", ownership-transfer-to-me/from-me, and the
+        // post-sale "to-buyer") have no visual map payload — ownership is moved at execute time by
+        // the chokepoint, not here — so apply is an idempotent no-op success. Without this, every
+        // parcel load re-applies these executed proposals and logs "Unsupported" once per pan.
+        if (route === 'noop') {
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
             return true;
         }
 
-        if (!(goalKey === 'road-track'
-            || goalKey === 'reparcellization'
-            || goalKey === 'decide-later'
-            || this._isBuildingProposal(proposalData)
-            || goalKey === 'park'
-            || goalKey === 'square'
-            || goalKey === 'lake')) {
+        if (route === 'unsupported') {
             const message = `Unsupported proposal goal: ${goalKey || 'missing goal'}`;
             try { this._setLastApplyFailure(safeId, message); } catch (_) { }
             console.warn(`[ProposalManager.applyProposal] ${message}`, { proposalId: safeId, goal: proposalData.goal });
@@ -2573,19 +2573,19 @@ const ProposalManager = {
             return false;
         }
 
-        if (goalKey !== 'road-track') this._beginReplacementSupersession(safeId, proposalData);
+        if (route !== 'road-track') this._beginReplacementSupersession(safeId, proposalData);
 
         result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
-            if (goalKey === 'road-track') {
+            if (route === 'road-track') {
                 return await this._applyRoadProposal(safeId, proposalData, applyOptions);
             }
-            if (goalKey === 'reparcellization') {
+            if (route === 'reparcellization') {
                 return await this._applyReparcellizationProposal(safeId, proposalData, applyOptions);
             }
-            if (goalKey === 'decide-later') {
+            if (route === 'decide-later') {
                 return await this._applyDecideLaterProposal(safeId, proposalData);
             }
-            if (this._isBuildingProposal(proposalData)) {
+            if (route === 'building') {
                 return await this._applyBuildingProposal(safeId, proposalData, applyOptions);
             }
             if (!proposalData.structureProposal) {
@@ -4261,8 +4261,7 @@ const ProposalManager = {
 
     _isBuildingProposal(proposalData) {
         if (!proposalData) return false;
-        const goalKey = this._normalizeGoalKey(proposalData.goal);
-        return goalKey === 'buildings' || goalKey === 'single' || goalKey === 'row' || goalKey === 'parcelbased' || goalKey === 'parcelBased';
+        return applyRoute.isBuildingGoal(this._normalizeGoalKey(proposalData.goal));
     },
 
     _isDecideLaterProposal(proposalData) {
@@ -4272,22 +4271,9 @@ const ProposalManager = {
     },
 
     _normalizeGoalKey(rawGoal) {
-        if (rawGoal === undefined || rawGoal === null) return '';
-        const text = String(rawGoal).trim().toLowerCase();
-        if (!text) return '';
-        const dashed = text.replace(/\s+/g, '-');
-        const key = dashed.replace(/\//g, '-');
-        if (key === 'road-track' || key === 'road' || key === 'track') return 'road-track';
-        if (key === 'decide-later' || key === 'decide') return 'decide-later';
-        if (key === 'reparcellization') return 'reparcellization';
-        if (key === 'park' || key === 'square' || key === 'lake') return key;
-        if (key === 'buildings' || key === 'residences') return 'buildings';
-        if (key === 'building(s)' || key === 'single' || key === 'single-building') return 'single';
-        if (key === 'row') return 'row';
-        if (key === 'parcelbased' || key === 'parcel-based') return 'parcelBased';
-        if (key === 'urban-rule') return 'urban-rule';
-        if (key === 'parcel') return 'parcel';
-        return key;
+        // Single source of truth in proposals/apply/route.js — this stays as a thin delegator so the
+        // ~40 internal callers keep working.
+        return applyRoute.normalizeGoalKey(rawGoal);
     },
 
     _getBuildingAncestorKey(proposalData) {
