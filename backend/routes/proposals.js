@@ -5,6 +5,7 @@
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import { recomputeCorridorStats } from './road-corridor.js';
+import { validateReparcellizationShares } from './reparcellization.js';
 
 // Rendering a thumbnail means fetching ~10-40 basemap tiles. That is normally under a second, but it
 // is a third party on the request path, so it gets a hard deadline: an upload must never hang on it.
@@ -375,7 +376,7 @@ export function setupProposalsRoute(app, pool) {
             const roadProposal = validated.roadProposal ?? null;
             const buildingProposal = validated.buildingProposal ?? null;
             const structureProposal = validated.structureProposal ?? null;
-            const reparcellization = validated.reparcellization ?? null;
+            let reparcellization = validated.reparcellization ?? null;
 
             const parentFeatures = null;
             const childFeatures = null;
@@ -399,6 +400,17 @@ export function setupProposalsRoute(app, pool) {
                         roadProposal.definition.metadata = roadProposal.definition.metadata || {};
                         roadProposal.definition.metadata.ownershipAndAcquisitionStats = serverStats;
                     }
+                }
+            }
+
+            // Reparcellization land shares are recomputed from the stored child geometry (percents
+            // must match the polygons, sum to ~100). The geometry-truth overwrites the client numbers
+            // and validated:false flags a mismatch. Soft: a bad plan is still stored, just marked.
+            if (reparcellization) {
+                const validatedReparcellization = validateReparcellizationShares(reparcellization);
+                if (validatedReparcellization) {
+                    reparcellization = validatedReparcellization;
+                    proposal.reparcellization = validatedReparcellization;
                 }
             }
 

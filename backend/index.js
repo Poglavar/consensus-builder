@@ -33,6 +33,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
+import { setupReparcellizationRoute } from './routes/reparcellization.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
@@ -320,6 +321,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
     setupRoadCorridorRoute(app, activePool);
+    setupReparcellizationRoute(app);
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
