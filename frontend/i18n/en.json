@@ -163,7 +163,7 @@
         },
         "publish": {
             "alreadyCreated": "This draft already created proposal {{id}}.",
-            "geometryReady": "Geometry restored from the draft"
+            "geometryReady": "Geometry attached from the draft"
         },
         "mapTooltip": "Draft — click to continue",
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",

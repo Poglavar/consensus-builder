@@ -163,7 +163,7 @@
         },
         "publish": {
             "alreadyCreated": "Ova je skica već stvorila prijedlog {{id}}.",
-            "geometryReady": "Geometrija je vraćena iz skice"
+            "geometryReady": "Geometrija je priložena iz skice"
         },
         "mapTooltip": "Skica — kliknite za nastavak",
         "noGeometryYet": "Ova skica još nema geometriju — počnite crtati da je dobije.",

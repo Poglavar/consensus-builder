@@ -1118,7 +1118,7 @@
             prefill,
             copySource: draft.sourceProposalId ? { proposalId: draft.sourceProposalId, name: global.pendingProposalReplacementSource.name } : null,
             geometryPreset: seeded ? {
-                statusText: tDraft('proposalDrafts.publish.geometryReady', 'Geometry restored from the draft'),
+                statusText: tDraft('proposalDrafts.publish.geometryReady', 'Geometry attached from the draft'),
                 submitted: true,
                 selectedAction: 'edit',
                 disableButtons: false
@@ -1150,9 +1150,16 @@
             // an unminted local object is absorbed, so the action is simply "Create proposal".
             const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
             const sourceIsMinted = !!(source && typeof global.isProposalMinted === 'function' && global.isProposalMinted(source));
-            submit.textContent = sourceIsMinted
-                ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
-                : tDraft('proposalDrafts.actions.createProposal', 'Create proposal');
+            // A no-property-change proposal (ownership no-change + parcels as-is) is a non-binding
+            // vote — that outcome wins over the create/replacement label, matching
+            // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
+            const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
+            const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
+            submit.textContent = isVote
+                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
+                : (sourceIsMinted
+                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();

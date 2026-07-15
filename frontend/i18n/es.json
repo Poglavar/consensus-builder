@@ -163,7 +163,7 @@
         },
         "publish": {
             "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
-            "geometryReady": "Geometría restaurada desde el borrador"
+            "geometryReady": "Geometría adjuntada desde el borrador"
         },
         "mapTooltip": "Borrador — haz clic para continuar",
         "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",

@@ -163,7 +163,7 @@
         },
         "publish": {
             "alreadyCreated": "Ovaj nacrt je već napravio predlog {{id}}.",
-            "geometryReady": "Geometrija je vraćena iz nacrta"
+            "geometryReady": "Geometrija je priložena iz nacrta"
         },
         "mapTooltip": "Nacrt — kliknite za nastavak",
         "noGeometryYet": "Ovaj nacrt još nema geometriju — počnite da crtate da je dobije.",

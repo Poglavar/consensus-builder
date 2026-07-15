@@ -320,18 +320,9 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
     // Open the details panel collapsed on first appearance (see showProposalInfo).
     if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
 
-    let applied = false;
-    if (typeof applyProposalToMap === 'function') {
-        applied = (await applyProposalToMap(proposalId, { parcelId: primaryParcelId, centerOnProposal: true })) !== false;
-    } else if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
-        try {
-            applied = (await ProposalManager.applyProposal(proposalId)) !== false;
-        } catch (_) {
-            applied = false;
-        }
-    }
-
-    if (!applied && typeof focusProposalDetails === 'function') {
+    // No auto-apply on creation: the structure geometry is already on the map as an applied draft
+    // before the proposal exists (we switched to auto-applying drafts). Just focus the details.
+    if (typeof focusProposalDetails === 'function') {
         focusProposalDetails(proposalId, { parcelId: primaryParcelId, centerOnProposal: true });
     }
 }
@@ -1798,14 +1789,8 @@ async function createProposal() {
             }
         }
 
-        // Vote proposals are applied to the map by default — they change no one's property, so
-        // showing them is harmless. Any client can remove them locally afterward via the usual
-        // remove-from-map action. Fire-and-forget so it never blocks the create flow.
-        if (proposal.isVote === true && typeof applyProposalToMap === 'function') {
-            Promise.resolve()
-                .then(() => applyProposalToMap(proposalId))
-                .catch(err => console.warn('[createProposal] auto-apply of vote proposal failed', err));
-        }
+        // Vote proposals need no special map handling: like every proposal, their geometry is
+        // already on the map as the applied draft they were created from — nothing to re-apply.
 
         // Update the show proposals button count
         console.debug('[createProposal] Updating UI and logging user action');
@@ -1873,25 +1858,9 @@ async function createProposal() {
             }
         }
 
-        // SimCity lifecycle: what you create is immediately on the map. Overlapping applied
-        // proposals get auto-parked (never deleted) by the parent-availability gate; if apply
-        // still fails, the proposal simply stays parked in the list.
-        // Roads never warn or park: corridors take partial slices, so a road sharing parcels with
-        // another (without touching it) coexists silently; touching roads merge in the draw flow.
-        const autoApplyOptions = (resolveProposalGoalKey(proposal, null) === 'road-track')
-            ? { applyAnyway: true, suppressMissingParentAlerts: true }
-            : { autoParkConflicts: true };
-        try {
-            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
-                await ProposalManager.applyProposal(proposalId, autoApplyOptions);
-                // The manager applies data + parcels; derived layers (corridor cross-sections,
-                // structure layers, parcel styles) refresh through the same helper the panel
-                // buttons use.
-                try { ProposalManager._refreshUIAfterProposalChange?.(proposalStorage.getProposal(proposalId)); } catch (_) { }
-            }
-        } catch (applyError) {
-            console.warn('[createProposal] Auto-apply failed; proposal stays parked', applyError);
-        }
+        // No auto-apply on creation: the geometry is already on the map as an applied draft before
+        // the proposal exists (we switched to auto-applying drafts). Re-applying the proposal here
+        // was redundant and caused conflict toasts/modals against the very draft it was made from.
 
         // Proposing an existing LOCAL object absorbs it: the record it was created from is
         // removed, so exactly one thing remains on the map and in the list. A minted source is
