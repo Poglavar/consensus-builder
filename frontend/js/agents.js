@@ -344,12 +344,9 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
     }
 
     console.log(`Transferred parcel ${parcelId} from ${fromAgentId || 'nobody'} to ${toAgentId}`);
-
-    // Persist the transfer server-side so it survives reload and syncs across clients
-    // (parcel_<id>_owner is otherwise browser-local). Best-effort, non-blocking.
-    if (typeof persistParcelOwnership === 'function') {
-        try { persistParcelOwnership(parcelId, toAgentId); } catch (_) { }
-    }
+    // Transfers are tracked browser-local (parcel_<id>_owner). The old server round-trip via
+    // /parcel-ownership was write-only — its read-back (hydrateParcelOwnershipFromServer) was never
+    // wired in — so the endpoint (an unauthenticated upsert) was removed.
 }
 
 // ---- Proposal ownership execution (Tiers 0–1) -----------------------------
@@ -430,65 +427,11 @@ function resolveProposalRecipientAgentId(proposal) {
     }
 }
 
-// ---- Ownership cache (Tier 2.3) -------------------------------------------
-// NOTE: canonical parcel ownership is on-chain (pulled on request). This backend store is a
-// NON-CANONICAL, best-effort cache for display / game mode only — we mirror local transfers to
-// it so they can survive reload / be shared, but it is NOT a source of truth and is deliberately
-// NOT auto-hydrated on load (that would override chain truth). All calls best-effort, non-blocking.
-function _ownershipBackendBase() {
-    try {
-        if (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') {
-            let b = window.getBackendBase();
-            if (b && b.endsWith('/')) b = b.slice(0, -1);
-            return b || '';
-        }
-    } catch (_) { }
-    return '';
-}
-
-function _ownershipCityId() {
-    try {
-        if (typeof window !== 'undefined' && window.CityConfigManager
-            && typeof window.CityConfigManager.getCurrentCityId === 'function') {
-            return window.CityConfigManager.getCurrentCityId();
-        }
-    } catch (_) { }
-    return null;
-}
-
-function persistParcelOwnership(parcelId, ownerId) {
-    const base = _ownershipBackendBase();
-    if (!base || typeof fetch !== 'function') return;
-    try {
-        fetch(`${base}/parcel-ownership`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ parcelId, owner: ownerId, city: _ownershipCityId() })
-        }).catch(() => { });
-    } catch (_) { }
-}
-
-// Load server-side ownership into PersistentStorage. Call once at startup (after agents load)
-// so transfers made elsewhere/last session are reflected. Exposed; wire into init as desired.
-async function hydrateParcelOwnershipFromServer() {
-    const base = _ownershipBackendBase();
-    if (!base || typeof fetch !== 'function') return;
-    try {
-        const city = _ownershipCityId();
-        const url = `${base}/parcel-ownership${city ? `?city=${encodeURIComponent(city)}` : ''}`;
-        const resp = await fetch(url);
-        if (!resp.ok) return;
-        const data = await resp.json();
-        const owners = (data && data.owners) || {};
-        Object.keys(owners).forEach(pid => {
-            PersistentStorage.setItem(`parcel_${pid}_owner`, owners[pid]);
-        });
-    } catch (_) { }
-}
+// Parcel ownership in game mode is tracked browser-local (parcel_<id>_owner); canonical ownership
+// is on-chain. The old non-canonical server cache (/parcel-ownership) was removed — its read-back
+// was never wired in, so it was a write-only, unauthenticated upsert.
 
 if (typeof window !== 'undefined') {
-    window.persistParcelOwnership = persistParcelOwnership;
-    window.hydrateParcelOwnershipFromServer = hydrateParcelOwnershipFromServer;
     window.resolveProposalRecipientAgentId = resolveProposalRecipientAgentId;
     window.getOrCreateCityAgent = getOrCreateCityAgent;
     window.CITY_AGENT_ID = CITY_AGENT_ID;
