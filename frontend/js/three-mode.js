@@ -23,6 +23,14 @@
         console.error('[3D] Smooth building transparency is unavailable. Skipping 3D mode initialization.');
         return;
     }
+    const buildingDisplayPolicy = (typeof window !== 'undefined') ? window.__threeBuildingDisplay : null;
+    if (!buildingDisplayPolicy
+        || typeof buildingDisplayPolicy.displayStatesForKind !== 'function'
+        || typeof buildingDisplayPolicy.resolveBuiltDisplayPolicy !== 'function'
+        || typeof buildingDisplayPolicy.resolveBuildingRenderParts !== 'function') {
+        console.error('[3D] Building display policy is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
     const structureRefresh = (typeof window !== 'undefined') ? window.__threeStructureRefresh : null;
     if (!structureRefresh
         || typeof structureRefresh.refreshStructureScene3D !== 'function'
@@ -214,8 +222,8 @@
     const buildingMaterials = {
         solid: makeBuildingMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20 }),
         ghost: makeBuildingMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20 }, 0.5),
-        // Buildings an applied corridor demolishes stay reddish in both Built modes, but their
-        // opacity must follow the selected mode: solid really is solid, transparent remains ghosted.
+        // Buildings an applied proposal demolishes stay reddish in inclusive Built modes; Removed
+        // also uses the solid variant so the isolated demolition footprint reads clearly.
         demolishedSolid: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }),
         demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3)
     };
@@ -234,13 +242,13 @@
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
-    // Building display: the built context and the planned proposals each render independently
-    // as 'solid' (opaque), 'ghost' (transparent) or 'off' (hidden). Defaults make the proposal
-    // pop against a translucent context.
+    // Building display: both families support solid / transparent / off. Built additionally offers
+    // complementary Surviving and Removed views from the exact stored carve halves. Defaults make
+    // the proposal pop against a translucent context.
     let builtDisplay = 'ghost';
     let plannedDisplay = 'solid';
     let buildingModeControlsEl = null;
-    let displayStateButtons = { built: {}, planned: {} };
+    let displayStateSelects = { built: null, planned: null };
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
     // Parcel isolation: clicking a parcel hides everything but that parcel and the
@@ -278,15 +286,15 @@
     // and just adds tilt, instead of reframing to a different scale.
     const CAMERA_DISTANCE_SCALE = 1.0;
 
-    function updateDisplayStateButtons() {
+    function updateDisplayStateControls() {
         try {
             ['built', 'planned'].forEach((kind) => {
                 const current = kind === 'built' ? builtDisplay : plannedDisplay;
-                Object.entries(displayStateButtons[kind] || {}).forEach(([state, btn]) => {
-                    if (!btn) return;
-                    btn.classList.toggle('three-mode-segment--active', state === current);
-                    btn.setAttribute('aria-pressed', state === current ? 'true' : 'false');
-                });
+                const select = displayStateSelects[kind];
+                if (!select) return;
+                select.value = current;
+                const selectedOption = select.options && select.options[select.selectedIndex];
+                select.title = selectedOption?.dataset?.tooltip || selectedOption?.textContent || '';
             });
         } catch (_) { }
     }
@@ -312,8 +320,7 @@
     }
 
     function setBuildingDisplay(kind, state) {
-        if (state !== 'solid' && state !== 'ghost' && state !== 'off' && state !== 'surviving') return;
-        if (state === 'surviving' && kind !== 'built') return; // only existing fabric can "survive"
+        if (!buildingDisplayPolicy.displayStatesForKind(kind).includes(state)) return;
         if (kind === 'built') {
             if (builtDisplay === state) return;
             builtDisplay = state;
@@ -323,7 +330,7 @@
         } else {
             return;
         }
-        updateDisplayStateButtons();
+        updateDisplayStateControls();
         // Changing display drops out of parcel isolation so the new state is shown in full.
         isolatedParcelId = null;
         updateIsolationButton();
@@ -699,7 +706,7 @@
     function ensureBuildingModeControls() {
         if (!threeContainer) return;
         if (buildingModeControlsEl && buildingModeControlsEl.parentElement === threeContainer) {
-            updateDisplayStateButtons();
+            updateDisplayStateControls();
             return;
         }
 
@@ -739,47 +746,48 @@
         radiusRow.appendChild(radiusSlider);
         buildingModeControlsEl.appendChild(radiusRow);
 
-        // Display-state rows: Built and Planned each pick solid / transparent / off.
+        // Display-state rows use equal-width selects. Built has one more state than Planned, so
+        // segmented buttons divided the same panel into four versus three unequal/truncated cells.
+        // A select represents this compact state choice without hiding any localized label.
         const makeDisplayRow = (kind, labelText) => {
             const row = document.createElement('div');
             row.className = 'three-mode-emphasis-row';
-            const label = document.createElement('span');
+            const label = document.createElement('label');
             label.className = 'three-mode-emphasis-label';
             label.textContent = labelText;
             // Full explanation on hover — the row label is short but its meaning isn't obvious.
             label.title = threeI18n('threeMode.controls.' + kind + 'Tooltip', labelText);
+            label.htmlFor = `three-mode-${kind}-display`;
             row.appendChild(label);
-            const wrap = document.createElement('div');
-            wrap.className = 'three-mode-segmented';
-            // Tooltip per state: the segment labels truncate with an ellipsis on a narrow
-            // panel, so the title carries the full name plus what the state actually does.
             const stateTooltips = {
                 solid: threeI18n('threeMode.controls.stateSolidTooltip', 'Solid'),
                 ghost: threeI18n('threeMode.controls.stateGhostTooltip', 'Transparent'),
                 surviving: threeI18n('threeMode.controls.stateSurvivingTooltip', 'Surviving'),
+                removed: threeI18n('threeMode.controls.stateRemovedTooltip', 'Removed'),
                 off: threeI18n('threeMode.controls.stateOffTooltip', 'Off')
             };
-            const states = [
-                ['solid', threeI18n('threeMode.controls.stateSolid', 'Solid')],
-                ['ghost', threeI18n('threeMode.controls.stateGhost', 'Transparent')],
-                ['off', threeI18n('threeMode.controls.stateOff', 'Off')]
-            ];
-            if (kind === 'built') {
-                // "Surviving": solid existing fabric, but the buildings the plan demolishes are
-                // NOT drawn at all — the after-the-plan ground truth.
-                states.splice(2, 0, ['surviving', threeI18n('threeMode.controls.stateSurviving', 'Surviving')]);
-            }
+            const stateLabels = {
+                solid: threeI18n('threeMode.controls.stateSolid', 'Solid'),
+                ghost: threeI18n('threeMode.controls.stateGhost', 'Transparent'),
+                surviving: threeI18n('threeMode.controls.stateSurviving', 'Surviving'),
+                removed: threeI18n('threeMode.controls.stateRemoved', 'Removed'),
+                off: threeI18n('threeMode.controls.stateOff', 'Off')
+            };
+            const states = buildingDisplayPolicy.displayStatesForKind(kind)
+                .map(state => [state, stateLabels[state]]);
+            const select = document.createElement('select');
+            select.id = `three-mode-${kind}-display`;
+            select.className = 'three-mode-display-select';
             states.forEach(([state, stateLabel]) => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'three-mode-segment';
-                btn.textContent = stateLabel;
-                if (stateTooltips[state]) btn.title = stateTooltips[state];
-                btn.addEventListener('click', () => setBuildingDisplay(kind, state));
-                displayStateButtons[kind][state] = btn;
-                wrap.appendChild(btn);
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = stateLabel;
+                if (stateTooltips[state]) option.dataset.tooltip = stateTooltips[state];
+                select.appendChild(option);
             });
-            row.appendChild(wrap);
+            select.addEventListener('change', () => setBuildingDisplay(kind, select.value));
+            displayStateSelects[kind] = select;
+            row.appendChild(select);
             return row;
         };
         buildingModeControlsEl.appendChild(makeDisplayRow('built', threeI18n('threeMode.controls.built', 'Built')));
@@ -804,7 +812,7 @@
         buildingModeControlsEl.appendChild(isolationResetEl);
 
         threeContainer.appendChild(buildingModeControlsEl);
-        updateDisplayStateButtons();
+        updateDisplayStateControls();
         updateIsolationButton();
     }
 
@@ -1652,7 +1660,10 @@
             const group = window.buildElevatedRail3D(data, coordsToXY, { maxRadius });
             if (!group) return;
             existingRailGroup = group;
-            existingRailGroup.visible = builtDisplay !== 'off' && isolatedParcelId === null && isolatedProposalId === null;
+            const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
+            existingRailGroup.visible = builtPolicy.showExistingRail
+                && isolatedParcelId === null
+                && isolatedProposalId === null;
             targetScene.add(existingRailGroup);
         };
 
@@ -2155,7 +2166,7 @@
         });
     }
 
-    function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, hideDemolished = false) {
+    function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, visibility = {}) {
         // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
         // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
         // that the 2D map serves and that cut/tunnel/demolish detection scans. So a demolished or
@@ -2189,7 +2200,9 @@
                 nearbyProposalBuildings.forEach(bld => {
                     try {
                         const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords);
+                        const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
+                            if (!renderParts.detailed) return;
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
                             if (mesh) targetGroup.add(mesh);
                             return;
@@ -2198,21 +2211,21 @@
                             // PARTIAL demolition: the real mesh cannot be sliced, so the affected
                             // building trades facade detail for truth — two extruded prisms at
                             // its measured height: the surviving remainder in normal material,
-                            // the demolished part as the condemned ghost (absent in Surviving).
+                            // the demolished part as a condemned volume (absent in Surviving).
                             const height = building3DHeightMeters(bld);
                             const remainder = asFeature(carve.remainder);
                             const demolished = asFeature(carve.demolished);
-                            if (remainder) {
+                            if (renderParts.remainder && remainder) {
                                 polygonFeatureToMeshes(remainder, buildingMaterial, 0, height)
                                     .forEach(m => targetGroup.add(m));
                             }
-                            if (!hideDemolished && demolished) {
+                            if (renderParts.demolished && demolished) {
                                 polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
                                     .forEach(m => targetGroup.add(m));
                             }
                             return;
                         }
-                        if (hideDemolished) return; // "Surviving": razed fabric absent
+                        if (!renderParts.detailed) return;
                         const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
                         if (mesh) targetGroup.add(mesh);
                     } catch (e) {
@@ -3163,16 +3176,23 @@
         // attach their meshes to the freshly cleared group.
         buildingsRenderGeneration++;
 
-        // Each family follows its own display state: solid, transparent, or hidden.
-        const showExisting = builtDisplay !== 'off';
+        // Each family follows its own display state. Built additionally supports complementary
+        // Surviving and Removed views using the exact two halves stored by the carve pipeline.
+        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
+        const showExisting = builtPolicy.visible;
         const showProposed = plannedDisplay !== 'off';
-        if (existingRailGroup) existingRailGroup.visible = showExisting;
-        const existingMaterial = (builtDisplay === 'solid' || builtDisplay === 'surviving')
+        if (existingRailGroup) existingRailGroup.visible = builtPolicy.showExistingRail;
+        const existingMaterial = builtPolicy.material === 'solid'
             ? buildingMaterials.solid
             : buildingMaterials.ghost;
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
 
-        if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial, builtDisplay === 'surviving');
+        if (showExisting) {
+            buildNearbyProposalBuildings3D(buildingGroup, existingMaterial, {
+                showSurviving: builtPolicy.showSurviving,
+                showDemolished: builtPolicy.showDemolished
+            });
+        }
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
@@ -3663,7 +3683,7 @@
         isolatedParcelId = null;
         isolationResetEl = null;
         parcelInfoPanelEl = null;
-        displayStateButtons = { built: {}, planned: {} };
+        displayStateSelects = { built: null, planned: null };
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }

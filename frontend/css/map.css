@@ -413,6 +413,42 @@ body.sidebar-collapsed {
     font-size: 12px;
 }
 
+/* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
+   uneven segmented cells and keep long translated labels fully readable. Photoreal mode retains
+   its equal three-button segments. */
+#three-container .three-mode-display-select {
+    appearance: none;
+    flex: 0 0 168px;
+    width: 168px;
+    min-width: 0;
+    height: 30px;
+    border: 1px solid #c8cdd5;
+    border-radius: 8px;
+    background-color: #f5f7fa;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%235a6472' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    color: #2d3748;
+    padding: 4px 30px 4px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+#three-container .three-mode-display-select:hover {
+    border-color: #8f99a7;
+    background-color: #fff;
+}
+
+#three-container .three-mode-display-select:focus-visible {
+    border-color: #2c6cb0;
+    box-shadow: 0 0 0 3px rgba(44, 108, 176, 0.2);
+    outline: none;
+}
+
 #three-container .three-mode-reset-btn {
     appearance: none;
     flex: 1;
@@ -449,7 +485,7 @@ body.sidebar-collapsed {
     font-weight: 600;
     cursor: pointer;
     transition: background 120ms ease, color 120ms ease;
-    /* Four segments on the Built row: labels shrink with a clean ellipsis instead of clipping. */
+    /* Photoreal mode still uses compact equal-width segments. */
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -472,9 +508,7 @@ body.sidebar-collapsed {
     color: #fff;
 }
 
-/* Phones: the control panel spans the top edge instead of hugging the right corner (with the
-   four-segment Built row it otherwise eats half the scene or squeezes to nothing), and the
-   segments grow to finger height. */
+/* Phones: the control panel spans the top edge and controls grow to finger height. */
 @media (max-width: 480px) {
     #three-container .three-mode-ui-panel,
     #cesium-container .three-mode-ui-panel {
@@ -487,6 +521,12 @@ body.sidebar-collapsed {
     #cesium-container .three-mode-emphasis-row .three-mode-segment {
         padding: 8px 4px;
         font-size: 11px;
+    }
+
+    #three-container .three-mode-display-select {
+        flex: 1 1 auto;
+        width: auto;
+        height: 38px;
     }
 
     /* The panel now owns the top edge — the loading pill moves to the bottom centre. */
@@ -503,6 +543,10 @@ body.sidebar-collapsed {
     #cesium-container .three-mode-segment {
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+
+    #three-container .three-mode-display-select {
+        height: 40px;
     }
 }
 
@@ -731,10 +775,10 @@ body.three-mode-active #agent-bubbles-container {
     }
     
     /* When sidebar is open, move map controls */
-/* Display-state rows (Built / Planned): equal-width state buttons, aligned across both rows. */
+/* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
 #three-container .three-mode-emphasis-label,
 #cesium-container .three-mode-emphasis-label {
-    flex: 0 0 54px;
+    flex: 0 0 70px;
 }
 
 #three-container .three-mode-emphasis-row .three-mode-segment,
