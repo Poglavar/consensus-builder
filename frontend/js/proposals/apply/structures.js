@@ -24,18 +24,46 @@
             const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
             const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+            const canonicalGeometry = typeof this._getCanonicalStructureGeometry === 'function'
+                ? this._getCanonicalStructureGeometry(proposalData, kind)
+                : null;
+            let geometry = sp.geometry;
+            if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
+                geometry = canonicalGeometry;
+            }
+            if ((!geometry || !geometry.type || !Array.isArray(geometry.coordinates))
+                && typeof this._rebuildStructureGeometry === 'function') {
+                geometry = this._rebuildStructureGeometry(sp, proposalData);
+            }
+            if (geometry && geometry.type && Array.isArray(geometry.coordinates)) {
+                try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
+            }
+            const refreshStructureLayer = () => {
+                if (kind === 'park') {
+                    if (typeof updateParksLayer === 'function') updateParksLayer();
+                } else if (kind === 'lake') {
+                    if (typeof updateLakesLayer === 'function') updateLakesLayer();
+                } else if (typeof updateSquaresLayer === 'function') {
+                    updateSquaresLayer();
+                }
+            };
+            let repairedEmptyDemolitionScan = false;
 
             // Structures clear their ground by default. A structure with NO demolition list
-            // (created before the feature, or while no building footprints were loaded)
-            // computes it now, at apply time, after making sure footprints are available.
-            if (!Array.isArray(sp.demolishedBuildings) || (!sp.demolishedBuildings.length && sp.demolitionScanned !== true)) {
+            // (created before the feature, or after an earlier footprint fetch failed) computes
+            // it now, after making sure footprints are available. An EMPTY scan is deliberately
+            // retried on reapply/load: `demolitionScanned=true` used to make a transient empty
+            // pool permanent, so covered buildings survived forever after one failed request.
+            if (!Array.isArray(sp.demolishedBuildings) || !sp.demolishedBuildings.length) {
                 try {
                     if (typeof window.ensureCorridorBuildingFootprintsLoaded === 'function') {
                         await window.ensureCorridorBuildingFootprintsLoaded();
                     }
-                    if (sp.geometry && typeof window.demolishBuildingsUnderFootprint === 'function') {
-                        sp.demolishedBuildings = await window.demolishBuildingsUnderFootprint(sp.geometry);
+                    if (geometry && typeof window.demolishBuildingsUnderFootprint === 'function') {
+                        const previousCount = Array.isArray(sp.demolishedBuildings) ? sp.demolishedBuildings.length : 0;
+                        sp.demolishedBuildings = await window.demolishBuildingsUnderFootprint(geometry);
                         sp.demolitionScanned = true;
+                        repairedEmptyDemolitionScan = previousCount === 0 && sp.demolishedBuildings.length > 0;
                         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.save === 'function') proposalStorage.save();
                     }
                 } catch (error) {
@@ -50,14 +78,14 @@
                 : false;
             const alreadyAppliedStatus = appliedOf(proposalData, sp) || lifecycleOf(proposalData) === 'Executed';
             if (alreadyAppliedStatus && alreadyInLayer) {
+                if (repairedEmptyDemolitionScan) {
+                    try { refreshStructureLayer(); } catch (error) {
+                        console.error(`[_applyStructureProposal] Failed to refresh repaired ${kind} presentation`, error);
+                    }
+                }
                 return true;
             }
             const step2Time = performance.now();
-            const canonicalGeometry = this._getCanonicalStructureGeometry(proposalData, kind);
-            let geometry = sp.geometry;
-            if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
-                geometry = canonicalGeometry;
-            }
             if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
                 if (typeof updateStatus === 'function') updateStatus('Cannot apply structure proposal: missing geometry.');
                 console.warn('[_applyStructureProposal] Missing geometry for structure proposal; refusing to apply', {
@@ -199,7 +227,6 @@
                 });
                 try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
                 window.parks.push(feature);
-                try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
             } else if (kind === 'lake') {
                 if (!Array.isArray(window.lakes)) window.lakes = [];
@@ -210,7 +237,6 @@
                 });
                 try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
                 window.lakes.push(feature);
-                try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
             } else {
                 if (!Array.isArray(window.squares)) window.squares = [];
@@ -221,10 +247,9 @@
                 });
                 try { if (typeof ensureSquareDecorations === 'function') ensureSquareDecorations(feature); } catch (_) { }
                 window.squares.push(feature);
-                try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
-            console.debug(`[_applyStructureProposal] Step 4: Added ${kind} to map and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
+            console.debug(`[_applyStructureProposal] Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
             const step5Time = performance.now();
             // Link to ancestors without hiding parent parcels; keep parcels clickable beneath the square overlay
@@ -236,9 +261,14 @@
             console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
             // The structure is now on the map. persistAppliedProposal moves only the root-local
-            // application axis; the lifecycle (Active/Executed) is left as-is.
+            // application axis; the lifecycle (Active/Executed) is left as-is. Persist the model
+            // BEFORE refreshing its views: both 2D and 3D building filters read the canonical
+            // application flag when the structure-layer update event fires.
             proposalData.structureProposal = sp;
             persistAppliedProposal(proposalData, proposalId);
+            try { refreshStructureLayer(); } catch (error) {
+                console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
+            }
             refreshProposalUIAfterApply(`Applied ${kind} proposal ${proposalData.title || idLabel}`);
 
             const totalTime = performance.now() - startTime;

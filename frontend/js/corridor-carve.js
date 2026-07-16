@@ -53,7 +53,16 @@ function demolishedBuildingRecordsFrom(proposals, options = {}) {
         if (!proposal) return;
         const rp = proposal.roadProposal;
         if (rp && rp.definition && (selectedByCaller || carveIsApplied(proposal, rp))) {
-            (rp.definition.demolishedBuildings || []).forEach(record => {
+            const definition = rp.definition;
+            const rawRecords = definition.demolishedBuildings || [];
+            const corridorRecords = (typeof options.consolidateCorridorRecords === 'function')
+                ? options.consolidateCorridorRecords(
+                    rawRecords,
+                    definition.surfaceFootprint || definition.polygon || null,
+                    definition
+                )
+                : rawRecords;
+            (corridorRecords || []).forEach(record => {
                 if (record && record.id) records.push(record);
             });
         }

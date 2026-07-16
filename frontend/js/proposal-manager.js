@@ -47,6 +47,25 @@ function _getProposalApplyLabel(proposalId, proposalData) {
     return title || _normalizeProposalId(proposalId) || 'unknown-proposal';
 }
 
+// Applied corridor proposals have a canonical cross-section renderer (corridor-render.js), including
+// their lane markings. The old per-parcel dashed centreline is only a compatibility presentation for
+// pre-corridor road proposals; drawing it over a corridor duplicates the road and goes stale mid-drag.
+function _shouldDrawLegacyRoadCenterline(feature, proposalData) {
+    const properties = feature?.properties || {};
+    const isRoad = properties.isRoad === true || properties.isRoad === 'true';
+    if (!isRoad) return false;
+
+    const definition = proposalData?.roadProposal?.definition
+        || proposalData?.definition
+        || proposalData?.geometry?.roadPlan
+        || null;
+    const isCorridor = properties.isCorridor === true
+        || properties.isCorridor === 'true'
+        || definition?.metadata?.isCorridor === true
+        || definition?.metadata?.isCorridor === 'true';
+    return !isCorridor;
+}
+
 async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) {
     const label = _getProposalApplyLabel(proposalId, proposalData);
     try {
@@ -440,6 +459,21 @@ async function _reapplyAppliedProposal(proposal) {
                 } catch (_) { }
             }
         });
+        // Park/square/lake proposals deliberately keep their source parcels and therefore normally
+        // have no childParcelIds. Reapply the structure BEFORE this branch returns: the old ordering
+        // made the structure block at the bottom unreachable for exactly these proposals, so an
+        // empty demolition scan could never be repaired when the page reloaded.
+        if (goal === 'park' || goal === 'square' || goal === 'lake') {
+            if (typeof ProposalManager._applyStructureProposal === 'function') {
+                try {
+                    await _runProposalApplyWithSummary(
+                        proposal.proposalId,
+                        proposal,
+                        () => ProposalManager._applyStructureProposal(proposal.proposalId, proposal)
+                    );
+                } catch (_) { }
+            }
+        }
         return;
     }
 
@@ -3504,9 +3538,10 @@ const ProposalManager = {
                         indexParcelLayer(layer);
                     }
 
-                    // For applied roads, draw centerline overlay
+                    // Only pre-corridor road proposals need the compatibility centreline. Modern
+                    // corridors are already drawn (and live-updated) by corridor-render.js.
                     const feat = layer?.feature;
-                    if (feat?.properties?.isRoad && window.map) {
+                    if (_shouldDrawLegacyRoadCenterline(feat, proposalData) && window.map) {
                         const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
                             || (proposalData?.definition?.points)
                             || (proposalData?.geometry?.roadPlan?.points)
@@ -3777,12 +3812,13 @@ const ProposalManager = {
                             useNormalStyle,
                             isRoad: feature.properties.isRoad,
                             hasMap: !!window.map,
-                            conditionMet: useNormalStyle && feature.properties.isRoad && window.map
+                            conditionMet: !!(useNormalStyle && _shouldDrawLegacyRoadCenterline(feature, proposalData) && window.map)
                         });
                     }
 
-                    // For applied roads, overlay a white dashed centerline instead of using the stroke as a border
-                    if (useNormalStyle && feature.properties.isRoad && window.map) {
+                    // Pre-corridor road compatibility only. A canonical corridor's lane renderer is
+                    // its single presentation source and follows node drags live.
+                    if (useNormalStyle && _shouldDrawLegacyRoadCenterline(feature, proposalData) && window.map) {
                         // Single source of truth: points passed with the road definition
                         const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
                             || (proposalData?.definition?.points)
@@ -4910,6 +4946,8 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ProposalManager,
-        _shouldSkipUncutRemainder
+        _reapplyAppliedProposal,
+        _shouldSkipUncutRemainder,
+        _shouldDrawLegacyRoadCenterline
     };
 }

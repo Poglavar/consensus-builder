@@ -825,7 +825,7 @@ if (typeof window !== 'undefined') {
 
 // Simple HTML escape to safely insert dynamic strings into innerHTML
 
-// PARCEL_NUMBER_PROPERTY_CANDIDATES is defined in proposals/sharing.js
+// Parcel display-number schema and accessors are owned by proposals/parcel-id.js.
 
 
 

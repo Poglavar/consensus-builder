@@ -1243,6 +1243,12 @@
             "unapply": "Retirar la propuesta existente",
             "destroy": "Demoler los edificios",
             "cut": "Cortar los edificios",
+            "proposalImpact": "Cortar o demoler retirará estas propuestas aplicadas del mapa (seguirán en la lista de propuestas):",
+            "proposalImpactTunnel": "El túnel mantiene aplicadas estas propuestas.",
+            "cutWithProposals": "Cortar — retirar {{count}} propuesta(s)",
+            "destroyWithProposals": "Demoler — retirar {{count}} propuesta(s)",
+            "mergeImpact": "Continuar fusionará estas propuestas de carretera con esta carretera y eliminará sus entradas de propuesta separadas:",
+            "merge": "Fusionar carreteras",
             "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
         },

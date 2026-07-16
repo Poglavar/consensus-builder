@@ -347,11 +347,22 @@ function launchRowHouseToolForSelection() {
     });
 }
 
-function launchParcelBasedToolForSelection() {
+async function launchParcelBasedToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the parcel-based tool.');
         return;
+    }
+    // Detached houses can be launched both from the parcel Build palette and from the classic
+    // proposal dialog. The latter used to bypass the "did you mean the whole block?" preflight.
+    // Run the same gate here before opening the generator; accepting it selects the block and
+    // deliberately stops this one-parcel launch.
+    if (selection.ids.length === 1 && typeof window.maybeSuggestWholeBlockForBuild === 'function') {
+        try {
+            if (await window.maybeSuggestWholeBlockForBuild(selection.ids)) return;
+        } catch (error) {
+            console.warn('[parcelBased] whole-block suggestion failed', error);
+        }
     }
     if (typeof openParcelBasedForParcels !== 'function') {
         updateStatus('Parcel-based tool is unavailable.');

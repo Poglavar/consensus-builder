@@ -787,22 +787,27 @@ async function createProposal() {
             };
 
             if (roadDrawingContext) {
-                const sourceDefinition = safeClone(roadDrawingContext.definition || {}) || {};
-                const sourceMetadata = {
-                    ...(sourceDefinition.metadata || {}),
-                    ...(roadDrawingContext.metadata || {})
-                };
-                const isTrackContext = sourceMetadata.isTrack === true
-                    || sourceMetadata.type === 'track'
-                    || roadDrawingContext.kind === 'track';
+                const isTrackContext = roadDrawingContext?.metadata?.isTrack === true;
                 const parentIds = (Array.isArray(roadDrawingContext.parentParcelIds) ? roadDrawingContext.parentParcelIds : normalizedParentParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
 
-                const rawCenterline = roadDrawingContext.centerline || sourceDefinition.points || sourceDefinition.segments;
+                const centerlinePoints = Array.isArray(roadDrawingContext.centerline)
+                    ? roadDrawingContext.centerline
+                        .map(segment => Array.isArray(segment)
+                            ? segment.map(pt => {
+                                if (!pt) return null;
+                                const lat = Number(pt.lat !== undefined ? pt.lat : (Array.isArray(pt) ? pt[1] : null));
+                                const lng = Number(pt.lng !== undefined ? pt.lng : (Array.isArray(pt) ? pt[0] : null));
+                                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                                return { lat, lng };
+                            }).filter(Boolean)
+                            : null)
+                        .filter(seg => Array.isArray(seg) && seg.length >= 2)
+                    : [];
 
-                const baseMetadata = (sourceMetadata && typeof sourceMetadata === 'object')
-                    ? { ...sourceMetadata }
+                const baseMetadata = (roadDrawingContext.metadata && typeof roadDrawingContext.metadata === 'object')
+                    ? { ...roadDrawingContext.metadata }
                     : {};
                 const resolvedMetadata = {
                     ...baseMetadata,
@@ -813,31 +818,30 @@ async function createProposal() {
                     isRoad: !isTrackContext, // tracks are NOT roads
                     isCorridor: true
                 };
-                const compiler = typeof window !== 'undefined' ? window.CorridorDraftState : null;
-                if (!compiler || typeof compiler.compileCorridorDefinition !== 'function') {
-                    throw new Error('Corridor draft compiler is unavailable.');
-                }
-                const roadDefinition = compiler.compileCorridorDefinition({
-                    ...sourceDefinition,
-                    kind: isTrackContext ? 'track' : 'road',
-                    segments: rawCenterline,
-                    segmentIds: roadDrawingContext.segmentIds || sourceDefinition.segmentIds || [],
-                    profile: roadDrawingContext.profile ?? sourceDefinition.profile ?? null,
-                    width: roadDrawingContext.width ?? sourceDefinition.width ?? (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
-                    sidewalkWidth: roadDrawingContext.sidewalkWidth ?? sourceDefinition.sidewalkWidth ?? null,
-                    tunnels: roadDrawingContext.tunnels || sourceDefinition.tunnels || [],
-                    demolishedBuildings: roadDrawingContext.demolishedBuildings || sourceDefinition.demolishedBuildings || [],
-                    segmentProfiles: roadDrawingContext.segmentProfiles || sourceDefinition.segmentProfiles || {},
-                    polygon: roadDrawingContext.polygon || sourceDefinition.polygon || null,
-                    surfaceFootprint: roadDrawingContext.surfaceFootprint || sourceDefinition.surfaceFootprint || null,
-                    latLngPairs: roadDrawingContext.latLngPairs || sourceDefinition.latLngPairs || null,
+                const roadDefinition = {
+                    points: centerlinePoints,
+                    segments: centerlinePoints,
+                    // Index-aligned with `segments`: identity survives a copy, so continuing a road in a
+                    // later session extends the same segment instead of minting a new one.
+                    segmentIds: Array.isArray(roadDrawingContext.segmentIds)
+                        ? roadDrawingContext.segmentIds.slice(0, centerlinePoints.length)
+                        : [],
+                    // The cross-section. `width` below is its total, kept as a cache for the many
+                    // consumers that only need the corridor's footprint.
+                    profile: safeClone(roadDrawingContext.profile) || null,
+                    width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
+                    sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
+                    tunnels: safeClone(roadDrawingContext.tunnels) || [],
+                    demolishedBuildings: safeClone(roadDrawingContext.demolishedBuildings) || [],
+                    segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
+                    polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
-                }, {
-                    kind: isTrackContext ? 'track' : 'road',
-                    previousDefinition: sourceDefinition,
-                    requireDrawable: true,
-                    metadata: resolvedMetadata
-                });
+                };
+
+                // The profile is the truth; if one is present the stored width must be its sum, or the
+                // corridor polygon and its cross-section would disagree about the footprint.
+                const profileWidth = (typeof corridorProfileWidth === 'function') ? corridorProfileWidth(roadDefinition.profile) : 0;
+                if (profileWidth > 0) roadDefinition.width = profileWidth;
 
                 if (roadDrawingContext.stats) {
                     const statsClone = safeClone(roadDrawingContext.stats);
@@ -853,8 +857,8 @@ async function createProposal() {
 
                 if (!proposal.geometry) proposal.geometry = {};
                 proposal.geometry.roadPlan = safeClone(roadDefinition);
-                if (roadDefinition.polygon) {
-                    proposal.geometry.roadGeometry = { polygon: safeClone(roadDefinition.polygon) };
+                if (roadDrawingContext.polygon) {
+                    proposal.geometry.roadGeometry = { polygon: safeClone(roadDrawingContext.polygon) };
                 }
 
                 proposal.roadProposal = {

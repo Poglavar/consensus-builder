@@ -10,7 +10,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     ProposalManager,
-    _shouldSkipUncutRemainder
+    _reapplyAppliedProposal,
+    _shouldSkipUncutRemainder,
+    _shouldDrawLegacyRoadCenterline
 } = require('../../frontend/js/proposal-manager.js');
 const {
     _buildSyntheticToken,
@@ -119,6 +121,58 @@ describe('_shouldSkipUncutRemainder', () => {
 
     it('scales its tolerance with the parent, so a ~1 m² cut on a small parcel is kept', () => {
         expect(_shouldSkipUncutRemainder(500, 499)).toBe(false);
+    });
+});
+
+describe('_shouldDrawLegacyRoadCenterline', () => {
+    it('keeps the compatibility centreline for a plain legacy road proposal', () => {
+        expect(_shouldDrawLegacyRoadCenterline(
+            { properties: { isRoad: true } },
+            { roadProposal: { definition: { points: [[{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }]] } } }
+        )).toBe(true);
+    });
+
+    it('does not draw a second centreline over a canonical corridor', () => {
+        expect(_shouldDrawLegacyRoadCenterline(
+            { properties: { isRoad: true, isCorridor: true } },
+            { roadProposal: { definition: { metadata: { isCorridor: true } } } }
+        )).toBe(false);
+    });
+
+    it('recognises a corridor from its definition when an old child feature omitted the flag', () => {
+        expect(_shouldDrawLegacyRoadCenterline(
+            { properties: { isRoad: true } },
+            { roadProposal: { definition: { metadata: { isCorridor: true } } } }
+        )).toBe(false);
+    });
+});
+
+describe('applied structure rehydration', () => {
+    it.each(['park', 'square', 'lake'])('reapplies a %s even though structures have no child parcels', async kind => {
+        const original = ProposalManager._applyStructureProposal;
+        const calls = [];
+        ProposalManager._applyStructureProposal = async (proposalId, proposal) => {
+            calls.push([proposalId, proposal]);
+            return true;
+        };
+        const proposal = {
+            proposalId: `p-${kind}`,
+            goal: kind,
+            applied: true,
+            structureProposal: {
+                kind,
+                applied: true,
+                parentParcelIds: [],
+                childParcelIds: []
+            }
+        };
+
+        try {
+            await _reapplyAppliedProposal(proposal);
+            expect(calls).toEqual([[`p-${kind}`, proposal]]);
+        } finally {
+            ProposalManager._applyStructureProposal = original;
+        }
     });
 });
 

@@ -4,6 +4,21 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const parcelId = require('../../frontend/js/proposals/parcel-id.js');
 
+describe('parcel display numbers', () => {
+    it('owns and resolves the cadastral display-number fields without a sharing-module global', () => {
+        expect(parcelId.PARCEL_NUMBER_PROPERTY_CANDIDATES).toContain('BROJ_CESTICE');
+        expect(parcelId.getParcelDisplayNumberFromProperties({
+            BROJ_CESTICE: '1607/1543',
+            parcelId: 'HR-123-456'
+        })).toBe('1607/1543');
+    });
+
+    it('falls back to canonical parcel identity and then the caller fallback', () => {
+        expect(parcelId.getParcelDisplayNumberFromProperties({ parcel_id: 'HR-123-456' })).toBe('HR-123-456');
+        expect(parcelId.getParcelDisplayNumberFromProperties({}, 'unknown parcel')).toBe('unknown parcel');
+    });
+});
+
 describe('withParcelWriteBatch', () => {
     const originalStorage = globalThis.PersistentStorage;
 

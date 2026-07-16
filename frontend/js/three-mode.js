@@ -23,6 +23,25 @@
         console.error('[3D] Smooth building transparency is unavailable. Skipping 3D mode initialization.');
         return;
     }
+    const structureRefresh = (typeof window !== 'undefined') ? window.__threeStructureRefresh : null;
+    if (!structureRefresh
+        || typeof structureRefresh.refreshStructureScene3D !== 'function'
+        || typeof structureRefresh.applyStructureDisplayMode !== 'function') {
+        console.error('[3D] Live structure refresh is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    const squarePaving = (typeof window !== 'undefined') ? window.__threeSquarePaving : null;
+    if (!squarePaving || typeof squarePaving.createSquarePavingTexture !== 'function') {
+        console.error('[3D] Square paving renderer is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    const snapshotNavigation = (typeof window !== 'undefined') ? window.__threeSnapshotNavigation : null;
+    if (!snapshotNavigation
+        || typeof snapshotNavigation.configurePannableOrbitControls !== 'function'
+        || typeof snapshotNavigation.resolveExitMapCenter !== 'function') {
+        console.error('[3D] Snapshot navigation policy is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
 
     // Smooth is the production candidate. `?ghostStyle=grain` retains the already-proven
     // screen-door renderer as an A/B fallback without maintaining a separate code path.
@@ -42,6 +61,10 @@
     let controls = null;
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
+    let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
+    let sceneLoadGeometrySource = 'camera';
+    let sceneTreeLoadGeometry = null; // preserves the existing tree query scope, but freezes its anchor
+    let sceneTreeLoadGeometrySource = 'camera';
     let focusProposalIds = null; // Set of proposalIds to frame on 3D entry (shared-link focus), or null for all
     let renderingOverlayEl = null; // transient overlay while 3D initializes
     let isTransitioning3D = false; // avoid double-activation
@@ -276,14 +299,15 @@
 
     // Apply the visibility implied by the current display states (no isolation).
     function applyModeVisibility() {
-        // Planned structures (park/square/lake grounds + their decorations) hide when planned
-        // is off. Both the flat half (grounds, paths, water) and the deco half (trees,
-        // fountains, fish) toggle together.
-        const showPlanned = plannedDisplay !== 'off';
-        if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
-        if (parkGroup) parkGroup.visible = showPlanned;
-        if (squareGroup) squareGroup.visible = showPlanned;
-        if (lakeGroup) lakeGroup.visible = showPlanned;
+        // Planned structures use ordinary scoped alpha materials (rather than the city-building
+        // depth/stencil ghost renderer): they are simple non-coincident surfaces and decorations.
+        // Transparent mode disables depth writes so a ghost park/square/lake cannot invisibly
+        // occlude another proposal behind it.
+        structureRefresh.applyStructureDisplayMode(
+            [plannedFlatGroup, parkGroup, squareGroup, lakeGroup],
+            plannedDisplay,
+            { ghostOpacity: 0.38 }
+        );
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
     }
 
@@ -1420,14 +1444,35 @@
         target.add(new THREE.Mesh(headGeo, stone));
     }
 
-    // Build Squares (ground + simple fountain)
+    let squareSurfaceMats = null;
+    function squareSurfaceMaterials() {
+        if (!squareSurfaceMats) {
+            const texture = squarePaving.createSquarePavingTexture(THREE, document, renderer);
+            squareSurfaceMats = {
+                paving: new THREE.MeshLambertMaterial({
+                    color: texture ? 0xffffff : 0xc8c0ae,
+                    map: texture || null,
+                    polygonOffset: true,
+                    polygonOffsetFactor: -2,
+                    polygonOffsetUnits: -2
+                }),
+                border: new THREE.LineBasicMaterial({ color: 0x756f63, transparent: true, opacity: 0.75 }),
+                rim: new THREE.MeshLambertMaterial({ color: 0x9a9a9a }),
+                water: new THREE.MeshPhongMaterial({ color: 0x3a8ad3, specular: 0x1f4f7a, shininess: 60 })
+            };
+        }
+        return squareSurfaceMats;
+    }
+
+    // Build Squares (running-bond paving + furniture/fountains)
     function buildSquares3D(flatTarget, decoTarget) {
         const squares = (typeof window !== 'undefined' && Array.isArray(window.squares)) ? window.squares : [];
         if (!squares || squares.length === 0) return;
 
-        const stoneMat = new THREE.MeshLambertMaterial({ color: 0xbdbdbd, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-        const rimMat = new THREE.MeshLambertMaterial({ color: 0x9a9a9a });
-        const waterMat = new THREE.MeshPhongMaterial({ color: 0x3a8ad3, specular: 0x1f4f7a, shininess: 60 });
+        const squareMats = squareSurfaceMaterials();
+        const stoneMat = squareMats.paving;
+        const rimMat = squareMats.rim;
+        const waterMat = squareMats.water;
 
         squares.forEach(sq => {
             try {
@@ -1435,6 +1480,8 @@
                 // Ground slightly above base to avoid z-fighting
                 const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
                 groundMeshes.forEach(m => { m.userData.isSquareGround = true; flatTarget.add(m); });
+                const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
+                borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
 
                 const dec = sq.properties && sq.properties.decorations;
                 if (!dec) return;
@@ -1833,11 +1880,57 @@
     }
 
     function corridorStripToFeature(polygon) {
-        const ring = polygon.map(point => [point.lng, point.lat]);
-        const first = ring[0];
-        const last = ring[ring.length - 1];
-        if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
-        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+        const sourceRings = Array.isArray(polygon?.[0]) ? polygon : [polygon];
+        const rings = sourceRings.map(source => {
+            const ring = source.map(point => [point.lng, point.lat]);
+            const first = ring[0];
+            const last = ring[ring.length - 1];
+            if (first && last && (first[0] !== last[0] || first[1] !== last[1])) ring.push([first[0], first[1]]);
+            return ring;
+        }).filter(ring => ring.length >= 4);
+        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings } };
+    }
+
+    // The established 2D strip ring deliberately uses even-odd fill and remains untouched. A closed
+    // centerline needs a different 3D representation: two cyclic offsets form an annulus (outer +
+    // hole), otherwise the cap-based flat ring becomes a bowtie and the mesh guard correctly drops it.
+    function corridorStripPolygon3D(centerline, strip, fallbackPolygon) {
+        if (typeof corridorClosedStripPolygonPlanar !== 'function'
+            || typeof wgs84ToHTRS96 !== 'function'
+            || typeof htrs96ToWGS84 !== 'function'
+            || !Array.isArray(centerline)
+            || centerline.length < 4) return fallbackPolygon;
+        const first = centerline[0];
+        const last = centerline[centerline.length - 1];
+        if (!first || !last || Math.abs(first.lat - last.lat) >= 1e-7 || Math.abs(first.lng - last.lng) >= 1e-7) {
+            return fallbackPolygon;
+        }
+        const planar = centerline.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        const rings = corridorClosedStripPolygonPlanar(planar, strip.left, strip.right);
+        if (!rings) return fallbackPolygon;
+        return rings.map(ring => ring.map(([x, y]) => {
+            const [lat, lng] = htrs96ToWGS84(x, y);
+            return { lat, lng };
+        }));
+    }
+
+    // Sharp reversals make the inside edge of an offset lane cross itself. The generic 3D mesh
+    // guard quite rightly refuses that bow-tie polygon (triangulating it produces spikes), but a
+    // refused strip exposes the flat grey corridor parcel underneath — commonly half the road.
+    // Turf's established footprint sanitizer splits the bow-tie into simple pieces and dissolves
+    // them back into the actual lane surface, which ShapeGeometry can triangulate safely.
+    function corridorStripMeshes3D(feature, material, z, depth) {
+        let meshes = polygonFeatureToMeshes(feature, material, z, depth);
+        if (meshes.length || typeof window.sanitizePolygonFeature !== 'function') return meshes;
+        try {
+            const repaired = window.sanitizePolygonFeature(feature);
+            if (repaired && repaired.geometry) {
+                meshes = polygonFeatureToMeshes(repaired, material, z, depth);
+            }
+        } catch (error) {
+            console.warn('[three-mode] Could not repair a self-intersecting corridor strip', error);
+        }
+        return meshes;
     }
 
     function corridorSymbolMaterial(kind) {
@@ -2026,8 +2119,9 @@
                     const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
                     const kerb = Number(lane.height) || 0;
                     strip.polygons.forEach(polygon => {
-                        const meshes = polygonFeatureToMeshes(
-                            corridorStripToFeature(polygon),
+                        const meshPolygon = corridorStripPolygon3D(entry.points, strip, polygon);
+                        const meshes = corridorStripMeshes3D(
+                            corridorStripToFeature(meshPolygon),
                             corridorLaneMaterial(strip.type),
                             CORRIDOR_STRIP_Z,
                             kerb
@@ -2077,7 +2171,11 @@
             // subtraction produced against that object's own footprint. Lookup, not guesswork.
             // A TUNNELLED building simply has no record, so it comes back untouched.
             const carveRecords = window.collectCarveRecords(
-                (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || []
+                (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || [],
+                {
+                    consolidateCorridorRecords: (records, region) =>
+                        window.consolidateCorridorDemolitionRecords(records, region, window.turf)
+                }
             );
             // One response can contain the same source surface twice: within one object (usually
             // opposite winding) or across adjacent/duplicate object_ids. Share these sets across the
@@ -2366,6 +2464,25 @@
         return { type: 'Point', coordinates: [lng, lat] };
     }
 
+    function captureSceneLoadGeometry() {
+        const proposalGeometry = proposalFramingGeometry();
+        const appliedWorkGeometry = appliedWorkFramingGeometry();
+        const entryAnchorGeometry = snapshotNavigation.captureSceneLoadAnchor(computeCameraFocusGeometry());
+        const selected = snapshotNavigation.resolveSceneLoadGeometry({
+            proposalGeometry,
+            appliedWorkGeometry,
+            entryAnchorGeometry
+        });
+        sceneLoadGeometry = snapshotNavigation.captureSceneLoadAnchor(selected);
+        sceneLoadGeometrySource = proposalGeometry
+            ? 'proposal'
+            : (appliedWorkGeometry ? 'plan' : 'camera');
+        sceneTreeLoadGeometry = snapshotNavigation.captureSceneLoadAnchor(
+            proposalGeometry || entryAnchorGeometry
+        );
+        sceneTreeLoadGeometrySource = proposalGeometry ? 'proposal' : 'camera';
+    }
+
     // Everything the user has placed on the map, as one bbox superpolygon: entering 3D loads
     // the built context around the WHOLE plan (edges + apron), not just around the camera.
     function appliedWorkFramingGeometry() {
@@ -2409,9 +2526,12 @@
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
 
-        // Priority: the shared-link proposal frame, else the superpolygon of EVERYTHING the
-        // user has applied (plus the edge apron below), else the camera point.
-        const proposalGeom = proposalFramingGeometry() || appliedWorkFramingGeometry();
+        // The query geometry was frozen at 3D entry. Panning moves only the camera over this
+        // snapshot; it never streams a new band of buildings. The radius control may explicitly
+        // refetch a wider band around this same anchor.
+        const queryGeometry = sceneLoadGeometry;
+        if (!queryGeometry) return;
+        const proposalGeom = queryGeometry.type === 'Point' ? null : queryGeometry;
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -2430,7 +2550,7 @@
             const bb = proposalGeom.coordinates[0];
             key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
         } else {
-            const pt = computeCameraFocusGeometry();
+            const pt = queryGeometry;
             if (!pt) return;
             geometry = pt;
             buffer = buildingLoadRadiusM;
@@ -2458,7 +2578,7 @@
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
                 const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'}${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
+                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly();
                 updateBuildingsLoader();
             })
@@ -2565,7 +2685,9 @@
     function ensureNearbyTrees() {
         if (!treesEnabled || nearbyTreesFetching) return;
 
-        const proposalGeom = proposalFramingGeometry();
+        const queryGeometry = sceneTreeLoadGeometry;
+        if (!queryGeometry) return;
+        const proposalGeom = queryGeometry.type === 'Point' ? null : queryGeometry;
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
@@ -2573,7 +2695,7 @@
             const bb = proposalGeom.coordinates[0];
             key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
         } else {
-            const pt = computeCameraFocusGeometry();
+            const pt = queryGeometry;
             if (!pt) return;
             geometry = pt;
             buffer = buildingLoadRadiusM;
@@ -2596,7 +2718,7 @@
                 nearbyTrees = (payload && Array.isArray(payload.trees)) ? payload.trees : [];
                 nearbyTreesKey = key;
                 nearbyTreesFetching = false;
-                console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${proposalGeom ? 'proposal' : 'camera'}+${buffer}m)`);
+                console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 if (isActive) rebuildTreesOnly();
             })
             .catch(err => {
@@ -3175,20 +3297,13 @@
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
         if (OrbitControlsCtor) {
             controls = new OrbitControlsCtor(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.screenSpacePanning = true;
+            snapshotNavigation.configurePannableOrbitControls(controls, THREE);
             controls.maxPolarAngle = Math.PI * 0.49; // limit below horizon
-            // In the camera-focus fallback mode (no proposal), also refetch on pan end.
-            try {
-                controls.addEventListener('end', () => {
-                    if (!proposalFramingGeometry()) ensureNearbyProposalBuildings();
-                });
-            } catch (_) { }
         }
 
         // Build content
         origin3857 = getOrigin3857();
+        captureSceneLoadGeometry();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
         try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
@@ -3516,29 +3631,8 @@
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
-        // Re-place camera to preserve view scale on resize (using last known pitch via controls orientation)
-        try {
-            // Approximate pitch from camera position
-            const pos = camera.position;
-            const distance = Math.max(1, Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z));
-            const pitchRad = Math.acos(Math.min(1, Math.max(-1, pos.z / distance)));
-            // Recompute placement with current content bounds
-            const content = computeContentBoundsXY();
-            const vFov = THREE.MathUtils.degToRad(camera.fov);
-            const aspect = camera.aspect;
-            const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-            const width = Math.max(1, content.width);
-            const height = Math.max(1, content.height);
-            const distForHeightTopDown = (height / 2) / Math.tan(vFov / 2);
-            const distForWidthTopDown = (width / 2) / Math.tan(hFov / 2);
-            const distTopDown = Math.max(distForHeightTopDown, distForWidthTopDown);
-            const newDistance = (distTopDown / Math.max(0.1, Math.cos(pitchRad))) * CAMERA_DISTANCE_SCALE;
-            // Keep north-up orientation consistent with 2D (flip Y)
-            const y = -Math.sin(pitchRad) * newDistance;
-            const z = Math.cos(pitchRad) * newDistance;
-            camera.position.set(0, y, z);
-            camera.lookAt(new THREE.Vector3(0, 0, 0));
-        } catch (_) { }
+        // Do not reframe here: camera + controls.target are the user's current pan/orbit state.
+        // Updating only the projection keeps that state intact across sidebar and window resizes.
     }
 
     function disposeScene() {
@@ -3577,6 +3671,10 @@
         renderer = null;
         scene = null;
         camera = null;
+        sceneLoadGeometry = null;
+        sceneLoadGeometrySource = 'camera';
+        sceneTreeLoadGeometry = null;
+        sceneTreeLoadGeometrySource = 'camera';
         flatGroup = null;
         plannedFlatGroup = null;
         buildingGroup = null;
@@ -3719,6 +3817,13 @@
     function exit3D() {
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         if (!isActive) return;
+        // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
+        // motionless while 3D is active (so it cannot stream tiles or parcels), then jumps once to
+        // the current 3D focus when the user explicitly returns to 2D.
+        const exitMapCenter = snapshotNavigation.resolveExitMapCenter(
+            controls && controls.target,
+            xyToLatLng
+        );
         isActive = false;
         focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
         stopIntroAutoRotate();
@@ -3735,6 +3840,12 @@
         pendingModelLoads = 0;
         updateBuildingsLoader();
         disposeScene();
+        if (exitMapCenter && typeof map !== 'undefined' && map && typeof map.setView === 'function') {
+            try {
+                const zoom = (typeof map.getZoom === 'function') ? map.getZoom() : undefined;
+                map.setView([exitMapCenter.lat, exitMapCenter.lng], zoom, { animate: false });
+            } catch (_) { }
+        }
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,
@@ -3743,36 +3854,9 @@
         }
     }
 
-
-    // Optional: rebuild content if parcel data reloads while in 3D
-    window.addEventListener('parcelDataLoaded', () => {
-        if (!isActive) return;
-        // Rebuild scene content without re-creating renderer/camera
-        if (!scene) { initScene(); return; }
-        // The parcel set may have changed entirely — drop any active isolation.
-        isolatedParcelId = null;
-        updateIsolationButton();
-        // Clear groups
-        if (flatGroup) {
-            for (let i = flatGroup.children.length - 1; i >= 0; i--) flatGroup.remove(flatGroup.children[i]);
-        }
-        clearGroupChildren(plannedFlatGroup);
-        clearGroupChildren(buildingGroup);
-        clearGroupChildren(parkGroup);
-        clearGroupChildren(squareGroup);
-        clearGroupChildren(lakeGroup);
-        origin3857 = getOrigin3857();
-        buildParcels3D(flatGroup);
-        buildRoads3D(flatGroup);
-        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
-        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
-        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        applyParcelVisibilityForMode(derivedParcelVisibilityMode());
-        rebuild3DBuildingsOnly();
-        rebuildProposalInteraction3D();
-    });
+    // Deliberately do not listen for `parcelDataLoaded` while 3D is active. `buildParcels3D` copies
+    // the entry-time Leaflet layers into `flatGroup`; keeping that mesh untouched makes parcels the
+    // same fixed scene snapshot as buildings and trees. OrbitControls never moves Leaflet itself.
 
     // Rebuild buildings if the 2D buildings layer updates (e.g., after fetch)
     window.addEventListener('buildingsLayerUpdated', () => {
@@ -3794,46 +3878,26 @@
     // fountains, fish) lives in its own group. Both clear together so the legacy
     // userData.isParkGround/isSquareGround/isLakeShore filtering on flatGroup is no longer
     // needed.
-    window.addEventListener('parksUpdated', () => {
-        if (!isActive) return;
-        if (!scene) { initScene(); return; }
-        clearGroupChildren(plannedFlatGroup);
-        clearGroupChildren(parkGroup);
-        clearGroupChildren(squareGroup);
-        clearGroupChildren(lakeGroup);
-        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
-        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        rebuildProposalInteraction3D();
-    });
+    function refreshStructures3D() {
+        structureRefresh.refreshStructureScene3D({
+            isActive: () => isActive,
+            hasScene: () => !!scene,
+            initScene,
+            groups: [plannedFlatGroup, parkGroup, squareGroup, lakeGroup],
+            clearGroup: clearGroupChildren,
+            buildParks: () => buildParks3D(plannedFlatGroup, parkGroup),
+            buildSquares: () => buildSquares3D(plannedFlatGroup, squareGroup),
+            buildLakes: () => buildLakes3D(plannedFlatGroup, lakeGroup),
+            buildReparcellization: () => buildPlannedReparcellization3D(plannedFlatGroup),
+            applyDisplay: applyModeVisibility,
+            rebuildBuildings: rebuild3DBuildingsOnly,
+            rebuildInteraction: rebuildProposalInteraction3D,
+            onError: (label, error) => console.error(`[three-mode] Failed to rebuild ${label} in 3D`, error)
+        });
+    }
 
-    window.addEventListener('squaresUpdated', () => {
-        if (!isActive) return;
-        if (!scene) { initScene(); return; }
-        clearGroupChildren(plannedFlatGroup);
-        clearGroupChildren(parkGroup);
-        clearGroupChildren(squareGroup);
-        clearGroupChildren(lakeGroup);
-        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
-        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        rebuildProposalInteraction3D();
-    });
-
-    window.addEventListener('lakesUpdated', () => {
-        if (!isActive) return;
-        if (!scene) { initScene(); return; }
-        clearGroupChildren(plannedFlatGroup);
-        clearGroupChildren(parkGroup);
-        clearGroupChildren(squareGroup);
-        clearGroupChildren(lakeGroup);
-        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
-        try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        rebuildProposalInteraction3D();
+    ['parksUpdated', 'squaresUpdated', 'lakesUpdated'].forEach(eventName => {
+        window.addEventListener(eventName, refreshStructures3D);
     });
 
     document.addEventListener('proposalCreated', () => {

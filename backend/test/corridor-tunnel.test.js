@@ -1,15 +1,23 @@
 // Unit tests for building collision detection and stable tunnel-edge metadata.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const {
     corridorTunnelEdgeKey,
+    corridorEdgeFetchSegments,
     findBuildingTunnelIntersections,
     makeBuildingTunnelRecord,
     addBuildingTunnelRecord,
     removeBuildingTunnelEdge,
-    corridorSurfaceRuns
+    corridorSurfaceRuns,
+    demolishBuildingsUnderFootprint,
+    upsertCutRecord,
+    consolidateCorridorDemolitionRecords,
+    collectObstacleProposalImpacts,
+    buildBuildingObstaclePrompt,
+    resolveBuildingObstacles
 } = require('../../frontend/js/corridor-tunnel.js');
 
 function fakeTurf(intersections = new Map()) {
@@ -25,6 +33,14 @@ describe('corridor building tunnels', () => {
 
     it('uses the same edge key in either drawing direction', () => {
         expect(corridorTunnelEdgeKey(from, to)).toBe(corridorTunnelEdgeKey(to, from));
+    });
+
+    it('splits a long diagonal into bounded fetch edges without losing its endpoints', () => {
+        const parts = corridorEdgeFetchSegments(from, to, 150);
+        expect(parts.length).toBeGreaterThan(8);
+        expect(parts[0][0]).toEqual(from);
+        expect(parts[parts.length - 1][1]).toEqual(to);
+        for (let i = 1; i < parts.length; i += 1) expect(parts[i][0]).toEqual(parts[i - 1][1]);
     });
 
     it('keeps only building intersections with meaningful overlap', () => {
@@ -52,6 +68,177 @@ describe('corridor building tunnels', () => {
         expect(records).toHaveLength(1);
         expect(records[0].buildingIds).toEqual(['building-b']);
         expect(removeBuildingTunnelEdge(records, from, to)).toEqual([]);
+    });
+});
+
+describe('structure demolition scan', () => {
+    it('turns an overlapping GDI footprint into an object_id-keyed demolition record', async () => {
+        const footprint = turf.polygon([[[15.97, 45.81], [15.9704, 45.81], [15.9704, 45.8103], [15.97, 45.8103], [15.97, 45.81]]], {
+            object_id: 61075
+        });
+        const structure = turf.polygon([[[15.9699, 45.8099], [15.9705, 45.8099], [15.9705, 45.8104], [15.9699, 45.8104], [15.9699, 45.8099]]]);
+        const keys = ['turf', 'buildingFeaturePool', 'proposedBuildings', 'proposalStorage', 'ensureBuildingFootprintsForBounds', 'ProposalManager'];
+        const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+        try {
+            globalThis.turf = turf;
+            globalThis.buildingFeaturePool = [footprint];
+            globalThis.proposedBuildings = [];
+            globalThis.proposalStorage = { getAllProposals: () => [] };
+            globalThis.ensureBuildingFootprintsForBounds = async () => true;
+            globalThis.ProposalManager = null;
+
+            const records = await demolishBuildingsUnderFootprint(structure.geometry);
+
+            expect(records).toHaveLength(1);
+            expect(records[0].id).toBe('61075');
+            expect(records[0].geometry).toEqual(footprint.geometry);
+            expect(records[0].remainder).toBeUndefined();
+        } finally {
+            keys.forEach(key => {
+                const descriptor = descriptors.get(key);
+                if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+                else delete globalThis[key];
+            });
+        }
+    });
+});
+
+describe('proposal-owned building impact preflight', () => {
+    const proposalHit = (proposalId, buildingIndex) => ({
+        id: `proposal:${proposalId}:${buildingIndex}`,
+        feature: {
+            type: 'Feature',
+            properties: { proposalId, buildingIndex },
+            geometry: { type: 'Polygon', coordinates: [] }
+        }
+    });
+
+    it('deduplicates proposal owners and names every one in the cutting/tunnelling dialog', () => {
+        const hits = [proposalHit('p-1', 0), proposalHit('p-1', 1), proposalHit('p-2', 0), { id: 'gdi-1' }];
+        const proposals = new Map([
+            ['p-1', { proposalId: 'p-1', title: 'Central Block' }],
+            ['p-2', { proposalId: 'p-2', title: 'Station Offices' }]
+        ]);
+        const impacts = collectObstacleProposalImpacts(hits, id => proposals.get(id));
+        expect(impacts).toEqual([
+            { proposalId: 'p-1', title: 'Central Block' },
+            { proposalId: 'p-2', title: 'Station Offices' }
+        ]);
+
+        const prompt = buildBuildingObstaclePrompt(hits, 'road', impacts);
+        expect(prompt.message).toContain('Central Block');
+        expect(prompt.message).toContain('Station Offices');
+        expect(prompt.message.match(/Central Block/g)).toHaveLength(1);
+        expect(prompt.message).toContain('Tunnelling keeps these proposals applied.');
+        expect(prompt.choices.find(choice => choice.value === 'cut')?.label).toContain('2');
+        expect(prompt.choices.find(choice => choice.value === 'destroy')?.label).toContain('2');
+    });
+
+    it('lists road proposals whose separate records will be removed by merge-on-connect', () => {
+        const mergeProposalImpacts = [
+            { proposalId: 'road-2', title: 'Station Approach' },
+            { proposalId: 'road-3', title: 'Market Street' }
+        ];
+        const prompt = buildBuildingObstaclePrompt([], 'road', [], { mergeProposalImpacts });
+        expect(prompt.message).toContain('Station Approach');
+        expect(prompt.message).toContain('Market Street');
+        expect(prompt.message).toContain('remove their separate proposal entries');
+        expect(prompt.choices.map(choice => choice.value)).toEqual(['merge', 'cancel']);
+    });
+
+    it('shows the complete impact before mutation; cut sets proposals aside while tunnel preserves them', async () => {
+        const keys = ['getProposalByIdOrHash', 'getProposalDisplayTitle', 'showStyledChoice', 'ProposalManager', 'i18n'];
+        const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+        const proposals = new Map([
+            ['p-1', { proposalId: 'p-1', title: 'Central Block' }],
+            ['p-2', { proposalId: 'p-2', title: 'Station Offices' }]
+        ]);
+        const hits = [proposalHit('p-1', 0), proposalHit('p-2', 0), { id: 'gdi-1', feature: { geometry: null } }];
+        const events = [];
+        try {
+            globalThis.i18n = null;
+            globalThis.getProposalByIdOrHash = id => proposals.get(id) || null;
+            globalThis.getProposalDisplayTitle = proposal => proposal.title;
+            globalThis.ProposalManager = {
+                unapplyProposal: async id => {
+                    events.push(`unapply:${id}`);
+                    return true;
+                }
+            };
+            globalThis.showStyledChoice = async (message) => {
+                expect(events).toEqual([]);
+                expect(message).toContain('Central Block');
+                expect(message).toContain('Station Offices');
+                events.push('prompt');
+                return 'cut';
+            };
+
+            const cut = await resolveBuildingObstacles(hits, 'road');
+            expect(events).toEqual(['prompt', 'unapply:p-1', 'unapply:p-2']);
+            expect(cut.removedProposalIds).toEqual(['p-1', 'p-2']);
+            expect(cut.cutHits.map(hit => hit.id)).toEqual(['gdi-1']);
+
+            events.length = 0;
+            globalThis.showStyledChoice = async (message) => {
+                expect(message).toContain('Central Block');
+                events.push('prompt');
+                return 'tunnel';
+            };
+            const tunnel = await resolveBuildingObstacles(hits, 'road');
+            expect(events).toEqual(['prompt']);
+            expect(tunnel.removedProposalIds).toEqual([]);
+
+            events.length = 0;
+            globalThis.showStyledChoice = async (message) => {
+                expect(message).toContain('Station Approach');
+                events.push('prompt');
+                return 'merge';
+            };
+            const merge = await resolveBuildingObstacles([], 'road', {
+                mergeProposalImpacts: [{ proposalId: 'road-2', title: 'Station Approach' }]
+            });
+            expect(events).toEqual(['prompt']);
+            expect(merge.action).toBe('merge');
+            expect(merge.removedProposalIds).toEqual([]);
+        } finally {
+            keys.forEach(key => {
+                const descriptor = descriptors.get(key);
+                if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+                else delete globalThis[key];
+            });
+        }
+    });
+});
+
+describe('merged corridor building cuts', () => {
+    const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
+    const vertical = turf.polygon([[[0.0002, 0], [0.0004, 0], [0.0004, 0.001], [0.0002, 0.001], [0.0002, 0]]]);
+    const horizontal = turf.polygon([[[0, 0.0006], [0.001, 0.0006], [0.001, 0.0008], [0, 0.0008], [0, 0.0006]]]);
+    const hit = { id: 'gdi-1', feature: footprint };
+
+    it('combines two partial records for one object_id into one cut against the merged road', () => {
+        const first = [];
+        const second = [];
+        upsertCutRecord(first, hit, vertical, turf);
+        upsertCutRecord(second, hit, horizontal, turf);
+        expect(first[0].remainder).toBeTruthy();
+        expect(second[0].remainder).toBeTruthy();
+
+        const mergedRoad = turf.union(vertical, horizontal);
+        const consolidated = consolidateCorridorDemolitionRecords([...first, ...second], mergedRoad, turf);
+        expect(consolidated).toHaveLength(1);
+        expect(consolidated[0].id).toBe('gdi-1');
+        const expectedRemainder = turf.difference(footprint, mergedRoad);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: consolidated[0].remainder }))
+            .toBeCloseTo(turf.area(expectedRemainder), 4);
+    });
+
+    it('keeps a full demolition final when another record only cuts the same building', () => {
+        const partial = [];
+        upsertCutRecord(partial, hit, vertical, turf);
+        const full = { id: 'gdi-1', geometry: footprint.geometry };
+        const consolidated = consolidateCorridorDemolitionRecords([partial[0], full], vertical, turf);
+        expect(consolidated).toEqual([full]);
     });
 });
 

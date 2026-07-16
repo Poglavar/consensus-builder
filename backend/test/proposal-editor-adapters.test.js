@@ -45,7 +45,7 @@ describe('proposal editor adapter registry', () => {
     });
 });
 
-describe('park and square proposal adapters', () => {
+describe('structure proposal adapters', () => {
     const geometry = {
         type: 'Polygon',
         coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
@@ -53,16 +53,18 @@ describe('park and square proposal adapters', () => {
 
     it.each([
         ['park', { trees: [[15.905, 45.805]], flowerbeds: [], ponds: [], paths: [], version: 3 }],
-        ['square', { fountains: [[15.905, 45.805]], trees: [], benches: [{ coordinate: [15.906, 45.806], bearing: 75 }], version: 2 }]
-    ])('round-trips %s furniture geometry and exposes the design section', (kind, decorations) => {
+        ['square', { fountains: [[15.905, 45.805]], trees: [], benches: [{ coordinate: [15.906, 45.806], bearing: 75 }], version: 2 }],
+        ['lake', { fish: [[15.905, 45.805]], reeds: [], version: 1 }]
+    ])('round-trips %s geometry, decorations, and demolition records', (kind, decorations) => {
         const adapter = buildStructureAdapter(kind);
+        const demolishedBuildings = [{ id: '61075', geometry }];
         const proposal = {
             proposalId: `${kind}-1`,
             city: 'zagreb',
             goal: kind,
             title: `Test ${kind}`,
             parentParcelIds: ['p1'],
-            structureProposal: { kind, geometry, decorations, parentParcelIds: ['p1'] }
+            structureProposal: { kind, geometry, decorations, demolishedBuildings, parentParcelIds: ['p1'] }
         };
         const draft = draftFor(adapter, proposal);
         const replacement = adapter.serializeProposal(draft);
@@ -70,6 +72,7 @@ describe('park and square proposal adapters', () => {
         expect(adapter.sections).toContain('design');
         expect(replacement.structureProposal.geometry).toEqual(geometry);
         expect(replacement.structureProposal.decorations).toEqual(decorations);
+        expect(replacement.structureProposal.demolishedBuildings).toEqual(demolishedBuildings);
         expect(adapter.validate(draft).valid).toBe(true);
     });
 });

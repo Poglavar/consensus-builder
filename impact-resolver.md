@@ -61,6 +61,19 @@ Parcels themselves reshape with the road; a proposal that stays valid keeps its 
 reshaped parcel (a building doesn't grow because its lot did) — only invalidation (parcel gone, or a
 road now crossing it) forces a set-aside.
 
+## Preflight disclosure is part of resolution
+
+Impact resolution is two-phase: **calculate and disclose first, mutate second**. A cutting/tunnelling
+dialog must deduplicate every proposal-owned obstacle, list each proposal by display name, and state
+the outcome of every choice. Cutting or demolishing sets those proposals aside (unapplied but retained
+in the proposal list); tunnelling preserves them. The same preflight must list local road proposals
+that merge-on-connect will absorb and explicitly say that their separate proposal records will be
+removed. No impact path may hide either outcome behind an internal `skipConfirm` mutation after
+showing a buildings-only count.
+
+The current corridor implementation enforces this contract in `collectObstacleProposalImpacts` and
+`buildBuildingObstaclePrompt` before `resolveBuildingObstacles` executes the chosen action.
+
 ## Deferred (Phase 2, not built)
 
 Cut-in-place for a **local, contiguous (notch)** case, and split-into-two for a **bisect** — both

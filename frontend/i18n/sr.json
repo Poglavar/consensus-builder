@@ -1195,6 +1195,12 @@
             "unapply": "Ukloni postojeći predlog sa mape",
             "destroy": "Sruši zgrade",
             "cut": "Preseci zgrade",
+            "proposalImpact": "Presecanje ili rušenje ukloniće ove primenjene predloge sa mape (ostaće na listi predloga):",
+            "proposalImpactTunnel": "Tunel ostavlja ove predloge primenjenima.",
+            "cutWithProposals": "Preseci — ukloni {{count}} predlog(a) sa mape",
+            "destroyWithProposals": "Sruši — ukloni {{count}} predlog(a) sa mape",
+            "mergeImpact": "Nastavak će spojiti ove predloge puteva sa ovim putem i ukloniti njihove zasebne zapise predloga:",
+            "merge": "Spoji puteve",
             "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
         },

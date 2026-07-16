@@ -366,6 +366,15 @@
 
         try {
             let removedParcels = 0;
+            const refreshStructureLayer = () => {
+                if (kind === 'park') {
+                    if (typeof updateParksLayer === 'function') updateParksLayer();
+                } else if (kind === 'lake') {
+                    if (typeof updateLakesLayer === 'function') updateLakesLayer();
+                } else if (typeof updateSquaresLayer === 'function') {
+                    updateSquaresLayer();
+                }
+            };
             if (kind === 'park') {
                 if (Array.isArray(window.parks)) {
                     const before = window.parks.length;
@@ -378,7 +387,6 @@
                     removedParcels += Math.max(0, before - window.parks.length);
                     if (before !== window.parks.length) {
                         try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
-                        try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                     }
                 }
             } else if (kind === 'lake') {
@@ -393,7 +401,6 @@
                     removedParcels += Math.max(0, before - window.lakes.length);
                     if (before !== window.lakes.length) {
                         try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
-                        try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
                     }
                 }
             } else {
@@ -408,7 +415,6 @@
                     removedParcels += Math.max(0, before - window.squares.length);
                     if (before !== window.squares.length) {
                         try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
-                        try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                     }
                 }
             }
@@ -433,6 +439,12 @@
                 proposalStorage.proposals.set(proposalData.proposalId, proposalData);
             }
             if (proposalStorage.save) proposalStorage.save();
+
+            // The view must observe the proposal already unapplied; otherwise its demolition
+            // records remain active for one refresh and the old building meshes stay stale.
+            try { refreshStructureLayer(); } catch (error) {
+                console.error(`[_unapplyStructureProposalConfirmed] Failed to refresh ${kind} presentation`, error);
+            }
 
             console.info('[ProposalManager] Unapplied structure proposal', {
                 proposalId,

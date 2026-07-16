@@ -3,6 +3,22 @@
 // read/write/clear + write-cache helpers (which read _parcelRecordWriteCache from state.js).
 // Extracted from proposals.js; leaf helpers, cross-module calls resolve as runtime globals.
 
+// Display-number schema belongs beside the display-number accessor. This used to live in the much
+// later-loaded sharing bundle; when that bundle's duplicate parcel helpers were removed, the accessor
+// retained a hidden global dependency and every proposal/block details render began throwing.
+const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
+    'BROJ_CESTICE',
+    'smp',
+    'SMP',
+    'parcelNumber',
+    'parcel_number',
+    'parcel',
+    'parcelNo',
+    'parcel_no',
+    'parcelId',
+    'parcel_id'
+];
+
 function normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
     const str = value.toString().trim();
@@ -359,6 +375,7 @@ if (typeof module === 'object' && module.exports) {
         _flushParcelWriteCache,
         _discardParcelWriteCache,
         withParcelWriteBatch,
-        isParcelWriteBatchActive
+        isParcelWriteBatchActive,
+        PARCEL_NUMBER_PROPERTY_CANDIDATES
     };
 }

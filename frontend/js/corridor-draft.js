@@ -8,10 +8,6 @@
     if (!createStore && typeof module !== 'undefined' && module.exports && typeof require === 'function') {
         try { createStore = require('./proposal-drafts.js').createProposalDraftStore; } catch (_) { }
     }
-    let draftStateApi = global.CorridorDraftState || null;
-    if (!draftStateApi && typeof module !== 'undefined' && module.exports && typeof require === 'function') {
-        try { draftStateApi = require('./corridor-draft-state.js'); } catch (_) { }
-    }
 
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
@@ -56,36 +52,29 @@
     }
 
     function corridorDefinitionFromSeed(seed, kind, previousDefinition) {
-        if (!draftStateApi || typeof draftStateApi.compileCorridorDefinition !== 'function') {
-            throw new Error('Corridor draft compiler is unavailable.');
-        }
-        const previous = cloneDraftValue(previousDefinition || {});
-        const nextSeed = cloneDraftValue(seed || {});
-        const centerline = nextSeed.centerline
-            || nextSeed.segments
-            || nextSeed.points
-            || previous.points
-            || previous.segments
-            || [];
-        return draftStateApi.compileCorridorDefinition({
-            ...previous,
-            ...nextSeed,
-            kind,
+        const centerline = cloneDraftValue(seed?.centerline || []);
+        return {
+            ...(cloneDraftValue(previousDefinition || {})),
+            points: centerline,
             segments: centerline,
-            segmentIds: nextSeed.segmentIds || previous.segmentIds || [],
-            profile: nextSeed.profile !== undefined ? nextSeed.profile : previous.profile,
-            segmentProfiles: nextSeed.segmentProfiles || previous.segmentProfiles || {},
+            segmentIds: cloneDraftValue(seed?.segmentIds || []),
+            profile: cloneDraftValue(seed?.profile || null),
+            width: seed?.width,
+            sidewalkWidth: seed?.sidewalkWidth,
+            tunnels: cloneDraftValue(seed?.tunnels || []),
+            demolishedBuildings: cloneDraftValue(seed?.demolishedBuildings || []),
+            segmentProfiles: cloneDraftValue(seed?.segmentProfiles || previousDefinition?.segmentProfiles || {}),
+            polygon: cloneDraftValue(seed?.polygon !== undefined ? seed.polygon : previousDefinition?.polygon || null),
+            latLngPairs: cloneDraftValue(seed?.latLngPairs !== undefined ? seed.latLngPairs : previousDefinition?.latLngPairs || null),
             metadata: {
-                ...(previous.metadata || {}),
-                ...(nextSeed.metadata || {}),
-                trackSpeed: nextSeed.trackSpeed ?? previous.metadata?.trackSpeed,
-                trackMinRadius: nextSeed.trackMinRadius ?? previous.metadata?.trackMinRadius
+                ...(cloneDraftValue(previousDefinition?.metadata || {})),
+                isCorridor: true,
+                isTrack: kind === 'track',
+                isRoad: kind !== 'track',
+                trackSpeed: seed?.trackSpeed,
+                trackMinRadius: seed?.trackMinRadius
             }
-        }, {
-            kind,
-            previousDefinition: previous,
-            requireDrawable: false
-        });
+        };
     }
 
     function legacyCorridorShape(draft) {
@@ -191,7 +180,6 @@
             ACTIVE_DRAFT_KEY,
             LEGACY_ACTIVE_DRAFT_KEY,
             buildCorridorDrawingSeed,
-            corridorDefinitionFromSeed,
             resolveCorridorScreenshotGeometry,
             saveActiveCorridorDraft,
             getActiveCorridorDraft,

@@ -1194,6 +1194,12 @@
             "unapply": "Unapply existing proposal",
             "destroy": "Demolish the buildings",
             "cut": "Cut through the buildings",
+            "proposalImpact": "Cutting or demolishing will set aside these applied proposals (they remain in the proposal list):",
+            "proposalImpactTunnel": "Tunnelling keeps these proposals applied.",
+            "cutWithProposals": "Cut through — set aside {{count}} proposal(s)",
+            "destroyWithProposals": "Demolish — set aside {{count}} proposal(s)",
+            "mergeImpact": "Continuing will merge these road proposals into this road and remove their separate proposal entries:",
+            "merge": "Merge roads",
             "confirm": "Tunnel through",
             "cancel": "Choose another route"
         },

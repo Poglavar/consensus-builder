@@ -98,10 +98,6 @@
         return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
     }
 
-    // A whole block of this size or smaller is a plausible "I meant the block" target;
-    // beyond it the suggestion is more likely noise than help.
-    const BLOCK_SUGGEST_MAX_PARCELS = 60;
-
     // Single parcel selected but it sits in a multi-parcel block: the user may simply have
     // forgotten to select the block first. Offer to do it for them — Yes selects the whole
     // block (and lands on the Proposals tab, tool NOT auto-launched); No proceeds one-parcel.
@@ -110,7 +106,10 @@
         if (ids.length !== 1) return false;
         if (typeof global.detectBlockParcelIdsForParcel !== 'function') return false;
         const block = global.detectBlockParcelIdsForParcel(ids[0]);
-        if (!block || block.count <= 1 || block.count > BLOCK_SUGGEST_MAX_PARCELS) return false;
+        // The count belongs in the question, not in a hidden policy gate. A large block is still
+        // a block, and silently skipping the question made Detached behave differently depending
+        // on where in the city it was launched.
+        if (!block || block.count <= 1) return false;
         if (typeof global.showStyledConfirm !== 'function') return false;
         const message = tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
             `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`);
@@ -206,7 +205,9 @@
 
     global.createProposalFromSingleParcel = createProposalFromSingleParcel;
     global.createProposalFromSelectedParcels = createProposalFromSelectedParcels;
+    // The classic proposal dialog also opens the detached-house editor. Keep the block suggestion
+    // at one implementation and let every creation entry point invoke it before opening a tool.
+    global.maybeSuggestWholeBlockForBuild = maybeSuggestWholeBlock;
     global.startParcelBuildTool = startParcelBuildTool;
     global.renderParcelProposalActions = renderParcelProposalActions;
 })(typeof window !== 'undefined' ? window : globalThis);
-
