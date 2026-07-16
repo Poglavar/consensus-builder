@@ -16,6 +16,10 @@ const applyRoute = (typeof window !== 'undefined' && window.__applyRoute)
     ? window.__applyRoute
     : require('./proposals/apply/route.js');
 
+const proposalMutationTransactions = (typeof window !== 'undefined' && window.ProposalMutationTransactions)
+    ? window.ProposalMutationTransactions
+    : require('./proposals/apply/transaction.js');
+
 // The parcel-identity + ownership helpers moved to proposal-parcel-identity.js (a sibling classic
 // script the browser loads first, so they are globals there). Under node they are module-scoped, so
 // load that file to publish them onto globalThis before the ProposalManager literal below references
@@ -57,6 +61,70 @@ async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) 
         console.warn(`Applying proposal ${label} ... failed`);
         throw error;
     }
+}
+
+async function _runProposalMutationBoundary(manager, kind, proposalId, options, operation) {
+    const supplied = options && options._mutationTransaction;
+    if (proposalMutationTransactions.isActiveTransaction(supplied)) {
+        return operation(supplied, { ...(options || {}), _mutationTransaction: supplied });
+    }
+
+    return proposalMutationTransactions.enqueue({
+        kind,
+        proposalId: _normalizeProposalId(proposalId)
+    }, async transaction => {
+        const store = typeof proposalStorage !== 'undefined' ? proposalStorage : null;
+        const proposalSnapshot = store && store.proposals instanceof Map
+            ? proposalMutationTransactions.snapshotRecordMap(store.proposals)
+            : null;
+        const nextProposalId = store ? store.nextProposalId : undefined;
+        const browserRoot = typeof window !== 'undefined' ? window : null;
+        const presentationSnapshot = proposalMutationTransactions.snapshotParcelPresentation(browserRoot);
+
+        if (store && typeof store.beginBatch === 'function' && typeof store.endBatch === 'function') {
+            store.beginBatch();
+            transaction.deferFinally('close proposal storage batch', () => store.endBatch());
+        }
+
+        transaction.deferRollback('restore proposal and map state', () => {
+            if (store && proposalSnapshot) {
+                proposalMutationTransactions.restoreRecordMap(store.proposals, proposalSnapshot);
+                if (nextProposalId !== undefined) store.nextProposalId = nextProposalId;
+                if (store.proposalIndexByHash && typeof store.proposalIndexByHash.clear === 'function') {
+                    store.proposalIndexByHash.clear();
+                }
+                if (typeof store._invalidateAncestorIndex === 'function') store._invalidateAncestorIndex();
+                if (typeof store.save === 'function') store.save();
+            }
+            proposalMutationTransactions.restoreParcelPresentation(browserRoot, presentationSnapshot);
+            try {
+                if (manager && typeof manager._refreshUIAfterProposalChange === 'function') {
+                    manager._refreshUIAfterProposalChange(store && typeof store.getProposal === 'function'
+                        ? store.getProposal(proposalId)
+                        : null);
+                }
+            } catch (_) { /* rollback must continue */ }
+        });
+
+        const ownsParcelBatch = !!(
+            browserRoot
+            && typeof browserRoot._startParcelWriteCache === 'function'
+            && typeof browserRoot._flushParcelWriteCache === 'function'
+            && typeof browserRoot._discardParcelWriteCache === 'function'
+            && !(typeof browserRoot.isParcelWriteBatchActive === 'function' && browserRoot.isParcelWriteBatchActive())
+        );
+        if (ownsParcelBatch) {
+            browserRoot._startParcelWriteCache();
+            transaction.deferCommit('flush parcel writes', () => browserRoot._flushParcelWriteCache());
+            transaction.deferRollback('discard parcel writes', () => browserRoot._discardParcelWriteCache());
+        }
+
+        return operation(transaction, {
+            ...(options || {}),
+            _mutationTransaction: transaction,
+            ...(ownsParcelBatch ? { _parcelWriteBatchActive: true } : {})
+        });
+    });
 }
 
 function _normalizeIdList(list) {
@@ -2127,7 +2195,7 @@ const ProposalManager = {
         return transaction;
     },
 
-    async _restoreReplacementSource(proposalId, proposalData) {
+    async _restoreReplacementSource(proposalId, proposalData, options = {}) {
         if (!proposalData || proposalData.roadProposal || typeof releaseReplacementSource !== 'function') return null;
         if (typeof proposalIsAppliedForReplacement === 'function' && proposalIsAppliedForReplacement(proposalData)) return null;
         const restoration = releaseReplacementSource(proposalData, proposalId, id => _getProposalRecord(id));
@@ -2137,7 +2205,8 @@ const ProposalManager = {
         try {
             const restored = await this.applyProposal(restoration.sourceId, {
                 applyAnyway: true,
-                _restoringReplacementSource: true
+                _restoringReplacementSource: true,
+                _mutationTransaction: options._mutationTransaction
             });
             if (!restored) throw new Error('The source proposal could not be reapplied.');
             delete proposalData.replacementRestorationError;
@@ -2157,6 +2226,12 @@ const ProposalManager = {
     },
 
     async applyProposal(proposalId, options = {}) {
+        return _runProposalMutationBoundary(this, 'apply', proposalId, options, (_transaction, transactionOptions) => (
+            this._applyProposalTransactionBody(proposalId, transactionOptions)
+        ));
+    },
+
+    async _applyProposalTransactionBody(proposalId, options = {}) {
         const safeId = _normalizeProposalId(proposalId) || '';
         const applyOptions = options || {};
 
@@ -2370,6 +2445,12 @@ const ProposalManager = {
     },
 
     async unapplyProposal(proposalId, options = {}) {
+        return _runProposalMutationBoundary(this, 'unapply', proposalId, options, (_transaction, transactionOptions) => (
+            this._unapplyProposalTransactionBody(proposalId, transactionOptions)
+        ));
+    },
+
+    async _unapplyProposalTransactionBody(proposalId, options = {}) {
         if (typeof proposalStorage === 'undefined') return false;
         const skipConfirm = !!options.skipConfirm;
         // An absorb/merge SUBSUMES the proposal — restoring its replacement source there
@@ -2396,7 +2477,7 @@ const ProposalManager = {
         else if (isDecideLater) currentSub = proposalData.decideLaterProposal;
 
         if (!appliedOf(proposalData, currentSub)) {
-            if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData, options);
             return true;
         }
 
@@ -2443,7 +2524,7 @@ const ProposalManager = {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalId));
         }
 
-        if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData, options);
 
         // Refresh UI after unapply
         this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
@@ -2460,6 +2541,12 @@ const ProposalManager = {
      * This allows efficient bulk unapply without intermediate UI updates.
      */
     async unapplyWholeFamily(proposalId, visited = new Set(), options = {}) {
+        return _runProposalMutationBoundary(this, 'unapply-family', proposalId, options, (_transaction, transactionOptions) => (
+            this._unapplyWholeFamilyTransactionBody(proposalId, visited, transactionOptions)
+        ));
+    },
+
+    async _unapplyWholeFamilyTransactionBody(proposalId, visited = new Set(), options = {}) {
         if (!proposalId || typeof proposalStorage === 'undefined') return;
         const proposalKey = String(proposalId);
         if (visited.has(proposalKey)) return;
@@ -2482,7 +2569,7 @@ const ProposalManager = {
         const combinedDescendants = Array.from(new Set([...descendantProposals, ...proposalDescendants]));
 
         for (const childId of combinedDescendants) {
-            await this.unapplyWholeFamily(childId, visited, options);
+            await this._unapplyWholeFamilyTransactionBody(childId, visited, options);
         }
 
         const isRoad = !!proposalData.roadProposal;
@@ -2499,7 +2586,7 @@ const ProposalManager = {
             : null;
 
         if (!appliedOf(proposalData, currentSub)) {
-            if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData, options);
             return;
         }
 
@@ -2514,7 +2601,7 @@ const ProposalManager = {
         } else if (isDecideLater) {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalKey));
         }
-        if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData, options);
     },
 
     /**
@@ -4494,7 +4581,11 @@ const ProposalManager = {
             const parked = [];
             for (const conflict of analysis.conflicts) {
                 // Parking must not resurrect the parked proposal's replaced ancestor under the new drawing.
-                const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true, skipRestoreSource: true });
+                const done = await this.unapplyProposal(conflict.proposalId, {
+                    skipConfirm: true,
+                    skipRestoreSource: true,
+                    _mutationTransaction: options._mutationTransaction
+                });
                 if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
             analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
@@ -4527,7 +4618,11 @@ const ProposalManager = {
                     analysis,
                     onApplyAnyway: () => this.applyProposal(idLabel, { ...options, applyAnyway: true }),
                     onUnapplyAndRetry: async (conflictProposalId) => {
-                        await this.unapplyProposal(conflictProposalId, { skipConfirm: true, skipRestoreSource: true });
+                        await this.unapplyProposal(conflictProposalId, {
+                            skipConfirm: true,
+                            skipRestoreSource: true,
+                            _mutationTransaction: options._mutationTransaction
+                        });
                         return this.applyProposal(idLabel, { ...options, applyAnyway: true });
                     }
                 });

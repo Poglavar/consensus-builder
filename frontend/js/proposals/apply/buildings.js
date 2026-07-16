@@ -69,7 +69,8 @@
                 });
 
             const conflictsCleared = await unapplyConflictsSequentially(this, conflicts, {
-                skipRestoreSource: true
+                skipRestoreSource: true,
+                _mutationTransaction: options._mutationTransaction
             });
             if (!conflictsCleared) {
                 console.warn('Could not unapply a conflicting building proposal', { proposalId, ancestorKey });
