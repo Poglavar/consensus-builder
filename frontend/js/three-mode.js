@@ -3328,6 +3328,13 @@
         }
         const loop = (now) => {
             stepManualAutoRotate(now);
+            // Keep the canvas locked to its container every frame. The window 'resize'
+            // listener misses box changes that don't fire a window resize (sidebar toggle,
+            // browser UI showing/hiding, a layout reflow after entering 3D before it settled),
+            // which left the canvas stale and shorter than the viewport — the 2D map then
+            // showed through along the bottom edge. This is size-only (no camera re-framing,
+            // unlike handleResize) so it never disturbs the user's current orbit/pan/zoom.
+            syncRendererSize();
             if (controls) controls.update();
             // Dynamically adjust near/far planes based on camera distance to maintain depth precision
             if (camera) {
@@ -3347,6 +3354,22 @@
             try { cancelAnimationFrame(frameId); } catch (_) { }
             frameId = null;
         }
+    }
+
+    // Lightweight per-frame guard that the drawing buffer matches the container box.
+    // Only touches renderer size + camera aspect when they actually drift — no camera
+    // re-placement — so it's safe to call every frame and never resets the user's view.
+    const _rendererSize = (typeof THREE !== 'undefined') ? new THREE.Vector2() : null;
+    function syncRendererSize() {
+        if (!renderer || !camera || !threeContainer) return;
+        const w = Math.max(1, threeContainer.clientWidth || 0);
+        const h = Math.max(1, threeContainer.clientHeight || 0);
+        if (w <= 1 || h <= 1) return; // container not laid out yet; don't clamp to a fallback
+        renderer.getSize(_rendererSize);
+        if (Math.round(_rendererSize.x) === w && Math.round(_rendererSize.y) === h) return;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
     }
 
     function handleResize() {
