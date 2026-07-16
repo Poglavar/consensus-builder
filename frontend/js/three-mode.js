@@ -8,6 +8,31 @@
         console.warn('[3D] THREE.js not available. Skipping 3D mode initialization.');
         return;
     }
+    const meshSanitize = (typeof window !== 'undefined') ? window.__threeMeshSanitize : null;
+    if (!meshSanitize) {
+        console.error('[3D] City-model mesh sanitizer is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    const screenDoor = (typeof window !== 'undefined') ? window.__threeScreenDoor : null;
+    if (!screenDoor) {
+        console.error('[3D] Stable building transparency is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    const smoothTransparency = (typeof window !== 'undefined') ? window.__threeSmoothTransparency : null;
+    if (!smoothTransparency) {
+        console.error('[3D] Smooth building transparency is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+
+    // Smooth is the production candidate. `?ghostStyle=grain` retains the already-proven
+    // screen-door renderer as an A/B fallback without maintaining a separate code path.
+    let BUILDING_GHOST_STYLE = 'smooth';
+    try {
+        if (new URLSearchParams(window.location.search).get('ghostStyle') === 'grain') {
+            BUILDING_GHOST_STYLE = 'grain';
+        }
+    } catch (_) { }
+    window.__threeBuildingGhostStyle = BUILDING_GHOST_STYLE;
 
     // Internal state
     let isActive = false;
@@ -89,18 +114,94 @@
     let walkPickClickHandler = null;
     let walkPickKeyHandler = null;
 
+    const BUILDING_OPACITY_KEY = 'cbBuildingOpacity';
+
+    function buildingOpacityOf(material) {
+        const opacity = Number(material?.userData?.[BUILDING_OPACITY_KEY]);
+        return Number.isFinite(opacity) ? Math.min(1, Math.max(0, opacity)) : 1;
+    }
+
+    function configureBuildingMaterial(material, opacity = 1) {
+        const numericOpacity = Number(opacity);
+        const normalizedOpacity = Number.isFinite(numericOpacity)
+            ? Math.min(1, Math.max(0, numericOpacity))
+            : 1;
+        material.userData = material.userData || {};
+        material.userData[BUILDING_OPACITY_KEY] = normalizedOpacity;
+
+        if (normalizedOpacity < 1 && BUILDING_GHOST_STYLE === 'grain') {
+            return screenDoor.configureMaterial(material, {
+                coverage: normalizedOpacity,
+                depthFunc: THREE.LessDepth
+            });
+        }
+        if (normalizedOpacity < 1) {
+            return smoothTransparency.configureColorMaterial(material, {
+                opacity: normalizedOpacity,
+                equalDepth: THREE.EqualDepth,
+                lessDepth: THREE.LessDepth,
+                notEqualStencilFunc: THREE.NotEqualStencilFunc,
+                keepStencilOp: THREE.KeepStencilOp,
+                replaceStencilOp: THREE.ReplaceStencilOp
+            });
+        }
+
+        material.transparent = false;
+        material.opacity = 1;
+        material.colorWrite = true;
+        material.depthTest = true;
+        material.depthWrite = true;
+        material.depthFunc = THREE.LessDepth;
+        material.stencilWrite = false;
+        if ('alphaToCoverage' in material) material.alphaToCoverage = false;
+        material.needsUpdate = true;
+        return material;
+    }
+
+    function makeBuildingMaterial(parameters, opacity = 1) {
+        const material = new THREE.MeshPhongMaterial({
+            ...parameters,
+            depthFunc: THREE.LessDepth,
+            polygonOffset: true,
+            polygonOffsetFactor: 1,
+            polygonOffsetUnits: 1
+        });
+        return configureBuildingMaterial(material, opacity);
+    }
+
+    // Three.js Material.clone() does not copy custom compile hooks. Reapply the selected ghost
+    // renderer whenever a material is cloned for a city face, parcel slice, or uploaded model.
+    function cloneBuildingMaterial(material) {
+        const cloned = material.clone();
+        return configureBuildingMaterial(cloned, buildingOpacityOf(material));
+    }
+
+    function attachBuildingDepthPrepass(mesh) {
+        if (BUILDING_GHOST_STYLE !== 'smooth' || !mesh) return null;
+        return smoothTransparency.attachDepthPrepass(mesh, {
+            lessDepth: THREE.LessDepth,
+            createMesh: (geometry, material) => new THREE.Mesh(geometry, material)
+        });
+    }
+
     // Basic materials
     // - solid: opaque gray, used for the "emphasized" buildings in the current mode.
-    // - ghost: translucent gray for context buildings in "both" mode. Darker + higher
-    //   opacity than the solid tone so the massing actually reads against the light basemap
-    //   (at low opacity over near-white tiles the buildings looked invisible).
+    // - ghost: smooth 50% alpha over the one nearest facade selected by an invisible depth pass.
+    //   The optional grain renderer remains available via `?ghostStyle=grain` for comparison.
     const buildingMaterials = {
-        solid: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        // Buildings an applied corridor demolishes: still drawn (they exist until the proposal
-        // executes) but as reddish condemned ghosts, so they never read as surviving fabric.
-        demolished: new THREE.MeshPhongMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12, transparent: true, opacity: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+        solid: makeBuildingMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20 }),
+        ghost: makeBuildingMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20 }, 0.5),
+        // Buildings an applied corridor demolishes stay reddish in both Built modes, but their
+        // opacity must follow the selected mode: solid really is solid, transparent remains ghosted.
+        demolishedSolid: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }),
+        demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3)
     };
+
+    function demolishedMaterialFor(buildingMaterial) {
+        return buildingOpacityOf(buildingMaterial) < 1
+            ? buildingMaterials.demolishedGhost
+            : buildingMaterials.demolishedSolid;
+    }
 
     const materials = {
         parcels: new THREE.MeshLambertMaterial({ color: 0xdddddd, emissive: 0x000000 }),
@@ -812,6 +913,9 @@
             }
             geometry.translate(0, 0, z);
             const mesh = new THREE.Mesh(geometry, material);
+            // Building ghost materials are tagged by configureBuildingMaterial; other flat and
+            // extruded scene materials pass through untouched.
+            attachBuildingDepthPrepass(mesh);
             meshes.push(mesh);
         };
 
@@ -1961,8 +2065,8 @@
         // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
         // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
         // that the 2D map serves and that cut/tunnel/demolish detection scans. So a demolished or
-        // cut building is found here by ID, exactly. They are drawn as condemned ghosts: they
-        // follow the Built control like every existing building, but never look like surviving fabric.
+        // cut building is found here by ID, exactly. They stay reddish but follow the Built
+        // solid/transparent control like every other existing building.
         try {
             // The carve lives in corridor-carve.js — the SAME module the server runs, so the 3D
             // view here and the walk sim's carved meshes cannot disagree about which buildings
@@ -1975,6 +2079,11 @@
             const carveRecords = window.collectCarveRecords(
                 (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || []
             );
+            // One response can contain the same source surface twice: within one object (usually
+            // opposite winding) or across adjacent/duplicate object_ids. Share these sets across the
+            // entire rebuild so only one copy reaches the depth buffer.
+            const meshDedupeState = { seenFaceKeys: new Set(), seenTriangleKeys: new Set() };
+            const demolishedMaterial = demolishedMaterialFor(buildingMaterial);
             // null → untouched; { remainder: null, demolished } → whole building razed;
             // { remainder, demolished } → partial: prisms for both parts. Both are raw geometries.
             const asFeature = (geometry) => (geometry ? { type: 'Feature', properties: {}, geometry } : null);
@@ -1983,7 +2092,7 @@
                     try {
                         const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords);
                         if (!carve) {
-                            const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
+                            const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
                             if (mesh) targetGroup.add(mesh);
                             return;
                         }
@@ -2000,13 +2109,13 @@
                                     .forEach(m => targetGroup.add(m));
                             }
                             if (!hideDemolished && demolished) {
-                                polygonFeatureToMeshes(demolished, buildingMaterials.demolished, 0, height)
+                                polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
                                     .forEach(m => targetGroup.add(m));
                             }
                             return;
                         }
                         if (hideDemolished) return; // "Surviving": razed fabric absent
-                        const mesh = buildMeshFromBuilding3D(bld, buildingMaterials.demolished);
+                        const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
                         if (mesh) targetGroup.add(mesh);
                     } catch (e) {
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
@@ -2041,7 +2150,7 @@
     // Build a THREE.Mesh from a { object_id, z_min, faces[] } building returned by /buildings/near.
     // Each face is a flat 3D polygon (wall section or roof panel). We triangulate each face in
     // its best-fit 2D plane, then lift the triangles back to their original 3D vertices.
-    function buildMeshFromBuilding3D(bld, material) {
+    function buildMeshFromBuilding3D(bld, material, dedupeState = {}) {
         if (!bld || !Array.isArray(bld.faces) || bld.faces.length === 0) return null;
         const groundZ = Number.isFinite(bld.z_min) ? bld.z_min : 0;
 
@@ -2067,8 +2176,12 @@
             }).filter(r => r.length >= 3);
 
             if (convertedRings.length === 0) continue;
-            const outer = convertedRings[0];
-            const holes = convertedRings.slice(1);
+            const prepared = meshSanitize.prepareFaceRings(convertedRings, {
+                seenFaceKeys: dedupeState.seenFaceKeys
+            });
+            if (!prepared) continue;
+            const outer = prepared.rings[0];
+            const holes = prepared.rings.slice(1);
 
             // Compute face normal from the outer ring (Newell's method — robust for non-trivial polygons).
             let nx = 0, ny = 0, nz = 0;
@@ -2112,11 +2225,11 @@
 
             for (let t = 0; t < triangles.length; t++) {
                 const tri = triangles[t];
-                for (let k = 0; k < 3; k++) {
-                    const v = flat3D[tri[k]];
-                    if (!v) continue;
-                    positions.push(v[0], v[1], v[2]);
-                }
+                const vertices = tri.map(index => flat3D[index]).filter(Boolean);
+                if (vertices.length !== 3) continue;
+                meshSanitize.appendUniqueTriangle(positions, vertices, {
+                    seenTriangleKeys: dedupeState.seenTriangleKeys
+                });
             }
         }
 
@@ -2127,9 +2240,10 @@
         geometry.computeVertexNormals();
 
         // Use a two-sided material clone so back faces (from inconsistent winding in source data) still render.
-        const mat = material.clone();
+        const mat = cloneBuildingMaterial(material);
         mat.side = THREE.DoubleSide;
         const mesh = new THREE.Mesh(geometry, mat);
+        attachBuildingDepthPrepass(mesh);
         mesh.userData.isNearbyBuilding3D = true;
         // Existing buildings carry no parcelId. Stamp a footprint center (as [lng, lat])
         // so parcel-isolation can later test which parcel this building sits on.
@@ -2602,8 +2716,7 @@
 
         const url = feat.properties.modelUrl;
         const gen = buildingsRenderGeneration;
-        const ghost = !!(buildingMaterial && buildingMaterial.transparent && buildingMaterial.opacity < 1);
-        const opacity = ghost ? buildingMaterial.opacity : 1;
+        const buildingOpacity = buildingOpacityOf(buildingMaterial);
         const stale = () => !isActive || gen !== buildingsRenderGeneration || targetGroup !== buildingGroup;
         // The scene's XY is Web-Mercator (EPSG:3857), which inflates horizontal distance by
         // ~1/cos(lat) vs real meters, while extrude heights use raw meters. The glTF model is in
@@ -2631,16 +2744,24 @@
             wrapper.scale.set(horizScale, horizScale, 1);
             wrapper.position.set(cx, cy, 0);
 
+            // Collect before attaching depth children: mutating an Object3D hierarchy during
+            // traverse would make the newly-added prepass meshes participate in this same walk.
+            const modelMeshes = [];
             wrapper.traverse((node) => {
-                if (!node.isMesh || !node.material) return;
-                const mats = Array.isArray(node.material) ? node.material : [node.material];
-                mats.forEach((m) => {
-                    if (!m) return;
-                    m.transparent = ghost;
-                    m.opacity = opacity;
-                    m.depthWrite = !ghost;
-                    m.needsUpdate = true;
+                if (node.isMesh && node.material) modelMeshes.push(node);
+            });
+            modelMeshes.forEach((node) => {
+                // scene.clone(true) still shares glTF materials with the cache and other
+                // placements. Clone each one before applying this display mode, then use the
+                // same stable transparency path as generated building geometry.
+                const sourceMaterials = Array.isArray(node.material) ? node.material : [node.material];
+                const configuredMaterials = sourceMaterials.map((sourceMaterial) => {
+                    if (!sourceMaterial) return sourceMaterial;
+                    const cloned = sourceMaterial.clone();
+                    return configureBuildingMaterial(cloned, buildingOpacity);
                 });
+                node.material = Array.isArray(node.material) ? configuredMaterials : configuredMaterials[0];
+                attachBuildingDepthPrepass(node);
             });
             targetGroup.add(wrapper);
         }).catch((err) => {
@@ -2769,7 +2890,7 @@
         const pendingSliceObjects = [];
         sliceData.forEach((slice, i) => {
             try {
-                const sliceMaterial = material.clone();
+                const sliceMaterial = cloneBuildingMaterial(material);
                 const shadedColor = baseColor.clone();
                 const hsl = {};
                 shadedColor.getHSL(hsl);
@@ -3004,7 +3125,12 @@
         camera = new THREE.PerspectiveCamera(45, width / height, 0.5, 200000);
         camera.up.set(0, 0, 1);
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true });
+        // The scene is already in a local metric frame and camera planes stay within a modest
+        // ratio, so a conventional depth buffer is both sufficient and more stable for coplanar
+        // offsets. A logarithmic buffer rewrites fragment depth and made tiny plane changes visible.
+        // The smooth ghost pass uses stencil to ensure that only one nearest translucent facade
+        // blends at each pixel, even if a residual coincident triangle survives sanitation.
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, stencil: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         threeContainer.innerHTML = '';
@@ -3326,6 +3452,11 @@
             console.log('[3D] Starting intro auto-rotate');
             startIntroAutoRotate();
         }
+        // Hysteresis for the depth-plane retune. The planes only need to follow real dolly/zoom
+        // distance, not orbit or pan. Retuning on every damped frame remaps nearly coplanar depth
+        // values and can make their winner alternate; use camera-to-controls-target distance and
+        // wait for a meaningful zoom before changing the projection.
+        let lastPlaneDist = 0;
         const loop = (now) => {
             stepManualAutoRotate(now);
             // Keep the canvas locked to its container every frame. The window 'resize'
@@ -3336,12 +3467,18 @@
             // unlike handleResize) so it never disturbs the user's current orbit/pan/zoom.
             syncRendererSize();
             if (controls) controls.update();
-            // Dynamically adjust near/far planes based on camera distance to maintain depth precision
+            // Adjust near/far planes only when camera distance has changed enough to matter,
+            // to keep depth precision across big zooms without churning the depth buffer per frame.
             if (camera) {
-                const dist = camera.position.length();
-                camera.near = Math.max(1, dist * 0.001);
-                camera.far = Math.max(1000, dist * 10);
-                camera.updateProjectionMatrix();
+                const dist = (controls && controls.target)
+                    ? camera.position.distanceTo(controls.target)
+                    : camera.position.length();
+                if (lastPlaneDist === 0 || Math.abs(dist - lastPlaneDist) > lastPlaneDist * 0.15) {
+                    camera.near = Math.max(1, dist * 0.001);
+                    camera.far = Math.max(1000, dist * 10);
+                    camera.updateProjectionMatrix();
+                    lastPlaneDist = dist;
+                }
             }
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
