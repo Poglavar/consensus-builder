@@ -7,6 +7,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    const unapplyConflictsSequentially = (
+        typeof ProposalApplyConflicts !== 'undefined'
+        && ProposalApplyConflicts
+        && typeof ProposalApplyConflicts.unapplyConflictsSequentially === 'function'
+    )
+        ? ProposalApplyConflicts.unapplyConflictsSequentially
+        : require('./conflicts.js').unapplyConflictsSequentially;
+
     return {
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
@@ -112,18 +120,23 @@
             if (blockName) {
                 try {
                     const all = proposalStorage.getAllProposals();
-                    all.filter(p => p.proposalId !== proposalId && p.structureProposal && p.structureProposal.blockName === blockName)
-                        .forEach(p => {
-                            if (appliedOf(p, p.structureProposal)) {
-                                const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
-                                if (hasFamilyUnapply) {
-                                    this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
-                                } else if (typeof this.unapplyProposal === 'function') {
-                                    this.unapplyProposal(p.proposalId, { skipConfirm: true, skipRestoreSource: true });
-                                }
-                            }
-                        });
-                } catch (e) { }
+                    const conflicts = all.filter(p => (
+                        p.proposalId !== proposalId
+                        && p.structureProposal
+                        && p.structureProposal.blockName === blockName
+                        && appliedOf(p, p.structureProposal)
+                    ));
+                    const conflictsCleared = await unapplyConflictsSequentially(this, conflicts, {
+                        skipRestoreSource: true
+                    });
+                    if (!conflictsCleared) {
+                        console.warn('Could not unapply a conflicting structure proposal', { proposalId, blockName });
+                        return false;
+                    }
+                } catch (e) {
+                    console.warn('Failed to enforce unique structure proposal constraint', e);
+                    return false;
+                }
             }
             console.debug(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
 

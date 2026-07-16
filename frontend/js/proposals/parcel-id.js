@@ -78,6 +78,30 @@ function _discardParcelWriteCache() {
     _parcelRecordWriteCache = null;
 }
 
+function isParcelWriteBatchActive() {
+    return typeof _parcelRecordWriteCache !== 'undefined' && _parcelRecordWriteCache instanceof Map;
+}
+
+async function withParcelWriteBatch(operation) {
+    if (typeof operation !== 'function') {
+        throw new TypeError('withParcelWriteBatch requires an operation function');
+    }
+
+    const ownsBatch = !isParcelWriteBatchActive();
+    if (ownsBatch) _startParcelWriteCache();
+    let committed = false;
+
+    try {
+        const result = await operation();
+        if (result === false) return false;
+        if (ownsBatch) _flushParcelWriteCache();
+        committed = true;
+        return result;
+    } finally {
+        if (ownsBatch && !committed) _discardParcelWriteCache();
+    }
+}
+
 function readPersistedParcelRecord(parcelId) {
     if (!parcelId) return null;
     const idStr = String(parcelId);
@@ -311,4 +335,30 @@ function getParcelDisplayNumberFromFeature(feature, fallback = '') {
     }
     const properties = feature.properties || feature;
     return getParcelDisplayNumberFromProperties(properties, fallback);
+}
+
+if (typeof window !== 'undefined') {
+    window.withParcelWriteBatch = withParcelWriteBatch;
+    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
+}
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = {
+        normalizeParcelId,
+        getParcelIdFromProperties,
+        getParcelIdFromFeature,
+        ensureParcelIdOnFeature,
+        normalizeParcelIdList,
+        readPersistedParcelRecord,
+        writePersistedParcelRecord,
+        clearPersistedParcelRecord,
+        getParcelAreaById,
+        getParcelDisplayNumberFromProperties,
+        getParcelDisplayNumberFromFeature,
+        _startParcelWriteCache,
+        _flushParcelWriteCache,
+        _discardParcelWriteCache,
+        withParcelWriteBatch,
+        isParcelWriteBatchActive
+    };
 }

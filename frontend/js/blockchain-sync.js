@@ -149,16 +149,10 @@
      * Parse contract status to string
      */
     function parseContractStatus(statusCode) {
-        const statusMap = {
-            0: 'Pending',
-            1: 'Active',
-            2: 'Accepted',
-            3: 'Executed',
-            4: 'Rejected',
-            5: 'Expired',
-            6: 'Cancelled'
-        };
-        return statusMap[statusCode] || 'Unknown';
+        const codec = global.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
     }
 
     /**

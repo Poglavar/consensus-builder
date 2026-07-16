@@ -11,6 +11,13 @@
     const PARCEL_MINT_STATUS_CACHE_TTL_MS = 30 * 1000;
     const MAX_MULTIPLE_ACCOUNTS_BATCH = 100;
 
+    function proposalStatusFromCode(statusCode) {
+        const codec = globalScope.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
+    }
+
     function normalizeCluster(cluster) {
         const raw = typeof cluster === 'string' ? cluster.trim() : '';
         return raw || 'devnet';
@@ -162,7 +169,6 @@
             offset += 8;
             const acceptedParcels = readVecString();
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             return {
                 proposalId: address,
                 proposalIdNum: proposalId.toString(),
@@ -170,7 +176,7 @@
                 isConditional,
                 imageURI,
                 acceptancePossible,
-                status: statusNames[status] || 'Unknown',
+                status: proposalStatusFromCode(status),
                 statusCode: status,
                 solBalance: solBalance.toString(),
                 ethBalance: solBalance.toString(), // compat alias — shared proposal schema uses ethBalance

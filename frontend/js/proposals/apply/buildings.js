@@ -7,6 +7,14 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    const unapplyConflictsSequentially = (
+        typeof ProposalApplyConflicts !== 'undefined'
+        && ProposalApplyConflicts
+        && typeof ProposalApplyConflicts.unapplyConflictsSequentially === 'function'
+    )
+        ? ProposalApplyConflicts.unapplyConflictsSequentially
+        : require('./conflicts.js').unapplyConflictsSequentially;
+
     return {
     async _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
@@ -53,21 +61,23 @@
 
         try {
             const allProposals = proposalStorage.getAllProposals();
-            allProposals
+            const conflicts = allProposals
                 .filter(p => p.proposalId !== proposalId && this._isBuildingProposal(p))
-                .forEach(p => {
+                .filter(p => {
                     const otherKey = this._getBuildingAncestorKey(p);
-                    if (otherKey === ancestorKey && appliedOf(p, p.buildingProposal)) {
-                        const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
-                        if (hasFamilyUnapply) {
-                            this.unapplyWholeFamily(p.proposalId, new Set(), { skipRestoreSource: true });
-                        } else if (typeof this.unapplyProposal === 'function') {
-                            this.unapplyProposal(p.proposalId, { skipConfirm: true, skipRestoreSource: true });
-                        }
-                    }
+                    return otherKey === ancestorKey && appliedOf(p, p.buildingProposal);
                 });
+
+            const conflictsCleared = await unapplyConflictsSequentially(this, conflicts, {
+                skipRestoreSource: true
+            });
+            if (!conflictsCleared) {
+                console.warn('Could not unapply a conflicting building proposal', { proposalId, ancestorKey });
+                return false;
+            }
         } catch (err) {
             console.warn('Failed to enforce unique building proposal constraint', err);
+            return false;
         }
         console.debug(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
 

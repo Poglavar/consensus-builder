@@ -970,6 +970,16 @@ const proposalStorage = {
         }
     },
 
+    // Lifecycle-only mutation. It deliberately does not infer or change local map visibility.
+    setProposalLifecycleStatus(proposalId, lifecycleStatus) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        proposal.lifecycleStatus = getLifecycleStatus({ lifecycleStatus });
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        return true;
+    },
+
     _normalizeProposal(proposal, context = {}) {
         const { existingHash = null } = context || {};
         // Ancestors-only contract: proposals never persist parcel geometries locally — they

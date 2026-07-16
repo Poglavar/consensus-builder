@@ -105,7 +105,9 @@ function checkAndUpdateProposalExpiry(proposal) {
             proposal.lifecycleStatus = 'Expired';
             proposal.updatedAt = new Date().toISOString();
             if (proposal.proposalId && typeof proposalStorage !== 'undefined') {
-                proposalStorage.updateProposalStatus(proposal.proposalId, 'Expired');
+                if (typeof proposalStorage.setProposalLifecycleStatus === 'function') {
+                    proposalStorage.setProposalLifecycleStatus(proposal.proposalId, 'Expired');
+                }
                 proposalStorage.save();
             }
         }
@@ -367,5 +369,10 @@ function parseProposalOfferValue(value) {
 // Export the pure classification helper for headless unit tests (browser leaves `module` undefined,
 // so this is a no-op there and the functions remain plain globals).
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { isVoteProposal };
+    module.exports = {
+        isVoteProposal,
+        isProposalExpired,
+        checkAndUpdateProposalExpiry,
+        parseExpiryTime
+    };
 }

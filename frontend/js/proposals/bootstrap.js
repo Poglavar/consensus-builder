@@ -95,6 +95,8 @@ if (typeof window !== 'undefined') {
     window._startParcelWriteCache = _startParcelWriteCache;
     window._flushParcelWriteCache = _flushParcelWriteCache;
     window._discardParcelWriteCache = _discardParcelWriteCache;
+    window.withParcelWriteBatch = withParcelWriteBatch;
+    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
 }
 
 

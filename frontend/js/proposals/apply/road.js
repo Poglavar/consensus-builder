@@ -9,6 +9,17 @@
 
     return {
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
+        if (
+            options._parcelWriteBatchActive !== true
+            && typeof window !== 'undefined'
+            && typeof window.withParcelWriteBatch === 'function'
+        ) {
+            return window.withParcelWriteBatch(() => this._applyRoadProposal(proposalId, proposalData, {
+                ...options,
+                _parcelWriteBatchActive: true
+            }));
+        }
+
         const startTime = performance.now();
         const proposalIdForSynthetics = (proposalData && proposalData.proposalId) ? String(proposalData.proposalId) : proposalId;
         const idLabel = _normalizeProposalId(proposalIdForSynthetics || proposalId) || 'unknown-proposal';
@@ -52,7 +63,7 @@
         }
 
         // PERFORMANCE: Start write cache to batch localStorage operations
-        if (typeof window._startParcelWriteCache === 'function') {
+        if (options._parcelWriteBatchActive !== true && typeof window._startParcelWriteCache === 'function') {
             window._startParcelWriteCache();
         }
 
