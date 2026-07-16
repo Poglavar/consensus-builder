@@ -10,10 +10,9 @@
 //       Whether this proposal's geometry is stamped onto THIS browser's map. The root boolean is
 //       the sole steady-state source of truth. `sub` is accepted only to migrate pre-split records.
 //
-// Both read the NEW fields (proposal.lifecycleStatus, proposal.applied, sub.applied) when present and
-// otherwise DERIVE from the legacy `status` strings, so old localStorage rows and old API responses
-// keep working until the backfill/normalize upgrades them in place. The legacy derivation mirrors
-// backend/scripts/split-status-applied.js deriveApplied so the browser and the server agree.
+// Both read the NEW fields (proposal.lifecycleStatus and proposal.applied) when present and otherwise
+// derive from legacy `status` strings so old localStorage and imported files can be normalized in
+// place. Server payloads carry lifecycle only; importing one always starts locally unapplied.
 //
 // Dependency-light (no DOM, no proposalStorage) so the same file loads in the browser and in node
 // tests, exactly like corridor-carve.js.
@@ -56,10 +55,9 @@ function canonicalLifecycle(value) {
 // authoritative: a stale nested flag can never override it. Nested flags and legacy status strings
 // are consulted only for an unnormalised, pre-split record with no root boolean.
 //
-// The demolition-rescue heuristic that flips a stuck 'Active'/'unapplied' road (like proposal 474)
-// to applied lives ONLY in the one-time backfill (backend/scripts/split-status-applied.js), NOT
-// here — otherwise a deliberately un-applied road that still carries its records would refuse to
-// give its buildings back. Steady state relies on the explicit boolean instead.
+// There is deliberately no demolition-based rescue heuristic here: a locally unapplied road can
+// still carry demolition records and must give its buildings back. Steady state relies on the
+// explicit root boolean instead.
 function isApplied(proposal, sub) {
     const propFlag = proposal && typeof proposal.applied === 'boolean' ? proposal.applied : undefined;
     if (propFlag !== undefined) return propFlag;

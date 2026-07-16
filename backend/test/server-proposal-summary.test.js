@@ -6,7 +6,7 @@
 // them. The field is only ever read by buildProposalThumbHtml, so nothing else noticed.
 //
 // server-sync.js is a classic script with no exports that reads cross-file globals, so it is
-// evaluated in a vm context with the two globals this function touches stubbed in.
+// evaluated in a vm context with the cross-file globals this function touches stubbed in.
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -21,6 +21,7 @@ function loadNormalizer() {
         window: undefined,
         console,
         normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
+        getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
         getCurrentCityId: () => 'zagreb'
     });
     runInContext(readFileSync(scriptPath, 'utf8'), context);
@@ -65,6 +66,8 @@ describe('normalizeServerProposalSummary', () => {
         expect(normalized.serverProposalId).toBe('62');
         expect(normalized.proposalId).toBe('p-9qg43kxlmm');
         expect(normalized.city).toBe('zagreb');
+        expect(normalized.lifecycleStatus).toBe('Active');
+        expect(normalized).not.toHaveProperty('status');
     });
 });
 
@@ -75,6 +78,7 @@ describe('serverListQuery (server-side search/sort mapping)', () => {
             window: undefined,
             console,
             normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
+            getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
             getCurrentCityId: () => 'zagreb',
             proposalListState: state
         });

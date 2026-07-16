@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS proposal (
     id SERIAL PRIMARY KEY,
-    proposal_id VARCHAR(255) UNIQUE NOT NULL, -- Unique identifier (can be onchain ID or local ID)
+    proposal_id VARCHAR(255) NOT NULL, -- Unique identifier (can be onchain ID or local ID)
     city VARCHAR(100) DEFAULT 'city', -- City identifier for multi-city support
     
     -- Basic proposal information

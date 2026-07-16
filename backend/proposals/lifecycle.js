@@ -39,4 +39,3 @@ export function effectiveLifecycleStatus(value, expiresAt, now = new Date()) {
     }
     return 'Active';
 }
-

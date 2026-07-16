@@ -1,5 +1,9 @@
 // proposals/server-sync.js — extracted from proposals.js (behavior-preserving relocation).
 
+const serverSyncLifecycleOf = (typeof getLifecycleStatus === 'function')
+    ? getLifecycleStatus
+    : (typeof require === 'function' ? require('./status.js').getLifecycleStatus : null);
+
 function resolveCurrentCityCode() {
     try {
         const mgr = typeof window !== 'undefined' ? window.CityConfigManager : null;
@@ -40,7 +44,7 @@ function normalizeServerProposalSummary(raw, cityCode) {
         author: raw.author || '',
         type: raw.type || raw.goal || 'parcel',
         goal: goalKey || 'parcel',
-        lifecycleStatus: getLifecycleStatus(raw),
+        lifecycleStatus: serverSyncLifecycleOf(raw),
         createdAt: raw.createdAt || raw.created_at || null,
         updatedAt: raw.updatedAt || raw.updated_at || null,
         // The summary endpoint serves the server-rendered thumbnail (COALESCE(screenshot_url,
