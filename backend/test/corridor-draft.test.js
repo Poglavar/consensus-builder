@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const {
     ACTIVE_DRAFT_KEY,
     buildCorridorDrawingSeed,
+    corridorDefinitionFromSeed,
     resolveCorridorScreenshotGeometry,
     saveActiveCorridorDraft,
     getActiveCorridorDraft,
@@ -57,6 +58,23 @@ describe('corridor drawing drafts', () => {
 
     it('rejects definitions without a centerline', () => {
         expect(buildCorridorDrawingSeed({ width: 10 }, null)).toBeNull();
+    });
+
+    it('routes draft persistence through the canonical corridor compiler', () => {
+        const previous = { importedTag: 'keep', metadata: { imported: true } };
+        const compiled = corridorDefinitionFromSeed({
+            centerline: [[15.97, 45.81], [15.98, 45.82]],
+            profile: { strips: [{ type: 'driving', width: 3 }, { type: 'sidewalk', width: 2 }] }
+        }, 'road', previous);
+
+        expect(compiled.points).toEqual([[
+            { lat: 45.81, lng: 15.97 },
+            { lat: 45.82, lng: 15.98 }
+        ]]);
+        expect(compiled.segmentIds).toEqual(['s1']);
+        expect(compiled.width).toBe(5);
+        expect(compiled.importedTag).toBe('keep');
+        expect(compiled.metadata).toMatchObject({ imported: true, type: 'road', isRoad: true });
     });
 
     it('autosaves, restores and clears one active dirty drawing', () => {

@@ -1517,7 +1517,40 @@ function draftLatLng(point) {
 }
 
 // Geometry tools own their live mutable state; this is the single snapshot boundary that turns it
-// into a small, reload-safe draft. Preview cursor geometry is deliberately excluded.
+// Compile the editor's mutable Leaflet state into the one plain-data corridor contract consumed by
+// drafts and proposal creation. Preview cursor geometry is deliberately excluded.
+function compileRoadDrawingDefinition({
+    segments,
+    segmentIds,
+    kind = corridorDrawingKind(),
+    polygon = null,
+    latLngPairs = null,
+    requireDrawable = true,
+    metadata = {}
+} = {}) {
+    const api = typeof window !== 'undefined' ? window.CorridorDraftState : null;
+    if (!api || typeof api.compileCorridorDefinition !== 'function') {
+        throw new Error('Corridor draft compiler is unavailable.');
+    }
+    return api.compileCorridorDefinition({
+        kind,
+        segments: segments || [],
+        segmentIds: segmentIds || [],
+        profile: getRoadDrawingProfile(),
+        width: roadWidth,
+        sidewalkWidth: roadSidewalkWidth,
+        trackSpeed,
+        trackMinRadius: trackMinCurvatureRadius,
+        tunnels: roadBuildingTunnels,
+        demolishedBuildings: roadDemolishedBuildings,
+        segmentProfiles: roadSegmentProfiles,
+        polygon,
+        latLngPairs,
+        metadata
+    }, { kind, requireDrawable, metadata });
+}
+
+// Persist the compiled state into a small, reload-safe draft.
 function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
     if (typeof saveActiveCorridorDraft !== 'function') return null;
     const entries = getAllRoadSegments(true)
@@ -1528,28 +1561,36 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         .filter(entry => entry.points.length >= 2);
     if (!entries.length) return null;
 
-    const seed = {
-        centerline: entries.map(entry => entry.points),
-        segmentIds: entries.map(entry => entry.id),
-        profile: getRoadDrawingProfile(),
-        width: roadWidth,
-        sidewalkWidth: roadSidewalkWidth,
-        // The rail engineering limits ride along with any corridor that carries a track.
-        trackSpeed,
-        trackMinRadius: trackMinCurvatureRadius,
-        tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
-        demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
-        segmentProfiles: JSON.parse(JSON.stringify(roadSegmentProfiles || {}))
-    };
-
+    let latLngPairs = null;
+    let polygon = null;
     try {
-        const latLngPairs = convertRoadPolygonToLatLngPairs(roadPolygon);
-        const polygon = convertLatLngPairsToGeoJSON(latLngPairs);
-        if (polygon?.type && Array.isArray(polygon.coordinates)) {
-            seed.polygon = polygon;
-            seed.latLngPairs = latLngPairs;
-        }
+        latLngPairs = convertRoadPolygonToLatLngPairs(roadPolygon);
+        const candidate = convertLatLngPairsToGeoJSON(latLngPairs);
+        if (candidate?.type && Array.isArray(candidate.coordinates)) polygon = candidate;
     } catch (_) { }
+    const definition = compileRoadDrawingDefinition({
+        segments: entries.map(entry => entry.points),
+        segmentIds: entries.map(entry => entry.id),
+        kind,
+        polygon,
+        latLngPairs,
+        requireDrawable: true,
+        metadata: { mode: 'draw', source: 'road-drawing' }
+    });
+    const seed = {
+        centerline: definition.points,
+        segmentIds: definition.segmentIds,
+        profile: definition.profile,
+        width: definition.width,
+        sidewalkWidth: definition.sidewalkWidth,
+        trackSpeed: definition.metadata.trackSpeed,
+        trackMinRadius: definition.metadata.trackMinRadius,
+        tunnels: definition.tunnels,
+        demolishedBuildings: definition.demolishedBuildings,
+        segmentProfiles: definition.segmentProfiles,
+        polygon: definition.polygon,
+        latLngPairs: definition.latLngPairs
+    };
 
     const copySource = window.pendingRoadCopySource || null;
     const parentParcelIds = (Array.isArray(roadAffectedParcels) ? roadAffectedParcels : [])
@@ -1661,45 +1702,39 @@ function rebuildRoadGeometryFromSegments() {
     return updatedPolygon;
 }
 
-// Normalize a seed centerline into segments of Leaflet LatLngs. Accepts the two shapes a stored road
-// definition can have: a flat list of points (older single-segment roads) or a list of segments.
-function normalizeSeedSegments(input) {
-    if (!Array.isArray(input) || !input.length) return [];
-    const toLatLng = (pt) => {
-        if (!pt) return null;
-        const lat = Number(pt.lat !== undefined ? pt.lat : (Array.isArray(pt) ? pt[1] : NaN));
-        const lng = Number(pt.lng !== undefined ? pt.lng : (Array.isArray(pt) ? pt[0] : NaN));
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-        return L.latLng(lat, lng);
-    };
-    const isNested = Array.isArray(input[0]);
-    const rawSegments = isNested ? input : [input];
-    return rawSegments
-        .map(segment => (Array.isArray(segment) ? segment.map(toLatLng).filter(Boolean) : []))
-        .filter(segment => segment.length >= 2);
-}
-
 // Reopen an existing corridor for editing: the drawing tool starts from its geometry instead of a blank
 // canvas, so it can be continued across a reload, an upload/download round-trip, or a copy. The locked
 // parcels and their stats are then derived from the corridor, exactly as they are after an undo.
 // A track seeds the same way a road does — it is the same tool and the same state.
 function seedRoadDrawing(seed) {
     if (!seed) return false;
-    const segments = normalizeSeedSegments(seed.centerline || seed.segments || seed.points);
+    const stateApi = typeof window !== 'undefined' ? window.CorridorDraftState : null;
+    if (!stateApi || typeof stateApi.createCorridorDraftState !== 'function'
+        || typeof stateApi.validateCorridorDraftState !== 'function') {
+        throw new Error('Corridor draft state module is unavailable.');
+    }
+    const canonicalSeed = stateApi.createCorridorDraftState({
+        ...seed,
+        kind: seed.kind || corridorDrawKind,
+        segments: seed.centerline || seed.segments || seed.points || []
+    });
+    if (!stateApi.validateCorridorDraftState(canonicalSeed, { requireDrawable: true }).ok) return false;
+    const segments = canonicalSeed.segments.map(segment => segment.map(point => L.latLng(point.lat, point.lng)));
     if (!segments.length) return false;
 
-    if (Number.isFinite(Number(seed.width))) roadWidth = Number(seed.width);
-    if (Number.isFinite(Number(seed.sidewalkWidth))) {
-        roadSidewalkWidth = Number(seed.sidewalkWidth);
+    const source = canonicalSeed;
+    if (source.width !== null && source.width !== undefined && Number.isFinite(Number(source.width))) roadWidth = Number(source.width);
+    if (source.sidewalkWidth !== null && source.sidewalkWidth !== undefined && Number.isFinite(Number(source.sidewalkWidth))) {
+        roadSidewalkWidth = Number(source.sidewalkWidth);
         if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
     }
-    if (Number.isFinite(Number(seed.trackSpeed))) trackSpeed = Number(seed.trackSpeed);
-    if (Number.isFinite(Number(seed.trackMinRadius))) trackMinCurvatureRadius = Number(seed.trackMinRadius);
+    if (source.trackSpeed !== null && source.trackSpeed !== undefined && Number.isFinite(Number(source.trackSpeed))) trackSpeed = Number(source.trackSpeed);
+    if (source.trackMinRadius !== null && source.trackMinRadius !== undefined && Number.isFinite(Number(source.trackMinRadius))) trackMinCurvatureRadius = Number(source.trackMinRadius);
 
     // A corridor drawn before profiles existed gets one synthesised from its width, so reopening it never
     // silently changes its footprint: the profile always sums back to the width it was drawn with. That
     // includes an old track — one rail lane as wide as the track was drawn.
-    roadProfile = normalizeCorridorProfile(seed.profile)
+    roadProfile = normalizeCorridorProfile(source.profile)
         || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, corridorDrawKind === 'track');
     if (roadProfile) roadWidth = corridorProfileWidth(roadProfile);
 
@@ -1707,14 +1742,14 @@ function seedRoadDrawing(seed) {
     roadSegmentIds = [];
     roadPoints = [];
     roadHasStarted = false;
-    roadBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
-    roadDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
-    roadSegmentProfiles = (seed.segmentProfiles && typeof seed.segmentProfiles === 'object')
-        ? JSON.parse(JSON.stringify(seed.segmentProfiles))
+    roadBuildingTunnels = Array.isArray(source.tunnels) ? JSON.parse(JSON.stringify(source.tunnels)) : [];
+    roadDemolishedBuildings = Array.isArray(source.demolishedBuildings) ? JSON.parse(JSON.stringify(source.demolishedBuildings)) : [];
+    roadSegmentProfiles = (source.segmentProfiles && typeof source.segmentProfiles === 'object')
+        ? JSON.parse(JSON.stringify(source.segmentProfiles))
         : {};
     cachedCommittedPolygon = null;
 
-    const seededIds = Array.isArray(seed.segmentIds) ? seed.segmentIds : [];
+    const seededIds = Array.isArray(source.segmentIds) ? source.segmentIds : [];
     segments.forEach((points, index) => pushRoadSegment(points, seededIds[index]));
 
     // Keep generated ids clear of the seeded ones so a continued road never collides with a new branch.
@@ -4994,42 +5029,43 @@ async function finishRoadDrawing() {
         });
     }
 
+    let compiledDefinition;
+    try {
+        compiledDefinition = compileRoadDrawingDefinition({
+            segments: centerlineSegments,
+            segmentIds: centerlineSegmentIds,
+            kind: corridorKind,
+            polygon: geoPolygon,
+            latLngPairs,
+            requireDrawable: true,
+            metadata: {
+                mode: 'draw',
+                source: 'road-drawing'
+            }
+        });
+    } catch (error) {
+        console.error('[finishRoadDrawing] Corridor compilation failed', error);
+        showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
+        exitRoadDrawingMode();
+        return;
+    }
+
     const roadDrawingContext = {
+        definition: compiledDefinition,
         parentParcelIds: parentParcelIds.slice(),
-        centerline: centerlineSegments,
-        segmentIds: centerlineSegmentIds,
-        profile: roadProfile ? { strips: roadProfile.strips.map(strip => ({ ...strip })) } : null,
-        polygon: geoPolygon,
+        centerline: compiledDefinition.points,
+        segmentIds: compiledDefinition.segmentIds,
+        profile: compiledDefinition.profile,
+        polygon: compiledDefinition.polygon,
         polygonOrder: 'lnglat', // Explicit: geoPolygon is GeoJSON format [lng, lat]
-        latLngPairs,
-        width: roadWidth,
-        sidewalkWidth: roadSidewalkWidth,
-        tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
-        demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
-        segmentProfiles: (() => {
-            const trimmed = {};
-            centerlineSegmentIds.forEach(id => {
-                if (id !== null && id !== undefined && roadSegmentProfiles[String(id)]) {
-                    trimmed[String(id)] = JSON.parse(JSON.stringify(roadSegmentProfiles[String(id)]));
-                }
-            });
-            return trimmed;
-        })(),
+        latLngPairs: compiledDefinition.latLngPairs,
+        width: compiledDefinition.width,
+        sidewalkWidth: compiledDefinition.sidewalkWidth,
+        tunnels: compiledDefinition.tunnels,
+        demolishedBuildings: compiledDefinition.demolishedBuildings,
+        segmentProfiles: compiledDefinition.segmentProfiles,
         stats: ownershipAndAcquisitionStats,
-        metadata: {
-            mode: 'draw',
-            type: corridorKind,
-            // Written, not read: `isTrack` is DERIVED from the profile everywhere the app asks the
-            // question (corridorIsTrack), but proposal creation, parcel styling and the draft store
-            // still key on the stored flag, and corridors saved before rail lanes existed have only
-            // this flag to say what they are. So it is recorded, and it always agrees with the lanes.
-            isTrack,
-            isRoad: !isTrack,
-            isCorridor: true,
-            source: 'road-drawing',
-            // The rail engineering limits the track was designed to; meaningless on a road.
-            ...(isTrack ? { trackSpeed, trackMinRadius: trackMinCurvatureRadius } : {})
-        }
+        metadata: compiledDefinition.metadata
     };
 
     if (typeof pendingRoadDrawingProposal !== 'undefined') {
