@@ -111,8 +111,7 @@
 
         // If we still have no child ids, nothing to remove; treat as already unapplied
         if (allChildIds.length === 0) {
-            roadProposal.applied = false;
-            proposalData.applied = false;
+            setProposalApplied(proposalData, false);
             this._restoreSupersededRoadSources(proposalId, proposalData);
             proposalStorage.save();
             console.warn('[_unapplyProposalConfirmed] No child parcel ids resolved; skipping removal', { proposalId, proposalHasChildIds: Array.isArray(proposalData.childParcelIds) && proposalData.childParcelIds.length });
@@ -195,8 +194,7 @@
         this._removeChildParcels(proposalId, allChildIds);
         roadProposal.childParcelIds = Array.from(new Set(allChildIds));
 
-        roadProposal.applied = false;
-        proposalData.applied = false; // leaves the map
+        setProposalApplied(proposalData, false); // leaves the map
         this._restoreSupersededRoadSources(proposalId, proposalData);
         proposalStorage.save();
 
@@ -268,14 +266,13 @@
         this._removeChildParcels(proposalId, childIds, proposalData);
 
         proposalData.decideLaterProposal = {
-            applied: false,
             parentParcelIds: parentIds,
             childParcelIds: []
         };
         proposalData.childParcelIds = Array.isArray(proposalData.childParcelIds)
             ? proposalData.childParcelIds.filter(id => !childIds.includes(id && id.toString ? id.toString() : String(id)))
             : [];
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         if (typeof proposalStorage._indexProposal === 'function') {
@@ -334,14 +331,8 @@
             if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
         }
 
-        buildingProposal.applied = false;
-        buildingProposal.appliedAt = null;
         proposalData.buildingProposal = buildingProposal;
-
-        if (proposalData.executedAt) {
-            delete proposalData.executedAt;
-        }
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -433,9 +424,8 @@
             uniqueParents.forEach(id => this._unmarkParcelModified(id));
 
             // The structure leaves the map (application axis only).
-            sp.applied = false;
             proposalData.structureProposal = sp;
-            proposalData.applied = false;
+            setProposalApplied(proposalData, false);
             proposalData.proposalId = proposalData.proposalId || proposalId;
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposalData);
@@ -529,14 +519,10 @@
         this._removeReparcellizationLayer(proposalId);
         this._removeChildParcels(proposalId, childIds, proposalData);
 
-        plan.applied = false;
-        if (plan.appliedAt) {
-            delete plan.appliedAt;
-        }
         plan.childParcelIds = [];
         proposalData.childParcelIds = [];
 
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;

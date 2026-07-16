@@ -17,9 +17,12 @@ describe('persistAppliedProposal', () => {
         const indexed = [];
         let savedN = 0;
         globalThis.proposalStorage = { _indexProposal: p => indexed.push(p), save: () => savedN++, proposals: new Map() };
-        const data = {};
+        const data = { roadProposal: { applied: false, appliedAt: 'stale' } };
         persistAppliedProposal(data, 'p-x');
         expect(data.applied).toBe(true);
+        expect(data.appliedAt).toBeTruthy();
+        expect(data.roadProposal.applied).toBeUndefined();
+        expect(data.roadProposal.appliedAt).toBeUndefined();
         expect(data.proposalId).toBe('p-x');
         expect(data.updatedAt).toBeTruthy();
         expect(indexed).toEqual([data]);

@@ -147,8 +147,6 @@
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
 
-        plan.applied = true;
-        plan.appliedAt = new Date().toISOString();
         plan.parentParcelIds = parentIds;
         plan.childParcelIds = childParcelIds;
         proposalData.parentParcelIds = parentIds;
@@ -450,13 +448,12 @@
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...childIdsOnMap]);
                 proposalData.decideLaterProposal = {
-                    applied: true,
                     parentParcelIds: parentIds,
                     childParcelIds: childIdsExisting.map(String),
                     _restored: true
                 };
                 proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...childIdsExisting.map(String)]));
-                proposalData.applied = true;
+                setProposalApplied(proposalData, true);
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
                 console.debug(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
@@ -477,13 +474,12 @@
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...restoredChildIds]);
                 proposalData.decideLaterProposal = {
-                    applied: true,
                     parentParcelIds: parentIds,
                     childParcelIds: restoredChildIds.map(String),
                     _restored: true
                 };
                 proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...restoredChildIds.map(String)]));
-                proposalData.applied = true;
+                setProposalApplied(proposalData, true);
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
                 console.debug(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
@@ -667,7 +663,6 @@
         this._hideFeaturesFromMap(parentFeatures);
 
         proposalData.decideLaterProposal = {
-            applied: true,
             parentParcelIds: parentIds,
             childParcelIds: shouldAddChild ? [String(childParcelId)] : [],
             _restored: true

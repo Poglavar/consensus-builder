@@ -92,10 +92,11 @@ describe('_applyBuildingProposal (characterization)', () => {
         const result = await _applyBuildingProposal.call(mgr, 'p-b1', data, {});
 
         expect(result).toBe(true);
-        // Applied flags on both axes-carriers.
+        // Map visibility has one authoritative root carrier.
         expect(data.applied).toBe(true);
-        expect(data.buildingProposal.applied).toBe(true);
-        expect(data.buildingProposal.appliedAt).toBeTruthy();
+        expect(data.appliedAt).toBeTruthy();
+        expect(data.buildingProposal.applied).toBeUndefined();
+        expect(data.buildingProposal.appliedAt).toBeUndefined();
         // Rendered the feature with the applied state + proposal id stamped on.
         expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(1);
         const rendered = globalThis.upsertProposedBuildingFeature.calls[0][0];

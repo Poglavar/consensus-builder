@@ -5,7 +5,15 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { getLifecycleStatus, canonicalLifecycle, isApplied } = require('../../frontend/js/proposals/status.js');
+const {
+    getLifecycleStatus,
+    canonicalLifecycle,
+    isApplied,
+    normalizeProposalStatusAxes,
+    parkProposalForImport,
+    setProposalApplied,
+    stripProposalAppliedState
+} = require('../../frontend/js/proposals/status.js');
 
 describe('getLifecycleStatus', () => {
     it('prefers the explicit lifecycleStatus field', () => {
@@ -39,15 +47,15 @@ describe('isApplied', () => {
         expect(isApplied({ applied: false, status: 'applied' })).toBe(false);
     });
 
-    it('honours the explicit boolean on the sub-proposal', () => {
+    it('uses a nested boolean only as a fallback for an unnormalised legacy row', () => {
         const p = { status: 'Active' };
         expect(isApplied(p, { applied: true, status: 'unapplied' })).toBe(true);
         expect(isApplied(p, { applied: false, status: 'applied' })).toBe(false);
     });
 
-    it('is applied when either the sub or the proposal boolean is true (OR, mirroring the old gate)', () => {
+    it('makes the root boolean authoritative over stale nested flags', () => {
         expect(isApplied({ applied: true }, { applied: false })).toBe(true);
-        expect(isApplied({ applied: false }, { applied: true })).toBe(true);
+        expect(isApplied({ applied: false }, { applied: true })).toBe(false);
     });
 
     it('legacy fallback: applied/executed status means on-the-map', () => {
@@ -69,5 +77,47 @@ describe('isApplied', () => {
         expect(isApplied({ status: 'applied', supersededByProposalId: 'p-x' })).toBe(false);
         expect(isApplied({ status: 'cancelled', roadProposal: { status: 'applied' } })).toBe(false);
         expect(isApplied({ status: 'expired', roadProposal: { status: 'applied' } })).toBe(false);
+    });
+});
+
+describe('proposal status-axis normalisation', () => {
+    it('migrates legacy state once to a root applied boolean and removes nested copies', () => {
+        const proposal = {
+            status: 'Executed',
+            roadProposal: { status: 'applied', applied: true, appliedAt: 'old' }
+        };
+        normalizeProposalStatusAxes(proposal);
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Executed', applied: true });
+        expect(proposal.status).toBeUndefined();
+        expect(proposal.roadProposal).not.toHaveProperty('status');
+        expect(proposal.roadProposal).not.toHaveProperty('applied');
+        expect(proposal.roadProposal).not.toHaveProperty('appliedAt');
+    });
+
+    it('sets local visibility only at the root', () => {
+        const proposal = { buildingProposal: { applied: false, appliedAt: 'old' } };
+        setProposalApplied(proposal, true, { appliedAt: 'now' });
+        expect(proposal).toMatchObject({ applied: true, appliedAt: 'now' });
+        expect(proposal.buildingProposal).not.toHaveProperty('applied');
+        setProposalApplied(proposal, false);
+        expect(proposal.applied).toBe(false);
+        expect(proposal).not.toHaveProperty('appliedAt');
+    });
+
+    it('strips every local visibility field from an outbound clone', () => {
+        const proposal = { applied: true, appliedAt: 'now', structureProposal: { applied: true, appliedAt: 'now' } };
+        stripProposalAppliedState(proposal);
+        expect(proposal).not.toHaveProperty('applied');
+        expect(proposal).not.toHaveProperty('appliedAt');
+        expect(proposal.structureProposal).not.toHaveProperty('applied');
+        expect(proposal.structureProposal).not.toHaveProperty('appliedAt');
+    });
+
+    it('parks imports even when their shared lifecycle is Executed', () => {
+        const proposal = { lifecycleStatus: 'Executed', applied: true, roadProposal: { applied: true } };
+        parkProposalForImport(proposal);
+        expect(proposal.lifecycleStatus).toBe('Executed');
+        expect(proposal.applied).toBe(false);
+        expect(proposal.roadProposal).not.toHaveProperty('applied');
     });
 });

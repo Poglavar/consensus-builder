@@ -169,7 +169,7 @@ describe('POST /buildings/near with `proposals`', () => {
         expect(res.body.count).toBe(2);
     });
 
-    it('carves nothing when the proposal is not applied', async () => {
+    it('uses the ids explicitly selected by the caller, independent of browser-local applied state', async () => {
         pool.setResults([
             { rows: BUILDINGS, rowCount: 3 },
             { rows: [{ ...PROPOSAL_ROW, status: 'Active', applied: false, roadProposal: { status: 'unapplied', applied: false, definition: CORRIDOR } }], rowCount: 1 }
@@ -180,7 +180,8 @@ describe('POST /buildings/near with `proposals`', () => {
             .send({ ...NEAR_BODY, proposals: ['p-carve-test'] });
 
         expect(res.status).toBe(200);
-        expect(res.body.count).toBe(3);
+        expect(res.body.count).toBe(2);
+        expect(res.body.buildings.find(b => b.object_id === 63)).toBeUndefined();
     });
 
     it('carves when applied=true even though the legacy status still reads unapplied (the 474 fix)', async () => {

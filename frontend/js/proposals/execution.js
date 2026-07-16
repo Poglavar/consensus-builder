@@ -481,9 +481,8 @@ function claimSaleOffer(proposalId, buyerAgentId) {
         recipientAddress: buyer, buyer, status: 'sold'
     };
     proposal.funded = true;
-    // Executing advances the lifecycle AND materialises the geometry, so both axes move together.
+    // Executing advances the shared lifecycle only. Map materialisation is a separate local action.
     proposal.lifecycleStatus = 'Executed';
-    proposal.applied = true;
     proposal.executedAt = new Date().toISOString();
 
     const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
@@ -1299,7 +1298,6 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             && proposalRecipientConsentSatisfied(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.lifecycleStatus = 'Executed';
-            proposal.applied = true;
             proposal.executedAt = new Date().toISOString();
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposal);
@@ -1344,17 +1342,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                     }
                 }
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
-                if (proposal.buildingProposal) {
-                    proposal.buildingProposal.applied = true;
-                }
                 if (typeof markProposedBuildingState === 'function') {
                     markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true, save: true });
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
-                }
-            } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square' || proposal.structureProposal.kind === 'lake')) {
-                if (proposal.structureProposal) {
-                    proposal.structureProposal.applied = true;
                 }
             }
 

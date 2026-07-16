@@ -38,8 +38,7 @@
                 parentParcelIds: canonicalParentIds.slice(),
                 childParcelIds: canonicalChildIds.slice(),
                 definition: canonicalRoadPlan,
-                roadGeometry: canonicalRoadGeometry,
-                applied: appliedOf(proposalData)
+                roadGeometry: canonicalRoadGeometry
             };
 
         proposalData.roadProposal = roadProposal;
@@ -646,8 +645,7 @@
         if (roadProposal.roadGeometry) {
             proposalData.geometry.roadGeometry = roadProposal.roadGeometry;
         }
-        roadProposal.applied = true;
-        proposalData.applied = true;
+        setProposalApplied(proposalData, true);
         proposalStorage.save();
         console.debug(`[_applyRoadProposal] Step 7: Saved proposal status (${(performance.now() - step7Time).toFixed(2)}ms)`);
 

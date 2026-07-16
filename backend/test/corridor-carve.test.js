@@ -133,6 +133,14 @@ describe('collectCarveRecords', () => {
 
         expect(records.size).toBe(0);
     });
+
+    it('can apply an explicit server-side selection without consulting browser visibility', () => {
+        const { records } = collectCarveRecords(
+            [{ applied: false, roadProposal: { definition: { demolishedBuildings: [fullDemolition(61075)] } } }],
+            { selectedByCaller: true }
+        );
+        expect([...records.keys()]).toEqual(['61075']);
+    });
 });
 
 describe('buildingFootprintFromFaces', () => {

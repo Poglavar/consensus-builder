@@ -1129,9 +1129,9 @@ const ProposalManager = {
                 definition: proposal.definition,
                 parentParcelIds: parentParcelIds,
                 // Child parcels are derived from the proposal definition and persisted storage; avoid storing geometry blobs
-                childParcelIds: [],
-                applied: appliedOf(proposal)
+                childParcelIds: []
             },
+            applied: appliedOf(proposal),
             createdAt: new Date().toISOString()
         };
 
@@ -2048,8 +2048,7 @@ const ProposalManager = {
         const synthetic = {
             kind: inferredKind,
             parentParcelIds: parentIds,
-            blockName: proposalData.blockName || null,
-            applied: appliedOf(proposalData)
+            blockName: proposalData.blockName || null
         };
         const canonicalGeometry = this._getCanonicalStructureGeometry(proposalData, inferredKind);
         const geometry = canonicalGeometry && canonicalGeometry.type && Array.isArray(canonicalGeometry.coordinates)

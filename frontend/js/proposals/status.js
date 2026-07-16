@@ -7,9 +7,8 @@
 //       The marketplace / on-chain lifecycle (mirrors the Solidity/Solana ProposalStatus enum).
 //
 //   isApplied(p, sub)     -> boolean
-//       Whether this proposal's geometry is stamped onto the map — drawn, and cutting the buildings
-//       under it. This is the axis the carve gate (corridor-carve.js) reads. `sub` is an optional
-//       sub-proposal (roadProposal / buildingProposal / structureProposal / reparcellization).
+//       Whether this proposal's geometry is stamped onto THIS browser's map. The root boolean is
+//       the sole steady-state source of truth. `sub` is accepted only to migrate pre-split records.
 //
 // Both read the NEW fields (proposal.lifecycleStatus, proposal.applied, sub.applied) when present and
 // otherwise DERIVE from the legacy `status` strings, so old localStorage rows and old API responses
@@ -20,6 +19,13 @@
 // tests, exactly like corridor-carve.js.
 
 const APPLIED_LIKE = new Set(['applied', 'executed']);
+const STATUS_SUB_KEYS = Object.freeze([
+    'roadProposal',
+    'buildingProposal',
+    'structureProposal',
+    'reparcellization',
+    'decideLaterProposal'
+]);
 
 function norm(value) {
     return String(value == null ? '' : value).trim().toLowerCase();
@@ -46,20 +52,17 @@ function canonicalLifecycle(value) {
     }
 }
 
-// Whether this proposal (optionally a specific sub-proposal) is applied to the map. The explicit
-// boolean wins on either the sub-proposal or the proposal (they are kept in sync, so an OR mirrors
-// the old `carveAppliedLike(rp.status, proposal.status)` gate). Only pre-split rows with NO boolean
-// on either fall through to the legacy status derivation.
+// Whether this proposal is applied to this browser's map. Once a root boolean exists it is
+// authoritative: a stale nested flag can never override it. Nested flags and legacy status strings
+// are consulted only for an unnormalised, pre-split record with no root boolean.
 //
 // The demolition-rescue heuristic that flips a stuck 'Active'/'unapplied' road (like proposal 474)
 // to applied lives ONLY in the one-time backfill (backend/scripts/split-status-applied.js), NOT
 // here — otherwise a deliberately un-applied road that still carries its records would refuse to
 // give its buildings back. Steady state relies on the explicit boolean instead.
 function isApplied(proposal, sub) {
-    const subFlag = sub && typeof sub.applied === 'boolean' ? sub.applied : undefined;
     const propFlag = proposal && typeof proposal.applied === 'boolean' ? proposal.applied : undefined;
-    if (subFlag === true || propFlag === true) return true;
-    if (subFlag === false || propFlag === false) return false;
+    if (propFlag !== undefined) return propFlag;
     return deriveAppliedFromLegacy(proposal, sub);
 }
 
@@ -70,15 +73,81 @@ function deriveAppliedFromLegacy(proposal, sub) {
     if (proposal.supersededByProposalId) return false;
     const life = norm(proposal.status);
     if (life === 'cancelled' || life === 'expired') return false;
+    if (sub && typeof sub.applied === 'boolean') return sub.applied;
+    for (const key of STATUS_SUB_KEYS) {
+        if (proposal[key] && typeof proposal[key].applied === 'boolean') return proposal[key].applied;
+    }
     if (sub && APPLIED_LIKE.has(norm(sub.status))) return true;
     if (APPLIED_LIKE.has(life)) return true;
-    return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+    return STATUS_SUB_KEYS
         .some(k => proposal[k] && APPLIED_LIKE.has(norm(proposal[k].status)));
+}
+
+// Upgrade one record to the steady-state two-axis shape. This is intentionally mutating: the
+// storage boundary calls it once and persists the canonical form, eliminating split-brain reads.
+function normalizeProposalStatusAxes(proposal) {
+    if (!proposal || typeof proposal !== 'object') return proposal;
+    const applied = typeof proposal.applied === 'boolean'
+        ? proposal.applied
+        : deriveAppliedFromLegacy(proposal);
+    proposal.lifecycleStatus = getLifecycleStatus(proposal);
+    proposal.applied = applied;
+    delete proposal.status;
+    STATUS_SUB_KEYS.forEach(key => {
+        const sub = proposal[key];
+        if (!sub || typeof sub !== 'object') return;
+        delete sub.applied;
+        delete sub.appliedAt;
+        delete sub.status;
+    });
+    return proposal;
+}
+
+function setProposalApplied(proposal, applied, options = {}) {
+    if (!proposal || typeof proposal !== 'object') return false;
+    proposal.applied = applied === true;
+    if (proposal.applied && options.stamp !== false) {
+        proposal.appliedAt = options.appliedAt || new Date().toISOString();
+    } else if (!proposal.applied) {
+        delete proposal.appliedAt;
+    }
+    STATUS_SUB_KEYS.forEach(key => {
+        const sub = proposal[key];
+        if (!sub || typeof sub !== 'object') return;
+        delete sub.applied;
+        delete sub.appliedAt;
+        delete sub.status;
+    });
+    return proposal.applied;
+}
+
+// Server/chain/share payloads must not carry a browser's local visibility choice.
+function stripProposalAppliedState(proposal) {
+    if (!proposal || typeof proposal !== 'object') return proposal;
+    delete proposal.applied;
+    delete proposal.appliedAt;
+    STATUS_SUB_KEYS.forEach(key => {
+        const sub = proposal[key];
+        if (!sub || typeof sub !== 'object') return;
+        delete sub.applied;
+        delete sub.appliedAt;
+    });
+    return proposal;
+}
+
+function parkProposalForImport(proposal) {
+    normalizeProposalStatusAxes(proposal);
+    setProposalApplied(proposal, false, { stamp: false });
+    return proposal;
 }
 
 if (typeof window !== 'undefined') {
     window.getLifecycleStatus = getLifecycleStatus;
     window.isApplied = isApplied;
+    window.normalizeProposalStatusAxes = normalizeProposalStatusAxes;
+    window.setProposalApplied = setProposalApplied;
+    window.stripProposalAppliedState = stripProposalAppliedState;
+    window.parkProposalForImport = parkProposalForImport;
 }
 
 // Node-visible for unit tests and any backend consumer; the browser loads this as a classic script.
@@ -87,6 +156,11 @@ if (typeof module !== 'undefined' && module.exports) {
         getLifecycleStatus,
         canonicalLifecycle,
         isApplied,
-        deriveAppliedFromLegacy
+        deriveAppliedFromLegacy,
+        normalizeProposalStatusAxes,
+        setProposalApplied,
+        stripProposalAppliedState,
+        parkProposalForImport,
+        STATUS_SUB_KEYS
     };
 }

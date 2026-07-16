@@ -234,9 +234,8 @@
             uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
             console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
-            // The structure is now on the map. Applying only moves the map-application axis; the
-            // lifecycle (Active/Executed) is left as-is (executed structures stay executed).
-            sp.applied = true;
+            // The structure is now on the map. persistAppliedProposal moves only the root-local
+            // application axis; the lifecycle (Active/Executed) is left as-is.
             proposalData.structureProposal = sp;
             persistAppliedProposal(proposalData, proposalId);
             refreshProposalUIAfterApply(`Applied ${kind} proposal ${proposalData.title || idLabel}`);

@@ -510,7 +510,7 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
     }
     const ids = [];
     parcelLayer.eachLayer(layer => {
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
         try {
             if (footprintBounds && !footprintBounds.intersects(layer.getBounds())) return;
@@ -652,8 +652,7 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         ...JSON.parse(JSON.stringify(clone.roadProposal || {})),
         definition: JSON.parse(JSON.stringify(definition)),
         parentParcelIds: parents.slice(),
-        childParcelIds: [],
-        applied: false
+        childParcelIds: []
     };
 
     const newId = (typeof proposalStorage !== 'undefined') ? proposalStorage.addProposal(clone) : null;
@@ -1825,14 +1824,14 @@ const ROAD_OWNERSHIP_TYPE_IDS = {
 let roadOwnershipStatsRequestId = 0;
 const roadOwnershipTypeCache = new Map();
 
-function getParcelIdFromFeature(feature) {
+function getRoadDrawingParcelIdFromFeature(feature) {
     return feature ? ensureParcelId(feature) : null;
 }
 
 function getParcelIdFromAny(parcel) {
     if (!parcel) return null;
-    const fromFeature = parcel.feature ? getParcelIdFromFeature(parcel.feature) : null;
-    const fromLayerFeature = parcel.layer?.feature ? getParcelIdFromFeature(parcel.layer.feature) : null;
+    const fromFeature = parcel.feature ? getRoadDrawingParcelIdFromFeature(parcel.feature) : null;
+    const fromLayerFeature = parcel.layer?.feature ? getRoadDrawingParcelIdFromFeature(parcel.layer.feature) : null;
     const fromProps = parcel.properties ? ensureParcelId(parcel.properties) : null;
     const raw = parcel.id ?? parcel.parcelId;
     const candidate = fromFeature || fromLayerFeature || fromProps || getParcelId(raw);
@@ -1943,7 +1942,7 @@ function getMarketPrice(parcelId, currency) {
     if (parcelLayer) {
         let foundLayer = null;
         parcelLayer.eachLayer(layer => {
-            const layerId = getParcelIdFromFeature(layer.feature);
+            const layerId = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (layerId && layerId.toString() === targetId.toString()) {
                 foundLayer = layer;
             }
@@ -3782,7 +3781,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
     // Clear previously affected parcels only after we have a valid polygon
     if (previousAffectedParcels && previousAffectedParcels.length > 0) {
         parcelLayer.eachLayer(layer => {
-            const pid = getParcelIdFromFeature(layer.feature);
+            const pid = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (!pid) return;
             // Reset style for previously affected parcels
             if (previousAffectedParcels.some(p => getParcelIdFromAny(p) === pid.toString())) {
@@ -3820,7 +3819,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
             }
         }
 
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
 
         // Skip if in exclusion list
         if (excludeSet && excludeSet.has(parcelId)) {
@@ -3914,7 +3913,7 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
 
     // Check each parcel for intersection with the segment
     parcelLayer.eachLayer(layer => {
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
 
         // Skip if already locked (already in our committed set)
@@ -5229,7 +5228,7 @@ function clearAffectedParcels() {
     if (roadAffectedParcels.length > 0) {
         parcelLayer.eachLayer(layer => {
             // Reset style for previously affected parcels
-            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            const layerParcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (layerParcelId && roadAffectedParcels.some(p => getParcelIdFromAny(p) === layerParcelId)) {
                 const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
@@ -6134,7 +6133,7 @@ function findPreviewAffectedParcels(previewPolygon) {
             } catch (e) { }
         }
 
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
 
         // Skip if already locked

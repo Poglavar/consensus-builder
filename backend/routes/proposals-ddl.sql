@@ -1,7 +1,7 @@
--- DDL for proposals table
--- This table stores all proposal data needed to recreate proposals on the map
+-- DDL for the proposal table
+-- This table stores proposal definitions and shared lifecycle state.
 
-CREATE TABLE IF NOT EXISTS proposals (
+CREATE TABLE IF NOT EXISTS proposal (
     id SERIAL PRIMARY KEY,
     proposal_id VARCHAR(255) UNIQUE NOT NULL, -- Unique identifier (can be onchain ID or local ID)
     city VARCHAR(100) DEFAULT 'city', -- City identifier for multi-city support
@@ -12,11 +12,9 @@ CREATE TABLE IF NOT EXISTS proposals (
     description TEXT,
     author VARCHAR(255),
     type VARCHAR(50) NOT NULL, -- 'parcel', 'road', 'building', 'structure'
-    -- Two INDEPENDENT status axes (the old overloaded `status` column is GONE):
-    --   lifecycle_status: marketplace/on-chain phase — 'Active', 'Executed', 'Cancelled', 'Expired', 'draft'
-    --   applied:          whether the geometry is stamped on the map and cutting the buildings under it
-    lifecycle_status VARCHAR(50) NOT NULL DEFAULT 'Active',
-    applied BOOLEAN NOT NULL DEFAULT true, -- spatial proposals are applied-by-default on create
+    -- Marketplace/on-chain phase. Browser map visibility is intentionally not server state.
+    lifecycle_status VARCHAR(50) NOT NULL DEFAULT 'Active'
+        CHECK (lifecycle_status IN ('Active', 'Executed', 'Cancelled', 'Expired', 'draft')),
     
     -- Financial information
     offer NUMERIC(20, 8),
@@ -75,37 +73,34 @@ CREATE TABLE IF NOT EXISTS proposals (
     proposal_data JSONB NOT NULL,
     
     -- Indexes for common queries
-    CONSTRAINT proposals_proposal_id_key UNIQUE (proposal_id)
+    CONSTRAINT proposal_proposal_id_key UNIQUE (proposal_id)
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_proposals_city ON proposals(city);
-CREATE INDEX IF NOT EXISTS idx_proposals_type ON proposals(type);
-CREATE INDEX IF NOT EXISTS idx_proposals_lifecycle_status ON proposals(lifecycle_status);
-CREATE INDEX IF NOT EXISTS idx_proposals_applied ON proposals(applied);
-CREATE INDEX IF NOT EXISTS idx_proposals_author ON proposals(author);
-CREATE INDEX IF NOT EXISTS idx_proposals_created_at ON proposals(created_at);
-CREATE INDEX IF NOT EXISTS idx_proposals_expires_at ON proposals(expires_at);
-CREATE INDEX IF NOT EXISTS idx_proposals_ancestor_parcel_ids ON proposals USING GIN(ancestor_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_descendant_parcel_ids ON proposals USING GIN(descendant_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_parent_proposal_ids ON proposals USING GIN(parent_proposal_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_child_proposal_ids ON proposals USING GIN(child_proposal_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_proposal_data ON proposals USING GIN(proposal_data);
+CREATE INDEX IF NOT EXISTS idx_proposal_city ON proposal(city);
+CREATE INDEX IF NOT EXISTS idx_proposal_type ON proposal(type);
+CREATE INDEX IF NOT EXISTS idx_proposal_lifecycle_status ON proposal(lifecycle_status);
+CREATE INDEX IF NOT EXISTS idx_proposal_author ON proposal(author);
+CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_ancestor_parcel_ids ON proposal USING GIN(ancestor_parcel_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_descendant_parcel_ids ON proposal USING GIN(descendant_parcel_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_parent_proposal_ids ON proposal USING GIN(parent_proposal_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_child_proposal_ids ON proposal USING GIN(child_proposal_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(proposal_data);
 
 -- Comments for documentation
-COMMENT ON TABLE proposals IS 'Stores all proposal data needed to recreate proposals on the map';
-COMMENT ON COLUMN proposals.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
-COMMENT ON COLUMN proposals.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
-COMMENT ON COLUMN proposals.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
-COMMENT ON COLUMN proposals.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
-COMMENT ON COLUMN proposals.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
-COMMENT ON COLUMN proposals.proposal_data IS 'Complete proposal object as stored in frontend - used for full reconstruction';
-COMMENT ON COLUMN proposals.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
+COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
+COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
+COMMENT ON COLUMN proposal.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
+COMMENT ON COLUMN proposal.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
+COMMENT ON COLUMN proposal.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
+COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
+COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
 --
--- Status split — run backend/scripts/split-status-applied.js --apply, which:
---   ADDs applied + lifecycle_status, backfills them, strips the legacy nested `status` from JSONB,
---   then DROPs the old overloaded `status` column and its index. No dual-write, no transition.
-
+-- Lifecycle cleanup — run backend/scripts/remove-server-applied.js in dry-run mode first, then with
+-- --apply. Add --drop-applied only after every deployed API version has stopped reading the column.

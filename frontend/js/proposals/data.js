@@ -870,27 +870,16 @@ const proposalStorage = {
         if (!preserveStatus) {
             const executed = getLifecycleStatus(normalized) === 'Executed';
             normalized.lifecycleStatus = executed ? 'Executed' : 'Active';
-            // Downloading a server proposal never applies it to THIS map, so reset the application
-            // axis. Executed geometry is a global on-chain fact and stays applied; everything else
-            // becomes not-on-my-map — otherwise the details panel claims it is on the map while no
-            // geometry was ever drawn (parcels untouched, nothing in 2D or 3D).
-            normalized.applied = executed;
-            // Every kind of nested proposal has to be reset, not just roads and buildings.
-            ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
-                .forEach(key => {
-                    const nested = normalized[key];
-                    if (!nested || typeof nested !== 'object') return;
-                    // Executed geometry is a global on-chain fact and stays applied; everything else
-                    // becomes not-on-my-map on import.
-                    nested.applied = executed;
-                    if (nested.appliedAt) delete nested.appliedAt;
-                });
             // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
             // cache; they are NOT reproduced. On apply, children are re-derived from (parents +
             // rule) and get freshly minted ids from the id subsystem. Child-id identity is a local
             // concern of each apply — the consensus layer is parent-keyed — so we do not try to
             // match the uploader's ids.
         }
+
+        // Importing only stores a definition. Even an Executed proposal has not been materialised
+        // in this browser yet; an explicit single-proposal or shared-plan flow applies it afterward.
+        parkProposalForImport(normalized);
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
@@ -945,29 +934,11 @@ const proposalStorage = {
         }
     },
 
-    // Legacy entry point: callers still pass one overloaded token ('Applied'/'Active'/'Executed').
-    // It is split here onto both axes — lifecycleStatus (the marketplace phase) and the boolean
-    // applied — while the legacy `status` and sub-proposal `.status` strings are kept written for
-    // any reader not yet repointed. New code should set proposal.applied / proposal.lifecycleStatus
-    // directly instead of routing through here.
+    // Deprecated compatibility entry point. Status tokens now mutate lifecycle only; map
+    // visibility must go through setProposalApplied so a server/chain transition cannot draw or
+    // remove geometry in this browser.
     updateProposalStatus(proposalId, status) {
-        const proposal = this.getProposal(proposalId);
-        if (proposal) {
-            proposal.lifecycleStatus = getLifecycleStatus({ status });
-            const applied = isApplied({ status });
-            proposal.applied = applied;
-            proposal.updatedAt = new Date().toISOString();
-
-            if (proposal.roadProposal) {
-                proposal.roadProposal.applied = applied;
-            }
-
-            if (proposal.buildingProposal) {
-                proposal.buildingProposal.applied = applied;
-            }
-
-            this._indexProposal(proposal);
-        }
+        return this.setProposalLifecycleStatus(proposalId, status);
     },
 
     // Lifecycle-only mutation. It deliberately does not infer or change local map visibility.
@@ -975,6 +946,19 @@ const proposalStorage = {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;
         proposal.lifecycleStatus = getLifecycleStatus({ lifecycleStatus });
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        return true;
+    },
+
+    setProposalApplied(proposalId, applied) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        if (typeof window !== 'undefined' && typeof window.setProposalApplied === 'function') {
+            window.setProposalApplied(proposal, applied);
+        } else {
+            proposal.applied = applied === true;
+        }
         proposal.updatedAt = new Date().toISOString();
         this._indexProposal(proposal);
         return true;
@@ -1019,32 +1003,9 @@ const proposalStorage = {
         }
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
-        // Two INDEPENDENT status axes (see proposals/status.js). Upgrade every proposal that passes
-        // through storage to carry the new fields, deriving from the legacy `status` when absent so
-        // old localStorage rows fix themselves on first read. The legacy `status` is left untouched
-        // so any not-yet-repointed reader keeps working until the split is finished everywhere.
-        proposal.lifecycleStatus = getLifecycleStatus(proposal);
-        if (typeof proposal.applied !== 'boolean') {
-            // Spatial proposals are applied-by-default (a drawn road/building/park is on the map).
-            // Legacy applied/executed status still wins; superseded/terminated are never applied.
-            const life = getLifecycleStatus(proposal);
-            const spatial = !!(proposal.roadProposal || proposal.buildingProposal || proposal.structureProposal || proposal.reparcellization);
-            proposal.applied = isApplied(proposal)
-                || (spatial && !proposal.supersededByProposalId && life !== 'Cancelled' && life !== 'Expired');
-        }
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(k => {
-            const sub = proposal[k];
-            if (sub && typeof sub === 'object') {
-                if (typeof sub.applied !== 'boolean') {
-                    sub.applied = (typeof proposal.applied === 'boolean') ? proposal.applied : isApplied(proposal, sub);
-                }
-                // The overloaded legacy `status` field is dead — scrub it from every sub-proposal so
-                // stale localStorage rows upgraded on load can never resurrect it.
-                delete sub.status;
-            }
-        });
-        // Same purge at the proposal level: applied + lifecycleStatus fully replace it.
-        delete proposal.status;
+        // Upgrade legacy rows once. Steady-state visibility lives only on proposal.applied; nested
+        // copies are removed so contradictory flags cannot be created again.
+        normalizeProposalStatusAxes(proposal);
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
         proposal.lens = normalizeLensEntries(
             proposal.lens
@@ -1153,7 +1114,6 @@ const proposalStorage = {
             proposal.buildingProposal = {
                 parentParcelIds: parentIds,
                 parentParcelNumbers: parentIds.map(id => ({ id, number: id })),
-                applied: proposal.applied === true,
                 ancestorKey: parentIds.join('|'),
                 parameters: {}
             };

@@ -170,8 +170,6 @@
             showBuildingsCheckbox.checked = true;
         }
 
-        buildingProposal.applied = true;
-        buildingProposal.appliedAt = new Date().toISOString();
         buildingProposal.parentParcelIds = uniqueParentIds;
         buildingProposal.ancestorKey = ancestorKey;
         proposalData.buildingProposal = buildingProposal;
