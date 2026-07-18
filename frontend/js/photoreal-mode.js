@@ -147,6 +147,7 @@
         try {
             const origin = new THREE.Vector3();
             const down = new THREE.Vector3(0, 0, -1);
+            const zs = [];
             for (let i = 0; i < LOCK_PROBE_OFFSETS.length; i++) {
                 origin.set(LOCK_PROBE_OFFSETS[i][0], LOCK_PROBE_OFFSETS[i][1], 4000);
                 const raycaster = new THREE.Raycaster(origin, down, 0, 9000);
@@ -157,7 +158,14 @@
                 // coarse far-earth tile kilometres below/above; a static coarse tile passes the
                 // stability test, so reject on magnitude before it can seat the world in orbit.
                 if (Math.abs(z) > FAR_EARTH_LIMIT_M) continue;
-                if (groundZ === null || z < groundZ) groundZ = z;
+                zs.push(z);
+            }
+            if (zs.length) {
+                zs.sort(function (a, b) { return a - b; });
+                // p25 of the round, not its minimum: the minimum over-corrects into pits (a
+                // sunken rail trench in Zagreb seated the streets ABOVE the proposals), while
+                // roofs and canopy only ever populate the top of the distribution.
+                groundZ = zs[Math.min(zs.length - 1, Math.floor(zs.length * 0.25))];
             }
         } catch (_) { return; }
         if (groundZ === null) return;
