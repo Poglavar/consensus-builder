@@ -214,21 +214,21 @@
     const MASK_WINDOW_HALF_M = 512;  // scene metres to each side of the window centre
     const MASK_RES = 1024;           // texels across the window (1 scene-metre per texel)
     const MASK_MOVE_M = 150;         // re-render the window when the orbit target strays this far
-    const CARVE_FLOOR_Z = -0.3;      // fragments above this (inside a footprint) are discarded
-    // Dilate every carve footprint a little: buildings straddling the boundary otherwise keep
-    // ragged facade slivers just outside the cut, and the 1 m/texel mask aliases along edges
-    // into comb patterns. The widened cut costs a sub-metre seam of street, which reads as a
-    // shadow gap rather than an artefact.
-    const CARVE_EDGE_BUFFER_M = 1.2; // true metres (turf buffers on the geographic footprint)
-    // The dilated cut opens a ring around every footprint with NOTHING beneath it in this
-    // world (no globe underlay): the sky showed through as light-blue slivers along proposal
-    // edges. An opaque ground APRON, slightly wider than the cut, seals the ring — it reads
-    // as pavement/soil in the proposal's edge shadow.
-    const CARVE_APRON_EXTRA_M = 1.5;  // apron reach beyond the already-dilated cut
-    // The apron is a shallow SOLID SLAB, not a flat sheet: the mesh is a hollow shell, and an
-    // oblique sightline into the carve trench exits through the shell's open cut face straight
-    // to the sky (front-side culling) — a floor only seals top-down views. The slab fills the
-    // trench volume, so side views hit its top/side instead.
+    // TWO carve zones, encoded in the mask's R and G channels. The Google tiles are one fused
+    // mesh — there is no "terrain-only" layer to reveal — so:
+    //  R = CORE (the exact footprints, covered by our own surfaces): full cut, everything above
+    //      the floor goes. G = EDGE RING (a dilated band around them): TRIM cut — only geometry
+    //      above ~waist height goes, which removes facades, canopy and clutter straddling the
+    //      boundary while KEEPING the real Google ground surface visible. The ring is why edges
+    //      show genuine terrain now instead of sky (nothing exists under the mesh) or a painted
+    //      apron.
+    const CARVE_FLOOR_Z = -0.3;      // core: fragments above this are discarded
+    const CARVE_TRIM_Z = 0.6;        // ring: fragments above this are discarded (ground survives)
+    const CARVE_CORE_BUFFER_M = 0.2; // tiny safety dilation of the core (mask texel aliasing)
+    const CARVE_RING_BUFFER_M = 2.7; // ring reach beyond the footprint (true metres, turf)
+    // Razed buildings get the core cut plus a shallow SOLID SLAB of bare soil: nothing of ours
+    // covers them, and the hollow mesh shell would otherwise open to the sky. A dirt pad where
+    // a building was demolished reads as a cleared lot.
     const CARVE_APRON_TOP_Z = -0.02;  // just under the z=0 content
     const CARVE_APRON_DEPTH_M = 0.5;  // slab thickness, reaching below the carve floor (−0.3)
     const CARVE_APRON_COLOR = 0x74736c;
@@ -238,6 +238,7 @@
     let maskCamera = null;
     let maskShapesGroup = null;
     let maskMaterial = null;
+    let ringMaterial = null;
     let apronGroup = null;
     let apronMaterial = null;
     let maskReady = false;
@@ -249,7 +250,8 @@
         uCorridorMin: { value: null }, // THREE.Vector2, created once THREE is up
         uCorridorScale: { value: 1 / (2 * MASK_WINDOW_HALF_M) },
         uCorridorOn: { value: 0 },
-        uFloorZ: { value: CARVE_FLOOR_Z }
+        uFloorZ: { value: CARVE_FLOOR_Z },
+        uTrimZ: { value: CARVE_TRIM_Z }
     };
 
     // -- carve footprint sources (same set the Cesium version clipped with) --
@@ -294,6 +296,9 @@
         return feat ? feat.geometry : null;
     }
 
+    // Carve footprints, classified: 'covered' footprints are filled by our own surfaces (roads,
+    // parks, proposed buildings) and get the core cut + a trim ring; 'razed' buildings have
+    // nothing of ours on top and get the core cut + a bare-soil slab instead of a ring.
     function collectCarveGeometries() {
         const out = [];
         // Applied road corridors: the surface-level footprint wins over the full outline, so
@@ -302,12 +307,12 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
-                if (geom && geom.type) out.push(geom);
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered' });
             }
         });
         // Applied structures (parks/squares/lakes/stations) replace the ground wholesale.
         appliedStructureProposals().forEach(function (proposal) {
-            out.push(proposal.structureProposal.geometry);
+            out.push({ geometry: proposal.structureProposal.geometry, kind: 'covered' });
         });
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
         // that razed them). Cut records are skipped — their demolished part lies inside a
@@ -319,7 +324,7 @@
                     if (record.remainder) return;
                     if (String(record.id).indexOf('proposal:') === 0) return;
                     const outside = razedFootprintOutsideStructures(record.geometry);
-                    if (outside) out.push(outside);
+                    if (outside) out.push({ geometry: outside, kind: 'razed' });
                 });
             } catch (err) {
                 console.warn('[photoreal] demolition carve collection failed', err);
@@ -328,7 +333,7 @@
         // Proposed buildings replace the real mesh standing on their spot.
         if (carveProposedBuildings && Array.isArray(window.proposedBuildings)) {
             window.proposedBuildings.forEach(function (feat) {
-                if (feat && feat.geometry) out.push(feat.geometry);
+                if (feat && feat.geometry) out.push({ geometry: feat.geometry, kind: 'covered' });
             });
         }
         return out;
@@ -350,6 +355,7 @@
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
         maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+        ringMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         corridorUniforms.uCorridorMask.value = maskRT.texture;
@@ -407,9 +413,9 @@
         return shapes;
     }
 
-    // Carve footprints (lat/lng GeoJSON) → filled shapes in scene XY: the dilated cut for the
-    // mask render target, and a slightly wider opaque ground apron INTO THE SCENE that seals
-    // the cut's edge ring (nothing exists under the mesh here — sky showed through it).
+    // Carve footprints (lat/lng GeoJSON) → mask shapes in scene XY: core cut (red) over trim
+    // ring (green) for covered footprints, and a bare-soil slab INTO THE SCENE under razed
+    // buildings (their hollow shell would otherwise open to the sky).
     function buildMaskShapes() {
         const THREE = window.THREE;
         if (!THREE || !maskScene || !internals) return;
@@ -418,21 +424,34 @@
         apronGroup = new THREE.Group();
         apronGroup.name = 'PhotorealCarveApron';
         const toXY = internals.latLngToXY;
-        collectCarveGeometries().forEach(function (geometry) {
-            const expanded = bufferGeometry(geometry, CARVE_EDGE_BUFFER_M);
-            shapesOfGeometry(expanded, toXY).forEach(function (shape) {
+        collectCarveGeometries().forEach(function (entry) {
+            const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
+            shapesOfGeometry(core, toXY).forEach(function (shape) {
                 const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), maskMaterial);
+                // The mask RT has no depth buffer: renderOrder makes the core (R) paint OVER
+                // the ring (G) wherever they overlap, so the shader reads R first.
+                mesh.renderOrder = 1;
                 mesh.frustumCulled = false;
                 maskShapesGroup.add(mesh);
             });
-            const apron = bufferGeometry(expanded, CARVE_APRON_EXTRA_M);
-            shapesOfGeometry(apron, toXY).forEach(function (shape) {
-                const mesh = new THREE.Mesh(
-                    new THREE.ExtrudeGeometry(shape, { depth: CARVE_APRON_DEPTH_M, bevelEnabled: false }),
-                    apronMaterial);
-                mesh.position.z = CARVE_APRON_TOP_Z - CARVE_APRON_DEPTH_M;
-                apronGroup.add(mesh);
-            });
+            if (entry.kind === 'covered') {
+                const ring = bufferGeometry(entry.geometry, CARVE_RING_BUFFER_M);
+                shapesOfGeometry(ring, toXY).forEach(function (shape) {
+                    const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), ringMaterial);
+                    mesh.renderOrder = 0;
+                    mesh.frustumCulled = false;
+                    maskShapesGroup.add(mesh);
+                });
+            } else {
+                const pad = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
+                shapesOfGeometry(pad, toXY).forEach(function (shape) {
+                    const mesh = new THREE.Mesh(
+                        new THREE.ExtrudeGeometry(shape, { depth: CARVE_APRON_DEPTH_M, bevelEnabled: false }),
+                        apronMaterial);
+                    mesh.position.z = CARVE_APRON_TOP_Z - CARVE_APRON_DEPTH_M;
+                    apronGroup.add(mesh);
+                });
+            }
         });
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
@@ -487,14 +506,18 @@
                     + 'uniform vec2 uCorridorMin;\n'
                     + 'uniform float uCorridorScale;\n'
                     + 'uniform float uCorridorOn;\n'
-                    + 'uniform float uFloorZ;')
+                    + 'uniform float uFloorZ;\n'
+                    + 'uniform float uTrimZ;')
                 .replace('void main() {', 'void main() {\n'
                     + 'if (uCorridorOn > 0.5 && vCorridorWorld.z > uFloorZ) {\n'
                     + '    vec2 cuv = (vCorridorWorld.xy - uCorridorMin) * uCorridorScale;\n'
                     + '    if (cuv.x > 0.0 && cuv.x < 1.0 && cuv.y > 0.0 && cuv.y < 1.0) {\n'
-                    // 0.3, not 0.5: linear filtering leaves boundary texels partially red, and a
-                    // mid threshold turned them into per-texel combs along building facades.
-                    + '        if (texture2D(uCorridorMask, cuv).r > 0.3) discard;\n'
+                    // 0.3, not 0.5: linear filtering leaves boundary texels partial, and a mid
+                    // threshold turned them into per-texel combs along building facades.
+                    // R = core (full cut), G = edge ring (trim above uTrimZ, ground survives).
+                    + '        vec3 cm = texture2D(uCorridorMask, cuv).rgb;\n'
+                    + '        if (cm.r > 0.3) discard;\n'
+                    + '        if (cm.g > 0.3 && vCorridorWorld.z > uTrimZ) discard;\n'
                     + '    }\n'
                     + '}\n');
         };
@@ -518,6 +541,7 @@
         maskCamera = null;
         maskMaterial = null;
         apronMaterial = null;
+        ringMaterial = null;
         maskReady = false;
         corridorUniforms.uCorridorMask.value = null;
         corridorUniforms.uCorridorOn.value = 0;
