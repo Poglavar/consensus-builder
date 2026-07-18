@@ -99,6 +99,8 @@
 
     // Groups for layers
     let flatGroup = null; // existing parcels + existing roads (always part of "built")
+    let corridorGroup = null; // applied corridor cross-sections — kept visible in realistic mode
+    let realisticLayerActive = false; // photoreal mesh is the built world; abstract built layers hide
     let plannedFlatGroup = null; // park/square/lake grounds, paths, ponds, water, etc.
     let buildingGroup = null; // buildings extrusion
     let parkGroup = null; // park decorations (trees)
@@ -342,6 +344,11 @@
         updateIsolationButton();
         rebuild3DBuildingsOnly();
         applyModeVisibility();
+        // In realistic mode the Built row also drives the photoreal mesh itself.
+        if (kind === 'built' && window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function'
+            && window.PhotorealMode.isActive() && typeof window.PhotorealMode.setBuiltVisible === 'function') {
+            window.PhotorealMode.setBuiltVisible(state !== 'off');
+        }
     }
 
     // Sets the built-context load radius (metres) and refetches at the new size. The camera is
@@ -3184,7 +3191,7 @@
     function setTreesEnabled(on) {
         treesEnabled = !!on;
         try { PersistentStorage.setItem(TREES_STORAGE_KEY, treesEnabled ? '1' : '0'); } catch (_) { }
-        if (treesGroup) treesGroup.visible = treesEnabled;
+        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (treesEnabled) {
             ensureNearbyTrees();
             rebuildTreesOnly();
@@ -3619,9 +3626,13 @@
         // Each family follows its own display state. Built additionally supports complementary
         // Surviving and Removed views using the exact two halves stored by the carve pipeline.
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
-        const showExisting = builtPolicy.visible;
+        // In realistic mode the photoreal mesh IS the built world: abstract existing buildings
+        // and rail stay hidden (demolitions are carved out of the mesh by the photoreal layer).
+        const showExisting = builtPolicy.visible && !realisticLayerActive;
         const showProposed = plannedDisplay !== 'off';
-        if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail;
+        if (existingTransitAlignmentGroup) {
+            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
+        }
         const existingMaterial = builtPolicy.material === 'solid'
             ? buildingMaterials.solid
             : buildingMaterials.ghost;
@@ -3732,6 +3743,7 @@
 
         // Groups
         flatGroup = new THREE.Group();
+        corridorGroup = new THREE.Group();
         plannedFlatGroup = new THREE.Group();
         buildingGroup = new THREE.Group();
         parkGroup = new THREE.Group();
@@ -3742,8 +3754,9 @@
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
-        treesGroup.visible = treesEnabled;
+        treesGroup.visible = treesEnabled && !realisticLayerActive;
         scene.add(flatGroup);
+        scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
@@ -3768,7 +3781,9 @@
         captureSceneLoadGeometry();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
-        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
+        // Corridors render into their own group (not flatGroup): in realistic mode the parcel
+        // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
+        try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -4699,6 +4714,15 @@
     }
 
     // Expose globals for debugging/manual control
+    // Realistic layer policy: while the photoreal mesh is the built world, the abstract built
+    // representations (parcel/road slabs, existing buildings, existing rail, OSM trees) hide —
+    // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
+    window.setRealisticLayerActive = function (on) {
+        realisticLayerActive = !!on;
+        if (flatGroup) flatGroup.visible = !realisticLayerActive;
+        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (isActive) rebuild3DBuildingsOnly();
+    };
     window.registerThreeModeFrameHook = function (fn) {
         if (typeof fn === 'function' && !frameHooks.includes(fn)) frameHooks.push(fn);
     };

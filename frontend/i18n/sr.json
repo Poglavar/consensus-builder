@@ -2665,6 +2665,7 @@
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",
             "streamingTiles": "Učitavanje 3D podataka…",
+            "noCoverage": "Ovde nema fotorealistične pokrivenosti — ostajemo u apstraktnom 3D prikazu.",
             "rotateHintDesktop": "Držite Ctrl i prevucite mišem za rotaciju pogleda",
             "rotateHintMobile": "Prevucite sa dva prsta za rotaciju pogleda",
             "carveUnderProposals": "Sakrij stvarne zgrade ispod predloga",
