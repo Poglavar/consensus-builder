@@ -701,6 +701,114 @@ def step_roads(grid):
     print(f"wrote overlay-roads.png ({len(feats)} road segments)")
 
 
+def partition_polygons(label, simplify_eps=3.0):
+    """Polygonize a label image into a PLANAR PARTITION with topologically shared
+    borders: boundary lattice edges are chained per label-pair, each chain is
+    simplified ONCE, and every polygon is assembled from those shared chains -
+    so neighbouring parcels get byte-identical common borders (no slivers, no
+    double-digitized edges), and junction points stay exact.
+    Returns {label_id: [ring, ...]} with rings as [(x, y), ...] lattice coords."""
+    H, W = label.shape
+    padded = np.zeros((H + 2, W + 2), dtype=label.dtype)
+    padded[1:-1, 1:-1] = label
+
+    # 1. collect unit boundary edges between differing labels, as directed edges
+    #    keyed so the region with the LOWER (nonzero-first) label is on a fixed side
+    edge_set = {}  # (corner_a, corner_b) sorted -> (labelA, labelB)
+    for y in range(H + 1):
+        for x in range(W + 1):
+            pass  # replaced by vectorized pass below
+    # vectorized: horizontal neighbours (vertical boundary edges)
+    diff_v = padded[:, :-1] != padded[:, 1:]
+    ys, xs = np.nonzero(diff_v)
+    for y, x in zip(ys.tolist(), xs.tolist()):
+        a, b = int(padded[y, x]), int(padded[y, x + 1])
+        edge_set[((x + 1, y), (x + 1, y + 1))] = (a, b)  # padded lattice coords
+    # vertical neighbours (horizontal boundary edges)
+    diff_h = padded[:-1, :] != padded[1:, :]
+    ys, xs = np.nonzero(diff_h)
+    for y, x in zip(ys.tolist(), xs.tolist()):
+        a, b = int(padded[y, x]), int(padded[y + 1, x])
+        edge_set[((x, y + 1), (x + 1, y + 1))] = (a, b)
+
+    # 2. node points: lattice corners where the boundary graph has degree != 2
+    from collections import defaultdict
+    adj = defaultdict(list)
+    for (p, q) in edge_set:
+        adj[p].append(q)
+        adj[q].append(p)
+    nodes = {p for p, nbrs in adj.items() if len(nbrs) != 2}
+
+    # 3. walk chains between nodes (or full loops when a boundary has no node)
+    visited = set()
+    chains = []  # {pts:[...], pairs:set of (a,b) label pairs along the chain}
+    def walk(start, first):
+        pts = [start, first]
+        pairs = set()
+        e = tuple(sorted((start, first)))
+        pairs.add(edge_set[e]); visited.add(e)
+        while pts[-1] not in nodes:
+            cur, prev = pts[-1], pts[-2]
+            nxt = None
+            for cand in adj[cur]:
+                if cand == prev: continue
+                ekey = tuple(sorted((cur, cand)))
+                if ekey in visited: continue
+                nxt = cand; break
+            if nxt is None: break
+            e = tuple(sorted((pts[-1], nxt)))
+            pairs.add(edge_set[e]); visited.add(e)
+            pts.append(nxt)
+            if nxt == start: break
+        return pts, pairs
+    for p in nodes:
+        for q in adj[p]:
+            e = tuple(sorted((p, q)))
+            if e in visited: continue
+            pts, pairs = walk(p, q)
+            chains.append({"pts": pts, "pairs": pairs})
+    # loops with no junction (isolated region boundary)
+    for e in list(edge_set):
+        if e in visited: continue
+        pts, pairs = walk(e[0], e[1])
+        chains.append({"pts": pts, "pairs": pairs})
+
+    # 4. simplify each chain ONCE (endpoints pinned); both neighbours reuse it
+    for c in chains:
+        if len(c["pts"]) > 2:
+            c["pts"] = [tuple(p) for p in rdp([list(p) for p in c["pts"]], simplify_eps)]
+
+    # 5. assemble rings per label from its chains, stitching at shared endpoints
+    label_chains = defaultdict(list)
+    for c in chains:
+        for (a, b) in c["pairs"]:
+            if a != 0: label_chains[a].append(c)
+            if b != 0: label_chains[b].append(c)
+    result = {}
+    for lab, cl in label_chains.items():
+        # dedupe chain objects
+        seen_ids = set(); unique = []
+        for c in cl:
+            if id(c) in seen_ids: continue
+            seen_ids.add(id(c)); unique.append(c["pts"])
+        rings = []
+        pool = [list(p) for p in unique]
+        while pool:
+            ring = list(pool.pop())
+            guard = 0
+            while ring[0] != ring[-1] and guard < 10000:
+                guard += 1
+                ext = None
+                for i, cand in enumerate(pool):
+                    if cand[0] == ring[-1]: ext = pool.pop(i); ring += ext[1:]; break
+                    if cand[-1] == ring[-1]: ext = pool.pop(i); ring += ext[-2::-1]; break
+                if ext is None: break
+            if ring[0] == ring[-1] and len(ring) >= 4:
+                rings.append(ring)
+        result[lab] = rings
+    return result
+
+
 def step_parcelation(grid):
     """The plan's implied land readjustment: partition sheet 1 by the drawn
     boundary lines and emit EVERY cell inside the obuhvat as a new-parcel slice,
@@ -764,7 +872,8 @@ def step_parcelation(grid):
             return np.asarray(seed, bool)
         return None
 
-    feats = []
+    # collect the final slice seed masks (name, kind, mask)
+    slices = []
     for kind, mask in class_masks.items():
         if not mask.any():
             continue
@@ -796,21 +905,73 @@ def step_parcelation(grid):
                     if ground_area_m2(int(part.sum())) >= 300:
                         parts.append((part, [name]))
             for part, part_names in parts:
-                for ft in component_features(part, grid, min_area_m2=300, rdp_eps_px=3.5, try_rect=False):
-                    ft["properties"]["kind"] = kind
-                    if part_names:
-                        ft["properties"]["kazete"] = part_names
-                    feats.append(ft)
+                slices.append({"kind": kind, "names": part_names, "mask": part})
+
+    # PLANAR PARTITION: one label per pixel. Every unclaimed pixel (boundary-line
+    # thickness, text, junction debris) is assigned to the NEAREST slice, and the
+    # domain slightly overshoots the drawn plan area so the uploader can clip the
+    # outer boundary to the exact vector union of the parent parcels. This is what
+    # guarantees the Zagreb principle: no gaps (unclickable land) and no
+    # double-claimed land. NOTE: the domain must derive from the labeled area, NOT
+    # from the parcel-union obuhvat — several FS parcels (roads, the canal) extend
+    # kilometres beyond the plan, so their raster union covers nearly the whole
+    # sheet and the fill would leak to the image borders.
+    label = np.zeros(free.shape, dtype=np.int32)
+    for i, sl in enumerate(slices):
+        label[sl["mask"]] = i + 1
+    domain = ndimage.binary_dilation(label > 0, np.ones((3, 3), bool), iterations=12)
+    # keep the M1-12 area out of the partition: its pixels must not pull slices in
+    m12 = building_seed_mask("M1-12")
+    m12_zone = None
+    if m12 is not None:
+        m12_zone = ndimage.binary_dilation(m12, np.ones((3, 3), bool), iterations=30) & obuhvat
+    _, (iy, ix) = ndimage.distance_transform_edt(label == 0, return_indices=True)
+    filled = label[iy, ix]
+    filled[~domain] = 0
+    if m12_zone is not None:
+        filled[m12_zone & (label == 0)] = 0  # unclaimed pixels around M1-12 stay out
+
+    rings_by_label = partition_polygons(filled, simplify_eps=3.0)
+
+    feats = []
+    for i, sl in enumerate(slices):
+        rings = rings_by_label.get(i + 1) or []
+        if not rings:
+            continue
+        def ring_area(r):
+            a = 0.0
+            for j in range(len(r) - 1):
+                a += r[j][0] * r[j + 1][1] - r[j + 1][0] * r[j][1]
+            return abs(a) / 2
+        rings.sort(key=ring_area, reverse=True)
+        # padded-lattice corner (x, y) -> image pixel corner (x-1, y-1) -> WGS84
+        def to_wgs(r):
+            out = [[round(v, 7) for v in grid.px_to_wgs(x - 1, y - 1)] for x, y in r]
+            if out[0] != out[-1]:
+                out.append(list(out[0]))
+            return out
+        outer = to_wgs(rings[0])
+        holes = [to_wgs(r) for r in rings[1:] if ring_area(r) > 30]
+        feats.append({
+            "type": "Feature",
+            "properties": {
+                "kind": sl["kind"],
+                "kazete": sl["names"] or None,
+                "area_m2": round(ground_area_m2(ring_area(rings[0]))),
+            },
+            "geometry": {"type": "Polygon", "coordinates": [outer] + holes},
+        })
     feats.sort(key=lambda f: -f["properties"]["area_m2"])
     counters = {}
     for ft in feats:
         kind = ft["properties"]["kind"]
-        kazete = ft["properties"].get("kazete", [])
+        kazete = ft["properties"].get("kazete") or []
         if kazete:
             ft["properties"]["name"] = "-".join(kazete)
         else:
             counters[kind] = counters.get(kind, 0) + 1
             ft["properties"]["name"] = f"{kind}-{counters[kind]}"
+        ft["properties"].pop("kazete", None)
     save_geojson(os.path.join(DATA, "parcelation.geojson"), feats)
     draw_overlay(img, grid, feats, os.path.join(DATA, "overlay-parcelation.png"))
 

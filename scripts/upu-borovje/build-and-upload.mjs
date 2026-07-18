@@ -165,13 +165,163 @@ function buildParkProposal(feature, intersecting) {
     };
 }
 
-const SLICE_COLORS = { M1: '#e8a24a', Z1: '#69b86b', R2: '#3aa88a', IS: '#9aa0a6' };
+const SLICE_COLORS = { M1: '#e8a24a', Z1: '#69b86b', R2: '#3aa88a', IS: '#9aa0a6', OST: '#b9b3a8' };
 
 function sliceDisplayName(props) {
     if (props.kind === 'M1') return `Građevna čestica ${props.name}`;
     if (props.kind === 'R2') return `Rekreacija ${props.name}`;
     if (props.kind === 'Z1') return `Javni park ${props.name}`;
+    if (props.kind === 'OST') return `Preostala čestica ${props.name}`;
     return `Prometna površina ${props.name}`;
+}
+
+const areaOf = (geometry) => turf.area({ type: 'Feature', properties: {}, geometry });
+
+// The parcelation must be clipped against the CADASTRE THE APP ACTUALLY SERVES
+// (its parcel table), not the UPU FeatureServer snapshot: the snapshot carries a
+// different parcel generation in places (e.g. its 1791/69 overlaps land the live
+// cadastre assigns to 1791/7), so remainders computed from it would double-claim
+// land. Fetching from the target backend keeps this correct for local AND prod.
+async function fetchAppParcels(baseUrl) {
+    // plan-area bbox in EPSG:3765 (HTRS96/TM), generous margin around the obuhvat
+    const bbox = '461744,5071628,462447,5072233';
+    const res = await fetch(`${baseUrl}/parcels?bbox=${bbox}`);
+    if (!res.ok) throw new Error(`GET /parcels?bbox failed (${res.status}) - is the backend at ${baseUrl} running?`);
+    const fc = await res.json();
+    if (!Array.isArray(fc.features) || !fc.features.length) {
+        throw new Error('backend returned no parcels for the plan bbox');
+    }
+    return fc;
+}
+
+function unionAll(features) {
+    let u = null;
+    for (const f of features) {
+        if (!f) continue;
+        try { u = u ? turf.union(u, f) : f; }
+        catch (error) { console.warn(`union failed on a piece: ${error.message}`); }
+    }
+    return u;
+}
+
+function explodeToPolygons(geometry) {
+    if (!geometry) return [];
+    if (geometry.type === 'Polygon') return [geometry];
+    if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(c => ({ type: 'Polygon', coordinates: c }));
+    if (geometry.type === 'GeometryCollection') return geometry.geometries.flatMap(g => explodeToPolygons(g));
+    return [];
+}
+
+// Turn the raster-extracted parcelation into an EXACT planar partition of its
+// parent parcels. The extractor's slices deliberately overshoot the drawn plan
+// boundary by ~3.6 m so no boundary-line sliver stays unclaimed; here that
+// overshoot is trimmed to the vector union of the parent parcels, and every
+// piece of parent land NOT covered by a slice becomes an explicit remainder
+// parcel. The app replaces a reparcellization's parents wholesale and takes the
+// slice geometry as-is, so this step is what guarantees the Zagreb principle:
+// all land stays under a parcel, and under at most one (no gaps, no double claims).
+function clipParcelationToParents(parcelation, parcels) {
+    // Parents = parcels genuinely under the DRAWN plan area. Erode each slice by
+    // the overshoot margin first, so a ~3.6 m spill over the plan edge cannot
+    // drag a neighbouring parcel into the readjustment.
+    const parentIds = new Set();
+    for (const f of parcelation.features) {
+        let core = f;
+        try {
+            const eroded = turf.buffer(f, -4, { units: 'meters' });
+            if (eroded && turf.area(eroded) > 1) core = eroded;
+        } catch (_) { /* thin slice - keep unbuffered */ }
+        const cb = turf.bbox(core);
+        for (const p of parcels.features) {
+            if (parentIds.has(p.properties.parcelId)) continue;
+            const pb = turf.bbox(p);
+            if (pb[0] > cb[2] || pb[2] < cb[0] || pb[1] > cb[3] || pb[3] < cb[1]) continue;
+            try {
+                const overlap = turf.intersect(core, p);
+                if (overlap && turf.area(overlap) > 10) parentIds.add(p.properties.parcelId);
+            } catch (_) { /* degenerate ring - skip */ }
+        }
+    }
+    const parentFeatures = parcels.features.filter(f => parentIds.has(f.properties.parcelId));
+    const parentUnion = unionAll(parentFeatures);
+
+    // Clip every slice to the parent union. A clip can split a slice; the largest
+    // part keeps the slice identity (building/park/street anchors reference the
+    // slice by INDEX, so slices stay index-aligned with parcelation.features),
+    // extra parts are appended as their own entries so no land is dropped.
+    const slices = [];
+    const extras = [];
+    for (const f of parcelation.features) {
+        let clipped = null;
+        try { clipped = turf.intersect(f, parentUnion); } catch (error) {
+            console.warn(`${f.properties.name}: clip failed (${error.message}) - keeping raster outline`);
+        }
+        const parts = (clipped ? explodeToPolygons(clipped.geometry) : [f.geometry])
+            .map(g => ({ g, a: areaOf(g) }))
+            .sort((x, y) => y.a - x.a);
+        const [main, ...rest] = parts;
+        slices.push({ kind: f.properties.kind, name: f.properties.name, area_m2: Math.round(main.a), geometry: main.g });
+        rest.filter(x => x.a > 0.5).forEach((x, n) => extras.push({
+            kind: f.properties.kind,
+            name: `${f.properties.name} (dio ${n + 2})`,
+            area_m2: Math.round(x.a),
+            geometry: x.g,
+        }));
+    }
+
+    // Remainders: per parent, whatever the slices do not cover stays a parcel of
+    // its own. Road/canal parents run far beyond the plan - without this, their
+    // land outside the plan would silently vanish from the map on apply.
+    const sliceUnion = unionAll([...slices, ...extras].map(e => ({ type: 'Feature', properties: {}, geometry: e.geometry })));
+    const remainders = [];
+    for (const p of parentFeatures) {
+        let rem = null;
+        try { rem = turf.difference(p, sliceUnion); } catch (error) {
+            console.warn(`${p.properties.parcelId}: remainder failed (${error.message})`);
+        }
+        if (!rem) continue;
+        const broj = p.properties.BROJ_CESTICE || p.properties.KATASTARSKA_CESTICA || p.properties.parcelId.split('-').pop();
+        const kept = explodeToPolygons(rem.geometry)
+            .map(g => ({ g, a: areaOf(g) }))
+            .filter(x => x.a > 0.5)
+            .sort((x, y) => y.a - x.a);
+        kept.forEach((x, n) => remainders.push({
+            kind: 'OST',
+            name: kept.length > 1 ? `k.č. ${broj} – ostatak ${n + 1}` : `k.č. ${broj} – ostatak`,
+            area_m2: Math.round(x.a),
+            geometry: x.g,
+        }));
+    }
+
+    // Coverage report: the children must tile the parents exactly (± numeric dust).
+    const all = [...slices, ...extras, ...remainders];
+    const totalChildren = all.reduce((s, e) => s + areaOf(e.geometry), 0);
+    const totalParents = parentUnion ? turf.area(parentUnion) : 0;
+    let maxOverlap = 0; let overlapPair = null;
+    for (let i = 0; i < all.length; i++) {
+        const bi = turf.bbox({ type: 'Feature', properties: {}, geometry: all[i].geometry });
+        for (let j = i + 1; j < all.length; j++) {
+            const bj = turf.bbox({ type: 'Feature', properties: {}, geometry: all[j].geometry });
+            if (bj[0] > bi[2] || bj[2] < bi[0] || bj[1] > bi[3] || bj[3] < bi[1]) continue;
+            try {
+                const ov = turf.intersect(
+                    { type: 'Feature', properties: {}, geometry: all[i].geometry },
+                    { type: 'Feature', properties: {}, geometry: all[j].geometry });
+                const a = ov ? turf.area(ov) : 0;
+                if (a > maxOverlap) { maxOverlap = a; overlapPair = `${all[i].name} × ${all[j].name}`; }
+            } catch (_) { /* degenerate - skip */ }
+        }
+    }
+    console.log(`parcelation: ${slices.length} slices + ${extras.length} split parts + ${remainders.length} remainders`
+        + ` over ${parentIds.size} parents`);
+    console.log(`  coverage: parents ${Math.round(totalParents)} m² vs children ${Math.round(totalChildren)} m²`
+        + ` (diff ${(totalParents - totalChildren).toFixed(1)} m²)`);
+    console.log(`  max pairwise overlap: ${maxOverlap.toFixed(2)} m²${overlapPair ? ` (${overlapPair})` : ''}`);
+    if (Math.abs(totalParents - totalChildren) > 50 || maxOverlap > 5) {
+        throw new Error('parcelation coverage check failed - children do not tile the parents');
+    }
+
+    return { slices, extras, remainders, parentParcelIds: Array.from(parentIds).sort() };
 }
 
 const ROAD_PROFILES = {
@@ -244,20 +394,19 @@ function buildStreetNetworkProposal(streets, parentParcelIds) {
     };
 }
 
-function buildReparcellizationProposal(slices, intersecting) {
-    const totalArea = slices.features.reduce((sum, f) => sum + f.properties.area_m2, 0);
-    const parents = new Set();
-    const polygons = slices.features.map(f => {
-        for (const id of intersecting(f.geometry)) parents.add(id);
-        return {
-            ownerKey: slugify(f.properties.name),
-            displayName: sliceDisplayName(f.properties),
-            color: SLICE_COLORS[f.properties.kind] || '#999999',
-            percent: Math.round((f.properties.area_m2 / totalArea) * 1000) / 10,
-            geometry: f.geometry,
-        };
-    });
-    const parentParcelIds = Array.from(parents).sort();
+function buildReparcellizationProposal(clip) {
+    // Slices FIRST and in extractor order - building/park/street anchors compose
+    // child ids from the slice's index in this array. Extras + remainders append.
+    const all = [...clip.slices, ...clip.extras, ...clip.remainders];
+    const totalArea = all.reduce((sum, e) => sum + e.area_m2, 0);
+    const polygons = all.map(e => ({
+        ownerKey: slugify(e.name),
+        displayName: sliceDisplayName(e),
+        color: SLICE_COLORS[e.kind] || '#999999',
+        percent: Math.round((e.area_m2 / totalArea) * 1000) / 10,
+        geometry: e.geometry,
+    }));
+    const parentParcelIds = clip.parentParcelIds;
     const title = 'UPU Borovje – nova parcelacija (urbana komasacija)';
     return {
         proposalId: PARCELATION_ID,
@@ -266,9 +415,10 @@ function buildReparcellizationProposal(slices, intersecting) {
         type: 'parcel',
         title,
         name: title,
-        description: `Nova parcelacija obuhvata: ${polygons.length} građevnih čestica`
+        description: `Nova parcelacija obuhvata: ${clip.slices.length + clip.extras.length} građevnih čestica`
             + ' (po jedna za svaku zgradu M1-1…M1-11, parkove Z1, rekreaciju R2 i prometne'
-            + ' površine). Kazeta M1-12 zadržava postojeće čestice (PP-5).'
+            + ` površine) te ${clip.remainders.length} preostalih čestica za dijelove ulaznih`
+            + ' parcela izvan zahvata plana. Kazeta M1-12 zadržava postojeće čestice (PP-5).'
             + ' Izvedeno iz UPU Borovje – zona jug (prijedlog plana za javnu raspravu, 2026).',
         author: AUTHOR,
         lifecycleStatus: 'Active',
@@ -317,7 +467,7 @@ async function main() {
         loadGeojson('zones.geojson'),
         loadGeojson('streets.geojson'),
         loadGeojson('parcelation.geojson'),
-        loadGeojson('parcels.geojson'),
+        fetchAppParcels(baseUrl),
     ]);
     const intersecting = parcelIntersectors(parcels);
 
@@ -325,7 +475,8 @@ async function main() {
     // one gradevna cestica per building/zone/street; everything else anchors to
     // those NEW parcels (matching the real plan, and avoiding parcel-occupancy
     // conflicts between kazete that share one big source parcel today).
-    const repar = buildReparcellizationProposal(parcelation, intersecting);
+    const clip = clipParcelationToParents(parcelation, parcels);
+    const repar = buildReparcellizationProposal(clip);
     const primaryParent = repar.parentParcelIds[0];
     const sliceChildId = (sliceIndex) => `${primaryParent}#${PARCELATION_ID}-${sliceIndex + 1}`;
     const sliceForPoint = (geometry) => {
@@ -349,7 +500,16 @@ async function main() {
             proposal.buildingProposal.parentParcelIds = [childId];
             proposal.buildingProposal.ancestorKey = childId;
         }
-        if (proposal.structureProposal) proposal.structureProposal.parentParcelIds = [childId];
+        if (proposal.structureProposal) {
+            proposal.structureProposal.parentParcelIds = [childId];
+            // park/recreation surfaces adopt the exact građevna-čestica geometry so
+            // the structure fills its parcel edge-to-edge (the zones.geojson trace
+            // has raster jitter and would leave slivers against the parcel border)
+            const clippedGeom = clip.slices[slice.index]?.geometry;
+            if (clippedGeom && ['Z1', 'R2'].includes(slice.feature.properties.kind)) {
+                proposal.structureProposal.geometry = clippedGeom;
+            }
+        }
         if (proposal.roadProposal) proposal.roadProposal.parentParcelIds = [childId];
     };
 
