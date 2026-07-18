@@ -15,13 +15,19 @@
 //
 // For a placed road the resulting footprint is checked live: hitting a NEW building blocks Apply —
 // tunnels are only made while drawing — while crossing an applied park/square/lake merely lights an
-// indicator (the structure is cut at render time).
+// indicator (the structure is cut at render time). A building this road already PARTIALLY demolished
+// is different again: its remainder still stands, and widening into it is shown (amber, its own
+// indicator) but does not block — the demolition was already consented, and Apply re-carves the cut
+// at the new width (road-drawing's runLocalCorridorGeometryUpdate).
 //
 // Local unminted roads take the change in place (footprint + parcel cuts rebuild on Apply); minted
 // proposals are immutable and reopen as a drawing draft instead.
 
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
+// Red overlay of the buildings the CURRENT cross-section cuts into — the on-map counterpart of
+// the "hits buildings" chip, repainted by every obstacle check while the editor is open.
+let corridorEditorHitBuildingsLayer = null;
 
 const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 
@@ -53,6 +59,9 @@ function corridorLaneTypeLabel(type) {
 
 function corridorEditorClose() {
     if (typeof clearCorridorProfilePreview === 'function') clearCorridorProfilePreview();
+    corridorEditorRenderBuildingHits([]);
+    corridorEditorRestoreBuildingFootprints();
+    document.body.classList.remove('corridor-editor-open');
     const overlay = document.getElementById('corridor-editor-overlay');
     if (overlay) overlay.remove();
     document.removeEventListener('keydown', corridorEditorKeydown);
@@ -134,9 +143,26 @@ function corridorEditorFlashRefusal() {
     );
 }
 
+// Pure: how this road's own demolition records partition for width-hit detection. A record
+// WITHOUT a remainder is a full demolition — nothing is standing, so a width change cannot hit
+// it and it is excluded like a tunnelled building. A record WITH a remainder left the building
+// standing: widening into that remainder is a real, reportable hit, but a RE-CUT of an already
+// consented demolition, not a new obstacle — shown, never blocking.
+function corridorEditorPartitionDemolitions(records) {
+    const excluded = new Set();
+    const recut = new Set();
+    (records || []).forEach(record => {
+        if (!record || record.id === undefined || record.id === null) return;
+        (record.remainder ? recut : excluded).add(String(record.id));
+    });
+    return { excluded, recut };
+}
+
 // Everything the corridor's footprint would collide with at the given total width: buildings the
 // road is not already tunnelled through (from the base map AND applied building proposals), and
-// applied parks/squares/lakes. Checked per edge, like drawing-time segment validation.
+// applied parks/squares/lakes. Checked per edge, like drawing-time segment validation. Hits on
+// buildings this road already partially demolished carry `recut: true` (the detection pool holds
+// their REMAINDER footprint, so the hit is against what is actually still standing).
 function corridorEditorCollectWidthHits(width) {
     const result = { buildings: [], structures: [] };
     const state = corridorEditorState;
@@ -152,8 +178,8 @@ function corridorEditorCollectWidthHits(width) {
         (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
         if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
     });
-    // Buildings this road already demolished are gone — a width change cannot "hit" them.
-    (state.definition.demolishedBuildings || []).forEach(record => tunnelled.add(String(record?.id)));
+    const demolitions = corridorEditorPartitionDemolitions(state.definition.demolishedBuildings);
+    demolitions.excluded.forEach(id => tunnelled.add(id));
     const seenBuildings = new Set();
     const seenStructures = new Set();
     segments.forEach(segment => {
@@ -168,7 +194,7 @@ function corridorEditorCollectWidthHits(width) {
                     const id = String(hit.id);
                     if (tunnelled.has(id) || seenBuildings.has(id)) return;
                     seenBuildings.add(id);
-                    result.buildings.push(hit);
+                    result.buildings.push(demolitions.recut.has(id) ? { ...hit, recut: true } : hit);
                 });
             }
             if (typeof detectStructureCrossings === 'function') {
@@ -183,15 +209,135 @@ function corridorEditorCollectWidthHits(width) {
     return result;
 }
 
+// Paint the hit buildings' footprints on the map, replacing the previous paint. A widening
+// that starts cutting into a building shows exactly WHERE, live, while the seam is still being
+// dragged — the chip alone said only that it happened. Red = a new building (blocks Apply);
+// amber = re-cutting deeper into a building this road already partially demolished (allowed —
+// what is painted is its still-standing remainder). Buildings the road tunnels through or fully
+// demolished are not hits (corridorEditorCollectWidthHits excludes them).
+function corridorEditorRenderBuildingHits(buildingHits) {
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined') return;
+    if (corridorEditorHitBuildingsLayer) {
+        try { map.removeLayer(corridorEditorHitBuildingsLayer); } catch (_) { }
+        corridorEditorHitBuildingsLayer = null;
+    }
+    const features = (buildingHits || [])
+        .map(hit => {
+            const geometry = hit && ((hit.feature && hit.feature.geometry) || hit.originalGeometry);
+            return geometry ? { type: 'Feature', properties: { recut: hit.recut === true }, geometry } : null;
+        })
+        .filter(Boolean);
+    if (!features.length) return;
+    if (typeof ensureCorridorStripsPane === 'function') ensureCorridorStripsPane();
+    corridorEditorHitBuildingsLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+        interactive: false,
+        pane: (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined,
+        style: feature => (feature.properties.recut
+            ? {
+                color: '#9a5b13',
+                weight: 2,
+                fillColor: '#d97706',
+                fillOpacity: 0.35,
+                className: 'corridor-editor-building-hit corridor-editor-building-hit--recut'
+            }
+            : {
+                color: '#b3261e',
+                weight: 2,
+                fillColor: '#dc2626',
+                fillOpacity: 0.4,
+                className: 'corridor-editor-building-hit'
+            })
+    }).addTo(map);
+}
+
+// The bounds of what is being edited: the scoped segment when the edit is segment-scoped,
+// otherwise the whole road network.
+function corridorEditorRoadBounds() {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal' || !state.definition) return null;
+    if (typeof L === 'undefined' || typeof corridorCenterlineOf !== 'function') return null;
+    let segments = corridorCenterlineOf(state.definition);
+    if (state.scope === 'segment' && state.segmentId && Array.isArray(state.definition.segmentIds)) {
+        segments = segments.filter((_, index) => String(state.definition.segmentIds[index] || '') === state.segmentId);
+    }
+    const bounds = L.latLngBounds([]);
+    segments.forEach(segment => (segment || []).forEach(point => bounds.extend(point)));
+    return bounds.isValid() ? bounds : null;
+}
+
+// Pure: the fitBounds padding that keeps the road inside the viewport the docked panel leaves
+// free. Which edge the panel occupies is read off its own rectangle — a full-viewport-wide panel
+// is the bottom dock (mobile), anything narrower is the right dock — so this cannot drift from
+// the CSS breakpoint.
+function corridorEditorFitPadding(viewportWidth, panelRect, margin = 40) {
+    const width = (panelRect && Number(panelRect.width)) || 0;
+    const height = (panelRect && Number(panelRect.height)) || 0;
+    const bottomDocked = width >= viewportWidth - 1;
+    return bottomDocked
+        ? { topLeft: [margin, margin], bottomRight: [margin, height + margin] }
+        : { topLeft: [margin, margin], bottomRight: [width + margin, margin] };
+}
+
+// Focus the road being edited in the part of the screen the panel does not cover.
+function corridorEditorFocusMap() {
+    const bounds = corridorEditorRoadBounds();
+    if (!bounds || typeof map === 'undefined' || !map || typeof map.fitBounds !== 'function') return;
+    const panel = document.querySelector('.corridor-editor');
+    const padding = corridorEditorFitPadding(
+        window.innerWidth,
+        panel ? panel.getBoundingClientRect() : null
+    );
+    map.fitBounds(bounds, {
+        paddingTopLeft: L.point(padding.topLeft[0], padding.topLeft[1]),
+        paddingBottomRight: L.point(padding.bottomRight[0], padding.bottomRight[1]),
+        maxZoom: 18
+    });
+}
+
+// The map beside the editor must show what a width change collides with, so the GDI footprint
+// layer turns on for the session (restored on close if the user had it off) and the pool is
+// fetched to cover the road — the red highlight and the Apply block both read that pool.
+function corridorEditorShowBuildingFootprints() {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal') return;
+    const checkbox = document.getElementById('showBuildings');
+    if (checkbox && !checkbox.checked) {
+        checkbox.checked = true;
+        state.restoreBuildingsCheckbox = true;
+    }
+    if (typeof window.rebuildBuildingLayerFromPool === 'function') {
+        try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
+    }
+    const bounds = corridorEditorRoadBounds();
+    if (bounds && typeof window.ensureBuildingFootprintsForBounds === 'function') {
+        window.ensureBuildingFootprintsForBounds(bounds)
+            // The pool may have just filled: re-check so buildings already being cut turn red now.
+            .then(() => corridorEditorScheduleObstacleCheck())
+            .catch(error => console.warn('[corridorEditor] building footprints could not be prepared', error));
+    }
+}
+
+function corridorEditorRestoreBuildingFootprints() {
+    if (!corridorEditorState || !corridorEditorState.restoreBuildingsCheckbox) return;
+    const checkbox = document.getElementById('showBuildings');
+    if (checkbox) checkbox.checked = false;
+    if (typeof window.rebuildBuildingLayerFromPool === 'function') {
+        try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
+    }
+}
+
 function corridorEditorUpdateIndicators(hits, blocked) {
     const buildingsChip = document.querySelector('.corridor-editor-indicator--buildings');
     if (buildingsChip) buildingsChip.hidden = !blocked;
+    const recutChip = document.querySelector('.corridor-editor-indicator--recut');
+    if (recutChip) recutChip.hidden = !(hits && hits.buildings.some(hit => hit.recut));
     const structuresChip = document.querySelector('.corridor-editor-indicator--structures');
     if (structuresChip) structuresChip.hidden = !(hits && hits.structures.length);
 }
 
 // Widening is blocked only when it hits a building the road did not already touch at its
-// opening width — tunnels are made while drawing, never by widening a placed road.
+// opening width — tunnels are made while drawing, never by widening a placed road. Re-cut
+// hits (deepening this road's own consented partial demolition) never block.
 function corridorEditorRunObstacleCheck() {
     const current = corridorEditorState;
     if (!current || current.mode !== 'proposal') return;
@@ -202,7 +348,8 @@ function corridorEditorRunObstacleCheck() {
         );
     }
     const hits = corridorEditorCollectWidthHits(corridorProfileWidth(current.profile));
-    current.widthBlocked = hits.buildings.some(hit => !current.baselineBuildingHitIds.has(String(hit.id)));
+    current.widthBlocked = hits.buildings.some(hit => !hit.recut && !current.baselineBuildingHitIds.has(String(hit.id)));
+    corridorEditorRenderBuildingHits(hits.buildings);
     corridorEditorUpdateIndicators(hits, current.widthBlocked);
     const saveButton = document.querySelector('.corridor-editor-save');
     if (saveButton) saveButton.disabled = !current.dirty || current.widthBlocked;
@@ -789,13 +936,14 @@ function corridorEditorOpenOverlay() {
     const indicatorsHtml = drawing ? '' : `
             <div class="corridor-editor-indicators">
                 <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'Hits buildings (to tunnel through buildings, use drawing mode)')}</span>
+                <span class="corridor-editor-indicator corridor-editor-indicator--recut" hidden>${corridorEditorI18n('modal.corridor.extendsCut', 'Cuts deeper into an already-cut building (amber on the map)')}</span>
                 <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
             </div>`;
     const overlay = document.createElement('div');
     overlay.id = 'corridor-editor-overlay';
     overlay.className = 'corridor-editor-overlay';
     overlay.innerHTML = `
-        <div class="corridor-editor" role="dialog" aria-modal="true" aria-label="Cross-section">
+        <div class="corridor-editor" role="dialog" aria-label="Cross-section">
             <div class="corridor-editor-header">
                 <div>
                     <div class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</div>
@@ -838,16 +986,24 @@ function corridorEditorOpenOverlay() {
             }
             corridorEditorRender();
             corridorEditorScheduleObstacleCheck();
+            // The edited extent changed with the scope, so point the map at it.
+            corridorEditorFocusMap();
         });
     });
 
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
-    overlay.addEventListener('click', (event) => { if (event.target === overlay) corridorEditorCancel(); });
+    // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
+    // beside the panel pans the map instead. Escape and the two buttons close the editor.
     document.addEventListener('keydown', corridorEditorKeydown);
+    // Lock the map's objects (CSS kills .leaflet-interactive; map-level handlers check
+    // isCorridorEditorOpen) while keeping pan and zoom live.
+    document.body.classList.add('corridor-editor-open');
 
     corridorEditorRender();
+    corridorEditorFocusMap();
+    corridorEditorShowBuildingFootprints();
 }
 
 // Entry point, wired to the "Cross-section" button in a road proposal's details panel.
@@ -888,6 +1044,8 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         originalProfile: JSON.parse(JSON.stringify(profile)),
         baselineBuildingHitIds: null,
         widthBlocked: false,
+        // Set when the editor itself ticked the "show buildings" box, so closing un-ticks it.
+        restoreBuildingsCheckbox: false,
         selected: 0,
         dragIndex: null,
         notice: null,
@@ -932,8 +1090,21 @@ function proposalHasEditableCorridor(proposal) {
     return !!corridorProfileOf(definition);
 }
 
+// The map stays pannable while the editor is docked, so map-level click handlers (road drawing,
+// measuring) must be able to ask whether a click should be ignored — the CSS lock only covers
+// clicks on objects, not clicks on the map itself.
+function isCorridorEditorOpen() {
+    return !!corridorEditorState;
+}
+
 if (typeof window !== 'undefined') {
     window.openCorridorProfileEditor = openCorridorProfileEditor;
     window.openRoadDrawingCrossSectionEditor = openRoadDrawingCrossSectionEditor;
     window.proposalHasEditableCorridor = proposalHasEditableCorridor;
+    window.isCorridorEditorOpen = isCorridorEditorOpen;
+}
+
+// Node-side exports for unit tests (backend/test); the browser loads this as a classic script.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { corridorEditorFitPadding, corridorEditorPartitionDemolitions };
 }

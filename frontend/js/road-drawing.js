@@ -3003,6 +3003,9 @@ async function handleRoadClick(e) {
         updateStatus('Apply or cancel the cross-section change before drawing another segment.');
         return;
     }
+    // The cross-section editor docks beside a live, pannable map — a click on it must not
+    // place a drawing point behind the editor's back.
+    if (typeof isCorridorEditorOpen === 'function' && isCorridorEditorOpen()) return;
     roadSegmentPlacementInProgress = true;
     try {
 

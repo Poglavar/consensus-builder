@@ -1,24 +1,34 @@
 /* The corridor cross-section editor: a scale diagram of the street plus one row per lane. */
 
+/* Docked beside a live map, not a blocking modal: the road being edited stays visible in the
+   remaining viewport and every edit previews on it as it is made. The overlay itself is
+   click-transparent — only the panel takes pointer events, so the map underneath keeps panning
+   and zooming. Desktop docks the panel to the right edge, mobile to the bottom (media query). */
 .corridor-editor-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: flex-end;
     z-index: 16000;
-    padding: 12px;
+    pointer-events: none;
 }
 
 .corridor-editor {
+    pointer-events: auto;
     background: #fff;
-    border-radius: 10px;
-    width: min(520px, 100%);
-    max-height: 92vh;
+    width: min(480px, 42vw);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* While the editor is open the map is a viewport, not a control surface: panning and zooming
+   stay live, but no object on it takes a click — roads, parcels, buildings, markers, none.
+   (Wins over Leaflet's own .leaflet-interactive rule by specificity; map-level click handlers
+   guard on isCorridorEditorOpen() themselves.) */
+body.corridor-editor-open .leaflet-interactive {
+    pointer-events: none;
 }
 
 .corridor-editor-header {
@@ -87,6 +97,15 @@
     border: 1px solid #f5d9a8;
 }
 
+/* Re-cut: the widening eats deeper into a building this road already partially demolished.
+   Amber like the structures chip (informational, never blocks) — matching the amber footprint
+   paint on the map, where red is reserved for the hits that DO block. */
+.corridor-editor-indicator--recut {
+    background: #fef3e2;
+    color: #9a5b13;
+    border: 1px solid #f5d9a8;
+}
+
 /* Flash the total when an edit is refused — a lane below its minimum, or the 80 m cap. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
@@ -100,6 +119,10 @@
 }
 
 .corridor-editor-body {
+    /* The one flexible region of the full-height panel: header/meta/footer keep their size,
+       the lane list scrolls. min-height 0 lets it actually shrink inside the flex column. */
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     /* The top padding is not decoration: without it the scroll container clips the first group label. */
     padding: 6px 16px 12px;
@@ -414,6 +437,23 @@ button.corridor-lane-standard--reset:hover {
     justify-content: flex-end;
     padding: 10px 16px 14px;
     border-top: 1px solid #eee;
+}
+
+/* Mobile: the editor takes the lower half of the screen and the map keeps the upper half —
+   the same docked-beside-a-live-map arrangement as desktop, rotated 90°. */
+@media (max-width: 768px) {
+    .corridor-editor-overlay {
+        align-items: flex-end;
+    }
+
+    .corridor-editor {
+        width: 100%;
+        height: 50vh;
+        /* Half of the VISIBLE viewport where supported — 50vh overshoots under mobile Safari's
+           dynamic toolbar and would hide the footer buttons. */
+        height: 50dvh;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+    }
 }
 
 /* Mobile: the row wraps of its own accord (flex), so only the spacing needs tightening. */
