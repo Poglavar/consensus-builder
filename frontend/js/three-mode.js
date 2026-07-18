@@ -87,7 +87,8 @@
     // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
     const INTRO_AUTO_ROTATE_SPEED = 0.7; // OrbitControls: ~86s per revolution (1.0 ≈ 60s)
     const INTRO_MANUAL_AUTO_ROTATE_RAD_PER_SEC = 0.18; // fallback if OrbitControls is missing
-    const ORIGIN = new THREE.Vector3(0, 0, 0);
+    // (No parse-time THREE usage in this file: the global arrives from the deferred ESM
+    // bootstrap, so THREE may only be touched once the user actually enters a 3D flow.)
     let pendingIntroAutoRotate = false;
     let introAutoRotateCleanup = null;
     let manualAutoRotateActive = false;
@@ -3717,12 +3718,12 @@
         // Populate scenery toggles for the active city (which layers it has ingested).
         refreshDecorToggles();
 
-        // Lights
-        const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6);
+        // Lights (×π: three r155+ dropped the implicit π factor legacy lighting applied)
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6 * Math.PI);
         hemi.position.set(0, 0, 1);
         scene.add(hemi);
 
-        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(200, 200, 400);
         scene.add(dir);
 
@@ -4006,7 +4007,7 @@
         const sin = Math.sin(angle);
         camera.position.x = (x * cos) - (y * sin);
         camera.position.y = (x * sin) + (y * cos);
-        camera.lookAt(ORIGIN);
+        camera.lookAt(0, 0, 0);
     }
 
     function startLoop() {

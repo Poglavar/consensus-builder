@@ -112,8 +112,9 @@
         controls.dampingFactor = dampingFactor;
         controls.enablePan = true;
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8 * Math.PI));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6 * Math.PI);
         dirLight.position.set(300, 300, 500);
         scene.add(dirLight);
 

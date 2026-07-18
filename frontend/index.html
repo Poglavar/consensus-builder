@@ -1483,10 +1483,49 @@
             'js/centerline-animation.js'
         ]);
     </script>
-    <!-- Three.js for 3D preview (0.147.0 is the last release shipping the classic examples/js UMD builds used here) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // Resolves once the ESM bootstrap below has populated window.THREE (or after a timeout
+        // if the CDN failed). Defined as a parse-time classic script so every later classic
+        // script can call it unconditionally before touching THREE.
+        window.whenThreeReady = (() => {
+            let promise = null;
+            return () => {
+                if (typeof window.THREE !== 'undefined') return Promise.resolve(true);
+                if (!promise) {
+                    promise = new Promise((resolve) => {
+                        window.addEventListener('threeReady', () => resolve(true), { once: true });
+                        setTimeout(() => resolve(typeof window.THREE !== 'undefined'), 10000);
+                    });
+                }
+                return promise;
+            };
+        })();
+    </script>
+    <!-- Three.js r184 as ESM: the import map + bootstrap module below populate the global
+         `THREE` that every classic script keeps using, including the OrbitControls/GLTFLoader
+         addons that used to ship as examples/js UMD builds (dropped after r147). Same pinned
+         URLs as zagreb-isochrone's photoreal sim, so both projects share one 3d-tiles-renderer
+         stack (and the browser cache). Module scripts are deferred, so no classic script may
+         touch THREE at parse time — all 3D code runs on user interaction, after `threeReady`. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+            "3d-tiles-renderer/three": "https://esm.sh/3d-tiles-renderer@0.5.0/three?external=three",
+            "3d-tiles-renderer/three/plugins": "https://esm.sh/3d-tiles-renderer@0.5.0/three/plugins?external=three"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE_NS from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        // Module namespace objects are frozen — spread into a plain object so the addon
+        // classes can sit where the classic scripts expect them (THREE.OrbitControls etc.).
+        window.THREE = Object.assign({}, THREE_NS, { OrbitControls, GLTFLoader });
+        window.dispatchEvent(new Event('threeReady'));
+    </script>
     <script>
         window.writeVersionedLocalScripts([
             'js/local-frame.js',
