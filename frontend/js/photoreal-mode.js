@@ -122,9 +122,20 @@
     }
 
     // ---- seating (port of the sim's lockTrackHeightOnce) ----
-    // Raycast straight down at the scene origin (the proposal centre) against the streamed
-    // tiles and shift the whole world so its ground surface sits just below the z=0 content.
-    // Heights are true metres in both frames (z scale is 1), so all sim thresholds carry over.
+    // Probe offsets (scene metres) around the origin for the ground raycast. A single ray at
+    // the proposal centre seats the world on whatever it hits — in Manhattan that was a tower
+    // ROOF, which sank every street ~100 m below the proposals. Roofs only ever bias a probe
+    // HIGH, so the round's MINIMUM hit is the street level (same reasoning that fixed the
+    // Cesium seating against parked-car roofs).
+    const LOCK_PROBE_OFFSETS = [
+        [0, 0], [60, 0], [-60, 0], [0, 60], [0, -60],
+        [120, 60], [-120, 60], [120, -60], [-120, -60],
+        [180, 0], [-180, 0], [0, 180], [0, -180]
+    ];
+
+    // Raycast a spread of points near the scene origin against the streamed tiles and shift
+    // the whole world so its STREET surface sits just below the z=0 content. Heights are true
+    // metres in both frames (z scale is 1), so all sim thresholds carry over.
     function tryLockGround(dtS) {
         lockWaitS += dtS;
         lockAccumS += dtS;
@@ -134,16 +145,22 @@
         if (!THREE || !tiles) return;
         let groundZ = null;
         try {
-            const raycaster = new THREE.Raycaster(
-                new THREE.Vector3(0, 0, 4000), new THREE.Vector3(0, 0, -1), 0, 9000);
-            const hits = raycaster.intersectObject(tiles.group, true);
-            if (hits.length) groundZ = hits[0].point.z;
+            const origin = new THREE.Vector3();
+            const down = new THREE.Vector3(0, 0, -1);
+            for (let i = 0; i < LOCK_PROBE_OFFSETS.length; i++) {
+                origin.set(LOCK_PROBE_OFFSETS[i][0], LOCK_PROBE_OFFSETS[i][1], 4000);
+                const raycaster = new THREE.Raycaster(origin, down, 0, 9000);
+                const hits = raycaster.intersectObject(tiles.group, true);
+                if (!hits.length) continue;
+                const z = hits[0].point.z;
+                // Far-earth trap (from the sim): before local tiles stream in, a ray can hit a
+                // coarse far-earth tile kilometres below/above; a static coarse tile passes the
+                // stability test, so reject on magnitude before it can seat the world in orbit.
+                if (Math.abs(z) > FAR_EARTH_LIMIT_M) continue;
+                if (groundZ === null || z < groundZ) groundZ = z;
+            }
         } catch (_) { return; }
         if (groundZ === null) return;
-        // Far-earth trap (from the sim): before local tiles stream in, the ray can hit a
-        // coarse far-earth tile kilometres below/above; a static coarse tile passes the
-        // stability test, so reject on magnitude before it can seat the world in orbit.
-        if (Math.abs(groundZ) > FAR_EARTH_LIMIT_M) return;
         // Let the local tiles refine a little before trusting early readings.
         const prog = Number(tiles.loadProgress);
         if (Number.isFinite(prog) && prog < 0.95 && lockWaitS < LOCK_MAX_WAIT_S * 0.5) return;
