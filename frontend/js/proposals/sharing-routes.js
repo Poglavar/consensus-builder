@@ -936,7 +936,8 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             }), 6000, 'error');
         }
 
-        // Optional URL-driven 3D mode: after shared apply completes, center on all proposals then enter 3D.
+        // Optional URL-driven 3D mode: after shared apply completes, enter 3D framed on THIS
+        // link's proposals only.
         try {
             if (!url3DModeHandled && is3DModeRequestedFromUrl()) {
                 // Wait for map centering to complete (if we centered on proposals above)
@@ -944,8 +945,10 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 if (allProposalIds.length > 0) {
                     await createLeafletViewSettlePromise(null, null);
                 }
-                // Enter 3D mode - camera will rotate around the current map center (which is the center of proposals)
-                const entered = enterUrlDrivenView();
+                // Pass the link's LOCAL proposal ids as the 3D focus — without them the camera
+                // framed the union of every applied proposal (this is the path every fresh
+                // download of a shared link takes; the already-applied fast paths pass ids).
+                const entered = enterUrlDrivenView(allProposalIds);
                 if (entered) url3DModeHandled = true;
             }
         } catch (_) { }
