@@ -18,11 +18,13 @@
     let tilesetPromise = null;
     let viewer = null;
     let googleTileset = null;
+    let tilesetState = 'pending'; // 'pending' | 'ready' | 'failed' — drives whether the globe renders
     let active = false;
     let statusEl = null;
     let lastGroundHeight = 0;     // elevation of the last camera target (for the auto-orbit)
     let autoRotateRemove = null;  // remover fn for the preRender auto-orbit listener
     const proposalEntities = [];
+    const proposalPrimitives = []; // batched scene primitives (trees) — cleared with the entities
 
     // Display states, mirroring 3D mode's two-row control (no radius here — Cesium streams
     // tiles by screen-space error, so distance culling is automatic). "Built" is the Google
@@ -61,6 +63,13 @@
 
     // ---- display states (Built = Google mesh, Planned = proposals) ----
     function applyBuiltDisplay() {
+        if (viewer) {
+            // The globe renders only when it IS the ground (mesh hidden or unavailable) — same as
+            // the isochrone photoreal sim, which renders no globe at all. When both drew, coarse
+            // terrain lobes covered the mesh ground in flat "generic green" wherever the two
+            // surfaces disagree vertically, and the whole earth flashed into view on first entry.
+            viewer.scene.globe.show = tilesetState === 'failed' || builtDisplay === 'off';
+        }
         if (!googleTileset || !window.Cesium) return;
         googleTileset.show = builtDisplay !== 'off';
         try {
@@ -105,6 +114,12 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) pushClipRings(definition.surfaceFootprint || definition.polygon);
         });
+        // Applied structures (parks/squares/lakes) replace the ground wholesale — a park over a
+        // parking lot must not show the cars through its lawn. renderCorridors fills the hole
+        // with the structure's own surface body.
+        appliedStructureProposals().forEach(function (proposal) {
+            pushClipRings(proposal.structureProposal.geometry);
+        });
         // A building a proposal razes entirely can stick out past the footprint that razed it —
         // carve its whole outline too, or its outer half would keep standing in the mesh. Cut
         // records are skipped: their demolished part lies inside the corridor footprint already.
@@ -116,12 +131,14 @@
                     // Demolished PROPOSED buildings are simply not rendered — only real buildings
                     // exist in the photoreal mesh and need a hole cut for them.
                     if (String(record.id).indexOf('proposal:') === 0) return;
-                    pushClipRings(record.geometry);
+                    const outside = razedFootprintOutsideStructures(record.geometry);
+                    if (outside) pushClipRings(outside);
                 });
             } catch (err) {
                 console.warn('[photoreal] demolition carve failed', err);
             }
         }
+        console.log('[photoreal] carving ' + polygons.length + ' clip polygons');
         try {
             googleTileset.clippingPolygons = polygons.length
                 ? new Cesium.ClippingPolygonCollection({ polygons: polygons })
@@ -134,7 +151,8 @@
     function setBuiltDisplay(state) {
         builtDisplay = state;
         applyBuiltDisplay();
-        applyCarving();
+        // Re-render the proposal too: the corridor undercoat exists only when the globe shows.
+        renderProposedBuildings();
         updateDisplayControls();
     }
 
@@ -328,13 +346,25 @@
             // photoreal sim. Cesium detects camera motion exactly, so zoom/pan/orbit
             // still render every moving frame.
             requestRenderMode: true,
-            maximumRenderTimeChange: Infinity
+            maximumRenderTimeChange: Infinity,
+            // Cesium defaults to 4x MSAA — a big fragment-cost tax on integrated GPUs. FXAA
+            // (still on) covers the jaggies far cheaper.
+            msaaSamples: 1
         });
+        const urlParams = new URLSearchParams(window.location.search || '');
+        // The proposal's immediate vicinity is what matters: cap the far plane so tilted views
+        // stop streaming and shading Google tiles all the way to the horizon. ?prfar=<m> to widen
+        // (e.g. ?prfar=20000 for city panoramas); ?fps=1 shows Cesium's FPS meter for measuring.
+        const prfar = Number(urlParams.get('prfar'));
+        viewer.camera.frustum.far = (Number.isFinite(prfar) && prfar > 500) ? prfar : 2000;
+        if (urlParams.get('fps')) viewer.scene.debugShowFramesPerSecond = true;
+        viewer.scene.fog.enabled = false; // fog only shades the globe, which we keep hidden
         viewer.scene.globe.depthTestAgainstTerrain = true;
-        // Coarser terrain+imagery refinement: the globe is almost entirely hidden under the
-        // photoreal mesh — only the carved corridor floor shows it, and that is viewed at
-        // street scale where terrain detail is imagery-driven anyway.
+        // Coarser terrain+imagery refinement: the globe only renders as the satellite fallback
+        // (mesh off or unavailable), never underneath the mesh.
         viewer.scene.globe.maximumScreenSpaceError = 3;
+        // Off until the tileset's fate is known — kills the whole-earth flash on first entry.
+        viewer.scene.globe.show = false;
         // No starfield / space backdrop — go straight to the city view while tiles stream.
         viewer.scene.skyBox.show = false;
         viewer.scene.sun.show = false;
@@ -366,13 +396,20 @@
                 const prq = Number(new URLSearchParams(window.location.search || '').get('prq'));
                 ts.maximumScreenSpaceError = (Number.isFinite(prq) && prq > 0) ? prq : 24;
                 ts.dynamicScreenSpaceError = true;
+                // Aggressive distance falloff: tiles beyond the immediate vicinity refine far
+                // less (the proposal neighbourhood is the subject; the skyline is backdrop).
+                ts.dynamicScreenSpaceErrorDensity = 6.0e-4;
+                ts.dynamicScreenSpaceErrorFactor = 24;
                 ts.skipLevelOfDetail = true;
                 ts.cacheBytes = 1024 * 1024 * 1024;
                 ts.maximumCacheOverflowBytes = 512 * 1024 * 1024;
                 viewer.scene.primitives.add(ts);
+                tilesetState = 'ready';
                 setStatus('');
                 applyBuiltDisplay();
-                applyCarving();
+                // Re-render so the entry-time undercoat (created while the tileset was pending)
+                // is dropped now that the mesh, not the globe, is the ground.
+                renderProposedBuildings();
                 bindTileProgress(ts);
                 seatMeshToTerrain(ts);
                 return ts;
@@ -380,6 +417,8 @@
             .catch(function (err) {
                 // No Google coverage for this city (or EEA-billed direct access): the globe still
                 // shows satellite imagery + terrain so the proposal stays in real-ish context.
+                tilesetState = 'failed';
+                applyBuiltDisplay();
                 setStatus('No photorealistic coverage here — showing satellite + terrain.');
                 console.warn('[photoreal] Google tileset failed to load:', err);
                 return null;
@@ -393,6 +432,8 @@
         corridorRenderToken++; // orphan any in-flight corridor terrain sampling
         proposalEntities.forEach(function (e) { viewer.entities.remove(e); });
         proposalEntities.length = 0;
+        proposalPrimitives.forEach(function (p) { try { viewer.scene.primitives.remove(p); } catch (_) { } });
+        proposalPrimitives.length = 0;
     }
 
     // Each entry is one polygon's full ring set: [outerRing, hole1, hole2, ...].
@@ -482,8 +523,11 @@
     const CORRIDOR_BODY = {
         road: 0.08,        // roadway surface above the carved floor (clears coarse-LOD terrain bumps)
         markingLift: 0.04, // white paint above the surface it is painted on
-        junction: 0.15,    // junction asphalt patch — covers through-markings, as in 2D/3D
-        crosswalk: 0.17,
+        // Junction patches sit ABOVE kerb tops (road 0.08 + kerb 0.15 = 0.23) — exactly as the
+        // abstract 3D layers them — so a crossing's asphalt swallows through-markings AND the
+        // sidewalk/cycleway bands inside the conflict area.
+        junction: 0.24,
+        crosswalk: 0.26,
         skirt: 1.5,        // lane bodies extrude this far below their lowest vertex (no slope gaps)
         densifyStep: 12    // metres between added terrain samples along a strip edge
     };
@@ -629,10 +673,18 @@
     // Height-reference clamping was tried first and floated every tree at the height of the
     // clipped-away Google mesh — clipping is a shader effect, the clipped geometry still answers
     // the clamping height query — so trees place themselves off our own terrain samples instead.
+    //
+    // All trees batch into TWO scene primitives (trunks + crowns): as per-tree entities, a couple
+    // of parks' worth of trees meant ~1200 entities for the visualizer to sweep every frame.
+    // Synchronous build on purpose — an async primitive's worker roundtrip stalls under
+    // requestRenderMode, and the one-time build happens while the mode is still revealing.
     function addCorridorTrees(treePoints, alpha) {
         if (!treePoints.length || !viewer) return;
         const trunkColor = Cesium.Color.fromCssColorString('#5c3d1e').withAlpha(alpha);
         const crownColor = Cesium.Color.fromCssColorString('#3a6b35').withAlpha(alpha);
+        const vertexFormat = Cesium.PerInstanceColorAppearance.VERTEX_FORMAT;
+        const trunkInstances = [];
+        const crownInstances = [];
         treePoints.forEach(function (item) {
             const random = treeRandom(item.lng, item.lat);
             const totalHeight = 5 + random * 3;
@@ -640,24 +692,39 @@
             const crownRadius = totalHeight * 0.2 + 0.4;
             // Trees stand on their lane's surface (a verge is a raised body), not on the raw floor.
             const base = (Number(item.groundHeight) || 0) + (Number(item.surfaceOffset) || 0);
-            try {
-                proposalEntities.push(viewer.entities.add({
-                    position: Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight / 2),
-                    cylinder: {
-                        length: trunkHeight, topRadius: 0.12, bottomRadius: 0.18, slices: 8,
-                        material: trunkColor
-                    }
-                }));
-                proposalEntities.push(viewer.entities.add({
-                    position: Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight + crownRadius * 0.65),
-                    ellipsoid: {
-                        radii: new Cesium.Cartesian3(crownRadius, crownRadius, crownRadius * 1.15),
-                        slicePartitions: 8, stackPartitions: 6,
-                        material: crownColor
-                    }
-                }));
-            } catch (_) { }
+            trunkInstances.push(new Cesium.GeometryInstance({
+                geometry: new Cesium.CylinderGeometry({
+                    length: trunkHeight, topRadius: 0.12, bottomRadius: 0.18, slices: 6,
+                    vertexFormat: vertexFormat
+                }),
+                modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(
+                    Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight / 2)),
+                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(trunkColor) }
+            }));
+            crownInstances.push(new Cesium.GeometryInstance({
+                geometry: new Cesium.EllipsoidGeometry({
+                    radii: new Cesium.Cartesian3(crownRadius, crownRadius, crownRadius * 1.15),
+                    slicePartitions: 6, stackPartitions: 5,
+                    vertexFormat: vertexFormat
+                }),
+                modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(
+                    Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight + crownRadius * 0.65)),
+                attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(crownColor) }
+            }));
         });
+        try {
+            [trunkInstances, crownInstances].forEach(function (instances) {
+                proposalPrimitives.push(viewer.scene.primitives.add(new Cesium.Primitive({
+                    geometryInstances: instances,
+                    appearance: new Cesium.PerInstanceColorAppearance({ translucent: alpha < 1, closed: true }),
+                    asynchronous: false,
+                    allowPicking: false
+                })));
+            });
+            viewer.scene.requestRender();
+        } catch (err) {
+            console.warn('[photoreal] tree primitives failed', err);
+        }
     }
 
     function collectJunctionFlats(junctions, flatJobs, alpha, markingAlpha) {
@@ -831,12 +898,95 @@
         });
     }
 
+    // ---- applied structures (parks / squares / lakes / stations): carve + fill + greenery ----
+    //
+    // A park drawn over a parking lot must READ as a park: the mesh under the structure is carved
+    // away (applyCarving) and replaced by the structure's own ground — a terrain-following body
+    // like a lane, in the structure's surface colour — plus, for parks, scattered trees. Cheap by
+    // construction: one body per polygon, a deterministic jittered tree grid, the shared tree
+    // budget and terrain-sampling batch.
+    const STRUCTURE_STYLES = {
+        park: { surface: '#4f7f52', trees: true },
+        square: { surface: '#c2beb4', trees: false },
+        lake: { surface: '#41729f', trees: false },
+        station: { surface: '#c2beb4', trees: false }
+    };
+    const STRUCTURE_SURFACE_TOP = 0.06;     // below the roadway (0.08), so an adjacent road wins
+    const CLEARED_GROUND_COLOR = '#9b9484'; // bare soil where a razed building stood
+    const STRUCTURE_TREE_SPACING = 11;      // metres between scattered park trees
+
+    function appliedStructureProposals() {
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return [];
+        if (typeof isApplied !== 'function') return [];
+        try {
+            return proposalStorage.getAllProposals().filter(function (p) {
+                return p && p.structureProposal && p.structureProposal.geometry
+                    && isApplied(p, p.structureProposal);
+            });
+        } catch (_) { return []; }
+    }
+
+    function geoRingToLatLngs(ring) {
+        return ring.map(function (c) { return { lat: c[1], lng: c[0] }; });
+    }
+
+    // The part of a razed building's footprint not already covered by an applied structure's own
+    // carve+fill. Carving (and flooring) building-by-building is redundant inside a structure —
+    // and every ClippingPolygon is evaluated per FRAGMENT of the whole Google mesh, so hundreds
+    // of redundant ones (a park razing a dense block) made the entire tileset render crawl.
+    function razedFootprintOutsideStructures(geometry) {
+        if (typeof turf === 'undefined' || !turf || typeof turf.difference !== 'function') return geometry;
+        let feat = { type: 'Feature', properties: {}, geometry: geometry };
+        try {
+            const structures = appliedStructureProposals();
+            for (let i = 0; i < structures.length && feat; i++) {
+                feat = turf.difference(feat,
+                    { type: 'Feature', properties: {}, geometry: structures[i].structureProposal.geometry });
+            }
+        } catch (_) { return geometry; }
+        return feat ? feat.geometry : null;
+    }
+
+    // Deterministic tree scatter: a jittered planar grid clipped to the polygon. Same treeRandom
+    // hash as everywhere else, so the layout is stable across renders.
+    function scatterTreesInPolygon(geometry, spacing) {
+        if (!corridorProjectionReady() || typeof turf === 'undefined' || !turf) return [];
+        const trees = [];
+        try {
+            const feature = { type: 'Feature', properties: {}, geometry: geometry };
+            const bbox = turf.bbox(feature);
+            const a = wgs84ToHTRS96(bbox[1], bbox[0]);
+            const b = wgs84ToHTRS96(bbox[3], bbox[2]);
+            const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]);
+            const y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+            if ((x1 - x0) * (y1 - y0) > 4e6) return []; // >4 km² of bbox: not scattering a forest
+            for (let x = x0 + spacing / 2; x < x1; x += spacing) {
+                for (let y = y0 + spacing / 2; y < y1; y += spacing) {
+                    const cell = latLngOf([x, y]);
+                    const jx = (treeRandom(cell.lng, cell.lat) - 0.5) * spacing * 0.7;
+                    const jy = (treeRandom(cell.lat, cell.lng) - 0.5) * spacing * 0.7;
+                    const ll = latLngOf([x + jx, y + jy]);
+                    if (turf.booleanPointInPolygon(turf.point([ll.lng, ll.lat]), feature)) {
+                        trees.push({ lat: ll.lat, lng: ll.lng, surfaceOffset: STRUCTURE_SURFACE_TOP });
+                    }
+                }
+            }
+        } catch (_) { }
+        return trees;
+    }
+
     function renderCorridors() {
         if (!viewer || plannedDisplay === 'off') return;
         if (typeof buildCorridorStrips !== 'function') return;
         const token = ++corridorRenderToken;
-        const alpha = plannedDisplay === 'ghost' ? 0.35 : 0.85;
-        const markingAlpha = plannedDisplay === 'ghost' ? 0.4 : 0.95;
+        // Fully opaque in solid mode: translucent asphalt let the crossing road's markings and
+        // bays ghost through junction patches, which is what made intersections look broken.
+        const alpha = plannedDisplay === 'ghost' ? 0.35 : 1;
+        const markingAlpha = plannedDisplay === 'ghost' ? 0.4 : 1;
+        // The draped undercoat only produces pixels on the globe — and the globe only renders
+        // when the mesh is off or unavailable. While the mesh is up, classification volumes are
+        // pure per-frame cost with zero output, so they are simply not created.
+        const undercoatNeeded = tilesetState !== 'ready' || builtDisplay === 'off';
         const stripJobs = []; // long lane bodies: per-vertex terrain heights
         const flatJobs = [];  // small flats (dashes, bays, arrows, rails, junction patches): one height each
         const crossJunctionInput = [];
@@ -860,7 +1010,7 @@
                                 });
                                 return;
                             }
-                            addDrapedPolygon(polygon, color, alpha); // instant visibility + permanent undercoat
+                            if (undercoatNeeded) addDrapedPolygon(polygon, color, alpha);
                             stripJobs.push({
                                 ring: densifyRing(polygon, CORRIDOR_BODY.densifyStep),
                                 top: top,
@@ -950,9 +1100,77 @@
             }
         }
 
+        // Applied structures: their ground body + park trees.
+        appliedStructureProposals().forEach(function (proposal) {
+            try {
+                const sp = proposal.structureProposal;
+                const style = STRUCTURE_STYLES[sp.kind] || STRUCTURE_STYLES.square;
+                polygonsOf(sp.geometry).forEach(function (rings) {
+                    const outer = rings && rings[0];
+                    if (!Array.isArray(outer) || outer.length < 3) return;
+                    stripJobs.push({
+                        ring: densifyRing(geoRingToLatLngs(outer), 20),
+                        top: STRUCTURE_SURFACE_TOP,
+                        color: style.surface,
+                        alpha: alpha
+                    });
+                });
+                if (style.trees) {
+                    treePoints = treePoints.concat(scatterTreesInPolygon(sp.geometry, STRUCTURE_TREE_SPACING));
+                }
+            } catch (err) {
+                console.error('[photoreal] structure render failed for proposal', proposal && proposal.proposalId, err);
+            }
+        });
+
+        // A designation corridor (an area DECLARED road land: polygon, no centerline, no lanes)
+        // gets the same fill treatment, in plain asphalt.
+        appliedCorridorProposals().forEach(function (proposal) {
+            const definition = window.corridorProposalDefinition(proposal);
+            if (!definition || typeof corridorIsDesignation !== 'function' || !corridorIsDesignation(definition)) return;
+            polygonsOf(definition.polygon).forEach(function (rings) {
+                const outer = rings && rings[0];
+                if (!Array.isArray(outer) || outer.length < 3) return;
+                stripJobs.push({
+                    ring: densifyRing(geoRingToLatLngs(outer), 20),
+                    top: STRUCTURE_SURFACE_TOP,
+                    color: '#3d3d3d',
+                    alpha: alpha
+                });
+            });
+        });
+
+        // Bare ground where a razed building stood: with the globe hidden, its carve hole would
+        // otherwise open into the void. Two hard-won rules: (1) the fill is CLIPPED out of every
+        // applied structure surface — the lawn IS the ground there, and an overlapping fill used
+        // to poke through the terrain-following lawn as angular soil patches wherever the local
+        // terrain dipped below the fill's height; (2) the remainder is itself terrain-following
+        // (a body, not an anchor-height flat), so a slope cannot lift it through the road above.
+        if (typeof window.collectCarveRecords === 'function'
+            && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+            try {
+                window.collectCarveRecords(proposalStorage.getAllProposals()).records.forEach(function (record) {
+                    if (record.remainder) return;
+                    if (String(record.id).indexOf('proposal:') === 0) return;
+                    const geometry = razedFootprintOutsideStructures(record.geometry);
+                    if (!geometry) return; // fully under a structure: its surface is the ground
+                    polygonsOf(geometry).forEach(function (rings) {
+                        const outer = rings && rings[0];
+                        if (!Array.isArray(outer) || outer.length < 3) return;
+                        stripJobs.push({
+                            ring: densifyRing(geoRingToLatLngs(outer), 12),
+                            top: 0.04,
+                            color: CLEARED_GROUND_COLOR,
+                            alpha: alpha
+                        });
+                    });
+                });
+            } catch (_) { }
+        }
+
         if (treePoints.length > MAX_PHOTOREAL_TREES) {
             console.warn('[photoreal] rendering ' + MAX_PHOTOREAL_TREES + ' of ' + treePoints.length
-                + ' corridor trees (entity budget)');
+                + ' trees (entity budget, corridors + parks)');
             treePoints = treePoints.slice(0, MAX_PHOTOREAL_TREES);
         }
         buildCorridorBodies(stripJobs, flatJobs, treePoints, alpha, token);
@@ -1132,6 +1350,16 @@
         document.body.classList.add('realistic-mode-active');
         const el = containerEl();
         if (el) el.classList.add('active'); // give the container size before creating the viewer
+        // Ported from the isochrone sim ("hidden until seated + cut + dressed"): the canvas stays
+        // invisible until the camera is aimed and the first tiles are in, so the first visible
+        // frame is the city — never a globe collapsing into place. visibility (not display)
+        // preserves layout, so the viewer sizes correctly and keeps rendering while hidden; the
+        // abstract 3D view stays on screen underneath meanwhile.
+        if (el) el.style.visibility = 'hidden';
+        const reveal = function () {
+            const c = containerEl();
+            if (c) c.style.visibility = '';
+        };
         // URL-driven entry frames the whole proposal; otherwise start from the abstract-3D vantage.
         const entryView = (options.frameProposal ? getProposalBboxView(options.pitchDeg) : null) || getEntryView();
         try {
@@ -1156,11 +1384,22 @@
             // Each box then settles onto the real ground in the background as tiles stream in, so the
             // proposal is visible immediately instead of after the ~10s mesh-height sampling.
             renderProposedBuildings();
-            await ensureTileset();
+            const ts = await ensureTileset();
             if (entryView) await applyEntryView(entryView); // fine-tune once the photoreal mesh is present
+            if (!ts || ts.tilesLoaded) {
+                reveal();
+            } else {
+                // First frames stream in shortly; 8 s is the give-up point so a slow connection
+                // still gets a (filling-in) view rather than a blank mode.
+                const revealTimer = setTimeout(reveal, 8000);
+                try {
+                    ts.initialTilesLoaded.addEventListener(function () { clearTimeout(revealTimer); reveal(); });
+                } catch (_) { clearTimeout(revealTimer); reveal(); }
+            }
             if (options.autoRotate && entryView) startAutoRotate(entryView);
             showRotateHint();
         } catch (err) {
+            reveal(); // never leave the mode invisible
             console.error('[photoreal] activation failed:', err);
             setStatus('Failed to load photorealistic 3D.');
         } finally {
@@ -1177,7 +1416,7 @@
         hideRotateHint();
         updateTileLoader(0, 0);
         const el = containerEl();
-        if (el) el.classList.remove('active');
+        if (el) { el.classList.remove('active'); el.style.visibility = ''; }
         document.body.classList.remove('realistic-mode-active');
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
