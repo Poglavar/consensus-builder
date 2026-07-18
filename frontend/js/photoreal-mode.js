@@ -1,8 +1,9 @@
 // Photorealistic 3D mode: overlays Google Photorealistic 3D Tiles (CesiumJS + Cesium ion)
-// on top of the existing 3D view, rendering the proposal's proposed buildings on real-world
-// context. Toggled from a button inside 3D mode. Cesium is lazy-loaded on first use so it
-// never affects initial page load. Kept loosely coupled to three-mode.js: it only reads the
-// shared `window.proposedBuildings` / `window.map` and watches the `three-mode-active` body class.
+// on top of the existing 3D view, rendering the proposal's proposed buildings and applied road
+// corridors on real-world context. Toggled from a button inside 3D mode. Cesium is lazy-loaded on
+// first use so it never affects initial page load. Kept loosely coupled to three-mode.js: it only
+// reads the shared `window.proposedBuildings` / `window.map` / proposal-store corridor helpers
+// (corridor-profile.js et al) and watches the `three-mode-active` body class.
 (function () {
     'use strict';
 
@@ -84,17 +85,43 @@
             return;
         }
         const polygons = [];
-        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
-        arr.forEach(function (feat) {
-            if (!feat || !feat.geometry) return;
-            polygonsOf(feat.geometry).forEach(function (rings) {
+        const pushClipRings = function (geometry) {
+            polygonsOf(geometry).forEach(function (rings) {
                 const outer = rings && rings[0];
                 if (!Array.isArray(outer) || outer.length < 3) return;
                 try {
                     polygons.push(new Cesium.ClippingPolygon({ positions: ringToCartesians(outer) }));
                 } catch (_) { }
             });
+        };
+        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        arr.forEach(function (feat) {
+            if (feat && feat.geometry) pushClipRings(feat.geometry);
         });
+        // Applied road corridors carve the mesh along their footprint, so the road replaces
+        // whatever stands on it. Tunnelled / grade-separated stretches keep the mesh above them:
+        // the surface-level footprint wins over the full outline when the definition carries one.
+        appliedCorridorProposals().forEach(function (proposal) {
+            const definition = window.corridorProposalDefinition(proposal);
+            if (definition) pushClipRings(definition.surfaceFootprint || definition.polygon);
+        });
+        // A building a proposal razes entirely can stick out past the footprint that razed it —
+        // carve its whole outline too, or its outer half would keep standing in the mesh. Cut
+        // records are skipped: their demolished part lies inside the corridor footprint already.
+        if (typeof window.collectCarveRecords === 'function'
+            && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+            try {
+                window.collectCarveRecords(proposalStorage.getAllProposals()).records.forEach(function (record) {
+                    if (record.remainder) return;
+                    // Demolished PROPOSED buildings are simply not rendered — only real buildings
+                    // exist in the photoreal mesh and need a hole cut for them.
+                    if (String(record.id).indexOf('proposal:') === 0) return;
+                    pushClipRings(record.geometry);
+                });
+            } catch (err) {
+                console.warn('[photoreal] demolition carve failed', err);
+            }
+        }
         try {
             googleTileset.clippingPolygons = polygons.length
                 ? new Cesium.ClippingPolygonCollection({ polygons: polygons })
@@ -294,9 +321,20 @@
             timeline: false, animation: false, baseLayerPicker: false,
             geocoder: false, homeButton: false, sceneModePicker: false,
             navigationHelpButton: false, infoBox: false, selectionIndicator: false,
-            fullscreenButton: false
+            fullscreenButton: false,
+            // Render only when something changed (camera moved, tiles arrived, entities
+            // edited) instead of every animation frame — the single biggest interaction
+            // speedup, same "skip work that recomputes nothing" idea as the isochrone
+            // photoreal sim. Cesium detects camera motion exactly, so zoom/pan/orbit
+            // still render every moving frame.
+            requestRenderMode: true,
+            maximumRenderTimeChange: Infinity
         });
         viewer.scene.globe.depthTestAgainstTerrain = true;
+        // Coarser terrain+imagery refinement: the globe is almost entirely hidden under the
+        // photoreal mesh — only the carved corridor floor shows it, and that is viewed at
+        // street scale where terrain detail is imagery-driven anyway.
+        viewer.scene.globe.maximumScreenSpaceError = 3;
         // No starfield / space backdrop — go straight to the city view while tiles stream.
         viewer.scene.skyBox.show = false;
         viewer.scene.sun.show = false;
@@ -317,11 +355,26 @@
         tilesetPromise = Cesium.createGooglePhotorealistic3DTileset()
             .then(function (ts) {
                 googleTileset = ts;
+                // Streaming settings ported from the zagreb-isochrone photoreal sim, where the
+                // same Google tileset zooms fluidly: a coarser screen-space-error target streams
+                // far fewer tiles per view (its errorTarget 24 vs the renderer default), dynamic
+                // SSE refines distant/oblique tiles even less, skipping intermediate LODs stops
+                // a zoom-in from downloading every level on the way down, and a bigger tile
+                // cache means zooming back out re-uses tiles instead of re-fetching them.
+                // ?prq=<n> mirrors the isochrone sim's ?rwq quality knob: lower = sharper but
+                // heavier (Cesium's default is 16), higher = lighter but blurrier.
+                const prq = Number(new URLSearchParams(window.location.search || '').get('prq'));
+                ts.maximumScreenSpaceError = (Number.isFinite(prq) && prq > 0) ? prq : 24;
+                ts.dynamicScreenSpaceError = true;
+                ts.skipLevelOfDetail = true;
+                ts.cacheBytes = 1024 * 1024 * 1024;
+                ts.maximumCacheOverflowBytes = 512 * 1024 * 1024;
                 viewer.scene.primitives.add(ts);
                 setStatus('');
                 applyBuiltDisplay();
                 applyCarving();
                 bindTileProgress(ts);
+                seatMeshToTerrain(ts);
                 return ts;
             })
             .catch(function (err) {
@@ -337,6 +390,7 @@
     // ---- proposed-building rendering (lng/lat footprints + height in metres -> extruded massing) ----
     function clearProposal() {
         if (!viewer) return;
+        corridorRenderToken++; // orphan any in-flight corridor terrain sampling
         proposalEntities.forEach(function (e) { viewer.entities.remove(e); });
         proposalEntities.length = 0;
     }
@@ -411,6 +465,501 @@
         }).catch(function () { /* keep the provisional base */ });
     }
 
+    // ---- applied road corridors (lane bodies + markings + junctions + trees on the carved floor) ----
+    //
+    // An applied road renders exactly the geometry the 2D map and abstract 3D draw — the strip /
+    // marking / junction / decoration builders in corridor-profile.js are the single source — but
+    // as real 3D bodies standing on the carved-out floor: each lane is its own prism whose top
+    // follows the sampled terrain, kerb lanes (sidewalk/verge/median) raised by their kerb height
+    // so an actual curb face shows, and every white line is a metre-wide quad at road height, so
+    // paint grows toward the camera the way real paint does (a pixel-width polyline is constant
+    // on screen, which reads exactly backwards in a street-level view). Terrain sampling is
+    // async: strips appear DRAPED on the floor instantly and the bodies land on top when the
+    // samples arrive — the draped layer STAYS as an undercoat, so where the rendered globe's
+    // coarser LOD bulges above the sampled heights, the bulge shows lane colour instead of bare
+    // ground poking through the road. Markings, junction patches and trees only exist in the
+    // sampled pass. Painted bike/pedestrian glyphs are skipped, as in 2D; rail sleepers likewise.
+    const CORRIDOR_BODY = {
+        road: 0.08,        // roadway surface above the carved floor (clears coarse-LOD terrain bumps)
+        markingLift: 0.04, // white paint above the surface it is painted on
+        junction: 0.15,    // junction asphalt patch — covers through-markings, as in 2D/3D
+        crosswalk: 0.17,
+        skirt: 1.5,        // lane bodies extrude this far below their lowest vertex (no slope gaps)
+        densifyStep: 12    // metres between added terrain samples along a strip edge
+    };
+    const MAX_PHOTOREAL_TREES = 600;
+    // Bumped on every corridor render AND every clear; a terrain-sampling pass that resolves
+    // after a newer render (or a clear) simply discards its result instead of resurrecting
+    // stale roads into the scene.
+    let corridorRenderToken = 0;
+
+    function appliedCorridorProposals() {
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return [];
+        if (typeof window.isAppliedCorridorProposal !== 'function' || typeof window.corridorProposalDefinition !== 'function') return [];
+        try {
+            return proposalStorage.getAllProposals().filter(window.isAppliedCorridorProposal);
+        } catch (_) { return []; }
+    }
+
+    // Same per-segment expansion as three-mode's buildCorridorStrips3D: each segment renders with
+    // ITS cross-section (segmentProfiles override), falling back to the whole-corridor profile.
+    function corridorRenderEntriesOf(definition) {
+        if (typeof corridorProfileOf !== 'function' || typeof corridorCenterlineOf !== 'function') return [];
+        const fallbackProfile = corridorProfileOf(definition);
+        const centerline = corridorCenterlineOf(definition);
+        if (!fallbackProfile || !centerline.length) return [];
+        const entries = ((typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [])
+            .filter(function (entry) { return Array.isArray(entry.points) && entry.points.length >= 2; })
+            .map(function (entry) { return entry.profile ? entry : { ...entry, profile: fallbackProfile }; });
+        return entries.length ? entries : centerline.map(function (points) { return { points: points, profile: fallbackProfile }; });
+    }
+
+    // The corridor builders return {lat,lng} points (Leaflet's shape), unlike the [lng,lat]
+    // GeoJSON rings buildings use — hence a second Cartesian converter.
+    function latLngsToCartesians(points) {
+        const flat = [];
+        points.forEach(function (p) { flat.push(p.lng, p.lat); });
+        return Cesium.Cartesian3.fromDegreesArray(flat);
+    }
+
+    // Draped lane undercoat: classified onto the terrain it hugs every terrain bump, which makes
+    // it both the instant stand-in while terrain sampling runs AND the permanent safety layer
+    // under the 3D body — a coarse-LOD bulge that pierces the body shows lane colour, not grass.
+    // TERRAIN only, deliberately: classifying on the mesh too painted the carve's vertical cut
+    // faces and boundary-straddling tree canopy in lane colours ("the road drapes over objects").
+    function addDrapedPolygon(ring, color, alpha) {
+        if (!Array.isArray(ring) || ring.length < 3) return;
+        try {
+            proposalEntities.push(viewer.entities.add({
+                polygon: {
+                    hierarchy: new Cesium.PolygonHierarchy(latLngsToCartesians(ring)),
+                    material: Cesium.Color.fromCssColorString(color).withAlpha(alpha),
+                    classificationType: Cesium.ClassificationType.TERRAIN
+                }
+            }));
+        } catch (_) { }
+    }
+
+    function corridorProjectionReady() {
+        return typeof window.wgs84ToHTRS96 === 'function' && typeof window.htrs96ToWGS84 === 'function';
+    }
+
+    function planarOf(point) { return wgs84ToHTRS96(point.lat, point.lng); }
+
+    function latLngOf(xy) {
+        const ll = htrs96ToWGS84(xy[0], xy[1]);
+        return { lat: ll[0], lng: ll[1] };
+    }
+
+    // Insert vertices along each edge of a strip ring so a long straight lane gets terrain
+    // samples mid-span — the ring's own vertices only sit at bends, and a body whose top is
+    // interpolated between two far-apart bends would ignore every dip in between.
+    function densifyRing(ring, stepM) {
+        if (!corridorProjectionReady()) return ring;
+        const out = [];
+        for (let i = 0; i < ring.length; i++) {
+            const a = ring[i];
+            const b = ring[(i + 1) % ring.length];
+            out.push(a);
+            const pa = planarOf(a), pb = planarOf(b);
+            const len = Math.hypot(pb[0] - pa[0], pb[1] - pa[1]);
+            const extra = Math.floor(len / stepM);
+            for (let k = 1; k <= extra; k++) {
+                const t = k / (extra + 1);
+                out.push(latLngOf([pa[0] + (pb[0] - pa[0]) * t, pa[1] + (pb[1] - pa[1]) * t]));
+            }
+        }
+        return out;
+    }
+
+    // A painted line (or a whole self-crossing strip) as world-space quads: one quad per
+    // centre-line edge between the two signed offsets, optionally chopped into `dash`
+    // ({on, off} metres) pieces. Dashes restart at each vertex — fine for near-straight roads.
+    function bandQuads(line, offsetLeft, offsetRight, dash) {
+        if (!corridorProjectionReady() || !Array.isArray(line) || line.length < 2) return [];
+        const pts = line.map(planarOf);
+        const quads = [];
+        const pushQuad = function (a, b) {
+            const dx = b[0] - a[0], dy = b[1] - a[1];
+            const len = Math.hypot(dx, dy);
+            if (len < 1e-6) return;
+            const nx = -dy / len, ny = dx / len; // left normal, same sign convention as offsetPolylinePlanar
+            quads.push([
+                latLngOf([a[0] + nx * offsetLeft, a[1] + ny * offsetLeft]),
+                latLngOf([b[0] + nx * offsetLeft, b[1] + ny * offsetLeft]),
+                latLngOf([b[0] + nx * offsetRight, b[1] + ny * offsetRight]),
+                latLngOf([a[0] + nx * offsetRight, a[1] + ny * offsetRight])
+            ]);
+        };
+        for (let i = 0; i < pts.length - 1; i++) {
+            const a = pts[i], b = pts[i + 1];
+            if (!dash) { pushQuad(a, b); continue; }
+            const dx = b[0] - a[0], dy = b[1] - a[1];
+            const len = Math.hypot(dx, dy);
+            if (len < 1e-6) continue;
+            const ux = dx / len, uy = dy / len;
+            for (let d = 0; d < len; d += dash.on + dash.off) {
+                const end = Math.min(d + dash.on, len);
+                pushQuad([a[0] + ux * d, a[1] + uy * d], [a[0] + ux * end, a[1] + uy * end]);
+            }
+        }
+        return quads;
+    }
+
+    // A flat strip whose ring crosses itself (a star, a loop, a hairpin) floods when triangulated —
+    // the same failure earcut has in three-mode, with the same cure: lay the band per centre-line
+    // edge instead (bandQuads over the full strip width).
+    function stripRingSelfIntersects(polygon) {
+        if (typeof window.ringSelfIntersectsXY !== 'function' || typeof window.wgs84ToHTRS96 !== 'function') return false;
+        try {
+            return window.ringSelfIntersectsXY(polygon.map(planarOf));
+        } catch (_) { return false; }
+    }
+
+    // Deterministic per-tree size — the same hash three-mode instances its trees with, so a tree
+    // is the same height in the abstract and photoreal views.
+    function treeRandom(lng, lat) {
+        let h = Math.imul(((lng * 1e6) | 0) ^ 0x9e3779b9, 0x85ebca6b);
+        h ^= Math.imul(((lat * 1e6) | 0) ^ 0x165667b1, 0xc2b2ae35);
+        h = (h ^ (h >>> 15)) >>> 0;
+        return (h % 100000) / 100000;
+    }
+
+    // Trunk + crown per tree at ABSOLUTE heights from the same terrain batch as the lane bodies.
+    // Height-reference clamping was tried first and floated every tree at the height of the
+    // clipped-away Google mesh — clipping is a shader effect, the clipped geometry still answers
+    // the clamping height query — so trees place themselves off our own terrain samples instead.
+    function addCorridorTrees(treePoints, alpha) {
+        if (!treePoints.length || !viewer) return;
+        const trunkColor = Cesium.Color.fromCssColorString('#5c3d1e').withAlpha(alpha);
+        const crownColor = Cesium.Color.fromCssColorString('#3a6b35').withAlpha(alpha);
+        treePoints.forEach(function (item) {
+            const random = treeRandom(item.lng, item.lat);
+            const totalHeight = 5 + random * 3;
+            const trunkHeight = totalHeight * 0.48;
+            const crownRadius = totalHeight * 0.2 + 0.4;
+            // Trees stand on their lane's surface (a verge is a raised body), not on the raw floor.
+            const base = (Number(item.groundHeight) || 0) + (Number(item.surfaceOffset) || 0);
+            try {
+                proposalEntities.push(viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight / 2),
+                    cylinder: {
+                        length: trunkHeight, topRadius: 0.12, bottomRadius: 0.18, slices: 8,
+                        material: trunkColor
+                    }
+                }));
+                proposalEntities.push(viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(item.lng, item.lat, base + trunkHeight + crownRadius * 0.65),
+                    ellipsoid: {
+                        radii: new Cesium.Cartesian3(crownRadius, crownRadius, crownRadius * 1.15),
+                        slicePartitions: 8, stackPartitions: 6,
+                        material: crownColor
+                    }
+                }));
+            } catch (_) { }
+        });
+    }
+
+    function collectJunctionFlats(junctions, flatJobs, alpha, markingAlpha) {
+        const asphalt = (typeof CORRIDOR_LANE_TYPES !== 'undefined'
+            && CORRIDOR_LANE_TYPES.driving && CORRIDOR_LANE_TYPES.driving.surface) || '#2b2b2b';
+        (junctions || []).forEach(function (junction) {
+            (junction.surfacePolygons || []).forEach(function (polygon) {
+                flatJobs.push({ ring: polygon, top: CORRIDOR_BODY.junction, color: asphalt, alpha: alpha });
+            });
+            (junction.crosswalkPolygons || []).forEach(function (polygon) {
+                flatJobs.push({ ring: polygon, top: CORRIDOR_BODY.crosswalk, color: '#ffffff', alpha: markingAlpha });
+            });
+        });
+    }
+
+    // Add the terrain-following bodies over the draped undercoat. One batched most-detailed
+    // terrain query covers every strip vertex, one anchor per small flat object (a dash or a
+    // patch spans a couple of metres — one height is plenty), and one point per tree. A strip
+    // whose samples fail keeps just its undercoat; a failed whole query keeps every road draped
+    // (still correct from above) and roots the trees at the entry ground height.
+    function buildCorridorBodies(stripJobs, flatJobs, treeJobs, treeAlpha, token) {
+        if (!viewer || (!stripJobs.length && !flatJobs.length && !treeJobs.length)) return;
+        const treesAtEntryGround = function () {
+            treeJobs.forEach(function (item) { item.groundHeight = lastGroundHeight; });
+            addCorridorTrees(treeJobs, treeAlpha);
+        };
+        if (!viewer.terrainProvider || viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) {
+            treesAtEntryGround();
+            return;
+        }
+        const cartos = [];
+        stripJobs.forEach(function (job) {
+            job.ring.forEach(function (p) { cartos.push(Cesium.Cartographic.fromDegrees(p.lng, p.lat)); });
+        });
+        flatJobs.forEach(function (job) {
+            const anchor = job.ring[0];
+            cartos.push(Cesium.Cartographic.fromDegrees(anchor.lng, anchor.lat));
+        });
+        treeJobs.forEach(function (item) {
+            cartos.push(Cesium.Cartographic.fromDegrees(item.lng, item.lat));
+        });
+        Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartos).then(function (sampled) {
+            if (token !== corridorRenderToken || !viewer) return; // a newer render owns the scene now
+            let cursor = 0;
+            stripJobs.forEach(function (job) {
+                const samples = sampled.slice(cursor, cursor + job.ring.length);
+                cursor += job.ring.length;
+                let minH = Infinity;
+                const heights = samples.map(function (s) {
+                    const h = (s && isFinite(s.height)) ? s.height : null;
+                    if (h !== null && h < minH) minH = h;
+                    return h;
+                });
+                if (!isFinite(minH)) return; // no usable samples: the undercoat alone shows this strip
+                const positions = job.ring.map(function (p, i) {
+                    return Cesium.Cartesian3.fromDegrees(p.lng, p.lat, (heights[i] !== null ? heights[i] : minH) + job.top);
+                });
+                try {
+                    proposalEntities.push(viewer.entities.add({
+                        polygon: {
+                            hierarchy: new Cesium.PolygonHierarchy(positions),
+                            perPositionHeight: true,
+                            extrudedHeight: minH - CORRIDOR_BODY.skirt,
+                            material: Cesium.Color.fromCssColorString(job.color).withAlpha(job.alpha)
+                        }
+                    }));
+                } catch (_) { }
+            });
+            flatJobs.forEach(function (job) {
+                const s = sampled[cursor++];
+                const h = (s && isFinite(s.height)) ? s.height : lastGroundHeight;
+                try {
+                    proposalEntities.push(viewer.entities.add({
+                        polygon: {
+                            hierarchy: new Cesium.PolygonHierarchy(latLngsToCartesians(job.ring)),
+                            height: h + job.top,
+                            material: Cesium.Color.fromCssColorString(job.color).withAlpha(job.alpha)
+                        }
+                    }));
+                } catch (_) { }
+            });
+            treeJobs.forEach(function (item) {
+                const s = sampled[cursor++];
+                item.groundHeight = (s && isFinite(s.height)) ? s.height : lastGroundHeight;
+            });
+            addCorridorTrees(treeJobs, treeAlpha);
+        }).catch(function (err) {
+            console.warn('[photoreal] corridor terrain sampling failed — roads stay draped', err);
+            if (token === corridorRenderToken && viewer) treesAtEntryGround();
+        });
+    }
+
+    // Seat the Google mesh onto the globe. The photogrammetric mesh and Cesium World Terrain can
+    // disagree vertically by metres (the mesh street sat ~4-5 m below the terrain the corridor
+    // stands on, so the road read as a causeway towering over the real ground). Same idea as the
+    // isochrone sim's lockTrackHeightOnce: measure terrain-minus-mesh along the corridor
+    // centreline — height queries ignore the carve clipping, so the ORIGINAL street surface
+    // still answers — take the median, and shift the whole tileset rigidly to close the gap.
+    // Our geometry is terrain-based and does not move, so nothing re-renders.
+    let meshSeated = false;
+    let meshSeatingInFlight = false;
+    function seatMeshToTerrain(ts) {
+        if (!viewer || !ts || meshSeated || meshSeatingInFlight) return;
+        if (typeof samplePolylinePlanar !== 'function' || !corridorProjectionReady()) return;
+        if (!viewer.scene.sampleHeightSupported) { meshSeated = true; return; }
+        if (!viewer.terrainProvider || viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) return;
+        const pts = [];
+        appliedCorridorProposals().forEach(function (proposal) {
+            const definition = window.corridorProposalDefinition(proposal);
+            corridorRenderEntriesOf(definition).forEach(function (entry) {
+                samplePolylinePlanar(entry.points.map(planarOf), 25).forEach(function (sample) {
+                    if (pts.length < 60) pts.push(latLngOf(sample.point));
+                });
+            });
+        });
+        if (!pts.length) return;
+        meshSeatingInFlight = true;
+        // The carve clips the mesh exactly where the measurement wants to touch it, and — unlike
+        // the height-reference queries that floated the trees — sampleHeight DOES respect the
+        // clipping. Lift the clip for the duration of the measurement; the sampling passes render
+        // offscreen, so with requestRenderMode on, the visible frame never shows the un-carved
+        // mesh. applyCarving() afterwards restores the canonical clip state either way.
+        try { ts.clippingPolygons = undefined; } catch (_) { }
+        const toCartos = function () {
+            return pts.map(function (p) { return Cesium.Cartographic.fromDegrees(p.lng, p.lat); });
+        };
+        Promise.all([
+            Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, toCartos()),
+            viewer.scene.sampleHeightMostDetailed(toCartos(), proposalEntities.slice())
+        ]).then(function (results) {
+            meshSeatingInFlight = false;
+            applyCarving();
+            if (!viewer || !googleTileset) return;
+            const deltas = [];
+            for (let i = 0; i < pts.length; i++) {
+                const t = results[0][i], m = results[1][i];
+                if (t && m && isFinite(t.height) && isFinite(m.height)) deltas.push(t.height - m.height);
+            }
+            if (deltas.length < 3) {
+                console.warn('[photoreal] mesh seating inconclusive: ' + deltas.length + '/' + pts.length
+                    + ' usable samples — will retry on the next corridor render');
+                return;
+            }
+            meshSeated = true;
+            deltas.sort(function (a, b) { return a - b; });
+            const median = deltas[Math.floor(deltas.length / 2)];
+            // Parked cars and tree canopy in the mesh only ever bias a sample HIGH (the mesh
+            // answers with a roof, never with a basement), which biases its delta LOW — so the
+            // true-ground answer sits in the upper part of the distribution: lean on p75. But
+            // cap the correction at +2 m over the median (a car's height): the tail also holds
+            // outright garbage samples (an interior surface under dense canopy), and a raw p75
+            // once chased one past the far-earth guard, cancelling the entire shift.
+            const p75 = deltas[Math.min(deltas.length - 1, Math.floor(deltas.length * 0.75))];
+            const delta = Math.min(p75, median + 2);
+            console.log('[photoreal] mesh seating: terrain-minus-mesh median ' + median.toFixed(2)
+                + ' m / p75 ' + p75.toFixed(2) + ' m -> shifting by ' + delta.toFixed(2)
+                + ' m (' + deltas.length + ' samples)');
+            // Far-earth trap from the isochrone sim: one nonsense measure must not launch the
+            // city into orbit. A sub-half-metre offset is not worth a visible shift either.
+            if (!isFinite(delta) || Math.abs(delta) > 25 || Math.abs(delta) < 0.5) return;
+            const up = Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(
+                Cesium.Cartesian3.fromDegrees(pts[0].lng, pts[0].lat), new Cesium.Cartesian3());
+            googleTileset.modelMatrix = Cesium.Matrix4.fromTranslation(
+                Cesium.Cartesian3.multiplyByScalar(up, delta, new Cesium.Cartesian3()));
+            try { viewer.scene.requestRender(); } catch (_) { }
+            console.log('[photoreal] seated Google mesh onto terrain: shifted ' + delta.toFixed(2) + ' m');
+        }).catch(function (err) {
+            meshSeatingInFlight = false;
+            applyCarving();
+            console.warn('[photoreal] mesh seating failed', err);
+        });
+    }
+
+    function renderCorridors() {
+        if (!viewer || plannedDisplay === 'off') return;
+        if (typeof buildCorridorStrips !== 'function') return;
+        const token = ++corridorRenderToken;
+        const alpha = plannedDisplay === 'ghost' ? 0.35 : 0.85;
+        const markingAlpha = plannedDisplay === 'ghost' ? 0.4 : 0.95;
+        const stripJobs = []; // long lane bodies: per-vertex terrain heights
+        const flatJobs = [];  // small flats (dashes, bays, arrows, rails, junction patches): one height each
+        const crossJunctionInput = [];
+        let treePoints = [];
+        appliedCorridorProposals().forEach(function (proposal) {
+            try {
+                const definition = window.corridorProposalDefinition(proposal);
+                const entries = corridorRenderEntriesOf(definition);
+                entries.forEach(function (entry) {
+                    const spans = (typeof corridorStripSpans === 'function') ? corridorStripSpans(entry.profile) : [];
+                    buildCorridorStrips([entry.points], entry.profile).forEach(function (strip) {
+                        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                        const color = lane.surface || '#2b2b2b';
+                        // The lane's kerb height is what lifts a sidewalk/verge body above the
+                        // roadway — the visible curb face is the side wall of that taller prism.
+                        const top = CORRIDOR_BODY.road + (Number(lane.height) || 0);
+                        strip.polygons.forEach(function (polygon) {
+                            if (stripRingSelfIntersects(polygon)) {
+                                bandQuads(entry.points, strip.left, strip.right, null).forEach(function (quad) {
+                                    flatJobs.push({ ring: quad, top: top, color: color, alpha: alpha });
+                                });
+                                return;
+                            }
+                            addDrapedPolygon(polygon, color, alpha); // instant visibility + permanent undercoat
+                            stripJobs.push({
+                                ring: densifyRing(polygon, CORRIDOR_BODY.densifyStep),
+                                top: top,
+                                color: color,
+                                alpha: alpha
+                            });
+                        });
+                        // A rail lane draws its pair of rails on the lane's own centre at the
+                        // lane's gauge — the same rule the 2D canvas renderer applies.
+                        if (strip.type === 'rail' && typeof buildCorridorOffsetLine === 'function') {
+                            const center = (strip.left + strip.right) / 2;
+                            const gauge = (typeof corridorRailGaugeOf === 'function' ? corridorRailGaugeOf(strip) : null) || 1435;
+                            const half = gauge / 2000; // mm -> m, half the gauge each side of the track centre
+                            [center + half, center - half].forEach(function (offset) {
+                                const line = buildCorridorOffsetLine(entry.points, offset);
+                                if (!line) return;
+                                bandQuads(line, 0.05, -0.05, null).forEach(function (quad) {
+                                    flatJobs.push({ ring: quad, top: top + CORRIDOR_BODY.markingLift, color: '#000000', alpha: markingAlpha });
+                                });
+                            });
+                        }
+                    });
+
+                    // White paint: lane separators (dashed; the opposing-flow divide heavier),
+                    // parking-bay edges + dividers, and direction arrows — from the same builders
+                    // as 2D/3D, laid as metre-wide quads just above the roadway surface. Same
+                    // half-widths and dash rhythms as three-mode's flat paint ribbons.
+                    const paintTop = CORRIDOR_BODY.road + CORRIDOR_BODY.markingLift;
+                    const markings = (typeof buildCorridorLaneMarkings === 'function')
+                        ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
+                    markings.forEach(function (marking) {
+                        const isCenterline = marking.kind === 'centerline';
+                        const half = isCenterline ? 0.09 : 0.075;
+                        const dash = isCenterline ? { on: 3, off: 2.5 } : { on: 1.5, off: 2.5 };
+                        (marking.lines || []).forEach(function (line) {
+                            bandQuads(line, half, -half, dash).forEach(function (quad) {
+                                flatJobs.push({ ring: quad, top: paintTop, color: '#f4f4f4', alpha: markingAlpha });
+                            });
+                        });
+                    });
+                    const bays = (typeof buildCorridorParkingBays === 'function')
+                        ? buildCorridorParkingBays([entry.points], entry.profile) : [];
+                    bays.forEach(function (bay) {
+                        const half = bay.kind === 'edge' ? 0.075 : 0.06;
+                        bandQuads(bay.line, half, -half, null).forEach(function (quad) {
+                            flatJobs.push({ ring: quad, top: paintTop, color: '#f4f4f4', alpha: markingAlpha });
+                        });
+                    });
+                    const arrows = (typeof buildCorridorDirectionArrows === 'function')
+                        ? buildCorridorDirectionArrows([entry.points], entry.profile) : [];
+                    arrows.forEach(function (ring) {
+                        flatJobs.push({ ring: ring, top: paintTop, color: '#f4f4f4', alpha: markingAlpha });
+                    });
+
+                    const decorations = (typeof buildCorridorDecorations === 'function')
+                        ? buildCorridorDecorations([entry.points], entry.profile) : [];
+                    decorations.forEach(function (item) {
+                        if (item.kind !== 'tree') return;
+                        const span = spans[item.stripIndex];
+                        const spanLane = (span && typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[span.type]) || {};
+                        item.surfaceOffset = CORRIDOR_BODY.road + (Number(spanLane.height) || 0);
+                        treePoints.push(item);
+                    });
+
+                    crossJunctionInput.push({
+                        centerline: [entry.points],
+                        profile: entry.profile,
+                        corridorId: String(proposal.proposalId !== undefined ? proposal.proposalId : (proposal.id || ''))
+                    });
+                });
+                const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
+                    ? buildCorridorJunctionTreatmentsForEntries(entries) : [];
+                collectJunctionFlats(junctions, flatJobs, alpha, markingAlpha);
+            } catch (err) {
+                // One corrupt road must not cost every other road its asphalt (2D/3D isolate the same way).
+                console.error('[photoreal] corridor render failed for proposal', proposal && proposal.proposalId, err);
+            }
+        });
+
+        // Intersections BETWEEN different applied roads get the same asphalt + zebra treatment.
+        if (typeof buildCrossCorridorJunctionTreatments === 'function'
+            && new Set(crossJunctionInput.map(function (c) { return c.corridorId; })).size >= 2) {
+            try {
+                collectJunctionFlats(buildCrossCorridorJunctionTreatments(crossJunctionInput), flatJobs, alpha, markingAlpha);
+            } catch (err) {
+                console.warn('[photoreal] cross-corridor junctions failed', err);
+            }
+        }
+
+        if (treePoints.length > MAX_PHOTOREAL_TREES) {
+            console.warn('[photoreal] rendering ' + MAX_PHOTOREAL_TREES + ' of ' + treePoints.length
+                + ' corridor trees (entity budget)');
+            treePoints = treePoints.slice(0, MAX_PHOTOREAL_TREES);
+        }
+        buildCorridorBodies(stripJobs, flatJobs, treePoints, alpha, token);
+        // A corridor applied after the tileset loaded still wants the mesh seated to it.
+        if (googleTileset) seatMeshToTerrain(googleTileset);
+    }
+
     function renderProposedBuildings() {
         if (!viewer) return;
         clearProposal();
@@ -461,18 +1010,31 @@
                 refineBase(ent, outer, hM);
             }
         }
+        renderCorridors();
         applyCarving();
     }
 
     // ---- camera: open from the exact legacy-3D vantage point, no fly-in animation ----
+    // Everything the proposal puts on the map, as GeoJSON features for bbox framing: proposed
+    // buildings plus applied corridor footprints (a road-only proposal must still frame its road).
+    function proposalBboxFeatures() {
+        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        const feats = arr.filter(function (f) { return f && f.geometry; });
+        appliedCorridorProposals().forEach(function (proposal) {
+            const definition = window.corridorProposalDefinition(proposal);
+            const polygon = definition && (definition.surfaceFootprint || definition.polygon);
+            if (polygon && polygon.type) feats.push({ type: 'Feature', properties: {}, geometry: polygon });
+        });
+        return feats;
+    }
+
     // Read the current Three.js 3D camera (target lng/lat, heading, pitch, range) so the photoreal
     // view starts where the user already is. Falls back to the proposal bbox, then the Leaflet view.
     function getEntryView() {
         const v = (typeof window.getThree3DGeoView === 'function') ? window.getThree3DGeoView() : null;
         if (v) return v;
         // Fallback A: frame the proposal bounding box.
-        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
-        const feats = arr.filter(function (f) { return f && f.geometry; });
+        const feats = proposalBboxFeatures();
         if (feats.length && typeof turf !== 'undefined' && turf) {
             try {
                 const bbox = turf.bbox(turf.featureCollection(feats));
@@ -531,6 +1093,8 @@
             heading = (heading + 0.08) % 360; // ~gentle spin
             viewer.camera.lookAt(target, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(heading), v.pitchRad, v.range));
             viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+            // Under requestRenderMode each orbited frame must schedule the next one.
+            viewer.scene.requestRender();
         });
         try {
             const canvas = viewer.canvas;
@@ -545,8 +1109,7 @@
     // camera encompasses the entire proposal and then tilts to show the 3D — independent of wherever
     // the abstract-3D camera happened to be).
     function getProposalBboxView(pitchDeg) {
-        const arr = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
-        const feats = arr.filter(function (f) { return f && f.geometry; });
+        const feats = proposalBboxFeatures();
         if (!feats.length || typeof turf === 'undefined' || !turf) return null;
         try {
             const bbox = turf.bbox(turf.featureCollection(feats));
