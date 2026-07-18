@@ -473,8 +473,13 @@
         lastFrameNow = now;
         const camera = internals.camera;
         const renderer = internals.renderer;
-        // Vicinity-only rendering: cap how far the frustum reaches while the mesh is up.
-        const farClamp = FAR_CLAMP_TRUE_M * mercatorK;
+        // Vicinity-only rendering: cap how far the frustum reaches while the mesh is up — but
+        // NEVER below the orbit distance itself. A URL entry framing a whole plan sits ~3 km
+        // out; clamping under that culled the entire world (and, because tiles outside the
+        // frustum are never streamed, the seating raycast had nothing to hit): solid sky.
+        const target = internals.controls && internals.controls.target;
+        const orbitDist = target ? camera.position.distanceTo(target) : 0;
+        const farClamp = Math.max(FAR_CLAMP_TRUE_M * mercatorK, orbitDist * 2.5);
         if (camera.far > farClamp) {
             camera.far = farClamp;
             if (camera.near >= camera.far) camera.near = Math.max(0.5, camera.far / 10000);
