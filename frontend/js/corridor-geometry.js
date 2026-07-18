@@ -116,8 +116,10 @@
         return { lat: a1.lat + t * d1y, lng: a1.lng + t * d1x };
     }
 
-    // Wherever two centerline segments cross, both get a vertex at the crossing point. That makes
-    // junctions real graph nodes: draggable, bulldozable, and honest for connectivity checks.
+    // Wherever two centerline edges cross, both get a vertex at the crossing point. Edges in the
+    // SAME polyline must be compared too: a five-point star drawn in one stroke is one array, but its
+    // crossings are just as real as crossings between separate strokes. The old i+1 loop silently
+    // skipped that whole class of junctions, leaving one self-crossing strip that 3D could not mesh.
     function insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys = null) {
         const EPS = 1e-7;
         const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
@@ -134,35 +136,232 @@
             changed = false;
             outer:
             for (let i = 0; i < segments.length; i += 1) {
-                for (let j = i + 1; j < segments.length; j += 1) {
+                for (let j = i; j < segments.length; j += 1) {
                     const A = segments[i];
                     const B = segments[j];
                     for (let ai = 0; ai < A.length - 1; ai += 1) {
-                        for (let bi = 0; bi < B.length - 1; bi += 1) {
+                        // Within one polyline, adjacent edges already share their ordinary vertex.
+                        // Start two edges later and also skip the first/last pair of a closed loop:
+                        // those are neighbours across the array seam, not a self-intersection.
+                        const firstBi = i === j ? ai + 2 : 0;
+                        for (let bi = firstBi; bi < B.length - 1; bi += 1) {
+                            if (i === j && ai === 0 && bi === B.length - 2 && near(B[0], B[B.length - 1])) {
+                                continue;
+                            }
                             const x = planarSegmentIntersection(A[ai], A[ai + 1], B[bi], B[bi + 1]);
                             if (!x) continue;
-                            let inserted = false;
+                            const insertA = !near(x, A[ai]) && !near(x, A[ai + 1])
+                                && !isProtectedEdge(A[ai], A[ai + 1]);
+                            const insertB = !near(x, B[bi]) && !near(x, B[bi + 1])
+                                && !isProtectedEdge(B[bi], B[bi + 1]);
+                            if (!insertA && !insertB) continue;
+
                             // Inserting the crossing vertex does NOT change what the segment IS —
                             // the id must survive, because per-segment cross-section overrides are
                             // keyed by it. (Nulling it here orphaned every absorbed road's profile
                             // at the junction step, repainting merges with the newest profile.)
-                            if (!near(x, A[ai]) && !near(x, A[ai + 1]) && !isProtectedEdge(A[ai], A[ai + 1])) {
-                                A.splice(ai + 1, 0, { lat: x.lat, lng: x.lng });
-                                inserted = true;
+                            if (A === B) {
+                                // Both insertions target one array. Apply the later splice first so
+                                // the earlier edge index cannot move underneath us.
+                                const insertions = [];
+                                if (insertA) insertions.push(ai + 1);
+                                if (insertB) insertions.push(bi + 1);
+                                insertions.sort((a, b) => b - a).forEach(index => {
+                                    A.splice(index, 0, { lat: x.lat, lng: x.lng });
+                                });
+                            } else {
+                                if (insertA) A.splice(ai + 1, 0, { lat: x.lat, lng: x.lng });
+                                if (insertB) B.splice(bi + 1, 0, { lat: x.lat, lng: x.lng });
                             }
-                            if (!near(x, B[bi]) && !near(x, B[bi + 1]) && !isProtectedEdge(B[bi], B[bi + 1])) {
-                                B.splice(bi + 1, 0, { lat: x.lat, lng: x.lng });
-                                inserted = true;
-                            }
-                            if (inserted) {
-                                changed = true;
-                                break outer;
-                            }
+                            changed = true;
+                            break outer;
                         }
                     }
                 }
             }
         }
+    }
+
+    const CORRIDOR_NODE_EPS = 1e-7;
+
+    function corridorNodeKey(point) {
+        if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return '';
+        return `${Math.round(point.lat / CORRIDOR_NODE_EPS)},${Math.round(point.lng / CORRIDOR_NODE_EPS)}`;
+    }
+
+    function corridorPointsNear(a, b) {
+        return !!a && !!b
+            && Math.abs(a.lat - b.lat) < CORRIDOR_NODE_EPS
+            && Math.abs(a.lng - b.lng) < CORRIDOR_NODE_EPS;
+    }
+
+    function corridorPieceHasLength(points) {
+        if (!Array.isArray(points) || points.length < 2) return false;
+        return points.slice(1).some(point => !corridorPointsNear(point, points[0]));
+    }
+
+    // Once a self-crossing has two copies of the same junction vertex along one polyline, split the
+    // traversal at those copies. The result is the actual graph: simple stretches whose endpoints
+    // share junction coordinates. Keeping the self-crossing traversal as one strip is not merely a
+    // rendering issue — it gives the editor no graph node and hands triangulation an invalid bowtie.
+    //
+    // `segmentProfiles` is mutated deliberately. A split stretch gets a stable derived id and a clone
+    // of the source override, so graph normalization cannot repaint part of a mixed-width network.
+    function splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles = null) {
+        if (!Array.isArray(segments)) return { segments: [], segmentIds: [] };
+        const ids = Array.isArray(segmentIds) ? segmentIds : [];
+        const usedIds = new Set(ids.filter(id => id !== null && id !== undefined).map(String));
+        const outSegments = [];
+        const outIds = [];
+
+        const cloneProfile = (sourceId, targetId) => {
+            if (!segmentProfiles || sourceId === null || sourceId === undefined || targetId === null || targetId === undefined) return;
+            const source = segmentProfiles[String(sourceId)];
+            if (!source) return;
+            try { segmentProfiles[String(targetId)] = JSON.parse(JSON.stringify(source)); }
+            catch (_) { segmentProfiles[String(targetId)] = source; }
+        };
+        const derivedId = (sourceId, partNumber) => {
+            const base = sourceId !== null && sourceId !== undefined && String(sourceId)
+                ? `${String(sourceId)}~${partNumber}`
+                : `split~${partNumber}`;
+            let candidate = base;
+            let suffix = 2;
+            while (usedIds.has(candidate)) candidate = `${base}~${suffix++}`;
+            usedIds.add(candidate);
+            return candidate;
+        };
+
+        const appendPieces = (pieces, sourceId) => {
+            let partNumber = 1;
+            pieces.filter(corridorPieceHasLength).forEach(piece => {
+                const id = partNumber === 1 ? (sourceId ?? null) : derivedId(sourceId, partNumber);
+                if (partNumber > 1) cloneProfile(sourceId, id);
+                outSegments.push(piece);
+                outIds.push(id);
+                partNumber += 1;
+            });
+        };
+
+        segments.forEach((rawSegment, segmentIndex) => {
+            if (!Array.isArray(rawSegment) || rawSegment.length < 2) return;
+            const sourceId = ids[segmentIndex] ?? null;
+            const closed = rawSegment.length > 2 && corridorPointsNear(rawSegment[0], rawSegment[rawSegment.length - 1]);
+            const base = (closed ? rawSegment.slice(0, -1) : rawSegment.slice())
+                .filter(point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng));
+            if (base.length < 2) return;
+
+            const occurrences = new Map();
+            const representatives = new Map();
+            base.forEach((point, index) => {
+                const key = corridorNodeKey(point);
+                if (!key) return;
+                if (!occurrences.has(key)) occurrences.set(key, []);
+                occurrences.get(key).push(index);
+                if (!representatives.has(key)) representatives.set(key, point);
+            });
+            const junctionKeys = new Set(
+                [...occurrences.entries()].filter(([, indexes]) => indexes.length > 1).map(([key]) => key)
+            );
+
+            // A simple closed loop repeats only its seam in rawSegment; it was removed from `base`,
+            // so no junction key remains and the established annulus representation stays intact.
+            if (!junctionKeys.size) {
+                outSegments.push(rawSegment);
+                outIds.push(sourceId);
+                return;
+            }
+
+            // Every occurrence of one graph node must be byte-for-byte identical. This also heals
+            // old near-equal vertices (within the same 1e-7 tolerance every consumer already uses).
+            const normalized = base.map(point => {
+                const representative = representatives.get(corridorNodeKey(point));
+                return representative ? { lat: representative.lat, lng: representative.lng } : { lat: point.lat, lng: point.lng };
+            });
+            const pieces = [];
+
+            if (closed) {
+                const startIndex = normalized.findIndex(point => junctionKeys.has(corridorNodeKey(point)));
+                const rotated = normalized.slice(startIndex).concat(normalized.slice(0, startIndex));
+                rotated.push({ ...rotated[0] });
+                let piece = [rotated[0]];
+                for (let index = 1; index < rotated.length; index += 1) {
+                    const point = rotated[index];
+                    piece.push(point);
+                    if (junctionKeys.has(corridorNodeKey(point))) {
+                        if (corridorPieceHasLength(piece)) pieces.push(piece);
+                        piece = [point];
+                    }
+                }
+            } else {
+                let piece = [normalized[0]];
+                for (let index = 1; index < normalized.length; index += 1) {
+                    const point = normalized[index];
+                    piece.push(point);
+                    if (junctionKeys.has(corridorNodeKey(point))) {
+                        if (corridorPieceHasLength(piece)) pieces.push(piece);
+                        piece = [point];
+                    }
+                }
+                if (corridorPieceHasLength(piece)) pieces.push(piece);
+            }
+
+            appendPieces(pieces, sourceId);
+        });
+
+        segments.splice(0, segments.length, ...outSegments);
+        if (Array.isArray(segmentIds)) segmentIds.splice(0, segmentIds.length, ...outIds);
+        return { segments, segmentIds: Array.isArray(segmentIds) ? segmentIds : outIds };
+    }
+
+    // The one canonical topology boundary for a corridor centerline. Geometry enters as user/import
+    // strokes and leaves as a graph suitable for node editing, junction detection, and 3D meshing.
+    function normalizeCorridorGraph(segments, segmentIds, protectedEdgeKeys = null, segmentProfiles = null) {
+        insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys);
+        return splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles);
+    }
+
+    // Normalize a stored definition without touching its footprint. Splitting a centerline at its
+    // own crossings changes only array topology — every physical edge stays exactly where it was —
+    // so an already-applied local proposal can be upgraded without unapply/reapply parcel churn.
+    function normalizeCorridorDefinitionTopology(definition) {
+        if (!definition || typeof definition !== 'object') return false;
+        const raw = (Array.isArray(definition.points) && definition.points.length)
+            ? definition.points
+            : (Array.isArray(definition.segments) ? definition.segments : null);
+        if (!raw || !raw.length) return false;
+
+        const toPoint = point => {
+            if (!point) return null;
+            const lat = Number(point.lat !== undefined ? point.lat : (Array.isArray(point) ? point[1] : NaN));
+            const lng = Number(point.lng !== undefined ? point.lng : (Array.isArray(point) ? point[0] : NaN));
+            return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+        };
+        const nested = Array.isArray(raw[0]);
+        const segments = (nested ? raw : [raw])
+            .map(segment => (Array.isArray(segment) ? segment.map(toPoint).filter(Boolean) : []))
+            .filter(segment => segment.length >= 2);
+        if (!segments.length) return false;
+
+        const segmentIds = segments.map((_, index) => (
+            Array.isArray(definition.segmentIds) && definition.segmentIds[index] !== undefined
+                ? definition.segmentIds[index]
+                : null
+        ));
+        const before = JSON.stringify({ segments, segmentIds, segmentProfiles: definition.segmentProfiles || null });
+        const protectedEdges = new Set(
+            (Array.isArray(definition.tunnels) ? definition.tunnels : [])
+                .map(record => record?.edgeKey)
+                .filter(Boolean)
+        );
+        normalizeCorridorGraph(segments, segmentIds, protectedEdges, definition.segmentProfiles || null);
+        const after = JSON.stringify({ segments, segmentIds, segmentProfiles: definition.segmentProfiles || null });
+        if (before === after) return false;
+
+        definition.points = segments;
+        definition.segments = segments;
+        definition.segmentIds = segmentIds;
+        return true;
     }
 
     // Connected components of a segment set: segments sharing any coincident vertex belong to one
@@ -864,6 +1063,9 @@
         pickSnapTarget,
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
+        splitCorridorSelfJunctions,
+        normalizeCorridorGraph,
+        normalizeCorridorDefinitionTopology,
         healNearMissJunctions,
         weldNearbyVertices,
         corridorConnectedComponents,
@@ -881,6 +1083,9 @@
         window.createRectangularRoadSegment = createRectangularRoadSegment;
         window.planarSegmentIntersection = planarSegmentIntersection;
         window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
+        window.splitCorridorSelfJunctions = splitCorridorSelfJunctions;
+        window.normalizeCorridorGraph = normalizeCorridorGraph;
+        window.normalizeCorridorDefinitionTopology = normalizeCorridorDefinitionTopology;
         window.healNearMissJunctions = healNearMissJunctions;
         window.weldNearbyVertices = weldNearbyVertices;
         window.corridorConnectedComponents = corridorConnectedComponents;

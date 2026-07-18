@@ -883,6 +883,7 @@
         // from a dragged node) triangulates into overlapping faces with degenerate normals — the flat
         // black area + radiating spikes seen in 3D. It renders fine in 2D, so the guard is HERE (3D
         // only): skip the mesh rather than draw the artifact. `ringSelfIntersectsXY` takes [x,y] pairs.
+        // (Corridor asphalt takes a different route for this case — see addFlatStripRibbon3D.)
         if (typeof window !== 'undefined' && typeof window.ringSelfIntersectsXY === 'function') {
             try {
                 if (window.ringSelfIntersectsXY(outer.map(v => [v.x, v.y]))) return null;
@@ -1832,6 +1833,81 @@
         return corridorLaneMaterials[type];
     }
 
+    // ---------------------------------------------------------------------------
+    // Self-crossing strips
+    //
+    // A strip is ONE object with ONE colour, the same one the 2D map paints — the 3D mesh is built from
+    // the very same strip polygon and the very same CORRIDOR_LANE_TYPES colour, no per-lane special work.
+    // The ONE thing THREE can't do that Leaflet can is fill a SELF-CROSSING polygon (a star road, a loop):
+    // Leaflet uses the even-odd rule and draws the thin band; THREE's earcut floods the whole enclosed
+    // area (the "dark blob"). turf.unkinkPolygon doesn't help — it fills ~2x the band (the enclosed lobes
+    // too). So for a self-crossing FLAT strip we lay the SAME band as a per-edge ribbon: a quad per
+    // centre-line edge between the strip's own two offsets, overlapping itself where the road crosses —
+    // which measures within ~10% of Leaflet's even-odd fill. Clean strips keep their crisp mitred earcut.
+    // ---------------------------------------------------------------------------
+
+    // Same colour as the ordinary lane material, but double-sided: the per-edge quads have mixed winding,
+    // so their normals are forced to +Z (they are flat and horizontal) and both faces must draw.
+    const corridorRibbonMaterials = {};
+    function corridorRibbonMaterial(type) {
+        if (!corridorRibbonMaterials[type]) {
+            const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[type]) || {};
+            corridorRibbonMaterials[type] = new THREE.MeshLambertMaterial({
+                color: new THREE.Color(lane.surface || '#2b2b2b'),
+                emissive: 0x000000,
+                side: THREE.DoubleSide
+            });
+        }
+        return corridorRibbonMaterials[type];
+    }
+
+    // Does a strip's outline cross itself? Tested in the same XY frame the mesh is built in, so it agrees
+    // with the guard inside arrayOfLngLatRingsToShape.
+    function corridorStripRingSelfIntersects(polygon) {
+        if (typeof window === 'undefined' || typeof window.ringSelfIntersectsXY !== 'function') return false;
+        try {
+            return window.ringSelfIntersectsXY(polygon.map(point => latLngToXY(point.lat, point.lng)));
+        } catch (_) { return false; }
+    }
+
+    // Lay a FLAT strip as one quad per centre-line edge, spanning the strip's two offsets — a thin band
+    // that overlaps itself where the road crosses (dark asphalt, not a flooded interior).
+    function addFlatStripRibbon3D(targetGroup, points, offsetLeft, offsetRight, material, laneType) {
+        if (!Array.isArray(points) || points.length < 2) return;
+        const xy = points.map(point => latLngToXY(point.lat, point.lng));
+        const positions = [];
+        const z = CORRIDOR_STRIP_Z;
+        for (let i = 0; i < xy.length - 1; i++) {
+            const a = xy[i];
+            const b = xy[i + 1];
+            const dx = b[0] - a[0];
+            const dy = b[1] - a[1];
+            const len = Math.hypot(dx, dy);
+            if (len < 1e-6) continue;
+            const nx = -dy / len; // left normal (unit), same sign convention as offsetPolylinePlanar
+            const ny = dx / len;
+            const aL = [a[0] + nx * offsetLeft, a[1] + ny * offsetLeft];
+            const bL = [b[0] + nx * offsetLeft, b[1] + ny * offsetLeft];
+            const aR = [a[0] + nx * offsetRight, a[1] + ny * offsetRight];
+            const bR = [b[0] + nx * offsetRight, b[1] + ny * offsetRight];
+            positions.push(
+                aL[0], aL[1], z, bL[0], bL[1], z, bR[0], bR[1], z,
+                aL[0], aL[1], z, bR[0], bR[1], z, aR[0], aR[1], z
+            );
+        }
+        if (!positions.length) return;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        // Flat and horizontal: force every normal up so the double-sided material lights it uniformly.
+        const normals = new Float32Array(positions.length);
+        for (let i = 2; i < normals.length; i += 3) normals[i] = 1;
+        geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData.isCorridorStrip = true;
+        mesh.userData.laneType = laneType;
+        targetGroup.add(mesh);
+    }
+
     function corridorStripToFeature(polygon) {
         const ring = polygon.map(point => [point.lng, point.lat]);
         const first = ring[0];
@@ -1951,6 +2027,109 @@
         });
     }
 
+    // ---------------------------------------------------------------------------
+    // Lane markings in 3D
+    //
+    // The 2D map paints lane separators and parking bays as white lines on the asphalt; 3D paints the
+    // SAME lines, from the same geometry builders, as flat opaque ribbons just above the surface. They
+    // sit below the junction patches (+0.16), so a crossing's asphalt still swallows the through-lines
+    // exactly as it does in 2D. Opaque, so they never join the translucent stack that flickers.
+    // ---------------------------------------------------------------------------
+    const CORRIDOR_MARKING_Z = CORRIDOR_STRIP_Z + 0.03;
+    let corridorMarkingMat = null;
+    function corridorMarkingMaterial() {
+        if (!corridorMarkingMat) {
+            corridorMarkingMat = new THREE.MeshBasicMaterial({ color: 0xf4f4f4, side: THREE.DoubleSide });
+        }
+        return corridorMarkingMat;
+    }
+
+    // The two triangles of one flat paint rectangle from XY point `a` to `b`, `half` metres to each side,
+    // appended to a flat positions array. MeshBasicMaterial is unlit, so no normals are needed.
+    function pushCorridorMarkingQuad(positions, a, b, half) {
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        const length = Math.hypot(dx, dy);
+        if (length < 1e-6) return;
+        const nx = (-dy / length) * half;
+        const ny = (dx / length) * half;
+        const z = CORRIDOR_MARKING_Z;
+        const ax = a[0], ay = a[1], bx = b[0], by = b[1];
+        positions.push(
+            ax + nx, ay + ny, z, bx + nx, by + ny, z, bx - nx, by - ny, z,
+            ax + nx, ay + ny, z, bx - nx, by - ny, z, ax - nx, ay - ny, z
+        );
+    }
+
+    // Lay one marking polyline (Leaflet LatLngs) as flat paint: a solid ribbon, or dashes when `dash`
+    // ({ on, off } in metres) is given. Dashes restart at each vertex — fine for the near-straight road
+    // segments these lines run along.
+    function addCorridorMarkingPolyline(positions, line, half, dash) {
+        if (!Array.isArray(line) || line.length < 2) return;
+        const pts = line.map(point => latLngToXY(point.lat, point.lng));
+        for (let i = 0; i < pts.length - 1; i++) {
+            const a = pts[i];
+            const b = pts[i + 1];
+            if (!dash) { pushCorridorMarkingQuad(positions, a, b, half); continue; }
+            const dx = b[0] - a[0];
+            const dy = b[1] - a[1];
+            const length = Math.hypot(dx, dy);
+            if (length < 1e-6) continue;
+            const ux = dx / length;
+            const uy = dy / length;
+            for (let d = 0; d < length; d += dash.on + dash.off) {
+                const end = Math.min(d + dash.on, length);
+                pushCorridorMarkingQuad(positions,
+                    [a[0] + ux * d, a[1] + uy * d], [a[0] + ux * end, a[1] + uy * end], half);
+            }
+        }
+    }
+
+    // Every white line of one corridor segment — lane separators (dashed, the solid-flow divide heavier)
+    // and parking bays (solid edge + bay dividers) — batched into ONE opaque mesh, so a long road is a
+    // single draw call rather than thousands of little ones.
+    function addCorridorMarkings3D(targetGroup, entry) {
+        try {
+        const positions = [];
+        const markings = (typeof buildCorridorLaneMarkings === 'function')
+            ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
+        markings.forEach(marking => {
+            const isCenterline = marking.kind === 'centerline';
+            const half = isCenterline ? 0.09 : 0.075;
+            const dash = isCenterline ? { on: 3, off: 2.5 } : { on: 1.5, off: 2.5 };
+            (marking.lines || []).forEach(line => addCorridorMarkingPolyline(positions, line, half, dash));
+        });
+        const bays = (typeof buildCorridorParkingBays === 'function')
+            ? buildCorridorParkingBays([entry.points], entry.profile) : [];
+        bays.forEach(bay => addCorridorMarkingPolyline(positions, bay.line, bay.kind === 'edge' ? 0.075 : 0.06, null));
+
+        // Direction arrows arrive as convex rings; a fan from vertex 0 triangulates each into the same
+        // flat white mesh as the lines.
+        const arrows = (typeof buildCorridorDirectionArrows === 'function')
+            ? buildCorridorDirectionArrows([entry.points], entry.profile) : [];
+        arrows.forEach(ring => {
+            const pts = ring.map(point => latLngToXY(point.lat, point.lng));
+            for (let i = 1; i < pts.length - 1; i++) {
+                positions.push(
+                    pts[0][0], pts[0][1], CORRIDOR_MARKING_Z,
+                    pts[i][0], pts[i][1], CORRIDOR_MARKING_Z,
+                    pts[i + 1][0], pts[i + 1][1], CORRIDOR_MARKING_Z
+                );
+            }
+        });
+
+        if (!positions.length) return;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const mesh = new THREE.Mesh(geometry, corridorMarkingMaterial());
+        mesh.userData.isCorridorMarking = true;
+        targetGroup.add(mesh);
+        } catch (error) {
+            // Markings are cosmetic: their failure must never cost a road its asphalt.
+            console.error('[three-mode] corridor markings failed', error);
+        }
+    }
+
     function addBuildingTunnelLiners3D(targetGroup, definition) {
         const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels : [];
         if (!tunnels.length) return;
@@ -2005,6 +2184,7 @@
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
 
         proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+            try {
             const definition = corridorProposalDefinition(proposal);
             const fallbackProfile = corridorProfileOf(definition);
             const centerline = corridorCenterlineOf(definition);
@@ -2026,6 +2206,14 @@
                     const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
                     const kerb = Number(lane.height) || 0;
                     strip.polygons.forEach(polygon => {
+                        // A flat strip whose outline crosses itself (a star, a loop, a hairpin) can't be
+                        // earcut — the fill floods the whole enclosed area. Lay the SAME band as a per-edge
+                        // ribbon instead. Clean strips (and all extruded ones) keep the mitred earcut ring.
+                        if (kerb === 0 && corridorStripRingSelfIntersects(polygon)) {
+                            addFlatStripRibbon3D(targetGroup, entry.points, strip.left, strip.right,
+                                corridorRibbonMaterial(strip.type), strip.type);
+                            return;
+                        }
                         const meshes = polygonFeatureToMeshes(
                             corridorStripToFeature(polygon),
                             corridorLaneMaterial(strip.type),
@@ -2042,6 +2230,7 @@
                 const decorations = (typeof buildCorridorDecorations === 'function')
                     ? buildCorridorDecorations([entry.points], entry.profile) : [];
                 addCorridorDecorations3D(targetGroup, decorations);
+                addCorridorMarkings3D(targetGroup, entry);
             });
             // Junction patches sized per arm cover the seams where different widths meet.
             const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
@@ -2049,6 +2238,11 @@
                 : ((typeof buildCorridorJunctionTreatments === 'function')
                     ? buildCorridorJunctionTreatments(centerline, fallbackProfile) : []);
             addCorridorJunctions3D(targetGroup, junctions);
+            } catch (error) {
+                // One corrupt road must not strip the asphalt off EVERY road in 3D (the 2D renderer
+                // already isolates per-proposal failures the same way).
+                console.error('[three-mode] corridor strips failed for proposal', proposal?.proposalId, error);
+            }
         });
 
         // Track surfaces use a different renderer, but building-tunnel metadata is common to both

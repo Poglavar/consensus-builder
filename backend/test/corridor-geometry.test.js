@@ -10,6 +10,9 @@ const {
     createRectangularRoadSegment,
     planarSegmentIntersection,
     insertCorridorCrossingNodes,
+    splitCorridorSelfJunctions,
+    normalizeCorridorGraph,
+    normalizeCorridorDefinitionTopology,
     healNearMissJunctions,
     weldNearbyVertices,
     corridorConnectedComponents,
@@ -113,6 +116,80 @@ describe('insertCorridorCrossingNodes', () => {
         insertCorridorCrossingNodes(segs, [1, 2], new Set([protectedKey]));
         expect(segs[0].length).toBe(before); // protected edge untouched
         delete global.corridorTunnelEdgeKey;
+    });
+
+    it('nodes a crossing made by two non-adjacent edges of the SAME stroke', () => {
+        // An X drawn in one stroke: edge 0 (-5,-5→5,5) crosses edge 2 (5,-5→-5,5) at (0,0).
+        const segs = [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]];
+        insertCorridorCrossingNodes(segs, ['star']);
+        const crossingCopies = segs[0].filter(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9);
+        expect(crossingCopies).toHaveLength(2); // the crossing vertex now sits on both crossing edges
+    });
+});
+
+// A road that crosses itself (a star, a loop) must become a real graph: simple stretches meeting at
+// shared junction nodes — draggable, junction-detectable, and 3D-meshable — never one self-crossing strip.
+describe('normalizeCorridorGraph (self-crossing → shared graph nodes)', () => {
+    it('turns one self-crossing stroke into simple stretches sharing a real junction', () => {
+        const segments = [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]];
+        const segmentIds = ['star'];
+        const profiles = { star: { strips: [{ type: 'driving', width: 8 }] } };
+
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+
+        expect(segments.length).toBeGreaterThan(1);
+        expect(segmentIds).toHaveLength(segments.length);
+        expect(segments.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+
+        // Four incident arms meet at (0,0): two tails plus both ends of the simple middle loop.
+        const crossingEndpoints = segments.flatMap(segment => [segment[0], segment[segment.length - 1]])
+            .filter(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9);
+        expect(crossingEndpoints).toHaveLength(4);
+
+        // Every derived stretch keeps the source cross-section instead of reverting to defaults.
+        segmentIds.slice(1).forEach(id => expect(profiles[String(id)]).toEqual(profiles.star));
+    });
+
+    it('nodes and splits a closed five-point star while preserving a simple closed loop', () => {
+        const star = [P(10, 0), P(-8, 6), P(3, -10), P(3, 10), P(-8, -6), P(10, 0)];
+        const simpleLoop = [P(0, 20), P(0, 30), P(10, 30), P(10, 20), P(0, 20)];
+        const segments = [star, simpleLoop];
+        const segmentIds = ['star', 'loop'];
+
+        normalizeCorridorGraph(segments, segmentIds);
+
+        expect(segments.length).toBeGreaterThan(2);
+        expect(segments.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+        // The simple loop is not a self-crossing — it stays one closed ring, untouched.
+        expect(segments.some((segment, i) => segmentIds[i] === 'loop' && segment.length === 5)).toBe(true);
+    });
+
+    it('keeps segment and id arrays aligned when a legacy anonymous stroke is split', () => {
+        const segments = [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]];
+        const segmentIds = [null];
+        splitCorridorSelfJunctions(segments, segmentIds);
+        expect(segments).toHaveLength(1); // nothing to split until the crossing is noded
+        insertCorridorCrossingNodes(segments, segmentIds);
+        splitCorridorSelfJunctions(segments, segmentIds);
+        expect(segmentIds).toHaveLength(segments.length);
+        expect(segmentIds.slice(1).every(Boolean)).toBe(true); // derived pieces get stable ids
+    });
+
+    it('upgrades a stored definition in place without touching its footprint (and is convergent)', () => {
+        const polygon = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [0, 0]]] };
+        const definition = {
+            points: [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]],
+            segments: [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]],
+            segmentIds: ['star'],
+            segmentProfiles: { star: { strips: [{ type: 'driving', width: 8 }] } },
+            polygon
+        };
+        expect(normalizeCorridorDefinitionTopology(definition)).toBe(true);
+        expect(definition.points).toBe(definition.segments);
+        expect(definition.segmentIds).toHaveLength(definition.points.length);
+        expect(definition.points.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+        expect(definition.polygon).toBe(polygon); // footprint metadata untouched
+        expect(normalizeCorridorDefinitionTopology(definition)).toBe(false); // second pass is a no-op
     });
 });
 

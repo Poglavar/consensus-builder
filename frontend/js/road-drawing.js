@@ -1013,10 +1013,11 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // connectivity is judged. Welding also erases any near-duplicate a drag/weld may have left behind.
     if (typeof weldNearbyVertices === 'function') weldNearbyVertices(normalizedSegments);
     if (typeof healNearMissJunctions === 'function') healNearMissJunctions(normalizedSegments);
-    insertCorridorCrossingNodes(
+    normalizeCorridorGraph(
         normalizedSegments,
         normalizedIds,
-        new Set((definition.tunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        new Set((definition.tunnels || []).map(record => record?.edgeKey).filter(Boolean)),
+        definition.segmentProfiles || null
     );
 
     // Re-carve this road's own demolitions at the MOVED geometry: drop the stale records (restoring
@@ -4744,10 +4745,11 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     // Only genuine crossings become shared nodes when absorbing a touching road; near-miss snapping
     // (welding nearby vertices / healing an endpoint onto a nearby centerline) is a deliberate drag-time
     // action, not something the auto-merge performs.
-    insertCorridorCrossingNodes(
+    normalizeCorridorGraph(
         mergedSegments,
         mergedSegmentIds,
-        new Set((mergedTunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        new Set((mergedTunnels || []).map(record => record?.edgeKey).filter(Boolean)),
+        mergedProfiles
     );
 
     // The established road donates only its NAME. Every body's segments keep their own
@@ -4857,10 +4859,11 @@ async function finishRoadDrawing() {
     // endpoint that stopped short of another centerline, or welding two nearby nodes) is NOT done on
     // finish — joining roads that merely came close is a deliberate act the user makes by dragging one
     // onto another, not something drawing a road should decide for them. Tunnelled edges are protected.
-    insertCorridorCrossingNodes(
+    normalizeCorridorGraph(
         segments,
         segmentIds,
-        new Set((roadBuildingTunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        new Set((roadBuildingTunnels || []).map(record => record?.edgeKey).filter(Boolean)),
+        roadSegmentProfiles
     );
 
     // Immediately stop interactions and preview while finishing

@@ -256,6 +256,42 @@ function renderCorridorRails(centerlines, profile, group, options = {}) {
     });
 }
 
+// Parking bay markings: the edge line where the lane meets the carriageway, and one divider per bay.
+// Many short lines per lane, so they share the rail canvas renderer rather than becoming SVG paths.
+function renderCorridorParkingBays(bays, group, pane) {
+    if (!Array.isArray(bays) || !bays.length || typeof L === 'undefined') return;
+    const renderer = corridorRailRenderer();
+    bays.forEach(bay => {
+        const isEdge = bay.kind === 'edge';
+        L.polyline(bay.line, {
+            pane: pane || undefined,
+            renderer,
+            color: '#f4f4f4',
+            weight: isEdge ? 1.5 : 1,
+            opacity: isEdge ? 0.85 : 0.7,
+            interactive: false,
+            className: `corridor-parking-marking corridor-parking-marking--${bay.kind}`
+        }).addTo(group);
+    });
+}
+
+// Direction arrows: one white filled convex ring per arrow piece (head triangle + stem rectangle),
+// painted down each motor-vehicle lane in its direction of travel.
+function renderCorridorDirectionArrows(arrows, group, pane) {
+    if (!Array.isArray(arrows) || !arrows.length || typeof L === 'undefined') return;
+    arrows.forEach(ring => {
+        L.polygon(ring, {
+            pane: pane || undefined,
+            color: '#f4f4f4',
+            weight: 0,
+            fillColor: '#f4f4f4',
+            fillOpacity: 0.9,
+            interactive: false,
+            className: 'corridor-direction-arrow'
+        }).addTo(group);
+    });
+}
+
 // Turn `[{type, polygons}]` into a LayerGroup. Surface, rails, markings, junction treatment and repeated
 // symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
 // `centerlines` + `profile` are what the strips were built from; passing them lets the rail lanes among
@@ -287,6 +323,14 @@ function renderCorridorStrips(strips, options = {}) {
             railColor: options.railColor,
             sleeperColor: options.sleeperColor
         });
+        // Parking bays come with the cross-section, like rails: a parking lane in the profile paints its
+        // bays right here, so drawn roads, applied roads and imported OSM streets all get them at once.
+        if (typeof buildCorridorParkingBays === 'function') {
+            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile), group, options.pane);
+        }
+        if (typeof buildCorridorDirectionArrows === 'function') {
+            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile), group, options.pane);
+        }
     }
     renderCorridorLaneMarkings(options.markings, group, options.pane);
     renderCorridorJunctions(options.junctions, group, options.pane);
@@ -616,6 +660,8 @@ function scheduleCorridorStripRefresh() {
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
     window.renderCorridorRails = renderCorridorRails;
+    window.renderCorridorParkingBays = renderCorridorParkingBays;
+    window.renderCorridorDirectionArrows = renderCorridorDirectionArrows;
     window.renderCorridorBuildingTunnels = renderCorridorBuildingTunnels;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
     window.setCorridorProfilePreview = setCorridorProfilePreview;

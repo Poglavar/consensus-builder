@@ -200,13 +200,45 @@
     flex: 0 0 62px;
 }
 
-/* The per-lane extras — a green strip's planting, a track's gauge — wrap onto their own line under the
-   row, so a 380 px panel keeps the type/width controls on one line and the extra never squeezes them. */
+/* The per-lane extras — a green strip's planting, a track's gauge, a parking lane's tree spacing — wrap
+   onto their own line under the row, so a 380 px panel keeps the type/width controls on one line and the
+   extra never squeezes them. */
 .corridor-lane-landscape,
-.corridor-lane-gauge {
+.corridor-lane-gauge,
+.corridor-lane-trees {
     flex: 1 0 100%;
     width: 100%;
     margin-bottom: 3px;
+}
+
+/* "Tree every [N] spaces" — the one editable number on a fixed-width parking row. */
+.corridor-lane-trees {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #5f6368;
+}
+
+.corridor-lane-tree-every {
+    width: 56px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* The direction arrow sits with the row actions but reads as a state, not a nudge: a touch of colour
+   so a click-to-flip control is distinct from the ↑/↓ reorder buttons beside it. */
+.corridor-lane-btn.corridor-lane-direction {
+    color: #1a73e8;
+    font-weight: 700;
+}
+
+.corridor-lane-btn.corridor-lane-direction:hover {
+    background: #e8f0fe;
 }
 
 .corridor-lane-unit {
@@ -464,7 +496,8 @@ button.corridor-lane-standard--reset:hover {
        lane width/type fields get the threshold size on touch devices. */
     .corridor-lane-type,
     .corridor-lane-width,
-    .corridor-lane-landscape {
+    .corridor-lane-landscape,
+    .corridor-lane-tree-every {
         font-size: 16px;
         height: 38px;
     }
@@ -483,6 +516,27 @@ button.corridor-lane-standard--reset:hover {
 
 .corridor-section-seam:hover::after {
     background: #f59e0b;
+}
+
+/* A seam against a fixed-width parking lane cannot be dragged: no resize cursor, and the handle line
+   reads as a static divider rather than an amber-hover drag target. */
+.corridor-section-seam--locked {
+    cursor: default;
+}
+
+.corridor-section-seam--locked::after {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.corridor-section-seam--locked:hover::after {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+/* A parking lane's depth is a fixed standard: its width field is read-only, styled to say so. */
+.corridor-lane-width--fixed {
+    background: #f1f3f4;
+    color: #5f6368;
+    cursor: not-allowed;
 }
 
 /* Non-blocking "Applying…" indicator shown while an applied corridor edit (node drag, bulldoze,

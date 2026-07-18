@@ -232,12 +232,19 @@ function corridorEditorSectionHtml(profile) {
                     aria-label="${laneLabel}, ${lane.width} metres"></button>`;
     }).join('');
     // Drag handles on the seams between lanes: dragging moves width from one side to the
-    // other (total unchanged) — the schematic IS the editor, not just a picture.
+    // other (total unchanged) — the schematic IS the editor, not just a picture. A seam touching a
+    // fixed-width lane (parking) cannot move, so it is drawn locked and does not respond to a drag.
+    const isFixed = type => typeof corridorLaneWidthFixed === 'function' && corridorLaneWidthFixed(type);
     let cumulative = 0;
     const seams = profile.strips.slice(0, -1).map((lane, index) => {
         cumulative += (lane.width / total) * 100;
-        return `<span class="corridor-section-seam" data-seam-index="${index}" style="left:${cumulative}%"
-                    title="${corridorEditorI18n('modal.corridor.dragSeam', 'Drag to resize the lanes on both sides')}"></span>`;
+        const locked = isFixed(lane.type) || isFixed(profile.strips[index + 1].type);
+        const lockedClass = locked ? ' corridor-section-seam--locked' : '';
+        const seamTitle = locked
+            ? corridorEditorI18n('modal.corridor.seamLocked', 'Parking keeps its fixed width')
+            : corridorEditorI18n('modal.corridor.dragSeam', 'Drag to resize the lanes on both sides');
+        return `<span class="corridor-section-seam${lockedClass}" data-seam-index="${index}" style="left:${cumulative}%"
+                    title="${seamTitle}"></span>`;
     }).join('');
     return `<div class="corridor-section">${cells}${seams}</div>`;
 }
@@ -296,6 +303,9 @@ function corridorEditorRowsHtml(profile) {
     return profile.strips.map((lane, index) => {
         const laneType = CORRIDOR_LANE_TYPES[lane.type] || {};
         const selected = index === corridorEditorState.selected ? ' corridor-lane-row--selected' : '';
+        // A parking lane's depth is a fixed standard, not a slider: its width shows read-only. (The reset
+        // button still offers to snap a legacy off-standard parking lane back to the standard.)
+        const fixedWidth = typeof corridorLaneWidthFixed === 'function' && corridorLaneWidthFixed(lane.type);
         const typeOptions = options.map(type => `<option value="${type}"${type === lane.type ? ' selected' : ''}>${corridorLaneTypeLabel(type)}</option>`).join('');
         const landscape = (lane.type === 'verge' || lane.type === 'median') ? corridorLandscapeOf(lane) : null;
         const landscapeSelect = landscape ? `
@@ -311,21 +321,41 @@ function corridorEditorRowsHtml(profile) {
                 <option value="1000"${gauge === 1000 ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.gauges.metre', '1000 mm (tram)')}</option>
                 <option value="1435"${gauge === 1435 ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.gauges.standard', '1435 mm (railway)')}</option>
             </select>` : '';
+        // A directional lane carries the way it runs; a clickable arrow in the row flips it, and the map's
+        // painted direction arrow turns with it. Glyph is abstract (the section is a cross-view), tooltip explains.
+        const direction = laneType.directional ? (lane.direction || 'forward') : null;
+        const directionGlyph = direction === 'backward' ? '←' : (direction === 'both' ? '↔' : '→');
+        const directionBtn = direction ? `
+                <button type="button" class="corridor-lane-btn corridor-lane-direction" data-direction-index="${index}"
+                    title="${corridorEditorI18n('modal.corridor.flipDirection', 'Traffic direction (click to reverse)')}"
+                    aria-label="${corridorEditorI18n('modal.corridor.flipDirection', 'Traffic direction (click to reverse)')}">${directionGlyph}</button>` : '';
+        // A parking lane can reserve every Nth bay for a tree (0 = none). The parking width is fixed, so this
+        // is the row's editable number — placed on the extras line, the same spot a green strip's planting takes.
+        const parkingOrientation = typeof corridorParkingOrientation === 'function' && corridorParkingOrientation(lane.type);
+        const treeEvery = parkingOrientation ? (Number(lane.treeEvery) || 0) : 0;
+        const treesControl = parkingOrientation ? `
+            <label class="corridor-lane-trees" title="${corridorEditorI18n('modal.corridor.treeEveryTitle', 'Plant a tree in every Nth parking space (0 = none)')}">
+                <span>${corridorEditorI18n('modal.corridor.treeEveryLabel', 'Tree every')}</span>
+                <input class="corridor-lane-tree-every" type="number" min="0" step="1" value="${treeEvery}" data-lane-index="${index}"
+                       aria-label="${corridorEditorI18n('modal.corridor.treeEveryTitle', 'Plant a tree in every Nth parking space (0 = none)')}">
+                <span>${corridorEditorI18n('modal.corridor.treeEverySuffix', 'spaces')}</span>
+            </label>` : '';
         return `
         <div class="corridor-lane-row${selected}" data-lane-index="${index}" tabindex="0">
             <span class="corridor-lane-handle" draggable="true" data-drag-index="${index}" title="${dragHint}" aria-hidden="true">⠿</span>
             <span class="corridor-lane-swatch" style="background:${laneType.surface}"></span>
             <select class="corridor-lane-type" data-lane-index="${index}" aria-label="Lane type">${typeOptions}</select>
-            <input class="corridor-lane-width" type="number" min="0.5" step="0.25" value="${lane.width}"
-                   data-lane-index="${index}" aria-label="Lane width in metres">
+            <input class="corridor-lane-width${fixedWidth ? ' corridor-lane-width--fixed' : ''}" type="number" min="0.5" step="0.25" value="${lane.width}"
+                   data-lane-index="${index}" aria-label="Lane width in metres"${fixedWidth ? ` disabled title="${corridorEditorI18n('modal.corridor.fixedWidth', 'Fixed at the standard bay depth')}"` : ''}>
             <span class="corridor-lane-unit">m</span>
             ${corridorEditorStandardHtml(lane, index)}
             <span class="corridor-lane-actions">
+                ${directionBtn}
                 <button type="button" class="corridor-lane-btn" data-move-up="${index}" aria-label="Move outward" ${index === 0 ? 'disabled' : ''}>↑</button>
                 <button type="button" class="corridor-lane-btn" data-move-down="${index}" aria-label="Move inward" ${index === profile.strips.length - 1 ? 'disabled' : ''}>↓</button>
                 <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
             </span>
-            ${landscapeSelect}${gaugeSelect}
+            ${landscapeSelect}${gaugeSelect}${treesControl}
         </div>`;
     }).join('');
 }
@@ -448,7 +478,7 @@ function corridorEditorBindBody(body) {
         row.addEventListener('focusin', select);
     });
 
-    body.querySelectorAll('.corridor-section-seam').forEach(seam => {
+    body.querySelectorAll('.corridor-section-seam:not(.corridor-section-seam--locked)').forEach(seam => {
         seam.addEventListener('pointerdown', event => {
             const state = corridorEditorState;
             const section = seam.closest('.corridor-section');
@@ -516,6 +546,26 @@ function corridorEditorBindBody(body) {
             // withLaneGauge also re-widths the lane to that gauge's standard, so the corridor's total
             // moves with it — the same way any other width edit moves it.
             corridorEditorApply(profile => withLaneGauge(profile, index, select.value));
+        });
+    });
+
+    // The direction arrow: click reverses the lane (both -> forward, so a click always resolves it).
+    body.querySelectorAll('[data-direction-index]').forEach(button => {
+        const index = Number(button.dataset.directionIndex);
+        button.addEventListener('click', () => {
+            corridorEditorState.selected = index;
+            corridorEditorApply(profile => {
+                const lane = profile.strips[index];
+                return withLaneDirection(profile, index, lane && lane.direction === 'backward' ? 'forward' : 'backward');
+            });
+        });
+    });
+
+    body.querySelectorAll('.corridor-lane-tree-every').forEach(input => {
+        input.addEventListener('change', () => {
+            const index = Number(input.dataset.laneIndex);
+            corridorEditorState.selected = index;
+            corridorEditorApply(profile => withLaneTreeEvery(profile, index, Number(input.value)));
         });
     });
 
