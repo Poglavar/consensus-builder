@@ -1122,6 +1122,17 @@ async function focusMapThenMaybeEnter3D(focusFn) {
         return false;
     }
 
+    // A proposal-link load owns its own 3D entry (passing the link's proposalIds as camera
+    // focus). Entering here — mid-apply, with no focus ids — won the race, marked the URL as
+    // handled, and the route's focused entry was skipped: the camera framed EVERY applied
+    // proposal instead of the link's. Same rule handleStandalone3DModeFromUrl already applies.
+    const hasProposalParams = params && (params.has('proposalShare') || params.has('shared')
+        || window.location.pathname.startsWith('/proposals/'));
+    if (hasProposalParams) {
+        doFocus();
+        return false;
+    }
+
     let beforeCenter = null;
     let beforeZoom = null;
     try {
