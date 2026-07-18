@@ -106,6 +106,23 @@ body.corridor-editor-open .leaflet-interactive {
     border: 1px solid #f5d9a8;
 }
 
+/* The way out of a blocked widening: a clickable chip that jumps to the Corridor tab, where the
+   fit computation and the move button live. Blue (an action), unlike the red/amber status chips. */
+.corridor-editor-indicator--fit {
+    appearance: none;
+    background: #e8f0fe;
+    color: #1a56c4;
+    border: 1px solid #a8c3f5;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.corridor-editor-indicator--fit:hover {
+    background: #d7e5fd;
+}
+
 /* Flash the total when an edit is refused — a lane below its minimum, or the 80 m cap. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
@@ -329,89 +346,24 @@ button.corridor-lane-standard--reset:hover {
     margin-bottom: 5px;
 }
 
-.corridor-editor-presets {
+/* The add-lane and preset dropdowns, one compact row above the diagram: adding a lane must not
+   be something you have to scroll a boulevard's fifteen rows to reach. */
+.corridor-editor-pickers {
+    display: flex;
+    gap: 8px;
     margin-bottom: 12px;
 }
 
-.corridor-editor-preset-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.corridor-preset-btn {
-    flex: 1 1 auto;
+.corridor-editor-pickers select {
+    flex: 1 1 0;
+    min-width: 0;
     border: 1px solid #cfd8e3;
-    border-radius: 999px;
+    border-radius: 6px;
     background: #f7f9fc;
     color: #1f2937;
-    font-size: 0.76rem;
-    padding: 5px 10px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.corridor-preset-btn:hover {
-    background: #e8f0fe;
-    border-color: #1a73e8;
-    color: #1a73e8;
-}
-
-/* Sits above the lane rows: adding a lane must not be something you have to scroll a boulevard's
-   fifteen rows to reach. */
-.corridor-editor-palette {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.corridor-editor-palette-buttons {
-    display: grid;
-    /* Two columns at the panel's full width: a lane type's name ("Biciklistička staza") has to be
-       readable, not elided into a tooltip. */
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 5px;
-}
-
-.corridor-palette-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #fff;
-    padding: 6px 8px;
     font-size: 0.8rem;
+    padding: 6px 8px;
     cursor: pointer;
-    text-align: left;
-    min-width: 0;
-}
-
-.corridor-palette-btn:hover {
-    border-color: #1a73e8;
-    background: #f5f8ff;
-}
-
-.corridor-palette-swatch {
-    flex: 0 0 auto;
-    width: 12px;
-    height: 18px;
-    border-radius: 2px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-.corridor-palette-label {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.corridor-palette-width {
-    flex: 0 0 auto;
-    color: #9aa0a6;
-    font-size: 0.72rem;
-    font-variant-numeric: tabular-nums;
 }
 
 /* Said out loud rather than silently refused: the one edit the editor can still turn down. */
@@ -469,10 +421,6 @@ button.corridor-lane-standard--reset:hover {
     .corridor-lane-btn {
         width: 26px;
         height: 26px;
-    }
-
-    .corridor-editor-palette-buttons {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 
     .corridor-editor-total {
@@ -547,9 +495,9 @@ button.corridor-lane-standard--reset:hover {
         height: 38px;
     }
 
-    /* Finger-sized targets for the two things that build the road. */
-    .corridor-preset-btn,
-    .corridor-palette-btn {
+    /* Finger-sized targets for the two dropdowns that build the road. */
+    .corridor-editor-pickers select {
+        font-size: 16px;
         min-height: 38px;
     }
 }
@@ -622,3 +570,180 @@ button.corridor-lane-standard--reset:hover {
 @keyframes corridor-apply-indicator-appear {
     to { opacity: 1; }
 }
+
+/* --- Corridor tab: clearance stats, width-profile chart, move-to-fit --- */
+
+.corridor-editor-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 0 16px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.corridor-editor-tab {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.corridor-editor-tab--active {
+    color: #111;
+    font-weight: 600;
+    border-bottom-color: #2563eb;
+}
+
+.corridor-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.corridor-stats-constraint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    cursor: pointer;
+}
+
+.corridor-stats-note {
+    font-size: 0.8rem;
+    color: #8a6d1a;
+    background: #fdf6e3;
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+.corridor-stats-headline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.corridor-stats-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111;
+    margin-right: 8px;
+}
+
+.corridor-stats-label {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.corridor-stats-current {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #555;
+}
+
+.corridor-stats-delta--ok {
+    color: #15803d;
+    font-weight: 600;
+}
+
+.corridor-stats-delta--over {
+    color: #b3261e;
+    font-weight: 600;
+}
+
+.corridor-stats-fit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.corridor-stats-fit-ok {
+    color: #15803d;
+}
+
+.corridor-stats-fit-none {
+    color: #b3261e;
+}
+
+.corridor-stats-side-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.corridor-chart-title {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.corridor-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.corridor-chart-grid {
+    stroke: #ececec;
+    stroke-width: 1;
+}
+
+.corridor-chart-tick,
+.corridor-chart-road-label,
+.corridor-chart-min-label {
+    font-size: 9px;
+    fill: #777;
+}
+
+.corridor-chart-min-label {
+    fill: #111;
+    font-weight: 600;
+}
+
+.corridor-chart-area {
+    fill: rgba(37, 99, 235, 0.08);
+    stroke: none;
+}
+
+.corridor-chart-line {
+    fill: none;
+    stroke: #2563eb;
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+
+.corridor-chart-road {
+    stroke: #666;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+.corridor-chart-min {
+    fill: #111827;
+}
+
+.corridor-chart-cursor {
+    stroke: #999;
+    stroke-width: 1;
+    stroke-dasharray: 2 2;
+}
+
+.corridor-chart-readout {
+    font-size: 0.78rem;
+    color: #555;
+    min-height: 1.2em;
+}
+
+.corridor-stats-pinch {
+    font-size: 0.8rem;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+

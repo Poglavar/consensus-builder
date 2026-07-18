@@ -28,8 +28,18 @@ let corridorEditorObstacleTimer = null;
 // Red overlay of the buildings the CURRENT cross-section cuts into — the on-map counterpart of
 // the "hits buildings" chip, repainted by every obstacle check while the editor is open.
 let corridorEditorHitBuildingsLayer = null;
+// The Corridor tab's map layers: the available-corridor halo, and the pinch tick with the
+// obstacles that form it. Drawn only while that tab is active; removed on tab switch and close.
+let corridorEditorHaloLayer = null;
+let corridorEditorPinchLayer = null;
+// The yellow probe tick a chart click drops on the map — "this point of the chart is HERE".
+let corridorEditorChartProbeLayer = null;
 
 const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
+// How far a clearance ray reaches before a side counts as open, and how much of an open side
+// the halo/chart display (an unbounded side is a floor, not a measurement).
+const CORRIDOR_CLEARANCE_MAX = 100;
+const CORRIDOR_CLEARANCE_DISPLAY_CAP = 30;
 
 function corridorEditorI18n(key, fallback, params = {}) {
     try {
@@ -60,6 +70,7 @@ function corridorLaneTypeLabel(type) {
 function corridorEditorClose() {
     if (typeof clearCorridorProfilePreview === 'function') clearCorridorProfilePreview();
     corridorEditorRenderBuildingHits([]);
+    corridorEditorClearClearanceOverlays();
     corridorEditorRestoreBuildingFootprints();
     document.body.classList.remove('corridor-editor-open');
     const overlay = document.getElementById('corridor-editor-overlay');
@@ -163,15 +174,24 @@ function corridorEditorPartitionDemolitions(records) {
 // applied parks/squares/lakes. Checked per edge, like drawing-time segment validation. Hits on
 // buildings this road already partially demolished carry `recut: true` (the detection pool holds
 // their REMAINDER footprint, so the hit is against what is actually still standing).
+// The centerline segments the editor is scoped to: the clicked segment when the edit is
+// segment-scoped, otherwise every segment of the road network.
+function corridorEditorScopedSegments() {
+    const state = corridorEditorState;
+    if (!state || !state.definition || typeof corridorCenterlineOf !== 'function') return [];
+    let segments = corridorCenterlineOf(state.definition);
+    if (state.scope === 'segment' && state.segmentId && Array.isArray(state.definition.segmentIds)) {
+        segments = segments.filter((_, index) => String(state.definition.segmentIds[index] || '') === state.segmentId);
+    }
+    return segments;
+}
+
 function corridorEditorCollectWidthHits(width) {
     const result = { buildings: [], structures: [] };
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !state.definition) return result;
     if (typeof calculateRoadPolygon !== 'function') return result;
-    let segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(state.definition) : [];
-    if (state.scope === 'segment' && state.segmentId && Array.isArray(state.definition.segmentIds)) {
-        segments = segments.filter((_, index) => String(state.definition.segmentIds[index] || '') === state.segmentId);
-    }
+    const segments = corridorEditorScopedSegments();
     const tunnelled = new Set();
     const tunnelEdgeKeys = new Set();
     (state.definition.tunnels || []).forEach(record => {
@@ -256,10 +276,7 @@ function corridorEditorRoadBounds() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !state.definition) return null;
     if (typeof L === 'undefined' || typeof corridorCenterlineOf !== 'function') return null;
-    let segments = corridorCenterlineOf(state.definition);
-    if (state.scope === 'segment' && state.segmentId && Array.isArray(state.definition.segmentIds)) {
-        segments = segments.filter((_, index) => String(state.definition.segmentIds[index] || '') === state.segmentId);
-    }
+    const segments = corridorEditorScopedSegments();
     const bounds = L.latLngBounds([]);
     segments.forEach(segment => (segment || []).forEach(point => bounds.extend(point)));
     return bounds.isValid() ? bounds : null;
@@ -311,8 +328,16 @@ function corridorEditorShowBuildingFootprints() {
     const bounds = corridorEditorRoadBounds();
     if (bounds && typeof window.ensureBuildingFootprintsForBounds === 'function') {
         window.ensureBuildingFootprintsForBounds(bounds)
-            // The pool may have just filled: re-check so buildings already being cut turn red now.
-            .then(() => corridorEditorScheduleObstacleCheck())
+            // The pool may have just filled: re-check so buildings already being cut turn red now,
+            // and re-measure the corridor against the buildings that just arrived.
+            .then(() => {
+                corridorEditorScheduleObstacleCheck();
+                const current = corridorEditorState;
+                if (current && current.activeTab === 'corridor') {
+                    current.clearanceCache = null;
+                    corridorEditorRender();
+                }
+            })
             .catch(error => console.warn('[corridorEditor] building footprints could not be prepared', error));
     }
 }
@@ -333,6 +358,12 @@ function corridorEditorUpdateIndicators(hits, blocked) {
     if (recutChip) recutChip.hidden = !(hits && hits.buildings.some(hit => hit.recut));
     const structuresChip = document.querySelector('.corridor-editor-indicator--structures');
     if (structuresChip) structuresChip.hidden = !(hits && hits.structures.length);
+    // A blocked widening is exactly when moving the road might help — point at the Corridor
+    // tab, where the fit computation and the move button live (hidden once already there).
+    const fitChip = document.querySelector('.corridor-editor-indicator--fit');
+    if (fitChip) {
+        fitChip.hidden = !blocked || (corridorEditorState && corridorEditorState.activeTab === 'corridor');
+    }
 }
 
 // Widening is blocked only when it hits a building the road did not already touch at its
@@ -364,6 +395,684 @@ function corridorEditorScheduleObstacleCheck() {
         corridorEditorObstacleTimer = null;
         corridorEditorRunObstacleCheck();
     }, 150);
+}
+
+// ---------------------------------------------------------------------------
+// Corridor tab
+//
+// The cross-section says what the road IS; this tab says what the road COULD BE here. One
+// clearance sampling pass along the scoped centerline (corridor-clearance.js) feeds all of it:
+// the corridor min width (the widest the road can be without demolishing anything), the width
+// profile chart, the pinch point and the obstacles that form it, and the move-to-fit shift.
+// Obstacles are the same building pool the width-hit check collides against, plus — behind a
+// toggle — every parcel that is neither road-classified nor already crossed by this road.
+// ---------------------------------------------------------------------------
+
+function corridorEditorClearanceReady() {
+    return typeof corridorClearanceSamples === 'function'
+        && typeof corridorClearanceStats === 'function'
+        && typeof wgs84ToHTRS96 === 'function';
+}
+
+function corridorEditorPlanarLength(pointsXY) {
+    let total = 0;
+    for (let i = 1; i < pointsXY.length; i += 1) {
+        total += Math.hypot(pointsXY[i][0] - pointsXY[i - 1][0], pointsXY[i][1] - pointsXY[i - 1][1]);
+    }
+    return total;
+}
+
+// GeoJSON Polygon/MultiPolygon -> planar rings for the clearance sampler.
+function corridorEditorGeometryToPlanarRings(geometry) {
+    if (!geometry) return [];
+    const rings = geometry.type === 'Polygon'
+        ? geometry.coordinates
+        : (geometry.type === 'MultiPolygon' ? geometry.coordinates.flat() : []);
+    return (rings || [])
+        .filter(ring => Array.isArray(ring) && ring.length >= 3)
+        .map(ring => ring
+            .map(pair => (Array.isArray(pair) ? wgs84ToHTRS96(pair[1], pair[0]) : null))
+            .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1])))
+        .filter(ring => ring.length >= 3);
+}
+
+// Everything a clearance ray may stop at: the loaded buildings (minus the ones this road
+// tunnels through or fully demolished — the same exclusions the width-hit check makes), and in
+// 'parcels' mode also every loaded parcel that is not road land and not already crossed by the
+// road at its current width (land the road already takes is part of the deal, not a wall).
+function corridorEditorClearanceObstacles() {
+    const state = corridorEditorState;
+    const obstacles = [];
+    if (!state || !state.definition || !corridorEditorClearanceReady()) return obstacles;
+    const bounds = corridorEditorRoadBounds();
+    if (!bounds) return obstacles;
+
+    // Rough lat/lng prefilter: a feature whose first coordinate is farther than the ray reach
+    // (plus the largest footprint we expect) cannot influence any sample.
+    const pad = CORRIDOR_CLEARANCE_MAX + 200;
+    const latPad = pad / 111320;
+    const lngPad = pad / (111320 * Math.cos(bounds.getCenter().lat * Math.PI / 180));
+    const south = bounds.getSouth() - latPad;
+    const north = bounds.getNorth() + latPad;
+    const west = bounds.getWest() - lngPad;
+    const east = bounds.getEast() + lngPad;
+    const firstCoordinate = geometry => {
+        const rings = geometry && (geometry.type === 'Polygon'
+            ? geometry.coordinates
+            : (geometry.type === 'MultiPolygon' ? geometry.coordinates.flat() : []));
+        return rings && rings[0] && rings[0][0];
+    };
+    const nearRoad = geometry => {
+        const coord = firstCoordinate(geometry);
+        return Array.isArray(coord) && coord[1] >= south && coord[1] <= north && coord[0] >= west && coord[0] <= east;
+    };
+
+    const tunnelled = new Set();
+    (state.definition.tunnels || []).forEach(record => {
+        (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
+    });
+    corridorEditorPartitionDemolitions(state.definition.demolishedBuildings).excluded
+        .forEach(id => tunnelled.add(id));
+
+    if (typeof collectLoadedCorridorBuildings === 'function' && typeof corridorBuildingKey === 'function') {
+        collectLoadedCorridorBuildings().forEach(feature => {
+            if (!feature || !feature.geometry || !nearRoad(feature.geometry)) return;
+            const id = String(corridorBuildingKey(feature));
+            if (tunnelled.has(id)) return;
+            const rings = corridorEditorGeometryToPlanarRings(feature.geometry);
+            if (rings.length) obstacles.push({ id, kind: 'building', rings });
+        });
+    }
+
+    if (state.clearanceMode === 'parcels' && typeof parcelLayer !== 'undefined' && parcelLayer
+        && typeof parcelLayer.eachLayer === 'function') {
+        const edgeFeatures = corridorEditorCurrentEdgeFeatures();
+        const crossed = feature => edgeFeatures.some(edge => {
+            try { return window.turf && window.turf.booleanDisjoint(edge, feature) === false; } catch (_) { return false; }
+        });
+        parcelLayer.eachLayer(layer => {
+            const feature = layer && layer.feature;
+            if (!feature || !feature.geometry || !nearRoad(feature.geometry)) return;
+            const props = feature.properties || {};
+            const parcelId = (props.parcelId !== undefined && props.parcelId !== null) ? String(props.parcelId)
+                : (props.id !== undefined && props.id !== null ? String(props.id) : null);
+            const isRoad = props.isRoad === true || props.isRoad === 'true'
+                || (parcelId && typeof isRoadParcel === 'function' && isRoadParcel(parcelId));
+            if (isRoad || crossed(feature)) return;
+            const rings = corridorEditorGeometryToPlanarRings(feature.geometry);
+            if (rings.length) obstacles.push({ id: `parcel:${parcelId || 'unknown'}`, kind: 'parcel', rings });
+        });
+    }
+    return obstacles;
+}
+
+// The scoped road's footprint at its PREVIEW width, one turf polygon per centerline edge —
+// what "already crossed by the road" is tested against.
+function corridorEditorCurrentEdgeFeatures() {
+    const state = corridorEditorState;
+    const features = [];
+    if (!state || typeof calculateRoadPolygon !== 'function' || typeof corridorFeatureFromLatLngRing !== 'function') return features;
+    const width = corridorProfileWidth(state.profile);
+    corridorEditorScopedSegments().forEach(segment => {
+        for (let i = 0; i < segment.length - 1; i += 1) {
+            const ring = calculateRoadPolygon([segment[i], segment[i + 1]], width);
+            const feature = ring ? corridorFeatureFromLatLngRing(ring) : null;
+            if (feature) features.push(feature);
+        }
+    });
+    return features;
+}
+
+// Sample (or reuse) the clearance for the current scope, constraint mode and geometry. The
+// samples do not depend on the cross-section — only the derived stats do — so profile edits
+// never invalidate this cache; a scope change, a constraint toggle, a building-pool fill or a
+// baked shift does (each bumps/clears its part of the key).
+function corridorEditorEnsureClearance() {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal' || !corridorEditorClearanceReady()) return null;
+    const key = [state.scope, state.segmentId || '', state.clearanceMode, state.geometryVersion || 0].join('|');
+    if (state.clearanceCache && state.clearanceCache.key === key) return state.clearanceCache;
+
+    const obstacles = corridorEditorClearanceObstacles();
+    const flat = [];
+    let chain = 0;
+    const samplesBySegment = corridorEditorScopedSegments().map(segment => {
+        const planar = segment
+            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+        if (planar.length < 2) return [];
+        const samples = corridorClearanceSamples(planar, obstacles, { maxDistance: CORRIDOR_CLEARANCE_MAX });
+        samples.forEach(sample => flat.push({ ...sample, chain: chain + sample.s }));
+        chain += corridorEditorPlanarLength(planar);
+        return samples;
+    });
+    state.clearanceCache = { key, samplesBySegment, flat, obstacles, chainLength: chain };
+    return state.clearanceCache;
+}
+
+function corridorEditorFormatMeters(value) {
+    return `${Number(Number(value).toFixed(1))}`;
+}
+
+// The compass name of the corridor's LEFT side — how a direction is said to someone who cannot
+// know which way the centerline was drawn. flip=true names the right side.
+function corridorEditorSideLabel(flat, flip) {
+    let x = 0;
+    let y = 0;
+    flat.forEach(sample => {
+        x += -Math.sin(sample.angle);
+        y += Math.cos(sample.angle);
+    });
+    if (flip) { x = -x; y = -y; }
+    const key = (typeof corridorCompass8 === 'function') ? corridorCompass8([x, y]) : null;
+    if (!key) return '';
+    const fallbacks = { n: 'north', ne: 'north-east', e: 'east', se: 'south-east', s: 'south', sw: 'south-west', w: 'west', nw: 'north-west' };
+    return corridorEditorI18n(`modal.corridor.compass.${key}`, fallbacks[key]);
+}
+
+// A shift's direction/magnitude as user-facing text: "1.8 m north-east".
+function corridorEditorShiftText(flat, shift) {
+    return `${corridorEditorFormatMeters(Math.abs(shift))} m ${corridorEditorSideLabel(flat, shift < 0)}`;
+}
+
+// What the corridor min width becomes without one pinch obstacle — the "what would demolishing
+// it buy" number, one resample with that obstacle left out.
+function corridorEditorWhatIfWithout(clearance, obstacleId) {
+    const state = corridorEditorState;
+    if (!state || !clearance) return null;
+    const remaining = clearance.obstacles.filter(obstacle => obstacle.id !== obstacleId);
+    const flat = [];
+    corridorEditorScopedSegments().forEach(segment => {
+        const planar = segment.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        corridorClearanceSamples(planar, remaining, { maxDistance: CORRIDOR_CLEARANCE_MAX })
+            .forEach(sample => flat.push(sample));
+    });
+    const stats = flat.length
+        ? corridorClearanceStats(flat, corridorProfileWidth(state.profile), { maxDistance: CORRIDOR_CLEARANCE_MAX })
+        : null;
+    return stats ? { minWidth: stats.minWidth, unbounded: stats.minWidthUnbounded } : null;
+}
+
+// The width-profile chart: chainage along the road against the corridor width there, with the
+// current road width as a dashed reference line and the pinch marked. Values are clipped at a
+// display cap — an open side is a floor, not a measurement — and the hover cursor (bound after
+// insertion) reads out exact values and pans the map on click.
+function corridorEditorChartSvg(stats, roadWidth, chainLength) {
+    if (!stats || stats.widths.length < 2) return '';
+    const W = 320;
+    const H = 110;
+    const M = { left: 34, right: 10, top: 10, bottom: 16 };
+    const cap = Math.max(Math.min(60, Math.max(roadWidth * 1.6, stats.minWidth * 1.3, 15)), roadWidth * 1.15);
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+    const x = chain => M.left + (chainLength > 0 ? (chain / chainLength) : 0) * plotW;
+    const y = width => M.top + (1 - Math.min(width, cap) / cap) * plotH;
+
+    const line = stats.widths
+        .map((entry, index) => `${index ? 'L' : 'M'}${x(entry.chain ?? entry.s).toFixed(1)},${y(entry.width).toFixed(1)}`)
+        .join(' ');
+    const first = stats.widths[0];
+    const last = stats.widths[stats.widths.length - 1];
+    const area = `${line} L${x(last.chain ?? last.s).toFixed(1)},${(M.top + plotH).toFixed(1)} L${x(first.chain ?? first.s).toFixed(1)},${(M.top + plotH).toFixed(1)} Z`;
+    const roadY = y(roadWidth);
+    const min = stats.widths[stats.pinch.index];
+    const gridY = [cap, cap / 2];
+
+    return `
+        <div class="corridor-chart-title">${corridorEditorI18n('modal.corridor.chartTitle', 'Corridor width along the road (m)')}</div>
+        <svg class="corridor-chart" viewBox="0 0 ${W} ${H}" role="img"
+             aria-label="${corridorEditorI18n('modal.corridor.chartTitle', 'Corridor width along the road (m)')}">
+            ${gridY.map(value => `<line class="corridor-chart-grid" x1="${M.left}" y1="${y(value).toFixed(1)}" x2="${W - M.right}" y2="${y(value).toFixed(1)}"></line>
+            <text class="corridor-chart-tick" x="${M.left - 4}" y="${(y(value) + 3).toFixed(1)}" text-anchor="end">${corridorEditorFormatMeters(value)}</text>`).join('')}
+            <line class="corridor-chart-grid" x1="${M.left}" y1="${M.top + plotH}" x2="${W - M.right}" y2="${M.top + plotH}"></line>
+            <text class="corridor-chart-tick" x="${M.left - 4}" y="${M.top + plotH + 3}" text-anchor="end">0</text>
+            <path class="corridor-chart-area" d="${area}"></path>
+            <path class="corridor-chart-line" d="${line}"></path>
+            <line class="corridor-chart-road" x1="${M.left}" y1="${roadY.toFixed(1)}" x2="${W - M.right}" y2="${roadY.toFixed(1)}"></line>
+            <text class="corridor-chart-road-label" x="${W - M.right}" y="${(roadY - 3).toFixed(1)}" text-anchor="end">${corridorEditorI18n('modal.corridor.chartRoad', 'road')} ${corridorEditorFormatMeters(roadWidth)} m</text>
+            <circle class="corridor-chart-min" cx="${x(min.chain ?? min.s).toFixed(1)}" cy="${y(min.width).toFixed(1)}" r="3.5"></circle>
+            <text class="corridor-chart-min-label" x="${x(min.chain ?? min.s).toFixed(1)}" y="${Math.max(M.top + 8, y(min.width) - 7).toFixed(1)}" text-anchor="middle">${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(min.width)}</text>
+            <line class="corridor-chart-cursor" y1="${M.top}" y2="${M.top + plotH}" hidden></line>
+            <rect class="corridor-chart-hit" x="${M.left}" y="${M.top}" width="${plotW}" height="${plotH}" fill="transparent"></rect>
+        </svg>
+        <div class="corridor-chart-readout" hidden></div>`;
+}
+
+function corridorEditorCorridorBodyHtml() {
+    const state = corridorEditorState;
+    if (!corridorEditorClearanceReady()) return '<div class="corridor-editor-notice">corridor-clearance.js missing</div>';
+    const clearance = corridorEditorEnsureClearance();
+    const width = corridorProfileWidth(state.profile);
+    const flat = clearance ? clearance.flat : [];
+    const stats = flat.length ? corridorClearanceStats(flat, width, { maxDistance: CORRIDOR_CLEARANCE_MAX }) : null;
+    if (stats) stats.widths.forEach((entry, index) => { entry.chain = flat[index].chain; });
+
+    const constraint = `
+        <label class="corridor-stats-constraint" title="${corridorEditorI18n('modal.corridor.constraintParcelsTitle', 'Treat every parcel that is not road land as a wall: the corridor can only use road parcels and land this road already takes.')}">
+            <input type="checkbox" class="corridor-stats-parcels"${state.clearanceMode === 'parcels' ? ' checked' : ''}>
+            <span>${corridorEditorI18n('modal.corridor.constraintParcels', 'Also stay within road parcels')}</span>
+        </label>`;
+
+    if (!stats) {
+        return `<div class="corridor-stats">${constraint}
+            <div class="corridor-editor-notice">${corridorEditorI18n('modal.corridor.noClearance', 'Nothing to measure yet — the road has no centerline here.')}</div>
+        </div>`;
+    }
+
+    const noObstacles = !clearance.obstacles.length
+        ? `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.noObstacles', 'No buildings are loaded near this road, so nothing constrains the corridor yet.')}</div>`
+        : '';
+
+    const minText = `${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.minWidth)} m`;
+    const delta = stats.minWidth - width;
+    const deltaText = delta >= 0
+        ? `<span class="corridor-stats-delta corridor-stats-delta--ok">${corridorEditorI18n('modal.corridor.roomToWiden', 'Room to widen: +{{delta}} m', { delta: corridorEditorFormatMeters(delta) })}</span>`
+        : `<span class="corridor-stats-delta corridor-stats-delta--over">${corridorEditorI18n('modal.corridor.overCorridor', 'Too wide for the corridor by {{delta}} m', { delta: corridorEditorFormatMeters(-delta) })}</span>`;
+
+    // Fit: only a single scoped segment can be moved as one piece (pick a segment on a network).
+    const singleSegment = clearance.samplesBySegment.filter(samples => samples.length).length === 1;
+    const minted = typeof isProposalMinted === 'function' && isProposalMinted(state.source);
+    const fit = corridorFitShift(flat, width, { maxDistance: CORRIDOR_CLEARANCE_MAX, margin: 0.05 });
+    let fitHtml = '';
+    if (stats.fitsAsIs) {
+        fitHtml = `<div class="corridor-stats-fit-ok">${corridorEditorI18n('modal.corridor.fitsAsIs', 'The road fits in its current position.')}</div>`;
+    } else if (!singleSegment) {
+        fitHtml = `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.fitPickSegment', 'Moving works one segment at a time — reopen the editor from a single segment of this road.')}</div>`;
+    } else if (fit && fit.feasible && fit.shift !== 0) {
+        fitHtml = `
+            <div class="corridor-stats-fit-move">${corridorEditorI18n('modal.corridor.fitIfMoved', 'The road would fit if moved {{move}}.', { move: corridorEditorShiftText(flat, fit.shift) })}</div>
+            <button type="button" class="btn btn-primary corridor-fit-move" data-shift="${fit.shift}"${minted ? ' disabled' : ''}>
+                ${corridorEditorI18n('modal.corridor.moveToFit', 'Move road {{move}}', { move: corridorEditorShiftText(flat, fit.shift) })}
+            </button>`;
+    } else {
+        fitHtml = `<div class="corridor-stats-fit-none">${corridorEditorI18n('modal.corridor.noFit', 'Does not fit even if moved — the corridor narrows to {{min}} m.', { min: corridorEditorFormatMeters(stats.minWidth) })}</div>`;
+    }
+
+    // A pending widening can be taken from one side instead of both: widen symmetrically, then
+    // shift by half the added width, and the whole addition lands on the chosen side.
+    const originalWidth = corridorProfileWidth(state.originalProfile || state.profile);
+    let sideHtml = '';
+    if (singleSegment && fit && width > originalWidth + 1e-6) {
+        const half = (width - originalWidth) / 2;
+        const options = [
+            { shift: half, side: corridorEditorSideLabel(flat, false) },
+            { shift: -half, side: corridorEditorSideLabel(flat, true) }
+        ];
+        const buttons = options.map(option => {
+            const possible = fit.feasible && option.shift >= fit.dMin - 1e-9 && option.shift <= fit.dMax + 1e-9;
+            return `<button type="button" class="btn btn-outline-secondary corridor-fit-side" data-shift="${option.shift}"
+                ${possible && !minted ? '' : ' disabled'}>${corridorEditorI18n('modal.corridor.widenInto', 'Widen toward: {{side}}', { side: option.side })}</button>`;
+        }).join('');
+        sideHtml = `<div class="corridor-stats-sides">
+            <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.widenIntoLabel', 'Take the added width ({{delta}} m) from one side', { delta: corridorEditorFormatMeters(width - originalWidth) })}</div>
+            <div class="corridor-stats-side-buttons">${buttons}</div>
+        </div>`;
+    }
+    const mintedNote = minted
+        ? `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.fitMinted', 'This proposal is minted and immutable — apply the cross-section to a drawing to move it.')}</div>`
+        : '';
+
+    // The pinch and what removing its obstacles would buy — the "what would demolition unlock" line.
+    const pinchLines = [];
+    pinchLines.push(corridorEditorI18n('modal.corridor.narrowest', 'Narrowest point: {{width}} m (marked on the map)', { width: `${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.minWidth)}` }));
+    [['leftObstacle', false], ['rightObstacle', true]].forEach(([sideKey, flip]) => {
+        const obstacle = stats.pinch[sideKey];
+        if (!obstacle || obstacle.kind !== 'building') return;
+        const whatIf = corridorEditorWhatIfWithout(clearance, obstacle.obstacleId);
+        if (!whatIf || whatIf.minWidth <= stats.minWidth + 0.05) return;
+        pinchLines.push(corridorEditorI18n('modal.corridor.whatIfDemolished', 'Without the building on the {{side}} side: {{width}} m', {
+            side: corridorEditorSideLabel(flat, flip),
+            width: `${whatIf.unbounded ? '≥ ' : ''}${corridorEditorFormatMeters(whatIf.minWidth)}`
+        }));
+    });
+
+    return `<div class="corridor-stats">
+        ${constraint}
+        ${noObstacles}
+        <div class="corridor-stats-headline">
+            <div class="corridor-stats-metric">
+                <span class="corridor-stats-value">${minText}</span>
+                <span class="corridor-stats-label">${corridorEditorI18n('modal.corridor.corridorMinWidth', 'Corridor min width — the widest this road can be here without demolishing anything')}</span>
+            </div>
+            <div class="corridor-stats-current">
+                <span>${corridorEditorI18n('modal.corridor.currentRoad', 'Current road: {{width}} m', { width: corridorEditorFormatMeters(width) })}</span>
+                ${deltaText}
+            </div>
+        </div>
+        <div class="corridor-stats-fit">${fitHtml}${sideHtml}${mintedNote}</div>
+        ${corridorEditorChartSvg(stats, width, clearance.chainLength)}
+        <div class="corridor-stats-pinch">${pinchLines.map(line => `<div>${line}</div>`).join('')}</div>
+    </div>`;
+}
+
+// The pane the clearance ticks and pinch-obstacle outlines draw in: ABOVE the road strips (655)
+// so a tick crossing the road stays visible on it, still under proposal hover outlines (660).
+function corridorEditorEnsureClearancePane() {
+    if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+    let pane = map.getPane('corridorClearancePane');
+    if (!pane && typeof map.createPane === 'function') pane = map.createPane('corridorClearancePane');
+    if (pane && pane.style) {
+        pane.style.zIndex = '658';
+        pane.style.pointerEvents = 'none';
+    }
+    return pane ? 'corridorClearancePane' : undefined;
+}
+
+function corridorEditorClearClearanceOverlays() {
+    if (typeof map === 'undefined' || !map) return;
+    [corridorEditorHaloLayer, corridorEditorPinchLayer, corridorEditorChartProbeLayer].forEach(layer => {
+        if (layer) { try { map.removeLayer(layer); } catch (_) { } }
+    });
+    corridorEditorHaloLayer = null;
+    corridorEditorPinchLayer = null;
+    corridorEditorChartProbeLayer = null;
+}
+
+// Draw the Corridor tab's story on the map: the available-corridor halo (the room the road has),
+// the pinch tick labelled with the min width, and the outlines of the obstacles that form it.
+function corridorEditorRenderClearanceOverlays() {
+    corridorEditorClearClearanceOverlays();
+    const state = corridorEditorState;
+    if (!state || state.activeTab !== 'corridor' || typeof map === 'undefined' || !map || typeof L === 'undefined') return;
+    if (!corridorEditorClearanceReady() || typeof htrs96ToWGS84 !== 'function') return;
+    const clearance = corridorEditorEnsureClearance();
+    if (!clearance || !clearance.flat.length) return;
+    const stats = corridorClearanceStats(clearance.flat, corridorProfileWidth(state.profile), { maxDistance: CORRIDOR_CLEARANCE_MAX });
+    if (!stats) return;
+    if (typeof ensureCorridorStripsPane === 'function') ensureCorridorStripsPane();
+    const pane = (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined;
+    const toLatLng = ([xCoord, yCoord]) => {
+        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        return { lat, lng };
+    };
+
+    const haloRings = clearance.samplesBySegment
+        .map(samples => corridorClearanceHalo(samples, CORRIDOR_CLEARANCE_DISPLAY_CAP))
+        .filter(Boolean)
+        .map(ring => ring.map(toLatLng));
+    if (haloRings.length) {
+        corridorEditorHaloLayer = L.polygon(haloRings, {
+            pane,
+            interactive: false,
+            color: '#2563eb',
+            weight: 1.5,
+            dashArray: '6 4',
+            fillColor: '#2563eb',
+            fillOpacity: 0.06,
+            className: 'corridor-clearance-halo'
+        }).addTo(map);
+    }
+
+    // The pinch tick and its obstacles draw ABOVE the road (their own pane): the numbers live in
+    // the panel and the chart — the map only shows WHERE.
+    const tickPane = corridorEditorEnsureClearancePane();
+    const pinch = stats.pinch;
+    const sample = pinch.sample;
+    const nx = -Math.sin(sample.angle);
+    const ny = Math.cos(sample.angle);
+    const L_ = Math.min(sample.left ? sample.left.distance : CORRIDOR_CLEARANCE_DISPLAY_CAP, CORRIDOR_CLEARANCE_DISPLAY_CAP);
+    const R_ = Math.min(sample.right ? sample.right.distance : CORRIDOR_CLEARANCE_DISPLAY_CAP, CORRIDOR_CLEARANCE_DISPLAY_CAP);
+    const tick = [
+        toLatLng([sample.point[0] + nx * L_, sample.point[1] + ny * L_]),
+        toLatLng([sample.point[0] - nx * R_, sample.point[1] - ny * R_])
+    ];
+    const group = [L.polyline(tick, { pane: tickPane, interactive: false, color: '#111827', weight: 3, className: 'corridor-clearance-pinch' })];
+    [pinch.leftObstacle, pinch.rightObstacle].forEach(hit => {
+        if (!hit) return;
+        const obstacle = clearance.obstacles.find(candidate => candidate.id === hit.obstacleId);
+        if (!obstacle) return;
+        group.push(L.polygon(obstacle.rings.map(ring => ring.map(toLatLng)), {
+            pane: tickPane,
+            interactive: false,
+            color: '#9a5b13',
+            weight: 2,
+            fillColor: '#d97706',
+            fillOpacity: 0.2,
+            className: 'corridor-clearance-pinch-obstacle'
+        }));
+    });
+    corridorEditorPinchLayer = L.layerGroup(group).addTo(map);
+}
+
+// Bake a lateral shift into the scoped segment's stored centerline. The shift goes through
+// updateLocalCorridorGeometry like any other geometry edit (a node drag, a reroute), so the
+// footprint, parcel cuts, demolition re-carves and collision prompts all replay on the moved
+// alignment. Endpoints welded to other roads (or to the rest of this network) are held: the
+// shift tapers to zero toward them, the shape of a real realignment.
+async function corridorEditorApplyFitShift(shiftMeters) {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal' || !Number.isFinite(shiftMeters) || !shiftMeters) return;
+    if (typeof updateLocalCorridorGeometry !== 'function' || !corridorEditorClearanceReady()) return;
+    const segments = corridorEditorScopedSegments();
+    if (segments.length !== 1) return;
+
+    const planar = segments[0].map(point => wgs84ToHTRS96(point.lat, point.lng));
+    const held = corridorHeldEndpoints(planar, corridorEditorOtherCenterlinesPlanar(), 1);
+    const taper = Math.max(10, corridorProfileWidth(state.profile));
+    let working = planar;
+    if (held.start || held.end) {
+        working = densifyPolylineXY(planar, Math.max(3, taper / 3));
+    }
+    const offsets = corridorShiftOffsets(working, shiftMeters, {
+        holdStart: held.start,
+        holdEnd: held.end,
+        taperMeters: taper
+    });
+    const shifted = offsets ? offsetPolylineVariable(working, offsets) : null;
+    if (!shifted) return;
+    const moved = shifted.map(([xCoord, yCoord]) => {
+        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        return { lat, lng };
+    });
+
+    // Name the move from the PRE-move samples (the direction hardly changes with the road).
+    const moveText = (state.clearanceCache && state.clearanceCache.flat.length)
+        ? corridorEditorShiftText(state.clearanceCache.flat, shiftMeters)
+        : `${corridorEditorFormatMeters(Math.abs(shiftMeters))} m`;
+
+    const updated = await updateLocalCorridorGeometry(state.proposalKey, definition => {
+        corridorEditorWriteScopedSegmentPoints(definition, moved);
+    });
+    if (!corridorEditorState || corridorEditorState !== state) return;
+    if (!updated) {
+        state.notice = corridorEditorI18n('modal.corridor.moveFailed', 'The road could not be moved (a minted proposal is immutable).');
+        corridorEditorRender();
+        return;
+    }
+    // The centerline moved: every cache derived from it is stale, including the opening-width
+    // baseline the blocking decision compares against.
+    state.geometryVersion = (state.geometryVersion || 0) + 1;
+    state.clearanceCache = null;
+    state.baselineBuildingHitIds = null;
+    if (typeof updateStatus === 'function') {
+        updateStatus(corridorEditorI18n('modal.corridor.movedStatus', 'Road moved {{move}}.', { move: moveText }));
+    }
+    corridorEditorRender();
+    corridorEditorFocusMap();
+}
+
+// Every centerline a shifted segment's endpoints could be welded to: the other segments of this
+// road network, and the centerlines of every other road proposal on the map.
+function corridorEditorOtherCenterlinesPlanar() {
+    const state = corridorEditorState;
+    const others = [];
+    if (!state) return others;
+    const toPlanar = segment => segment
+        .map(point => wgs84ToHTRS96(point.lat, point.lng))
+        .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+
+    if (state.scope === 'segment' && state.segmentId && typeof corridorCenterlineOf === 'function') {
+        const ids = Array.isArray(state.definition.segmentIds) ? state.definition.segmentIds : [];
+        corridorCenterlineOf(state.definition).forEach((segment, index) => {
+            if (String(ids[index] || '') !== state.segmentId) others.push(toPlanar(segment));
+        });
+    }
+    try {
+        const proposals = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
+            ? proposalStorage.getAllProposals()
+            : [];
+        proposals.forEach(proposal => {
+            if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return;
+            const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+            if (String(key) === String(state.proposalKey)) return;
+            if (typeof isProposalApplied === 'function' && !isProposalApplied(proposal)) return;
+            corridorCenterlineOf(proposal.roadProposal.definition).forEach(segment => others.push(toPlanar(segment)));
+        });
+    } catch (_) { }
+    return others.filter(poly => poly.length >= 2);
+}
+
+// Replace the scoped segment's points inside the stored definition, whatever raw shape it uses
+// (one flat point list, or a list of segments under `points` or `segments`).
+function corridorEditorWriteScopedSegmentPoints(definition, latlngs) {
+    const state = corridorEditorState;
+    const points = latlngs.map(point => ({ lat: point.lat, lng: point.lng }));
+    const raw = (Array.isArray(definition.points) && definition.points.length && definition.points)
+        || (Array.isArray(definition.segments) && definition.segments)
+        || null;
+    if (!raw) return;
+    if (!Array.isArray(raw[0])) {
+        definition.points = points;
+        return;
+    }
+    // Raw indices of the segments corridorCenterlineOf would keep, in its output order — the
+    // order segmentIds are indexed by.
+    const validRawIndices = [];
+    raw.forEach((segment, index) => {
+        if (Array.isArray(segment) && segment.length >= 2) validRawIndices.push(index);
+    });
+    let target = -1;
+    if (state && state.scope === 'segment' && state.segmentId) {
+        const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds : [];
+        const position = validRawIndices.findIndex((rawIndex, order) => String(ids[order] || '') === state.segmentId);
+        if (position >= 0) target = validRawIndices[position];
+    } else if (validRawIndices.length === 1) {
+        target = validRawIndices[0];
+    }
+    if (target < 0) return;
+    raw[target] = points;
+}
+
+// Render the Corridor tab body and wire its controls.
+function corridorEditorRenderCorridorTab(body) {
+    body.innerHTML = corridorEditorCorridorBodyHtml();
+
+    const toggle = body.querySelector('.corridor-stats-parcels');
+    if (toggle) {
+        toggle.addEventListener('change', () => {
+            const state = corridorEditorState;
+            if (!state) return;
+            state.clearanceMode = toggle.checked ? 'parcels' : 'buildings';
+            state.clearanceCache = null;
+            corridorEditorRender();
+        });
+    }
+
+    body.querySelectorAll('.corridor-fit-move, .corridor-fit-side').forEach(button => {
+        button.addEventListener('click', () => {
+            corridorEditorApplyFitShift(Number(button.dataset.shift));
+        });
+    });
+
+    corridorEditorBindChart(body);
+    corridorEditorRenderClearanceOverlays();
+}
+
+// The chart's hover crosshair and click-to-pan. Nearest-station lookup is by chainage, the same
+// x the chart plots.
+function corridorEditorBindChart(body) {
+    const svg = body.querySelector('.corridor-chart');
+    const readout = body.querySelector('.corridor-chart-readout');
+    const cursor = svg && svg.querySelector('.corridor-chart-cursor');
+    const hit = svg && svg.querySelector('.corridor-chart-hit');
+    const state = corridorEditorState;
+    if (!svg || !hit || !state) return;
+    const clearance = state.clearanceCache;
+    if (!clearance || !clearance.flat.length) return;
+    const width = corridorProfileWidth(state.profile);
+
+    const nearestSample = event => {
+        const rect = hit.getBoundingClientRect();
+        const fraction = Math.max(0, Math.min(1, (event.clientX - rect.left) / (rect.width || 1)));
+        const chain = fraction * clearance.chainLength;
+        let best = clearance.flat[0];
+        clearance.flat.forEach(sample => {
+            if (Math.abs(sample.chain - chain) < Math.abs(best.chain - chain)) best = sample;
+        });
+        return best;
+    };
+
+    hit.addEventListener('pointermove', event => {
+        const sample = nearestSample(event);
+        const L_ = sample.left ? sample.left.distance : CORRIDOR_CLEARANCE_MAX;
+        const R_ = sample.right ? sample.right.distance : CORRIDOR_CLEARANCE_MAX;
+        const unbounded = !sample.left || !sample.right;
+        if (cursor) {
+            // The hit rect carries the plot area in SVG coordinates; derive the cursor x from it.
+            const plotX = Number(hit.getAttribute('x'));
+            const plotW = Number(hit.getAttribute('width'));
+            const x = plotX + (clearance.chainLength > 0 ? sample.chain / clearance.chainLength : 0) * plotW;
+            cursor.setAttribute('x1', x);
+            cursor.setAttribute('x2', x);
+            cursor.hidden = false;
+        }
+        if (readout) {
+            readout.hidden = false;
+            readout.textContent = corridorEditorI18n('modal.corridor.chartReadout', 'At {{at}} m: corridor {{width}} m', {
+                at: corridorEditorFormatMeters(sample.chain),
+                width: `${unbounded ? '≥ ' : ''}${corridorEditorFormatMeters(L_ + R_)}`
+            }) + (L_ + R_ < width ? ` — ${corridorEditorI18n('modal.corridor.chartTooNarrow', 'narrower than the road')}` : '');
+        }
+    });
+    hit.addEventListener('pointerleave', () => {
+        if (cursor) cursor.hidden = true;
+        if (readout) readout.hidden = true;
+    });
+    hit.addEventListener('click', event => {
+        corridorEditorShowChartProbe(nearestSample(event));
+    });
+}
+
+// Drop a yellow tick across the corridor at a clicked chart station and pan to it — the chart's
+// x-axis made visible: "the 75 m mark is HERE". No numbers on the map (the chart readout carries
+// them); the tick draws above the road in its own pane. Replaced by the next click, cleared with
+// the other Corridor-tab overlays.
+function corridorEditorShowChartProbe(sample) {
+    if (!sample || typeof map === 'undefined' || !map || typeof L === 'undefined'
+        || typeof htrs96ToWGS84 !== 'function') return;
+    if (corridorEditorChartProbeLayer) {
+        try { map.removeLayer(corridorEditorChartProbeLayer); } catch (_) { }
+        corridorEditorChartProbeLayer = null;
+    }
+    const toLatLng = ([xCoord, yCoord]) => {
+        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        return { lat, lng };
+    };
+    const nx = -Math.sin(sample.angle);
+    const ny = Math.cos(sample.angle);
+    const left = Math.min(sample.left ? sample.left.distance : CORRIDOR_CLEARANCE_DISPLAY_CAP, CORRIDOR_CLEARANCE_DISPLAY_CAP);
+    const right = Math.min(sample.right ? sample.right.distance : CORRIDOR_CLEARANCE_DISPLAY_CAP, CORRIDOR_CLEARANCE_DISPLAY_CAP);
+    const tick = [
+        toLatLng([sample.point[0] + nx * left, sample.point[1] + ny * left]),
+        toLatLng([sample.point[0] - nx * right, sample.point[1] - ny * right])
+    ];
+    corridorEditorChartProbeLayer = L.polyline(tick, {
+        pane: corridorEditorEnsureClearancePane(),
+        interactive: false,
+        color: '#eab308',
+        weight: 4,
+        className: 'corridor-clearance-probe'
+    }).addTo(map);
+    map.panTo(toLatLng(sample.point));
+}
+
+function corridorEditorSyncTabs() {
+    const state = corridorEditorState;
+    document.querySelectorAll('.corridor-editor-tab').forEach(tab => {
+        const active = state && tab.dataset.tab === state.activeTab;
+        tab.classList.toggle('corridor-editor-tab--active', !!active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
 }
 
 // A proportional bar of the cross-section, drawn to scale across the panel.
@@ -507,29 +1216,8 @@ function corridorEditorRowsHtml(profile) {
     }).join('');
 }
 
-// The lane palette: one button per lane type, each inserting that type at its standard width. The road
-// grows by exactly that much — this is how a street is widened now that there is no width slider.
-function corridorEditorPaletteHtml() {
-    const buttons = corridorEditorLaneTypes().map(type => {
-        const laneType = CORRIDOR_LANE_TYPES[type] || {};
-        const width = Number(corridorStandardWidth(type));
-        const label = corridorLaneTypeLabel(type);
-        return `<button type="button" class="corridor-palette-btn" data-add-type="${type}"
-                    title="${corridorEditorI18n('modal.corridor.addLaneOfType', 'Add: {{lane}} ({{width}} m)', { lane: label, width })}">
-                    <span class="corridor-palette-swatch" style="background:${laneType.surface}"></span>
-                    <span class="corridor-palette-label">${label}</span>
-                    <span class="corridor-palette-width">${width} m</span>
-                </button>`;
-    }).join('');
-    return `
-        <div class="corridor-editor-palette">
-            <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.addLane', 'Add lane')}</div>
-            <div class="corridor-editor-palette-buttons">${buttons}</div>
-        </div>`;
-}
-
-// The standard cross-sections, keyed by the same totals the road-width picker offers. One click stamps a
-// complete, correct section; tweaking it afterwards is what the rest of the editor is for.
+// The standard cross-sections, keyed by the same totals the road-width picker offers. Picking one
+// stamps a complete, correct section; tweaking it afterwards is what the rest of the editor is for.
 const CORRIDOR_EDITOR_PRESETS = [
     { width: 7.5, key: 'alley', fallback: 'Alley ~7.5 m' },
     { width: 10, key: 'local', fallback: 'Local ~10 m' },
@@ -539,16 +1227,31 @@ const CORRIDOR_EDITOR_PRESETS = [
     { width: 80, key: 'boulevard', fallback: 'Boulevard ~80 m' }
 ];
 
-function corridorEditorPresetsHtml() {
-    const buttons = CORRIDOR_EDITOR_PRESETS
+// One compact row of two dropdowns: add a lane of a type (at its standard width — this is how a
+// street is widened, there is no width slider), and stamp a standard cross-section. Dropdowns,
+// not button grids: ten lane types and six presets as buttons pushed the lane rows below the fold.
+function corridorEditorPickersHtml() {
+    const laneOptions = corridorEditorLaneTypes().map(type => {
+        const width = Number(corridorStandardWidth(type));
+        return `<option value="${type}">${corridorLaneTypeLabel(type)} (${width} m)</option>`;
+    }).join('');
+    const presetOptions = CORRIDOR_EDITOR_PRESETS
         .filter(preset => CORRIDOR_PROFILE_PRESETS[preset.width])
-        .map(preset => `<button type="button" class="corridor-preset-btn" data-preset="${preset.width}">${
+        .map(preset => `<option value="${preset.width}">${
             corridorEditorI18n(`modal.corridor.presetWidths.${preset.key}`, preset.fallback)
-        }</button>`).join('');
+        }</option>`).join('');
+    const addLabel = corridorEditorI18n('modal.corridor.addLane', 'Add lane');
+    const presetLabel = corridorEditorI18n('modal.corridor.presets', 'Standard cross-sections');
     return `
-        <div class="corridor-editor-presets">
-            <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.presets', 'Standard cross-sections')}</div>
-            <div class="corridor-editor-preset-buttons">${buttons}</div>
+        <div class="corridor-editor-pickers">
+            <select class="corridor-editor-preset-select" aria-label="${presetLabel}">
+                <option value="" selected disabled>${presetLabel}…</option>
+                ${presetOptions}
+            </select>
+            <select class="corridor-editor-add-lane" aria-label="${addLabel}">
+                <option value="" selected disabled>${addLabel}…</option>
+                ${laneOptions}
+            </select>
         </div>`;
 }
 
@@ -578,18 +1281,30 @@ function corridorEditorSelect(index, scrollIntoView) {
 function corridorEditorRender() {
     const body = document.querySelector('.corridor-editor-body');
     if (!body || !corridorEditorState) return;
+    corridorEditorSyncTabs();
+
+    if (corridorEditorState.activeTab === 'corridor' && corridorEditorState.mode === 'proposal') {
+        corridorEditorRenderCorridorTab(body);
+        const corridorSave = document.querySelector('.corridor-editor-save');
+        if (corridorSave) {
+            corridorSave.disabled = !corridorEditorState.dirty || corridorEditorState.widthBlocked === true;
+        }
+        // The obstacle check keeps running here too: it owns the red hit paint and the Apply block.
+        corridorEditorScheduleObstacleCheck();
+        return;
+    }
+
     const profile = corridorEditorState.profile;
     const notice = corridorEditorState.notice
         ? `<div class="corridor-editor-notice" role="status">${corridorEditorState.notice}</div>`
         : '';
 
-    // Presets, then the diagram, then the palette — the two controls that BUILD the road stay at the top,
-    // where they cannot be pushed below the fold by a boulevard's fifteen lane rows.
+    // The pickers, then the diagram — the controls that BUILD the road stay at the top, where
+    // they cannot be pushed below the fold by a boulevard's fifteen lane rows.
     body.innerHTML = `
-        ${corridorEditorPresetsHtml()}
+        ${corridorEditorPickersHtml()}
         ${corridorEditorSectionHtml(profile)}
         ${notice}
-        ${corridorEditorPaletteHtml()}
         <div class="corridor-editor-hint">${corridorEditorI18n('modal.corridor.dragReorderHint', 'Drag a lane by its handle to reorder it; drag a seam in the diagram to move width from one lane to its neighbour.')}</div>
         <div class="corridor-editor-lanes">${corridorEditorRowsHtml(profile)}</div>
     `;
@@ -752,11 +1467,15 @@ function corridorEditorBindBody(body) {
         });
     });
 
-    // The palette. A new lane goes AFTER the selected one — the outermost strips are almost always
-    // sidewalks, so appending on the right would put a traffic lane outside the pavement.
-    body.querySelectorAll('[data-add-type]').forEach(button => {
-        const type = button.dataset.addType;
-        button.addEventListener('click', () => {
+    // The add-lane dropdown. A new lane goes AFTER the selected one — the outermost strips are
+    // almost always sidewalks, so appending on the right would put a traffic lane outside the
+    // pavement. (The re-render after the edit resets the dropdown to its placeholder.)
+    const addSelect = body.querySelector('.corridor-editor-add-lane');
+    if (addSelect) {
+        addSelect.addEventListener('change', () => {
+            const type = addSelect.value;
+            addSelect.value = '';
+            if (!type || !isCorridorLaneType(type)) return;
             const state = corridorEditorState;
             const lanes = state.profile.strips.length;
             const at = (state.selected >= 0 && state.selected < lanes) ? state.selected + 1 : lanes;
@@ -767,16 +1486,18 @@ function corridorEditorBindBody(body) {
             state.selected = at; // the new lane lands at `at`, and the render below highlights it
             corridorEditorApply(profile => withLaneInserted(profile, at, lane));
         });
-    });
+    }
 
-    body.querySelectorAll('[data-preset]').forEach(button => {
-        const preset = CORRIDOR_PROFILE_PRESETS[button.dataset.preset];
-        if (!preset) return;
-        button.addEventListener('click', () => {
+    const presetSelect = body.querySelector('.corridor-editor-preset-select');
+    if (presetSelect) {
+        presetSelect.addEventListener('change', () => {
+            const preset = CORRIDOR_PROFILE_PRESETS[presetSelect.value];
+            presetSelect.value = '';
+            if (!preset) return;
             corridorEditorState.selected = 0;
             corridorEditorApply(() => normalizeCorridorProfile(preset.map(strip => ({ ...strip }))));
         });
-    });
+    }
 
     corridorEditorBindLaneDrag(body);
 }
@@ -938,6 +1659,14 @@ function corridorEditorOpenOverlay() {
                 <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'Hits buildings (to tunnel through buildings, use drawing mode)')}</span>
                 <span class="corridor-editor-indicator corridor-editor-indicator--recut" hidden>${corridorEditorI18n('modal.corridor.extendsCut', 'Cuts deeper into an already-cut building (amber on the map)')}</span>
                 <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
+                <button type="button" class="corridor-editor-indicator corridor-editor-indicator--fit" hidden>${corridorEditorI18n('modal.corridor.fitHint', 'Can it fit if moved? Open the Corridor tab')}</button>
+            </div>`;
+    // Two tabs for a placed road: the cross-section (what the road is) and the corridor (what the
+    // room around it allows). Drawing mode keeps the single cross-section view.
+    const tabsHtml = drawing ? '' : `
+            <div class="corridor-editor-tabs" role="tablist">
+                <button type="button" class="corridor-editor-tab corridor-editor-tab--active" data-tab="section" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
+                <button type="button" class="corridor-editor-tab" data-tab="corridor" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
             </div>`;
     const overlay = document.createElement('div');
     overlay.id = 'corridor-editor-overlay';
@@ -957,7 +1686,7 @@ function corridorEditorOpenOverlay() {
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
                 ${totalControl}
-            </div>${indicatorsHtml}
+            </div>${indicatorsHtml}${tabsHtml}
             <div class="corridor-editor-body"></div>
             <div class="corridor-editor-footer">
                 <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
@@ -979,6 +1708,7 @@ function corridorEditorOpenOverlay() {
                 : corridorProfileOf(state.definition);
             state.originalProfile = JSON.parse(JSON.stringify(state.profile));
             state.baselineBuildingHitIds = null;
+            state.clearanceCache = null; // the scoped extent changed with the scope
             state.dirty = false;
             state.notice = null;
             if (typeof setCorridorProfilePreview === 'function') {
@@ -990,6 +1720,26 @@ function corridorEditorOpenOverlay() {
             corridorEditorFocusMap();
         });
     });
+
+    overlay.querySelectorAll('.corridor-editor-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const state = corridorEditorState;
+            if (!state || state.activeTab === tab.dataset.tab) return;
+            state.activeTab = tab.dataset.tab === 'corridor' ? 'corridor' : 'section';
+            if (state.activeTab !== 'corridor') corridorEditorClearClearanceOverlays();
+            corridorEditorRender();
+        });
+    });
+
+    const fitHint = overlay.querySelector('.corridor-editor-indicator--fit');
+    if (fitHint) {
+        fitHint.addEventListener('click', () => {
+            const state = corridorEditorState;
+            if (!state || state.activeTab === 'corridor') return;
+            state.activeTab = 'corridor';
+            corridorEditorRender();
+        });
+    }
 
     overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
@@ -1044,6 +1794,12 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         originalProfile: JSON.parse(JSON.stringify(profile)),
         baselineBuildingHitIds: null,
         widthBlocked: false,
+        activeTab: 'section',
+        // 'buildings' measures the corridor against buildings only; 'parcels' additionally walls
+        // it in at every parcel that is not road land (and not already crossed by this road).
+        clearanceMode: 'buildings',
+        clearanceCache: null,
+        geometryVersion: 0,
         // Set when the editor itself ticked the "show buildings" box, so closing un-ticks it.
         restoreBuildingsCheckbox: false,
         selected: 0,
@@ -1106,5 +1862,9 @@ if (typeof window !== 'undefined') {
 
 // Node-side exports for unit tests (backend/test); the browser loads this as a classic script.
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { corridorEditorFitPadding, corridorEditorPartitionDemolitions };
+    module.exports = {
+        corridorEditorFitPadding,
+        corridorEditorPartitionDemolitions,
+        corridorEditorWriteScopedSegmentPoints
+    };
 }
