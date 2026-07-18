@@ -3711,9 +3711,18 @@ const ProposalManager = {
                 // Regular road or parcel - use normal styling
                 let style;
                 if (useNormalStyle) {
-                    style = feature.properties.isRoad
-                        ? ((feature.properties.isCorridor === true && window.corridorParcelStyle) ? window.corridorParcelStyle : window.roadStyle)
-                        : window.normalStyle;
+                    if (feature.properties.isRoad) {
+                        style = (feature.properties.isCorridor === true && window.corridorParcelStyle)
+                            ? window.corridorParcelStyle
+                            : window.roadStyle;
+                    } else if (feature.properties.color) {
+                        // A non-road child carrying an explicit tint (e.g. a reparcellization
+                        // slice re-cut by a road edit) keeps that tint instead of dropping to
+                        // the transparent default - the slice identity survives the re-cut.
+                        style = { color: '#333333', weight: 1, fillColor: feature.properties.color, fillOpacity: 0.35 };
+                    } else {
+                        style = window.normalStyle;
+                    }
                 } else {
                     // Use different styles for roads vs parcels in proposals
                     style = feature.properties.isRoad ? proposalRoadStyle : proposalParcelStyle;

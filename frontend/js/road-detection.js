@@ -41,7 +41,17 @@ function loadRoadParcels() {
         if (stored) {
             const arr = JSON.parse(stored);
             if (Array.isArray(arr)) {
-                roadParcelsSet = new Set(arr.map(String));
+                // Detection only ever classifies REAL cadastre parcels; synthetic child ids
+                // ("...#p-...", "...#proposal-N") in here are leftovers of an inheritance bug
+                // (children registered because ANY ancestor id was in this registry), and a
+                // poisoned entry keeps re-tagging every re-cut. Self-heal: drop them on load —
+                // road-piece children re-register on the next apply, so nothing is lost.
+                const clean = arr.map(String).filter(id => !id.includes('#'));
+                roadParcelsSet = new Set(clean);
+                if (clean.length !== arr.length) {
+                    console.info(`[road-detection] Purged ${arr.length - clean.length} synthetic ids from the road-parcel registry.`);
+                    try { PersistentStorage.setItem(ROAD_PARCELS_KEY, JSON.stringify(clean)); } catch (_) { }
+                }
             }
         }
         roadParcelsLoaded = true;
