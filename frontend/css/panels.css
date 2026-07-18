@@ -175,6 +175,47 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
     border-radius: 10px;
 }
 
+.parcel-transport-group,
+.parcel-ownership-group {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 2px 0 0;
+    padding: 3px 4px 4px;
+    border: 1px solid #b6c2d1;
+    border-radius: 10px;
+}
+
+.parcel-transport-group legend,
+.parcel-ownership-group legend {
+    padding: 0 5px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.parcel-transport-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.parcel-ownership-group {
+    background: rgba(253, 246, 221, 0.35);
+}
+
+.parcel-ownership-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.parcel-ownership-grid .parcel-build-btn {
+    grid-column: 2;
+}
+
 .parcel-build-btn {
     display: flex;
     flex-direction: column;
@@ -205,6 +246,31 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 .parcel-build-btn:hover {
     background: #eef2f7;
     border-color: #94a3b8;
+}
+
+.parcel-transport-btn--road i { color: #475569; }
+.parcel-transport-btn--track i { color: #7c3aed; }
+.parcel-transport-btn--bus i { color: #2563eb; }
+.parcel-transport-btn--tram i { color: #0f766e; }
+.parcel-transport-btn--underground i { color: #1d4ed8; }
+.parcel-transport-btn--elevated i { color: #b45309; }
+
+.parcel-transport-btn span {
+    display: flex;
+    min-height: 2.3em;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    text-align: center;
+    text-overflow: clip;
+    white-space: normal;
+}
+
+.parcel-transport-btn[data-station-type].is-active {
+    border-color: #16a34a;
+    background: #dcfce7;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.16);
+    color: #166534;
 }
 
 /* Structure and terms tools get a hint of their nature; form tools stay neutral. */

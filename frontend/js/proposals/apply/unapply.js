@@ -111,8 +111,7 @@
 
         // If we still have no child ids, nothing to remove; treat as already unapplied
         if (allChildIds.length === 0) {
-            roadProposal.applied = false;
-            proposalData.applied = false;
+            setProposalApplied(proposalData, false);
             this._restoreSupersededRoadSources(proposalId, proposalData);
             proposalStorage.save();
             console.warn('[_unapplyProposalConfirmed] No child parcel ids resolved; skipping removal', { proposalId, proposalHasChildIds: Array.isArray(proposalData.childParcelIds) && proposalData.childParcelIds.length });
@@ -195,8 +194,7 @@
         this._removeChildParcels(proposalId, allChildIds);
         roadProposal.childParcelIds = Array.from(new Set(allChildIds));
 
-        roadProposal.applied = false;
-        proposalData.applied = false; // leaves the map
+        setProposalApplied(proposalData, false); // leaves the map
         this._restoreSupersededRoadSources(proposalId, proposalData);
         proposalStorage.save();
 
@@ -268,14 +266,13 @@
         this._removeChildParcels(proposalId, childIds, proposalData);
 
         proposalData.decideLaterProposal = {
-            applied: false,
             parentParcelIds: parentIds,
             childParcelIds: []
         };
         proposalData.childParcelIds = Array.isArray(proposalData.childParcelIds)
             ? proposalData.childParcelIds.filter(id => !childIds.includes(id && id.toString ? id.toString() : String(id)))
             : [];
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         if (typeof proposalStorage._indexProposal === 'function') {
@@ -334,14 +331,8 @@
             if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
         }
 
-        buildingProposal.applied = false;
-        buildingProposal.appliedAt = null;
         proposalData.buildingProposal = buildingProposal;
-
-        if (proposalData.executedAt) {
-            delete proposalData.executedAt;
-        }
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;
@@ -369,12 +360,23 @@
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData || !proposalData.structureProposal) return false;
         const sp = proposalData.structureProposal;
-        const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+        const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
         const blockName = sp.blockName || null;
         const normalizedProposalId = proposalId && proposalId.toString ? proposalId.toString() : (proposalId === 0 ? '0' : String(proposalId || ''));
 
         try {
             let removedParcels = 0;
+            const refreshStructureLayer = () => {
+                if (kind === 'park') {
+                    if (typeof updateParksLayer === 'function') updateParksLayer();
+                } else if (kind === 'lake') {
+                    if (typeof updateLakesLayer === 'function') updateLakesLayer();
+                } else if (kind === 'station') {
+                    if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer();
+                } else if (typeof updateSquaresLayer === 'function') {
+                    updateSquaresLayer();
+                }
+            };
             if (kind === 'park') {
                 if (Array.isArray(window.parks)) {
                     const before = window.parks.length;
@@ -387,7 +389,6 @@
                     removedParcels += Math.max(0, before - window.parks.length);
                     if (before !== window.parks.length) {
                         try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
-                        try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                     }
                 }
             } else if (kind === 'lake') {
@@ -402,7 +403,20 @@
                     removedParcels += Math.max(0, before - window.lakes.length);
                     if (before !== window.lakes.length) {
                         try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
-                        try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+                    }
+                }
+            } else if (kind === 'station') {
+                if (Array.isArray(window.transitStations)) {
+                    const before = window.transitStations.length;
+                    window.transitStations = window.transitStations.filter(f => {
+                        const featureProposalId = f && f.properties
+                            ? (f.properties.proposalId && f.properties.proposalId.toString ? f.properties.proposalId.toString() : String(f.properties.proposalId || ''))
+                            : null;
+                        return featureProposalId !== normalizedProposalId;
+                    });
+                    removedParcels += Math.max(0, before - window.transitStations.length);
+                    if (before !== window.transitStations.length) {
+                        try { PersistentStorage.setItem('cb_transit_stations', JSON.stringify(window.transitStations)); } catch (_) { }
                     }
                 }
             } else {
@@ -417,7 +431,6 @@
                     removedParcels += Math.max(0, before - window.squares.length);
                     if (before !== window.squares.length) {
                         try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
-                        try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                     }
                 }
             }
@@ -433,9 +446,8 @@
             uniqueParents.forEach(id => this._unmarkParcelModified(id));
 
             // The structure leaves the map (application axis only).
-            sp.applied = false;
             proposalData.structureProposal = sp;
-            proposalData.applied = false;
+            setProposalApplied(proposalData, false);
             proposalData.proposalId = proposalData.proposalId || proposalId;
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposalData);
@@ -443,6 +455,12 @@
                 proposalStorage.proposals.set(proposalData.proposalId, proposalData);
             }
             if (proposalStorage.save) proposalStorage.save();
+
+            // The view must observe the proposal already unapplied; otherwise its demolition
+            // records remain active for one refresh and the old building meshes stay stale.
+            try { refreshStructureLayer(); } catch (error) {
+                console.error(`[_unapplyStructureProposalConfirmed] Failed to refresh ${kind} presentation`, error);
+            }
 
             console.info('[ProposalManager] Unapplied structure proposal', {
                 proposalId,
@@ -529,14 +547,10 @@
         this._removeReparcellizationLayer(proposalId);
         this._removeChildParcels(proposalId, childIds, proposalData);
 
-        plan.applied = false;
-        if (plan.appliedAt) {
-            delete plan.appliedAt;
-        }
         plan.childParcelIds = [];
         proposalData.childParcelIds = [];
 
-        proposalData.applied = false;
+        setProposalApplied(proposalData, false);
         proposalData.updatedAt = new Date().toISOString();
 
         proposalData.proposalId = proposalData.proposalId || proposalId;

@@ -354,6 +354,12 @@
                 .map(record => record?.edgeKey)
                 .filter(Boolean)
         );
+        (Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : []).forEach(record => {
+            if (record?.edgeKey) protectedEdges.add(record.edgeKey);
+            (Array.isArray(record?.edgeKeys) ? record.edgeKeys : []).forEach(key => {
+                if (key) protectedEdges.add(key);
+            });
+        });
         normalizeCorridorGraph(segments, segmentIds, protectedEdges, definition.segmentProfiles || null);
         const after = JSON.stringify({ segments, segmentIds, segmentProfiles: definition.segmentProfiles || null });
         if (before === after) return false;
@@ -655,6 +661,26 @@
         return false;
     }
 
+    // Joining two endpoint-connected strokes is only safe while the result remains one simple path.
+    // If the joined path crosses or touches itself away from an ordinary loop closure, keeping the
+    // strokes separate preserves the road graph: the crossing-noder can then put the same junction
+    // vertex into both strokes, and each strip renderer receives non-self-crossing input.
+    function polylineHasNontrivialSelfIntersection(points) {
+        if (!Array.isArray(points) || points.length < 4) return false;
+        const EPS = 1e-7;
+        const near = (a, b) => a && b
+            && Math.abs(a.lat - b.lat) < EPS
+            && Math.abs(a.lng - b.lng) < EPS;
+        for (let i = 0; i < points.length - 1; i += 1) {
+            for (let j = i + 2; j < points.length - 1; j += 1) {
+                // The first and last edge of a closed ring are neighbours, not a self-crossing.
+                if (i === 0 && j === points.length - 2 && near(points[0], points[points.length - 1])) continue;
+                if (planarSegmentIntersection(points[i], points[i + 1], points[j], points[j + 1])) return true;
+            }
+        }
+        return false;
+    }
+
     // Merge polylines that share an endpoint into single segments, keeping ids and per-segment
     // profile overrides aligned. Pieces with DIFFERENT cross-section profiles stay separate.
     function weldCorridorSegments(segments, segmentIds, segmentProfiles = null) {
@@ -677,11 +703,14 @@
                     if (profileKeyOf(ids[i]) !== profileKeyOf(ids[j])) continue;
                     const a = segs[i];
                     const b = segs[j];
-                    if (same(a[a.length - 1], b[0])) segs[i] = a.concat(b.slice(1));
-                    else if (same(a[a.length - 1], b[b.length - 1])) segs[i] = a.concat(b.slice(0, -1).reverse());
-                    else if (same(a[0], b[b.length - 1])) segs[i] = b.concat(a.slice(1));
-                    else if (same(a[0], b[0])) segs[i] = b.slice(1).reverse().concat(a);
+                    let candidate = null;
+                    if (same(a[a.length - 1], b[0])) candidate = a.concat(b.slice(1));
+                    else if (same(a[a.length - 1], b[b.length - 1])) candidate = a.concat(b.slice(0, -1).reverse());
+                    else if (same(a[0], b[b.length - 1])) candidate = b.concat(a.slice(1));
+                    else if (same(a[0], b[0])) candidate = b.slice(1).reverse().concat(a);
                     else continue;
+                    if (polylineHasNontrivialSelfIntersection(candidate)) continue;
+                    segs[i] = candidate;
                     ids[i] = profileKeyOf(ids[i]) ? ids[i] : (profileKeyOf(ids[j]) ? ids[j] : null);
                     segs.splice(j, 1);
                     ids.splice(j, 1);
@@ -1030,18 +1059,33 @@
         });
         if (best) return best;
 
-        // Tier 3: placed (external) corridors — endpoints and edges compete on distance
+        // Tier 3: every explicit node on a placed (external) corridor. Internal junction/bend
+        // vertices are real graph nodes too; limiting this pass to endpoints made the cursor snap
+        // to the nearby centreline instead of the existing node the user was aiming at.
         externalSegments.forEach((entry, externalIndex) => {
             const seg = entry && entry.points;
             if (!Array.isArray(seg) || seg.length < 2) return;
             seg.forEach((vertex, vertexIndex) => {
                 const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
-                if (!isEndpoint) return;
                 const distance = pixelDistance(cursorPx, vertex);
                 if (distance > radiusPx) return;
                 if (best && distance >= best.distance) return;
-                best = { distance, source: 'external', kind: 'external-endpoint', externalIndex, vertexIndex, pixel: vertex };
+                best = {
+                    distance,
+                    source: 'external',
+                    kind: isEndpoint ? 'external-endpoint' : 'external-node',
+                    externalIndex,
+                    vertexIndex,
+                    pixel: vertex
+                };
             });
+        });
+        if (best) return best;
+
+        // Tier 4: an arbitrary point on a placed corridor's centreline.
+        externalSegments.forEach((entry, externalIndex) => {
+            const seg = entry && entry.points;
+            if (!Array.isArray(seg) || seg.length < 2) return;
             for (let i = 0; i < seg.length - 1; i++) {
                 const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
                 const distance = pixelDistance(cursorPx, projected);

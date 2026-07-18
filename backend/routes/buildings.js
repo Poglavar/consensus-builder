@@ -165,7 +165,7 @@ export function setupBuildingsRoute(app, pool) {
     // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
     // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
     //
-    // `proposals` (OPTIONAL) is a list of proposal ids whose demolitions should already be applied
+    // `proposals` (OPTIONAL) is an explicit list of proposal definitions whose demolitions to apply
     // to the meshes that come back — see backend/buildings/carve.js. With it:
     //   demolished building → ABSENT from the response entirely (there is nothing left to draw, and
     //                         a flag would just make every consumer re-implement the filter)
@@ -221,7 +221,7 @@ export function setupBuildingsRoute(app, pool) {
         }
     });
 
-    // POST /buildings/carve - What the given applied proposals did to the EXISTING buildings under
+    // POST /buildings/carve - What the explicitly selected proposals do to EXISTING buildings under
     // them, as a verdict per AFFECTED building. Nothing else is returned: a building absent from
     // `carves` is untouched and should render exactly as its source gives it.
     // Body: { proposals: string[] | string, city?: string, geometry?: <GeoJSON>, buffer_meters?: number }
@@ -272,7 +272,7 @@ export function setupBuildingsRoute(app, pool) {
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
 
-            // No records at all (the ids matched nothing, or nothing is applied) means nothing was
+            // No records at all (the ids matched nothing or carry no demolitions) means nothing was
             // carved. Say so — do not fall through into an unbounded building query.
             const area = (body.geometry && body.geometry.type) ? body.geometry : carveRecordsBounds(carveContext);
             if (!area) {

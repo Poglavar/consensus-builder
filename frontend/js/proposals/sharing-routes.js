@@ -219,7 +219,6 @@ function buildSharedProposalsPayload(appliedProposals) {
             parcelIds: ensureArrayOfStrings(proposal.parentParcelIds),
             acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
             color: proposal.color || null,
-            applied: true,
             minted: isProposalMinted(proposal),
             onchain: proposal.onchain ? {
                 transactionHash: proposal.onchain.transactionHash || null,
@@ -341,8 +340,7 @@ function buildSharedProposalsPayload(appliedProposals) {
                     ? Number(proposal.reparcellization.totalArea)
                     : null,
                 ownerShares: clonedOwnerShares,
-                polygons: clonedPolygons,
-                applied: false
+                polygons: clonedPolygons
             };
 
             clonedPolygons.forEach(slice => {
@@ -517,7 +515,7 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
             throw new Error('Missing parcel geometry required for this proposal.');
         }
 
-        normalized.lifecycleStatus = 'Active';
+        parkProposalForImport(normalized);
         normalized.acceptedParcelIds = [];
 
         const targetHash = normalized.proposalId || sharedProposal.proposalId || `shared_${Date.now()}`;
@@ -987,7 +985,7 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         }
     }
     if (existing) {
-        const alreadyApplied = isProposalCurrentlyApplied(existing) || getLifecycleStatus(existing) === 'Executed';
+        const alreadyApplied = isProposalCurrentlyApplied(existing);
         if (alreadyApplied) {
             const descendantsMaterialized = (() => {
                 try {

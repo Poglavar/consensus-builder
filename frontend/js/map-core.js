@@ -397,6 +397,10 @@ async function fetchBuildings(boundsOverride = null) {
         if (mergedFeatures.length > BUILDING_POOL_CAP) {
             // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
             mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
+            // Coverage describes what is PRESENT in the pool, not merely what was fetched once.
+            // Evicting features while retaining their old coverage made later corridor scans skip
+            // the refetch and then conclude that the evicted buildings did not exist.
+            buildingFetchCoverage.length = 0;
         }
         // The full pool survives demolition filtering, so unapplying the road brings them back.
         window.buildingFeaturePool = mergedFeatures;
@@ -726,4 +730,4 @@ window.blockLayer = blockLayer;
 window.currentCenterline = currentCenterline;
 window.currentWidthLines = currentWidthLines;
 window.TOTAL_SPENT = TOTAL_SPENT;
-window.SQM_AVG_PRICE = SQM_AVG_PRICE; 
+window.SQM_AVG_PRICE = SQM_AVG_PRICE;

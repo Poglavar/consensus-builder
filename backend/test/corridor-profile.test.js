@@ -20,7 +20,9 @@ const {
     withLaneRemoved,
     withLaneMoved,
     offsetPolylinePlanar,
+    offsetClosedPolylinePlanar,
     corridorStripRingPlanar,
+    corridorClosedStripPolygonPlanar,
     ringSelfIntersectsXY,
     corridorProfileFromOsmTags,
     corridorProfileToOsmTags,
@@ -397,6 +399,18 @@ describe('corridorStripRingPlanar', () => {
         expect(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8)).not.toBe(null);
         // But it IS a self-intersecting ring, which the 3D-side detector recognises.
         expect(ringSelfIntersectsXY(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8))).toBe(true);
+    });
+
+    it('builds a smooth 3D band for a closed road without changing the flat 2D strip contract', () => {
+        const triangle = [[0, 0], [100, 0], [50, 80], [0, 0]];
+        const polygon = corridorClosedStripPolygonPlanar(triangle, 5, -5);
+        expect(polygon).toHaveLength(2);
+        expect(polygon.every(ring => !ringSelfIntersectsXY(ring))).toBe(true);
+        expect(Math.abs(ringArea(polygon[0]))).toBeGreaterThan(Math.abs(ringArea(polygon[1])));
+        expect(offsetClosedPolylinePlanar(triangle, 5)).not.toBe(null);
+        const flat2D = corridorStripRingPlanar(triangle, 5, -5);
+        expect(Array.isArray(flat2D[0])).toBe(true);
+        expect(Array.isArray(flat2D[0][0])).toBe(false);
     });
 });
 

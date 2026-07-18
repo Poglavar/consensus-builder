@@ -9,6 +9,12 @@ globalThis.turf = turf; // the module reads `turf` from the global at call time
 
 const require = createRequire(import.meta.url);
 const {
+    CORRIDOR_PROFILE_PRESETS,
+    corridorStripSpans,
+    corridorStripRingPlanar,
+    ringSelfIntersectsXY
+} = require('../../frontend/js/corridor-profile.js');
+const {
     sanitizePolygonFeature,
     robustNegativeBuffer,
     robustUnion,
@@ -84,6 +90,41 @@ describe('sanitizePolygonFeature', () => {
 
     it('returns null for null input', () => {
         expect(sanitizePolygonFeature(null)).toBeNull();
+    });
+
+    it('repairs the folded inside lane of a sharp 3D road turn into meshable polygons', () => {
+        // A 165-degree reversal is the characteristic failure: roughly the inside half of a wide
+        // cross-section folds into bow-ties and three-mode's triangulation guard drops those lanes.
+        const angle = 165 * Math.PI / 180;
+        const centerline = [[-100, 0], [0, 0], [100 * Math.cos(angle), 100 * Math.sin(angle)]];
+        const folded = corridorStripSpans({ strips: CORRIDOR_PROFILE_PRESETS[18] })
+            .map(span => corridorStripRingPlanar(centerline, span.left, span.right))
+            .find(ring => ringSelfIntersectsXY(ring));
+        expect(folded).toBeTruthy();
+
+        // Put the metric test geometry near Zagreb before Turf operates on it as WGS84.
+        const origin = [15.98, 45.80];
+        const ring = [...folded, folded[0]].map(([x, y]) => [
+            origin[0] + x / 80000,
+            origin[1] + y / 111000
+        ]);
+        const repaired = sanitizePolygonFeature(turf.polygon([ring]));
+        expect(repaired).toBeTruthy();
+        expect(['Polygon', 'MultiPolygon']).toContain(repaired.geometry.type);
+        expect(turf.area(repaired)).toBeGreaterThan(0);
+
+        const polygons = repaired.geometry.type === 'Polygon'
+            ? [repaired.geometry.coordinates]
+            : repaired.geometry.coordinates;
+        const toMetric = ([lng, lat]) => [
+            (lng - origin[0]) * 80000,
+            (lat - origin[1]) * 111000
+        ];
+        polygons.forEach(rings => {
+            rings.forEach(outputRing => {
+                expect(ringSelfIntersectsXY(outputRing.slice(0, -1).map(toMetric))).toBe(false);
+            });
+        });
     });
 });
 

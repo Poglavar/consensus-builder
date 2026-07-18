@@ -13,7 +13,7 @@ const {
 
 // Post status-split: proposals carry the boolean `applied` axis and a `lifecycleStatus` axis.
 function proposal(id, applied = false, lifecycleStatus = 'Active') {
-    return { proposalId: id, applied, lifecycleStatus, roadProposal: { applied } };
+    return { proposalId: id, applied, lifecycleStatus, roadProposal: {} };
 }
 
 describe('copied road supersession', () => {
@@ -23,7 +23,7 @@ describe('copied road supersession', () => {
         const records = new Map([[source.proposalId, source], [replacement.proposalId, replacement]]);
 
         expect(supersedeCopiedRoadSource(replacement, replacement.proposalId, id => records.get(id))).toBe(source);
-        expect(source.roadProposal.applied).toBe(false);
+        expect(source.roadProposal.applied).toBeUndefined();
         expect(source.applied).toBe(false);
         expect(source.lifecycleStatus).toBe('Active');
         expect(source.supersededByProposalId).toBe('road-b');
@@ -39,7 +39,7 @@ describe('copied road supersession', () => {
         supersedeCopiedRoadSource(replacement, replacement.proposalId, id => records.get(id));
 
         expect(restoreSupersededRoadSources(replacement, replacement.proposalId, id => records.get(id))).toEqual([source]);
-        expect(source.roadProposal.applied).toBe(true);
+        expect(source.roadProposal.applied).toBeUndefined();
         // An executed road comes back executed — supersession only parked its geometry.
         expect(source.lifecycleStatus).toBe('Executed');
         expect(source.supersededByProposalId).toBeUndefined();
@@ -62,7 +62,6 @@ describe('copied road supersession', () => {
         const feature = { properties: { isRoad: true, isCorridor: true, ancestorProposal: 'road-a' } };
         expect(appliedRoadProposalForFeature(feature, id => records.get(id))).toBe(road);
         expect(appliedRoadProposalForFeature({ properties: { isRoad: true } }, id => records.get(id))).toBeNull();
-        road.roadProposal.applied = false;
         road.applied = false;
         expect(appliedRoadProposalForFeature(feature, id => records.get(id))).toBeNull();
     });

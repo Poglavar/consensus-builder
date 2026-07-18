@@ -92,10 +92,11 @@ describe('_applyBuildingProposal (characterization)', () => {
         const result = await _applyBuildingProposal.call(mgr, 'p-b1', data, {});
 
         expect(result).toBe(true);
-        // Applied flags on both axes-carriers.
+        // Map visibility has one authoritative root carrier.
         expect(data.applied).toBe(true);
-        expect(data.buildingProposal.applied).toBe(true);
-        expect(data.buildingProposal.appliedAt).toBeTruthy();
+        expect(data.appliedAt).toBeTruthy();
+        expect(data.buildingProposal.applied).toBeUndefined();
+        expect(data.buildingProposal.appliedAt).toBeUndefined();
         // Rendered the feature with the applied state + proposal id stamped on.
         expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(1);
         const rendered = globalThis.upsertProposedBuildingFeature.calls[0][0];
@@ -137,6 +138,33 @@ describe('_applyBuildingProposal (characterization)', () => {
         const result = await _applyBuildingProposal.call(mgr, 'p-b1', buildingProposalData(), {});
         expect(result).toBe(false);
         expect(store.saved).toBe(0);
+    });
+
+    it('waits for a conflicting building to be fully unapplied before rendering', async () => {
+        let finishUnapply;
+        const conflict = {
+            proposalId: 'p-old',
+            applied: true,
+            buildingProposal: { parentParcelIds: ['HR-1', 'HR-2'] }
+        };
+        globalThis.proposalStorage.getAllProposals = () => [conflict];
+        const unapplyWholeFamily = spy(() => new Promise(resolve => { finishUnapply = resolve; }));
+        const mgr = makeManager({
+            _isBuildingProposal: () => true,
+            _getBuildingAncestorKey: () => 'HR-1|HR-2',
+            unapplyWholeFamily
+        });
+
+        const applying = _applyBuildingProposal.call(mgr, 'p-b1', buildingProposalData(), {});
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(unapplyWholeFamily.calls.length).toBe(1);
+        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(0);
+
+        finishUnapply(true);
+        expect(await applying).toBe(true);
+        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(1);
     });
 
     it('returns false on null proposalData without throwing', async () => {

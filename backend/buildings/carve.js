@@ -23,13 +23,15 @@ import { extrudeFootprint } from './extrude.js';
 
 const require = createRequire(import.meta.url);
 const { collectCarveRecords, carveBuildingByObjectId } = require('../../frontend/js/corridor-carve.js');
+const {
+    consolidateCorridorDemolitionRecords,
+    consolidateBuildingDemolitionRecords
+} = require('../../frontend/js/corridor-tunnel.js');
 
-// The proposal columns the carve reads. The map-application axis is the boolean `applied` (on the
-// proposal, mirrored on each sub-proposal JSONB); corridor-carve.js reads it via isApplied() and
-// falls back to the legacy `status`/`lifecycle_status` only for rows the split has not upgraded yet.
-// Hand it the same shape GET /proposals/:id returns.
+// The caller explicitly selects proposal ids to carve. Server-side carving therefore never reads a
+// browser's local `applied` flag; it applies the definitions named in the request.
 const PROPOSAL_SQL = `
-    SELECT proposal_id, id, lifecycle_status AS "lifecycleStatus", applied, city,
+    SELECT proposal_id, id, lifecycle_status AS "lifecycleStatus", city,
            road_proposal AS "roadProposal",
            structure_proposal AS "structureProposal",
            building_proposal AS "buildingProposal"
@@ -49,7 +51,13 @@ export async function fetchProposalsForCarve(pool, ids) {
 // Every demolition record the given applied proposals carry, indexed by object_id. Pure — no DB
 // round-trip, because the record already names its mesh.
 export function carveRecordsFor(proposals) {
-    return collectCarveRecords(proposals);
+    return collectCarveRecords(proposals, {
+        selectedByCaller: true,
+        consolidateCorridorRecords: (records, region) =>
+            consolidateCorridorDemolitionRecords(records, region, turf),
+        consolidateBuildingRecords: records =>
+            consolidateBuildingDemolitionRecords(records, turf)
+    });
 }
 
 // Height of a { z_min, z_max, faces[] } building in metres, falling back to scanning face vertices

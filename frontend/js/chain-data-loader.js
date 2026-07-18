@@ -33,6 +33,13 @@
         'function ownerOf(uint256 tokenId) public view returns (address)'
     ];
 
+    function proposalStatusFromCode(statusCode) {
+        const codec = globalScope.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
+    }
+
     /**
      * Check if an RPC URL is localhost
      */
@@ -325,7 +332,6 @@
                 return [];
             }
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             let proposals;
 
             try {
@@ -365,7 +371,7 @@
                         isConditional: isConditionalArray[index],
                         imageURI: imageURIArray[index],
                         acceptancePossible: acceptancePossibleArray[index],
-                        status: statusNames[Number(statusArray[index])] || 'Unknown',
+                        status: proposalStatusFromCode(statusArray[index]),
                         statusCode: Number(statusArray[index]),
                         ethBalance: ethBalanceArray[index].toString(),
                         tokenBalance: tokenBalanceArray[index].toString(),
@@ -414,7 +420,7 @@
                                 isConditional,
                                 imageURI,
                                 acceptancePossible,
-                                status: statusNames[Number(status)] || 'Unknown',
+                                status: proposalStatusFromCode(status),
                                 statusCode: Number(status),
                                 ethBalance: ethBalance.toString(),
                                 tokenBalance: tokenBalance.toString(),
@@ -488,7 +494,6 @@
         const normalizedAddress = getAddress(proposalContractAddress);
         const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
 
-        const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
         const results = [];
         const BATCH_SIZE = 40;
 
@@ -526,7 +531,7 @@
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
-                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    status: proposalStatusFromCode(statusArray[index]),
                     statusCode: Number(statusArray[index]),
                     ethBalance: ethBalanceArray[index].toString(),
                     tokenBalance: tokenBalanceArray[index].toString(),
@@ -740,7 +745,6 @@
                 expiringPercentageArray
             ] = result;
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             const lensArrays = await Promise.all(proposalIds.map(async (proposalId) => {
                 try {
                     const lensResult = await contract.getLens(proposalId);
@@ -763,7 +767,7 @@
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
-                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    status: proposalStatusFromCode(statusArray[index]),
                     statusCode: Number(statusArray[index]),
                     ethBalance: ethBalanceArray[index].toString(),
                     tokenBalance: tokenBalanceArray[index].toString(),
@@ -798,4 +802,3 @@
         getProviderForChain
     };
 })();
-

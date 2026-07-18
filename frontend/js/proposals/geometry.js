@@ -687,7 +687,7 @@ function renderGeometrySection(goalKey) {
     updateCreateProposalSubmitState();
 }
 
-function handleGeometryAction(actionKey) {
+async function handleGeometryAction(actionKey) {
     const t = getProposalI18nHelper();
     const tCorridor = getRoadDesignationTranslator(t);
     const label = {
@@ -695,12 +695,12 @@ function handleGeometryAction(actionKey) {
     };
 
     switch (actionKey) {
-        case 'edit':
+        case 'edit': {
+            let opened = true;
             if (currentGeometryGoal === 'reparcellization') {
-                handleReparcellizationAlgorithmClick('sweep-line');
-            }
-            if (currentGeometryGoal === 'single') {
-                launchSingleBuildingToolForSelection();
+                opened = await handleReparcellizationAlgorithmClick('sweep-line');
+            } else if (currentGeometryGoal === 'single') {
+                opened = await launchSingleBuildingToolForSelection();
             } else if (currentGeometryGoal === 'road-track') {
                 // The road-track goal's geometry step DESIGNATES the selected parcels as road land.
                 // Designing a road (a centerline with a cross-section) is the corridor tool's job, on the
@@ -709,12 +709,16 @@ function handleGeometryAction(actionKey) {
                     openRoadDesignationModal();
                 } else if (typeof updateStatus === 'function') {
                     updateStatus(tCorridor('statusUnavailable', 'Road designation is not available yet.'));
+                    opened = false;
                 }
             } else if (currentGeometryGoal === 'urban-rule') {
-                openUrbanRuleGeometry();
+                opened = await openUrbanRuleGeometry();
             }
-            setGeometryStatus(label.submitted, { submitted: true });
+            // Accepting the whole-block suggestion deliberately stops this one-parcel launch.
+            // Do not falsely mark geometry as submitted when no editor opened.
+            if (opened !== false) setGeometryStatus(label.submitted, { submitted: true });
             break;
+        }
         case 'upload':
             // Currently only the single-building goal supports uploading a 3D model.
             if (currentGeometryGoal === 'single') {
@@ -729,6 +733,8 @@ function handleGeometryAction(actionKey) {
                     if (typeof updateStatus === 'function') updateStatus('Select parcels before uploading a building.');
                     break;
                 }
+                if (typeof shouldStopFreshProposalForWholeBlock === 'function'
+                    && await shouldStopFreshProposalForWholeBlock('single', selection)) break;
                 window.BuildingUpload.open(
                     {
                         parcels: selection.layers,

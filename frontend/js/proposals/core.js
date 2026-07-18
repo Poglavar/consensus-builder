@@ -489,11 +489,11 @@ function facetModeLabel(name, value) {
 }
 
 function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
-    proposalFacetState.parcels = mode;
-    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', mode, lock, reason);
-    // Merge requires ≥2 parcels — disable it (greyed pill) for a single-parcel selection.
-    const mergeRadio = document.querySelector('input[name="proposalParcelsMode"][value="merge"]');
-    if (mergeRadio) mergeRadio.disabled = proposalSingleParcelSelection;
+    // The active parcel model has two states: keep boundaries, or run land readjustment.
+    // Legacy callers asking for the removed merge mode safely resolve to no boundary change.
+    const normalized = mode === 'readjust' ? 'readjust' : 'as-is';
+    proposalFacetState.parcels = normalized;
+    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', normalized, lock, reason);
 }
 
 function showProposalPerSliceOption(show) {
@@ -520,7 +520,6 @@ function deriveProposalGoalKey() {
     if (landUse === 'urban-rule') return 'urban-rule';
     if (parcels === 'readjust') return 'reparcellization';
     if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
-    if (parcels === 'merge') return 'decide-later';
     if (ownership && ownership !== 'no-change') return 'ownership-transfer';
     return null; // as-is / as-is / no-change: nothing to propose yet
 }

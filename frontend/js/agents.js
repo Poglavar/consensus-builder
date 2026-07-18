@@ -207,14 +207,6 @@ function createUserAgent(name, avatarIndex, options = {}) {
 }
 
 /**
- * Get the current user agent
- */
-function getCurrentUserAgent() {
-    const agents = agentStorage.getAllAgents();
-    return agents.find(agent => agent.userControlled === true);
-}
-
-/**
  * Set agent as user controlled and clear other user controlled agents
  */
 function setUserControlledAgent(agentId, isUserControlled = true) {

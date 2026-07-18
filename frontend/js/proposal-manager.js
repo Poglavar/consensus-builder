@@ -16,6 +16,10 @@ const applyRoute = (typeof window !== 'undefined' && window.__applyRoute)
     ? window.__applyRoute
     : require('./proposals/apply/route.js');
 
+const proposalMutationTransactions = (typeof window !== 'undefined' && window.ProposalMutationTransactions)
+    ? window.ProposalMutationTransactions
+    : require('./proposals/apply/transaction.js');
+
 // The parcel-identity + ownership helpers moved to proposal-parcel-identity.js (a sibling classic
 // script the browser loads first, so they are globals there). Under node they are module-scoped, so
 // load that file to publish them onto globalThis before the ProposalManager literal below references
@@ -43,6 +47,25 @@ function _getProposalApplyLabel(proposalId, proposalData) {
     return title || _normalizeProposalId(proposalId) || 'unknown-proposal';
 }
 
+// Applied corridor proposals have a canonical cross-section renderer (corridor-render.js), including
+// their lane markings. The old per-parcel dashed centreline is only a compatibility presentation for
+// pre-corridor road proposals; drawing it over a corridor duplicates the road and goes stale mid-drag.
+function _shouldDrawLegacyRoadCenterline(feature, proposalData) {
+    const properties = feature?.properties || {};
+    const isRoad = properties.isRoad === true || properties.isRoad === 'true';
+    if (!isRoad) return false;
+
+    const definition = proposalData?.roadProposal?.definition
+        || proposalData?.definition
+        || proposalData?.geometry?.roadPlan
+        || null;
+    const isCorridor = properties.isCorridor === true
+        || properties.isCorridor === 'true'
+        || definition?.metadata?.isCorridor === true
+        || definition?.metadata?.isCorridor === 'true';
+    return !isCorridor;
+}
+
 async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) {
     const label = _getProposalApplyLabel(proposalId, proposalData);
     try {
@@ -57,6 +80,70 @@ async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) 
         console.warn(`Applying proposal ${label} ... failed`);
         throw error;
     }
+}
+
+async function _runProposalMutationBoundary(manager, kind, proposalId, options, operation) {
+    const supplied = options && options._mutationTransaction;
+    if (proposalMutationTransactions.isActiveTransaction(supplied)) {
+        return operation(supplied, { ...(options || {}), _mutationTransaction: supplied });
+    }
+
+    return proposalMutationTransactions.enqueue({
+        kind,
+        proposalId: _normalizeProposalId(proposalId)
+    }, async transaction => {
+        const store = typeof proposalStorage !== 'undefined' ? proposalStorage : null;
+        const proposalSnapshot = store && store.proposals instanceof Map
+            ? proposalMutationTransactions.snapshotRecordMap(store.proposals)
+            : null;
+        const nextProposalId = store ? store.nextProposalId : undefined;
+        const browserRoot = typeof window !== 'undefined' ? window : null;
+        const presentationSnapshot = proposalMutationTransactions.snapshotParcelPresentation(browserRoot);
+
+        if (store && typeof store.beginBatch === 'function' && typeof store.endBatch === 'function') {
+            store.beginBatch();
+            transaction.deferFinally('close proposal storage batch', () => store.endBatch());
+        }
+
+        transaction.deferRollback('restore proposal and map state', () => {
+            if (store && proposalSnapshot) {
+                proposalMutationTransactions.restoreRecordMap(store.proposals, proposalSnapshot);
+                if (nextProposalId !== undefined) store.nextProposalId = nextProposalId;
+                if (store.proposalIndexByHash && typeof store.proposalIndexByHash.clear === 'function') {
+                    store.proposalIndexByHash.clear();
+                }
+                if (typeof store._invalidateAncestorIndex === 'function') store._invalidateAncestorIndex();
+                if (typeof store.save === 'function') store.save();
+            }
+            proposalMutationTransactions.restoreParcelPresentation(browserRoot, presentationSnapshot);
+            try {
+                if (manager && typeof manager._refreshUIAfterProposalChange === 'function') {
+                    manager._refreshUIAfterProposalChange(store && typeof store.getProposal === 'function'
+                        ? store.getProposal(proposalId)
+                        : null);
+                }
+            } catch (_) { /* rollback must continue */ }
+        });
+
+        const ownsParcelBatch = !!(
+            browserRoot
+            && typeof browserRoot._startParcelWriteCache === 'function'
+            && typeof browserRoot._flushParcelWriteCache === 'function'
+            && typeof browserRoot._discardParcelWriteCache === 'function'
+            && !(typeof browserRoot.isParcelWriteBatchActive === 'function' && browserRoot.isParcelWriteBatchActive())
+        );
+        if (ownsParcelBatch) {
+            browserRoot._startParcelWriteCache();
+            transaction.deferCommit('flush parcel writes', () => browserRoot._flushParcelWriteCache());
+            transaction.deferRollback('discard parcel writes', () => browserRoot._discardParcelWriteCache());
+        }
+
+        return operation(transaction, {
+            ...(options || {}),
+            _mutationTransaction: transaction,
+            ...(ownsParcelBatch ? { _parcelWriteBatchActive: true } : {})
+        });
+    });
 }
 
 function _normalizeIdList(list) {
@@ -372,6 +459,21 @@ async function _reapplyAppliedProposal(proposal) {
                 } catch (_) { }
             }
         });
+        // Park/square/lake/station proposals deliberately keep their source parcels and therefore normally
+        // have no childParcelIds. Reapply the structure BEFORE this branch returns: the old ordering
+        // made the structure block at the bottom unreachable for exactly these proposals, so an
+        // empty demolition scan could never be repaired when the page reloaded.
+        if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station') {
+            if (typeof ProposalManager._applyStructureProposal === 'function') {
+                try {
+                    await _runProposalApplyWithSummary(
+                        proposal.proposalId,
+                        proposal,
+                        () => ProposalManager._applyStructureProposal(proposal.proposalId, proposal)
+                    );
+                } catch (_) { }
+            }
+        }
         return;
     }
 
@@ -489,7 +591,7 @@ async function _reapplyAppliedProposal(proposal) {
     }
 
     // Structures: reapply overlays if needed (they keep parents visible)
-    if (goal === 'park' || goal === 'square' || goal === 'lake') {
+    if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station') {
         if (typeof ProposalManager._applyStructureProposal === 'function') {
             try {
                 await _runProposalApplyWithSummary(
@@ -1129,9 +1231,9 @@ const ProposalManager = {
                 definition: proposal.definition,
                 parentParcelIds: parentParcelIds,
                 // Child parcels are derived from the proposal definition and persisted storage; avoid storing geometry blobs
-                childParcelIds: [],
-                applied: appliedOf(proposal)
+                childParcelIds: []
             },
+            applied: appliedOf(proposal),
             createdAt: new Date().toISOString()
         };
 
@@ -1976,6 +2078,7 @@ const ProposalManager = {
         }
         if (kind === 'park' && geometry.parkGraphics) return geometry.parkGraphics;
         if (kind === 'square' && geometry.squareGraphics) return geometry.squareGraphics;
+        if (kind === 'station' && geometry.stationGraphics) return geometry.stationGraphics;
         if (geometry.squareGraphics) return geometry.squareGraphics;
         return null;
     },
@@ -2027,7 +2130,7 @@ const ProposalManager = {
     _inferStructureKindFromProposal(proposalData) {
         if (!proposalData) return null;
         const kind = this._normalizeGoalKey(proposalData.goal);
-        return (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : null;
+        return (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') ? kind : null;
     },
 
     _bootstrapStructureProposalFromMetadata(proposalData) {
@@ -2048,8 +2151,7 @@ const ProposalManager = {
         const synthetic = {
             kind: inferredKind,
             parentParcelIds: parentIds,
-            blockName: proposalData.blockName || null,
-            applied: appliedOf(proposalData)
+            blockName: proposalData.blockName || null
         };
         const canonicalGeometry = this._getCanonicalStructureGeometry(proposalData, inferredKind);
         const geometry = canonicalGeometry && canonicalGeometry.type && Array.isArray(canonicalGeometry.coordinates)
@@ -2128,7 +2230,7 @@ const ProposalManager = {
         return transaction;
     },
 
-    async _restoreReplacementSource(proposalId, proposalData) {
+    async _restoreReplacementSource(proposalId, proposalData, options = {}) {
         if (!proposalData || proposalData.roadProposal || typeof releaseReplacementSource !== 'function') return null;
         if (typeof proposalIsAppliedForReplacement === 'function' && proposalIsAppliedForReplacement(proposalData)) return null;
         const restoration = releaseReplacementSource(proposalData, proposalId, id => _getProposalRecord(id));
@@ -2138,7 +2240,8 @@ const ProposalManager = {
         try {
             const restored = await this.applyProposal(restoration.sourceId, {
                 applyAnyway: true,
-                _restoringReplacementSource: true
+                _restoringReplacementSource: true,
+                _mutationTransaction: options._mutationTransaction
             });
             if (!restored) throw new Error('The source proposal could not be reapplied.');
             delete proposalData.replacementRestorationError;
@@ -2158,6 +2261,12 @@ const ProposalManager = {
     },
 
     async applyProposal(proposalId, options = {}) {
+        return _runProposalMutationBoundary(this, 'apply', proposalId, options, (_transaction, transactionOptions) => (
+            this._applyProposalTransactionBody(proposalId, transactionOptions)
+        ));
+    },
+
+    async _applyProposalTransactionBody(proposalId, options = {}) {
         const safeId = _normalizeProposalId(proposalId) || '';
         const applyOptions = options || {};
 
@@ -2371,6 +2480,12 @@ const ProposalManager = {
     },
 
     async unapplyProposal(proposalId, options = {}) {
+        return _runProposalMutationBoundary(this, 'unapply', proposalId, options, (_transaction, transactionOptions) => (
+            this._unapplyProposalTransactionBody(proposalId, transactionOptions)
+        ));
+    },
+
+    async _unapplyProposalTransactionBody(proposalId, options = {}) {
         if (typeof proposalStorage === 'undefined') return false;
         const skipConfirm = !!options.skipConfirm;
         // An absorb/merge SUBSUMES the proposal — restoring its replacement source there
@@ -2397,7 +2512,7 @@ const ProposalManager = {
         else if (isDecideLater) currentSub = proposalData.decideLaterProposal;
 
         if (!appliedOf(proposalData, currentSub)) {
-            if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData, options);
             return true;
         }
 
@@ -2444,7 +2559,7 @@ const ProposalManager = {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalId));
         }
 
-        if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalId, proposalData, options);
 
         // Refresh UI after unapply
         this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
@@ -2461,6 +2576,12 @@ const ProposalManager = {
      * This allows efficient bulk unapply without intermediate UI updates.
      */
     async unapplyWholeFamily(proposalId, visited = new Set(), options = {}) {
+        return _runProposalMutationBoundary(this, 'unapply-family', proposalId, options, (_transaction, transactionOptions) => (
+            this._unapplyWholeFamilyTransactionBody(proposalId, visited, transactionOptions)
+        ));
+    },
+
+    async _unapplyWholeFamilyTransactionBody(proposalId, visited = new Set(), options = {}) {
         if (!proposalId || typeof proposalStorage === 'undefined') return;
         const proposalKey = String(proposalId);
         if (visited.has(proposalKey)) return;
@@ -2483,7 +2604,7 @@ const ProposalManager = {
         const combinedDescendants = Array.from(new Set([...descendantProposals, ...proposalDescendants]));
 
         for (const childId of combinedDescendants) {
-            await this.unapplyWholeFamily(childId, visited, options);
+            await this._unapplyWholeFamilyTransactionBody(childId, visited, options);
         }
 
         const isRoad = !!proposalData.roadProposal;
@@ -2500,7 +2621,7 @@ const ProposalManager = {
             : null;
 
         if (!appliedOf(proposalData, currentSub)) {
-            if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
+            if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData, options);
             return;
         }
 
@@ -2515,7 +2636,7 @@ const ProposalManager = {
         } else if (isDecideLater) {
             await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalKey));
         }
-        if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData);
+        if (!skipRestoreSource) await this._restoreReplacementSource(proposalKey, proposalData, options);
     },
 
     /**
@@ -3418,9 +3539,10 @@ const ProposalManager = {
                         indexParcelLayer(layer);
                     }
 
-                    // For applied roads, draw centerline overlay
+                    // Only pre-corridor road proposals need the compatibility centreline. Modern
+                    // corridors are already drawn (and live-updated) by corridor-render.js.
                     const feat = layer?.feature;
-                    if (feat?.properties?.isRoad && window.map) {
+                    if (_shouldDrawLegacyRoadCenterline(feat, proposalData) && window.map) {
                         const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
                             || (proposalData?.definition?.points)
                             || (proposalData?.geometry?.roadPlan?.points)
@@ -3691,12 +3813,13 @@ const ProposalManager = {
                             useNormalStyle,
                             isRoad: feature.properties.isRoad,
                             hasMap: !!window.map,
-                            conditionMet: useNormalStyle && feature.properties.isRoad && window.map
+                            conditionMet: !!(useNormalStyle && _shouldDrawLegacyRoadCenterline(feature, proposalData) && window.map)
                         });
                     }
 
-                    // For applied roads, overlay a white dashed centerline instead of using the stroke as a border
-                    if (useNormalStyle && feature.properties.isRoad && window.map) {
+                    // Pre-corridor road compatibility only. A canonical corridor's lane renderer is
+                    // its single presentation source and follows node drags live.
+                    if (useNormalStyle && _shouldDrawLegacyRoadCenterline(feature, proposalData) && window.map) {
                         // Single source of truth: points passed with the road definition
                         const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
                             || (proposalData?.definition?.points)
@@ -4495,7 +4618,11 @@ const ProposalManager = {
             const parked = [];
             for (const conflict of analysis.conflicts) {
                 // Parking must not resurrect the parked proposal's replaced ancestor under the new drawing.
-                const done = await this.unapplyProposal(conflict.proposalId, { skipConfirm: true, skipRestoreSource: true });
+                const done = await this.unapplyProposal(conflict.proposalId, {
+                    skipConfirm: true,
+                    skipRestoreSource: true,
+                    _mutationTransaction: options._mutationTransaction
+                });
                 if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
             analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
@@ -4528,7 +4655,11 @@ const ProposalManager = {
                     analysis,
                     onApplyAnyway: () => this.applyProposal(idLabel, { ...options, applyAnyway: true }),
                     onUnapplyAndRetry: async (conflictProposalId) => {
-                        await this.unapplyProposal(conflictProposalId, { skipConfirm: true, skipRestoreSource: true });
+                        await this.unapplyProposal(conflictProposalId, {
+                            skipConfirm: true,
+                            skipRestoreSource: true,
+                            _mutationTransaction: options._mutationTransaction
+                        });
                         return this.applyProposal(idLabel, { ...options, applyAnyway: true });
                     }
                 });
@@ -4816,6 +4947,8 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ProposalManager,
-        _shouldSkipUncutRemainder
+        _reapplyAppliedProposal,
+        _shouldSkipUncutRemainder,
+        _shouldDrawLegacyRoadCenterline
     };
 }

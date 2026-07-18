@@ -18,9 +18,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     base64UrlEncodeBytes,
-    base64UrlDecodeToBytes,
-    buildCityQueryParam
+    base64UrlDecodeToBytes
 } = require('../../frontend/js/proposals/sharing.js');
+const { buildCityQueryParam } = require('../../frontend/js/proposals/server-sync.js');
 const {
     deepClone,
     deepCloneArray,

@@ -4,6 +4,12 @@
     let lastHoverLayer = null;
     let lastHoverParcelId = null;
 
+    function isStationPlacementMapInteractionActive() {
+        return global.transitStationPlacementMode === true
+            || (typeof global.isTransitStationPlacementActive === 'function'
+                && global.isTransitStationPlacementActive());
+    }
+
     function getParcelIdFromFeature(feature) {
         if (!feature) return null;
         const props = feature.properties || {};
@@ -26,8 +32,12 @@
 
     function highlightFeature(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // Station placement owns every map-surface pointer event. Parcels stay visually inert
+        // while the carried station preview and compatible-track overlay respond to the cursor.
+        if (isStationPlacementMapInteractionActive()) return;
         // No parcel hover while the structure geometry editor owns the map.
         if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
+        if (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
@@ -241,6 +251,20 @@
         restoreParcelLayerStyle(layer);
     }
 
+    function clearParcelHover() {
+        const previousLayer = lastHoverLayer;
+        lastHoverLayer = null;
+        lastHoverParcelId = null;
+        if (previousLayer) {
+            try { restoreParcelLayerStyle(previousLayer); } catch (_) { }
+        }
+        try {
+            if (typeof global.clearProposalInfoHoverOverlay === 'function') {
+                global.clearProposalInfoHoverOverlay();
+            }
+        } catch (_) { }
+    }
+
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
         const events = {
@@ -267,6 +291,7 @@
     }
 
     function selectParcel(parcelOrId, showPanel = true) {
+        if (isStationPlacementMapInteractionActive()) return;
         if (!global.parcelLayer) return;
         const parcelId = parcelOrId && parcelOrId.feature
             ? getParcelIdFromFeature(parcelOrId.feature)
@@ -414,6 +439,7 @@
 
     global.highlightFeature = highlightFeature;
     global.resetHighlight = resetHighlight;
+    global.clearParcelHover = clearParcelHover;
     global.onEachFeature = onEachFeature;
     global.restoreParcelLayerStyle = restoreParcelLayerStyle;
     global.selectParcel = selectParcel;

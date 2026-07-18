@@ -120,6 +120,36 @@ function renderCorridorBuildingTunnels(tunnels, group, pane) {
     });
 }
 
+function renderCorridorGradeSeparations(records, group, pane) {
+    if (!Array.isArray(records) || !group) return;
+    records.forEach(record => {
+        if (!record?.from || !record?.crossing || !record?.to) return;
+        const isOverpass = record.mode === 'overpass';
+        if (!isOverpass && record.mode !== 'underpass') return;
+        const color = isOverpass ? '#d97706' : '#1d4ed8';
+        L.polyline([record.from, record.crossing, record.to], {
+            color,
+            weight: Math.max(6, Number(record.width) || 2),
+            opacity: 0.92,
+            dashArray: isOverpass ? null : '8 7',
+            lineCap: 'round',
+            interactive: false,
+            pane: pane || undefined,
+            className: `corridor-grade-separation corridor-grade-separation--${record.mode}`
+        }).addTo(group);
+        [record.from, record.to].forEach(point => L.circleMarker(point, {
+            radius: 4.5,
+            color,
+            weight: 2,
+            fillColor: '#ffffff',
+            fillOpacity: 1,
+            interactive: false,
+            pane: pane || undefined,
+            className: `corridor-grade-separation-portal corridor-grade-separation-portal--${record.mode}`
+        }).addTo(group));
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Rail lanes
 //
@@ -596,7 +626,22 @@ function refreshAppliedCorridorStrips() {
         group.addTo(layer);
         renderAppliedCorridorHitTargets(allStrips, proposal, layer, definition, entries);
         const corridorId = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
-        entries.forEach(entry => renderedCorridors.push({ centerline: [entry.points], profile: entry.profile, corridorId }));
+        const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
+            ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
+            : [];
+        entries.forEach(entry => {
+            // A grade-separated span crosses in plan but is deliberately not a network junction.
+            // Remove only those edges from the render-only centerlines fed to the cross-road
+            // junction detector; the complete road remains visible in the strip layer above.
+            const junctionRuns = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
+                ? corridorSurfaceRuns([entry.points], gradeSpans)
+                : [entry.points];
+            if (junctionRuns.length) renderedCorridors.push({
+                centerline: junctionRuns,
+                profile: entry.profile,
+                corridorId
+            });
+        });
         drawn += 1;
         } catch (error) {
             // One corrupt road must not strip the asphalt off EVERY road on the map.
@@ -616,10 +661,13 @@ function refreshAppliedCorridorStrips() {
     // their own over every applied corridor — including ones whose strips failed to build.
     proposals.forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
-        if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
+        if (!definition) return;
         if (!isApplied(proposal, proposal.roadProposal)) return;
-        renderCorridorBuildingTunnels(definition.tunnels, layer, CORRIDOR_STRIPS_PANE);
-        drawn += 1;
+        const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels : [];
+        const gradeSeparations = Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : [];
+        if (tunnels.length) renderCorridorBuildingTunnels(tunnels, layer, CORRIDOR_STRIPS_PANE);
+        if (gradeSeparations.length) renderCorridorGradeSeparations(gradeSeparations, layer, CORRIDOR_STRIPS_PANE);
+        if (tunnels.length || gradeSeparations.length) drawn += 1;
     });
 
     // Applied roads cut through parks/squares/lakes at render time — any corridor change
@@ -663,6 +711,7 @@ if (typeof window !== 'undefined') {
     window.renderCorridorParkingBays = renderCorridorParkingBays;
     window.renderCorridorDirectionArrows = renderCorridorDirectionArrows;
     window.renderCorridorBuildingTunnels = renderCorridorBuildingTunnels;
+    window.renderCorridorGradeSeparations = renderCorridorGradeSeparations;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
     window.setCorridorProfilePreview = setCorridorProfilePreview;
     window.clearCorridorProfilePreview = clearCorridorProfilePreview;

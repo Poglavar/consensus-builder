@@ -452,6 +452,16 @@
             "showDgu": "DGU katastar (pravna evidencija)",
             "showProposed": "Prikaži predložene zgrade"
         },
+        "stations": {
+            "title": "Stanice",
+            "placeTitle": "Postavi stanicu",
+            "bus": "Autobuska stanica",
+            "tram": "Tramvajska stanica",
+            "underground": "Podzemna stanica",
+            "elevated": "Stanica nadzemne železnice",
+            "cancel": "Otkaži postavljanje",
+            "hint": "Železničke stanice se vezuju za pruge. Autobuske stanice se vezuju za izabranu stranu puta."
+        },
         "roads": {
             "title": "Ceste",
             "drawDguTooltip": "Iscrtaj uredjenazemlja.hr poligone namene puteva",
@@ -648,6 +658,14 @@
                 "square": "Trg",
                 "lake": "Jezero",
                 "offer": "Ponuda",
+                "transport": "Saobraćaj",
+                "ownershipCategory": "Vlasništvo",
+                "road": "Put",
+                "track": "Pruga",
+                "busStation": "Autobuska stanica",
+                "tramStation": "Tramvajska stanica",
+                "undergroundStation": "Metro stanica",
+                "elevatedStation": "Nadzemna stanica",
                 "noParcelSelected": "Nijedna parcela nije izabrana. Prvo izaberi parcelu.",
                 "useMainCreateButton": "Kada je izabrano više parcela, koristi glavno dugme \"Napravi predlog\".",
                 "enableMultiSelect": "Uključi izbor više parcela za ovu radnju.",
@@ -1208,7 +1226,20 @@
             "unapply": "Ukloni postojeći predlog sa mape",
             "destroy": "Sruši zgrade",
             "cut": "Preseci zgrade",
+            "proposalImpact": "Presecanje ili rušenje ukloniće ove primenjene predloge sa mape (ostaće na listi predloga):",
+            "proposalImpactTunnel": "Tunel ostavlja ove predloge primenjenima.",
+            "cutWithProposals": "Preseci — ukloni {{count}} predlog(a) sa mape",
+            "destroyWithProposals": "Sruši — ukloni {{count}} predlog(a) sa mape",
+            "mergeImpact": "Nastavak će spojiti ove predloge puteva sa ovim putem i ukloniti njihove zasebne zapise predloga:",
+            "merge": "Spoji puteve",
             "confirm": "Tunel kroz zgradu",
+            "cancel": "Izaberi drugu trasu"
+        },
+        "corridorGrade": {
+            "offer": "Ova pešačka ruta ukršta {{count}} nepešački put/puteve. Kako treba da ih pređe?",
+            "atGrade": "Prelaz u nivou",
+            "underpass": "Pothodnik",
+            "overpass": "Nadvožnjak",
             "cancel": "Izaberi drugu trasu"
         },
         "deleteProposal": {
@@ -2503,6 +2534,7 @@
             "please_provide_author_name_and_a_valid_offer": "Unesi ime autora i validnu ponudu.",
             "please_select_a_parcel_first": "Prvo izaberi parcelu",
             "please_specify_which_owner_acceptance_to_undo": "Navedite koje prihvatanje vlasnika da se poništi.",
+            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi preraspodelu zemljišta.",
             "proposal_not_found": "Predlog nije pronađen.",
             "proposal_storage_is_unavailable": "Skladište predloga nije dostupno.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Nedostaje plan reparcelacije. Ponovo pokreni algoritam.",
@@ -2638,6 +2670,7 @@
             "stateSolid": "Puno",
             "stateGhost": "Providno",
             "stateSurviving": "Preostale",
+            "stateRemoved": "Uklonjene",
             "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",
@@ -2649,6 +2682,7 @@
             "stateSolidTooltip": "Puno — iscrtano potpuno neprozirno",
             "stateGhostTooltip": "Providno — iscrtano poluprovidno da se vidi kroz njega",
             "stateSurvivingTooltip": "Preostale — postojeće zgrade prikazane puno, ali one koje plan ruši su skrivene (stanje nakon plana)",
+            "stateRemovedTooltip": "Uklonjene — prikazuju se samo postojeće zgrade ili delovi zgrada koje plan ruši",
             "stateOffTooltip": "Isključeno — nije iscrtano",
             "solid": "Puno:",
             "neither": "Nijedno",
@@ -2711,5 +2745,18 @@
         "hintSelect": "Izaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",
         "statusSaved": "Dizajn strukture je sačuvan."
+    },
+    "stationEditor": {
+        "ariaLabel": "Uređivač geometrije stanice",
+        "title": "Uredi geometriju stanice",
+        "station": "Stanica",
+        "close": "Zatvori",
+        "fixedPosition": "Centar stanice ostaje fiksan. Rotirajte stanicu oko njega.",
+        "rotation": "Rotacija",
+        "platformHeight": "Visina perona iznad tla",
+        "hint": "Pregled na mapi se ažurira tokom uređivanja.",
+        "cancel": "Otkaži",
+        "save": "Gotovo",
+        "saved": "Geometrija stanice je sačuvana."
     }
 }

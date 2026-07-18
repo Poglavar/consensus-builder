@@ -307,7 +307,10 @@
         if (cityConfig && cityConfig.buildings && cityConfig.buildings.source === 'none') {
             return null;
         }
-        const base = (getDataSource() === 'localhost') ? LOCAL_BASE : UGT_BASE;
+        // Honour the localhost worktree's `?backend=` override just like every other backend
+        // request. Using LOCAL_BASE here silently sent demolition-footprint scans to port 3000
+        // while the same page loaded 3D meshes from its requested backend port.
+        const base = getBackendBase();
         const search = new URLSearchParams({ bbox, source: source === 'dgu' ? 'dgu' : 'gdi' });
         return { url: `${base}/buildings?${search.toString()}`, isOSS: false };
     }
@@ -377,5 +380,4 @@
     window.getBackendBase = getBackendBase;
     window.getCurrentDataSource = getDataSource;
 })();
-
 

@@ -36,6 +36,13 @@ function draftFor(adapter, proposal, overrides = {}) {
 describe('proposal editor adapter registry', () => {
     it('registers every creatable proposal goal', () => {
         expect(registry.completeness(CREATABLE_PROPOSAL_GOALS)).toEqual({ complete: true, missing: [] });
+        expect(CREATABLE_PROPOSAL_GOALS).not.toContain('decide-later');
+    });
+
+    it('keeps stored Decide Later proposals readable but not editable into new proposals', () => {
+        const capability = registry.canEdit({ goal: 'decide-later', decideLaterProposal: {} });
+        expect(capability.editable).toBe(false);
+        expect(capability.reason).toContain('no longer');
     });
 
     it('normalizes aliases to the same adapter', () => {
@@ -45,7 +52,7 @@ describe('proposal editor adapter registry', () => {
     });
 });
 
-describe('park and square proposal adapters', () => {
+describe('structure proposal adapters', () => {
     const geometry = {
         type: 'Polygon',
         coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
@@ -53,16 +60,18 @@ describe('park and square proposal adapters', () => {
 
     it.each([
         ['park', { trees: [[15.905, 45.805]], flowerbeds: [], ponds: [], paths: [], version: 3 }],
-        ['square', { fountains: [[15.905, 45.805]], trees: [], benches: [{ coordinate: [15.906, 45.806], bearing: 75 }], version: 2 }]
-    ])('round-trips %s furniture geometry and exposes the design section', (kind, decorations) => {
+        ['square', { fountains: [[15.905, 45.805]], trees: [], benches: [{ coordinate: [15.906, 45.806], bearing: 75 }], version: 2 }],
+        ['lake', { fish: [[15.905, 45.805]], reeds: [], version: 1 }]
+    ])('round-trips %s geometry, decorations, and demolition records', (kind, decorations) => {
         const adapter = buildStructureAdapter(kind);
+        const demolishedBuildings = [{ id: '61075', geometry }];
         const proposal = {
             proposalId: `${kind}-1`,
             city: 'zagreb',
             goal: kind,
             title: `Test ${kind}`,
             parentParcelIds: ['p1'],
-            structureProposal: { kind, geometry, decorations, parentParcelIds: ['p1'] }
+            structureProposal: { kind, geometry, decorations, demolishedBuildings, parentParcelIds: ['p1'] }
         };
         const draft = draftFor(adapter, proposal);
         const replacement = adapter.serializeProposal(draft);
@@ -70,7 +79,87 @@ describe('park and square proposal adapters', () => {
         expect(adapter.sections).toContain('design');
         expect(replacement.structureProposal.geometry).toEqual(geometry);
         expect(replacement.structureProposal.decorations).toEqual(decorations);
+        expect(replacement.structureProposal.demolishedBuildings).toEqual(demolishedBuildings);
         expect(adapter.validate(draft).valid).toBe(true);
+    });
+});
+
+describe('transit station proposal adapter', () => {
+    const geometry = {
+        type: 'Polygon',
+        coordinates: [[[15.9, 45.8], [15.9002, 45.8], [15.9002, 45.8005], [15.9, 45.8005], [15.9, 45.8]]]
+    };
+
+    it('round-trips the station type, placement frame, footprint, and model version', () => {
+        const adapter = registry.get('station');
+        const proposal = {
+            proposalId: 'station-1',
+            city: 'zagreb',
+            goal: 'station',
+            title: 'Central metro',
+            parentParcelIds: ['p1', 'p2'],
+            structureProposal: {
+                kind: 'station',
+                stationType: 'underground',
+                center: [15.9001, 45.80025],
+                bearing: 72,
+                modelVersion: 1,
+                geometry,
+                parentParcelIds: ['p1', 'p2']
+            }
+        };
+
+        const draft = draftFor(adapter, proposal);
+        const replacement = adapter.serializeProposal(draft);
+
+        expect(adapter.hasDesign).toBe(true);
+        expect(adapter.sections).toContain('design');
+        expect(adapter.validate(draft).valid).toBe(true);
+        expect(replacement.goal).toBe('station');
+        expect(replacement.structureProposal).toMatchObject({
+            kind: 'station',
+            stationType: 'underground',
+            center: [15.9001, 45.80025],
+            bearing: 72,
+            modelVersion: 1,
+            parentParcelIds: ['p1', 'p2']
+        });
+        expect(replacement.geometry.stationGraphics).toEqual(geometry);
+    });
+
+    it('rejects a missing station placement frame', () => {
+        const adapter = registry.get('station');
+        const draft = {
+            fields: { parentParcelIds: ['p1'] },
+            editorPayload: {
+                structureProposal: { kind: 'station', stationType: 'tram', geometry }
+            }
+        };
+
+        expect(adapter.validate(draft)).toMatchObject({
+            valid: false,
+            errors: expect.arrayContaining([expect.objectContaining({ code: 'invalid-station-centre' })])
+        });
+    });
+
+    it('accepts bus stations and bounds elevated platform height', () => {
+        const adapter = registry.get('station');
+        const bus = draftFor(adapter, {
+            proposalId: 'bus-1', city: 'zagreb', goal: 'station', title: 'Roadside stop',
+            parentParcelIds: ['p1'],
+            structureProposal: {
+                kind: 'station', stationType: 'bus', center: [15.9, 45.8], bearing: 0, geometry
+            }
+        });
+        expect(adapter.validate(bus).valid).toBe(true);
+
+        const elevated = structuredClone(bus);
+        elevated.editorPayload.structureProposal.stationType = 'elevated';
+        elevated.editorPayload.structureProposal.platformHeightM = 41;
+        expect(adapter.validate(elevated)).toMatchObject({
+            valid: false,
+            errors: expect.arrayContaining([expect.objectContaining({ code: 'invalid-station-platform-height' })])
+        });
     });
 });
 

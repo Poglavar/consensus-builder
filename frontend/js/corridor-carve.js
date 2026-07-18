@@ -46,20 +46,30 @@ const carveIsApplied = (typeof isApplied === 'function')
 // takes its demolitions with it — the buildings come back. Roads, parks/squares/lakes and building
 // typologies all clear their ground the same way and all park their records on
 // `<kind>Proposal.demolishedBuildings`.
-function demolishedBuildingRecordsFrom(proposals) {
+function demolishedBuildingRecordsFrom(proposals, options = {}) {
+    const selectedByCaller = options.selectedByCaller === true;
     const records = [];
     (proposals || []).forEach(proposal => {
         if (!proposal) return;
         const rp = proposal.roadProposal;
-        if (rp && rp.definition && carveIsApplied(proposal, rp)) {
-            (rp.definition.demolishedBuildings || []).forEach(record => {
+        if (rp && rp.definition && (selectedByCaller || carveIsApplied(proposal, rp))) {
+            const definition = rp.definition;
+            const rawRecords = definition.demolishedBuildings || [];
+            const corridorRecords = (typeof options.consolidateCorridorRecords === 'function')
+                ? options.consolidateCorridorRecords(
+                    rawRecords,
+                    definition.surfaceFootprint || definition.polygon || null,
+                    definition
+                )
+                : rawRecords;
+            (corridorRecords || []).forEach(record => {
                 if (record && record.id) records.push(record);
             });
         }
         ['structureProposal', 'buildingProposal'].forEach(key => {
             const sub = proposal[key];
             if (!sub || !Array.isArray(sub.demolishedBuildings)) return;
-            if (!carveIsApplied(proposal, sub)) return;
+            if (!selectedByCaller && !carveIsApplied(proposal, sub)) return;
             sub.demolishedBuildings.forEach(record => {
                 if (record && record.id) records.push(record);
             });
@@ -75,9 +85,13 @@ function demolishedBuildingRecordsFrom(proposals) {
 //
 // Later records win: a building cut by one proposal and then razed by another is razed.
 // Returns { records: Map<string, record> }.
-function collectCarveRecords(proposals) {
+function collectCarveRecords(proposals, options = {}) {
     const records = new Map();
-    demolishedBuildingRecordsFrom(proposals).forEach(record => {
+    const rawRecords = demolishedBuildingRecordsFrom(proposals, options);
+    const combinedRecords = (typeof options.consolidateBuildingRecords === 'function')
+        ? options.consolidateBuildingRecords(rawRecords)
+        : rawRecords;
+    (combinedRecords || []).forEach(record => {
         if (!record || !record.geometry) return;
         const existing = records.get(String(record.id));
         // A full demolition (no remainder) is final — a cut recorded elsewhere cannot resurrect it.

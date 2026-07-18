@@ -133,6 +133,14 @@ describe('collectCarveRecords', () => {
 
         expect(records.size).toBe(0);
     });
+
+    it('can apply an explicit server-side selection without consulting browser visibility', () => {
+        const { records } = collectCarveRecords(
+            [{ applied: false, roadProposal: { definition: { demolishedBuildings: [fullDemolition(61075)] } } }],
+            { selectedByCaller: true }
+        );
+        expect([...records.keys()]).toEqual(['61075']);
+    });
 });
 
 describe('buildingFootprintFromFaces', () => {
@@ -208,13 +216,13 @@ describe('carveBuildingByObjectId', () => {
         expect(carveBuildingByObjectId(61075, collectCarveRecords([tunnelled]))).toBeNull();
     });
 
-    it('lets a park/square clear its ground — its records carve exactly like a corridor\'s', () => {
-        const park = {
-            proposalId: 'p-park',
+    it.each(['park', 'square', 'lake'])('lets a %s clear its ground — its records carve exactly like a corridor\'s', kind => {
+        const structure = {
+            proposalId: `p-${kind}`,
             status: 'applied',
-            structureProposal: { status: 'applied', demolishedBuildings: [fullDemolition(61075)] }
+            structureProposal: { kind, status: 'applied', demolishedBuildings: [fullDemolition(61075)] }
         };
-        const carve = carveBuildingByObjectId(61075, collectCarveRecords([park]));
+        const carve = carveBuildingByObjectId(61075, collectCarveRecords([structure]));
 
         expect(carve).toBeTruthy();
         expect(carve.remainder).toBeNull();

@@ -427,6 +427,16 @@
             "showDgu": "DGU cadastre (legal reference)",
             "showProposed": "Show Proposed Buildings"
         },
+        "stations": {
+            "title": "Stations",
+            "placeTitle": "Place a station",
+            "bus": "Bus station",
+            "tram": "Tram station",
+            "underground": "Underground station",
+            "elevated": "Elevated train station",
+            "cancel": "Cancel placement",
+            "hint": "Rail stations snap to rail tracks. Bus stations snap to the selected roadside."
+        },
         "roads": {
             "title": "Roads",
             "showLayer": "Show roads",
@@ -624,6 +634,14 @@
                 "square": "Square",
                 "lake": "Lake",
                 "offer": "Offer",
+                "transport": "Transport",
+                "ownershipCategory": "Ownership",
+                "road": "Road",
+                "track": "Track",
+                "busStation": "Bus station",
+                "tramStation": "Tram station",
+                "undergroundStation": "Metro station",
+                "elevatedStation": "Elevated station",
                 "noParcelSelected": "No parcel selected. Please select a parcel first.",
                 "useMainCreateButton": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
                 "enableMultiSelect": "Enable multi-parcel selection to use this action.",
@@ -1207,7 +1225,20 @@
             "unapply": "Unapply existing proposal",
             "destroy": "Demolish the buildings",
             "cut": "Cut through the buildings",
+            "proposalImpact": "Cutting or demolishing will unapply these proposals (they remain in the proposal list and can be applied again):",
+            "proposalImpactTunnel": "Tunnelling keeps these proposals applied.",
+            "cutWithProposals": "Cut through — unapply {{count}} proposal(s)",
+            "destroyWithProposals": "Demolish — unapply {{count}} proposal(s)",
+            "mergeImpact": "Continuing will merge these road proposals into this road and remove their separate proposal entries:",
+            "merge": "Merge roads",
             "confirm": "Tunnel through",
+            "cancel": "Choose another route"
+        },
+        "corridorGrade": {
+            "offer": "This pedestrian route crosses {{count}} non-pedestrian road(s). How should it cross?",
+            "atGrade": "At-grade crossing",
+            "underpass": "Underpass",
+            "overpass": "Overpass",
             "cancel": "Choose another route"
         },
         "deleteProposal": {
@@ -2473,6 +2504,7 @@
             "please_provide_author_name_and_a_valid_offer": "Please provide author, name, and a valid offer.",
             "please_select_a_parcel_first": "Please select a parcel first",
             "please_specify_which_owner_acceptance_to_undo": "Please specify which owner acceptance to undo.",
+            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
             "proposal_not_found": "Proposal not found.",
             "proposal_storage_is_unavailable": "Proposal storage is unavailable.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Reparcellization plan is missing. Please rerun the algorithm.",
@@ -2608,6 +2640,7 @@
             "stateSolid": "Solid",
             "stateGhost": "Transparent",
             "stateSurviving": "Surviving",
+            "stateRemoved": "Removed",
             "stateOff": "Off",
             "built": "Built",
             "both": "Both",
@@ -2619,6 +2652,7 @@
             "stateSolidTooltip": "Solid — drawn fully opaque",
             "stateGhostTooltip": "Transparent — drawn semi-transparent so you can see through it",
             "stateSurvivingTooltip": "Surviving — existing buildings shown solid, but the ones the plan demolishes are hidden (the after-the-plan state)",
+            "stateRemovedTooltip": "Removed — show only existing buildings or portions of buildings that the plan demolishes",
             "stateOffTooltip": "Off — not drawn",
             "solid": "Solid:",
             "neither": "Neither",
@@ -2681,5 +2715,18 @@
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",
         "statusSaved": "Structure design saved."
+    },
+    "stationEditor": {
+        "ariaLabel": "Station geometry editor",
+        "title": "Edit station geometry",
+        "station": "Station",
+        "close": "Close",
+        "fixedPosition": "The station centre stays fixed. Rotate the station around it.",
+        "rotation": "Rotation",
+        "platformHeight": "Platform height above ground",
+        "hint": "The map preview updates while you edit.",
+        "cancel": "Cancel",
+        "save": "Done",
+        "saved": "Station geometry saved."
     }
 }

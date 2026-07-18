@@ -29,40 +29,8 @@ import { fileURLToPath } from 'node:url';
 
 const FRONTEND_JS = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../../frontend/js');
 
-// Pre-existing duplicates, all centred on proposals/sharing.js re-declaring helpers that other
-// proposals/* files already own. sharing.js loads last, so ITS copy is the one that runs everywhere.
-// Names marked (DIVERGENT) have bodies that actually differ between the copies — those are latent
-// bugs of the same shape as the escapeHtml one, where the version people read is not the version
-// that executes. The rest are byte-identical copies that will drift.
-const KNOWN_COLLISIONS = new Set([
-    'buildBoundsFromSharedPayload',          // (DIVERGENT) sharing.js vs proposals/geometry.js
-    'ensureAncestorProposalsUploaded',       // (DIVERGENT) sharing.js vs proposals/server-sync.js
-    'ensurePolygonIsClosed',                 // (DIVERGENT) government-plan-worker.js vs road-drawing.js
-    'getCurrentUserAgent',                   // (DIVERGENT) agents.js vs user-management.js
-    'getParcelDisplayNumberFromProperties',  // (DIVERGENT) sharing.js vs proposals/parcel-id.js
-    'getParcelIdFromFeature',                // (DIVERGENT) road-drawing.js vs proposals/parcel-id.js
-    'getShareI18nHelper',                    // (DIVERGENT) proposals/core.js vs sharing.js
-    'getSharedInspectorI18nHelper',          // (DIVERGENT) proposals/dialog-share.js vs sharing.js
-    'headProposalExists',                    // (DIVERGENT) sharing.js vs proposals/server-sync.js
-    'normalizeFeature',                      // (DIVERGENT) government-plan-worker.js vs proposals/core.js
-    'buildCityQueryParam',                   // sharing.js vs proposals/server-sync.js
-    'buildLeafletBoundsFromArray',           // sharing.js vs proposals/geometry.js
-    'checkParcelsOriginal',                  // sharing.js vs proposals/storage.js
-    'collectCoordinatesFromGeometry',        // sharing.js vs proposals/geometry.js
-    'collectParcelProposalPairs',            // sharing.js vs proposals/storage.js
-    'computeBoundsFromGeoJSONFeatures',      // sharing.js vs proposals/geometry.js
-    'computeSharedBoundingBoxFromFeatures',  // proposals/core.js vs sharing.js
-    'getParcelDisplayNumberFromFeature',     // sharing.js vs proposals/parcel-id.js
-    'getServerProposalId',                   // sharing.js vs proposals/server-sync.js
-    'isProposalCurrentlyApplied',            // sharing.js vs proposals/execution.js
-    'mapGoalToBackendType',                  // sharing.js vs proposals/server-sync.js
-    'migrateRoadAssetsToNewId',              // sharing.js vs proposals/storage.js
-    'resolveBackendBaseUrl',                 // proposals/core.js vs sharing.js
-    'resolveFrontendBaseUrl',                // proposals/core.js vs sharing.js
-    'sortProposalIdsForShare',               // proposals/core.js vs sharing.js
-    'syncProposalWithServerId',              // sharing.js vs proposals/server-sync.js
-    'uploadProposalToServer'                 // sharing.js vs proposals/server-sync.js
-]);
+// The migration backlog is intentionally empty. New classic-script globals must have one owner.
+const KNOWN_COLLISIONS = new Set();
 
 function listJsFiles(dir) {
     return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {

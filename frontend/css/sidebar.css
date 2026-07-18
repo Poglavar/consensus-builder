@@ -550,6 +550,20 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     box-sizing: border-box; /* Include padding in width calculations */
 }
 
+.btn[data-station-type].is-active {
+    background: #0f766e;
+    border-color: #0b5f59;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+}
+
+#station-placement-status {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
 .accordion-content.active {
     display: block;
 }

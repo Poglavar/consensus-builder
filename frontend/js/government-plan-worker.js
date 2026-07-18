@@ -45,12 +45,12 @@ function processPlanRequest(data) {
         differenceErrors: 0
     };
 
-    const planFeature = normalizeFeature(planPolygon);
+    const planFeature = normalizeGovernmentPlanFeature(planPolygon);
     const planBbox = computeFeatureBbox(planFeature);
     const outputs = [];
 
     parcels.forEach((parcel, index) => {
-        const feature = normalizeFeature(parcel);
+        const feature = normalizeGovernmentPlanFeature(parcel);
         if (!feature) {
             return;
         }
@@ -94,12 +94,12 @@ function processPlanRequest(data) {
         if (intersection && intersection.geometry) {
             const polygons = extractPolygonsWithHoles(intersection.geometry);
             polygons.forEach(poly => {
-                const closedOuter = ensurePolygonIsClosed(poly.outer);
+                const closedOuter = closeGovernmentPlanPolygon(poly.outer);
                 if (!closedOuter || closedOuter.length < 4) {
                     return;
                 }
                 const closedHoles = (Array.isArray(poly.holes) ? poly.holes : [])
-                    .map(hole => ensurePolygonIsClosed(hole))
+                    .map(hole => closeGovernmentPlanPolygon(hole))
                     .filter(ring => Array.isArray(ring) && ring.length >= 4);
                 const coords = [closedOuter, ...closedHoles];
                 const polygon = turf.polygon(coords);
@@ -144,12 +144,12 @@ function processPlanRequest(data) {
             } else {
                 stats.differenceSuccess += 1;
                 remPolygons.forEach(poly => {
-                    const closedOuter = ensurePolygonIsClosed(poly.outer);
+                    const closedOuter = closeGovernmentPlanPolygon(poly.outer);
                     if (!closedOuter || closedOuter.length < 4) {
                         return;
                     }
                     const closedHoles = (Array.isArray(poly.holes) ? poly.holes : [])
-                        .map(hole => ensurePolygonIsClosed(hole))
+                        .map(hole => closeGovernmentPlanPolygon(hole))
                         .filter(ring => Array.isArray(ring) && ring.length >= 4);
                     const coords = [closedOuter, ...closedHoles];
                     const polygon = turf.polygon(coords);
@@ -198,7 +198,7 @@ function processPlanRequest(data) {
     return { parcels: outputs, stats };
 }
 
-function normalizeFeature(input) {
+function normalizeGovernmentPlanFeature(input) {
     if (!input) return null;
     if (input.type === 'Feature') {
         return input;
@@ -247,7 +247,7 @@ function extractPolygonsWithHoles(geometry) {
     return [];
 }
 
-function ensurePolygonIsClosed(coords) {
+function closeGovernmentPlanPolygon(coords) {
     if (!Array.isArray(coords) || coords.length < 3) {
         return null;
     }

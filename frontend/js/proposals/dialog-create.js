@@ -562,7 +562,6 @@ function showProposalDialog(overrides = null) {
         square: t('modal.createProposal.goalOptions.square', 'Square'),
         lake: t('modal.createProposal.goalOptions.lake', 'Lake'),
         roadTrack: t('modal.createProposal.goalOptions.roadTrack', 'Road/Track'),
-        decideLater: t('modal.createProposal.goalOptions.decideLater', 'Decide later'),
         urbanRule: t('modal.createProposal.goalOptions.urbanRule', 'Urban Rule'),
         reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization'),
         ownershipTransfer: t('modal.createProposal.goalOptions.ownershipTransfer', 'Ownership transfer')
@@ -575,7 +574,6 @@ function showProposalDialog(overrides = null) {
     const asIsLandUseLabel = t('modal.createProposal.goalOptions.asIs', 'As is');
     const parcelsOptions = {
         asIs: t('modal.createProposal.parcelsOptions.asIs', 'As is'),
-        merge: t('modal.createProposal.parcelsOptions.merge', 'Merge'),
         readjust: t('modal.createProposal.parcelsOptions.readjust', 'Readjust')
     };
     const ownershipRecipients = {
@@ -689,8 +687,6 @@ function showProposalDialog(overrides = null) {
     const totalOwners = ownershipStats.ownerCount || selectedParcels.length;
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;
-    proposalSingleParcelSelection = isSingleParcelSelection;
-
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelId = getParcelIdFromFeature(parcel?.feature);
@@ -766,7 +762,6 @@ function showProposalDialog(overrides = null) {
                         <span class="proposal-goal-subhead">${goalSectionLabels.parcels}</span>
                         <div class="proposal-radio-group" id="proposalParcelsGroup">
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="merge" onchange="onProposalParcelsChange()"><span>🪡 ${parcelsOptions.merge}</span></label>
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><span>✂️ ${parcelsOptions.readjust}</span></label>
                         </div>
                         <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>

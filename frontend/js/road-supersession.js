@@ -13,13 +13,12 @@
         return normalized === 'applied' || normalized === 'executed';
     };
 
-    // Map-application axis. The explicit boolean wins on either the sub-proposal or the proposal
-    // (mirrors proposals/status.js isApplied); only pre-split rows with no boolean fall to legacy.
+    // Map-application axis. The root boolean is authoritative; nested state is legacy-only.
     function roadProposalIsApplied(proposal) {
         if (!proposal || !proposal.roadProposal) return false;
         const rp = proposal.roadProposal;
-        if (typeof rp.applied === 'boolean') return rp.applied;
         if (typeof proposal.applied === 'boolean') return proposal.applied;
+        if (typeof rp.applied === 'boolean') return rp.applied;
         return appliedLike(rp.status) || appliedLike(proposal.status);
     }
 
@@ -42,11 +41,8 @@
         if (!resolvedReplacementId || sourceId === resolvedReplacementId) return null;
 
         source.appliedBeforeSuperseded = typeof source.applied === 'boolean' ? source.applied : true;
-        // Save the lifecycle so an Executed road comes back Executed, then park it. Superseding is an
-        // application-axis event: the road leaves the map (applied=false) while parked.
-        source.lifecycleBeforeSuperseded = source.lifecycleStatus || 'Active';
-        source.roadProposal.applied = false;
-        source.lifecycleStatus = 'Active';
+        // Superseding is application-axis-only: park the source without rewriting its lifecycle.
+        delete source.roadProposal.applied;
         source.applied = false; // superseded roads leave the map until restored
         source.roadProposal.supersededByProposalId = resolvedReplacementId;
         source.supersededByProposalId = resolvedReplacementId;
@@ -75,11 +71,8 @@
             if (String(marker || '') !== resolvedReplacementId) return;
             const restoredApplied = typeof source.appliedBeforeSuperseded === 'boolean' ? source.appliedBeforeSuperseded : true;
             source.applied = restoredApplied;
-            // Restore the lifecycle we parked (Executed stays Executed; Applied → Active).
-            source.lifecycleStatus = source.lifecycleBeforeSuperseded || 'Active';
-            source.roadProposal.applied = restoredApplied;
+            delete source.roadProposal.applied;
             delete source.appliedBeforeSuperseded;
-            delete source.lifecycleBeforeSuperseded;
             delete source.roadProposal.supersededByProposalId;
             delete source.supersededByProposalId;
             restored.push(source);

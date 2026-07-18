@@ -7,9 +7,13 @@
 
 // Flip the proposal to applied and write it through proposalStorage. _indexProposal when available
 // (keeps the storage indexes coherent), else a plain map set; save() is guarded.
+const setAppliedRoot = (typeof setProposalApplied === 'function')
+    ? setProposalApplied
+    : require('../status.js').setProposalApplied;
+
 function persistAppliedProposal(proposalData, proposalId) {
     if (!proposalData) return;
-    proposalData.applied = true;
+    setAppliedRoot(proposalData, true);
     proposalData.updatedAt = new Date().toISOString();
     proposalData.proposalId = proposalData.proposalId || proposalId;
     if (typeof proposalStorage !== 'undefined' && proposalStorage) {

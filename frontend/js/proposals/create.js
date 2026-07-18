@@ -287,6 +287,8 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
                     : await demolishBuildingsUnderFootprint(structureGeometry))
                 : []
         },
+        // The structure draft is already materialised on this browser's map.
+        applied: true,
         termsConfirmed: true,
         createdAt: new Date().toISOString(),
         expiresAt: expiresAt,
@@ -340,6 +342,13 @@ async function createProposal() {
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
+        return;
+    }
+    if (selectedTool === 'decide-later') {
+        showProposalAlertMessage(
+            'proposal_type_no_longer_available',
+            'Merge / Decide Later is no longer available. Use Land readjustment.'
+        );
         return;
     }
     if (goalRequiresGeometry(selectedTool) && !proposalGeometrySubmitted) {
@@ -640,6 +649,8 @@ async function createProposal() {
             goal: selectedTool,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
             ownerAcceptances: {},
+            // Proposal creation consumes an already-materialised local design draft.
+            applied: true,
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString(), // Add creation timestamp
             expiresAt: expiresAt, // Expiry timestamp (null if no expiry)
@@ -676,13 +687,6 @@ async function createProposal() {
             }
             proposal.proposalDraftId = publishingDraftId;
             proposal.proposalDraftRevision = draft?.revision ?? source.revision ?? null;
-        }
-
-        if (selectedTool === 'decide-later') {
-            proposal.decideLaterProposal = {
-                parentParcelIds: normalizedParentParcelIds.slice(),
-                childParcelIds: []
-            };
         }
 
         // "Ownership transfer from me" proposals are automatically accepted but not funded
@@ -828,6 +832,7 @@ async function createProposal() {
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     tunnels: safeClone(roadDrawingContext.tunnels) || [],
+                    gradeSeparations: safeClone(roadDrawingContext.gradeSeparations) || [],
                     demolishedBuildings: safeClone(roadDrawingContext.demolishedBuildings) || [],
                     segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
@@ -1880,7 +1885,8 @@ async function createProposal() {
                         snapshot.applied = false;
                         ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
                             if (snapshot[kind] && typeof snapshot[kind] === 'object') {
-                                snapshot[kind].applied = false;
+                                delete snapshot[kind].applied;
+                                delete snapshot[kind].appliedAt;
                                 if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
                             }
                         });
@@ -1959,22 +1965,20 @@ function buildUploadReadyProposal(proposal) {
     // current city, which is only right if you upload from where you created it.
     uploadProposal.city = uploadProposal.city || getProposalCityId() || 'city';
 
-    // "Applied" describes *this browser's* map, not the proposal: it says the geometry has been
-    // drawn onto the local cadastre. It is meaningless on the server, where every client has its
-    // own map — publishing it is what made a downloaded proposal claim to be applied when nothing
-    // had been drawn. Strip it. "Executed" is different: that is a global, on-chain fact and stays.
+    // "Applied" describes *this browser's* map, not the proposal. It is meaningless on the server,
+    // where every client has its own map, so publishing must remove it even for Executed proposals.
     //
     // Nested proposals are replaced with copies rather than mutated: uploadProposal is a shallow
     // copy of the caller's stored proposal, so writing through them would un-apply the user's own
     // proposal on their own map.
-    const uploadExecuted = getLifecycleStatus(uploadProposal) === 'Executed';
-    uploadProposal.applied = uploadExecuted;
+    delete uploadProposal.applied;
+    delete uploadProposal.appliedAt;
     ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
         .forEach(key => {
             const nested = uploadProposal[key];
             if (!nested || typeof nested !== 'object') return;
             const sanitized = { ...nested };
-            sanitized.applied = uploadExecuted;
+            delete sanitized.applied;
             delete sanitized.appliedAt;
             uploadProposal[key] = sanitized;
         });

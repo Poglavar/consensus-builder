@@ -15,7 +15,7 @@ function isProposalMinted(proposal) {
 // server-uploaded ones: the server upload is a publication/commitment act — it stands in for the
 // blockchain for people who don't mint, and once uploaded the record is shared and referenced, so we
 // can't resync or change its data. The impact resolver keys mutability on THIS, not on isProposalMinted:
-// an immutable proposal a road runs into can only be set aside (unapplied), tunnelled under, or the edit
+// an immutable proposal a road runs into can only be unapplied, tunnelled under, or the edit
 // rerouted — never cut or reshaped. Only a purely local proposal (never uploaded) is ours to modify.
 function isProposalImmutable(proposal) {
     if (!proposal) return false;

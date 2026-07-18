@@ -9,6 +9,17 @@
 
     return {
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
+        if (
+            options._parcelWriteBatchActive !== true
+            && typeof window !== 'undefined'
+            && typeof window.withParcelWriteBatch === 'function'
+        ) {
+            return window.withParcelWriteBatch(() => this._applyRoadProposal(proposalId, proposalData, {
+                ...options,
+                _parcelWriteBatchActive: true
+            }));
+        }
+
         const startTime = performance.now();
         const proposalIdForSynthetics = (proposalData && proposalData.proposalId) ? String(proposalData.proposalId) : proposalId;
         const idLabel = _normalizeProposalId(proposalIdForSynthetics || proposalId) || 'unknown-proposal';
@@ -27,8 +38,7 @@
                 parentParcelIds: canonicalParentIds.slice(),
                 childParcelIds: canonicalChildIds.slice(),
                 definition: canonicalRoadPlan,
-                roadGeometry: canonicalRoadGeometry,
-                applied: appliedOf(proposalData)
+                roadGeometry: canonicalRoadGeometry
             };
 
         proposalData.roadProposal = roadProposal;
@@ -52,7 +62,7 @@
         }
 
         // PERFORMANCE: Start write cache to batch localStorage operations
-        if (typeof window._startParcelWriteCache === 'function') {
+        if (options._parcelWriteBatchActive !== true && typeof window._startParcelWriteCache === 'function') {
             window._startParcelWriteCache();
         }
 
@@ -635,8 +645,7 @@
         if (roadProposal.roadGeometry) {
             proposalData.geometry.roadGeometry = roadProposal.roadGeometry;
         }
-        roadProposal.applied = true;
-        proposalData.applied = true;
+        setProposalApplied(proposalData, true);
         proposalStorage.save();
         console.debug(`[_applyRoadProposal] Step 7: Saved proposal status (${(performance.now() - step7Time).toFixed(2)}ms)`);
 

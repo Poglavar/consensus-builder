@@ -978,6 +978,79 @@ function offsetPolylinePlanar(pointsXY, offset) {
     return result;
 }
 
+// Closed centerlines have no end caps. Keeping this separate from offsetPolylinePlanar is important:
+// the 2D renderer intentionally retains its established even-odd strip behaviour, while the 3D
+// renderer needs two clean cyclic boundaries so it can mesh a band with a real hole.
+function offsetClosedPolylinePlanar(pointsXY, offset) {
+    if (!Array.isArray(pointsXY) || pointsXY.length < 4 || !Number.isFinite(offset)) return null;
+    const EPS = 1e-9;
+    const same = (a, b) => a && b && Math.hypot(a[0] - b[0], a[1] - b[1]) < EPS;
+    const points = pointsXY.slice();
+    if (same(points[0], points[points.length - 1])) points.pop();
+
+    const clean = [];
+    points.forEach(point => {
+        if (Array.isArray(point) && point.length >= 2 && Number.isFinite(point[0]) && Number.isFinite(point[1])
+            && (!clean.length || !same(clean[clean.length - 1], point))) clean.push(point);
+    });
+    if (clean.length >= 2 && same(clean[0], clean[clean.length - 1])) clean.pop();
+    if (clean.length < 3) return null;
+
+    const edges = clean.map((point, index) => {
+        const next = clean[(index + 1) % clean.length];
+        const dx = next[0] - point[0];
+        const dy = next[1] - point[1];
+        const length = Math.hypot(dx, dy);
+        if (length < EPS) return null;
+        return { normal: [-dy / length, dx / length], direction: [dx / length, dy / length] };
+    });
+    if (edges.some(edge => !edge)) return null;
+
+    const result = [];
+    const push = point => {
+        if (!result.length || !same(result[result.length - 1], point)) result.push(point);
+    };
+    const move = (point, normal) => [point[0] + normal[0] * offset, point[1] + normal[1] * offset];
+
+    clean.forEach((vertex, index) => {
+        const previous = edges[(index - 1 + edges.length) % edges.length];
+        const next = edges[index];
+        const mx = previous.normal[0] + next.normal[0];
+        const my = previous.normal[1] + next.normal[1];
+        const mitreLength = Math.hypot(mx, my);
+        const cross = previous.direction[0] * next.direction[1] - previous.direction[1] * next.direction[0];
+        const onOutside = (cross > 0) ? offset < 0 : offset > 0;
+        const bevel = () => {
+            push(move(vertex, previous.normal));
+            push(move(vertex, next.normal));
+        };
+
+        if (mitreLength < EPS || onOutside || Math.abs(cross) < 1e-12) {
+            bevel();
+            return;
+        }
+        const mitre = [mx / mitreLength, my / mitreLength];
+        const cosHalf = mitre[0] * previous.normal[0] + mitre[1] * previous.normal[1];
+        if (Math.abs(cosHalf) < 1 / CORRIDOR_MITRE_LIMIT) {
+            bevel();
+            return;
+        }
+        push([vertex[0] + mitre[0] * offset / cosHalf, vertex[1] + mitre[1] * offset / cosHalf]);
+    });
+    return result.length >= 3 ? result : null;
+}
+
+function planarRingSignedArea(ring) {
+    if (!Array.isArray(ring) || ring.length < 3) return 0;
+    let twiceArea = 0;
+    for (let i = 0; i < ring.length; i += 1) {
+        const a = ring[i];
+        const b = ring[(i + 1) % ring.length];
+        twiceArea += a[0] * b[1] - b[0] * a[1];
+    }
+    return twiceArea / 2;
+}
+
 // Do two planar segments [a1,a2] and [b1,b2] properly cross? Endpoints touching don't count —
 // we only care about a genuine interior crossing, which is what makes a strip ring a bowtie.
 function planarSegmentsCross(a1, a2, b1, b2) {
@@ -1025,6 +1098,19 @@ function corridorStripRingPlanar(pointsXY, left, right) {
     // off legitimate roads. The bowtie only misbehaves in 3D (ExtrudeGeometry → black faces), so the
     // self-intersection guard (ringSelfIntersectsXY) lives in the 3D mesh builder, not here.
     return [...leftSide, ...rightSide.reverse()];
+}
+
+// 3D-only closed-strip representation: an outer boundary plus an inner hole. This helper is pure;
+// buildCorridorStripPolygon deliberately continues returning the established flat ring for 2D.
+function corridorClosedStripPolygonPlanar(pointsXY, left, right) {
+    if (!Array.isArray(pointsXY) || pointsXY.length < 4) return null;
+    const first = pointsXY[0];
+    const last = pointsXY[pointsXY.length - 1];
+    if (!first || !last || Math.hypot(first[0] - last[0], first[1] - last[1]) >= 1e-7) return null;
+    const a = offsetClosedPolylinePlanar(pointsXY, Math.max(left, right));
+    const b = offsetClosedPolylinePlanar(pointsXY, Math.min(left, right));
+    if (!a || !b || ringSelfIntersectsXY(a) || ringSelfIntersectsXY(b)) return null;
+    return Math.abs(planarRingSignedArea(a)) >= Math.abs(planarRingSignedArea(b)) ? [a, b] : [b, a];
 }
 
 function corridorProjectionAvailable() {
@@ -1687,7 +1773,9 @@ if (typeof module !== 'undefined' && module.exports) {
         CORRIDOR_MIN_DRIVING_WIDTH,
         CORRIDOR_MIN_LANE_WIDTH,
         offsetPolylinePlanar,
+        offsetClosedPolylinePlanar,
         corridorStripRingPlanar,
+        corridorClosedStripPolygonPlanar,
         ringSelfIntersectsXY,
         corridorLaneSeparators,
         samplePolylinePlanar,

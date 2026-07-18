@@ -21,6 +21,34 @@
         return [key(a), key(b)].sort().join('|');
     }
 
+    // A long diagonal's bounding box contains an enormous square of unrelated city. Fetching that
+    // square can hit the API's row cap, leaving arbitrary buildings along the actual road unloaded.
+    // Split the edge into short pieces first; each request then hugs the corridor it is meant to scan.
+    function corridorEdgeFetchSegments(from, to, maxLengthMeters = 150) {
+        const start = pointOf(from);
+        const end = pointOf(to);
+        if (!start || !end) return [];
+        const radians = degrees => degrees * Math.PI / 180;
+        const dLat = radians(end.lat - start.lat);
+        const dLng = radians(end.lng - start.lng);
+        const lat1 = radians(start.lat);
+        const lat2 = radians(end.lat);
+        const h = Math.sin(dLat / 2) ** 2
+            + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+        const distance = 6371008.8 * 2 * Math.asin(Math.min(1, Math.sqrt(h)));
+        const limit = Number(maxLengthMeters);
+        const count = Math.max(1, Math.ceil(distance / (Number.isFinite(limit) && limit > 0 ? limit : 150)));
+        return Array.from({ length: count }, (_, index) => {
+            const a = index / count;
+            const b = (index + 1) / count;
+            const interpolate = ratio => ({
+                lat: start.lat + (end.lat - start.lat) * ratio,
+                lng: start.lng + (end.lng - start.lng) * ratio
+            });
+            return [interpolate(a), interpolate(b)];
+        });
+    }
+
     function buildingIdentifier(feature, fallback) {
         const props = feature && feature.properties ? feature.properties : {};
         if (props.proposalId !== undefined && props.proposalId !== null) {
@@ -64,6 +92,49 @@
         return null;
     }
 
+    // Collision detection runs against the building's CURRENT surviving footprint, but every
+    // demolition record must remain anchored to the provider's ORIGINAL footprint. Otherwise a
+    // second road cutting an already-cut building would treat the first remainder as a new whole
+    // building and independent proposal records could never be combined correctly.
+    function originalBuildingFeature(hitOrFeature) {
+        const candidate = hitOrFeature?.feature || hitOrFeature;
+        const current = normalizeBuildingFeature(candidate);
+        const originalGeometry = hitOrFeature?.originalGeometry
+            || candidate?.__corridorOriginalGeometry
+            || current?.geometry;
+        if (!originalGeometry) return current;
+        return {
+            type: 'Feature',
+            properties: { ...(current?.properties || {}) },
+            geometry: originalGeometry
+        };
+    }
+
+    // Applies already-recorded demolitions to the footprint pool without destroying the source
+    // data. Full demolitions disappear; partial demolitions remain collision targets using their
+    // surviving remainder, with the original geometry carried beside them for future cuts.
+    function applyDemolitionRecordsToBuildingFeatures(buildings, records) {
+        const byId = new Map();
+        (records || []).forEach(record => {
+            if (record?.id !== undefined && record?.id !== null) byId.set(String(record.id), record);
+        });
+        if (!byId.size) return (buildings || []).slice();
+        return (buildings || []).map((candidate, index) => {
+            const feature = normalizeBuildingFeature(candidate);
+            if (!feature?.geometry) return null;
+            const id = String(buildingIdentifier(feature, `building:${index}`));
+            const record = byId.get(id);
+            if (!record) return candidate;
+            if (!record.remainder) return null;
+            return {
+                ...feature,
+                properties: { ...(feature.properties || {}) },
+                geometry: JSON.parse(JSON.stringify(record.remainder)),
+                __corridorOriginalGeometry: JSON.parse(JSON.stringify(record.geometry || feature.geometry))
+            };
+        }).filter(Boolean);
+    }
+
     // minimumArea must match the record-writing thresholds (upsertCutRecord /
     // splitDemolitionFootprint ignore clips under 2 m²): a lower detection floor made buildings
     // grazed by 0.25–2 m² PROMPT but produce no record, so the finish check re-prompted for them.
@@ -88,7 +159,12 @@
             const id = buildingIdentifier(feature, `building:${index}`);
             if (seen.has(id)) return;
             seen.add(id);
-            hits.push({ id, feature, area });
+            hits.push({
+                id,
+                feature,
+                area,
+                originalGeometry: feature.__corridorOriginalGeometry || feature.geometry
+            });
         });
         return hits;
     }
@@ -105,7 +181,6 @@
     function collectLoadedCorridorBuildings() {
         const buildings = [];
         const seenProposalBuildings = new Set();
-        const demolished = collectDemolishedBuildingIds();
         const pool = Array.isArray(global.buildingFeaturePool) ? global.buildingFeaturePool : [];
         pool.forEach(feature => {
             if (feature && feature.geometry) buildings.push(feature);
@@ -142,11 +217,7 @@
                 });
             });
         } catch (_) { }
-        if (!demolished.size) return buildings;
-        return buildings.filter((candidate, index) => {
-            const feature = normalizeBuildingFeature(candidate);
-            return !demolished.has(String(buildingIdentifier(feature, `building:${index}`)));
-        });
+        return applyDemolitionRecordsToBuildingFeatures(buildings, collectDemolishedBuildingRecords());
     }
 
     // Tunnel spans are covered structures that acquire nothing: splits each centerline segment
@@ -177,6 +248,26 @@
             if (current.length >= 2) runs.push(current);
         });
         return runs;
+    }
+
+    // A tunnel record belongs to one exact centerline edge. Moving or deleting either endpoint
+    // invalidates that record; retaining it would keep the old purple span visible and, worse,
+    // globally suppress the building from collision detection on the road's new alignment.
+    function retainLiveCorridorTunnelRecords(segments, tunnelRecords) {
+        const isPoint = value => !!value && (value.lat !== undefined || (Array.isArray(value) && typeof value[0] === 'number'));
+        const list = Array.isArray(segments)
+            ? (segments.length && isPoint(segments[0]) ? [segments] : segments)
+            : [];
+        const liveEdgeKeys = new Set();
+        list.forEach(segment => {
+            if (!Array.isArray(segment)) return;
+            for (let index = 0; index < segment.length - 1; index += 1) {
+                const edgeKey = corridorTunnelEdgeKey(segment[index], segment[index + 1]);
+                if (edgeKey) liveEdgeKeys.add(edgeKey);
+            }
+        });
+        return (Array.isArray(tunnelRecords) ? tunnelRecords : [])
+            .filter(record => record?.edgeKey && liveEdgeKeys.has(record.edgeKey));
     }
 
     async function ensureCorridorBuildingFootprintsLoaded() {
@@ -363,26 +454,144 @@
         return null;
     }
 
-    async function promptBuildingObstacle(hits, corridorKind) {
-        const count = hits.length;
+    function lookupObstacleProposal(proposalId) {
+        if (!proposalId) return null;
+        try {
+            if (typeof global.getProposalByIdOrHash === 'function') {
+                const found = global.getProposalByIdOrHash(proposalId);
+                if (found) return found;
+            }
+        } catch (_) { }
+        try {
+            const found = global.proposalStorage?.getProposal?.(proposalId);
+            if (found) return found;
+        } catch (_) { }
+        try {
+            return (global.proposalStorage?.getAllProposals?.() || []).find(proposal => {
+                const candidates = [proposal?.proposalId, proposal?.id, proposal?.serverProposalId];
+                if (typeof global.getProposalKey === 'function') candidates.push(global.getProposalKey(proposal));
+                return candidates.some(candidate => candidate !== undefined
+                    && candidate !== null
+                    && String(candidate) === String(proposalId));
+            }) || null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function obstacleProposalTitle(proposal, proposalId) {
+        try {
+            if (proposal && typeof global.getProposalDisplayTitle === 'function') {
+                const title = global.getProposalDisplayTitle(proposal);
+                if (title && String(title).trim()) return String(title).replace(/\s+/g, ' ').trim();
+            }
+        } catch (_) { }
+        const candidates = [
+            proposal?.title,
+            proposal?.name,
+            proposal?.proposalName,
+            proposal?.blockName,
+            proposal?.roadProposal?.name,
+            proposal?.buildingProposal?.name,
+            proposal?.structureProposal?.blockName
+        ];
+        const title = candidates.find(candidate => typeof candidate === 'string' && candidate.trim());
+        return title ? title.replace(/\s+/g, ' ').trim() : `Proposal ${proposalId}`;
+    }
+
+    // Preflight the proposal side-effects BEFORE the user chooses. Several building features may
+    // belong to one proposal, so dedupe by owner id and keep unknown ids visible instead of silently
+    // dropping them from the warning. `lookupProposal` is injectable for the node regression test.
+    function collectObstacleProposalImpacts(hits, lookupProposal = lookupObstacleProposal) {
+        const impacts = [];
+        const seen = new Set();
+        (Array.isArray(hits) ? hits : []).forEach(hit => {
+            const proposalId = tunnelHitProposalId(hit);
+            if (!proposalId || seen.has(proposalId)) return;
+            seen.add(proposalId);
+            const proposal = typeof lookupProposal === 'function' ? lookupProposal(proposalId) : null;
+            impacts.push({
+                proposalId,
+                title: obstacleProposalTitle(proposal, proposalId)
+            });
+        });
+        return impacts;
+    }
+
+    function buildBuildingObstaclePrompt(
+        hits,
+        corridorKind,
+        proposalImpacts = collectObstacleProposalImpacts(hits),
+        options = {}
+    ) {
+        const count = Array.isArray(hits) ? hits.length : 0;
+        const mergeProposalImpacts = Array.isArray(options.mergeProposalImpacts)
+            ? options.mergeProposalImpacts.filter(Boolean)
+            : [];
         const kind = corridorKind === 'track'
             ? tunnelText('modal.corridorTunnel.track', 'track')
             : tunnelText('modal.corridorTunnel.road', 'road');
-        const message = tunnelText(
-            'modal.corridorTunnel.offer',
-            'This {{kind}} would pass through {{count}} building(s). Create a tunnel through the building?',
-            { kind, count }
-        );
+        let message = count
+            ? tunnelText(
+                'modal.corridorTunnel.offer',
+                'This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?',
+                { kind, count }
+            )
+            : '';
+        const proposalCount = proposalImpacts.length;
+        if (proposalCount) {
+            const heading = tunnelText(
+                'modal.corridorTunnel.proposalImpact',
+                'Cutting or demolishing will unapply these proposals (they remain in the proposal list and can be applied again):',
+                { count: proposalCount }
+            );
+            const tunnelNote = tunnelText(
+                'modal.corridorTunnel.proposalImpactTunnel',
+                'Tunnelling keeps these proposals applied.',
+                { count: proposalCount }
+            );
+            const list = proposalImpacts.map(impact => `• ${impact.title}`).join('\n');
+            message = `${message}\n\n${heading}\n${list}\n\n${tunnelNote}`;
+        }
+        if (mergeProposalImpacts.length) {
+            const mergeHeading = tunnelText(
+                'modal.corridorTunnel.mergeImpact',
+                'Continuing will merge these road proposals into this road and remove their separate proposal entries:',
+                { count: mergeProposalImpacts.length }
+            );
+            const mergeList = mergeProposalImpacts.map(impact => `• ${impact.title}`).join('\n');
+            message = `${message}${message ? '\n\n' : ''}${mergeHeading}\n${mergeList}`;
+        }
         // Demolition is the common outcome for a road pushed through a parcel; tunnels are the
         // exception. Destroy leads and is preselected (Enter accepts it).
         // Cutting is the DEFAULT: the corridor takes exactly its own footprint out of the
         // buildings; full demolition and tunnelling are the deliberate alternatives.
-        const choices = [
-            { value: 'cut', label: tunnelText('modal.corridorTunnel.cut', 'Cut through the buildings'), primary: true },
-            { value: 'destroy', label: tunnelText('modal.corridorTunnel.destroy', 'Demolish the buildings') },
+        const choices = count ? [
+            {
+                value: 'cut',
+                label: proposalCount
+                    ? tunnelText('modal.corridorTunnel.cutWithProposals', 'Cut through — unapply {{count}} proposal(s)', { count: proposalCount })
+                    : tunnelText('modal.corridorTunnel.cut', 'Cut through the buildings'),
+                primary: true
+            },
+            {
+                value: 'destroy',
+                label: proposalCount
+                    ? tunnelText('modal.corridorTunnel.destroyWithProposals', 'Demolish — unapply {{count}} proposal(s)', { count: proposalCount })
+                    : tunnelText('modal.corridorTunnel.destroy', 'Demolish the buildings')
+            },
             { value: 'tunnel', label: tunnelText('modal.corridorTunnel.confirm', 'Tunnel through') },
             { value: 'cancel', label: tunnelText('modal.corridorTunnel.cancel', 'Choose another route') }
+        ] : [
+            { value: 'merge', label: tunnelText('modal.corridorTunnel.merge', 'Merge roads'), primary: true },
+            { value: 'cancel', label: tunnelText('modal.corridorTunnel.cancel', 'Choose another route') }
         ];
+        return { message, choices, proposalImpacts, mergeProposalImpacts };
+    }
+
+    async function promptBuildingObstacle(hits, corridorKind, options = {}) {
+        const proposalImpacts = collectObstacleProposalImpacts(hits);
+        const { message, choices } = buildBuildingObstaclePrompt(hits, corridorKind, proposalImpacts, options);
         if (typeof global.showStyledChoice === 'function') {
             const answer = await global.showStyledChoice(message, choices);
             return answer || 'cancel';
@@ -398,15 +607,17 @@
     }
 
     // Walks the user through the buildings a new corridor edge collides with.
-    // Returns { action: 'destroy' | 'tunnel' | 'cancel', removedProposalIds, demolishedBuildings }.
+    // Returns { action: 'cut' | 'destroy' | 'tunnel' | 'cancel', removedProposalIds,
+    // demolishedBuildings, cutHits }. Proposal impacts are disclosed in the choice dialog before
+    // this function mutates anything; `removedProposalIds` records the proposals actually unapplied.
     // Destroy: proposal-owned buildings are unapplied (the proposal survives in the list);
     // real buildings are recorded as demolished — the object_id AND the footprint. The id is what
     // the 3D view and the walk sim match on (same GDI object_id, exactly); the footprint is what
     // the cut geometry is subtracted from, and what the 2D layer redraws a partial demolition with.
-    // Set aside a proposal whose building sits under the corridor: unapply it (kept in its parcels'
+    // Unapply a proposal whose building sits under the corridor (it stays in its parcels'
     // list, recoverable), recording its id in `removedProposalIds`.
     //
-    // DECISION (2026-07-15, see impact-resolver.md): a proposal a road runs into is only ever set aside
+    // DECISION (2026-07-15, see impact-resolver.md): a proposal a road runs into is only ever unapplied
     // (unapply), tunnelled under, or destroyed — NEVER cut in place or split into two. This holds for
     // every kind and both mutability classes. Splitting a bisected proposal is the only contiguity-
     // preserving alternative to unapply (non-contiguous proposals are a firm no-go), but a bisected
@@ -424,22 +635,27 @@
         }
     }
 
-    async function resolveBuildingObstacles(hits, corridorKind = 'road') {
+    async function resolveBuildingObstacles(hits, corridorKind = 'road', options = {}) {
         const removedProposalIds = [];
         const demolishedBuildings = [];
-        if (!Array.isArray(hits) || !hits.length) return { action: 'destroy', removedProposalIds, demolishedBuildings, cutHits: [] };
+        const obstacleHits = Array.isArray(hits) ? hits : [];
+        const mergeImpacts = Array.isArray(options.mergeProposalImpacts) ? options.mergeProposalImpacts.filter(Boolean) : [];
+        if (!obstacleHits.length && !mergeImpacts.length) {
+            return { action: 'destroy', removedProposalIds, demolishedBuildings, cutHits: [] };
+        }
         if (promptActive) return { action: 'cancel', removedProposalIds, demolishedBuildings, cutHits: [] };
         promptActive = true;
         try {
-            const answer = await promptBuildingObstacle(hits, corridorKind);
+            const answer = await promptBuildingObstacle(obstacleHits, corridorKind, { ...options, mergeProposalImpacts: mergeImpacts });
             if (answer === 'cancel') return { action: 'cancel', removedProposalIds, demolishedBuildings, cutHits: [] };
+            if (answer === 'merge') return { action: 'merge', removedProposalIds, demolishedBuildings, cutHits: [] };
             if (answer === 'tunnel') return { action: 'tunnel', removedProposalIds, demolishedBuildings, cutHits: [] };
             if (answer === 'cut') {
                 // Proposal-owned buildings can't be sliced — they are unapplied like on destroy
                 // (kept in the list); the REAL buildings come back for the caller to cut with
                 // the actual corridor geometry, edge by edge.
                 const cutHits = [];
-                for (const hit of hits) {
+                for (const hit of obstacleHits) {
                     const owner = tunnelHitProposalId(hit);
                     if (owner) {
                         await setAsideObstacleProposal(owner, removedProposalIds);
@@ -449,13 +665,13 @@
                 }
                 return { action: 'cut', removedProposalIds, demolishedBuildings, cutHits };
             }
-            for (const hit of hits) {
+            for (const hit of obstacleHits) {
                 const owner = tunnelHitProposalId(hit);
                 if (owner) {
                     await setAsideObstacleProposal(owner, removedProposalIds);
                 } else {
                     let geometry = null;
-                    try { geometry = JSON.parse(JSON.stringify(hit.feature?.geometry || null)); } catch (error) {
+                    try { geometry = JSON.parse(JSON.stringify(originalBuildingFeature(hit)?.geometry || null)); } catch (error) {
                         console.error('[corridor-tunnel] could not capture footprint of demolished building — it will still render in 3D', hit.id, error);
                     }
                     demolishedBuildings.push({ id: String(hit.id), geometry });
@@ -481,7 +697,11 @@
                 console.error('[corridor-tunnel] corridor-carve.js not loaded — no demolition records');
                 return [];
             }
-            return from(global.proposalStorage?.getAllProposals?.() || []);
+            const records = from(global.proposalStorage?.getAllProposals?.() || [], {
+                consolidateCorridorRecords: (records, region) =>
+                    consolidateCorridorDemolitionRecords(records, region, global.turf)
+            });
+            return consolidateBuildingDemolitionRecords(records, global.turf);
         } catch (error) {
             console.error('[corridor-tunnel] demolished-building scan failed', error);
             return [];
@@ -522,7 +742,7 @@
     // nearly everything converts to a full demolition. Mutates `records` in place.
     function upsertCutRecord(records, hit, regionFeature, turfApi) {
         const api = turfApi || global.turf;
-        const footprintFeature = normalizeBuildingFeature(hit.feature || hit);
+        const footprintFeature = originalBuildingFeature(hit);
         if (!api || !footprintFeature?.geometry || !regionFeature?.geometry) return records;
         const id = String(hit.id);
         const existingIndex = records.findIndex(record => String(record?.id) === id);
@@ -561,6 +781,138 @@
         return records;
     }
 
+    // Connected local roads become one proposal. If both pieces cut the same large building they
+    // arrive here as two records with the same object_id; a Map lookup can retain only one and used
+    // to make the other road appear to pass underneath an uncut part of the building. Recompute one
+    // authoritative record per building against the whole merged SURFACE footprint (tunnels omitted).
+    function consolidateCorridorDemolitionRecords(records, region, turfApi) {
+        const api = turfApi || global.turf;
+        const regionFeature = normalizeBuildingFeature(region);
+        if (!api || !regionFeature?.geometry) return (records || []).map(record => JSON.parse(JSON.stringify(record)));
+
+        const grouped = new Map();
+        (records || []).forEach(record => {
+            if (!record?.id || !record.geometry) return;
+            const id = String(record.id);
+            if (!grouped.has(id)) grouped.set(id, []);
+            grouped.get(id).push(record);
+        });
+
+        const consolidated = [];
+        grouped.forEach((buildingRecords, id) => {
+            // One record already contains the exact draw-time decision and subtraction. Recompute
+            // only the ambiguous duplicate case introduced by merging two independently cut roads.
+            if (buildingRecords.length === 1) {
+                consolidated.push(JSON.parse(JSON.stringify(buildingRecords[0])));
+                return;
+            }
+            const full = buildingRecords.find(record => !record.remainder);
+            if (full) {
+                consolidated.push(JSON.parse(JSON.stringify(full)));
+                return;
+            }
+            const geometry = buildingRecords[0]?.geometry;
+            if (!geometry) return;
+            upsertCutRecord(consolidated, {
+                id,
+                feature: { type: 'Feature', properties: {}, geometry }
+            }, regionFeature, api);
+        });
+        return consolidated;
+    }
+
+    // One building may be cut by several INDEPENDENT applied proposals. Collapse those records into
+    // one authoritative carve against the largest stored original footprint. The removed parts are
+    // unioned, then the remainder threshold is applied to the combined result—not separately per
+    // road—so crossing a previously cut building cannot resurrect either cut or leave a sliver.
+    function consolidateBuildingDemolitionRecords(records, turfApi) {
+        const api = turfApi || global.turf;
+        const source = Array.isArray(records) ? records.filter(record => record?.id && record.geometry) : [];
+        if (!api || typeof api.area !== 'function' || typeof api.union !== 'function'
+            || typeof api.difference !== 'function') {
+            return source.map(record => JSON.parse(JSON.stringify(record)));
+        }
+
+        const grouped = new Map();
+        source.forEach(record => {
+            const id = String(record.id);
+            if (!grouped.has(id)) grouped.set(id, []);
+            grouped.get(id).push(record);
+        });
+
+        const consolidated = [];
+        grouped.forEach((buildingRecords, id) => {
+            const full = buildingRecords.find(record => !record.remainder);
+            if (full) {
+                consolidated.push(JSON.parse(JSON.stringify(full)));
+                return;
+            }
+            if (buildingRecords.length === 1) {
+                consolidated.push(JSON.parse(JSON.stringify(buildingRecords[0])));
+                return;
+            }
+
+            let footprintGeometry = null;
+            let footprintArea = -1;
+            buildingRecords.forEach(record => {
+                try {
+                    const feature = { type: 'Feature', properties: {}, geometry: record.geometry };
+                    const area = Number(api.area(feature)) || 0;
+                    if (area > footprintArea) {
+                        footprintArea = area;
+                        footprintGeometry = record.geometry;
+                    }
+                } catch (_) { }
+            });
+            if (!footprintGeometry) return;
+
+            let removed = null;
+            buildingRecords.forEach(record => {
+                let partGeometry = record.demolishedPart || null;
+                if (!partGeometry && record.remainder) {
+                    try {
+                        const derived = api.difference(
+                            { type: 'Feature', properties: {}, geometry: footprintGeometry },
+                            { type: 'Feature', properties: {}, geometry: record.remainder }
+                        );
+                        partGeometry = derived?.geometry || null;
+                    } catch (_) { }
+                }
+                if (!partGeometry) return;
+                const part = { type: 'Feature', properties: {}, geometry: partGeometry };
+                if (!removed) {
+                    removed = part;
+                    return;
+                }
+                try { removed = api.union(removed, part) || removed; } catch (error) {
+                    console.error('[corridor-tunnel] cross-proposal cut accumulation failed', id, error);
+                }
+            });
+            if (!removed) {
+                consolidated.push(JSON.parse(JSON.stringify(buildingRecords[buildingRecords.length - 1])));
+                return;
+            }
+
+            let remainder = null;
+            const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
+            try { remainder = api.difference(footprint, removed); } catch (error) {
+                console.error('[corridor-tunnel] cross-proposal cut remainder failed — demolishing whole', id, error);
+            }
+            const remainderArea = remainder ? (Number(api.area(remainder)) || 0) : 0;
+            if (!remainder || remainderArea < Math.max(10, Math.max(0, footprintArea) * 0.15)) {
+                consolidated.push({ id, geometry: JSON.parse(JSON.stringify(footprintGeometry)) });
+                return;
+            }
+            consolidated.push({
+                id,
+                geometry: JSON.parse(JSON.stringify(footprintGeometry)),
+                demolishedPart: JSON.parse(JSON.stringify(removed.geometry)),
+                remainder: JSON.parse(JSON.stringify(remainder.geometry))
+            });
+        });
+        return consolidated;
+    }
+
     // Buildings under a demolition region (park/square/lake footprint, or a building
     // proposal's parcels): the region clears its ground by DEFAULT, no prompt —
     // proposal-owned buildings are unapplied silently (kept in the list), real ones are
@@ -591,7 +943,7 @@
                 }
                 continue;
             }
-            const footprintFeature = normalizeBuildingFeature(hit.feature);
+            const footprintFeature = originalBuildingFeature(hit);
             let footprint = null;
             try {
                 footprint = JSON.parse(JSON.stringify(footprintFeature?.geometry || null));
@@ -620,7 +972,9 @@
 
     Object.assign(global, {
         corridorTunnelEdgeKey,
+        corridorEdgeFetchSegments,
         corridorBuildingKey,
+        applyDemolitionRecordsToBuildingFeatures,
         findBuildingTunnelIntersections,
         collectLoadedCorridorBuildings,
         ensureCorridorBuildingFootprintsLoaded,
@@ -630,29 +984,43 @@
         addBuildingTunnelRecord,
         removeBuildingTunnelEdge,
         corridorSurfaceRuns,
+        retainLiveCorridorTunnelRecords,
         collectDemolishedBuildingIds,
         collectDemolishedBuildingRecords,
         clipCorridorEdgeThroughBuildings,
         demolishBuildingsUnderFootprint,
         splitDemolitionFootprint,
         upsertCutRecord,
+        consolidateCorridorDemolitionRecords,
+        consolidateBuildingDemolitionRecords,
         corridorTunnelHitProposalId: tunnelHitProposalId,
+        collectObstacleProposalImpacts,
+        buildBuildingObstaclePrompt,
         resolveBuildingObstacles
     });
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             corridorTunnelEdgeKey,
+            corridorEdgeFetchSegments,
             corridorBuildingKey,
+            applyDemolitionRecordsToBuildingFeatures,
             findBuildingTunnelIntersections,
             corridorFeatureFromLatLngRing,
             makeBuildingTunnelRecord,
             addBuildingTunnelRecord,
             removeBuildingTunnelEdge,
             corridorSurfaceRuns,
+            retainLiveCorridorTunnelRecords,
             clipCorridorEdgeThroughBuildings,
+            demolishBuildingsUnderFootprint,
             splitDemolitionFootprint,
-            upsertCutRecord
+            upsertCutRecord,
+            consolidateCorridorDemolitionRecords,
+            consolidateBuildingDemolitionRecords,
+            collectObstacleProposalImpacts,
+            buildBuildingObstaclePrompt,
+            resolveBuildingObstacles
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

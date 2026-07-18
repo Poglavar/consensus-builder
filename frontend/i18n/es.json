@@ -420,6 +420,16 @@
             "showDgu": "Catastro DGU (referencia legal)",
             "showProposed": "Mostrar edificios propuestos"
         },
+        "stations": {
+            "title": "Estaciones",
+            "placeTitle": "Colocar una estación",
+            "bus": "Estación de autobús",
+            "tram": "Estación de tranvía",
+            "underground": "Estación subterránea",
+            "elevated": "Estación de tren elevado",
+            "cancel": "Cancelar colocación",
+            "hint": "Las estaciones ferroviarias se ajustan a las vías. Las de autobús se ajustan al lado de la carretera elegido."
+        },
         "roads": {
             "title": "Carreteras",
             "drawDguTooltip": "Dibujar polígonos de uso vial de uredjenazemlja.hr",
@@ -671,6 +681,14 @@
                 "square": "Plaza",
                 "lake": "Lago",
                 "offer": "Oferta",
+                "transport": "Transporte",
+                "ownershipCategory": "Propiedad",
+                "road": "Carretera",
+                "track": "Vía férrea",
+                "busStation": "Estación de autobús",
+                "tramStation": "Estación de tranvía",
+                "undergroundStation": "Estación de metro",
+                "elevatedStation": "Estación elevada",
                 "noParcelSelected": "No hay ninguna parcela seleccionada. Selecciona una parcela primero.",
                 "useMainCreateButton": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
                 "enableMultiSelect": "Activa la selección de varias parcelas para usar esta acción.",
@@ -1256,7 +1274,20 @@
             "unapply": "Retirar la propuesta existente",
             "destroy": "Demoler los edificios",
             "cut": "Cortar los edificios",
+            "proposalImpact": "Cortar o demoler retirará estas propuestas aplicadas del mapa (seguirán en la lista de propuestas):",
+            "proposalImpactTunnel": "El túnel mantiene aplicadas estas propuestas.",
+            "cutWithProposals": "Cortar — retirar {{count}} propuesta(s)",
+            "destroyWithProposals": "Demoler — retirar {{count}} propuesta(s)",
+            "mergeImpact": "Continuar fusionará estas propuestas de carretera con esta carretera y eliminará sus entradas de propuesta separadas:",
+            "merge": "Fusionar carreteras",
             "confirm": "Atravesar con túnel",
+            "cancel": "Elegir otra ruta"
+        },
+        "corridorGrade": {
+            "offer": "Esta ruta peatonal cruza {{count}} vía(s) no peatonal(es). ¿Cómo debe cruzarlas?",
+            "atGrade": "Cruce a nivel",
+            "underpass": "Paso inferior",
+            "overpass": "Paso elevado",
             "cancel": "Elegir otra ruta"
         },
         "deleteProposal": {
@@ -2522,6 +2553,7 @@
             "please_provide_author_name_and_a_valid_offer": "Indica autor, nombre y una oferta válida.",
             "please_select_a_parcel_first": "Selecciona primero una parcela",
             "please_specify_which_owner_acceptance_to_undo": "Especifica qué aceptación de propietario deseas deshacer.",
+            "proposal_type_no_longer_available": "Fusionar / Decidir más tarde ya no está disponible. Usa el reajuste del suelo.",
             "proposal_not_found": "Propuesta no encontrada.",
             "proposal_storage_is_unavailable": "El almacenamiento de propuestas no está disponible.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Falta el plan de reparcelación. Vuelve a ejecutar el algoritmo.",
@@ -2657,6 +2689,7 @@
             "stateSolid": "Sólido",
             "stateGhost": "Transparente",
             "stateSurviving": "Restantes",
+            "stateRemoved": "Demolidos",
             "stateOff": "Apagado",
             "built": "Construido",
             "both": "Ambos",
@@ -2668,6 +2701,7 @@
             "stateSolidTooltip": "Sólido — dibujado totalmente opaco",
             "stateGhostTooltip": "Transparente — dibujado semitransparente para poder ver a través",
             "stateSurvivingTooltip": "Restantes — los edificios existentes se muestran sólidos, pero los que el plan demuele se ocultan (el estado posterior al plan)",
+            "stateRemovedTooltip": "Demolidos — muestra solo los edificios existentes o las partes que el plan demuele",
             "stateOffTooltip": "Apagado — no se dibuja",
             "solid": "Sólido:",
             "neither": "Ninguno",
@@ -2730,5 +2764,18 @@
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
         "statusSaved": "Diseño de la estructura guardado."
+    },
+    "stationEditor": {
+        "ariaLabel": "Editor de geometría de estación",
+        "title": "Editar geometría de estación",
+        "station": "Estación",
+        "close": "Cerrar",
+        "fixedPosition": "El centro de la estación permanece fijo. Gira la estación a su alrededor.",
+        "rotation": "Rotación",
+        "platformHeight": "Altura del andén sobre el suelo",
+        "hint": "La vista previa del mapa se actualiza mientras editas.",
+        "cancel": "Cancelar",
+        "save": "Listo",
+        "saved": "Geometría de estación guardada."
     }
 }
