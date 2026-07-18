@@ -2889,6 +2889,9 @@
                 const pid = (f.properties && f.properties.proposalId != null) ? String(f.properties.proposalId) : null;
                 return pid && focusIds.has(pid);
             });
+            console.log('[3D] framing subset: ' + subset.length + '/' + features.length
+                + ' features match ' + focusIds.size + ' focus ids'
+                + (subset.length ? '' : ' — FALLING BACK to all applied'));
             if (subset.length) framed = subset;
         }
         try {
@@ -4268,6 +4271,8 @@
         focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
             ? new Set(options.focusProposalIds.map(String))
             : null;
+        console.log('[3D] enter3D focus ids:', focusProposalIds ? focusProposalIds.size : 0,
+            focusProposalIds ? Array.from(focusProposalIds).slice(0, 4) : '(none — framing all applied)');
         pendingIntroAutoRotate = !!(options && options.fromUrl);
         if (pendingIntroAutoRotate) {
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
