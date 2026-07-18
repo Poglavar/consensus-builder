@@ -1436,6 +1436,26 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     if (payload.serverProposalId) ids.push(String(payload.serverProposalId));
                 }
             }
+            // A linked proposal that was ALREADY applied locally never enters loadedById — its
+            // features carry the LOCAL proposalId, so resolve the incoming server ids against
+            // the store too. Without this the focus set matches nothing and 3D entry silently
+            // falls back to framing EVERY applied proposal, not just the link's.
+            try {
+                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
+                    (proposalStorage.getAllProposals() || []).forEach(p => {
+                        if (!p || !p.proposalId) return;
+                        const candidates = [
+                            p.serverProposalId != null ? String(p.serverProposalId) : null,
+                            String(p.proposalId),
+                            (typeof getServerProposalId === 'function' && getServerProposalId(p) != null)
+                                ? String(getServerProposalId(p)) : null
+                        ];
+                        if (candidates.some(id => id && incomingIds.has(id))) {
+                            ids.push(String(p.proposalId));
+                        }
+                    });
+                }
+            } catch (_) { }
             return ids;
         };
 
