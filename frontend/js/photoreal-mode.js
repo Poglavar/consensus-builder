@@ -64,6 +64,7 @@
     let lockAccumS = 0;
     let lastFrameNow = 0;
     let sinceAnyLoadS = 0;
+    let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusEl = null;
     let loaderEl = null;
     let loaderTextEl = null;
@@ -161,6 +162,7 @@
                 zs.push(z);
             }
             if (zs.length) {
+                if (profT && !profT.firstProbe) profT.firstProbe = performance.now();
                 zs.sort(function (a, b) { return a - b; });
                 // p25 of the round, not its minimum: the minimum over-corrects into pits (a
                 // sunken rail trench in Zagreb seated the streets ABOVE the proposals), while
@@ -189,6 +191,16 @@
         tiles.group.visible = builtVisible;
         console.log('[photoreal] world seated: ground shifted ' + (use + GROUND_BELOW_CONTENT_M).toFixed(2)
             + ' m (' + (stable ? 'stable' : 'median-after-timeout') + ')');
+        if (profT) {
+            const span = function (a, b) { return (a && b && b >= a) ? ((b - a) / 1000).toFixed(1) + 's' : '—'; };
+            const now = performance.now();
+            console.log('[photoreal] transition profile: tiles-lib ' + span(profT.t0, profT.lib)
+                + ' | ion+setup ' + span(profT.lib, profT.setup)
+                + ' | first-tile ' + span(profT.setup, profT.firstTile)
+                + ' | stream-to-95% ' + span(profT.firstTile, profT.streamed)
+                + ' | seat ' + span(profT.streamed || profT.firstProbe || profT.firstTile, now)
+                + ' | TOTAL ' + span(profT.t0, now));
+        }
     }
 
     // ---- carve mask: shader clip of the mesh under proposals (ported from the sim) ----
@@ -528,6 +540,10 @@
         tiles.update();
         const prog = Number(tiles.loadProgress);
         updateLoader(Number.isFinite(prog) ? prog : 1);
+        if (profT && Number.isFinite(prog)) {
+            if (!profT.firstTile && prog < 1) profT.firstTile = performance.now();
+            if (profT.firstTile && !profT.streamed && prog >= 0.95) profT.streamed = performance.now();
+        }
         // No-coverage watchdog: if nothing ever streams, say so and fall back to abstract 3D.
         if (!grounded) {
             sinceAnyLoadS = (Number.isFinite(prog) && prog > 0) ? -Infinity : sinceAnyLoadS + dtS;
@@ -598,7 +614,9 @@
             if (!frame) throw new Error('photoreal-frame helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
 
+            profT = { t0: performance.now() };
             await loadTilesLib();
+            profT.lib = performance.now();
             if (!document.body.classList.contains('realistic-mode-active')) return; // left meanwhile
 
             tiles = new TilesRenderer();
@@ -630,6 +648,7 @@
 
             tiles.setCamera(internals.camera);
             tiles.setResolutionFromRenderer(internals.camera, internals.renderer);
+            profT.setup = performance.now();
 
             // scene <- scaleNode(k,k,1) <- seatNode(z offset; z scale is 1, so it shifts world
             // z 1:1) <- frameNode(tiles-ENU -> scene rotation) <- tiles.group
