@@ -1192,6 +1192,11 @@
             try {
             const proposalId = proposalKey3D(proposal);
             if (!proposalId) return;
+            // Reparcellization is land-administration scaffolding under the whole plan: its
+            // pick surface blanketed the area and intercepted clicks meant for the buildings
+            // standing on it. It stays selectable from lists/panels, never from map clicks.
+            if (proposal.reparcellization && !proposal.buildingProposal && !proposal.structureProposal
+                && !proposal.roadProposal) return;
             // Parked (unapplied) ideas stay off the map entirely; they only render while
             // selected, as a preview of where they would land when applied.
             const applied = proposalApplied3D(proposal);

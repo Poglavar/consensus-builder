@@ -224,8 +224,13 @@
     // world (no globe underlay): the sky showed through as light-blue slivers along proposal
     // edges. An opaque ground APRON, slightly wider than the cut, seals the ring — it reads
     // as pavement/soil in the proposal's edge shadow.
-    const CARVE_APRON_EXTRA_M = 1.5; // apron reach beyond the already-dilated cut
-    const CARVE_APRON_Z = -0.15;     // under the z=0 content, above the carve floor (−0.3)
+    const CARVE_APRON_EXTRA_M = 1.5;  // apron reach beyond the already-dilated cut
+    // The apron is a shallow SOLID SLAB, not a flat sheet: the mesh is a hollow shell, and an
+    // oblique sightline into the carve trench exits through the shell's open cut face straight
+    // to the sky (front-side culling) — a floor only seals top-down views. The slab fills the
+    // trench volume, so side views hit its top/side instead.
+    const CARVE_APRON_TOP_Z = -0.02;  // just under the z=0 content
+    const CARVE_APRON_DEPTH_M = 0.5;  // slab thickness, reaching below the carve floor (−0.3)
     const CARVE_APRON_COLOR = 0x74736c;
 
     let maskRT = null;
@@ -422,8 +427,10 @@
             });
             const apron = bufferGeometry(expanded, CARVE_APRON_EXTRA_M);
             shapesOfGeometry(apron, toXY).forEach(function (shape) {
-                const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), apronMaterial);
-                mesh.position.z = CARVE_APRON_Z;
+                const mesh = new THREE.Mesh(
+                    new THREE.ExtrudeGeometry(shape, { depth: CARVE_APRON_DEPTH_M, bevelEnabled: false }),
+                    apronMaterial);
+                mesh.position.z = CARVE_APRON_TOP_Z - CARVE_APRON_DEPTH_M;
                 apronGroup.add(mesh);
             });
         });
