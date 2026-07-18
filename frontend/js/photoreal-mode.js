@@ -491,7 +491,19 @@
         } catch (_) { }
         document.body.classList.add('realistic-mode-active');
         try {
+            // (Entry options like frameProposal/autoRotate are handled by three-mode's own
+            // URL-driven entry — by the time this layer attaches, the camera is already
+            // framed on the proposal and the intro auto-rotate is running.)
             internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
+            if (!internals) {
+                // 3D mode may still be booting (URL-driven entry): wait for its ready signal.
+                await new Promise(function (resolve) {
+                    const onReady = function () { window.removeEventListener('threeModeReady', onReady); resolve(); };
+                    window.addEventListener('threeModeReady', onReady);
+                    setTimeout(function () { window.removeEventListener('threeModeReady', onReady); resolve(); }, 15000);
+                });
+                internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
+            }
             if (!internals) throw new Error('3D mode internals unavailable');
             const anchor = internals.originLatLng();
             const frame = window.__photorealFrame;
