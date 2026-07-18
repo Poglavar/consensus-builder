@@ -147,7 +147,6 @@ function describeParcelSelection(ids) {
 }
 
 // --- 3D preview state ---
-let blockifyThreeLoadPromise = null;
 let blockify3D = {
     renderer: null,
     scene: null,
@@ -621,19 +620,9 @@ let blockifyDebugLayer = null;
 
 async function ensureThreeForBlockify() {
     if (typeof THREE !== 'undefined') return true;
-    if (blockifyThreeLoadPromise) {
-        await blockifyThreeLoadPromise;
-        return typeof THREE !== 'undefined';
-    }
-    blockifyThreeLoadPromise = new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js';
-        script.async = true;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-    });
-    await blockifyThreeLoadPromise;
+    // THREE comes from index.html's ESM bootstrap — never load a second copy here, an old
+    // UMD build would clobber the r184 global for the whole app.
+    if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
     return typeof THREE !== 'undefined';
 }
 
@@ -845,8 +834,9 @@ function initBlockify3DSimple() {
         controls.enablePan = true;
     }
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.9);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
+    // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+    const amb = new THREE.AmbientLight(0xffffff, 0.9 * Math.PI);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.7 * Math.PI);
     dir.position.set(300, 300, 500);
     scene.add(amb);
     scene.add(dir);

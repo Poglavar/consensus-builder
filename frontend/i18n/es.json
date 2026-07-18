@@ -2721,8 +2721,7 @@
         "controls": {
             "buildingRenderingAria": "Representación de edificios",
             "streamingTiles": "Cargando datos 3D…",
-            "rotateHintDesktop": "Mantén Ctrl y arrastra para rotar la vista",
-            "rotateHintMobile": "Desliza con dos dedos para rotar la vista",
+            "noCoverage": "No hay cobertura fotorrealista aquí — permanecemos en 3D abstracto.",
             "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",
             "stateSolid": "Sólido",
             "stateGhost": "Transparente",

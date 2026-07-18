@@ -2672,8 +2672,7 @@
         "controls": {
             "buildingRenderingAria": "Building rendering",
             "streamingTiles": "Streaming 3D tiles…",
-            "rotateHintDesktop": "Hold Ctrl and drag to rotate the view",
-            "rotateHintMobile": "Swipe with two fingers to rotate the view",
+            "noCoverage": "No photorealistic coverage here — staying in abstract 3D.",
             "carveUnderProposals": "Hide real buildings under proposals",
             "stateSolid": "Solid",
             "stateGhost": "Transparent",

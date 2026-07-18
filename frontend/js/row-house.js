@@ -74,7 +74,6 @@
         hasCenteredOnce: false,
         anchorLngLat: { lng: 0, lat: 0 }
     };
-    let rowHouseThreeLoadPromise = null;
 
     // Helper functions
     function formatRowHouseText(template, params = {}) {
@@ -1239,27 +1238,9 @@
 
     async function ensureThreeForRowHouse() {
         if (typeof THREE !== 'undefined') return true;
-
-        const loadScript = (src) => new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-
-        if (!rowHouseThreeLoadPromise) {
-            rowHouseThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
-        }
-        await rowHouseThreeLoadPromise;
-
-        if (typeof THREE === 'undefined') return false;
-
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
-        }
-
+        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
+        // second copy here, an old UMD build would clobber the r184 global for the whole app.
+        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
         return typeof THREE !== 'undefined';
     }
 

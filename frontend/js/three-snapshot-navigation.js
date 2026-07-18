@@ -38,6 +38,20 @@
             controls.mouseButtons.LEFT = three.MOUSE.PAN;
             controls.mouseButtons.MIDDLE = three.MOUSE.DOLLY;
             controls.mouseButtons.RIGHT = three.MOUSE.ROTATE;
+            // Ctrl/Cmd held = left-drag rotates/tilts. Made explicit instead of relying on
+            // OrbitControls' internal modifier flip: macOS turns ctrl+left-click into a
+            // right-click at the browser level, and how that emulation meets the pointer-event
+            // handling has shifted across three versions.
+            const setRotateModifier = (on) => {
+                controls.mouseButtons.LEFT = on ? three.MOUSE.ROTATE : three.MOUSE.PAN;
+            };
+            window.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) setRotateModifier(true);
+            });
+            window.addEventListener('keyup', (e) => {
+                if (!e.ctrlKey && !e.metaKey) setRotateModifier(false);
+            });
+            window.addEventListener('blur', () => setRotateModifier(false));
         }
         if (controls.touches && three?.TOUCH) {
             controls.touches.ONE = three.TOUCH.PAN;
