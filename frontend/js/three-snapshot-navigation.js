@@ -45,13 +45,15 @@
             const setRotateModifier = (on) => {
                 controls.mouseButtons.LEFT = on ? three.MOUSE.ROTATE : three.MOUSE.PAN;
             };
-            window.addEventListener('keydown', (e) => {
-                if (e.ctrlKey || e.metaKey) setRotateModifier(true);
-            });
-            window.addEventListener('keyup', (e) => {
-                if (!e.ctrlKey && !e.metaKey) setRotateModifier(false);
-            });
-            window.addEventListener('blur', () => setRotateModifier(false));
+            if (typeof window !== 'undefined') {
+                window.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) setRotateModifier(true);
+                });
+                window.addEventListener('keyup', (e) => {
+                    if (!e.ctrlKey && !e.metaKey) setRotateModifier(false);
+                });
+                window.addEventListener('blur', () => setRotateModifier(false));
+            }
         }
         if (controls.touches && three?.TOUCH) {
             controls.touches.ONE = three.TOUCH.PAN;
