@@ -207,6 +207,28 @@ def min_area_rect(points):
     return corners
 
 
+def moment_rect(mask):
+    """Rectangle matched to a component's first and second moments: centroid,
+    PCA orientation, and side lengths sqrt(12*eigenvalue). For a rectangular
+    mask under boundary noise (hatch jitter, label bleed) this recovers the
+    true rectangle, without min-area-rect's inflation around protrusions."""
+    ys, xs = np.nonzero(mask)
+    if len(xs) < 4:
+        return None
+    cx, cy = xs.mean(), ys.mean()
+    cov = np.cov(np.stack([xs - cx, ys - cy]))
+    evals, evecs = np.linalg.eigh(cov)  # ascending
+    L = math.sqrt(12 * max(evals[1], 0.0))
+    W = math.sqrt(12 * max(evals[0], 0.0))
+    u = evecs[:, 1]  # major axis
+    v = evecs[:, 0]  # minor axis
+    corners = []
+    for su, sv in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+        corners.append([cx + su * u[0] * L / 2 + sv * v[0] * W / 2,
+                        cy + su * u[1] * L / 2 + sv * v[1] * W / 2])
+    return corners
+
+
 def polygon_mask_iou(poly_px, mask):
     """IoU between a pixel polygon and a boolean mask (rasterized comparison)."""
     canvas = Image.new("1", (mask.shape[1], mask.shape[0]), 0)
@@ -321,7 +343,34 @@ def step_buildings(grid):
     m = ndimage.binary_closing(grey, st, iterations=4)
     m = ndimage.binary_opening(m, st, iterations=3)
     m = ndimage.binary_fill_holes(m)
-    feats = component_features(m, grid, min_area_m2=300, rdp_eps_px=4.0)
+    # Plan envelopes are rectangles; the raster carries notches/protrusions from
+    # labels and hatch bleed. Emit a clean 4-vertex moment-matched rectangle per
+    # component instead of the traced outline.
+    lbl, n = ndimage.label(m)
+    feats = []
+    for i in range(1, n + 1):
+        comp = lbl == i
+        a_px = int(comp.sum())
+        if ground_area_m2(a_px) < 300:
+            continue
+        rect = moment_rect(comp)
+        if not rect:
+            continue
+        iou = polygon_mask_iou(rect, comp)
+        cy, cx = ndimage.center_of_mass(comp)
+        lon, lat = grid.px_to_wgs(cx, cy)
+        feats.append({
+            "type": "Feature",
+            "properties": {
+                "area_m2": round(ground_area_m2(a_px)),
+                "shape": "rectangle",
+                "rect_fit_iou": round(float(iou), 3),
+                "centroid": [round(lon, 7), round(lat, 7)],
+            },
+            "geometry": {"type": "Polygon",
+                         "coordinates": [ring_px_to_wgs(grid, rect + [rect[0]])]},
+        })
+    feats.sort(key=lambda f: -f["properties"]["area_m2"])
     # name the kazete by matching component centroids to the KAZETE table once
     # the mapping file exists; first run emits indexes for the labeled overlay
     mapping_path = os.path.join(HERE, "kazete-mapping.json")
