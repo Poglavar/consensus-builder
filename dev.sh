@@ -58,8 +58,9 @@ trap cleanup EXIT INT TERM
 ( cd "$ROOT/backend" && API_PORT="$BACKEND_PORT" PGHOST="${PGHOST:-localhost}" npm start ) &
 pids+=("$!")
 
-# Frontend: plain static server of the frontend dir.
-( serve "$ROOT/frontend" -l "$FRONTEND_PORT" ) &
+# Frontend: static server of the frontend dir. -s rewrites unknown paths to
+# index.html so /proposals/... links work (parity with the prod nginx config).
+( serve -s "$ROOT/frontend" -l "$FRONTEND_PORT" ) &
 pids+=("$!")
 
 echo "[dev] ready → open: $FRONTEND_URL"
