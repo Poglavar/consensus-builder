@@ -71,10 +71,14 @@
             window.addEventListener('load', function () {
                 document.body.classList.remove('app-loading');
             });
-            window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths) {
+            // opts.defer emits `defer` script tags: deferred classic scripts run in insertion
+            // order AFTER module scripts (like the THREE ESM bootstrap), so a list that needs
+            // `window.THREE` at parse time opts in and keeps its intra-list order.
+            window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths, opts) {
+                var attrs = (opts && opts.defer) ? ' defer' : '';
                 var html = '';
                 paths.forEach(function (path) {
-                    html += '<script src="' + escapeHtmlAttribute(appendBuildToken(path)) + '"><\/script>';
+                    html += '<script' + attrs + ' src="' + escapeHtmlAttribute(appendBuildToken(path)) + '"><\/script>';
                 });
                 document.write(html);
             };
@@ -1554,7 +1558,10 @@
             'js/row-house.js',
             'js/parcel-based.js',
             'js/government-roads.js?v=20260404b'
-        ]);
+            // deferred: this stack assumes `window.THREE` exists when it evaluates (three-mode's
+            // whole IIFE bails without it). The ESM bootstrap above is a module (= deferred), and
+            // deferred classics run after it, in order — parse-time tags would run BEFORE it.
+        ], { defer: true });
     </script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 

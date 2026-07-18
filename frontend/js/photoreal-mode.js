@@ -479,9 +479,13 @@
     async function activate() {
         if (active) return;
         // Direct calls (URL-driven entry) can arrive before 3D mode is up — route through
-        // the same enter-3D-first path the globe button takes, then re-enter here.
+        // the same enter-3D-first path the globe button takes, then re-enter here. Only when
+        // that path actually exists: if three-mode failed to load, bouncing to goRealistic()
+        // would recurse right back here forever.
         if (!(typeof window.isThreeModeActive === 'function' && window.isThreeModeActive())) {
-            goRealistic();
+            if (typeof window.enterThreeMode === 'function') { goRealistic(); return; }
+            console.error('[photoreal] 3D mode is unavailable (three-mode failed to load)');
+            setStatus('Failed to start 3D mode.');
             return;
         }
         const btn = toggleBtn();
@@ -645,7 +649,11 @@
             activate();
             return;
         }
-        if (typeof window.enterThreeMode !== 'function') { activate(); return; }
+        if (typeof window.enterThreeMode !== 'function') {
+            console.error('[photoreal] 3D mode is unavailable (three-mode failed to load)');
+            setStatus('Failed to start 3D mode.');
+            return;
+        }
         const btn = toggleBtn();
         if (btn) btn.classList.add('active');
         try {
