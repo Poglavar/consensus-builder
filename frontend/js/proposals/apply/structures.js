@@ -23,7 +23,7 @@
         try {
             const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
-            const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+            const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
             const canonicalGeometry = typeof this._getCanonicalStructureGeometry === 'function'
                 ? this._getCanonicalStructureGeometry(proposalData, kind)
                 : null;
@@ -43,6 +43,8 @@
                     if (typeof updateParksLayer === 'function') updateParksLayer();
                 } else if (kind === 'lake') {
                     if (typeof updateLakesLayer === 'function') updateLakesLayer();
+                } else if (kind === 'station') {
+                    if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer();
                 } else if (typeof updateSquaresLayer === 'function') {
                     updateSquaresLayer();
                 }
@@ -72,7 +74,11 @@
             }
             console.debug(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
-            const collection = (kind === 'park') ? window.parks : (kind === 'lake' ? window.lakes : window.squares);
+            const collection = kind === 'park'
+                ? window.parks
+                : (kind === 'lake'
+                    ? window.lakes
+                    : (kind === 'station' ? window.transitStations : window.squares));
             const alreadyInLayer = Array.isArray(collection)
                 ? collection.some(feature => feature && feature.properties && feature.properties.proposalId === proposalId)
                 : false;
@@ -190,6 +196,7 @@
                     lakeGraphics: kind === 'lake' ? (sp.lakeGraphics || null) : null,
                     parkGraphics: kind === 'park' ? geometry : null,
                     squareGraphics: kind === 'square' ? geometry : null,
+                    stationGraphics: kind === 'station' ? geometry : null,
                     roadGeometry: null,
                     roadPlan: null,
                     buildings: null,
@@ -205,6 +212,9 @@
                 if (kind === 'square' && !proposalData.geometry.squareGraphics) {
                     proposalData.geometry.squareGraphics = geometry;
                 }
+                if (kind === 'station' && !proposalData.geometry.stationGraphics) {
+                    proposalData.geometry.stationGraphics = geometry;
+                }
             }
 
             const feature = {
@@ -214,7 +224,15 @@
                     blockName: blockName,
                     proposalId,
                     lakeGraphics: sp.lakeGraphics || null,
-                    decorations: sp.decorations ? JSON.parse(JSON.stringify(sp.decorations)) : undefined
+                    decorations: sp.decorations ? JSON.parse(JSON.stringify(sp.decorations)) : undefined,
+                    stationType: sp.stationType || undefined,
+                    center: Array.isArray(sp.center) ? sp.center.slice() : undefined,
+                    bearing: Number.isFinite(Number(sp.bearing)) ? Number(sp.bearing) : undefined,
+                    platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
+                    attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
+                    modelVersion: sp.modelVersion || undefined,
+                    name: proposalData.title || proposalData.name || undefined,
+                    parentParcelIds: parentIds.slice()
                 },
                 geometry: JSON.parse(JSON.stringify(geometry))
             };
@@ -238,6 +256,14 @@
                 try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
                 window.lakes.push(feature);
                 try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
+            } else if (kind === 'station') {
+                if (!Array.isArray(window.transitStations)) window.transitStations = [];
+                window.transitStations = window.transitStations.filter(f => {
+                    if (!f || !f.properties) return true;
+                    return String(f.properties.proposalId || '') !== String(proposalId);
+                });
+                window.transitStations.push(feature);
+                try { PersistentStorage.setItem('cb_transit_stations', JSON.stringify(window.transitStations)); } catch (_) { }
             } else {
                 if (!Array.isArray(window.squares)) window.squares = [];
                 // Only remove if it's the same proposal (to avoid duplicates when re-applying)

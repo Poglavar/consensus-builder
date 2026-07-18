@@ -354,6 +354,12 @@
                 .map(record => record?.edgeKey)
                 .filter(Boolean)
         );
+        (Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : []).forEach(record => {
+            if (record?.edgeKey) protectedEdges.add(record.edgeKey);
+            (Array.isArray(record?.edgeKeys) ? record.edgeKeys : []).forEach(key => {
+                if (key) protectedEdges.add(key);
+            });
+        });
         normalizeCorridorGraph(segments, segmentIds, protectedEdges, definition.segmentProfiles || null);
         const after = JSON.stringify({ segments, segmentIds, segmentProfiles: definition.segmentProfiles || null });
         if (before === after) return false;
@@ -1053,18 +1059,33 @@
         });
         if (best) return best;
 
-        // Tier 3: placed (external) corridors — endpoints and edges compete on distance
+        // Tier 3: every explicit node on a placed (external) corridor. Internal junction/bend
+        // vertices are real graph nodes too; limiting this pass to endpoints made the cursor snap
+        // to the nearby centreline instead of the existing node the user was aiming at.
         externalSegments.forEach((entry, externalIndex) => {
             const seg = entry && entry.points;
             if (!Array.isArray(seg) || seg.length < 2) return;
             seg.forEach((vertex, vertexIndex) => {
                 const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
-                if (!isEndpoint) return;
                 const distance = pixelDistance(cursorPx, vertex);
                 if (distance > radiusPx) return;
                 if (best && distance >= best.distance) return;
-                best = { distance, source: 'external', kind: 'external-endpoint', externalIndex, vertexIndex, pixel: vertex };
+                best = {
+                    distance,
+                    source: 'external',
+                    kind: isEndpoint ? 'external-endpoint' : 'external-node',
+                    externalIndex,
+                    vertexIndex,
+                    pixel: vertex
+                };
             });
+        });
+        if (best) return best;
+
+        // Tier 4: an arbitrary point on a placed corridor's centreline.
+        externalSegments.forEach((entry, externalIndex) => {
+            const seg = entry && entry.points;
+            if (!Array.isArray(seg) || seg.length < 2) return;
             for (let i = 0; i < seg.length - 1; i++) {
                 const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
                 const distance = pixelDistance(cursorPx, projected);

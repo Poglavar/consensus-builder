@@ -467,6 +467,7 @@
                 width: legacy.seed.width,
                 sidewalkWidth: legacy.seed.sidewalkWidth,
                 tunnels: cloneDraftValue(legacy.seed.tunnels || []),
+                gradeSeparations: cloneDraftValue(legacy.seed.gradeSeparations || []),
                 metadata: {
                     isTrack: legacy.kind === 'track',
                     isRoad: legacy.kind !== 'track',

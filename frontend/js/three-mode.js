@@ -50,6 +50,11 @@
         console.error('[3D] Snapshot navigation policy is unavailable. Skipping 3D mode initialization.');
         return;
     }
+    const keyboardContext = (typeof window !== 'undefined') ? window.__threeKeyboardContext : null;
+    if (!keyboardContext || typeof keyboardContext.classifyThreeModeKeydown !== 'function') {
+        console.error('[3D] Keyboard context policy is unavailable. Skipping 3D mode initialization.');
+        return;
+    }
 
     // Smooth is the production candidate. `?ghostStyle=grain` retains the already-proven
     // screen-door renderer as an A/B fallback without maintaining a separate code path.
@@ -95,9 +100,8 @@
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
     let lakeGroup = null; // lake decorations (fish)
-    let existingRailGroup = null; // elevated viaduct for existing rail lines (city-gated)
-    let elevatedRailData = null;  // fetched once per session; keyed by the config url
-    let elevatedRailDataUrl = null;
+    let stationGroup = null; // placeable bus/tram/underground/elevated station models
+    let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
@@ -143,7 +147,6 @@
     }
     let walkPickActive = false;
     let walkPickClickHandler = null;
-    let walkPickKeyHandler = null;
 
     const BUILDING_OPACITY_KEY = 'cbBuildingOpacity';
 
@@ -275,7 +278,6 @@
     const PRICE_STEP_EUR = 100;
     let parcelClickHandler = null;
     let parcelPointerDownHandler = null;
-    let isolationKeyHandler = null;
     let proposalSelectionUnsubscribe = null;
     // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
     let clickDownXY = null;
@@ -312,7 +314,7 @@
         // Transparent mode disables depth writes so a ghost park/square/lake cannot invisibly
         // occlude another proposal behind it.
         structureRefresh.applyStructureDisplayMode(
-            [plannedFlatGroup, parkGroup, squareGroup, lakeGroup],
+            [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup],
             plannedDisplay,
             { ghostOpacity: 0.38 }
         );
@@ -653,7 +655,7 @@
             c.visible = false;
         });
         // Planned decorations aren't parcel-specific; hide them while isolated.
-        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, existingRailGroup].forEach(g => { if (g) g.visible = false; });
+        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup].forEach(g => { if (g) g.visible = false; });
     }
 
     // Hide everything except the given parcel and the building footprint(s) on it.
@@ -1643,45 +1645,96 @@
         });
     }
 
-    // Existing heavy-rail lines as an elevated viaduct (tram-sim look), for cities that ship
-    // a rail3d GeoJSON (city-config). Data is fetched once per session; the mesh is culled to
-    // the framed content so the whole national network never enters the scene.
-    function buildExistingRail3D(targetScene) {
-        const config = (typeof window.CityConfigManager?.getRail3dConfig === 'function')
-            ? window.CityConfigManager.getRail3dConfig()
-            : null;
-        if (!config || !config.url || typeof window.buildElevatedRail3D !== 'function') return;
+    // Shared procedural station models are authored in the isochrone app's conventional
+    // Three.js frame (X right, Y up, Z forward). This scene uses X east, Y north, Z up, so each
+    // model gets one fixed axis adapter and an outer geographic-bearing rotation.
+    function buildTransitStations3D(targetGroup) {
+        const library = (typeof window !== 'undefined') ? window.TransitStationModels : null;
+        const stations = (typeof window !== 'undefined' && Array.isArray(window.transitStations))
+            ? window.transitStations
+            : [];
+        if (!targetGroup || !library || typeof library.createStationModel !== 'function' || !stations.length) return;
 
-        const attach = data => {
+        stations.forEach(station => {
+            try {
+                const type = window.TransitStations?.stationType?.(station)
+                    || library.normalizeType?.(station?.properties?.stationType);
+                const center = window.TransitStations?.stationCenter?.(station)
+                    || station?.properties?.center;
+                if (!type || !Array.isArray(center) || center.length < 2) return;
+                const [x, y] = coordsToXY(center);
+                const bearing = Number(window.TransitStations?.stationBearing?.(station)
+                    ?? station?.properties?.bearing
+                    ?? 0);
+                const placement = new THREE.Group();
+                placement.name = `TransitStation:${type}`;
+                placement.position.set(x, y, 0.04);
+                placement.rotation.z = Math.PI - (Number.isFinite(bearing) ? bearing : 0) * Math.PI / 180;
+
+                const model = library.createStationModel(THREE, type, {
+                    name: station?.properties?.name || library.specFor?.(type)?.label,
+                    platformHeightM: Number.isFinite(Number(station?.properties?.platformHeightM))
+                        ? Number(station.properties.platformHeightM)
+                        : undefined,
+                    document
+                });
+                model.rotation.x = Math.PI / 2;
+                placement.add(model);
+                const proposalId = station?.properties?.proposalId;
+                placement.traverse(object => {
+                    object.userData = object.userData || {};
+                    object.userData.isTransitStation = true;
+                    object.userData.stationType = type;
+                    if (proposalId !== undefined && proposalId !== null) object.userData.proposalId = String(proposalId);
+                });
+                targetGroup.add(placement);
+            } catch (error) {
+                console.warn('[3D] Failed to build a transit station:', error);
+            }
+        });
+    }
+
+    // Render the same immutable alignments used by 2D station snapping. Sources are loaded once,
+    // while mesh construction is clipped to this scene's initial content bounds and never streams
+    // additional geometry as the user pans the frozen 3D snapshot.
+    function buildExistingTransitAlignments3D(targetScene) {
+        const registry = window.TransitAlignments;
+        if (!registry || typeof registry.ensureLoaded !== 'function') return;
+
+        const attach = loadedSources => {
             if (!isActive || !scene || scene !== targetScene) return; // scene changed mid-fetch
             const content = computeContentBoundsXY();
             const diagonal = Math.max(1, Math.hypot(content.width || 0, content.height || 0));
             const maxRadius = Math.min(7000, Math.max(2000, diagonal * 1.5));
-            const group = window.buildElevatedRail3D(data, coordsToXY, { maxRadius });
-            if (!group) return;
-            existingRailGroup = group;
+            const root = new THREE.Group();
+            root.name = 'ExistingTransitAlignments';
+            for (const source of loadedSources || []) {
+                let child = null;
+                if (source.render3d === 'elevated' && typeof window.buildElevatedRail3D === 'function') {
+                    child = window.buildElevatedRail3D(source.featureCollection, coordsToXY, { maxRadius });
+                } else if (source.render3d === 'surface' && typeof window.buildSurfaceRail3D === 'function') {
+                    child = window.buildSurfaceRail3D(source.featureCollection, coordsToXY, {
+                        maxRadius,
+                        gaugeM: source.mode === 'tram' ? 1.0 : 1.435
+                    });
+                }
+                if (!child) continue;
+                child.userData.sourceId = source.id;
+                child.userData.alignmentMode = source.mode;
+                root.add(child);
+            }
+            if (!root.children.length) return;
+            existingTransitAlignmentGroup = root;
             const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
-            existingRailGroup.visible = builtPolicy.showExistingRail
+            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail
                 && isolatedParcelId === null
                 && isolatedProposalId === null;
-            targetScene.add(existingRailGroup);
+            targetScene.add(existingTransitAlignmentGroup);
         };
 
-        if (elevatedRailData && elevatedRailDataUrl === config.url) {
-            attach(elevatedRailData);
-            return;
-        }
-        fetch(config.url)
-            .then(response => {
-                if (!response.ok) throw new Error(`rail3d source responded ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                elevatedRailData = data;
-                elevatedRailDataUrl = config.url;
-                attach(data);
-            })
-            .catch(error => console.error('[three-mode] existing rail lines failed to load', error));
+        registry.ensureLoaded()
+            .then(() => attach(registry.getLoadedSources?.() || []))
+            .catch(error => console.error('[three-mode] existing transit alignments failed to load', error));
     }
 
     // estimateBuildingHeightMeters is the shared estimator in frontend/js/building-height.js
@@ -1748,26 +1801,58 @@
         });
     }
 
-    // Union of applied lake footprints: parcel ground must not cover the recessed basin,
-    // so parcels intersecting a lake are meshed with the lake cut out of them.
-    function lakeFootprintFeatures() {
+    // Recessed lakes and underground station entrances need openings in the otherwise opaque
+    // parcel plane. The underground hall itself remains covered; surface/elevated stations do not
+    // cut the ground at all.
+    function groundCutFootprintFeatures() {
         const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
-        return lakes
+        const lakeCuts = lakes
             .filter(lake => lake && lake.geometry)
             .map(lake => ({ type: 'Feature', properties: {}, geometry: lake.geometry }));
+        const stationCuts = (typeof window !== 'undefined' && Array.isArray(window.transitStations) ? window.transitStations : [])
+            .flatMap(station => {
+                const geometries = window.TransitStations?.stationSurfaceCutouts?.(station) || [];
+                return geometries
+                    .filter(geometry => geometry?.type && Array.isArray(geometry.coordinates))
+                    .map(geometry => ({ type: 'Feature', properties: {}, geometry }));
+            });
+        const underpassCuts = [];
+        try {
+            (proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
+                if (!isApplied(proposal, proposal?.roadProposal)) return;
+                const definition = corridorProposalDefinition(proposal);
+                (definition?.gradeSeparations || []).forEach(record => {
+                    if (record?.mode !== 'underpass') return;
+                    let geometry = record.footprint?.geometry || record.footprint || null;
+                    if (!geometry?.type && record.from && record.crossing && record.to && typeof turf !== 'undefined') {
+                        try {
+                            geometry = turf.buffer(turf.lineString([
+                                [record.from.lng, record.from.lat],
+                                [record.crossing.lng, record.crossing.lat],
+                                [record.to.lng, record.to.lat]
+                            ]), Math.max(1, Number(record.width) || 2) / 2, { units: 'meters' })?.geometry || null;
+                        } catch (_) { geometry = null; }
+                    }
+                    if (geometry?.type) underpassCuts.push({ type: 'Feature', properties: {}, geometry });
+                });
+            });
+        } catch (error) {
+            console.warn('[three-mode] Could not derive pedestrian underpass openings', error);
+        }
+        return lakeCuts.concat(stationCuts, underpassCuts);
     }
 
-    function cutLakesOutOfFeature(feature, lakeFeatures) {
-        if (!lakeFeatures.length || typeof turf === 'undefined') return feature;
+    function cutGroundOpeningsOutOfFeature(feature, cutFeatures) {
+        if (!cutFeatures.length || typeof turf === 'undefined') return feature;
         let current = feature;
-        for (const lake of lakeFeatures) {
+        for (const cut of cutFeatures) {
             try {
-                if (!turf.booleanIntersects(current, lake)) continue;
-                const remainder = turf.difference(current, lake);
-                if (!remainder) return null; // parcel fully under water
+                if (!turf.booleanIntersects(current, cut)) continue;
+                const remainder = turf.difference(current, cut);
+                if (!remainder) return null;
                 current = remainder;
             } catch (error) {
-                console.error('[three-mode] lake cut failed for a parcel — ground may cover the basin', error);
+                console.error('[three-mode] ground opening failed for a parcel', error);
             }
         }
         return current;
@@ -1775,7 +1860,7 @@
 
     function buildParcels3D(targetGroup) {
         if (typeof parcelLayer === 'undefined' || !parcelLayer) return;
-        const lakeFeatures = lakeFootprintFeatures();
+        const groundCutFeatures = groundCutFootprintFeatures();
         // parcels at z=0
         parcelLayer.getLayers().forEach(l => {
             const f = l.feature;
@@ -1796,7 +1881,7 @@
                 obj.userData.isParcel = true;
                 if (parcelId) obj.userData.parcelId = parcelId;
             };
-            const groundFeature = cutLakesOutOfFeature(f, lakeFeatures);
+            const groundFeature = cutGroundOpeningsOutOfFeature(f, groundCutFeatures);
             if (groundFeature) {
                 const meshes = polygonFeatureToMeshes(groundFeature, fillMat, 0, 0);
                 meshes.forEach(m => { tag(m); targetGroup.add(m); });
@@ -1804,6 +1889,16 @@
             const borders = polygonFeatureToBorderLines(f, edgeMat, 0.5);
             borders.forEach(line => { tag(line); targetGroup.add(line); });
         });
+    }
+
+    function rebuildParcelGround3D() {
+        if (!isActive || !flatGroup) return;
+        for (let index = flatGroup.children.length - 1; index >= 0; index--) {
+            const child = flatGroup.children[index];
+            if (child?.userData?.isParcel) flatGroup.remove(child);
+        }
+        buildParcels3D(flatGroup);
+        applyParcelVisibilityForMode(derivedParcelVisibilityMode());
     }
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
@@ -2104,6 +2199,138 @@
         });
     }
 
+    function gradeRecordPointXY(point) {
+        if (!point || !Number.isFinite(Number(point.lat)) || !Number.isFinite(Number(point.lng))) return null;
+        const [x, y] = latLngToXY(Number(point.lat), Number(point.lng));
+        return { x, y };
+    }
+
+    function closestGradeSegmentSample(x, y, start, end, zStart, zEnd) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const lengthSq = dx * dx + dy * dy;
+        const t = lengthSq > 1e-9
+            ? Math.max(0, Math.min(1, ((x - start.x) * dx + (y - start.y) * dy) / lengthSq))
+            : 0;
+        const px = start.x + dx * t;
+        const py = start.y + dy * t;
+        return { distanceSq: (x - px) ** 2 + (y - py) ** 2, z: zStart + (zEnd - zStart) * t };
+    }
+
+    function gradeElevationAtXY(record, x, y) {
+        const start = gradeRecordPointXY(record?.from);
+        const crossing = gradeRecordPointXY(record?.crossing);
+        const end = gradeRecordPointXY(record?.to);
+        const peak = Number(record?.elevation) || (record?.mode === 'overpass' ? 5.2 : -3.2);
+        if (!start || !crossing || !end) return 0;
+        const before = closestGradeSegmentSample(x, y, start, crossing, 0, peak);
+        const after = closestGradeSegmentSample(x, y, crossing, end, peak, 0);
+        return before.distanceSq <= after.distanceSq ? before.z : after.z;
+    }
+
+    function elevateGradeMeshes(meshes, record) {
+        (meshes || []).forEach(mesh => {
+            const position = mesh?.geometry?.getAttribute?.('position');
+            if (!position) return;
+            for (let index = 0; index < position.count; index++) {
+                position.setZ(index, position.getZ(index) + gradeElevationAtXY(
+                    record,
+                    position.getX(index),
+                    position.getY(index)
+                ));
+            }
+            position.needsUpdate = true;
+            try { mesh.geometry.computeVertexNormals(); } catch (_) { }
+            try { mesh.geometry.computeBoundingSphere(); } catch (_) { }
+            mesh.userData.isGradeSeparatedCorridor = true;
+            mesh.userData.gradeSeparationMode = record.mode;
+            mesh.userData.gradeSeparationId = record.id || null;
+        });
+    }
+
+    function addGradeSeparationEdges3D(targetGroup, record) {
+        const points = [record?.from, record?.crossing, record?.to].map(gradeRecordPointXY);
+        if (points.some(point => !point)) return;
+        const peak = Number(record.elevation) || (record.mode === 'overpass' ? 5.2 : -3.2);
+        const heights = [0, peak, 0];
+        const width = Math.max(2, Number(record.width) || 2);
+        const railMaterial = new THREE.MeshLambertMaterial({
+            color: record.mode === 'overpass' ? 0xc47608 : 0x315f9f
+        });
+        for (let index = 0; index < 2; index++) {
+            const a = points[index];
+            const b = points[index + 1];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const horizontal = Math.hypot(dx, dy);
+            if (horizontal < 0.2) continue;
+            const dz = heights[index + 1] - heights[index];
+            const assembly = new THREE.Group();
+            assembly.position.set((a.x + b.x) / 2, (a.y + b.y) / 2, (heights[index] + heights[index + 1]) / 2);
+            assembly.rotation.z = Math.atan2(dy, dx);
+            assembly.rotation.y = -Math.atan2(dz, horizontal);
+            const length = Math.hypot(horizontal, dz);
+            [-1, 1].forEach(side => {
+                const barrier = new THREE.Mesh(
+                    new THREE.BoxGeometry(length, 0.12, record.mode === 'overpass' ? 1.1 : 0.8),
+                    railMaterial
+                );
+                barrier.position.set(0, side * (width / 2 + 0.08), record.mode === 'overpass' ? 0.55 : 0.4);
+                barrier.userData.isGradeSeparationEdge = true;
+                barrier.userData.gradeSeparationMode = record.mode;
+                assembly.add(barrier);
+            });
+            targetGroup.add(assembly);
+        }
+
+        if (record.mode === 'overpass') {
+            const supportMaterial = new THREE.MeshLambertMaterial({ color: 0x6b7280 });
+            [[points[0], points[1]], [points[2], points[1]]].forEach(([outer, inner]) => {
+                const t = 0.58;
+                const x = outer.x + (inner.x - outer.x) * t;
+                const y = outer.y + (inner.y - outer.y) * t;
+                const height = Math.max(0.8, peak * t - 0.18);
+                const pier = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, height, 10), supportMaterial);
+                pier.rotation.x = Math.PI / 2;
+                pier.position.set(x, y, height / 2);
+                pier.userData.isGradeSeparationPier = true;
+                targetGroup.add(pier);
+            });
+        }
+    }
+
+    function addGradeSeparatedCorridors3D(targetGroup, definition, entries, fallbackProfile) {
+        const records = Array.isArray(definition?.gradeSeparations) ? definition.gradeSeparations : [];
+        records.forEach(record => {
+            if (!record?.from || !record?.crossing || !record?.to
+                || (record.mode !== 'underpass' && record.mode !== 'overpass')) return;
+            const entry = entries.find(candidate => record.segmentId != null
+                && String(candidate.segmentId) === String(record.segmentId));
+            const profile = entry?.profile || fallbackProfile;
+            if (!profile) return;
+            const path = [record.from, record.crossing, record.to];
+            buildCorridorStrips([path], profile).forEach(strip => {
+                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                const kerb = Number(lane.height) || 0;
+                (strip.polygons || []).forEach(polygon => {
+                    const meshes = corridorStripMeshes3D(
+                        corridorStripToFeature(polygon),
+                        corridorLaneMaterial(strip.type),
+                        CORRIDOR_STRIP_Z,
+                        kerb
+                    );
+                    elevateGradeMeshes(meshes, record);
+                    meshes.forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.laneType = strip.type;
+                        targetGroup.add(mesh);
+                    });
+                });
+            });
+            addGradeSeparationEdges3D(targetGroup, record);
+        });
+    }
+
     function buildCorridorStrips3D(targetGroup) {
         if (typeof buildCorridorStrips !== 'function' || typeof isAppliedCorridorProposal !== 'function') return;
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
@@ -2125,32 +2352,43 @@
                 ? entries
                 : centerline.map(points => ({ points, profile: fallbackProfile }));
 
+            const gradeSpanRecords = (typeof gradeSeparationSpanRecords === 'function')
+                ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
+                : [];
+            const surfaceRenderEntries = [];
             renderEntries.forEach(entry => {
-                buildCorridorStrips([entry.points], entry.profile).forEach(strip => {
-                    const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
-                    const kerb = Number(lane.height) || 0;
-                    strip.polygons.forEach(polygon => {
-                        const meshPolygon = corridorStripPolygon3D(entry.points, strip, polygon);
-                        const meshes = corridorStripMeshes3D(
-                            corridorStripToFeature(meshPolygon),
-                            corridorLaneMaterial(strip.type),
-                            CORRIDOR_STRIP_Z,
-                            kerb
-                        );
-                        meshes.forEach(mesh => {
-                            mesh.userData.isCorridorStrip = true;
-                            mesh.userData.laneType = strip.type;
-                            targetGroup.add(mesh);
+                const surfaceRuns = gradeSpanRecords.length && typeof corridorSurfaceRuns === 'function'
+                    ? corridorSurfaceRuns([entry.points], gradeSpanRecords)
+                    : [entry.points];
+                surfaceRuns.forEach(points => {
+                    surfaceRenderEntries.push({ ...entry, points });
+                    buildCorridorStrips([points], entry.profile).forEach(strip => {
+                        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                        const kerb = Number(lane.height) || 0;
+                        strip.polygons.forEach(polygon => {
+                            const meshPolygon = corridorStripPolygon3D(points, strip, polygon);
+                            const meshes = corridorStripMeshes3D(
+                                corridorStripToFeature(meshPolygon),
+                                corridorLaneMaterial(strip.type),
+                                CORRIDOR_STRIP_Z,
+                                kerb
+                            );
+                            meshes.forEach(mesh => {
+                                mesh.userData.isCorridorStrip = true;
+                                mesh.userData.laneType = strip.type;
+                                targetGroup.add(mesh);
+                            });
                         });
                     });
+                    const decorations = (typeof buildCorridorDecorations === 'function')
+                        ? buildCorridorDecorations([points], entry.profile) : [];
+                    addCorridorDecorations3D(targetGroup, decorations);
                 });
-                const decorations = (typeof buildCorridorDecorations === 'function')
-                    ? buildCorridorDecorations([entry.points], entry.profile) : [];
-                addCorridorDecorations3D(targetGroup, decorations);
             });
+            addGradeSeparatedCorridors3D(targetGroup, definition, renderEntries, fallbackProfile);
             // Junction patches sized per arm cover the seams where different widths meet.
             const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
-                ? buildCorridorJunctionTreatmentsForEntries(renderEntries)
+                ? buildCorridorJunctionTreatmentsForEntries(surfaceRenderEntries)
                 : ((typeof buildCorridorJunctionTreatments === 'function')
                     ? buildCorridorJunctionTreatments(centerline, fallbackProfile) : []);
             addCorridorJunctions3D(targetGroup, junctions);
@@ -2185,7 +2423,9 @@
                 (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || [],
                 {
                     consolidateCorridorRecords: (records, region) =>
-                        window.consolidateCorridorDemolitionRecords(records, region, window.turf)
+                        window.consolidateCorridorDemolitionRecords(records, region, window.turf),
+                    consolidateBuildingRecords: records =>
+                        window.consolidateBuildingDemolitionRecords(records, window.turf)
                 }
             );
             // One response can contain the same source surface twice: within one object (usually
@@ -3181,7 +3421,7 @@
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
         const showExisting = builtPolicy.visible;
         const showProposed = plannedDisplay !== 'off';
-        if (existingRailGroup) existingRailGroup.visible = builtPolicy.showExistingRail;
+        if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail;
         const existingMaterial = builtPolicy.material === 'solid'
             ? buildingMaterials.solid
             : buildingMaterials.ghost;
@@ -3297,6 +3537,7 @@
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
+        stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
@@ -3308,10 +3549,11 @@
         scene.add(parkGroup);
         scene.add(squareGroup);
         scene.add(lakeGroup);
+        scene.add(stationGroup);
         scene.add(treesGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
-        existingRailGroup = null; // rebuilt per scene below (city-gated)
+        existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -3330,8 +3572,9 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildTransitStations3D(stationGroup); } catch (error) { console.warn('[three-mode] transit stations failed', error); }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
-        try { buildExistingRail3D(scene); } catch (error) { console.error('[three-mode] elevated rail failed', error); }
+        try { buildExistingTransitAlignments3D(scene); } catch (error) { console.error('[three-mode] transit alignments failed', error); }
         // Apply initial visibility based on the current display states.
         applyModeVisibility();
         rebuild3DBuildingsOnly();
@@ -3404,8 +3647,6 @@
         renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
-        isolationKeyHandler = handleIsolationKey;
-        document.addEventListener('keydown', isolationKeyHandler);
         if (!proposalSelectionUnsubscribe && window.ProposalSelection?.subscribe) {
             proposalSelectionUnsubscribe = window.ProposalSelection.subscribe(() => rebuildProposalInteraction3D());
         }
@@ -3664,17 +3905,13 @@
             try { controls.dispose(); } catch (_) { }
         }
         controls = null;
-        // Tear down parcel-isolation listeners and reset state.
+        // Tear down parcel-isolation pointer listeners and reset state.
         if (renderer && renderer.domElement) {
             if (parcelClickHandler) { try { renderer.domElement.removeEventListener('click', parcelClickHandler); } catch (_) { } }
             if (parcelPointerDownHandler) { try { renderer.domElement.removeEventListener('pointerdown', parcelPointerDownHandler); } catch (_) { } }
         }
-        if (isolationKeyHandler) {
-            try { document.removeEventListener('keydown', isolationKeyHandler); } catch (_) { }
-        }
         parcelClickHandler = null;
         parcelPointerDownHandler = null;
-        isolationKeyHandler = null;
         if (proposalSelectionUnsubscribe) {
             try { proposalSelectionUnsubscribe(); } catch (_) { }
             proposalSelectionUnsubscribe = null;
@@ -3701,6 +3938,7 @@
         parkGroup = null;
         squareGroup = null;
         lakeGroup = null;
+        stationGroup = null;
         proposalInteractionGroup = null;
         proposalDraftGroup = null;
         threeContainer && (threeContainer.innerHTML = '');
@@ -3893,21 +4131,25 @@
         rebuildProposalInteraction3D();
     });
 
-    // Rebuild parks/squares/lakes when their 2D state changes. The "flat" portion of each
+    // Rebuild parks/squares/lakes/stations when their 2D state changes. The "flat" portion of each
     // (grounds, paths, water) lives in plannedFlatGroup; the "deco" portion (trees,
     // fountains, fish) lives in its own group. Both clear together so the legacy
     // userData.isParkGround/isSquareGround/isLakeShore filtering on flatGroup is no longer
     // needed.
     function refreshStructures3D() {
+        // Structure footprints own parcel-ground openings (lake beds and station entrances), so
+        // rebuild only the fixed snapshot's parcel meshes before repainting the structure groups.
+        rebuildParcelGround3D();
         structureRefresh.refreshStructureScene3D({
             isActive: () => isActive,
             hasScene: () => !!scene,
             initScene,
-            groups: [plannedFlatGroup, parkGroup, squareGroup, lakeGroup],
+            groups: [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup],
             clearGroup: clearGroupChildren,
             buildParks: () => buildParks3D(plannedFlatGroup, parkGroup),
             buildSquares: () => buildSquares3D(plannedFlatGroup, squareGroup),
             buildLakes: () => buildLakes3D(plannedFlatGroup, lakeGroup),
+            buildStations: () => buildTransitStations3D(stationGroup),
             buildReparcellization: () => buildPlannedReparcellization3D(plannedFlatGroup),
             applyDisplay: applyModeVisibility,
             rebuildBuildings: rebuild3DBuildingsOnly,
@@ -3916,7 +4158,7 @@
         });
     }
 
-    ['parksUpdated', 'squaresUpdated', 'lakesUpdated'].forEach(eventName => {
+    ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated'].forEach(eventName => {
         window.addEventListener(eventName, refreshStructures3D);
     });
 
@@ -4056,6 +4298,7 @@
         if (buildingGroup) targets.push(buildingGroup);
         if (flatGroup) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
+        if (stationGroup) targets.push(stationGroup);
         const hits = raycaster.intersectObjects(targets, true);
         for (const h of hits) {
             let obj = h.object;
@@ -4110,8 +4353,26 @@
         isolateParcel(pid);
     }
 
-    function handleIsolationKey(evt) {
-        if (evt.key === 'Escape' && (isolatedParcelId !== null || isolatedProposalId !== null)) clearIsolation();
+    // Capture-phase boundary: when 3D is active, its keyboard context gets first refusal and
+    // document-level 2D shortcuts never see the event. Text fields and native control activation
+    // still pass through; modifier combinations retain their browser/OS default without reaching
+    // application-level 2D listeners.
+    function handleThreeModeKeyboardContext(evt) {
+        const action = keyboardContext.classifyThreeModeKeydown({
+            active: isActive,
+            key: evt.key,
+            ctrlKey: evt.ctrlKey,
+            metaKey: evt.metaKey,
+            altKey: evt.altKey,
+            target: evt.target,
+            walkPickActive,
+            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null
+        });
+        if (action === 'pass') return;
+        if (action === 'cancel-walk') cancelWalkPick();
+        else if (action === 'clear-isolation') clearIsolation();
+        if (action !== 'block-2d-native') evt.preventDefault();
+        evt.stopImmediatePropagation();
     }
 
     // Ground lat/lng at the centre of the viewport (NDC 0,0), or null if the ray misses the ground.
@@ -4166,15 +4427,10 @@
             cancelWalkPick();
             openWalkAt(ll);
         };
-        walkPickKeyHandler = (evt) => {
-            if (evt.key === 'Escape') cancelWalkPick();
-        };
-
         // 'click' (not 'mousedown') so OrbitControls drags don't trigger a pick.
         if (renderer && renderer.domElement) {
             renderer.domElement.addEventListener('click', walkPickClickHandler);
         }
-        document.addEventListener('keydown', walkPickKeyHandler);
     }
 
     function cancelWalkPick() {
@@ -4185,11 +4441,7 @@
         if (renderer && renderer.domElement && walkPickClickHandler) {
             renderer.domElement.removeEventListener('click', walkPickClickHandler);
         }
-        if (walkPickKeyHandler) {
-            document.removeEventListener('keydown', walkPickKeyHandler);
-        }
         walkPickClickHandler = null;
-        walkPickKeyHandler = null;
     }
 
     if (walkBtn) {
@@ -4248,6 +4500,10 @@
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
+
+    // Window capture runs before every document-level shortcut, including the few legacy handlers
+    // that also use capture. This is the keyboard-context boundary between the 3D and 2D apps.
+    window.addEventListener('keydown', handleThreeModeKeyboardContext, true);
 
     document.addEventListener('proposal-draft-preview-change', event => {
         rebuildProposalDraftPreview3D(event.detail || null);

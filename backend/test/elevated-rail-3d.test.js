@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { resampleXY } = require('../../frontend/js/elevated-rail-3d.js');
+const { resampleXY, projectRailSegments } = require('../../frontend/js/elevated-rail-3d.js');
 
 describe('resampleXY', () => {
     it('samples a straight line every spacing and keeps both endpoints', () => {
@@ -25,5 +25,23 @@ describe('resampleXY', () => {
     it('returns nothing for degenerate input', () => {
         expect(resampleXY([[5, 5]], 30)).toEqual([]);
         expect(resampleXY([], 30)).toEqual([]);
+    });
+});
+
+describe('surface rail snapshot culling', () => {
+    it('keeps a segment that crosses the initial scene radius and rejects a remote segment', () => {
+        const segments = projectRailSegments({
+            type: 'FeatureCollection',
+            features: [{
+                type: 'Feature', properties: {},
+                geometry: { type: 'MultiLineString', coordinates: [
+                    [[-20, 0], [20, 0]],
+                    [[50, 50], [60, 50]]
+                ] }
+            }]
+        }, point => point, 5);
+
+        expect(segments).toHaveLength(1);
+        expect(segments[0]).toMatchObject({ ax: -20, ay: 0, bx: 20, by: 0, length: 40 });
     });
 });

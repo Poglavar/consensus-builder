@@ -7,14 +7,17 @@ const require = createRequire(import.meta.url);
 const {
     corridorTunnelEdgeKey,
     corridorEdgeFetchSegments,
+    applyDemolitionRecordsToBuildingFeatures,
     findBuildingTunnelIntersections,
     makeBuildingTunnelRecord,
     addBuildingTunnelRecord,
     removeBuildingTunnelEdge,
     corridorSurfaceRuns,
+    retainLiveCorridorTunnelRecords,
     demolishBuildingsUnderFootprint,
     upsertCutRecord,
     consolidateCorridorDemolitionRecords,
+    consolidateBuildingDemolitionRecords,
     collectObstacleProposalImpacts,
     buildBuildingObstaclePrompt,
     resolveBuildingObstacles
@@ -33,6 +36,18 @@ describe('corridor building tunnels', () => {
 
     it('uses the same edge key in either drawing direction', () => {
         expect(corridorTunnelEdgeKey(from, to)).toBe(corridorTunnelEdgeKey(to, from));
+    });
+
+    it('drops a tunnel record as soon as a node move changes its exact edge', () => {
+        const middle = { lat: 45.805, lng: 15.905 };
+        const moved = { lat: 45.806, lng: 15.906 };
+        const records = [
+            { id: 'keep', edgeKey: corridorTunnelEdgeKey(from, middle), buildingIds: ['a'] },
+            { id: 'stale', edgeKey: corridorTunnelEdgeKey(middle, to), buildingIds: ['b'] }
+        ];
+
+        expect(retainLiveCorridorTunnelRecords([[from, middle], [moved, to]], records))
+            .toEqual([records[0]]);
     });
 
     it('splits a long diagonal into bounded fetch edges without losing its endpoints', () => {
@@ -129,9 +144,10 @@ describe('proposal-owned building impact preflight', () => {
         expect(prompt.message).toContain('Central Block');
         expect(prompt.message).toContain('Station Offices');
         expect(prompt.message.match(/Central Block/g)).toHaveLength(1);
+        expect(prompt.message).toContain('unapply these proposals');
         expect(prompt.message).toContain('Tunnelling keeps these proposals applied.');
-        expect(prompt.choices.find(choice => choice.value === 'cut')?.label).toContain('2');
-        expect(prompt.choices.find(choice => choice.value === 'destroy')?.label).toContain('2');
+        expect(prompt.choices.find(choice => choice.value === 'cut')?.label).toContain('unapply 2');
+        expect(prompt.choices.find(choice => choice.value === 'destroy')?.label).toContain('unapply 2');
     });
 
     it('lists road proposals whose separate records will be removed by merge-on-connect', () => {
@@ -146,7 +162,7 @@ describe('proposal-owned building impact preflight', () => {
         expect(prompt.choices.map(choice => choice.value)).toEqual(['merge', 'cancel']);
     });
 
-    it('shows the complete impact before mutation; cut sets proposals aside while tunnel preserves them', async () => {
+    it('shows the complete impact before mutation; cut unapplies proposals while tunnel preserves them', async () => {
         const keys = ['getProposalByIdOrHash', 'getProposalDisplayTitle', 'showStyledChoice', 'ProposalManager', 'i18n'];
         const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
         const proposals = new Map([
@@ -239,6 +255,45 @@ describe('merged corridor building cuts', () => {
         const full = { id: 'gdi-1', geometry: footprint.geometry };
         const consolidated = consolidateCorridorDemolitionRecords([partial[0], full], vertical, turf);
         expect(consolidated).toEqual([full]);
+    });
+});
+
+describe('cuts across independent proposals', () => {
+    const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], { object_id: 'gdi-1' });
+    const vertical = turf.polygon([[[0.0002, 0], [0.0004, 0], [0.0004, 0.001], [0.0002, 0.001], [0.0002, 0]]]);
+    const horizontal = turf.polygon([[[0, 0.0006], [0.001, 0.0006], [0.001, 0.0008], [0, 0.0008], [0, 0.0006]]]);
+
+    it('keeps a partial remainder in the collision pool and accumulates the next road cut', () => {
+        const firstRoad = [];
+        upsertCutRecord(firstRoad, { id: 'gdi-1', feature: footprint }, vertical, turf);
+
+        const survivors = applyDemolitionRecordsToBuildingFeatures([footprint], firstRoad);
+        expect(survivors).toHaveLength(1);
+        expect(turf.area(survivors[0])).toBeCloseTo(turf.area({
+            type: 'Feature', properties: {}, geometry: firstRoad[0].remainder
+        }), 4);
+
+        const hits = findBuildingTunnelIntersections(horizontal, survivors, turf);
+        expect(hits).toHaveLength(1);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: hits[0].originalGeometry }))
+            .toBeCloseTo(turf.area(footprint), 4);
+
+        const secondRoad = [];
+        upsertCutRecord(secondRoad, hits[0], horizontal, turf);
+        const combined = consolidateBuildingDemolitionRecords([...firstRoad, ...secondRoad], turf);
+        const expectedRemoved = turf.union(vertical, horizontal);
+        const expectedRemainder = turf.difference(footprint, expectedRemoved);
+        expect(combined).toHaveLength(1);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: combined[0].remainder }))
+            .toBeCloseTo(turf.area(expectedRemainder), 4);
+    });
+
+    it('removes a building from collision detection only after a full demolition', () => {
+        const visible = applyDemolitionRecordsToBuildingFeatures(
+            [footprint],
+            [{ id: 'gdi-1', geometry: footprint.geometry }]
+        );
+        expect(visible).toEqual([]);
     });
 });
 

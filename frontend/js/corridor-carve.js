@@ -87,7 +87,11 @@ function demolishedBuildingRecordsFrom(proposals, options = {}) {
 // Returns { records: Map<string, record> }.
 function collectCarveRecords(proposals, options = {}) {
     const records = new Map();
-    demolishedBuildingRecordsFrom(proposals, options).forEach(record => {
+    const rawRecords = demolishedBuildingRecordsFrom(proposals, options);
+    const combinedRecords = (typeof options.consolidateBuildingRecords === 'function')
+        ? options.consolidateBuildingRecords(rawRecords)
+        : rawRecords;
+    (combinedRecords || []).forEach(record => {
         if (!record || !record.geometry) return;
         const existing = records.get(String(record.id));
         // A full demolition (no remainder) is final — a cut recorded elsewhere cannot resurrect it.

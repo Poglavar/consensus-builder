@@ -370,6 +370,10 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
         console.warn('[copyProposal] proposal has no resolvable goal; cannot copy:', proposalIdOrHash);
         return;
     }
+    if (goalKey === 'decide-later') {
+        console.warn('[copyProposal] Merge / Decide Later proposals are read-only and cannot be copied.');
+        return;
+    }
 
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || source.proposalName || sourceKey;

@@ -136,7 +136,7 @@ function corridorEditorFlashRefusal() {
 
 // Everything the corridor's footprint would collide with at the given total width: buildings the
 // road is not already tunnelled through (from the base map AND applied building proposals), and
-// applied parks/squares/lakes. Checked per edge, like the finish-time tunnel recheck.
+// applied parks/squares/lakes. Checked per edge, like drawing-time segment validation.
 function corridorEditorCollectWidthHits(width) {
     const result = { buildings: [], structures: [] };
     const state = corridorEditorState;
@@ -427,8 +427,9 @@ function corridorEditorRender() {
 
     const saveButton = document.querySelector('.corridor-editor-save');
     if (saveButton) {
-        saveButton.disabled = corridorEditorState.mode !== 'drawing'
-            && (!corridorEditorState.dirty || corridorEditorState.widthBlocked === true);
+        saveButton.disabled = corridorEditorState.saving === true
+            || (corridorEditorState.mode !== 'drawing'
+                && (!corridorEditorState.dirty || corridorEditorState.widthBlocked === true));
     }
 
     corridorEditorScheduleObstacleCheck();
@@ -631,9 +632,36 @@ function corridorEditorBindLaneDrag(body) {
 async function corridorEditorSave() {
     if (!corridorEditorState) return;
     if (corridorEditorState.mode === 'drawing') {
+        const state = corridorEditorState;
+        if (state.saving) return;
+        const openingWidth = corridorProfileWidth(state.originalProfile || state.profile);
+        const editedWidth = corridorProfileWidth(state.profile);
+        const footprintChanged = Math.abs(editedWidth - openingWidth) > 1e-6;
+        if (footprintChanged) {
+            state.saving = true;
+            corridorEditorRender();
+            let accepted = false;
+            try {
+                accepted = typeof window.validateRoadDrawingProfileImpacts === 'function'
+                    && await window.validateRoadDrawingProfileImpacts();
+            } finally {
+                if (corridorEditorState === state) state.saving = false;
+            }
+            if (!accepted) {
+                if (corridorEditorState === state) {
+                    state.notice = corridorEditorI18n(
+                        'modal.corridor.unresolvedDrawingImpact',
+                        'The cross-section was not applied. Adjust it or resolve its building impacts.'
+                    );
+                    corridorEditorRender();
+                    corridorEditorFlashRefusal();
+                }
+                return;
+            }
+        }
         corridorEditorClose();
         if (typeof updateStatus === 'function') {
-            updateStatus('Cross-section applied. Keep drawing or press C to create the proposal.');
+            updateStatus('Cross-section applied. Keep drawing or press F to finish the road.');
         }
         return;
     }

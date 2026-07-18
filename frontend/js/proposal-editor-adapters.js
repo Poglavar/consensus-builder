@@ -13,13 +13,13 @@
         'square',
         'park',
         'lake',
+        'station',
         'single',
         'buildings',
         'row',
         'parcelBased',
         'urban-rule',
         'road-track',
-        'decide-later',
         'reparcellization',
         'ownership-transfer'
     ];
@@ -169,6 +169,7 @@
             width: definition?.width,
             sidewalkWidth: definition?.sidewalkWidth,
             tunnels: clone(definition?.tunnels || []),
+            gradeSeparations: clone(definition?.gradeSeparations || []),
             demolishedBuildings: clone(definition?.demolishedBuildings || []),
             segmentProfiles: clone(definition?.segmentProfiles || {}),
             trackSpeed: definition?.metadata?.trackSpeed,
@@ -189,6 +190,7 @@
             width: seed?.width,
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: clone(seed?.tunnels || []),
+            gradeSeparations: clone(seed?.gradeSeparations || sourceDefinition?.gradeSeparations || []),
             demolishedBuildings: clone(seed?.demolishedBuildings || sourceDefinition?.demolishedBuildings || []),
             segmentProfiles: clone(seed?.segmentProfiles || sourceDefinition?.segmentProfiles || {}),
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
@@ -531,6 +533,7 @@
         const labels = {
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
             single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            station: 'Transit station',
             'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
@@ -660,6 +663,87 @@
         return adapter;
     }
 
+    function buildStationAdapter() {
+        const adapter = buildGenericAdapter('station', {
+            label: 'Transit station',
+            sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+            hasDesign: true
+        });
+        adapter.draftFromProposal = function draftStationFromProposal(proposal) {
+            const structureProposal = clone(proposal?.structureProposal || {});
+            structureProposal.kind = 'station';
+            if (structureProposal.stationType === 'elevated' && !Number.isFinite(Number(structureProposal.platformHeightM))) {
+                structureProposal.platformHeightM = Number(global.TransitStationModels?.specFor?.('elevated')?.defaultPlatformHeightM) || 10;
+            }
+            const geometry = clone(structureProposal.geometry || proposal?.geometry?.stationGraphics || proposal?.geometry || null);
+            structureProposal.geometry = geometry;
+            return {
+                adapterKey: 'station',
+                proposalType: proposal.primaryType || proposalTypeLabel('station'),
+                fields: sourceFields(proposal),
+                editorPayload: {
+                    geometry: clone(geometry),
+                    structureProposal,
+                    facets: clone(proposal.facets || proposal.proposalFacets || null)
+                },
+                previewGeometry: clone(geometry)
+            };
+        };
+        adapter.validate = function validateStation(draft) {
+            const { errors, warnings } = commonValidation(draft);
+            const station = draft?.editorPayload?.structureProposal || {};
+            const geometry = station.geometry || draft?.editorPayload?.geometry;
+            if (!featureGeometryValid(geometry)) {
+                errors.push(issue('invalid-station-footprint', 'The station needs a valid footprint.', 'editorPayload.structureProposal.geometry'));
+            }
+            if (!['bus', 'tram', 'underground', 'elevated'].includes(String(station.stationType || ''))) {
+                errors.push(issue('invalid-station-type', 'Choose a bus, tram, underground, or elevated station.', 'editorPayload.structureProposal.stationType'));
+            }
+            const center = station.center;
+            if (!Array.isArray(center) || center.length < 2 || !center.every(Number.isFinite)) {
+                errors.push(issue('invalid-station-centre', 'The station needs a valid centre point.', 'editorPayload.structureProposal.center'));
+            }
+            if (station.stationType === 'elevated') {
+                const platformHeightM = Number(station.platformHeightM);
+                if (!Number.isFinite(platformHeightM) || platformHeightM < 3 || platformHeightM > 40) {
+                    errors.push(issue('invalid-station-platform-height', 'Elevated platform height must be between 3 and 40 metres.', 'editorPayload.structureProposal.platformHeightM'));
+                }
+            }
+            return { valid: errors.length === 0, errors, warnings };
+        };
+        adapter.renderPreview = function renderStationPreview(draft, viewMode) {
+            const station = clone(draft?.editorPayload?.structureProposal || {});
+            return {
+                kind: 'structure',
+                structureKind: 'station',
+                stationType: station.stationType || null,
+                bearing: Number.isFinite(Number(station.bearing)) ? Number(station.bearing) : 0,
+                platformHeightM: Number.isFinite(Number(station.platformHeightM)) ? Number(station.platformHeightM) : null,
+                viewMode: viewMode || '2d',
+                parcelIds: clone(draft?.fields?.parentParcelIds || []),
+                geometry: clone(station.geometry || draft?.editorPayload?.geometry || null)
+            };
+        };
+        adapter.openDesignEditor = function openStationDesignEditor(draft) {
+            if (typeof global.openTransitStationGeometryEditor !== 'function') return false;
+            return global.openTransitStationGeometryEditor(draft);
+        };
+        adapter.serializeProposal = function serializeStation(draft) {
+            const output = commonProposalFromDraft(draft);
+            const station = clone(draft?.editorPayload?.structureProposal || {});
+            station.kind = 'station';
+            station.geometry = clone(station.geometry || draft?.editorPayload?.geometry || null);
+            station.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
+            output.goal = 'station';
+            output.primaryType = proposalTypeLabel('station');
+            output.type = 'structure';
+            output.structureProposal = station;
+            output.geometry = { stationGraphics: clone(station.geometry) };
+            return output;
+        };
+        return adapter;
+    }
+
     const corridorAdapter = {
         key: 'road-track',
         label: 'Road / Track',
@@ -751,10 +835,12 @@
                 afterWidth: Number(after.width) || null,
                 widthChange: (Number(after.width) || 0) - (Number(before.width) || 0),
                 profileChanged: !same(before.profile || null, after.profile || null),
-                tunnelsChanged: !same(before.tunnels || [], after.tunnels || [])
+                tunnelsChanged: !same(before.tunnels || [], after.tunnels || []),
+                gradeSeparationsChanged: !same(before.gradeSeparations || [], after.gradeSeparations || [])
             };
             summary.unchanged = summary.unchanged && !summary.geometry.changed
-                && summary.geometry.widthChange === 0 && !summary.geometry.profileChanged && !summary.geometry.tunnelsChanged;
+                && summary.geometry.widthChange === 0 && !summary.geometry.profileChanged
+                && !summary.geometry.tunnelsChanged && !summary.geometry.gradeSeparationsChanged;
             return summary;
         },
         payloadFromDrawingSeed(seed, sourceDefinition) {
@@ -1048,7 +1134,10 @@
     registry.register('park', buildStructureAdapter('park'));
     registry.register('square', buildStructureAdapter('square'));
     registry.register('lake', buildGenericAdapter('lake', { hasDesign: true }));
-    registry.register('decide-later', buildGenericAdapter('decide-later'));
+    registry.register('station', buildStationAdapter(), { aliases: ['transit-station'] });
+    // Existing stored merge proposals remain readable/applicable, but this removed goal cannot be
+    // used as the source of a new or replacement draft.
+    registry.declareReadOnly('decide-later', 'Merge / Decide Later is no longer a creatable proposal type.');
     registry.register('ownership-transfer', buildGenericAdapter('ownership-transfer'), {
         aliases: ['ownership-transfer-to-me', 'ownership-transfer-from-me']
     });
@@ -1112,6 +1201,7 @@
             reparcellizationAdapter,
             buildGenericAdapter,
             buildStructureAdapter,
+            buildStationAdapter,
             summarizeCommonChanges
         };
     }

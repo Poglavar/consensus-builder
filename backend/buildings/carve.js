@@ -23,7 +23,10 @@ import { extrudeFootprint } from './extrude.js';
 
 const require = createRequire(import.meta.url);
 const { collectCarveRecords, carveBuildingByObjectId } = require('../../frontend/js/corridor-carve.js');
-const { consolidateCorridorDemolitionRecords } = require('../../frontend/js/corridor-tunnel.js');
+const {
+    consolidateCorridorDemolitionRecords,
+    consolidateBuildingDemolitionRecords
+} = require('../../frontend/js/corridor-tunnel.js');
 
 // The caller explicitly selects proposal ids to carve. Server-side carving therefore never reads a
 // browser's local `applied` flag; it applies the definitions named in the request.
@@ -51,7 +54,9 @@ export function carveRecordsFor(proposals) {
     return collectCarveRecords(proposals, {
         selectedByCaller: true,
         consolidateCorridorRecords: (records, region) =>
-            consolidateCorridorDemolitionRecords(records, region, turf)
+            consolidateCorridorDemolitionRecords(records, region, turf),
+        consolidateBuildingRecords: records =>
+            consolidateBuildingDemolitionRecords(records, turf)
     });
 }
 

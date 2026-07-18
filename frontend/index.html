@@ -97,6 +97,7 @@
                 'css/proposals.css',
                 'css/proposal-editor.css',
                 'css/structure-geometry-editor.css',
+                'css/station-geometry-editor.css',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
@@ -523,6 +524,46 @@
 
                     <div id="parcels-counted" style="color: #666;" data-i18n-key="sidebar.blocks.countedDefault">Parcels
                         counted: 0</div>
+                </div>
+            </div>
+
+            <!-- Transit Stations Section -->
+            <div class="accordion-section" data-section="stations">
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span class="accordion-title">
+                        <i class="fas fa-train-subway"></i>
+                        <span class="accordion-title-text" data-section-title="stations"
+                            data-i18n-key="sidebar.stations.title">Stations</span>
+                    </span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="control-group-title" data-i18n-key="sidebar.stations.placeTitle">Place a station</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-action" data-station-type="bus"
+                                onclick="startTransitStationPlacement('bus')">
+                                <span data-i18n-key="sidebar.stations.bus">Bus station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="tram"
+                                onclick="startTransitStationPlacement('tram')">
+                                <span data-i18n-key="sidebar.stations.tram">Tram station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="underground"
+                                onclick="startTransitStationPlacement('underground')">
+                                <span data-i18n-key="sidebar.stations.underground">Underground station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="elevated"
+                                onclick="startTransitStationPlacement('elevated')">
+                                <span data-i18n-key="sidebar.stations.elevated">Elevated train station</span>
+                            </button>
+                            <button type="button" class="btn" onclick="cancelTransitStationPlacement()">
+                                <span data-i18n-key="sidebar.stations.cancel">Cancel placement</span>
+                            </button>
+                        </div>
+                        <div id="station-placement-status" class="control-help-text"
+                            data-i18n-key="sidebar.stations.hint">Rail stations snap to rail tracks. Bus stations snap to the selected roadside.</div>
+                    </div>
                 </div>
             </div>
 
@@ -1368,13 +1409,17 @@
             'js/proposal-manager.js',
             'js/reparcellization-shares.js',
             'js/reparcellization-slice.js',
+            'js/reparcellization-ui-state.js',
             'js/reparcellization.js',
             'js/financials.js',
             'js/agents.js',
             'js/agent-bubbles.js',
             'js/game.js',
             'js/structures.js',
-            'js/structure-geometry-editor.js'
+            'js/structure-geometry-editor.js',
+            'js/vendor/transit-station-models.js',
+            'js/transit-alignments.js',
+            'js/transit-stations.js'
         ]);
     </script>
 
@@ -1428,9 +1473,11 @@
             'js/corridor-render.js',
             'js/corridor-editor.js',
             'js/corridor-tunnel.js',
+            'js/corridor-grade-separation.js',
             'js/corridor-topology-migration.js',
             'js/corridor-structures.js',
             'js/road-stroke-state.js',
+            'js/road-finalization-state.js',
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/centerline-animation.js'
@@ -1452,6 +1499,8 @@
             'js/three-structure-refresh.js',
             'js/three-square-paving.js',
             'js/three-snapshot-navigation.js',
+            'js/three-keyboard-context.js',
+            'js/elevated-rail-3d.js',
             'js/three-mode.js',
             'js/photoreal-mode.js',
             'js/three-edit-scene.js',
@@ -1477,7 +1526,6 @@
             'js/area-monitor/paint.js?v=20260404i',
             'js/area-monitor/ui.js?v=20260428a',
             'js/area-monitor/routing.js?v=20260404a',
-            'js/elevated-rail-3d.js',
             'js/boot-ready.js'
         ]);
     </script>

@@ -459,11 +459,11 @@ async function _reapplyAppliedProposal(proposal) {
                 } catch (_) { }
             }
         });
-        // Park/square/lake proposals deliberately keep their source parcels and therefore normally
+        // Park/square/lake/station proposals deliberately keep their source parcels and therefore normally
         // have no childParcelIds. Reapply the structure BEFORE this branch returns: the old ordering
         // made the structure block at the bottom unreachable for exactly these proposals, so an
         // empty demolition scan could never be repaired when the page reloaded.
-        if (goal === 'park' || goal === 'square' || goal === 'lake') {
+        if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station') {
             if (typeof ProposalManager._applyStructureProposal === 'function') {
                 try {
                     await _runProposalApplyWithSummary(
@@ -591,7 +591,7 @@ async function _reapplyAppliedProposal(proposal) {
     }
 
     // Structures: reapply overlays if needed (they keep parents visible)
-    if (goal === 'park' || goal === 'square' || goal === 'lake') {
+    if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station') {
         if (typeof ProposalManager._applyStructureProposal === 'function') {
             try {
                 await _runProposalApplyWithSummary(
@@ -2078,6 +2078,7 @@ const ProposalManager = {
         }
         if (kind === 'park' && geometry.parkGraphics) return geometry.parkGraphics;
         if (kind === 'square' && geometry.squareGraphics) return geometry.squareGraphics;
+        if (kind === 'station' && geometry.stationGraphics) return geometry.stationGraphics;
         if (geometry.squareGraphics) return geometry.squareGraphics;
         return null;
     },
@@ -2129,7 +2130,7 @@ const ProposalManager = {
     _inferStructureKindFromProposal(proposalData) {
         if (!proposalData) return null;
         const kind = this._normalizeGoalKey(proposalData.goal);
-        return (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : null;
+        return (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') ? kind : null;
     },
 
     _bootstrapStructureProposalFromMetadata(proposalData) {

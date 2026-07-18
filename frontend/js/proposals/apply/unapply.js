@@ -360,7 +360,7 @@
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData || !proposalData.structureProposal) return false;
         const sp = proposalData.structureProposal;
-        const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+        const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
         const blockName = sp.blockName || null;
         const normalizedProposalId = proposalId && proposalId.toString ? proposalId.toString() : (proposalId === 0 ? '0' : String(proposalId || ''));
 
@@ -371,6 +371,8 @@
                     if (typeof updateParksLayer === 'function') updateParksLayer();
                 } else if (kind === 'lake') {
                     if (typeof updateLakesLayer === 'function') updateLakesLayer();
+                } else if (kind === 'station') {
+                    if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer();
                 } else if (typeof updateSquaresLayer === 'function') {
                     updateSquaresLayer();
                 }
@@ -401,6 +403,20 @@
                     removedParcels += Math.max(0, before - window.lakes.length);
                     if (before !== window.lakes.length) {
                         try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
+                    }
+                }
+            } else if (kind === 'station') {
+                if (Array.isArray(window.transitStations)) {
+                    const before = window.transitStations.length;
+                    window.transitStations = window.transitStations.filter(f => {
+                        const featureProposalId = f && f.properties
+                            ? (f.properties.proposalId && f.properties.proposalId.toString ? f.properties.proposalId.toString() : String(f.properties.proposalId || ''))
+                            : null;
+                        return featureProposalId !== normalizedProposalId;
+                    });
+                    removedParcels += Math.max(0, before - window.transitStations.length);
+                    if (before !== window.transitStations.length) {
+                        try { PersistentStorage.setItem('cb_transit_stations', JSON.stringify(window.transitStations)); } catch (_) { }
                     }
                 }
             } else {

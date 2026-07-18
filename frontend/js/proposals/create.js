@@ -344,6 +344,13 @@ async function createProposal() {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
         return;
     }
+    if (selectedTool === 'decide-later') {
+        showProposalAlertMessage(
+            'proposal_type_no_longer_available',
+            'Merge / Decide Later is no longer available. Use Land readjustment.'
+        );
+        return;
+    }
     if (goalRequiresGeometry(selectedTool) && !proposalGeometrySubmitted) {
         showProposalAlertMessage('please_add_a_geometry_first', 'Please add a geometry first.');
         updateCreateProposalSubmitState();
@@ -682,13 +689,6 @@ async function createProposal() {
             proposal.proposalDraftRevision = draft?.revision ?? source.revision ?? null;
         }
 
-        if (selectedTool === 'decide-later') {
-            proposal.decideLaterProposal = {
-                parentParcelIds: normalizedParentParcelIds.slice(),
-                childParcelIds: []
-            };
-        }
-
         // "Ownership transfer from me" proposals are automatically accepted but not funded
         // This means all parcels are marked as accepted, but the proposal cannot be executed
         if (selectedTool === 'ownership-transfer-from-me') {
@@ -832,6 +832,7 @@ async function createProposal() {
                     width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     tunnels: safeClone(roadDrawingContext.tunnels) || [],
+                    gradeSeparations: safeClone(roadDrawingContext.gradeSeparations) || [],
                     demolishedBuildings: safeClone(roadDrawingContext.demolishedBuildings) || [],
                     segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,

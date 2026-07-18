@@ -31,7 +31,9 @@
         if (key === 'road-track' || key === 'road' || key === 'track') return 'road-track';
         if (key === 'decide-later' || key === 'decide') return 'decide-later';
         if (key === 'reparcellization') return 'reparcellization';
-        if (key === 'park' || key === 'square' || key === 'lake') return key;
+        if (key === 'park' || key === 'square' || key === 'lake' || key === 'station' || key === 'transit-station') {
+            return key === 'transit-station' ? 'station' : key;
+        }
         if (key === 'buildings' || key === 'residences') return 'buildings';
         if (key === 'building(s)' || key === 'single' || key === 'single-building') return 'single';
         if (key === 'row') return 'row';
@@ -62,7 +64,9 @@
         if (goalKey === 'reparcellization') return { route: 'reparcellization', goalKey };
         if (goalKey === 'decide-later') return { route: 'decide-later', goalKey };
         if (isBuildingGoal(goalKey)) return { route: 'building', goalKey };
-        if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake') return { route: 'structure', goalKey };
+        if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake' || goalKey === 'station') {
+            return { route: 'structure', goalKey };
+        }
 
         return { route: 'unsupported', goalKey };
     }

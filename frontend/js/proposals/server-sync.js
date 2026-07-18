@@ -545,7 +545,7 @@ function prepareProposalForImport(sharedProposal) {
             if (sharedProposal.reparcellization) return 'reparcellization';
             if (sharedProposal.structureProposal && sharedProposal.structureProposal.kind) {
                 const kind = normalizeProposalGoalKey(sharedProposal.structureProposal.kind);
-                if (kind === 'park' || kind === 'square' || kind === 'lake') return kind;
+                if (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') return kind;
             }
             if (sharedProposal.buildingProposal || (sharedProposal.geometry && Array.isArray(sharedProposal.geometry.buildings) && sharedProposal.geometry.buildings.length)) {
                 return 'buildings';
@@ -647,15 +647,28 @@ function prepareProposalForImport(sharedProposal) {
         }
     }
 
-    // Structure proposals (parks/squares)
+    // Structure proposals (parks/squares/lakes/stations)
     if (sharedProposal.structureProposal && !isDecideLater) {
+        const sharedStructure = sharedProposal.structureProposal;
         base.structureProposal = {
-            kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square' || sharedProposal.structureProposal.kind === 'lake') ? sharedProposal.structureProposal.kind : 'square',
-            geometry: deepClone(sharedProposal.structureProposal.geometry),
-            decorations: deepClone(sharedProposal.structureProposal.decorations || null),
-            blockName: sharedProposal.structureProposal.blockName || null,
-            parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.parentParcelIds)
+            kind: (sharedStructure.kind === 'park' || sharedStructure.kind === 'square' || sharedStructure.kind === 'lake' || sharedStructure.kind === 'station') ? sharedStructure.kind : 'square',
+            geometry: deepClone(sharedStructure.geometry),
+            decorations: deepClone(sharedStructure.decorations || null),
+            blockName: sharedStructure.blockName || null,
+            parentParcelIds: ensureArrayOfStrings(sharedStructure.parentParcelIds && sharedStructure.parentParcelIds.length ? sharedStructure.parentParcelIds : base.parentParcelIds)
         };
+        if (base.structureProposal.kind === 'station') {
+            base.structureProposal.stationType = sharedStructure.stationType || 'tram';
+            base.structureProposal.center = deepClone(sharedStructure.center || null);
+            base.structureProposal.bearing = Number.isFinite(Number(sharedStructure.bearing)) ? Number(sharedStructure.bearing) : 0;
+            if (base.structureProposal.stationType === 'elevated') {
+                base.structureProposal.platformHeightM = Number.isFinite(Number(sharedStructure.platformHeightM))
+                    ? Number(sharedStructure.platformHeightM)
+                    : 10;
+            }
+            base.structureProposal.attachment = deepClone(sharedStructure.attachment || null);
+            base.structureProposal.modelVersion = sharedStructure.modelVersion || 1;
+        }
         base.goal = normalizeProposalGoalKey(base.structureProposal.kind) || base.goal;
     }
 

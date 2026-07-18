@@ -132,10 +132,24 @@
             curatedRoads: {
                 url: '/road-parcels'
             },
-            // Existing heavy-rail lines rendered as an elevated viaduct in 3D mode (ported
-            // from the tram sim). Static OSM-derived GeoJSON shipped with the frontend.
-            rail3d: {
-                url: 'data/zagreb_rail_tracks.geojson'
+            // Immutable OSM-derived alignments shared by station snapping and 3D rendering.
+            // Editable proposal corridors remain a separate game-data source.
+            transitAlignments: {
+                sources: [{
+                    id: 'zagreb-heavy-rail',
+                    url: 'data/zagreb_rail_tracks.geojson',
+                    mode: 'heavy-rail',
+                    stationTypes: ['elevated'],
+                    elevationM: 7.5,
+                    render3d: 'elevated'
+                }, {
+                    id: 'zagreb-tram',
+                    url: 'data/zagreb_tram_tracks_osm.geojson',
+                    mode: 'tram',
+                    stationTypes: ['tram'],
+                    elevationM: 0,
+                    render3d: 'surface'
+                }]
             }
         },
         split: {
@@ -1406,7 +1420,7 @@
         getParcelBuilderConfig,
         getWalkConfig: () => withLocalSimUrl(getCurrentCityConfig().walk || null),
         getCuratedRoadsConfig: () => getCurrentCityConfig().curatedRoads || null,
-        getRail3dConfig: () => getCurrentCityConfig().rail3d || null,
+        getTransitAlignmentConfig: () => getCurrentCityConfig().transitAlignments || null,
         // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
         // city because it depends on city street data), driving a drawn track works at any
         // location — the track, rails and corridor come from the proposal itself — so every

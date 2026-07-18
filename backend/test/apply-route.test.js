@@ -16,6 +16,7 @@ describe('normalizeGoalKey', () => {
         expect(normalizeGoalKey('decide')).toBe('decide-later');
         expect(normalizeGoalKey('reparcellization')).toBe('reparcellization');
         expect(normalizeGoalKey('Park')).toBe('park');
+        expect(normalizeGoalKey('Transit Station')).toBe('station');
         expect(normalizeGoalKey('residences')).toBe('buildings');
         expect(normalizeGoalKey('single-building')).toBe('single');
         expect(normalizeGoalKey('parcel-based')).toBe('parcelBased');
@@ -47,6 +48,7 @@ describe('classifyApplyRoute', () => {
         expect(route('park')).toBe('structure');
         expect(route('square')).toBe('structure');
         expect(route('lake')).toBe('structure');
+        expect(route('station')).toBe('structure');
     });
 
     it('treats parcel / ownership-transfer / to-buyer as an idempotent no-op', () => {

@@ -1,4 +1,4 @@
-// Coordinates a live park/square/lake refresh in abstract 3D so structure surfaces and the
+// Coordinates a live park/square/lake/station refresh in abstract 3D so structure surfaces and the
 // existing-building carve are rebuilt from the same committed proposal state.
 (function (root, factory) {
     const api = factory();
@@ -108,6 +108,7 @@
         callSafely('parks', options.buildParks, options.onError);
         callSafely('squares', options.buildSquares, options.onError);
         callSafely('lakes', options.buildLakes, options.onError);
+        callSafely('stations', options.buildStations, options.onError);
         callSafely('reparcellization', options.buildReparcellization, options.onError);
         callSafely('display', options.applyDisplay, options.onError);
 

@@ -1,4 +1,4 @@
-// Verifies that a live park/square/lake update rebuilds both structure surfaces and the existing
+// Verifies that a live park/square/lake/station update rebuilds both structure surfaces and the existing
 // 3D buildings whose demolition state changed, without needing a browser or WebGL scene.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
@@ -11,7 +11,7 @@ const {
 
 function sceneOptions(overrides = {}) {
     const events = [];
-    const groups = ['planned', 'parks', 'squares', 'lakes'];
+    const groups = ['planned', 'parks', 'squares', 'lakes', 'stations'];
     const options = {
         isActive: () => true,
         hasScene: () => true,
@@ -21,6 +21,7 @@ function sceneOptions(overrides = {}) {
         buildParks: vi.fn(() => events.push('build:parks')),
         buildSquares: vi.fn(() => events.push('build:squares')),
         buildLakes: vi.fn(() => events.push('build:lakes')),
+        buildStations: vi.fn(() => events.push('build:stations')),
         buildReparcellization: vi.fn(() => events.push('build:reparcellization')),
         applyDisplay: vi.fn(() => events.push('apply:display')),
         rebuildBuildings: vi.fn(() => events.push('rebuild:buildings')),
@@ -55,8 +56,8 @@ describe('refreshStructureScene3D', () => {
         expect(refreshStructureScene3D(options)).toBe('rebuilt');
         expect(options.clearGroup.mock.calls.map(call => call[0])).toEqual(groups);
         expect(events).toEqual([
-            'clear:planned', 'clear:parks', 'clear:squares', 'clear:lakes',
-            'build:parks', 'build:squares', 'build:lakes', 'build:reparcellization',
+            'clear:planned', 'clear:parks', 'clear:squares', 'clear:lakes', 'clear:stations',
+            'build:parks', 'build:squares', 'build:lakes', 'build:stations', 'build:reparcellization',
             'apply:display',
             'rebuild:buildings', 'rebuild:interaction'
         ]);

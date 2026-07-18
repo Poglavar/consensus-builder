@@ -1,4 +1,4 @@
-// Characterizes the model-before-view contract for applying and unapplying park/square/lake
+// Characterizes the model-before-view contract for applying and unapplying park/square/lake/station
 // proposals: every layer refresh must observe the proposal's canonical application state.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
@@ -38,7 +38,7 @@ function polygon() {
 }
 
 function structureProposal(kind, applied) {
-    return {
+    const proposal = {
         proposalId: `p-${kind}`,
         lifecycleStatus: 'Active',
         applied,
@@ -51,6 +51,17 @@ function structureProposal(kind, applied) {
             demolishedBuildings: [{ id: 'building-1', geometry: polygon() }]
         }
     };
+    if (kind === 'station') {
+        Object.assign(proposal.structureProposal, {
+            stationType: 'elevated',
+            center: [15.9705, 45.8105],
+            bearing: 35,
+            platformHeightM: 16.5,
+            attachment: { kind: 'rail', proposalId: 'track-1' },
+            modelVersion: 2
+        });
+    }
+    return proposal;
 }
 
 function installSharedGlobals(browserWindow, proposalStore) {
@@ -69,13 +80,14 @@ function installSharedGlobals(browserWindow, proposalStore) {
 const kinds = [
     ['park', 'parks', 'updateParksLayer', 'ensureParkDecorations'],
     ['square', 'squares', 'updateSquaresLayer', 'ensureSquareDecorations'],
-    ['lake', 'lakes', 'updateLakesLayer', 'ensureLakeGraphics']
+    ['lake', 'lakes', 'updateLakesLayer', 'ensureLakeGraphics'],
+    ['station', 'transitStations', 'updateTransitStationsLayer', null]
 ];
 
 describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName, updateName, ensureName) => {
     it('refreshes the layer only after apply is canonical', async () => {
         const proposal = structureProposal(kind, false);
-        const browserWindow = { parks: [], squares: [], lakes: [] };
+        const browserWindow = { parks: [], squares: [], lakes: [], transitStations: [] };
         const proposalStore = {
             proposals: new Map([[proposal.proposalId, proposal]]),
             getAllProposals: () => [proposal],
@@ -83,7 +95,7 @@ describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName,
             save: vi.fn()
         };
         installSharedGlobals(browserWindow, proposalStore);
-        installGlobal(ensureName, vi.fn());
+        if (ensureName) installGlobal(ensureName, vi.fn());
 
         const stateSeenByRefresh = [];
         installGlobal(updateName, vi.fn(() => stateSeenByRefresh.push(isApplied(proposal, proposal.structureProposal))));
@@ -101,6 +113,12 @@ describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName,
 
         expect(result).toBe(true);
         expect(browserWindow[collectionName]).toHaveLength(1);
+        if (kind === 'station') {
+            expect(browserWindow.transitStations[0].properties).toMatchObject({
+                stationType: 'elevated', bearing: 35, platformHeightM: 16.5,
+                attachment: { kind: 'rail', proposalId: 'track-1' }, modelVersion: 2
+            });
+        }
         expect(stateSeenByRefresh).toEqual([true]);
         expect(isApplied(proposal, proposal.structureProposal)).toBe(true);
     });
@@ -112,7 +130,7 @@ describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName,
             properties: { proposalId: proposal.proposalId },
             geometry: polygon()
         };
-        const browserWindow = { parks: [], squares: [], lakes: [], [collectionName]: [feature] };
+        const browserWindow = { parks: [], squares: [], lakes: [], transitStations: [], [collectionName]: [feature] };
         const proposalStore = {
             proposals: new Map([[proposal.proposalId, proposal]]),
             _indexProposal: vi.fn(value => proposalStore.proposals.set(value.proposalId, value)),
@@ -151,6 +169,7 @@ describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName,
             parks: [],
             squares: [],
             lakes: [],
+            transitStations: [],
             [collectionName]: [feature],
             ensureCorridorBuildingFootprintsLoaded: vi.fn(async () => true),
             demolishBuildingsUnderFootprint: vi.fn(async () => [expectedRecord])
@@ -192,6 +211,7 @@ describe.each(kinds)('%s proposal presentation ordering', (kind, collectionName,
             parks: [],
             squares: [],
             lakes: [],
+            transitStations: [],
             [collectionName]: [feature],
             ensureCorridorBuildingFootprintsLoaded: vi.fn(async () => true),
             demolishBuildingsUnderFootprint: vi.fn(async () => [expectedRecord])

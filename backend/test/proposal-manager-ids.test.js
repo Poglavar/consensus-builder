@@ -148,7 +148,7 @@ describe('_shouldDrawLegacyRoadCenterline', () => {
 });
 
 describe('applied structure rehydration', () => {
-    it.each(['park', 'square', 'lake'])('reapplies a %s even though structures have no child parcels', async kind => {
+    it.each(['park', 'square', 'lake', 'station'])('reapplies a %s even though structures have no child parcels', async kind => {
         const original = ProposalManager._applyStructureProposal;
         const calls = [];
         ProposalManager._applyStructureProposal = async (proposalId, proposal) => {

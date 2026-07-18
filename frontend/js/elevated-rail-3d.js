@@ -1,5 +1,6 @@
-// Elevated heavy-rail viaduct for the 3D view: existing rail lines drawn as concrete pillars,
-// box girders and twin rails — ported from zagreb-isochrone's tram sim
+// Existing rail renderers for the 3D view: heavy rail becomes a concrete viaduct, while OSM
+// tram alignments become a compact surface trackbed with sleepers and twin rails. The viaduct was
+// ported from zagreb-isochrone's tram sim
 // (station-3d/world/elevated-rail.js) and remapped to this scene's frame: ground = XY (from
 // latLngToXY / Web Mercator), height = +Z. Merge-free on purpose: every part is one
 // InstancedMesh, so the three@0.147 script-tag bundle needs no BufferGeometryUtils addon.
@@ -16,6 +17,11 @@
     const RAIL_W = 0.10;
     const RAIL_H = 0.12;
     const PILLAR_SPACING = 30;
+    const SURFACE_TRACKBED_Z = 0.33;
+    const SURFACE_TRACKBED_H = 0.04;
+    const SURFACE_RAIL_Z = 0.43;
+    const SURFACE_SLEEPER_Z = 0.375;
+    const SURFACE_SLEEPER_SPACING = 1.35;
 
     const COLOR_CONCRETE = 0xb8b6ad;
     const COLOR_CONCRETE_CAP = 0xa6a49b;
@@ -49,6 +55,52 @@
             samples.push({ x: lastPoint[0], y: lastPoint[1] });
         }
         return samples;
+    }
+
+    function geometryLineParts(geometry) {
+        if (!geometry) return [];
+        if (geometry.type === 'LineString') return [geometry.coordinates || []];
+        if (geometry.type === 'MultiLineString') return geometry.coordinates || [];
+        return [];
+    }
+
+    function segmentDistanceToOrigin(ax, ay, bx, by) {
+        const dx = bx - ax;
+        const dy = by - ay;
+        const lengthSq = dx * dx + dy * dy;
+        const t = lengthSq > 1e-9 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / lengthSq)) : 0;
+        return Math.hypot(ax + dx * t, ay + dy * t);
+    }
+
+    // Converts GeoJSON polylines to the immutable segment snapshot used by the surface renderer.
+    // Culling happens here once; moving the 3D camera never fetches or adds more track geometry.
+    function projectRailSegments(featureCollection, coordsToXY, maxRadius) {
+        if (typeof coordsToXY !== 'function') return [];
+        const radius = Number(maxRadius) > 0 ? Number(maxRadius) : Infinity;
+        const features = Array.isArray(featureCollection?.features) ? featureCollection.features : [];
+        const segments = [];
+        for (const feature of features) {
+            for (const part of geometryLineParts(feature?.geometry)) {
+                const points = (part || []).map(coordsToXY).filter(point => (
+                    Array.isArray(point) && Number.isFinite(Number(point[0])) && Number.isFinite(Number(point[1]))
+                ));
+                for (let index = 0; index < points.length - 1; index++) {
+                    const ax = Number(points[index][0]);
+                    const ay = Number(points[index][1]);
+                    const bx = Number(points[index + 1][0]);
+                    const by = Number(points[index + 1][1]);
+                    const length = Math.hypot(bx - ax, by - ay);
+                    if (length < 0.2 || segmentDistanceToOrigin(ax, ay, bx, by) > radius) continue;
+                    segments.push({
+                        ax, ay, bx, by, length,
+                        cx: (ax + bx) * 0.5,
+                        cy: (ay + by) * 0.5,
+                        angle: Math.atan2(by - ay, bx - ax)
+                    });
+                }
+            }
+        }
+        return segments;
     }
 
     // Build the viaduct for a GeoJSON FeatureCollection of rail LineStrings.
@@ -149,9 +201,83 @@
         return group;
     }
 
+    // Existing OSM tram alignments: a restrained paved bed, sleepers and two steel rails.
+    // The physical z separation keeps them smooth over the existing-road surface without depth bias.
+    function buildSurfaceRail3D(featureCollection, coordsToXY, options = {}) {
+        const THREE = global.THREE;
+        if (!THREE) {
+            console.error('[surface-rail] THREE unavailable — existing tram tracks cannot render');
+            return null;
+        }
+        const maxRadius = Number(options.maxRadius) > 0 ? Number(options.maxRadius) : 7000;
+        const gauge = Number(options.gaugeM) > 0 ? Number(options.gaugeM) : 1.0;
+        const segments = projectRailSegments(featureCollection, coordsToXY, maxRadius);
+        if (!segments.length) return null;
+
+        const sleepers = [];
+        for (const segment of segments) {
+            const count = Math.max(1, Math.floor(segment.length / SURFACE_SLEEPER_SPACING));
+            for (let index = 0; index <= count; index++) {
+                const t = index / count;
+                sleepers.push({
+                    x: segment.ax + (segment.bx - segment.ax) * t,
+                    y: segment.ay + (segment.by - segment.ay) * t,
+                    angle: segment.angle
+                });
+            }
+        }
+
+        const group = new THREE.Group();
+        group.name = 'ExistingSurfaceRail';
+        group.userData.isExistingTransitAlignment = true;
+        group.userData.renderStyle = 'surface';
+        const dummy = new THREE.Object3D();
+        const bedMat = new THREE.MeshLambertMaterial({ color: 0x9a9488 });
+        const sleeperMat = new THREE.MeshLambertMaterial({ color: 0x5f554a });
+        const railMat = new THREE.MeshPhongMaterial({ color: COLOR_RAIL, specular: 0x555b66, shininess: 60 });
+        const bedGeo = new THREE.BoxGeometry(1, gauge + 1.15, SURFACE_TRACKBED_H);
+        const sleeperGeo = new THREE.BoxGeometry(0.16, gauge + 0.72, 0.06);
+        const railGeo = new THREE.BoxGeometry(1, RAIL_W, RAIL_H);
+        const bedMesh = new THREE.InstancedMesh(bedGeo, bedMat, segments.length);
+        const sleeperMesh = new THREE.InstancedMesh(sleeperGeo, sleeperMat, sleepers.length);
+        const railMesh = new THREE.InstancedMesh(railGeo, railMat, segments.length * 2);
+
+        segments.forEach((segment, index) => {
+            dummy.position.set(segment.cx, segment.cy, SURFACE_TRACKBED_Z);
+            dummy.rotation.set(0, 0, segment.angle);
+            dummy.scale.set(segment.length, 1, 1);
+            dummy.updateMatrix();
+            bedMesh.setMatrixAt(index, dummy.matrix);
+
+            const nx = -Math.sin(segment.angle);
+            const ny = Math.cos(segment.angle);
+            [-1, 1].forEach((side, railIndex) => {
+                const offset = side * gauge * 0.5;
+                dummy.position.set(segment.cx + nx * offset, segment.cy + ny * offset, SURFACE_RAIL_Z);
+                dummy.rotation.set(0, 0, segment.angle);
+                dummy.scale.set(segment.length, 1, 1);
+                dummy.updateMatrix();
+                railMesh.setMatrixAt(index * 2 + railIndex, dummy.matrix);
+            });
+        });
+        sleepers.forEach((sleeper, index) => {
+            dummy.position.set(sleeper.x, sleeper.y, SURFACE_SLEEPER_Z);
+            dummy.rotation.set(0, 0, sleeper.angle);
+            dummy.scale.set(1, 1, 1);
+            dummy.updateMatrix();
+            sleeperMesh.setMatrixAt(index, dummy.matrix);
+        });
+        bedMesh.instanceMatrix.needsUpdate = true;
+        sleeperMesh.instanceMatrix.needsUpdate = true;
+        railMesh.instanceMatrix.needsUpdate = true;
+        group.add(bedMesh, sleeperMesh, railMesh);
+        return group;
+    }
+
     global.buildElevatedRail3D = buildElevatedRail3D;
+    global.buildSurfaceRail3D = buildSurfaceRail3D;
 
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { resampleXY, buildElevatedRail3D };
+        module.exports = { resampleXY, segmentDistanceToOrigin, projectRailSegments, buildElevatedRail3D, buildSurfaceRail3D };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

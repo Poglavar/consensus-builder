@@ -2413,19 +2413,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         gap: 8px;
     }
 
-    /* Keep road/track actions on one row inside proposal tab */
-    .parcel-road-actions {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
-
-    .parcel-road-actions .btn {
-        width: auto;
-        flex: 1 1 0;
-    }
-
-
     /* Control groups more compact */
     .control-group {
         padding: 12px 0;

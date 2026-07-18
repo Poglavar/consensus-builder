@@ -266,6 +266,27 @@ function getCurrentParcelSelectionContext() {
     return context;
 }
 
+// Shared classic-dialog boundary for fresh parcel-based proposals. The parcel panel owns the
+// block detection/prompt implementation; classic launchers only supply their goal and selection.
+async function shouldStopFreshProposalForWholeBlock(goal, selectionOverride = null) {
+    const selection = selectionOverride || getCurrentParcelSelectionContext();
+    if (!selection || !Array.isArray(selection.ids)) return false;
+    // Copies/replacements already carry an intentional parcel scope, and instant-build drafts ran
+    // this gate before their editor opened. Never ask again while publishing or editing one.
+    if (window.pendingProposalCopySource?.proposalId
+        || window.pendingProposalReplacementSource?.proposalId
+        || window.pendingProposalDraftId) return false;
+    if (typeof window.maybeSuggestWholeBlockForFreshProposal !== 'function') return false;
+    try {
+        const stopped = await window.maybeSuggestWholeBlockForFreshProposal(goal, selection.ids);
+        if (stopped && typeof closeProposalDialog === 'function') closeProposalDialog();
+        return stopped;
+    } catch (error) {
+        console.warn(`[${goal || 'proposal'}] whole-block suggestion failed`, error);
+        return false;
+    }
+}
+
 function formatParcelSelectionLabel(parcelIds = []) {
     if (!parcelIds || parcelIds.length === 0) return 'Selected Parcels';
     if (parcelIds.length === 1) {
@@ -274,12 +295,13 @@ function formatParcelSelectionLabel(parcelIds = []) {
     return `${parcelIds.length} Parcels`;
 }
 
-function launchStructureToolForSelection(kind) {
+async function launchStructureToolForSelection(kind) {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the structure tool.');
-        return;
+        return false;
     }
+    if (await shouldStopFreshProposalForWholeBlock(kind, selection)) return false;
     if (kind === 'lake') {
         const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
         if (!contiguity.contiguous) {
@@ -288,17 +310,17 @@ function launchStructureToolForSelection(kind) {
             } else if (typeof alert === 'function') {
                 alert('Parcels not contiguous');
             }
-            return;
+            return false;
         }
     }
     const geometry = buildGeometryFromParcels(selection.layers);
     if (!geometry) {
         updateStatus('Could not build geometry for the selected parcels.');
-        return;
+        return false;
     }
     if (typeof showStructureProposalDialog !== 'function') {
         updateStatus('Structure proposal dialog is unavailable.');
-        return;
+        return false;
     }
     closeProposalDialog();
     showStructureProposalDialog({
@@ -307,17 +329,19 @@ function launchStructureToolForSelection(kind) {
         geometry,
         blockName: formatParcelSelectionLabel(selection.ids)
     });
+    return true;
 }
 
-function launchSingleBuildingToolForSelection() {
+async function launchSingleBuildingToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the single building tool.');
-        return;
+        return false;
     }
+    if (await shouldStopFreshProposalForWholeBlock('single', selection)) return false;
     if (typeof openSingleBuildingForParcels !== 'function') {
         updateStatus('Single building tool is unavailable.');
-        return;
+        return false;
     }
     // Reopen on the existing design (a copied proposal, or your own in-progress edits) when the
     // pending context matches this selection. Position lives in the geometry, so pass features.
@@ -327,17 +351,19 @@ function launchSingleBuildingToolForSelection() {
         parcels: selection.layers,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null
     });
+    return true;
 }
 
-function launchRowHouseToolForSelection() {
+async function launchRowHouseToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the row house tool.');
-        return;
+        return false;
     }
+    if (await shouldStopFreshProposalForWholeBlock('row', selection)) return false;
     if (typeof openRowHouseForParcels !== 'function') {
         updateStatus('Row house tool is unavailable.');
-        return;
+        return false;
     }
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openRowHouseForParcels({
@@ -345,28 +371,21 @@ function launchRowHouseToolForSelection() {
         parcels: selection.layers,
         initialParameters: seed ? seed.parameters : null
     });
+    return true;
 }
 
 async function launchParcelBasedToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the parcel-based tool.');
-        return;
+        return false;
     }
-    // Detached houses can be launched both from the parcel Build palette and from the classic
-    // proposal dialog. The latter used to bypass the "did you mean the whole block?" preflight.
-    // Run the same gate here before opening the generator; accepting it selects the block and
-    // deliberately stops this one-parcel launch.
-    if (selection.ids.length === 1 && typeof window.maybeSuggestWholeBlockForBuild === 'function') {
-        try {
-            if (await window.maybeSuggestWholeBlockForBuild(selection.ids)) return;
-        } catch (error) {
-            console.warn('[parcelBased] whole-block suggestion failed', error);
-        }
-    }
+    // Every classic building launcher uses the same goal-aware selection gate before its editor.
+    // Accepting the offer selects the block and deliberately stops this one-parcel launch.
+    if (await shouldStopFreshProposalForWholeBlock('parcelBased', selection)) return false;
     if (typeof openParcelBasedForParcels !== 'function') {
         updateStatus('Parcel-based tool is unavailable.');
-        return;
+        return false;
     }
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openParcelBasedForParcels({
@@ -374,6 +393,7 @@ async function launchParcelBasedToolForSelection() {
         parcels: selection.layers,
         initialParameters: seed ? seed.parameters : null
     });
+    return true;
 }
 
 function toggleDepositInput() {
@@ -411,7 +431,7 @@ function computeProposalCategoryFlags(proposal, options = {}) {
     const isReparcellizationProposal = goalKey === 'reparcellization' || !!subject.reparcellization || !!(fallback && fallback.reparcellization);
     const isDecideLaterProposal = goalKey === 'decide-later' || !!subject.decideLaterProposal || !!(fallback && fallback.decideLaterProposal);
     const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
-    const isStructureGoal = ['park', 'square', 'lake'].includes(goalKey) || ['park', 'square', 'lake'].includes(structureKind);
+    const isStructureGoal = ['park', 'square', 'lake', 'station'].includes(goalKey) || ['park', 'square', 'lake', 'station'].includes(structureKind);
     const isBuildingProposal = (!isRoadProposal) && (isBuildingGoal || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
     const isStructureProposal = (!isRoadProposal) && (!isBuildingProposal) && (isStructureGoal || hasStructureProposal);
 
@@ -441,7 +461,7 @@ function getProposalDisplayType(proposal) {
         return 'building';
     }
 
-    if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake') {
+    if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake' || goalKey === 'station') {
         return goalKey;
     }
 

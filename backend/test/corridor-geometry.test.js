@@ -575,6 +575,14 @@ describe('pickSnapTarget (pixel space)', () => {
         expect(atEnd.kind).toBe('external-endpoint');
     });
 
+    it('snaps to an existing external INTERNAL NODE before its centreline', () => {
+        const external = [{ points: [px(200, 200), px(250, 200), px(300, 200)] }];
+        const snap = pickSnapTarget(px(253, 204), local(), external, -1, 12);
+        expect(snap.kind).toBe('external-node');
+        expect(snap.vertexIndex).toBe(1);
+        expect(snap.pixel).toEqual(px(250, 200));
+    });
+
     it('returns null when nothing is within the radius', () => {
         expect(pickSnapTarget(px(500, 500), local(), [], -1, 12)).toBeNull();
     });

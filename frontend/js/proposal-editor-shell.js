@@ -57,6 +57,34 @@
         return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Proposal')).replace(/-/g, ' ');
     }
 
+    function rejectRetiredProposalGoal(goalOrProposal) {
+        let rawGoal = goalOrProposal;
+        if (goalOrProposal && typeof goalOrProposal === 'object') {
+            if (goalOrProposal.decideLaterProposal) rawGoal = 'decide-later';
+            else {
+                try {
+                    rawGoal = typeof global.resolveProposalGoalKey === 'function'
+                        ? global.resolveProposalGoalKey(goalOrProposal, null)
+                        : (goalOrProposal.goal || goalOrProposal.primaryType || goalOrProposal.proposalType || '');
+                } catch (_) {
+                    rawGoal = goalOrProposal.goal || goalOrProposal.primaryType || goalOrProposal.proposalType || '';
+                }
+            }
+        }
+        const normalized = global.proposalEditorAdapterRegistry?.normalizeGoal?.(rawGoal)
+            || String(rawGoal || '').trim().toLowerCase().replace(/\s+/g, '-');
+        if (normalized !== 'decide-later') return false;
+
+        const message = tDraft(
+            'modal.createProposal.proposal_type_no_longer_available',
+            'Merge / Decide Later is no longer available. Use Land readjustment.'
+        );
+        if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+        else if (typeof global.updateStatus === 'function') global.updateStatus(message);
+        else console.warn(message);
+        return true;
+    }
+
     function relativeTime(value) {
         const then = new Date(value || 0).getTime();
         if (!Number.isFinite(then)) return '';
@@ -256,6 +284,15 @@
             return draft.goal === 'park'
                 ? `${counts[0]} tree(s) · ${counts[1]} flowerbed(s) · ${counts[2]} pond(s) · ${counts[3]} footpath(s)`
                 : `${counts[0]} fountain(s) · ${counts[1]} tree(s) · ${counts[2]} bench(es)`;
+        }
+        if ((draft.adapterKey || draft.goal) === 'station') {
+            const station = payload.structureProposal || {};
+            const type = global.TransitStationModels?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
+            const bearing = Math.round(Number(station.bearing) || 0);
+            const height = station.stationType === 'elevated' && Number.isFinite(Number(station.platformHeightM))
+                ? ` · ${Number(station.platformHeightM)} m high`
+                : '';
+            return `${type} · ${bearing}°${height}`;
         }
         return tDraft('proposalDrafts.design.parcelSummary', '{{count}} affected parcel(s)', { count: draft.fields?.parentParcelIds?.length || 0 });
     }
@@ -719,6 +756,7 @@
         if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) return null;
+        if (rejectRetiredProposalGoal(proposal)) return null;
         const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
         if (!draft) return null;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
@@ -731,6 +769,7 @@
             ? global.getCurrentParcelSelectionContext()
             : { ids: [] };
         const goal = options.goal || 'as-is';
+        if (rejectRetiredProposalGoal(goal)) return null;
         const draft = global.proposalDraftStore.createDraft({
             cityId: options.cityId || currentCityId(),
             goal,
@@ -756,7 +795,7 @@
     // Esc discards the draft instead — the source object is left exactly as it was.
     let geometryEditCommitDraftId = null;
 
-    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square']);
+    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square', 'station']);
 
     function canEditProposalGeometry(proposalOrId) {
         const proposal = typeof proposalOrId === 'object' ? proposalOrId : proposalById(proposalOrId);
@@ -1268,7 +1307,7 @@
         // The about-to-be-absorbed source still occupies the parcels; it must be unapplied
         // silently (it is replaced, not parked), so the conflict gate must know about it.
         const absorbingSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
-        const applyOptions = (proposal.goal === 'road-track')
+        const applyOptions = (proposal.goal === 'road-track' || proposal.goal === 'station')
             ? { applyAnyway: true, suppressMissingParentAlerts: true }
             : { autoParkConflicts: true, absorbSourceProposalId: absorbingSourceId };
         try {
@@ -1406,6 +1445,17 @@
             if (Array.isArray(payload.parcelIds)) fields.parentParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'structure') {
             if (!['park', 'square'].includes(draft.adapterKey || draft.goal)) return null;
+            const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
+            const geometry = structureProposal.geometry || draft.editorPayload?.geometry || null;
+            patch = {
+                editorPayload: { ...draft.editorPayload, geometry, structureProposal },
+                previewGeometry: JSON.parse(JSON.stringify(geometry))
+            };
+            if (Array.isArray(structureProposal.parentParcelIds)) {
+                fields.parentParcelIds = structureProposal.parentParcelIds.map(String);
+            }
+        } else if (kind === 'station') {
+            if ((draft.adapterKey || draft.goal) !== 'station') return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
             const geometry = structureProposal.geometry || draft.editorPayload?.geometry || null;
             patch = {
