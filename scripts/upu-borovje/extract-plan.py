@@ -444,6 +444,216 @@ def step_zones(grid):
     draw_overlay(img, grid, feats, os.path.join(DATA, "overlay-zones.png"))
 
 
+def zhang_suen_thin(mask):
+    """Vectorized Zhang-Suen thinning; returns a 1px-wide skeleton."""
+    img = mask.copy()
+    def neighbors(a):
+        p2 = np.roll(a, 1, 0); p3 = np.roll(np.roll(a, 1, 0), -1, 1)
+        p4 = np.roll(a, -1, 1); p5 = np.roll(np.roll(a, -1, 0), -1, 1)
+        p6 = np.roll(a, -1, 0); p7 = np.roll(np.roll(a, -1, 0), 1, 1)
+        p8 = np.roll(a, 1, 1); p9 = np.roll(np.roll(a, 1, 0), 1, 1)
+        return p2, p3, p4, p5, p6, p7, p8, p9
+    while True:
+        changed = False
+        for phase in (0, 1):
+            p2, p3, p4, p5, p6, p7, p8, p9 = neighbors(img)
+            seq = [p2, p3, p4, p5, p6, p7, p8, p9, p2]
+            b = sum(p.astype(int) for p in (p2, p3, p4, p5, p6, p7, p8, p9))
+            a = sum(((~seq[i]) & seq[i + 1]).astype(int) for i in range(8))
+            if phase == 0:
+                cond = (a == 1) & (b >= 2) & (b <= 6) & ~(p2 & p4 & p6) & ~(p4 & p6 & p8)
+            else:
+                cond = (a == 1) & (b >= 2) & (b <= 6) & ~(p2 & p4 & p8) & ~(p2 & p6 & p8)
+            kill = img & cond
+            if kill.any():
+                img &= ~kill
+                changed = True
+        if not changed:
+            return img
+
+
+OFFS8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+
+def pixel_graph(skel):
+    """Skeleton -> multigraph. Junction pixels (8-degree != 2) are CLUSTERED
+    (thinning staircases produce adjacent junction pixels); edges are the
+    degree-2 pixel chains between clusters. Returns (centroids, edges) where
+    edges are {a, b, path} with a/b cluster ids (None for a bare dangling end)
+    and path an ordered pixel list from the a-side to the b-side."""
+    st = np.ones((3, 3), int)
+    deg = ndimage.convolve(skel.astype(int), st, mode="constant") - skel
+    node_px = skel & (deg != 2)
+    node_lbl, n_nodes = ndimage.label(node_px, structure=st)
+    edge_px = skel & ~node_px
+    edge_lbl, n_edges = ndimage.label(edge_px, structure=st)
+    centroids = {}
+    for i in range(1, n_nodes + 1):
+        ys, xs = np.nonzero(node_lbl == i)
+        centroids[i] = (float(ys.mean()), float(xs.mean()))
+    H, W = skel.shape
+
+    def cluster_at(p):
+        for dy, dx in OFFS8:
+            y, x = p[0] + dy, p[1] + dx
+            if 0 <= y < H and 0 <= x < W and node_lbl[y, x]:
+                return int(node_lbl[y, x])
+        return None
+
+    edges = []
+    for e in range(1, n_edges + 1):
+        ys, xs = np.nonzero(edge_lbl == e)
+        px = set(zip(ys.tolist(), xs.tolist()))
+        ends = [p for p in px if sum(((p[0] + dy, p[1] + dx) in px) for dy, dx in OFFS8) <= 1]
+        start = ends[0] if ends else next(iter(px))
+        path = [start]
+        seen = {start}
+        while True:
+            nxt = None
+            for dy, dx in OFFS8:
+                q = (path[-1][0] + dy, path[-1][1] + dx)
+                if q in px and q not in seen:
+                    nxt = q
+                    break
+            if nxt is None:
+                break
+            path.append(nxt)
+            seen.add(nxt)
+        edges.append({"a": cluster_at(path[0]), "b": cluster_at(path[-1]), "path": path})
+    return centroids, edges
+
+
+def diameter_path(skel):
+    """Longest shortest-path between skeleton pixels (double BFS). Fallback
+    centerline for degenerate components whose skeleton is a mesh of cycles."""
+    from collections import deque
+    pts = list(zip(*np.nonzero(skel)))
+    if len(pts) < 2:
+        return []
+    px = set(pts)
+
+    def bfs(start):
+        dist = {start: 0}
+        parent = {start: None}
+        q = deque([start])
+        far = start
+        while q:
+            cur = q.popleft()
+            for dy, dx in OFFS8:
+                nb = (cur[0] + dy, cur[1] + dx)
+                if nb in px and nb not in dist:
+                    dist[nb] = dist[cur] + 1
+                    parent[nb] = cur
+                    if dist[nb] > dist[far]:
+                        far = nb
+                    q.append(nb)
+        return far, parent
+
+    a, _ = bfs(pts[0])
+    b, parent = bfs(a)
+    path = []
+    cur = b
+    while cur is not None:
+        path.append(cur)
+        cur = parent[cur]
+    return path[::-1]
+
+
+def simplify_graph(centroids, edges, min_stub_px=60, collapse_px=40):
+    """Reduce the raw pixel graph to the true street graph. Phase priority per
+    iteration matters:
+      1) CONTRACT degree-2 nodes first - thinning staircases pepper straight
+         streets with artifact nodes; contraction must reassemble full-length
+         edges before anything is judged "short";
+      2) PRUNE stubs - a short leaf edge hanging off a real junction (degree 3+)
+         is skeleton debris from a wide junction plaza or the margin fringe;
+         tiny floating debris (both ends free) also dies here;
+      3) COLLAPSE junction-internal micro-edges - a wide junction thins into a
+         small cycle between 3+-degree nodes; merge it into one junction node.
+    """
+    centroids = dict(centroids)
+    edges = [dict(e) for e in edges]
+
+    def degrees():
+        d = {}
+        for e in edges:
+            for end in ("a", "b"):
+                if e[end] is not None:
+                    d[e[end]] = d.get(e[end], 0) + 1
+        return d
+
+    changed = True
+    while changed:
+        changed = False
+
+        # 1) contract a degree-2 node
+        deg = degrees()
+        for node, d in deg.items():
+            if d != 2:
+                continue
+            incident = [e for e in edges if e["a"] == node or e["b"] == node]
+            if len(incident) != 2:
+                continue  # a loop touching the node twice - leave it
+            e1, e2 = incident
+            p1 = e1["path"] if e1["b"] == node else e1["path"][::-1]
+            far1 = e1["a"] if e1["b"] == node else e1["b"]
+            p2 = e2["path"] if e2["a"] == node else e2["path"][::-1]
+            far2 = e2["b"] if e2["a"] == node else e2["a"]
+            joint = (int(round(centroids[node][0])), int(round(centroids[node][1])))
+            edges.remove(e1)
+            edges.remove(e2)
+            edges.append({"a": far1, "b": far2, "path": p1 + [joint] + p2})
+            changed = True
+            break
+        if changed:
+            continue
+
+        # 2) prune stubs
+        deg = degrees()
+        for e in list(edges):
+            a, b = e["a"], e["b"]
+            a_free = a is None or deg.get(a, 0) <= 1
+            b_free = b is None or deg.get(b, 0) <= 1
+            L = len(e["path"])
+            if a_free and b_free:
+                if L < 30:  # floating debris; a real isolated street is longer
+                    edges.remove(e)
+                    changed = True
+                    break
+                continue
+            if a_free != b_free and L < min_stub_px:
+                anchor = b if a_free else a
+                if deg.get(anchor, 0) >= 3:  # debris hanging off a junction
+                    edges.remove(e)
+                    changed = True
+                    break
+        if changed:
+            continue
+
+        # 3) collapse a junction-internal micro-edge
+        deg = degrees()
+        for e in list(edges):
+            if e["a"] is None or e["b"] is None or len(e["path"]) >= collapse_px:
+                continue
+            a, b = e["a"], e["b"]
+            if a != b and (deg.get(a, 0) < 3 or deg.get(b, 0) < 3):
+                continue  # not junction-internal - a genuine short piece
+            edges.remove(e)
+            if a == b:
+                changed = True
+                break  # tiny self-loop - just drop it
+            ca, cb = centroids[a], centroids[b]
+            centroids[a] = ((ca[0] + cb[0]) / 2, (ca[1] + cb[1]) / 2)
+            for other in edges:
+                if other["a"] == b:
+                    other["a"] = a
+                if other["b"] == b:
+                    other["b"] = a
+            changed = True
+            break
+    return edges
+
+
 def step_roads(grid):
     """Street-corridor POLYGONS from sheet 1: partition by the solid boundary
     lines (as in step_zones) and take the WHITE cells inside the obuhvat - not
@@ -483,13 +693,82 @@ def step_roads(grid):
         m |= cell
     st = np.ones((3, 3), bool)
     m = ndimage.binary_dilation(m, st, iterations=3)
+    # heavy closing: drawn symbols inside corridors (arrows, cadastral line
+    # remnants) slit the mask, and a slit corridor skeletonizes into a useless
+    # mesh instead of a centerline
+    m = ndimage.binary_closing(m, st, iterations=5)
     m = ndimage.binary_fill_holes(m)
     m = ndimage.binary_opening(m, st, iterations=2)
     feats = component_features(m, grid, min_area_m2=300, rdp_eps_px=3.0, try_rect=False)
     for i, ft in enumerate(feats):
         ft["properties"]["name"] = f"corridor-{i}"
     save_geojson(os.path.join(DATA, "corridors.geojson"), feats)
-    draw_overlay(img, grid, feats, os.path.join(DATA, "overlay-roads.png"))
+
+    # centerline street graph per corridor component, ordered like the polygon
+    # features (area desc) so streets[i].corridor matches corridors.geojson[i]
+    lblc, nc = ndimage.label(m)
+    comps = sorted(
+        [(int((lblc == i).sum()), i) for i in range(1, nc + 1)
+         if ground_area_m2(int((lblc == i).sum())) >= 300],
+        reverse=True)
+    k = math.cos(math.radians(45.775))
+    streets = []
+    for order, (_, ci) in enumerate(comps):
+        comp = lblc == ci
+        dist = ndimage.distance_transform_edt(comp)
+        skel = zhang_suen_thin(comp)
+        centroids, raw_edges = pixel_graph(skel)
+        graph_edges = simplify_graph(centroids, raw_edges)
+        if not graph_edges:
+            # degenerate mesh skeleton (symbols slitting a short corridor) -
+            # fall back to the single longest path through it
+            path = diameter_path(skel)
+            if len(path) >= 15:
+                graph_edges = [{"a": None, "b": None, "path": path}]
+        for e in graph_edges:
+            # terminal node centroids first/last so segments meeting at a junction
+            # share EXACTLY the same endpoint coordinate (an interconnected network)
+            pts = list(e["path"])
+            if e["a"] is not None:
+                ca = centroids[e["a"]]
+                pts.insert(0, (int(round(ca[0])), int(round(ca[1]))))
+            if e["b"] is not None:
+                cb = centroids[e["b"]]
+                pts.append((int(round(cb[0])), int(round(cb[1]))))
+            widths = [float(dist[p]) * 2 * RES * k for p in e["path"] if comp[p]]
+            simplified = rdp([(p[1], p[0]) for p in pts], 2.5)
+            line = [[round(v, 7) for v in grid.px_to_wgs(x, y)] for x, y in simplified]
+            if len(line) < 2:
+                continue
+            length = sum(
+                math.hypot((line[j + 1][0] - line[j][0]) * 111319 * k,
+                           (line[j + 1][1] - line[j][1]) * 111319)
+                for j in range(len(line) - 1))
+            if length < 8:
+                continue
+            streets.append({
+                "type": "Feature",
+                "properties": {
+                    "corridor": order,
+                    "width_m": round(round((np.median(widths) if widths else 8) * 2) / 2, 1),
+                    "length_m": round(length, 1),
+                },
+                "geometry": {"type": "LineString", "coordinates": line},
+            })
+    for i, ft in enumerate(streets):
+        ft["properties"]["name"] = f"street-{i}"
+    save_geojson(os.path.join(DATA, "streets.geojson"), streets)
+
+    ov = img.convert("RGB")
+    dr2 = ImageDraw.Draw(ov)
+    for ft in feats:
+        pxs = [tuple(grid.wgs_to_px(lon, lat)) for lon, lat in ft["geometry"]["coordinates"][0]]
+        dr2.line(pxs + [pxs[0]], fill=(255, 160, 0), width=3)
+    for ft in streets:
+        pxs = [tuple(grid.wgs_to_px(lon, lat)) for lon, lat in ft["geometry"]["coordinates"]]
+        dr2.line(pxs, fill=(255, 0, 255), width=4)
+    ov.save(os.path.join(DATA, "overlay-roads.png"))
+    print(f"wrote overlay-roads.png ({len(streets)} street segments)")
 
 
 def step_parcelation(grid):

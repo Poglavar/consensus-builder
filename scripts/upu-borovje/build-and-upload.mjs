@@ -174,24 +174,61 @@ function sliceDisplayName(props) {
     return `Prometna površina ${props.name}`;
 }
 
-function buildRoadProposal(feature, intersecting, index, total) {
-    const { name, area_m2 } = feature.properties;
-    const parentParcelIds = intersecting(feature.geometry);
-    if (!parentParcelIds.length) {
-        throw new Error(`${name}: no intersecting parcels found`);
+function corridorStripProfile(widthM) {
+    // Cross-section from the measured corridor width. Narrow corridors are the
+    // plan's pedestrian surfaces (IS-2) - one paved pedestrian strip; wider ones
+    // (IS-1 shared streets, the collector) get two driving lanes + sidewalks.
+    const w = Math.max(3, Math.round(widthM * 4) / 4);
+    if (w < 12) {
+        return { strips: [{ type: 'sidewalk', width: w }] };
     }
+    const sidewalk = 2;
+    const lane = Math.round(((w - 2 * sidewalk) / 2) * 4) / 4;
+    return {
+        strips: [
+            { type: 'sidewalk', width: sidewalk },
+            { type: 'driving', width: lane, direction: 'forward' },
+            { type: 'driving', width: lane, direction: 'backward' },
+            { type: 'sidewalk', width: sidewalk },
+        ],
+    };
+}
+
+function buildRoadProposal(corridorFeature, streetFeatures, intersecting, index, total) {
+    const { area_m2 } = corridorFeature.properties;
+    const parentParcelIds = intersecting(corridorFeature.geometry);
+    if (!parentParcelIds.length) {
+        throw new Error(`corridor ${index}: no intersecting parcels found`);
+    }
+    if (!streetFeatures.length) {
+        throw new Error(`corridor ${index}: no centerline segments extracted`);
+    }
+    // centerline segments: [{lat,lng}, ...] per segment, endpoints shared at junctions
+    const segments = streetFeatures.map(f =>
+        f.geometry.coordinates.map(([lng, lat]) => ({ lat, lng })));
+    const segmentIds = streetFeatures.map((f, n) => `upu-u${index + 1}-s${n + 1}`);
+    const segmentProfiles = {};
+    streetFeatures.forEach((f, n) => {
+        segmentProfiles[segmentIds[n]] = corridorStripProfile(f.properties.width_m);
+    });
+    const widths = streetFeatures.map(f => f.properties.width_m).sort((a, b) => a - b);
+    const medianWidth = widths[Math.floor(widths.length / 2)];
     const isMain = index === 0;
     const title = isMain
         ? 'UPU Borovje – ulična mreža (prometne površine IS)'
         : `UPU Borovje – prometna površina ${index + 1}/${total}`;
-    // Polygon-driven road: _buildChildFeaturesFromDefinition carves parcels
-    // directly from definition.polygon; no centerline needed for a plan corridor.
     const definition = {
         kind: 'road',
-        width: 18, // IS-1 corridor width per the plan text (metadata; the polygon governs)
-        points: [],
-        segmentIds: [],
-        polygon: feature.geometry,
+        width: medianWidth,
+        points: segments,
+        segments,
+        segmentIds,
+        segmentProfiles,
+        tunnels: [],
+        demolishedBuildings: [],
+        // the real street-land geometry from the plan; the apply path carves
+        // parcels from this polygon rather than from buffered centerlines
+        polygon: corridorFeature.geometry,
     };
     return {
         proposalId: `upu-borovje-ulice-${index + 1}`,
@@ -200,10 +237,11 @@ function buildRoadProposal(feature, intersecting, index, total) {
         type: 'road',
         title,
         name: title,
-        description: `Planirana ulična mreža (${area_m2} m² prometnih površina): sabirna ulica,`
-            + ' kolno-pješačke površine (IS-1) i pješačke površine (IS-2) prema planu.'
-            + ' Izvedeno iz kartografskog prikaza 1. Korištenje i namjena površina,'
-            + ' UPU Borovje – zona jug (prijedlog plana za javnu raspravu, 2026).',
+        description: `Planirane prometne površine (${area_m2} m²): ${segments.length}`
+            + ' međusobno povezanih uličnih segmenata (sabirna ulica, kolno-pješačke'
+            + ' površine IS-1, pješačke površine IS-2) s profilima prema izmjerenim'
+            + ' širinama koridora. Izvedeno iz kartografskog prikaza 1. Korištenje'
+            + ' i namjena površina, UPU Borovje – zona jug (prijedlog plana, 2026).',
         author: AUTHOR,
         lifecycleStatus: 'Active',
         parentParcelIds,
@@ -214,7 +252,7 @@ function buildRoadProposal(feature, intersecting, index, total) {
             childParcelIds: [],
             applied: false,
         },
-        geometry: { roadPlan: definition, roadGeometry: { polygon: feature.geometry } },
+        geometry: { roadPlan: definition, roadGeometry: { polygon: corridorFeature.geometry } },
     };
 }
 
@@ -286,10 +324,11 @@ async function main() {
     const baseUrlIdx = args.indexOf('--base-url');
     const baseUrl = baseUrlIdx >= 0 ? args[baseUrlIdx + 1] : 'http://localhost:3000';
 
-    const [buildings, zones, corridors, parcelation, parcels] = await Promise.all([
+    const [buildings, zones, corridors, streets, parcelation, parcels] = await Promise.all([
         loadGeojson('buildings.geojson'),
         loadGeojson('zones.geojson'),
         loadGeojson('corridors.geojson'),
+        loadGeojson('streets.geojson'),
         loadGeojson('parcelation.geojson'),
         loadGeojson('parcels.geojson'),
     ]);
@@ -340,7 +379,8 @@ async function main() {
         proposals.push(p);
     }
     corridors.features.forEach((f, i) => {
-        const p = buildRoadProposal(f, intersecting, i, corridors.features.length);
+        const segs = streets.features.filter(sf => sf.properties.corridor === i);
+        const p = buildRoadProposal(f, segs, intersecting, i, corridors.features.length);
         anchorToSlice(p, f.geometry, p.proposalId);
         proposals.push(p);
     });
