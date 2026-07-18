@@ -3,7 +3,7 @@
 // ported from zagreb-isochrone's tram sim
 // (station-3d/world/elevated-rail.js) and remapped to this scene's frame: ground = XY (from
 // latLngToXY / Web Mercator), height = +Z. Merge-free on purpose: every part is one
-// InstancedMesh, so the three@0.147 script-tag bundle needs no BufferGeometryUtils addon.
+// InstancedMesh, so the global THREE bundle needs no BufferGeometryUtils addon.
 (function attachElevatedRail3D(global) {
     'use strict';
 

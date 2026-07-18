@@ -72,6 +72,9 @@
     let camera = null;
     let renderer = null;
     let controls = null;
+    // External per-frame hooks (the photoreal tile layer registers here): run after controls
+    // and near/far updates, immediately before render, only while the 3D loop is running.
+    const frameHooks = [];
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
@@ -87,7 +90,8 @@
     // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
     const INTRO_AUTO_ROTATE_SPEED = 0.7; // OrbitControls: ~86s per revolution (1.0 ≈ 60s)
     const INTRO_MANUAL_AUTO_ROTATE_RAD_PER_SEC = 0.18; // fallback if OrbitControls is missing
-    const ORIGIN = new THREE.Vector3(0, 0, 0);
+    // (No parse-time THREE usage in this file: the global arrives from the deferred ESM
+    // bootstrap, so THREE may only be touched once the user actually enters a 3D flow.)
     let pendingIntroAutoRotate = false;
     let introAutoRotateCleanup = null;
     let manualAutoRotateActive = false;
@@ -95,6 +99,8 @@
 
     // Groups for layers
     let flatGroup = null; // existing parcels + existing roads (always part of "built")
+    let corridorGroup = null; // applied corridor cross-sections — kept visible in realistic mode
+    let realisticLayerActive = false; // photoreal mesh is the built world; abstract built layers hide
     let plannedFlatGroup = null; // park/square/lake grounds, paths, ponds, water, etc.
     let buildingGroup = null; // buildings extrusion
     let parkGroup = null; // park decorations (trees)
@@ -338,6 +344,11 @@
         updateIsolationButton();
         rebuild3DBuildingsOnly();
         applyModeVisibility();
+        // In realistic mode the Built row also drives the photoreal mesh itself.
+        if (kind === 'built' && window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function'
+            && window.PhotorealMode.isActive() && typeof window.PhotorealMode.setBuiltVisible === 'function') {
+            window.PhotorealMode.setBuiltVisible(state !== 'off');
+        }
     }
 
     // Sets the built-context load radius (metres) and refetches at the new size. The camera is
@@ -3180,7 +3191,7 @@
     function setTreesEnabled(on) {
         treesEnabled = !!on;
         try { PersistentStorage.setItem(TREES_STORAGE_KEY, treesEnabled ? '1' : '0'); } catch (_) { }
-        if (treesGroup) treesGroup.visible = treesEnabled;
+        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (treesEnabled) {
             ensureNearbyTrees();
             rebuildTreesOnly();
@@ -3615,9 +3626,13 @@
         // Each family follows its own display state. Built additionally supports complementary
         // Surviving and Removed views using the exact two halves stored by the carve pipeline.
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay);
-        const showExisting = builtPolicy.visible;
+        // In realistic mode the photoreal mesh IS the built world: abstract existing buildings
+        // and rail stay hidden (demolitions are carved out of the mesh by the photoreal layer).
+        const showExisting = builtPolicy.visible && !realisticLayerActive;
         const showProposed = plannedDisplay !== 'off';
-        if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail;
+        if (existingTransitAlignmentGroup) {
+            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
+        }
         const existingMaterial = builtPolicy.material === 'solid'
             ? buildingMaterials.solid
             : buildingMaterials.ghost;
@@ -3717,17 +3732,18 @@
         // Populate scenery toggles for the active city (which layers it has ingested).
         refreshDecorToggles();
 
-        // Lights
-        const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6);
+        // Lights (×π: three r155+ dropped the implicit π factor legacy lighting applied)
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6 * Math.PI);
         hemi.position.set(0, 0, 1);
         scene.add(hemi);
 
-        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(200, 200, 400);
         scene.add(dir);
 
         // Groups
         flatGroup = new THREE.Group();
+        corridorGroup = new THREE.Group();
         plannedFlatGroup = new THREE.Group();
         buildingGroup = new THREE.Group();
         parkGroup = new THREE.Group();
@@ -3738,8 +3754,9 @@
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
-        treesGroup.visible = treesEnabled;
+        treesGroup.visible = treesEnabled && !realisticLayerActive;
         scene.add(flatGroup);
+        scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
@@ -3764,7 +3781,9 @@
         captureSceneLoadGeometry();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
-        try { buildCorridorStrips3D(flatGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
+        // Corridors render into their own group (not flatGroup): in realistic mode the parcel
+        // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
+        try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -4006,7 +4025,7 @@
         const sin = Math.sin(angle);
         camera.position.x = (x * cos) - (y * sin);
         camera.position.y = (x * sin) + (y * cos);
-        camera.lookAt(ORIGIN);
+        camera.lookAt(0, 0, 0);
     }
 
     function startLoop() {
@@ -4051,6 +4070,9 @@
                     camera.updateProjectionMatrix();
                     lastPlaneDist = dist;
                 }
+            }
+            for (let i = 0; i < frameHooks.length; i++) {
+                try { frameHooks[i](now); } catch (err) { console.error('[3D] frame hook failed', err); }
             }
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
@@ -4667,8 +4689,8 @@
         });
     }
 
-    // Expose the current 3D camera as a geographic view so the photorealistic (Cesium) mode can
-    // open from the exact same vantage point instead of flying in from space. Returns null when
+    // Expose the current 3D camera as a geographic view (target lat/lng, heading, pitch, range
+    // in true metres) for share links and other geo consumers. Returns null when
     // not in 3D. The scene is uniformly Web-Mercator scaled (horizontal distances inflated by
     // ~1/cos(lat)), so the camera->target range is converted back to real metres; the tilt angle
     // is scale-invariant and needs no correction.
@@ -4680,7 +4702,7 @@
             const tgtLL = xyToLatLng(tgt.x, tgt.y);
             if (!camLL || !tgtLL) return null;
             const polar = controls.getPolarAngle();        // 0 = top-down, π/2 = horizon
-            const pitchRad = polar - Math.PI / 2;           // Cesium: 0 horizon, -π/2 straight down
+            const pitchRad = polar - Math.PI / 2;           // 0 = horizon, -π/2 = straight down
             const latRad = tgtLL.lat * Math.PI / 180;
             const range = Math.max(1, controls.getDistance() * Math.cos(latRad));
             let headingDeg = 0;
@@ -4692,6 +4714,32 @@
     }
 
     // Expose globals for debugging/manual control
+    // Realistic layer policy: while the photoreal mesh is the built world, the abstract built
+    // representations (parcel/road slabs, existing buildings, existing rail, OSM trees) hide —
+    // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
+    window.setRealisticLayerActive = function (on) {
+        realisticLayerActive = !!on;
+        if (flatGroup) flatGroup.visible = !realisticLayerActive;
+        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (isActive) rebuild3DBuildingsOnly();
+    };
+    window.registerThreeModeFrameHook = function (fn) {
+        if (typeof fn === 'function' && !frameHooks.includes(fn)) frameHooks.push(fn);
+    };
+    window.unregisterThreeModeFrameHook = function (fn) {
+        const i = frameHooks.indexOf(fn);
+        if (i >= 0) frameHooks.splice(i, 1);
+    };
+    // The photoreal tile layer builds INTO this scene — hand it the live internals rather
+    // than letting it run a second renderer (the whole point of retiring Cesium).
+    window.getThreeModeInternals = function () {
+        if (!isActive || !scene || !camera || !renderer) return null;
+        return {
+            scene: scene, camera: camera, renderer: renderer, controls: controls,
+            latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
+            originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; }
+        };
+    };
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };

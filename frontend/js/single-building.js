@@ -40,7 +40,6 @@
         resizeHandler: null,
         projector: null
     };
-    let singleThreeLoadPromise = null;
 
     function resolveParcelId(feature) {
         if (!feature || typeof feature !== 'object') return null;
@@ -61,28 +60,10 @@
     }
 
     async function ensureThreeForSingle() {
-        const loadScript = (src) => new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-
-        if (typeof THREE === 'undefined') {
-            if (!singleThreeLoadPromise) {
-                singleThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
-            }
-            await singleThreeLoadPromise;
-        }
-
-        if (typeof THREE === 'undefined') return false;
-
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
-        }
-
+        if (typeof THREE !== 'undefined') return true;
+        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
+        // second copy here, an old UMD build would clobber the r184 global for the whole app.
+        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
         return typeof THREE !== 'undefined';
     }
 

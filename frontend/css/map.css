@@ -99,8 +99,7 @@ body.sidebar-collapsed {
 }
 
 /* 3D mode in-view controls */
-#three-container .three-mode-ui-panel,
-#cesium-container .three-mode-ui-panel {
+#three-container .three-mode-ui-panel {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -361,8 +360,7 @@ body.sidebar-collapsed {
     cursor: pointer;
 }
 
-#three-container .three-mode-emphasis-row,
-#cesium-container .three-mode-emphasis-row {
+#three-container .three-mode-emphasis-row {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -379,35 +377,30 @@ body.sidebar-collapsed {
     align-items: center;
 }
 
-#three-container .three-mode-trees-toggle,
-#cesium-container .three-mode-trees-toggle {
+#three-container .three-mode-trees-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
 }
 
-#three-container .three-mode-trees-toggle input[type="checkbox"],
-#cesium-container .three-mode-trees-toggle input[type="checkbox"] {
+#three-container .three-mode-trees-toggle input[type="checkbox"] {
     accent-color: #3a6b35;
     cursor: pointer;
     margin: 0;
 }
 
-#three-container .three-mode-emphasis-label,
-#cesium-container .three-mode-emphasis-label {
+#three-container .three-mode-emphasis-label {
     font-size: 12px;
     font-weight: 600;
     color: #5a6472;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segmented,
-#cesium-container .three-mode-emphasis-row .three-mode-segmented {
+#three-container .three-mode-emphasis-row .three-mode-segmented {
     flex: 1;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment,
-#cesium-container .three-mode-emphasis-row .three-mode-segment {
+#three-container .three-mode-emphasis-row .three-mode-segment {
     flex: 1;
     padding: 4px 8px;
     font-size: 12px;
@@ -467,16 +460,14 @@ body.sidebar-collapsed {
     background: #24578d;
 }
 
-#three-container .three-mode-segmented,
-#cesium-container .three-mode-segmented {
+#three-container .three-mode-segmented {
     display: flex;
     border: 1px solid #d4d7dd;
     border-radius: 8px;
     overflow: hidden;
 }
 
-#three-container .three-mode-segment,
-#cesium-container .three-mode-segment {
+#three-container .three-mode-segment {
     appearance: none;
     border: none;
     background: #f5f7fa;
@@ -492,33 +483,28 @@ body.sidebar-collapsed {
     text-overflow: ellipsis;
 }
 
-#three-container .three-mode-segment + .three-mode-segment,
-#cesium-container .three-mode-segment + .three-mode-segment {
+#three-container .three-mode-segment + .three-mode-segment {
     border-left: 1px solid #d4d7dd;
 }
 
-#three-container .three-mode-segment:hover,
-#cesium-container .three-mode-segment:hover {
+#three-container .three-mode-segment:hover {
     background: #e9ecf1;
 }
 
-#three-container .three-mode-segment--active,
-#cesium-container .three-mode-segment--active {
+#three-container .three-mode-segment--active {
     background: #2c6cb0;
     color: #fff;
 }
 
 /* Phones: the control panel spans the top edge and controls grow to finger height. */
 @media (max-width: 480px) {
-    #three-container .three-mode-ui-panel,
-    #cesium-container .three-mode-ui-panel {
+    #three-container .three-mode-ui-panel {
         left: 12px;
         right: 12px;
         max-width: none;
     }
 
-    #three-container .three-mode-emphasis-row .three-mode-segment,
-    #cesium-container .three-mode-emphasis-row .three-mode-segment {
+    #three-container .three-mode-emphasis-row .three-mode-segment {
         padding: 8px 4px;
         font-size: 11px;
     }
@@ -539,8 +525,7 @@ body.sidebar-collapsed {
 }
 
 @media (pointer: coarse) {
-    #three-container .three-mode-segment,
-    #cesium-container .three-mode-segment {
+    #three-container .three-mode-segment {
         padding-top: 10px;
         padding-bottom: 10px;
     }
@@ -776,13 +761,11 @@ body.three-mode-active #agent-bubbles-container {
     
     /* When sidebar is open, move map controls */
 /* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
-#three-container .three-mode-emphasis-label,
-#cesium-container .three-mode-emphasis-label {
+#three-container .three-mode-emphasis-label {
     flex: 0 0 70px;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment,
-#cesium-container .three-mode-emphasis-row .three-mode-segment {
+#three-container .three-mode-emphasis-row .three-mode-segment {
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
