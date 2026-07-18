@@ -208,12 +208,21 @@
     // into comb patterns. The widened cut costs a sub-metre seam of street, which reads as a
     // shadow gap rather than an artefact.
     const CARVE_EDGE_BUFFER_M = 1.2; // true metres (turf buffers on the geographic footprint)
+    // The dilated cut opens a ring around every footprint with NOTHING beneath it in this
+    // world (no globe underlay): the sky showed through as light-blue slivers along proposal
+    // edges. An opaque ground APRON, slightly wider than the cut, seals the ring — it reads
+    // as pavement/soil in the proposal's edge shadow.
+    const CARVE_APRON_EXTRA_M = 1.5; // apron reach beyond the already-dilated cut
+    const CARVE_APRON_Z = -0.15;     // under the z=0 content, above the carve floor (−0.3)
+    const CARVE_APRON_COLOR = 0x74736c;
 
     let maskRT = null;
     let maskScene = null;
     let maskCamera = null;
     let maskShapesGroup = null;
     let maskMaterial = null;
+    let apronGroup = null;
+    let apronMaterial = null;
     let maskReady = false;
     let maskCenterX = 0;
     let maskCenterY = 0;
@@ -324,62 +333,90 @@
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
         maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+        apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         corridorUniforms.uCorridorMask.value = maskRT.texture;
     }
 
-    function disposeMaskShapes() {
-        if (!maskShapesGroup) return;
-        maskShapesGroup.traverse(function (o) {
+    function disposeGroupMeshes(group, parent) {
+        if (!group) return;
+        group.traverse(function (o) {
             if (o.isMesh && o.geometry) { try { o.geometry.dispose(); } catch (_) { } }
         });
-        if (maskScene) { try { maskScene.remove(maskShapesGroup); } catch (_) { } }
-        maskShapesGroup = null;
+        if (parent) { try { parent.remove(group); } catch (_) { } }
     }
 
-    // Carve footprints (lat/lng GeoJSON) → filled shapes in scene XY, on the mask scene's z=0.
+    function disposeMaskShapes() {
+        disposeGroupMeshes(maskShapesGroup, maskScene);
+        maskShapesGroup = null;
+        disposeGroupMeshes(apronGroup, internals && internals.scene);
+        apronGroup = null;
+    }
+
+    function bufferGeometry(geometry, metres) {
+        if (typeof turf === 'undefined' || !turf || typeof turf.buffer !== 'function') return geometry;
+        try {
+            const buffered = turf.buffer(
+                { type: 'Feature', properties: {}, geometry: geometry }, metres, { units: 'meters' });
+            return (buffered && buffered.geometry) ? buffered.geometry : geometry;
+        } catch (_) { return geometry; }
+    }
+
+    function shapesOfGeometry(geometry, toXY) {
+        const THREE = window.THREE;
+        const shapes = [];
+        polygonsOf(geometry).forEach(function (rings) {
+            const outer = rings && rings[0];
+            if (!Array.isArray(outer) || outer.length < 3) return;
+            try {
+                const shape = new THREE.Shape();
+                outer.forEach(function (c, i) {
+                    const xy = toXY(c[1], c[0]);
+                    if (i === 0) shape.moveTo(xy[0], xy[1]); else shape.lineTo(xy[0], xy[1]);
+                });
+                for (let h = 1; h < rings.length; h++) {
+                    const ring = rings[h];
+                    if (!Array.isArray(ring) || ring.length < 3) continue;
+                    const hole = new THREE.Path();
+                    ring.forEach(function (c, i) {
+                        const xy = toXY(c[1], c[0]);
+                        if (i === 0) hole.moveTo(xy[0], xy[1]); else hole.lineTo(xy[0], xy[1]);
+                    });
+                    shape.holes.push(hole);
+                }
+                shapes.push(shape);
+            } catch (_) { /* one bad polygon must not cost the rest their carve */ }
+        });
+        return shapes;
+    }
+
+    // Carve footprints (lat/lng GeoJSON) → filled shapes in scene XY: the dilated cut for the
+    // mask render target, and a slightly wider opaque ground apron INTO THE SCENE that seals
+    // the cut's edge ring (nothing exists under the mesh here — sky showed through it).
     function buildMaskShapes() {
         const THREE = window.THREE;
         if (!THREE || !maskScene || !internals) return;
         disposeMaskShapes();
         maskShapesGroup = new THREE.Group();
+        apronGroup = new THREE.Group();
+        apronGroup.name = 'PhotorealCarveApron';
         const toXY = internals.latLngToXY;
         collectCarveGeometries().forEach(function (geometry) {
-            let expanded = geometry;
-            if (typeof turf !== 'undefined' && turf && typeof turf.buffer === 'function') {
-                try {
-                    const buffered = turf.buffer(
-                        { type: 'Feature', properties: {}, geometry: geometry },
-                        CARVE_EDGE_BUFFER_M, { units: 'meters' });
-                    if (buffered && buffered.geometry) expanded = buffered.geometry;
-                } catch (_) { /* unbuffered footprint still carves */ }
-            }
-            polygonsOf(expanded).forEach(function (rings) {
-                const outer = rings && rings[0];
-                if (!Array.isArray(outer) || outer.length < 3) return;
-                try {
-                    const shape = new THREE.Shape();
-                    outer.forEach(function (c, i) {
-                        const xy = toXY(c[1], c[0]);
-                        if (i === 0) shape.moveTo(xy[0], xy[1]); else shape.lineTo(xy[0], xy[1]);
-                    });
-                    for (let h = 1; h < rings.length; h++) {
-                        const ring = rings[h];
-                        if (!Array.isArray(ring) || ring.length < 3) continue;
-                        const hole = new THREE.Path();
-                        ring.forEach(function (c, i) {
-                            const xy = toXY(c[1], c[0]);
-                            if (i === 0) hole.moveTo(xy[0], xy[1]); else hole.lineTo(xy[0], xy[1]);
-                        });
-                        shape.holes.push(hole);
-                    }
-                    const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), maskMaterial);
-                    mesh.frustumCulled = false;
-                    maskShapesGroup.add(mesh);
-                } catch (_) { /* one bad polygon must not cost the rest their carve */ }
+            const expanded = bufferGeometry(geometry, CARVE_EDGE_BUFFER_M);
+            shapesOfGeometry(expanded, toXY).forEach(function (shape) {
+                const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), maskMaterial);
+                mesh.frustumCulled = false;
+                maskShapesGroup.add(mesh);
+            });
+            const apron = bufferGeometry(expanded, CARVE_APRON_EXTRA_M);
+            shapesOfGeometry(apron, toXY).forEach(function (shape) {
+                const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), apronMaterial);
+                mesh.position.z = CARVE_APRON_Z;
+                apronGroup.add(mesh);
             });
         });
         maskScene.add(maskShapesGroup);
+        internals.scene.add(apronGroup);
     }
 
     function renderCarveMask(cx, cy) {
@@ -461,6 +498,7 @@
         maskScene = null;
         maskCamera = null;
         maskMaterial = null;
+        apronMaterial = null;
         maskReady = false;
         corridorUniforms.uCorridorMask.value = null;
         corridorUniforms.uCorridorOn.value = 0;
