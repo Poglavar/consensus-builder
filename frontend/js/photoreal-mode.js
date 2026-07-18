@@ -203,6 +203,11 @@
     const MASK_RES = 1024;           // texels across the window (1 scene-metre per texel)
     const MASK_MOVE_M = 150;         // re-render the window when the orbit target strays this far
     const CARVE_FLOOR_Z = -0.3;      // fragments above this (inside a footprint) are discarded
+    // Dilate every carve footprint a little: buildings straddling the boundary otherwise keep
+    // ragged facade slivers just outside the cut, and the 1 m/texel mask aliases along edges
+    // into comb patterns. The widened cut costs a sub-metre seam of street, which reads as a
+    // shadow gap rather than an artefact.
+    const CARVE_EDGE_BUFFER_M = 1.2; // true metres (turf buffers on the geographic footprint)
 
     let maskRT = null;
     let maskScene = null;
@@ -340,7 +345,16 @@
         maskShapesGroup = new THREE.Group();
         const toXY = internals.latLngToXY;
         collectCarveGeometries().forEach(function (geometry) {
-            polygonsOf(geometry).forEach(function (rings) {
+            let expanded = geometry;
+            if (typeof turf !== 'undefined' && turf && typeof turf.buffer === 'function') {
+                try {
+                    const buffered = turf.buffer(
+                        { type: 'Feature', properties: {}, geometry: geometry },
+                        CARVE_EDGE_BUFFER_M, { units: 'meters' });
+                    if (buffered && buffered.geometry) expanded = buffered.geometry;
+                } catch (_) { /* unbuffered footprint still carves */ }
+            }
+            polygonsOf(expanded).forEach(function (rings) {
                 const outer = rings && rings[0];
                 if (!Array.isArray(outer) || outer.length < 3) return;
                 try {
@@ -422,7 +436,9 @@
                     + 'if (uCorridorOn > 0.5 && vCorridorWorld.z > uFloorZ) {\n'
                     + '    vec2 cuv = (vCorridorWorld.xy - uCorridorMin) * uCorridorScale;\n'
                     + '    if (cuv.x > 0.0 && cuv.x < 1.0 && cuv.y > 0.0 && cuv.y < 1.0) {\n'
-                    + '        if (texture2D(uCorridorMask, cuv).r > 0.5) discard;\n'
+                    // 0.3, not 0.5: linear filtering leaves boundary texels partially red, and a
+                    // mid threshold turned them into per-texel combs along building facades.
+                    + '        if (texture2D(uCorridorMask, cuv).r > 0.3) discard;\n'
                     + '    }\n'
                     + '}\n');
         };
