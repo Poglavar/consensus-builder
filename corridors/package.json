@@ -1,0 +1,17 @@
+{
+    "name": "consensus-builder-corridors",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "description": "Standalone prototype: algorithmic corridor proposal generator (see ../algorithmic-corridors.md)",
+    "scripts": {
+        "fetch-osm": "node fetch-osm-layers.js",
+        "fetch-dem": "node fetch-dem.js",
+        "generate": "node generate.js"
+    },
+    "dependencies": {
+        "pg": "^8.12.0",
+        "pngjs": "^7.0.0",
+        "proj4": "^2.11.0"
+    }
+}
