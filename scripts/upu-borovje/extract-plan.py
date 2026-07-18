@@ -701,7 +701,7 @@ def step_roads(grid):
     print(f"wrote overlay-roads.png ({len(feats)} road segments)")
 
 
-def partition_polygons(label, simplify_eps=3.0):
+def partition_polygons(label, simplify_eps=3.0, straight_snap=2.2, smooth_iters=4):
     """Polygonize a label image into a PLANAR PARTITION with topologically shared
     borders: boundary lattice edges are chained per label-pair, each chain is
     simplified ONCE, and every polygon is assembled from those shared chains -
@@ -773,10 +773,39 @@ def partition_polygons(label, simplify_eps=3.0):
         pts, pairs = walk(e[0], e[1])
         chains.append({"pts": pts, "pairs": pairs})
 
-    # 4. simplify each chain ONCE (endpoints pinned); both neighbours reuse it
+    # 4. smooth + simplify each chain ONCE; both neighbours reuse it. RDP alone
+    #    keeps every staircase corner it cannot prove redundant, so first pull
+    #    the raster wobble to the drawn line with neighbour averaging (junction
+    #    endpoints pinned), then snap chains that are straight-within-tolerance
+    #    to a single segment, and RDP only the genuinely curved rest.
+    def max_dev_from_endpoint_line(pts):
+        (x0, y0), (x1, y1) = pts[0], pts[-1]
+        dx, dy = x1 - x0, y1 - y0
+        norm = math.hypot(dx, dy)
+        if norm == 0:
+            return max(math.hypot(px - x0, py - y0) for px, py in pts)
+        return max(abs(dy * (px - x0) - dx * (py - y0)) / norm for px, py in pts[1:-1])
     for c in chains:
-        if len(c["pts"]) > 2:
-            c["pts"] = [tuple(p) for p in rdp([list(p) for p in c["pts"]], simplify_eps)]
+        pts = [tuple(p) for p in c["pts"]]
+        if len(pts) <= 2:
+            continue
+        if pts[0] == pts[-1] and pts[0] not in nodes:
+            # junction-free loop: smooth cyclically (no endpoint to pin)
+            ring = pts[:-1]
+            for _ in range(smooth_iters):
+                n = len(ring)
+                if n < 3:
+                    break
+                ring = [((ring[i - 1][0] + 2 * ring[i][0] + ring[(i + 1) % n][0]) / 4,
+                         (ring[i - 1][1] + 2 * ring[i][1] + ring[(i + 1) % n][1]) / 4)
+                        for i in range(n)]
+            c["pts"] = [tuple(p) for p in rdp([list(p) for p in ring + [ring[0]]], simplify_eps)]
+            continue
+        sm = smooth_polyline(pts, iterations=smooth_iters)
+        if max_dev_from_endpoint_line(sm) <= straight_snap:
+            c["pts"] = [pts[0], pts[-1]]
+        else:
+            c["pts"] = [tuple(p) for p in rdp([list(p) for p in sm], simplify_eps)]
 
     # 5. assemble rings per label from its chains, stitching at shared endpoints
     label_chains = defaultdict(list)
