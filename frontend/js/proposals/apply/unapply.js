@@ -172,10 +172,15 @@
             }
 
             // If the original was a road, restore that too
-            const parentIdsForRoadCheck = []
-                .concat(feature.properties.parentParcelIds || [])
-                .concat(feature.properties.parentParcelId ? [feature.properties.parentParcelId] : [])
-                .concat(feature.properties.rootParcelId ? [feature.properties.rootParcelId] : []);
+            // DIRECT parent only. Checking the full parentParcelIds genealogy (or the root)
+            // over-triggers badly on deep parcel trees: a reparcellization slice carries ALL the
+            // readjustment's ancestor ids, so one road-detected ancestor anywhere in that list
+            // turned every zone slice's remainder into an "Unnamed Road" (dark asphalt fill) the
+            // moment a road edit re-carved it - and re-registered it, ratcheting the corruption.
+            // A child inherits road-ness from the parcel it was actually cut from, nothing else.
+            const parentIdsForRoadCheck = feature.properties.parentParcelId
+                ? [feature.properties.parentParcelId]
+                : [];
             const parentIsRoadParcel = typeof window.isRoadParcel === 'function'
                 && parentIdsForRoadCheck.some(id => id && window.isRoadParcel(String(id)));
             if (feature.properties.isRoad || parentIsRoadParcel) {
