@@ -1293,8 +1293,10 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             return;
         }
 
-        // Check if URL matches /proposals/:id or comma-separated ids
-        const pathMatch = pathname.match(/^\/proposals\/([0-9,]+)$/);
+        // Check if URL matches /proposals/:id or comma-separated ids. Ids are numeric
+        // server ids OR named slug ids (e.g. generated plans like upu-borovje-m1-1);
+        // multi-segment chain refs (/proposals/<chain>/<addr>/...) were handled above.
+        const pathMatch = pathname.match(/^\/proposals\/([A-Za-z0-9_,-]+)$/);
         if (!pathMatch) {
             console.debug('[handleProposalRouteFromUrl] Proposal path did not match expected pattern:', pathname);
             return;
