@@ -1152,6 +1152,7 @@
             "scopeSegment": "Ovu dionicu",
             "scopeRoad": "Cijelu cestovnu mrežu",
             "hitsBuildings": "Zahvaća zgrade (za tunel kroz zgrade koristite crtanje)",
+            "extendsCut": "Dodatno zasijeca već presječenu zgradu (žuto na karti)",
             "cutsStructures": "Presijeca postavljene parkove/trgove/jezera",
             "cancel": "Odustani",
             "save": "Spremi kao novi prijedlog",

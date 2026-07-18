@@ -1200,6 +1200,7 @@
             "scopeSegment": "Este tramo",
             "scopeRoad": "Toda la red vial",
             "hitsBuildings": "Choca con edificios (para túneles a través de edificios, usa el modo de dibujo)",
+            "extendsCut": "Corta más profundo en un edificio ya recortado (ámbar en el mapa)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",
             "save": "Guardar como nueva propuesta",

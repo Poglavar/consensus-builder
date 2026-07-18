@@ -1152,6 +1152,7 @@
             "scopeSegment": "Ovu deonicu",
             "scopeRoad": "Celu putnu mrežu",
             "hitsBuildings": "Zahvata zgrade (za tunel kroz zgrade koristite crtanje)",
+            "extendsCut": "Dodatno zaseca već presečenu zgradu (žuto na karti)",
             "cutsStructures": "Preseca postavljene parkove/trgove/jezera",
             "cancel": "Otkaži",
             "save": "Sačuvaj kao novi predlog",

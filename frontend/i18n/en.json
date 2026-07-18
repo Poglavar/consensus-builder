@@ -1151,6 +1151,7 @@
             "scopeSegment": "This segment",
             "scopeRoad": "Entire road network",
             "hitsBuildings": "Hits buildings (to tunnel through buildings, use drawing mode)",
+            "extendsCut": "Cuts deeper into an already-cut building (amber on the map)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",
             "save": "Save as new proposal",
