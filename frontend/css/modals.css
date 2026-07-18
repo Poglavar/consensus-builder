@@ -2931,10 +2931,16 @@
     align-self: flex-start;
 }
 
-#single-building-map {
+#single-building-map-wrap {
+    position: relative;
     flex: 1 1 auto;
     width: 100%;
     min-height: 260px;
+}
+
+#single-building-map {
+    width: 100%;
+    height: 100%;
 }
 
 #single-building-controls {
@@ -2969,41 +2975,17 @@
     margin-top: 12px;
 }
 
-/* High-visibility footprint handle */
-.single-building-drag-handle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #0d6efd;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    cursor: grab;
+.single-building-rotation-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 6px;
 }
 
-.single-building-drag-handle.leaflet-marker-draggable:hover {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-}
-
-.single-building-drag-handle.leaflet-marker-draggable.leaflet-dragging {
-    cursor: grabbing;
-}
-
-.single-building-drag-handle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #0d6efd;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    cursor: grab;
-}
-
-.single-building-drag-handle.leaflet-marker-draggable:hover {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-}
-
-.single-building-drag-handle.leaflet-marker-draggable.leaflet-dragging {
-    cursor: grabbing;
+.single-building-rotation-buttons .btn {
+    min-height: 40px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 /* Share proposals modal */
@@ -4322,12 +4304,16 @@
         flex: 0 0 auto;
     }
     
-    #single-building-map {
+    #single-building-map-wrap {
         order: 2;
         flex: 0 0 auto;
         height: 40vh;
         min-height: 200px;
         margin-bottom: 40px; /* Space for scrolling */
+    }
+
+    #single-building-map {
+        height: 100%;
     }
     
     .single-building-3d-wrapper {
@@ -4851,6 +4837,50 @@
 .blockify-handle--vertex span {
     background: #fb8c00; /* orange = draggable outline vertex (manual footprint mode) */
     border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
+}
+.polygon-geometry-editor__vertex {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    pointer-events: auto !important;
+    touch-action: none;
+}
+.polygon-geometry-editor__vertex.is-selected span {
+    background: #fff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.22), 0 2px 7px rgba(0, 0, 0, 0.5);
+}
+.polygon-geometry-editor__delete-marker {
+    background: transparent;
+    border: 0;
+}
+.polygon-geometry-editor__delete-marker span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 26px;
+    height: 26px;
+    border: 1px solid #ef9a9a;
+    border-radius: 50%;
+    background: #fff;
+    color: #c62828;
+    box-shadow: 0 2px 7px rgba(18, 32, 51, 0.28);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+.polygon-geometry-editor__delete-marker:hover span,
+.polygon-geometry-editor__delete-marker:focus span {
+    background: #fff1f1;
+    border-color: #e53935;
+    outline: 2px solid rgba(229, 57, 53, 0.25);
+    outline-offset: 1px;
+}
+.polygon-geometry-editor__edge {
+    cursor: pointer;
 }
 #blockify-manual-toggle,
 #blockify-geojson-upload {

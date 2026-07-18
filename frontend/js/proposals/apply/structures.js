@@ -184,6 +184,11 @@
                     return f.properties.proposalId !== proposalId;
                 });
                 try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
+                // Auto-layout is generated on the rendered feature. Keep the same canonical copy
+                // on the proposal so every generated item is present when Design is reopened.
+                if (feature.properties?.decorations) {
+                    sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
+                }
                 window.parks.push(feature);
                 try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
@@ -206,6 +211,9 @@
                     return f.properties.proposalId !== proposalId;
                 });
                 try { if (typeof ensureSquareDecorations === 'function') ensureSquareDecorations(feature); } catch (_) { }
+                if (feature.properties?.decorations) {
+                    sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
+                }
                 window.squares.push(feature);
                 try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }

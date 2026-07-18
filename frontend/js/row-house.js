@@ -1,11 +1,11 @@
 /**
  * Row House (row of houses) functionality.
  * 
- * This file contains the functionality for row houses - a single line/row of houses
- * represented by a simple rectangle polygon with chamfered corners (no inner hole).
+ * This file contains the functionality for row houses - a single line/row of houses whose
+ * initial parametric footprint can then be edited as an arbitrary polygon.
  * 
  * Unlike block typology which creates ring-shaped buildings with courtyards,
- * row typology creates a simple chamfered rectangle for linear housing developments.
+ * row typology starts from a simple chamfered rectangle for linear housing developments.
  */
 
 (function () {
@@ -14,6 +14,8 @@
     let rowHouseMap = null;
     let rowHouseParcelLayer = null;
     let rowHouseBuildingLayer = null;
+    let rowHousePolygonEditor = null;
+    let rowHousePendingVertexActionIndex = null;
     let generatedRowHouseFeature = null;
     let rowHouseBlockNameOverride = null;
     let rowHouseBlock = null;
@@ -40,16 +42,14 @@
     // Parameters to restore when the modal next opens, instead of the defaults. Set by
     // openRowHouseForParcels({ initialParameters }); consumed once by showRowHouseModal().
     let rowHouseSeedParameters = null;
+    let rowHouseSeedFeature = null;
 
     // Interaction state
     let isDragging = false;
-    let isRotating = false;
     let dragStartLatLng = null;
     let dragStartOffset = null;
-    let rotateStartAngle = null;
-    let rotateStartRotation = null;
-    let rotationHandleMarker = null; // Single rotation handle
-    let resizeHandleMarkers = []; // Side resize handles
+    let dragStartFeature = null;
+    let dragLastValidFeature = null;
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
@@ -105,6 +105,15 @@
         return message;
     }
 
+    function showRowHouseEditorAlert(key, fallback) {
+        const message = translateRowHouseText(`rowHouses.modal.${key}`, fallback);
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+            ? window.showStyledAlert
+            : window.alert;
+        if (typeof alertFn === 'function') alertFn(message);
+        return message;
+    }
+
     function setRowHouseInfo(key, fallback, params = {}) {
         const infoElement = document.getElementById('rowhouse-info');
         if (!infoElement) return;
@@ -131,6 +140,47 @@
         if (typeof window !== 'undefined') {
             window.pendingRowHouseProposalContext = pendingRowHouseProposalContext;
         }
+    }
+
+    function cloneRowHouseFeature(feature) {
+        if (!feature) return null;
+        try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
+    }
+
+    function rowHouseOuterRing(feature) {
+        if (!feature?.geometry || feature.geometry.type !== 'Polygon') return null;
+        const ring = feature.geometry.coordinates?.[0];
+        return Array.isArray(ring) && ring.length >= 4 ? ring : null;
+    }
+
+    function rowHouseFeatureWithRing(feature, ring) {
+        const next = cloneRowHouseFeature(feature);
+        if (!next?.geometry || !Array.isArray(ring) || ring.length < 3) return null;
+        const open = window.PolygonGeometryEditor?.openRing?.(ring) || ring.slice();
+        if (open.length < 3) return null;
+        next.geometry = {
+            type: 'Polygon',
+            coordinates: [[...open, [open[0][0], open[0][1]]]]
+        };
+        return next;
+    }
+
+    function rowHouseFeatureValid(feature) {
+        try {
+            if (!feature?.geometry || feature.geometry.type !== 'Polygon' || turf.area(feature) < 0.5) return false;
+            if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
+            if (!cachedSuperparcel?.geometry) return true;
+            const outside = turf.difference(feature, cachedSuperparcel);
+            return !outside || turf.area(outside) <= 0.05;
+        } catch (_) {
+            try { return turf.booleanWithin(feature, cachedSuperparcel); } catch (_) { return false; }
+        }
+    }
+
+    function destroyRowHousePolygonEditor() {
+        if (!rowHousePolygonEditor) return;
+        try { rowHousePolygonEditor.destroy(); } catch (_) { }
+        rowHousePolygonEditor = null;
     }
 
     // Keep the Leaflet map sized to its flex container so the full viewport stays interactive
@@ -825,221 +875,18 @@
         ];
     }
 
-    function computeRectAxes() {
-        const totalRotation = baseRotation + currentRotation;
-        const ux = Math.cos(totalRotation);
-        const uy = Math.sin(totalRotation);
-        const perpX = -uy;
-        const perpY = ux;
-        return { ux, uy, perpX, perpY };
-    }
-
-    function clearRotationHandle() {
-        if (rowHouseMap && rotationHandleMarker) {
-            rowHouseMap.removeLayer(rotationHandleMarker);
-        }
-        rotationHandleMarker = null;
-    }
-
-    function clearResizeHandles() {
-        resizeHandleMarkers.forEach(marker => {
-            if (rowHouseMap && marker) {
-                rowHouseMap.removeLayer(marker);
-            }
-        });
-        resizeHandleMarkers = [];
-    }
-
-    // Start rotation interaction
-    function startRotation(e, cornerCoords) {
-        if (!generatedRowHouseFeature) return;
-        isRotating = true;
-        isDragging = false;
-        isResizing = false;
-
-        // Calculate angle from building center to the grabbed corner
-        const centerMeters = [currentOffsetX, currentOffsetY];
-        const cornerMeters = latLngToMeters({ lat: cornerCoords[1], lng: cornerCoords[0] });
-        rotateStartAngle = Math.atan2(cornerMeters[1] - centerMeters[1], cornerMeters[0] - centerMeters[0]);
-        rotateStartRotation = currentRotation;
-
-        rowHouseMap.dragging.disable();
-        document.addEventListener('mousemove', onRotateMove);
-        document.addEventListener('mouseup', onRotateEnd);
-    }
-
-    function createRotationHandle(feature) {
-        clearRotationHandle();
-        if (!rowHouseMap || !feature || !Array.isArray(feature.properties?._corners)) return;
-
-        // Use first corner (not the midpoint) for rotation control
-        const corner = feature.properties._corners[0];
-        if (!Array.isArray(corner) || corner.length < 2) return;
-
-        const marker = L.circleMarker([corner[1], corner[0]], {
-            radius: 8,
-            fillColor: '#ff9800',
-            fillOpacity: 0.9,
-            color: '#e65100',
-            weight: 2,
-            className: 'rowhouse-rotation-handle'
-        });
-
-        marker.on('mousedown', (e) => {
-            L.DomEvent.stopPropagation(e);
-            startRotation(e, corner);
-        });
-
-        marker.addTo(rowHouseMap);
-        rotationHandleMarker = marker;
-    }
-
-    function createResizeHandles(feature) {
-        clearResizeHandles();
-        if (!rowHouseMap || !feature || !Array.isArray(feature.properties?._corners)) return;
-
-        const corners = feature.properties._corners;
-        const { ux, uy, perpX, perpY } = computeRectAxes();
-
-        const sides = [
-            { a: corners[0], b: corners[1], normal: [-perpX, -perpY], mode: 'width' },
-            { a: corners[1], b: corners[2], normal: [ux, uy], mode: 'length' },
-            { a: corners[2], b: corners[3], normal: [perpX, perpY], mode: 'width' },
-            { a: corners[3], b: corners[0], normal: [-ux, -uy], mode: 'length' }
-        ];
-
-        sides.forEach((side, idx) => {
-            if (!side.a || !side.b) return;
-            const midLng = (side.a[0] + side.b[0]) / 2;
-            const midLat = (side.a[1] + side.b[1]) / 2;
-
-            const marker = L.circleMarker([midLat, midLng], {
-                radius: 5,
-                fillColor: '#000',
-                fillOpacity: 0.95,
-                color: '#000',
-                weight: 1,
-                className: 'rowhouse-resize-handle'
-            });
-
-            marker.on('mousedown', (e) => {
-                L.DomEvent.stopPropagation(e);
-                startResize(e, idx, side.normal, side.mode);
-            });
-
-            marker.addTo(rowHouseMap);
-            resizeHandleMarkers.push(marker);
-        });
-    }
-
-    let isResizing = false;
-    let resizeContext = null;
-
-    function startResize(e, sideIndex, normalVec, mode) {
-        if (!generatedRowHouseFeature) return;
-        isResizing = true;
-        isDragging = false;
-        isRotating = false;
-        resizeContext = {
-            startLatLng: e.latlng,
-            sideIndex,
-            normal: normalVec,
-            mode,
-            startLength: currentBuildingLength,
-            startWidth: currentBuildingWidth
-        };
-
-        if (rowHouseMap) rowHouseMap.dragging.disable();
-        document.addEventListener('mousemove', onResizeMove);
-        document.addEventListener('mouseup', onResizeEnd);
-    }
-
-    function onResizeMove(e) {
-        if (!isResizing || !rowHouseMap || !resizeContext || !resizeContext.startLatLng) return;
-
-        const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
-        const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
-
-        const startMeters = latLngToMeters(resizeContext.startLatLng);
-        const currentMeters = latLngToMeters(latlng);
-        const deltaX = currentMeters[0] - startMeters[0];
-        const deltaY = currentMeters[1] - startMeters[1];
-        const n = resizeContext.normal || [0, 0];
-        const projected = (deltaX * n[0]) + (deltaY * n[1]);
-
-        let newLength = currentBuildingLength;
-        let newWidth = currentBuildingWidth;
-
-        if (resizeContext.mode === 'width') {
-            newWidth = Math.max(2, resizeContext.startWidth + 2 * projected);
-        } else if (resizeContext.mode === 'length') {
-            newLength = Math.max(4, resizeContext.startLength + 2 * projected);
-        }
-
-        if (checkBuildingFitsInSuperparcel(newLength, newWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
-            currentBuildingLength = newLength;
-            currentBuildingWidth = newWidth;
-
-            const lengthSlider = document.getElementById('rowhouse-length-slider');
-            const widthSlider = document.getElementById('rowhouse-width-slider');
-            if (lengthSlider) {
-                lengthSlider.value = currentBuildingLength;
-                const lengthValue = document.getElementById('rowhouse-length-value');
-                if (lengthValue) lengthValue.textContent = currentBuildingLength.toFixed(1);
-            }
-            if (widthSlider) {
-                widthSlider.value = currentBuildingWidth;
-                const widthValue = document.getElementById('rowhouse-width-value');
-                if (widthValue) widthValue.textContent = currentBuildingWidth.toFixed(1);
-            }
-
-            regenerateAndDisplay();
-        }
-    }
-
-    function onResizeEnd() {
-        isResizing = false;
-        resizeContext = null;
-        if (rowHouseMap) rowHouseMap.dragging.enable();
-        document.removeEventListener('mousemove', onResizeMove);
-        document.removeEventListener('mouseup', onResizeEnd);
-    }
-
-    // Handle rotation movement
-    function onRotateMove(e) {
-        if (!isRotating || !rowHouseMap) return;
-
-        const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
-        const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
-        const mouseMeters = latLngToMeters(latlng);
-
-        // Calculate new angle
-        const centerMeters = [currentOffsetX, currentOffsetY];
-        const newAngle = Math.atan2(mouseMeters[1] - centerMeters[1], mouseMeters[0] - centerMeters[0]);
-        const deltaAngle = newAngle - rotateStartAngle;
-        const proposedRotation = rotateStartRotation + deltaAngle;
-
-        // Check if new rotation fits
-        if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, proposedRotation)) {
-            currentRotation = proposedRotation;
-            regenerateAndDisplay();
-        }
-    }
-
-    // End rotation interaction
-    function onRotateEnd() {
-        isRotating = false;
-        if (rowHouseMap) rowHouseMap.dragging.enable();
-        document.removeEventListener('mousemove', onRotateMove);
-        document.removeEventListener('mouseup', onRotateEnd);
-    }
-
     // Start drag interaction
     function startDrag(e) {
-        if (isRotating) return;
+        const originalTarget = e?.originalEvent?.target;
+        if (originalTarget && typeof originalTarget.closest === 'function'
+            && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
         isDragging = true;
         dragStartLatLng = e.latlng;
         dragStartOffset = [currentOffsetX, currentOffsetY];
+        dragStartFeature = cloneRowHouseFeature(generatedRowHouseFeature);
+        dragLastValidFeature = cloneRowHouseFeature(generatedRowHouseFeature);
+        rowHousePendingVertexActionIndex = null;
+        destroyRowHousePolygonEditor();
 
         rowHouseMap.dragging.disable();
         document.addEventListener('mousemove', onDragMove);
@@ -1053,68 +900,170 @@
         const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
         const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
 
-        // Calculate delta in meters
+        const projector = getRowHouseProjector();
+        if (!projector || !dragStartFeature?.geometry || !window.SingleBuildingGeometry?.translateGeometry) return;
+        const startPoint = projector.project(dragStartLatLng);
+        const currentPoint = projector.project(latlng);
+        const geometry = window.SingleBuildingGeometry.translateGeometry(
+            projector,
+            dragStartFeature.geometry,
+            currentPoint[0] - startPoint[0],
+            currentPoint[1] - startPoint[1]
+        );
+        const candidate = cloneRowHouseFeature(dragStartFeature);
+        if (!candidate || !geometry) return;
+        candidate.geometry = geometry;
+        if (!rowHouseFeatureValid(candidate)) return;
+
         const startMeters = latLngToMeters(dragStartLatLng);
         const currentMeters = latLngToMeters(latlng);
-        const deltaX = currentMeters[0] - startMeters[0];
-        const deltaY = currentMeters[1] - startMeters[1];
-
-        const proposedOffsetX = dragStartOffset[0] + deltaX;
-        const proposedOffsetY = dragStartOffset[1] + deltaY;
-
-        // Check if new position fits
-        if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, proposedOffsetX, proposedOffsetY, currentRotation)) {
-            currentOffsetX = proposedOffsetX;
-            currentOffsetY = proposedOffsetY;
-            regenerateAndDisplay();
-        }
+        currentOffsetX = dragStartOffset[0] + currentMeters[0] - startMeters[0];
+        currentOffsetY = dragStartOffset[1] + currentMeters[1] - startMeters[1];
+        candidate.properties = { ...(candidate.properties || {}), offsetX: currentOffsetX, offsetY: currentOffsetY };
+        dragLastValidFeature = candidate;
+        generatedRowHouseFeature = candidate;
+        try {
+            const latLngs = candidate.geometry.coordinates.map(ring => ring.map(([lng, lat]) => [lat, lng]));
+            rowHouseBuildingLayer?.eachLayer?.(layer => layer.setLatLngs?.(latLngs));
+        } catch (_) { }
+        updateBuildingMetrics(candidate);
+        try { updateRowHouse3DScene(candidate); } catch (_) { }
     }
 
     // End drag interaction
     function onDragEnd() {
+        const finalFeature = dragLastValidFeature || dragStartFeature;
         isDragging = false;
         dragStartLatLng = null;
         dragStartOffset = null;
+        dragStartFeature = null;
+        dragLastValidFeature = null;
         if (rowHouseMap) rowHouseMap.dragging.enable();
         document.removeEventListener('mousemove', onDragMove);
         document.removeEventListener('mouseup', onDragEnd);
+        if (finalFeature) {
+            generatedRowHouseFeature = finalFeature;
+            displayRowHouseBuildingInModal(finalFeature);
+            autosaveRowHouseDraft();
+        }
     }
 
-    // Regenerate polygon and update display (used during drag/rotate)
-    function regenerateAndDisplay() {
-        const block = getActiveRowHouseBlock();
-        if (!block) return;
+    function commitRowHousePolygonRing(ring) {
+        const candidate = rowHouseFeatureWithRing(generatedRowHouseFeature, ring);
+        if (!candidate || !rowHouseFeatureValid(candidate)) {
+            displayRowHouseBuildingInModal(generatedRowHouseFeature);
+            return false;
+        }
+        candidate.properties = {
+            ...(candidate.properties || {}),
+            type: 'proposedRowHouse',
+            height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+            footprintMode: 'polygon'
+        };
+        generatedRowHouseFeature = candidate;
+        displayRowHouseBuildingInModal(candidate);
+        autosaveRowHouseDraft();
+        return true;
+    }
 
+    function renderRowHousePolygonEditor() {
+        const initialSelectedVertexIndex = rowHousePendingVertexActionIndex;
+        rowHousePendingVertexActionIndex = null;
+        destroyRowHousePolygonEditor();
+        const ring = rowHouseOuterRing(generatedRowHouseFeature);
+        if (!rowHouseMap || !ring || !window.PolygonGeometryEditor?.create) return;
+        rowHousePolygonEditor = window.PolygonGeometryEditor.create({
+            map: rowHouseMap,
+            leaflet: L,
+            turf,
+            ring,
+            boundary: () => cachedSuperparcel,
+            initialSelectedVertexIndex,
+            showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
+            vertexTitle: translateRowHouseText('rowHouses.modal.vertexLabel', 'Drag to reshape'),
+            deleteTitle: translateRowHouseText('rowHouses.modal.deleteVertexLabel', 'Delete selected vertex'),
+            onCommit: ({ ring: committedRing, reason, vertexIndex }) => {
+                rowHousePendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
+                const committed = commitRowHousePolygonRing(committedRing);
+                rowHousePendingVertexActionIndex = null;
+                return committed;
+            }
+        });
+    }
+
+    function rotateRowHouseFootprint(deltaDegrees) {
+        if (!generatedRowHouseFeature?.geometry || !Number.isFinite(deltaDegrees)) return;
+        let candidate = null;
         try {
-            const buildingFeature = generateRowHousePolygon(
-                block,
-                currentBuildingLength,
-                currentBuildingWidth,
-                currentChamfer,
-                currentOffsetX,
-                currentOffsetY,
-                currentRotation
+            const geometry = window.SingleBuildingGeometry?.rotateGeometry?.(
+                getRowHouseProjector(),
+                generatedRowHouseFeature.geometry,
+                deltaDegrees
             );
-
-            if (buildingFeature) {
-                generatedRowHouseFeature = buildingFeature;
-                displayRowHouseBuildingInModal(buildingFeature);
-                autosaveRowHouseDraft();
+            if (geometry) {
+                candidate = cloneRowHouseFeature(generatedRowHouseFeature);
+                candidate.geometry = geometry;
             }
         } catch (_) { }
+        if (!candidate || !rowHouseFeatureValid(candidate)) return;
+        currentRotation += deltaDegrees * Math.PI / 180;
+        candidate.properties = {
+            ...(generatedRowHouseFeature.properties || {}),
+            rotation: currentRotation,
+            footprintMode: 'polygon'
+        };
+        generatedRowHouseFeature = candidate;
+        displayRowHouseBuildingInModal(candidate);
+        autosaveRowHouseDraft();
+    }
+
+    function loadRowHouseGeoJSON(file) {
+        if (!file || !window.PolygonGeometryEditor) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            let ring = null;
+            try {
+                ring = window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(JSON.parse(reader.result), turf);
+            } catch (error) {
+                console.error('Row-house GeoJSON parse failed', error);
+            }
+            if (!ring) {
+                showRowHouseEditorAlert('uploadNoPolygon', 'No usable polygon found in that file.');
+                return;
+            }
+            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, cachedSuperparcel, turf) || ring;
+            const candidate = rowHouseFeatureWithRing(generatedRowHouseFeature, constrained);
+            if (!candidate || !rowHouseFeatureValid(candidate)) {
+                showRowHouseEditorAlert('uploadOutside', 'The uploaded polygon does not overlap these parcels in a usable way.');
+                return;
+            }
+            candidate.properties = {
+                ...(generatedRowHouseFeature?.properties || {}),
+                type: 'proposedRowHouse',
+                height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+                footprintMode: 'polygon',
+                rotation: 0
+            };
+            currentOffsetX = 0;
+            currentOffsetY = 0;
+            currentRotation = 0;
+            generatedRowHouseFeature = candidate;
+            displayRowHouseBuildingInModal(candidate);
+            autosaveRowHouseDraft();
+        };
+        reader.onerror = () => showRowHouseEditorAlert('uploadError', 'Could not read that file.');
+        reader.readAsText(file);
     }
 
     // Display building on the modal map
     function displayRowHouseBuildingInModal(feature) {
         if (!rowHouseMap) return;
 
+        destroyRowHousePolygonEditor();
         if (rowHouseBuildingLayer) {
             rowHouseMap.removeLayer(rowHouseBuildingLayer);
             rowHouseBuildingLayer = null;
         }
-
-        clearRotationHandle();
-        clearResizeHandles();
 
         if (!feature || !feature.geometry) return;
 
@@ -1135,9 +1084,8 @@
             }
         }).addTo(rowHouseMap);
 
-        // Add single rotation handle and side resize handles
-        createRotationHandle(feature);
-        createResizeHandles(feature);
+        // Vertex/edge interaction is shared with block-manual and freeform-building editors.
+        renderRowHousePolygonEditor();
 
         // Update metrics display
         updateBuildingMetrics(feature);
@@ -1569,6 +1517,17 @@
                         </label>
                         <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                     </div>
+                    <div class="parameter-group">
+                        <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
+                        <div class="single-building-rotation-buttons">
+                            <button id="rowhouse-rotate-counterclockwise" class="btn btn-light" type="button" data-i18n-key="rowHouses.modal.rotateCounterclockwise" data-i18n-attr="aria-label" aria-label="Rotate counterclockwise 5 degrees">&#8634; 5°</button>
+                            <button id="rowhouse-rotate-clockwise" class="btn btn-light" type="button" data-i18n-key="rowHouses.modal.rotateClockwise" data-i18n-attr="aria-label" aria-label="Rotate clockwise 5 degrees">&#8635; 5°</button>
+                        </div>
+                    </div>
+                    <div class="parameter-group">
+                        <button id="rowhouse-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                        <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                    </div>
                     <div class="parameter-metrics">
                         <div class="metric-row">
                             <span data-i18n-key="rowHouses.modal.labels.circumference" data-i18n-attr="text">Circumference (m):</span>
@@ -1584,7 +1543,7 @@
                         </div>
                     </div>
                     <div class="parameter-info">
-                        <p data-i18n-key="rowHouses.modal.helper.adjust">Adjust parameters using the sliders to modify the row houses shape.</p>
+                        <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
                         <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
                         <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
                     </div>
@@ -1682,6 +1641,22 @@
                 }
             });
 
+            document.getElementById('rowhouse-rotate-counterclockwise')
+                .addEventListener('click', () => rotateRowHouseFootprint(5));
+            document.getElementById('rowhouse-rotate-clockwise')
+                .addEventListener('click', () => rotateRowHouseFootprint(-5));
+
+            const geojsonButton = document.getElementById('rowhouse-geojson-upload');
+            const geojsonInput = document.getElementById('rowhouse-geojson-input');
+            if (geojsonButton && geojsonInput) {
+                geojsonButton.addEventListener('click', () => geojsonInput.click());
+                geojsonInput.addEventListener('change', event => {
+                    const file = event.target?.files?.[0];
+                    if (file) loadRowHouseGeoJSON(file);
+                    event.target.value = '';
+                });
+            }
+
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
@@ -1733,11 +1708,12 @@
         currentOffsetY = 0;
         currentRotation = 0;
 
-        // Restore a saved design over the defaults (e.g. a copied proposal). The row house is fully
-        // parametric — offsetX/offsetY/rotation encode its position — so the stored parameters
-        // regenerate the exact same building while leaving every slider live.
+        // Restore saved slider values and, when present, the exact edited polygon. Parameters keep
+        // the controls useful; the feature preserves vertex edits and uploaded footprints.
         const seed = rowHouseSeedParameters;
+        const seedFeature = cloneRowHouseFeature(rowHouseSeedFeature);
         rowHouseSeedParameters = null;
+        rowHouseSeedFeature = null;
         if (seed) {
             const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
             if (num(seed.length) !== null) currentBuildingLength = num(seed.length);
@@ -1780,7 +1756,22 @@
 
         // Generate row house immediately
         setTimeout(() => {
-            generateRowHouseInModal();
+            if (seedFeature?.geometry && rowHouseFeatureValid(seedFeature)) {
+                seedFeature.properties = {
+                    ...(seedFeature.properties || {}),
+                    type: 'proposedRowHouse',
+                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
+                    footprintMode: 'polygon'
+                };
+                generatedRowHouseFeature = seedFeature;
+                displayRowHouseBuildingInModal(seedFeature);
+                autosaveRowHouseDraft();
+                const doneButton = document.getElementById('btn-rowhouse-done');
+                if (doneButton) doneButton.disabled = false;
+                setRowHouseInfo('', '');
+            } else {
+                generateRowHouseInModal();
+            }
         }, 500);
     }
 
@@ -1846,6 +1837,8 @@
     function closeRowHouseModal(options = {}) {
         const { preservePending = false } = options;
         document.removeEventListener('keydown', handleRowHouseKeydown);
+        destroyRowHousePolygonEditor();
+        rowHousePendingVertexActionIndex = null;
 
         if (rowHouseMapResizeObserver) {
             try { rowHouseMapResizeObserver.disconnect(); } catch (_) { }
@@ -1868,12 +1861,9 @@
 
         // Clear state
         generatedRowHouseFeature = null;
+        rowHouseSeedFeature = null;
         rowHouseBlock = null;
         rowHouseBlockNameOverride = null;
-
-        // Clear handle markers
-        clearRotationHandle();
-        clearResizeHandles();
 
         // Clear cached superparcel data
         cachedSuperparcel = null;
@@ -2056,9 +2046,9 @@
     }
 
     // Entry point for opening row house modal from parcels
-    // `initialParameters` (optional) reopens the editor on a previously-saved design instead of the
-    // defaults — used by "Copy into new proposal".
-    function openRowHouseForParcels({ blockName, parcels, initialParameters = null }) {
+    // Saved parameters keep the sliders meaningful; `initialFeature` preserves arbitrary edits or
+    // an uploaded polygon instead of regenerating a rectangle when the proposal is reopened.
+    function openRowHouseForParcels({ blockName, parcels, initialParameters = null, initialFeature = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             if (typeof updateStatus === 'function') {
@@ -2067,6 +2057,7 @@
             return;
         }
         rowHouseSeedParameters = initialParameters || null;
+        rowHouseSeedFeature = initialFeature?.geometry ? cloneRowHouseFeature(initialFeature) : null;
 
         const seenIds = new Set();
         const normalizedParcels = [];

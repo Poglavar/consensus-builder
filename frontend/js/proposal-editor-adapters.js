@@ -828,7 +828,12 @@
                     return true;
                 }
                 if (typology === 'row' && typeof global.openRowHouseForParcels === 'function') {
-                    global.openRowHouseForParcels({ blockName: context.blockName, parcels: selection.layers, initialParameters: context.parameters || null });
+                    global.openRowHouseForParcels({
+                        blockName: context.blockName,
+                        parcels: selection.layers,
+                        initialParameters: context.parameters || null,
+                        initialFeature: features[0] || null
+                    });
                     return true;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
