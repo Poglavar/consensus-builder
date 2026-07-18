@@ -28,8 +28,7 @@ already-uploaded proposals, delete the rows first:
 | `parcels.geojson` | FeatureServer (vector) | 174 parcels, KO Žitnjak (335550), with app `parcelId` `HR-335550-<broj>` |
 | `buildings.geojson` | sheet 4 raster | 12 building envelopes M1-1…M1-12, named via `kazete-mapping.json`, floors from PP rules |
 | `zones.geojson` | sheet 1 raster | 5× Z1 park + 1× R2 recreation, planar-partitioned along drawn boundary lines |
-| `corridors.geojson` | sheet 1 raster | 3 street-land polygons (IS corridors) |
-| `streets.geojson` | sheet 1 raster | centerline segments per corridor (junction endpoints shared) with measured widths |
+| `streets.geojson` | sheet 2a raster | 6 road-axis segments (collector + crossings), junction vertices shared |
 | `parcelation.geojson` | sheet 1 raster | 20 new-parcel slices (građevne čestice per kazeta, parks, streets) |
 | `parcel-fixes.geojson` | local parcel DB | current cadastre where the UPU snapshot is stale (4304 → 4304/1…/6) |
 
@@ -40,12 +39,14 @@ already-uploaded proposals, delete the rows first:
   plan's provedbena pravila: PP-1 P+3, PP-2 P+4, PP-3 P+8 (tower), PP-4 P+5.
 - **6 park proposals** (5× Z1 + the central R2 recreation zone — modeled as a
   park until a dedicated playground/sports-field structure kind exists).
-- **3 road proposals** — proper corridor definitions: centerline `points`
-  (extracted via skeleton → pixel-graph → contract/prune/collapse condensation,
-  with a diameter-path fallback for mesh-degenerate skeletons), per-segment
-  `segmentProfiles` from measured widths (<12 m = the plan's pedestrian IS-2
-  surfaces, one paved strip; wider = two driving lanes + sidewalks), plus
-  `definition.polygon` carrying the real street-land geometry for the carve.
+- **1 street-network road proposal** (`upu-borovje-ulice`) — 6 interconnected
+  centerline segments extracted from **sheet 2a (Prometni i komunikacijski
+  sustav)**, which draws the roads explicitly: the collector is the red-hatched
+  planned-road band (centerline = smoothed diameter path of the band), the
+  IS-1/IS-2 crossings are clean colored cells (straight PCA axes). Crossing
+  endpoints are inserted as junction vertices into the collector polyline, so
+  the network is properly noded. Per-class cross-sections: SP 19 m (lanes +
+  cycleway + sidewalks + verges), IS-1 18 m shared surface, IS-2 9 m pedestrian.
 - **1 land-readjustment proposal** (`p-upu-borovje-parcelacija`) — the plan's new
   parcelation as a reparcellization: one građevna čestica per building
   (multi-kazeta blocks split by nearest building envelope), one parcel per
