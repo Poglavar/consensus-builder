@@ -436,11 +436,13 @@ function buildReparcellizationProposal(clip) {
     };
 }
 
-async function postProposal(baseUrl, proposal) {
+async function postProposal(baseUrl, proposal, origin) {
     const response = await fetch(`${baseUrl}/proposals`, {
         method: 'POST',
-        // the backend's write guard requires a recognised Origin (CSRF protection)
-        headers: { 'Content-Type': 'application/json', Origin: baseUrl },
+        // the backend's write guard requires a recognised Origin (CSRF protection).
+        // In production only the site origins are allowed, so uploads through an
+        // SSH tunnel must state the site origin via --origin.
+        headers: { 'Content-Type': 'application/json', Origin: origin || baseUrl },
         body: JSON.stringify(proposal),
     });
     const body = await response.text();
@@ -461,6 +463,8 @@ async function main() {
     }
     const baseUrlIdx = args.indexOf('--base-url');
     const baseUrl = baseUrlIdx >= 0 ? args[baseUrlIdx + 1] : 'http://localhost:3000';
+    const originIdx = args.indexOf('--origin');
+    const origin = originIdx >= 0 ? args[originIdx + 1] : null;
 
     const [buildings, zones, streets, parcelation, parcels] = await Promise.all([
         loadGeojson('buildings.geojson'),
@@ -546,7 +550,7 @@ async function main() {
     let ok = 0;
     for (const p of proposals) {
         try {
-            const saved = await postProposal(baseUrl, p);
+            const saved = await postProposal(baseUrl, p, origin);
             ok += 1;
             console.log(`uploaded ${p.proposalId} -> server id ${saved.proposalId ?? saved.id ?? '?'}`);
         } catch (error) {
