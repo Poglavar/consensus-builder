@@ -27,6 +27,11 @@ const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
 const turf = require('@turf/turf');
 
 const CITY = 'zagreb';
+// The parcelation id deliberately starts with p- so its synthetic children get
+// ids containing '#p-' (see _composeSyntheticParcelId / _buildSyntheticToken):
+// the shared-plan queue classifies '#p-' parents as DERIVED and waits for the
+// earlier apply in the link to mint them instead of fetching them from the server.
+const PARCELATION_ID = 'p-upu-borovje-parcelacija';
 const AUTHOR = 'UPU Borovje – zona jug (Grad Zagreb, prijedlog plana 2026)';
 const FLOOR_HEIGHT_M = 3.5;
 
@@ -229,7 +234,7 @@ function buildReparcellizationProposal(slices, intersecting) {
     const parentParcelIds = Array.from(parents).sort();
     const title = 'UPU Borovje – nova parcelacija (urbana komasacija)';
     return {
-        proposalId: 'upu-borovje-parcelacija',
+        proposalId: PARCELATION_ID,
         city: CITY,
         goal: 'reparcellization',
         type: 'parcel',
@@ -290,18 +295,55 @@ async function main() {
     ]);
     const intersecting = parcelIntersectors(parcels);
 
-    const proposals = [];
+    // The plan is a SEQUENCED package: the land readjustment goes first and mints
+    // one gradevna cestica per building/zone/street; everything else anchors to
+    // those NEW parcels (matching the real plan, and avoiding parcel-occupancy
+    // conflicts between kazete that share one big source parcel today).
+    const repar = buildReparcellizationProposal(parcelation, intersecting);
+    const primaryParent = repar.parentParcelIds[0];
+    const sliceChildId = (sliceIndex) => `${primaryParent}#${PARCELATION_ID}-${sliceIndex + 1}`;
+    const sliceForPoint = (geometry) => {
+        const pt = turf.pointOnFeature({ type: 'Feature', properties: {}, geometry });
+        const idx = parcelation.features.findIndex(f => {
+            try { return turf.booleanPointInPolygon(pt, f); } catch (_) { return false; }
+        });
+        return idx >= 0 ? { index: idx, feature: parcelation.features[idx] } : null;
+    };
+    const anchorToSlice = (proposal, geometry, label) => {
+        const slice = sliceForPoint(geometry);
+        if (!slice) {
+            console.warn(`${label}: no parcelation slice found - keeping original parcels`);
+            return;
+        }
+        const childId = sliceChildId(slice.index);
+        proposal.parentParcelIds = [childId];
+        proposal.description += ` Gradi se na građevnoj čestici ${slice.feature.properties.name}`
+            + ' nastaloj parcelacijom plana.';
+        if (proposal.buildingProposal) {
+            proposal.buildingProposal.parentParcelIds = [childId];
+            proposal.buildingProposal.ancestorKey = childId;
+        }
+        if (proposal.structureProposal) proposal.structureProposal.parentParcelIds = [childId];
+        if (proposal.roadProposal) proposal.roadProposal.parentParcelIds = [childId];
+    };
+
+    const proposals = [repar];
     for (const f of buildings.features) {
         const p = buildBuildingProposal(f, intersecting);
-        if (p) proposals.push(p);
+        if (!p) continue;
+        anchorToSlice(p, f.geometry, p.proposalId);
+        proposals.push(p);
     }
     for (const f of zones.features) {
-        proposals.push(buildParkProposal(f, intersecting));
+        const p = buildParkProposal(f, intersecting);
+        anchorToSlice(p, f.geometry, p.proposalId);
+        proposals.push(p);
     }
     corridors.features.forEach((f, i) => {
-        proposals.push(buildRoadProposal(f, intersecting, i, corridors.features.length));
+        const p = buildRoadProposal(f, intersecting, i, corridors.features.length);
+        anchorToSlice(p, f.geometry, p.proposalId);
+        proposals.push(p);
     });
-    proposals.push(buildReparcellizationProposal(parcelation, intersecting));
 
     for (const p of proposals) {
         console.log(`${p.proposalId}  [${p.goal}]  parcels: ${p.parentParcelIds.length}  "${p.title}"`);

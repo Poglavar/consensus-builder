@@ -42,7 +42,7 @@ already-uploaded proposals, delete the rows first:
 - **3 road proposals** — first-class road proposals driven by `definition.polygon`
   (the real street-land geometry; `_buildChildFeaturesFromDefinition` carves
   parcels directly from the corridor polygon, no centerline required).
-- **1 land-readjustment proposal** (`upu-borovje-parcelacija`) — the plan's new
+- **1 land-readjustment proposal** (`p-upu-borovje-parcelacija`) — the plan's new
   parcelation as a reparcellization: one građevna čestica per building
   (multi-kazeta blocks split by nearest building envelope), one parcel per
   park/recreation zone, streets as prometne površine. M1-12 keeps its existing
@@ -56,6 +56,18 @@ already-uploaded proposals, delete the rows first:
   parcel-union obuhvat clip) partition the sheet into cells, classified by hatch
   color measured on the eroded cell interior (hatch bleeds across thin lines).
 - Georeference verified against the vector parcels: alignment ≈ 0.3 m.
+
+## Sequencing: the parcelation goes first
+
+The plan is a package: the reparcellization mints one građevna čestica per
+building/zone/street, and every other proposal anchors to those NEW parcels
+(`parentParcelIds` = the synthetic child ids, precomputed here). This mirrors
+the real plan and avoids parcel-occupancy conflicts between kazete that share
+one big source parcel today. Mechanics: the parcelation's proposal id starts
+with `p-` so its children get `...#p-...` ids, which the shared-plan queue
+classifies as DERIVED parents — it waits for the earlier apply in the link to
+create them instead of fetching them from the server. Open the plan with the
+parcelation first in the id list.
 
 ## Named proposal links
 
