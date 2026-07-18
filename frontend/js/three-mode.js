@@ -72,6 +72,9 @@
     let camera = null;
     let renderer = null;
     let controls = null;
+    // External per-frame hooks (the photoreal tile layer registers here): run after controls
+    // and near/far updates, immediately before render, only while the 3D loop is running.
+    const frameHooks = [];
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
@@ -4053,6 +4056,9 @@
                     lastPlaneDist = dist;
                 }
             }
+            for (let i = 0; i < frameHooks.length; i++) {
+                try { frameHooks[i](now); } catch (err) { console.error('[3D] frame hook failed', err); }
+            }
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
         };
@@ -4693,6 +4699,23 @@
     }
 
     // Expose globals for debugging/manual control
+    window.registerThreeModeFrameHook = function (fn) {
+        if (typeof fn === 'function' && !frameHooks.includes(fn)) frameHooks.push(fn);
+    };
+    window.unregisterThreeModeFrameHook = function (fn) {
+        const i = frameHooks.indexOf(fn);
+        if (i >= 0) frameHooks.splice(i, 1);
+    };
+    // The photoreal tile layer builds INTO this scene — hand it the live internals rather
+    // than letting it run a second renderer (the whole point of retiring Cesium).
+    window.getThreeModeInternals = function () {
+        if (!isActive || !scene || !camera || !renderer) return null;
+        return {
+            scene: scene, camera: camera, renderer: renderer, controls: controls,
+            latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
+            originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; }
+        };
+    };
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
