@@ -401,6 +401,29 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
+// Enter URL-driven 3D framed on `focusIds`, waiting (capped) until at least one of those
+// proposals has a materialized building feature. Entering the instant the route decides
+// raced hydration/reapply: the focus subset matched nothing yet, and the camera silently
+// fell back to framing EVERY applied proposal.
+function enterUrlDrivenViewWhenReady(focusIds) {
+    const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
+    const deadline = Date.now() + 8000;
+    const attempt = () => {
+        let ready = ids.length === 0;
+        try {
+            const feats = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
+                ? window.proposedBuildings : [];
+            ready = ready || feats.some(f => f && f.properties && ids.includes(String(f.properties.proposalId)));
+        } catch (_) { ready = true; }
+        if (ready || Date.now() > deadline) {
+            enterUrlDrivenView(ids.length ? ids : undefined);
+            return;
+        }
+        setTimeout(attempt, 200);
+    };
+    attempt();
+}
+
 function isTruthyUrlFlag(params, key) {
     try {
         if (!params || typeof params.has !== 'function') return false;
@@ -948,8 +971,8 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 // Pass the link's LOCAL proposal ids as the 3D focus — without them the camera
                 // framed the union of every applied proposal (this is the path every fresh
                 // download of a shared link takes; the already-applied fast paths pass ids).
-                const entered = enterUrlDrivenView(allProposalIds);
-                if (entered) url3DModeHandled = true;
+                url3DModeHandled = true;
+                enterUrlDrivenViewWhenReady(allProposalIds);
             }
         } catch (_) { }
     } catch (error) {
@@ -1560,7 +1583,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
             }
             if (urlRequests3D) {
-                try { enterUrlDrivenView(getFocusProposalIds()); } catch (_) { }
+                try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
             }
         };
 
@@ -2362,8 +2385,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // URL-driven 3D mode: only enter after the user dismisses the results dialog.
                     try {
                         if (wants3DFromUrl && !url3DModeHandled) {
-                            const entered = enterUrlDrivenView(getFocusProposalIds());
-                            if (entered) url3DModeHandled = true;
+                            url3DModeHandled = true;
+                            enterUrlDrivenViewWhenReady(getFocusProposalIds());
                         }
                     } catch (_) { }
                 }
@@ -2389,8 +2412,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (!planSummaryModal) {
             try {
                 if (wants3DFromUrl && !url3DModeHandled) {
-                    const entered = enterUrlDrivenView(getFocusProposalIds());
-                    if (entered) url3DModeHandled = true;
+                    url3DModeHandled = true;
+                    enterUrlDrivenViewWhenReady(getFocusProposalIds());
                 }
             } catch (_) { }
         }
