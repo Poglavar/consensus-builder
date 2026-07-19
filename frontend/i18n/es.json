@@ -180,6 +180,8 @@
         "hr": "Croata"
     },
     "common": {
+        "copied": "Copiado",
+        "copyToClipboard": "Copiar al portapapeles",
         "logout": "Cerrar sesión",
         "unknown": "Desconocido",
         "unknownOwner": "Propietario desconocido",

@@ -180,6 +180,8 @@
         "hr": "Hrvatski"
     },
     "common": {
+        "copied": "Kopirano",
+        "copyToClipboard": "Kopiraj u privremenu memoriju",
         "logout": "Odjava",
         "unknown": "Nepoznato",
         "unknownOwner": "Nepoznat vlasnik",

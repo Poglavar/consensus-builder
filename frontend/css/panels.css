@@ -35,10 +35,24 @@
     gap: 4px;
     font-size: 11px;
     color: #666;
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: copy;
+    transition: background-color 120ms ease, color 120ms ease;
 }
 
 #parcel-info-panel .parcel-title-id-value {
     font-family: monospace;
+}
+
+#parcel-info-panel .parcel-title-id:hover {
+    background: rgba(29, 113, 184, 0.1);
+    color: #1d71b8;
+}
+
+#parcel-info-panel .parcel-title-id:focus-visible {
+    outline: 2px solid #1d71b8;
+    outline-offset: 2px;
 }
 
 /* 

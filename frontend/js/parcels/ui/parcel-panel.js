@@ -605,13 +605,48 @@
             titleElement.removeAttribute('data-i18n-params');
 
             const resolvedId = displayParcelId || brojValue;
-            const headerText = resolvedId
-                ? tParcel('panel.parcel.multi.parcelLabel', { number: resolvedId }, `Parcel ${resolvedId}`)
-                : fallbackTitle;
-            titleElement.textContent = headerText;
+            titleElement.textContent = '';
+            if (resolvedId) {
+                const numberMarker = '__PARCEL_NUMBER__';
+                const headerTemplate = tParcel(
+                    'panel.parcel.multi.parcelLabel',
+                    { number: numberMarker },
+                    `Parcel ${numberMarker}`
+                );
+                const markerIndex = headerTemplate.indexOf(numberMarker);
+                const prefix = markerIndex >= 0 ? headerTemplate.slice(0, markerIndex) : `${headerTemplate} `;
+                const suffix = markerIndex >= 0 ? headerTemplate.slice(markerIndex + numberMarker.length) : '';
+                const copyHintKey = 'common.copyToClipboard';
+                const copyHint = tParcel(copyHintKey, {}, 'Copy to clipboard');
 
-            if (typeof global.i18n !== 'undefined' && typeof global.i18n.applyTranslations === 'function') {
-                try { global.i18n.applyTranslations(titleElement); } catch (_) { /* ignore */ }
+                titleElement.appendChild(global.document.createTextNode(prefix));
+                const copyTarget = global.document.createElement('span');
+                copyTarget.className = 'parcel-title-id';
+                copyTarget.tabIndex = 0;
+                copyTarget.setAttribute('role', 'button');
+                copyTarget.setAttribute('aria-label', `${copyHint}: ${resolvedId}`);
+                copyTarget.title = copyHint;
+
+                const valueElement = global.document.createElement('span');
+                valueElement.className = 'parcel-title-id-value';
+                valueElement.textContent = resolvedId;
+                copyTarget.appendChild(valueElement);
+
+                const copyParcelId = () => {
+                    if (typeof global.copyTextWithFeedback === 'function') {
+                        global.copyTextWithFeedback(resolvedId);
+                    }
+                };
+                copyTarget.addEventListener('click', copyParcelId);
+                copyTarget.addEventListener('keydown', event => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    copyParcelId();
+                });
+                titleElement.appendChild(copyTarget);
+                if (suffix) titleElement.appendChild(global.document.createTextNode(suffix));
+            } else {
+                titleElement.textContent = fallbackTitle;
             }
         }
 

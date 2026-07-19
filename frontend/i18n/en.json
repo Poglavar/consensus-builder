@@ -180,6 +180,8 @@
         "hr": "Croatian"
     },
     "common": {
+        "copied": "Copied",
+        "copyToClipboard": "Copy to clipboard",
         "logout": "Log Out",
         "unknown": "Unknown",
         "unknownOwner": "Unknown owner",

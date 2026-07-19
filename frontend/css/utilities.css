@@ -1983,6 +1983,28 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     padding-bottom: 10px;
 }
 
+/* Compact acknowledgement shared by click-to-copy values. */
+.copy-feedback-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    z-index: 100001;
+    transform: translate(-50%, 5px);
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(20, 22, 28, 0.9);
+    color: #fff;
+    font: 600 11px/1.2 system-ui, sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.copy-feedback-toast.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 .takeover-buttons .btn {
     flex: 1;
 }
