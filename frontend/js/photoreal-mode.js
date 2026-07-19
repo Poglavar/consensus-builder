@@ -50,6 +50,8 @@
     // ---- state ----
     let active = false;
     let tiles = null;
+    let tilesAnchorKey = null; // anchor of the live tile session; reuse while it matches
+    let tilesCamera = null;    // camera bound to the renderer (re-bound when three-mode rebuilds)
     let scaleNode = null;   // (k, k, 1) Mercator inflation, scene-axis aligned
     let seatNode = null;    // vertical seating offset, scene-axis aligned (z scale is 1)
     let frameNode = null;   // fixed tiles-ENU -> scene rotation (photoreal-frame.js)
@@ -590,9 +592,13 @@
             if (!profT.firstTile && prog < 1) profT.firstTile = performance.now();
             if (profT.firstTile && !profT.streamed && prog >= 0.95) profT.streamed = performance.now();
         }
-        // No-coverage watchdog: if nothing ever streams, say so and fall back to abstract 3D.
+        // No-coverage watchdog: if no tile CONTENT ever arrives, say so and fall back to
+        // abstract 3D. loadProgress alone lies here — a rate-limited session reports 1
+        // ("nothing queued") while the group stays empty forever.
         if (!grounded) {
-            sinceAnyLoadS = (Number.isFinite(prog) && prog > 0) ? -Infinity : sinceAnyLoadS + dtS;
+            const noContent = !Number.isFinite(prog) || prog === 0
+                || (prog >= 1 && tiles.group && tiles.group.children.length === 0);
+            sinceAnyLoadS = noContent ? sinceAnyLoadS + dtS : -Infinity;
             if (sinceAnyLoadS > NO_COVERAGE_TIMEOUT_S) {
                 console.warn('[photoreal] no tiles streamed — no Google coverage here?');
                 setStatus(photorealI18n('threeMode.controls.noCoverage',
@@ -660,6 +666,40 @@
             if (!frame) throw new Error('photoreal-frame helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
 
+            // Reuse the streamed session when re-entering at the same anchor. Google's tile
+            // URLs carry a per-session token, so a dispose-and-rebuild both defeats the HTTP
+            // cache AND mints a new (quota-counted) session — toggling 3D<->realistic used to
+            // re-download the whole neighbourhood every time.
+            const anchorKey = anchor.lat.toFixed(6) + ',' + anchor.lng.toFixed(6);
+            if (tiles && scaleNode && tilesAnchorKey === anchorKey) {
+                internals.scene.add(scaleNode);
+                if (tilesCamera && tilesCamera !== internals.camera) {
+                    try { tiles.deleteCamera(tilesCamera); } catch (_) { }
+                }
+                tiles.setCamera(internals.camera);
+                tiles.setResolutionFromRenderer(internals.camera, internals.renderer);
+                tilesCamera = internals.camera;
+                savedBackground = internals.scene.background;
+                hadSavedBackground = true;
+                internals.scene.background = new window.THREE.Color(0x87ceeb);
+                ensureMaskObjects();
+                buildMaskShapes();
+                renderCarveMask(0, 0);
+                if (grounded) {
+                    if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
+                    tiles.group.visible = builtVisible;
+                }
+                lastFrameNow = 0;
+                sinceAnyLoadS = 0;
+                if (typeof window.registerThreeModeFrameHook === 'function') {
+                    window.registerThreeModeFrameHook(onFrame);
+                }
+                active = true;
+                console.log('[photoreal] reusing streamed tile session (anchor unchanged)');
+                return;
+            }
+            if (tiles) hardDisposeTiles(); // anchor changed — a fresh session is genuinely needed
+
             profT = { t0: performance.now() };
             await loadTilesLib();
             profT.lib = performance.now();
@@ -694,6 +734,8 @@
 
             tiles.setCamera(internals.camera);
             tiles.setResolutionFromRenderer(internals.camera, internals.renderer);
+            tilesCamera = internals.camera;
+            tilesAnchorKey = anchorKey;
             profT.setup = performance.now();
 
             // scene <- scaleNode(k,k,1) <- seatNode(z offset; z scale is 1, so it shifts world
@@ -768,12 +810,11 @@
         }
         hadSavedBackground = false;
         disposeMask();
-        if (tiles) { try { tiles.removeEventListener('load-model', onTileModelLoad); } catch (_) { } }
-        if (tiles) { try { tiles.dispose(); } catch (_) { } }
-        tiles = null;
-        scaleNode = seatNode = frameNode = null;
+        // The tiles renderer, its node chain, seating and streamed cache SURVIVE deactivation:
+        // re-entering at the same anchor re-attaches them instantly instead of minting a new
+        // Google session and re-downloading the neighbourhood. hardDisposeTiles() drops them
+        // when the anchor actually changes.
         internals = null;
-        grounded = false;
         if (options.keepStatus) {
             if (loaderEl) loaderEl.classList.remove('visible');
             setTimeout(function () { removeUiElements(); }, 6000);
@@ -784,6 +825,18 @@
         const btn = toggleBtn();
         if (btn) btn.classList.remove('active');
         if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
+    }
+
+    function hardDisposeTiles() {
+        if (tiles) {
+            try { tiles.removeEventListener('load-model', onTileModelLoad); } catch (_) { }
+            try { tiles.dispose(); } catch (_) { }
+        }
+        tiles = null;
+        scaleNode = seatNode = frameNode = null;
+        tilesCamera = null;
+        tilesAnchorKey = null;
+        grounded = false;
     }
 
     function toggle() {
