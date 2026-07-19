@@ -1407,86 +1407,6 @@ function findRoadSnapTarget(latlng) {
     return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), type: raw.kind, proposalId: entry.proposalId, minted: entry.minted };
 }
 
-// Clicking a snap on a LOCAL applied road while drawing pulls that road into the drawing
-// session immediately: its segments join the live preview (mitered corners, junction fills
-// render right away instead of at finish), its cross-section and name carry over, and the old
-// record disappears — finishing simply creates the combined road.
-let absorbedRoadIdentity = null;
-
-async function absorbAppliedRoadIntoDrawing(snap) {
-    if (!snap || !snap.proposalId || snap.minted) return false;
-    const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(snap.proposalId) : null;
-    const definition = proposal?.roadProposal?.definition;
-    if (!proposal || !definition) return false;
-    // A session absorbs corridors of its OWN kind: a track continues a track, a road a road. Snapping
-    // a road onto a track still connects them — it just forms a junction instead of one object.
-    if (corridorIsTrack(definition) !== corridorDrawingIsTrack()) return false;
-
-    if (!absorbedRoadIdentity) {
-        absorbedRoadIdentity = { name: proposal.title || proposal.name || '' };
-    }
-    // The tool's active cross-section is NOT adopted from the absorbed road: the user's set
-    // profile keeps driving new segments, while every absorbed segment keeps its own width
-    // through the per-segment overrides captured below.
-    const absorbedEntries = (typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [];
-
-    // The absorbed road's obstacle DECISIONS come along too. Its accepted geometry must remain
-    // fully decided when it joins this drawing; F never re-litigates those buildings.
-    (definition.tunnels || []).forEach(record => {
-        if (record && typeof addBuildingTunnelRecord === 'function') {
-            roadBuildingTunnels = addBuildingTunnelRecord(roadBuildingTunnels, JSON.parse(JSON.stringify(record)));
-        }
-    });
-    const sessionDemolished = new Set(roadDemolishedBuildings.map(record => String(record.id)));
-    (definition.demolishedBuildings || []).forEach(record => {
-        if (record && record.id && !sessionDemolished.has(String(record.id))) {
-            sessionDemolished.add(String(record.id));
-            roadDemolishedBuildings.push(JSON.parse(JSON.stringify(record)));
-        }
-    });
-    const segments = (typeof corridorCenterlineOf === 'function' ? corridorCenterlineOf(definition) : [])
-        .map(segment => segment.map(point => L.latLng(point.lat, point.lng)));
-    const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [];
-
-    const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
-    clearSelectionVisualsForRemovedProposal(proposal);
-    try { await ProposalManager.unapplyProposal(key, { skipConfirm: true, skipRestoreSource: true }); } catch (_) { }
-    try { proposalStorage.removeProposal(key); } catch (_) { }
-
-    segments.forEach((segment, index) => {
-        if (segment.length < 2) return;
-        // Segment ids collide across roads (every drawing counts s1, s2, ...): keep the id only
-        // if it is still free, else mint a fresh one — profile overrides follow the FINAL id.
-        const requested = ids[index] || null;
-        const finalId = (requested && !roadSegmentIds.includes(requested)) ? requested : null;
-        pushRoadSegment(segment, finalId);
-        const assignedId = roadSegmentIds[roadSegmentIds.length - 1];
-        const entryProfile = absorbedEntries[index]?.profile;
-        if (assignedId && entryProfile) {
-            roadSegmentProfiles[String(assignedId)] = JSON.parse(JSON.stringify(entryProfile));
-        }
-    });
-    // Bump the id generator past every absorbed id (the seed path does the same): without
-    // this the NEXT drawn segment reuses an absorbed id and inherits its profile override, so its
-    // placement check would inspect the wrong width.
-    roadSegmentIds.forEach(id => {
-        const match = /^s(\d+)$/.exec(String(id || ''));
-        if (match) nextRoadSegmentId = Math.max(nextRoadSegmentId, Number(match[1]) + 1);
-    });
-    const rebuilt = rebuildRoadGeometryFromSegments();
-    recomputeLockedParcelsFromPolygon(rebuilt);
-    redrawRoadVertexMarkers();
-    refreshRoadBuildingTunnelLayer();
-    updateRoadInfoPanel();
-    if (typeof updateRoadCrossSectionButton === 'function') updateRoadCrossSectionButton();
-    if (typeof updateStatus === 'function') {
-        updateStatus(translateRoadText('panel.road.absorbedStatus', 'Continuing “{{name}}” — finishing keeps it one road.', {
-            name: absorbedRoadIdentity.name || 'road'
-        }));
-    }
-    return true;
-}
-
 // When a proposal is removed by an absorb/merge while it is the SELECTED one, its selection
 // visuals must go with it — otherwise the blue parcel highlights and the details panel stay
 // orphaned on screen (the proposal no longer exists). Key-based, like the delete path.
@@ -3010,14 +2930,11 @@ async function handleRoadClick(e) {
     try {
 
     // Snap to an existing vertex or edge so segments that look connected really do share a node.
+    // Drawing NEVER mutates or removes a placed road: a snap onto an existing corridor only donates
+    // the exact position for this new segment's vertex, attaching it to that vertex/centerline. All
+    // merging and joining of touching corridors happens ONCE, at finish (F), in
+    // absorbConnectedLocalCorridors — never on a click.
     let snap = findRoadSnapTarget(e.latlng);
-    // A snap on a placed LOCAL corridor absorbs it into this drawing right now; the re-snap below
-    // then resolves onto the (now own) segment, so the ordinary resume/branch logic continues
-    // it with proper corners. Minted corridors stay put — the snap just donates the exact position.
-    if (snap && (snap.type === 'external-endpoint' || snap.type === 'external-node' || snap.type === 'external-edge') && !snap.minted) {
-        const absorbed = await absorbAppliedRoadIntoDrawing(snap);
-        if (absorbed) snap = findRoadSnapTarget(e.latlng);
-    }
     let clickPoint = snap ? snap.latlng : e.latlng;
     clearRoadSnapMarker();
 
@@ -5303,10 +5220,9 @@ async function finishRoadDrawingOnce() {
     // proposal terms later. Drafts are created lazily on autosave — force one now if missing.
     if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft(corridorKind);
     const designDraftId = window.activeProposalDesignDraftId;
-    if (designDraftId && absorbedRoadIdentity?.name && window.proposalDraftStore?.getDraft?.(designDraftId)) {
-        // Continuing an absorbed corridor: the finished object keeps the original's name.
-        window.proposalDraftStore.updateDraft(designDraftId, { fields: { name: absorbedRoadIdentity.name } }, { recordHistory: false });
-    }
+    // A finished road that touches an existing one keeps the established road's name — but that
+    // naming now happens in absorbConnectedLocalCorridors (from the oldest touching road) at finish,
+    // since drawing no longer absorbs a road on click.
     if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
@@ -5406,7 +5322,6 @@ function resetRoadDrawing(hidePanel = true) {
     roadGradeSeparations = [];
     roadDemolishedBuildings = [];
     roadSegmentProfiles = {};
-    absorbedRoadIdentity = null; // the absorbed name already lives on the drawing's draft
     roadWidth = 2;
     roadProfile = null;
     roadLastValidatedWidth = roadWidth;
