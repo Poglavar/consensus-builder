@@ -243,6 +243,10 @@
     const CURTAIN_BOTTOM_MARGIN_M = 1.0;   // sink below the lower of content/terrain
     const CURTAIN_MAX_RISE_M = 8;          // clamp rim height: ignore a stray tree/roof hit at the edge
     const CURTAIN_MAX_DIP_M = 25;          // clamp embankment depth on steep drops
+    // Parks discard only the tile GROUND (below groundHeight + this band) and keep taller mesh, so
+    // hedges/trees stand instead of being sliced into sky-windows. ~1 m ≈ the grass/shrub line:
+    // remove Google's lawn so our park shows, keep anything taller as real greenery.
+    const CARVE_KEEPVEG_BAND_M = 1.0;
     const TERRAIN_GRID_MAX = 22;           // grid samples per axis (<= ~484 raycasts, once per seat)
     const TERRAIN_GRID_MIN_CELL_M = 12;    // target grid spacing in scene metres
 
@@ -253,7 +257,9 @@
     let maskMaterial = null;
     let apronGroup = null;
     let apronMaterial = null;
+    let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
     let terrainGrid = null; // cached tile-height field, sampled once per seating (see the curtain)
+    let groundTexture = null; // DataTexture of terrainGrid heights, fed to the keep-veg shader
     let maskReady = false;
     let maskCenterX = 0;
     let maskCenterY = 0;
@@ -267,7 +273,13 @@
         uCorridorMin: { value: null }, // THREE.Vector2, created once THREE is up
         uCorridorScale: { value: 1 / (2 * MASK_WINDOW_HALF_M) },
         uCorridorOn: { value: 0 },
-        uFloorZ: { value: CARVE_FLOOR_Z }
+        uFloorZ: { value: CARVE_FLOOR_Z },
+        // Keep-vegetation (green mask channel = parks): discard only the tile ground layer, below
+        // groundHeight + band, so hedges/trees stay standing instead of being sliced into windows.
+        uGroundTex: { value: null },       // DataTexture of tile ground heights over the plan bbox
+        uGroundMin: { value: null },       // THREE.Vector2, grid origin in scene XY
+        uGroundInvSpan: { value: null },   // THREE.Vector2, 1 / grid span (world XY -> [0,1])
+        uKeepBand: { value: CARVE_KEEPVEG_BAND_M }
     };
 
     // -- carve footprint sources (same set the Cesium version clipped with) --
@@ -328,13 +340,16 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered' });
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'full' });
             }
         });
-        // Applied structures (parks/squares/lakes/stations) replace the ground wholesale.
+        // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
+        // PARK keeps its trees and hedges — it only removes the tile lawn (keep-veg), so Google's
+        // vegetation isn't sliced into sky-windows at the park edges.
         appliedStructureProposals().forEach(function (proposal) {
             if (!passesIsolation(proposal)) return;
-            out.push({ geometry: proposal.structureProposal.geometry, kind: 'covered' });
+            const isPark = proposal.structureProposal && proposal.structureProposal.kind === 'park';
+            out.push({ geometry: proposal.structureProposal.geometry, kind: 'covered', mode: isPark ? 'keepveg' : 'full' });
         });
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
         // that razed them). Cut records are skipped — their demolished part lies inside a
@@ -349,7 +364,7 @@
                     if (record.remainder) return;
                     if (String(record.id).indexOf('proposal:') === 0) return;
                     const outside = razedFootprintOutsideStructures(record.geometry);
-                    if (outside) out.push({ geometry: outside, kind: 'razed' });
+                    if (outside) out.push({ geometry: outside, kind: 'razed', mode: 'full' });
                 });
             } catch (err) {
                 console.warn('[photoreal] demolition carve collection failed', err);
@@ -360,7 +375,7 @@
             window.proposedBuildings.forEach(function (feat) {
                 if (!feat || !feat.geometry) return;
                 if (isolationFilter && String(feat.properties && feat.properties.proposalId) !== isolationFilter) return;
-                out.push({ geometry: feat.geometry, kind: 'covered' });
+                out.push({ geometry: feat.geometry, kind: 'covered', mode: 'full' });
             });
         }
         return out;
@@ -381,13 +396,16 @@
         maskCamera = new THREE.OrthographicCamera(
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
-        maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+        maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });      // full discard
+        maskMaterialPark = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });  // keep-veg (ground only)
         // DOUBLE-SIDED, like the mask: this material paints both the flat cap and the curtain
         // walls, and either can face the camera from either side depending on ring winding — a
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
         // camera would look straight through the seal into the hole. A solid earth wall has no back.
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
+        if (!corridorUniforms.uGroundMin.value) corridorUniforms.uGroundMin.value = new THREE.Vector2();
+        if (!corridorUniforms.uGroundInvSpan.value) corridorUniforms.uGroundInvSpan.value = new THREE.Vector2();
         corridorUniforms.uCorridorMask.value = maskRT.texture;
     }
 
@@ -493,6 +511,31 @@
             }
         }
         terrainGrid = { minX: minX, minY: minY, dx: w / (nx - 1), dy: h / (ny - 1), nx: nx, ny: ny, z: z };
+        updateGroundTexture();
+    }
+
+    // Upload the height grid as a single-channel float texture the keep-veg shader samples for the
+    // local ground height (nearest filtering — no float-linear extension needed). Missing samples
+    // (NaN) fall back to 0 so a park over unstreamed tiles still discards its lawn near z≈0.
+    function updateGroundTexture() {
+        const THREE = window.THREE;
+        const g = terrainGrid;
+        if (!THREE || !g) return;
+        if (groundTexture) { try { groundTexture.dispose(); } catch (_) { } groundTexture = null; }
+        const data = new Float32Array(g.nx * g.ny);
+        for (let i = 0; i < data.length; i++) data[i] = isFinite(g.z[i]) ? g.z[i] : 0;
+        const tex = new THREE.DataTexture(data, g.nx, g.ny, THREE.RedFormat, THREE.FloatType);
+        tex.minFilter = THREE.NearestFilter;
+        tex.magFilter = THREE.NearestFilter;
+        tex.wrapS = THREE.ClampToEdgeWrapping;
+        tex.wrapT = THREE.ClampToEdgeWrapping;
+        tex.needsUpdate = true;
+        groundTexture = tex;
+        corridorUniforms.uGroundTex.value = tex;
+        if (corridorUniforms.uGroundMin.value) corridorUniforms.uGroundMin.value.set(g.minX, g.minY);
+        if (corridorUniforms.uGroundInvSpan.value) {
+            corridorUniforms.uGroundInvSpan.value.set(1 / ((g.nx - 1) * g.dx), 1 / ((g.ny - 1) * g.dy));
+        }
     }
 
     // Bilinear tile height at a scene-XY point from the cached grid; null if outside it or if every
@@ -564,9 +607,14 @@
         entries.forEach(function (entry) {
             try {
                 const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
+                const keepVeg = (entry.mode === 'keepveg');
+                const maskMat = keepVeg ? maskMaterialPark : maskMaterial;
                 polygonShapesAndRings(core, toXY).forEach(function (sr) {
-                    const mask = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMaterial);
+                    const mask = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMat);
                     mask.frustumCulled = false;
+                    // No depth buffer on the mask RT, so draw order decides overlaps: full discard
+                    // (renderOrder 1) paints over keep-veg (0), so a road through a park still clears.
+                    mask.renderOrder = keepVeg ? 0 : 1;
                     maskShapesGroup.add(mask);
                     const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
                     cap.position.z = CARVE_APRON_TOP_Z;
@@ -630,14 +678,29 @@
                     + 'uniform vec2 uCorridorMin;\n'
                     + 'uniform float uCorridorScale;\n'
                     + 'uniform float uCorridorOn;\n'
-                    + 'uniform float uFloorZ;')
+                    + 'uniform float uFloorZ;\n'
+                    + 'uniform sampler2D uGroundTex;\n'
+                    + 'uniform vec2 uGroundMin;\n'
+                    + 'uniform vec2 uGroundInvSpan;\n'
+                    + 'uniform float uKeepBand;')
                 .replace('void main() {', 'void main() {\n'
-                    + 'if (uCorridorOn > 0.5 && vCorridorWorld.z > uFloorZ) {\n'
+                    + 'if (uCorridorOn > 0.5) {\n'
                     + '    vec2 cuv = (vCorridorWorld.xy - uCorridorMin) * uCorridorScale;\n'
                     + '    if (cuv.x > 0.0 && cuv.x < 1.0 && cuv.y > 0.0 && cuv.y < 1.0) {\n'
-                    // 0.3, not 0.5: linear filtering leaves boundary texels partial, and a mid
-                    // threshold turned them into per-texel combs along building facades.
-                    + '        if (texture2D(uCorridorMask, cuv).r > 0.3) discard;\n'
+                    // Threshold 0.3, not 0.5: linear filtering leaves boundary texels partial, and a
+                    // mid threshold turned them into per-texel combs along facades. Red wins ties.
+                    + '        vec4 cmask = texture2D(uCorridorMask, cuv);\n'
+                    // RED = full discard (roads, razed & proposed buildings): everything above the floor.
+                    + '        if (cmask.r > 0.3) {\n'
+                    + '            if (vCorridorWorld.z > uFloorZ) discard;\n'
+                    // GREEN = keep-vegetation (parks): discard ONLY the tile ground layer — below the
+                    // local ground height + band — so hedges and trees stand instead of being sliced.
+                    + '        } else if (cmask.g > 0.3) {\n'
+                    + '            vec2 guv = (vCorridorWorld.xy - uGroundMin) * uGroundInvSpan;\n'
+                    + '            float gh = uFloorZ;\n'
+                    + '            if (guv.x >= 0.0 && guv.x <= 1.0 && guv.y >= 0.0 && guv.y <= 1.0) gh = texture2D(uGroundTex, guv).r;\n'
+                    + '            if (vCorridorWorld.z < gh + uKeepBand) discard;\n'
+                    + '        }\n'
                     + '    }\n'
                     + '}\n');
         };
@@ -660,8 +723,11 @@
         maskScene = null;
         maskCamera = null;
         maskMaterial = null;
+        maskMaterialPark = null;
         apronMaterial = null;
         terrainGrid = null;
+        if (groundTexture) { try { groundTexture.dispose(); } catch (_) { } groundTexture = null; }
+        corridorUniforms.uGroundTex.value = null;
         maskReady = false;
         corridorUniforms.uCorridorMask.value = null;
         corridorUniforms.uCorridorOn.value = 0;
