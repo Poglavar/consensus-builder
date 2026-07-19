@@ -245,6 +245,10 @@
     let maskCenterX = 0;
     let maskCenterY = 0;
     let carveProposedBuildings = true; // proposed-building footprints join the carve (roads/parks always do)
+    // Isolation in three-mode hides other proposals' surfaces; their carve holes must lift
+    // with them. null = no isolation; a proposalId = carve only that proposal; '__parcel__'
+    // = parcel isolation, carve nothing (the mesh returns wholesale during inspection).
+    let isolationFilter = null;
     const corridorUniforms = {
         uCorridorMask: { value: null },
         uCorridorMin: { value: null }, // THREE.Vector2, created once THREE is up
@@ -301,9 +305,14 @@
     // nothing of ours on top and get the core cut + a bare-soil slab instead of a ring.
     function collectCarveGeometries() {
         const out = [];
+        if (isolationFilter === '__parcel__') return out;
+        const passesIsolation = function (proposal) {
+            return !isolationFilter || String(proposal && proposal.proposalId) === isolationFilter;
+        };
         // Applied road corridors: the surface-level footprint wins over the full outline, so
         // tunnelled / grade-separated stretches keep the mesh above them.
         appliedCorridorProposals().forEach(function (proposal) {
+            if (!passesIsolation(proposal)) return;
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
@@ -312,12 +321,16 @@
         });
         // Applied structures (parks/squares/lakes/stations) replace the ground wholesale.
         appliedStructureProposals().forEach(function (proposal) {
+            if (!passesIsolation(proposal)) return;
             out.push({ geometry: proposal.structureProposal.geometry, kind: 'covered' });
         });
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
         // that razed them). Cut records are skipped — their demolished part lies inside a
         // corridor footprint already; demolished PROPOSED buildings aren't in the mesh at all.
-        if (typeof window.collectCarveRecords === 'function'
+        // Razed-building records carry no proposal provenance: they only carve when no
+        // isolation filter is active (the mesh buildings return during isolation).
+        if (!isolationFilter
+            && typeof window.collectCarveRecords === 'function'
             && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
             try {
                 window.collectCarveRecords(proposalStorage.getAllProposals()).records.forEach(function (record) {
@@ -333,7 +346,9 @@
         // Proposed buildings replace the real mesh standing on their spot.
         if (carveProposedBuildings && Array.isArray(window.proposedBuildings)) {
             window.proposedBuildings.forEach(function (feat) {
-                if (feat && feat.geometry) out.push({ geometry: feat.geometry, kind: 'covered' });
+                if (!feat || !feat.geometry) return;
+                if (isolationFilter && String(feat.properties && feat.properties.proposalId) !== isolationFilter) return;
+                out.push({ geometry: feat.geometry, kind: 'covered' });
             });
         }
         return out;
@@ -800,6 +815,13 @@
 
     // Keep the carve in sync while the layer is up (proposal edits re-mirror this global).
     window.addEventListener('proposedBuildingsUpdated', function () {
+        if (active && grounded) rebuildCarveMask();
+    });
+
+    // Isolation hides other proposals' surfaces; lift their carve holes with them.
+    window.addEventListener('threeModeIsolationChanged', function (ev) {
+        const d = (ev && ev.detail) || {};
+        isolationFilter = d.proposalId ? String(d.proposalId) : (d.parcelId ? '__parcel__' : null);
         if (active && grounded) rebuildCarveMask();
     });
 

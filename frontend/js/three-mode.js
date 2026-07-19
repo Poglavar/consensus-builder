@@ -94,6 +94,7 @@
     // bootstrap, so THREE may only be touched once the user actually enters a 3D flow.)
     let pendingIntroAutoRotate = false;
     let introAutoRotateCleanup = null;
+    let suppressClickAfterRotateStop = false; // the click that stops the intro spin must not select
     let manualAutoRotateActive = false;
     let manualAutoRotateLastTs = 0;
 
@@ -670,6 +671,16 @@
     }
 
     // Hide everything except the given parcel and the building footprint(s) on it.
+    // The photoreal layer carves the mesh for every applied proposal; when isolation hides
+    // some proposals' surfaces, their carve holes would gape open — so it listens for this.
+    function notifyIsolationChanged() {
+        try {
+            window.dispatchEvent(new CustomEvent('threeModeIsolationChanged', {
+                detail: { proposalId: isolatedProposalId, parcelId: isolatedParcelId }
+            }));
+        } catch (_) { }
+    }
+
     function isolateParcel(parcelId) {
         if (!parcelId) return;
         isolatedParcelId = parcelId;
@@ -678,6 +689,7 @@
         updateParcelInfoPanel(parcelId);
         const pf = getParcelFeatureById(parcelId);
         applyIsolationVisibility(new Set([String(parcelId)]), pf ? [pf] : []);
+        notifyIsolationChanged();
     }
 
     // Hide everything except the parcels (and their buildings) belonging to a whole proposal.
@@ -694,6 +706,7 @@
         const feats = [];
         idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
         applyIsolationVisibility(idSet, feats);
+        notifyIsolationChanged();
     }
 
     function clearIsolation() {
@@ -708,6 +721,7 @@
         // Rebuild buildings so their per-object visibility resets cleanly to the mode default.
         rebuild3DBuildingsOnly();
         applyModeVisibility();
+        notifyIsolationChanged();
     }
 
     function updateIsolationButton() {
@@ -3954,6 +3968,12 @@
 
     function stopIntroAutoRotate() {
         try {
+            // The pointerdown that stops an ACTIVE intro rotation must not double as a map
+            // click: it isolated whichever proposal sat under the cursor, hiding all others
+            // (and, in realistic mode, gaping their carve holes open).
+            if ((controls && controls.autoRotate) || manualAutoRotateActive) {
+                suppressClickAfterRotateStop = true;
+            }
             const wasPending = pendingIntroAutoRotate;
             pendingIntroAutoRotate = false;
             if (wasPending) {
@@ -4545,6 +4565,7 @@
 
     function handleParcelClick(evt) {
         if (evt.button !== 0) return;
+        if (suppressClickAfterRotateStop) { suppressClickAfterRotateStop = false; return; }
         // Walk-pick owns clicks while it's active.
         if (walkPickActive) return;
         // Ignore the click that ends a camera drag (orbit/tilt) — only a near-stationary
