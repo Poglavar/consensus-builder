@@ -228,6 +228,16 @@ async function ensureBuildingFootprintsForRoadEdge(from, to, width) {
     }
 }
 
+// A hit's per-building action from an obstacle resolution: the tour's per-building override if it set
+// one, else the global default. resolveBuildingObstacles carries the map; the fallback keeps the old
+// single-action shape working (every hit gets resolution.action).
+function resolvedActionForHit(resolution, hit) {
+    const id = String(hit && hit.id != null ? hit.id : '');
+    const map = resolution && resolution.effectiveActionById;
+    if (map && typeof map.get === 'function' && map.has(id)) return map.get(id);
+    return (resolution && resolution.action) || 'cancel';
+}
+
 // Width/profile edits can make a previously clear edge touch a building. This check belongs to the
 // edit's Apply action, never to F: segment placement and geometry edits own every impact decision.
 async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = [], demolishedRecords = [], segmentProfiles = null, options = {}) {
@@ -318,39 +328,38 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
         ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
         : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
     if (resolution.action === 'cancel') return { accepted: false, records: list, demolished };
-    if (resolution.action === 'destroy') {
-        (resolution.demolishedBuildings || []).forEach(record => {
-            if (!fullyDemolishedIds.has(String(record.id))) {
-                fullyDemolishedIds.add(String(record.id));
-                demolished.push(record);
-            }
-        });
-        return { accepted: true, records: list, demolished };
-    }
-    if (resolution.action === 'cut') {
-        // Cut each real hit with every edge whose polygon crosses it (upsert accumulates).
-        if (typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
-            const cutIds = new Set((resolution.cutHits || []).map(hit => String(hit.id)));
-            missing.forEach(edge => {
-                const polygon = calculateRoadPolygon([edge.from, edge.to], edge.edgeWidth || width);
-                const edgeRegion = polygon ? corridorFeatureFromLatLngRing(polygon) : null;
-                if (!edgeRegion) return;
-                edge.hits.filter(hit => hit.feature && cutIds.has(String(hit.id)))
-                    .forEach(hit => upsertCutRecord(demolished, hit, edgeRegion));
-            });
+    // Per-building outcomes: destroy, cut and tunnel can all apply within the same set now (the tour
+    // lets the user override individual buildings), so run each independently, not as one blanket branch.
+    (resolution.demolishedBuildings || []).forEach(record => {
+        if (!fullyDemolishedIds.has(String(record.id))) {
+            fullyDemolishedIds.add(String(record.id));
+            demolished.push(record);
         }
-        return { accepted: true, records: list, demolished };
+    });
+    // Cut each real cut-hit with every edge whose polygon crosses it (upsert accumulates).
+    if ((resolution.cutHits || []).length
+        && typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
+        const cutIds = new Set(resolution.cutHits.map(hit => String(hit.id)));
+        missing.forEach(edge => {
+            const polygon = calculateRoadPolygon([edge.from, edge.to], edge.edgeWidth || width);
+            const edgeRegion = polygon ? corridorFeatureFromLatLngRing(polygon) : null;
+            if (!edgeRegion) return;
+            edge.hits.filter(hit => hit.feature && cutIds.has(String(hit.id)))
+                .forEach(hit => upsertCutRecord(demolished, hit, edgeRegion));
+        });
     }
+    // Tunnel only the hits whose per-building action is 'tunnel' and whose proposal (if any) still
+    // stands. Process edges from the END backwards so splicing portal vertices into the live segment
+    // array never shifts the indices of edges still waiting their turn.
     const removedOwners = new Set(resolution.removedProposalIds || []);
-    const hitStillStands = hit => {
+    const hitTunnels = hit => {
+        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
         return !owner || !removedOwners.has(owner);
     };
-    // Process edges of each segment from the END backwards so splicing portal vertices into
-    // the live segment array never shifts the indices of edges still waiting their turn.
     missing.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
     missing.forEach(edge => {
-        const standingHits = edge.hits.filter(hitStillStands);
+        const standingHits = edge.hits.filter(hitTunnels);
         if (!standingHits.length) return;
         const clippableHits = standingHits.filter(hit => hit.feature);
         const plan = (clippableHits.length && typeof clipCorridorEdgeThroughBuildings === 'function')
@@ -872,9 +881,45 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const normalizedIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice(0, normalizedSegments.length) : [];
     // Tunnel records are edge-addressed. A node move changes those keys, so discard records whose
     // exact edge no longer exists BEFORE building detection derives its already-tunnelled ids. The
-    // moved edges then receive a fresh impact decision and new facade portals/tunnel records.
+    // dropped records are re-keyed onto the moved endpoints just below (a pure move preserves the
+    // portal vertices), so the tunnel follows the drag instead of being re-litigated.
     if (typeof retainLiveCorridorTunnelRecords === 'function') {
         definition.tunnels = retainLiveCorridorTunnelRecords(normalizedSegments, definition.tunnels || []);
+    }
+    // A node DRAG relocates a tunnel-span endpoint, so retention just dropped that record — but the
+    // portal is still a vertex at the SAME centerline index (moveNodeTargets edits in place). Re-key
+    // each dropped record onto the moved endpoints so the tunnel FOLLOWS the drag: no re-clip, no new
+    // portal vertex, and — because the re-keyed edge lands in tunnelEdgeKeys below — no re-detection or
+    // re-prompt. Records whose endpoints no longer form one adjacent edge (a structural edit, not a
+    // pure move) are left dropped; alreadyTunnelledIds still exempts their buildings from re-asking.
+    if ((definitionSnapshot.tunnels || []).length && typeof makeBuildingTunnelRecord === 'function'
+        && typeof addBuildingTunnelRecord === 'function' && typeof corridorCenterlineOf === 'function') {
+        const snapSegs = corridorCenterlineOf(definitionSnapshot) || [];
+        const EPS = 1e-9;
+        const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        const locate = (pt) => {
+            for (let si = 0; si < snapSegs.length; si += 1) {
+                const vi = (snapSegs[si] || []).findIndex(v => near(v, pt));
+                if (vi >= 0) return [si, vi];
+            }
+            return null;
+        };
+        definition.tunnels = definition.tunnels || [];
+        const liveKeys = new Set(definition.tunnels.map(r => r?.edgeKey).filter(Boolean));
+        (definitionSnapshot.tunnels || []).forEach(record => {
+            if (!record || !record.from || !record.to) return;
+            if (record.edgeKey && liveKeys.has(record.edgeKey)) return; // retention kept it — nothing to re-key
+            const a = locate(record.from), b = locate(record.to);
+            if (!a || !b || a[0] !== b[0] || Math.abs(a[1] - b[1]) !== 1) return; // not one live adjacent edge
+            const seg = normalizedSegments[a[0]];
+            const nf = seg && seg[a[1]], nt = seg && seg[b[1]];
+            if (!nf || !nt) return;
+            const rekeyed = makeBuildingTunnelRecord(nf, nt, (record.buildingIds || []).map(id => ({ id })), { segmentId: record.segmentId });
+            if (rekeyed && !liveKeys.has(rekeyed.edgeKey)) {
+                addBuildingTunnelRecord(definition.tunnels, rekeyed);
+                liveKeys.add(rekeyed.edgeKey);
+            }
+        });
     }
     if (typeof retainLiveGradeSeparations === 'function') {
         definition.gradeSeparations = retainLiveGradeSeparations(normalizedSegments, definition.gradeSeparations || []);
@@ -945,17 +990,20 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         && typeof resolveBuildingObstacles === 'function') {
         // A building this road already CUT or DEMOLISHED is exempt by id (below): it is gone from the
         // detection pool, so an edit never re-asks. Tunnels were the asymmetry — decided per EDGE
-        // (`tunnelEdgeKeys`), so a moved or extended edge lost the exemption the instant its key changed
-        // and re-prompted (and re-spliced portals, growing the centerline) for a building already
-        // tunnelled. `alreadyTunnelledIds` restores parity: a building with any LIVE tunnel record
-        // (retainLiveCorridorTunnelRecords has already run, so these are the tunnels the edit kept) is
-        // reused silently, never re-asked; only a genuinely new building reaches the dialog. Whole-
-        // building demolitions stay globally resolved because the building is absent and re-carved.
+        // (`tunnelEdgeKeys`), so a moved or extended edge re-prompted (and re-spliced portals, growing
+        // the centerline) for a building already tunnelled. `alreadyTunnelledIds` restores parity.
+        // CRUCIAL: read it from the PRE-EDIT snapshot, not the live `definition.tunnels`. Dragging a
+        // node that touches the tunnel span changes that edge's key, so retainLiveCorridorTunnelRecords
+        // has ALREADY dropped the record above — the live list is empty exactly when the building is
+        // still, obviously, tunnelled. The snapshot (frozen before the edit) still names every
+        // tunnelled building, so the reuse holds and the drag no longer re-asks nor re-portals.
         const fullyDemolishedIds = new Set();
         const tunnelEdgeKeys = new Set();
-        const alreadyTunnelledIds = new Set();
         (definition.tunnels || []).forEach(record => {
             if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
+        });
+        const alreadyTunnelledIds = new Set();
+        (definitionSnapshot.tunnels || []).forEach(record => {
             (record?.buildingIds || []).forEach(id => { if (id) alreadyTunnelledIds.add(String(id)); });
         });
         (definition.demolishedBuildings || []).forEach(record => {
@@ -1054,11 +1102,12 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 try { if (typeof refreshRoadNodeHandles === 'function') refreshRoadNodeHandles(); } catch (_) { }
                 return false;
             }
-            if (resolution.action === 'destroy' && (resolution.demolishedBuildings || []).length) {
+            // Per-building outcomes (the tour can mix destroy/cut/tunnel across the affected set).
+            if ((resolution.demolishedBuildings || []).length) {
                 definition.demolishedBuildings = definition.demolishedBuildings || [];
                 definition.demolishedBuildings.push(...resolution.demolishedBuildings);
             }
-            if (resolution.action === 'cut' && (resolution.cutHits || []).length
+            if ((resolution.cutHits || []).length
                 && typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
                 definition.demolishedBuildings = definition.demolishedBuildings || [];
                 const cutIds = new Set(resolution.cutHits.map(hit => String(hit.id)));
@@ -1070,17 +1119,18 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                         .forEach(hit => upsertCutRecord(definition.demolishedBuildings, hit, edgeRegion));
                 });
             }
-            if (resolution.action === 'tunnel') {
+            {
                 const removedOwners = new Set(resolution.removedProposalIds || []);
-                definition.tunnels = definition.tunnels || [];
                 // End-backwards per segment so splicing portals never shifts pending edge indices.
                 edgeHits.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
                 edgeHits.forEach(edge => {
                     const standing = edge.hits.filter(hit => {
+                        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
                     if (!standing.length) return;
+                    definition.tunnels = definition.tunnels || [];
                     // Tunnel only while inside the buildings: portals become centerline vertices.
                     const plan = (typeof clipCorridorEdgeThroughBuildings === 'function')
                         ? clipCorridorEdgeThroughBuildings(edge.from, edge.to, standing, editWidthForSegment(edge.segmentIndex))
@@ -3088,15 +3138,17 @@ async function handleRoadClick(e) {
                     ? await resolveBuildingObstacles(hits, 'road')
                     : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [], cutHits: [] };
                 if (resolution.action === 'cancel') return;
-                if (resolution.action === 'destroy') {
-                    roadDemolishedBuildings.push(...(resolution.demolishedBuildings || []));
+                // Per-building outcomes: destroy, cut and tunnel can all apply within this edge's set.
+                if ((resolution.demolishedBuildings || []).length) {
+                    roadDemolishedBuildings.push(...resolution.demolishedBuildings);
                 }
-                if (resolution.action === 'cut' && edgeRegion && typeof upsertCutRecord === 'function') {
-                    (resolution.cutHits || []).forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
+                if ((resolution.cutHits || []).length && edgeRegion && typeof upsertCutRecord === 'function') {
+                    resolution.cutHits.forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
                 }
-                if (resolution.action === 'tunnel') {
+                {
                     const removedOwners = new Set(resolution.removedProposalIds || []);
                     const standingHits = hits.filter(hit => {
+                        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
