@@ -2862,9 +2862,13 @@ const ProposalManager = {
             }
             try { if (typeof clearProposalPreviewLayers === 'function') clearProposalPreviewLayers(); } catch (_) { }
 
-            // Update visual layers and lists
-            if (typeof updateProposalLayer === 'function') updateProposalLayer();
-            if (typeof updateProposalList === 'function') updateProposalList();
+            // Rebuild every layer the deleted proposal fed — corridor strips + tunnel portals, parcel
+            // styles, parks/lakes/squares, proposed buildings, reparcellization, and the lists. Delete
+            // was the one mutation that hand-rolled a PARTIAL refresh (updateProposalLayer is a no-op
+            // stub), so a deleted road's strip and its tunnel portals stayed painted — the shared
+            // applied-corridor layer only ever clears and rebuilds as a unit, and nothing rebuilt it.
+            // Route delete through the same canonical refresh every other proposal mutation uses.
+            try { this._refreshUIAfterProposalChange(proposalData); } catch (_) { }
 
             // Hide proposal info panel if it's showing the deleted proposal
             try {
