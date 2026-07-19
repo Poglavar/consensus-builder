@@ -371,7 +371,13 @@
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
         maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
-        apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR });
+        // DOUBLE-SIDED, like the mask: the plinth is a solid earth block, but ExtrudeGeometry
+        // orients its side walls by the polygon's ring winding (GeoJSON/turf hand us clockwise
+        // rings about half the time), so a single-sided wall is back-face culled for half of all
+        // footprints — the camera then looks straight through the embankment into the hole and out
+        // to the sky. That is the residual light-blue seam: visible at grazing angles (the walls),
+        // never top-down (the cap's winding is auto-corrected by the shape triangulator).
+        apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         corridorUniforms.uCorridorMask.value = maskRT.texture;
     }
