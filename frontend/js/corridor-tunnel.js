@@ -534,7 +534,7 @@
         let message = count
             ? tunnelText(
                 'modal.corridorTunnel.offer',
-                'This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?',
+                'This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?',
                 { kind, count }
             )
             : '';

@@ -1306,7 +1306,7 @@
             "cancel": "Cancelar"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Cortarlos, demolerlos o hacer un túnel?",
+            "offer": "Este {{kind}} atravesaría {{count}} edificio(s) nuevo(s). ¿Cortarlos, demolerlos o hacer un túnel?",
             "road": "camino",
             "track": "vía férrea",
             "unapply": "Retirar la propuesta existente",

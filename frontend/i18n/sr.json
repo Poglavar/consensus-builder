@@ -1258,7 +1258,7 @@
             "cancel": "Odustani"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Preseći ih, srušiti ili prokopati tunel?",
+            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} novu zgradu/nove zgrade. Preseći ih, srušiti ili prokopati tunel?",
             "road": "put",
             "track": "pruga",
             "unapply": "Ukloni postojeći predlog sa mape",

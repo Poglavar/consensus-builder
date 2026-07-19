@@ -267,13 +267,18 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
     }
     const missing = [];
     const combinedHits = new Map();
+    // A building this road already tunnels ANYWHERE keeps that decision: a wider profile (or any edit)
+    // that newly grazes it must reuse the tunnel, never re-ask. Built once from the road's live tunnel
+    // records — the same whole-road, building-keyed rule the geometry-edit path uses, so a road's
+    // relation to a building is decided once and identically across every edit path.
+    const alreadyTunnelledIds = new Set();
+    list.forEach(record => (record?.buildingIds || []).forEach(id => { if (id) alreadyTunnelledIds.add(String(id)); }));
     (segments || []).forEach((segment, segmentIndex) => {
         for (let pointIndex = 0; pointIndex < segment.length - 1; pointIndex++) {
             const from = segment[pointIndex];
             const to = segment[pointIndex + 1];
             const edgeKey = corridorTunnelEdgeKey(from, to);
             if (!edgeKey) continue;
-            const existing = list.find(record => record?.edgeKey === edgeKey) || null;
             const polygon = calculateRoadPolygon([from, to], widthForSegment(segmentIndex));
             const detected = (polygon ? detectLoadedBuildingTunnelIntersections(polygon) : [])
                 .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
@@ -287,8 +292,10 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
                 }
             }
             const hits = detected.filter(hit => !cutRecordIds.has(String(hit.id)));
-            const existingIds = new Set((existing?.buildingIds || []).map(String));
-            const newHits = hits.filter(hit => !existingIds.has(String(hit.id)));
+            // Reuse across the WHOLE road, not just this edge: a building tunnelled on any edge is
+            // exempt here too, so a wider profile that newly grazes it never re-asks (parity with the
+            // geometry-edit path — a road's decision about a building is made once, everywhere).
+            const newHits = hits.filter(hit => !alreadyTunnelledIds.has(String(hit.id)));
             if (!newHits.length) continue;
             newHits.forEach(hit => combinedHits.set(hit.id, hit));
             missing.push({
@@ -931,14 +938,20 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
 
     if (typeof detectLoadedBuildingTunnelIntersections === 'function'
         && typeof resolveBuildingObstacles === 'function') {
-        // Tunnel decisions belong to exact edges, not globally to a building. A building can be
-        // tunnelled on one unchanged edge while a newly moved edge hits it somewhere else; only
-        // `tunnelEdgeKeys` may exempt the former. Whole-building demolitions remain globally
-        // resolved because the building is already absent and is re-carved from its stored geometry.
+        // A building this road already CUT or DEMOLISHED is exempt by id (below): it is gone from the
+        // detection pool, so an edit never re-asks. Tunnels were the asymmetry — decided per EDGE
+        // (`tunnelEdgeKeys`), so a moved or extended edge lost the exemption the instant its key changed
+        // and re-prompted (and re-spliced portals, growing the centerline) for a building already
+        // tunnelled. `alreadyTunnelledIds` restores parity: a building with any LIVE tunnel record
+        // (retainLiveCorridorTunnelRecords has already run, so these are the tunnels the edit kept) is
+        // reused silently, never re-asked; only a genuinely new building reaches the dialog. Whole-
+        // building demolitions stay globally resolved because the building is absent and re-carved.
         const fullyDemolishedIds = new Set();
         const tunnelEdgeKeys = new Set();
+        const alreadyTunnelledIds = new Set();
         (definition.tunnels || []).forEach(record => {
             if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
+            (record?.buildingIds || []).forEach(id => { if (id) alreadyTunnelledIds.add(String(id)); });
         });
         (definition.demolishedBuildings || []).forEach(record => {
             if (!record.remainder) fullyDemolishedIds.add(String(record.id));
@@ -995,7 +1008,11 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                             .forEach(hit => upsertCutRecord(definition.demolishedBuildings, hit, edgeRegion));
                     }
                 }
-                const hits = detected.filter(hit => !dragCutIds.has(String(hit.id)));
+                // Only genuinely new buildings reach the dialog: an already-cut (dragCutIds) or
+                // already-tunnelled (alreadyTunnelledIds) building keeps its prior decision silently —
+                // no re-ask, and for a tunnel no re-spliced portals, so a plain drag or extend stops
+                // growing the centerline with fresh vertices.
+                const hits = detected.filter(hit => !dragCutIds.has(String(hit.id)) && !alreadyTunnelledIds.has(String(hit.id)));
                 if (hits.length) {
                     edgeHits.push({
                         from: segment[i],

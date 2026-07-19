@@ -1257,7 +1257,7 @@
             "cancel": "Cancel"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?",
+            "offer": "This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?",
             "road": "road",
             "track": "track",
             "unapply": "Unapply existing proposal",
