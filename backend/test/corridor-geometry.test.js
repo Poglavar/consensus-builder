@@ -204,6 +204,49 @@ describe('normalizeCorridorGraph', () => {
         expect(segmentIds.slice(1).every(Boolean)).toBe(true);
     });
 
+    it('splits a through-road at a T-junction so each arm is its own segment', () => {
+        // A straight road A, and a connector B whose endpoint lands on A's mid-span.
+        const A = [P(0, 0), P(0, 10)];
+        const B = [P(0, 5), P(5, 5)];
+        const segments = [A, B];
+        const segmentIds = ['A', 'B'];
+        const profiles = { A: { strips: [{ type: 'driving', width: 8 }] } };
+
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+
+        // A becomes two arms (A, A~…) plus the connector B — three independently-id'd segments.
+        expect(segments).toHaveLength(3);
+        expect(segmentIds).toHaveLength(segments.length);
+        const armIds = segmentIds.filter(id => id === 'A' || String(id).startsWith('A~'));
+        expect(armIds).toHaveLength(2);
+        // Both arms keep A's cross-section (a split arm cannot silently revert to the default).
+        armIds.forEach(id => expect(profiles[String(id)]).toEqual(profiles.A));
+        // The junction (0,5) is an endpoint shared by ≥3 stretches — a real degree-3 graph node.
+        const atJunction = segments.filter(s =>
+            (Math.abs(s[0].lat) < 1e-9 && Math.abs(s[0].lng - 5) < 1e-9)
+            || (Math.abs(s[s.length - 1].lat) < 1e-9 && Math.abs(s[s.length - 1].lng - 5) < 1e-9));
+        expect(atJunction.length).toBeGreaterThanOrEqual(3);
+
+        // Convergent: re-running does not split further.
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+        expect(segments).toHaveLength(3);
+    });
+
+    it('splits both roads at an X-crossing into four arms', () => {
+        const segments = [[P(-5, 0), P(5, 0)], [P(0, -5), P(0, 5)]];
+        const segmentIds = ['A', 'B'];
+        normalizeCorridorGraph(segments, segmentIds);
+        expect(segments).toHaveLength(4);
+        expect(segmentIds).toHaveLength(4);
+    });
+
+    it('leaves a lone road with no junction as one segment', () => {
+        const segments = [[P(0, 0), P(0, 5), P(0, 10)]];
+        const segmentIds = ['A'];
+        normalizeCorridorGraph(segments, segmentIds);
+        expect(segments).toHaveLength(1);
+    });
+
     it('upgrades an already-stored definition without changing its footprint metadata', () => {
         const polygon = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [0, 0]]] };
         const definition = {

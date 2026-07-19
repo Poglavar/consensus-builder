@@ -200,10 +200,17 @@
         return points.slice(1).some(point => !corridorPointsNear(point, points[0]));
     }
 
-    // Once a self-crossing has two copies of the same junction vertex along one polyline, split the
-    // traversal at those copies. The result is the actual graph: simple stretches whose endpoints
-    // share junction coordinates. Keeping the self-crossing traversal as one strip is not merely a
-    // rendering issue — it gives the editor no graph node and hands triangulation an invalid bowtie.
+    // Split every polyline at its graph junctions so each stretch between junctions is its own
+    // segment — a real node the editor can grab and an arm whose cross-section edits independently.
+    // Two kinds of junction split here:
+    //   • self-crossing — one polyline passes through the same vertex twice (a star/loop); and
+    //   • shared node — a vertex a through-road carries in its INTERIOR that another polyline also
+    //     touches (a T where one road's endpoint meets another's mid-span, or an X crossing). Without
+    //     this the through-road stayed one segment across the junction, so its two arms shared an id
+    //     and were width-edited together. (The name is historical — it now splits at all junctions,
+    //     not only self ones.) Splitting is topology-only: every vertex and edge stays where it was.
+    // Only INTERIOR occurrences split; a shared node that is already a polyline endpoint is a segment
+    // boundary already, so the pass is convergent (re-running it changes nothing).
     //
     // `segmentProfiles` is mutated deliberately. A split stretch gets a stable derived id and a clone
     // of the source override, so graph normalization cannot repaint part of a mixed-width network.
@@ -243,6 +250,29 @@
             });
         };
 
+        // A node key that appears in two or more DISTINCT polylines is a cross-polyline junction (T or
+        // X). Count the distinct polylines each key touches once, up front, so the per-polyline walk
+        // below can split a through-road where another road meets its mid-span — not only at a
+        // polyline's own self-crossings. (Repeats within one polyline are still caught per-segment.)
+        const crossPolylineKeys = new Set();
+        {
+            const keyToSegments = new Map();
+            segments.forEach((rawSegment, segmentIndex) => {
+                if (!Array.isArray(rawSegment) || rawSegment.length < 2) return;
+                const closed = rawSegment.length > 2 && corridorPointsNear(rawSegment[0], rawSegment[rawSegment.length - 1]);
+                const seenHere = new Set();
+                (closed ? rawSegment.slice(0, -1) : rawSegment).forEach(point => {
+                    if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+                    const key = corridorNodeKey(point);
+                    if (!key || seenHere.has(key)) return;
+                    seenHere.add(key);
+                    if (!keyToSegments.has(key)) keyToSegments.set(key, new Set());
+                    keyToSegments.get(key).add(segmentIndex);
+                });
+            });
+            keyToSegments.forEach((segIndexes, key) => { if (segIndexes.size > 1) crossPolylineKeys.add(key); });
+        }
+
         segments.forEach((rawSegment, segmentIndex) => {
             if (!Array.isArray(rawSegment) || rawSegment.length < 2) return;
             const sourceId = ids[segmentIndex] ?? null;
@@ -261,7 +291,9 @@
                 if (!representatives.has(key)) representatives.set(key, point);
             });
             const junctionKeys = new Set(
-                [...occurrences.entries()].filter(([, indexes]) => indexes.length > 1).map(([key]) => key)
+                [...occurrences.entries()]
+                    .filter(([key, indexes]) => indexes.length > 1 || crossPolylineKeys.has(key))
+                    .map(([key]) => key)
             );
 
             // A simple closed loop repeats only its seam in rawSegment; it was removed from `base`,
