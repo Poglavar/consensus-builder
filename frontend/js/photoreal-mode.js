@@ -85,6 +85,7 @@
     let loaderTextEl = null;
     let fpsEl = null;
     let seatDebugEl = null;
+    let coverEl = null; // opaque loading cover hiding the abstract 3D during a URL-driven rw entry
     let fpsFrames = 0;
     let fpsSinceS = 0;
 
@@ -114,6 +115,23 @@
         statusEl.style.display = msg ? 'block' : 'none';
     }
 
+    // On a URL-driven rw entry, cover the abstract 3D while Google tiles stream, so the view goes
+    // 2D -> loading -> composed rw instead of flashing the flat plan first. Removed at first-seat
+    // (the composed reveal). z-index sits below the controls panel/mode buttons, so 2D still works.
+    function showCover() {
+        const host = containerEl();
+        if (!host || coverEl) return;
+        coverEl = document.createElement('div');
+        coverEl.className = 'photoreal-cover';
+        coverEl.innerHTML = '<div class="photoreal-cover-spinner"></div>'
+            + '<div class="photoreal-cover-text">'
+            + photorealI18n('threeMode.controls.streamingTiles', 'Loading photorealistic view…') + '</div>';
+        host.appendChild(coverEl);
+    }
+    function hideCover() {
+        if (coverEl) { try { coverEl.remove(); } catch (_) { } coverEl = null; }
+    }
+
     function updateLoader(progress) {
         const host = containerEl();
         if (!host) return;
@@ -132,10 +150,10 @@
     }
 
     function removeUiElements() {
-        [statusEl, loaderEl, fpsEl, seatDebugEl].forEach(function (el) {
+        [statusEl, loaderEl, fpsEl, seatDebugEl, coverEl].forEach(function (el) {
             if (el) { try { el.remove(); } catch (_) { } }
         });
-        statusEl = loaderEl = loaderTextEl = fpsEl = seatDebugEl = null;
+        statusEl = loaderEl = loaderTextEl = fpsEl = seatDebugEl = coverEl = null;
     }
 
     // ---- seating (port of the sim's lockTrackHeightOnce) ----
@@ -827,6 +845,7 @@
                 renderCarveMask(t.x, t.y);
             }
         }
+        if (grounded && coverEl) hideCover(); // composed scene is up — drop the loading cover
         if (fpsEl) {
             fpsFrames += 1;
             fpsSinceS += dtS;
@@ -839,7 +858,7 @@
     }
 
     // ---- activate / deactivate ----
-    async function activate() {
+    async function activate(options) {
         if (active) return;
         // Direct calls (URL-driven entry) can arrive before 3D mode is up — route through
         // the same enter-3D-first path the globe button takes, then re-enter here. Only when
@@ -876,6 +895,10 @@
             const frame = window.__photorealFrame;
             if (!frame) throw new Error('photoreal-frame helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
+
+            // URL-driven entry (frameProposal): hide the abstract 3D behind a loading cover until
+            // the composed scene is ready. Skip it when reusing an already-seated session (instant).
+            if (options && options.frameProposal && !grounded) showCover();
 
             // Reuse the streamed session when re-entering at the same anchor. Google's tile
             // URLs carry a per-session token, so a dispose-and-rebuild both defeats the HTTP
@@ -1009,6 +1032,7 @@
     function deactivate(options) {
         options = options || {};
         active = false;
+        hideCover(); // never let the loading cover outlive the mode (e.g. no-coverage fallback)
         if (typeof window.unregisterThreeModeFrameHook === 'function') {
             window.unregisterThreeModeFrameHook(onFrame);
         }
