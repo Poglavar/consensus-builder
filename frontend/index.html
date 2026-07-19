@@ -5,9 +5,8 @@
     <base href="/">
     <title>Consensus Builder</title>
     <meta charset="utf-8" />
-    <!-- Capture ?seat before the share flow rewrites the /proposals/... URL and drops the query;
-         photoreal-mode reads this back to show its on-screen seating diagnostic. -->
-    <script>try{if(new URLSearchParams(location.search).has('seat'))sessionStorage.setItem('cbSeatDebug','1');}catch(e){}</script>
+    <!-- Capture photoreal diagnostics before the share flow rewrites /proposals/... and drops the query. -->
+    <script>try{(function(){var params=new URLSearchParams(location.search);if(params.has('seat'))sessionStorage.setItem('cbSeatDebug','1');if(params.has('seam'))sessionStorage.setItem('cbPhotorealSeam',params.get('seam'));})();}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Open Graph / Social Media Meta Tags -->
@@ -1550,6 +1549,8 @@
             'js/elevated-rail-3d.js',
             'js/three-mode.js',
             'js/photoreal-frame.js',
+            'js/photoreal-ground.js',
+            'js/photoreal-seam.js',
             'js/photoreal-mode.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',

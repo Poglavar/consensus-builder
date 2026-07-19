@@ -39,6 +39,27 @@
         } catch (_) { return false; }
     }
 
+    // Experimental exact caps for every Google mesh triangle crossed by a full-discard boundary.
+    // `debug` uses the same geometry as `mesh`, but renders it visibly through everything so we
+    // can distinguish bad placement from a texture/depth-order problem. Persist like ?seat because
+    // proposal-route normalization can remove query parameters early.
+    function meshSeamMode() {
+        try {
+            const params = new URLSearchParams(window.location.search || '');
+            if (params.has('seam')) sessionStorage.setItem('cbPhotorealSeam', params.get('seam'));
+            const mode = sessionStorage.getItem('cbPhotorealSeam');
+            return mode === 'mesh' || mode === 'debug' ? mode : 'off';
+        } catch (_) { return 'off'; }
+    }
+
+    function meshSeamCapsActive() {
+        return meshSeamMode() !== 'off';
+    }
+
+    function meshSeamDebugActive() {
+        return meshSeamMode() === 'debug';
+    }
+
     // ---- lazy tiles library (ESM, resolved through the page's import map) ----
     let TilesRenderer, CesiumIonAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin,
         ReorientationPlugin, DRACOLoaderCtor;
@@ -74,6 +95,8 @@
     let grounded = false;
     let builtVisible = true; // three-mode's Built row drives the mesh while the layer is up
     let lockSamples = [];
+    let lockedGroundZ = null; // final pre-seat height chosen by the temporal stability gate
+    let lastProbeSummary = null; // raw round distribution, exposed by ?seat for ground-vs-roof diagnosis
     let lockWaitS = 0;
     let lockAccumS = 0;
     let seatDebugAccumS = 0;
@@ -88,6 +111,13 @@
     let coverEl = null; // opaque loading cover hiding the abstract 3D during a URL-driven rw entry
     let fpsFrames = 0;
     let fpsSinceS = 0;
+    const loadedTileScenes = new Set();
+    let tileSeamCaps = new WeakMap();
+    let seamScheduled = new WeakMap();
+    let seamBoundaryGrid = null;
+    let seamGeneration = 0;
+    let seamReadyScenes = 0;
+    let seamCapSegments = 0;
 
     const containerEl = () => document.getElementById('three-container');
     const toggleBtn = () => document.getElementById('mode-realistic-toggle');
@@ -201,7 +231,15 @@
                 // p25 of the round, not its minimum: the minimum over-corrects into pits (a
                 // sunken rail trench in Zagreb seated the streets ABOVE the proposals), while
                 // roofs and canopy only ever populate the top of the distribution.
-                groundZ = zs[Math.min(zs.length - 1, Math.floor(zs.length * 0.25))];
+                const p25Index = Math.min(zs.length - 1, Math.floor(zs.length * 0.25));
+                groundZ = zs[p25Index];
+                lastProbeSummary = {
+                    count: zs.length,
+                    min: zs[0],
+                    p25: groundZ,
+                    median: zs[Math.floor(zs.length / 2)],
+                    max: zs[zs.length - 1]
+                };
             }
         } catch (_) { return; }
         if (groundZ === null) return;
@@ -215,6 +253,7 @@
         if (!stable && lockWaitS < LOCK_MAX_WAIT_S) return;
         const sorted = lockSamples.slice().sort(function (a, b) { return a - b; });
         const use = stable ? lockSamples[lockSamples.length - 1] : sorted[Math.floor(sorted.length / 2)];
+        lockedGroundZ = use;
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
@@ -265,8 +304,9 @@
     // the table) but never the UPHILL ones (ground above it): a downward wall cannot fill an upward
     // gap, and that was the residual light-blue. So we sample the tile mesh's real height along
     // every cut edge — a coarse grid raycast once per seating and cached (the terrain doesn't move)
-    // — and build the earth wall from the content up OR down to that height, meeting the rim
-    // wherever it sits. A flat earth cap over the footprint handles the top-down view + razed pad.
+    // — clean that noisy top-surface grid into a bare-ground estimate, then build the earth wall
+    // from the content up OR down to that height, meeting the rim wherever it sits. A flat earth
+    // cap over the footprint handles the top-down view + razed pad.
     const CARVE_APRON_TOP_Z = -0.02;    // cap height: just under the z=0 content
     const CARVE_PLINTH_DEPTH_M = 4;     // fallback skirt depth where no terrain sample is available
     const CARVE_APRON_COLOR = 0x6e7563; // muted earth-green: plausible under grass and asphalt alike
@@ -281,6 +321,17 @@
     const CARVE_KEEPVEG_BAND_M = 1.0;
     const TERRAIN_GRID_MAX = 22;           // grid samples per axis (<= ~484 raycasts, once per seat)
     const TERRAIN_GRID_MIN_CELL_M = 12;    // target grid spacing in scene metres
+    // The ray grid is a digital-surface model (roofs/canopy included). A 5x5 morphological opening
+    // finds the locally continuous low envelope without the rejected per-column minimum, whose
+    // underside/coarse-tile hits warped the terrain. Only features >=1.5 m above that envelope move.
+    const TERRAIN_OPENING_RADIUS_CELLS = 2;
+    const TERRAIN_OBSTACLE_MIN_HEIGHT_M = 1.5;
+    const TERRAIN_GAP_FILL_PASSES = 2;
+    // ?seam=mesh prototype: intersect streamed triangles with the actual vector cut boundary and
+    // give every clipped surface (ground, canopy, roof, facade) a short texture-matched fascia.
+    // The earth curtain still handles the ground-to-road elevation difference below it.
+    const MESH_SEAM_CAP_DEPTH_M = 1.25;
+    const MESH_SEAM_GRID_CELL_M = 16;
 
     let maskRT = null;
     let maskScene = null;
@@ -290,7 +341,7 @@
     let apronGroup = null;
     let apronMaterial = null;
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
-    let terrainGrid = null; // cached tile-height field, sampled once per seating (see the curtain)
+    let terrainGrid = null; // cached cleaned ground field, sampled once per covered plan extent
     let groundTexture = null; // DataTexture of terrainGrid heights, fed to the keep-veg shader
     let maskReady = false;
     let maskCenterX = 0;
@@ -306,7 +357,7 @@
         uCorridorScale: { value: 1 / (2 * MASK_WINDOW_HALF_M) },
         uCorridorOn: { value: 0 },
         uFloorZ: { value: CARVE_FLOOR_Z },
-        // Keep-vegetation (green mask channel = parks): discard only the tile ground layer, below
+        // Keep-vegetation (green mask channel = parks only): discard the tile ground layer below
         // groundHeight + band, so hedges/trees stay standing instead of being sliced into windows.
         uGroundTex: { value: null },       // DataTexture of tile ground heights over the plan bbox
         uGroundMin: { value: null },       // THREE.Vector2, grid origin in scene XY
@@ -372,12 +423,12 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
-                // keep-veg: a road removes the ground it paves but must not slice the roadside
-                // hedges/trees into transparent shells — they stand as real greenery.
-                // buffer 0: the 1.2 m anti-comb dilation exists for building FACADES; a flat road
-                // has none, and the ring it leaves shows as an olive apron strip beside the road.
-                // With no dilation the road mesh covers its cut and meets the terrain directly.
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg', buffer: 0 });
+                // Roads need a deterministic full cut. A keep-vegetation cut depends on the cached
+                // terrain heightfield; when finer tile LODs replace the surface after that one-time
+                // sample, their ground can rise above the stale cutoff and occlude the road again.
+                // buffer 0 keeps this full cut exact: vegetation beside the paved footprint remains,
+                // while anything actually inside the replacement road is intentionally removed.
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'full', buffer: 0 });
             }
         });
         // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
@@ -500,29 +551,287 @@
         return out;
     }
 
+    function appendSeamRingSegments(ring, out) {
+        if (!Array.isArray(ring) || ring.length < 2) return;
+        for (let i = 1; i < ring.length; i++) {
+            const a = ring[i - 1];
+            const b = ring[i];
+            if (!a || !b || (a[0] === b[0] && a[1] === b[1])) continue;
+            out.push({ a: [a[0], a[1]], b: [b[0], b[1]] });
+        }
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        if (first && last && (first[0] !== last[0] || first[1] !== last[1])) {
+            out.push({ a: [last[0], last[1]], b: [first[0], first[1]] });
+        }
+    }
+
+    function disposeTileSeamCaps(scene) {
+        const record = scene && tileSeamCaps.get(scene);
+        if (!record) return;
+        (record.caps || []).forEach(function (cap) {
+            try { if (cap.parent) cap.parent.remove(cap); } catch (_) { }
+            try { if (cap.geometry) cap.geometry.dispose(); } catch (_) { }
+            try { if (cap.material) cap.material.dispose(); } catch (_) { }
+        });
+        seamReadyScenes = Math.max(0, seamReadyScenes - 1);
+        seamCapSegments = Math.max(0, seamCapSegments - (record.segmentCount || 0));
+        tileSeamCaps.delete(scene);
+    }
+
+    function clearAllTileSeamCaps() {
+        seamGeneration += 1;
+        loadedTileScenes.forEach(disposeTileSeamCaps);
+        tileSeamCaps = new WeakMap();
+        seamScheduled = new WeakMap();
+        seamReadyScenes = 0;
+        seamCapSegments = 0;
+    }
+
+    function seamMaterialFor(sourceMaterial) {
+        const THREE = window.THREE;
+        if (meshSeamDebugActive()) {
+            const debugMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff00d4,
+                side: THREE.DoubleSide,
+                depthTest: false,
+                depthWrite: false,
+                transparent: true,
+                opacity: 1,
+                fog: false,
+                toneMapped: false
+            });
+            debugMaterial.name = 'PhotorealSeamCapDebugMaterial';
+            debugMaterial.userData.__photorealSeamCapMaterial = true;
+            return debugMaterial;
+        }
+        const color = sourceMaterial && sourceMaterial.color
+            ? sourceMaterial.color.clone()
+            : new THREE.Color(CARVE_APRON_COLOR);
+        const material = new THREE.MeshBasicMaterial({
+            color: color,
+            map: sourceMaterial && sourceMaterial.map ? sourceMaterial.map : null,
+            side: THREE.DoubleSide,
+            depthTest: true,
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: -1,
+            polygonOffsetUnits: -1
+        });
+        material.name = 'PhotorealSeamCapMaterial';
+        material.userData.__photorealSeamCapMaterial = true;
+        return material;
+    }
+
+    function sourceMaterialAt(mesh, materialIndex) {
+        if (Array.isArray(mesh.material)) {
+            return mesh.material[materialIndex] || mesh.material[0] || null;
+        }
+        return mesh.material || null;
+    }
+
+    function materialIndexAtOffset(groups, offset) {
+        for (let i = 0; i < groups.length; i++) {
+            const group = groups[i];
+            if (offset >= group.start && offset < group.start + group.count) {
+                return Number(group.materialIndex) || 0;
+            }
+        }
+        return 0;
+    }
+
+    function interpolatedUv(uvAttribute, indices, barycentric) {
+        if (!uvAttribute) return [0, 0];
+        let u = 0;
+        let v = 0;
+        for (let i = 0; i < 3; i++) {
+            u += uvAttribute.getX(indices[i]) * barycentric[i];
+            v += uvAttribute.getY(indices[i]) * barycentric[i];
+        }
+        return [u, v];
+    }
+
+    function appendSeamQuad(bucket, hit, uvAttribute, indices, inverseWorld, scratch) {
+        const start = hit.start.position;
+        const end = hit.end.position;
+        const startBottom = [start[0], start[1], start[2] - MESH_SEAM_CAP_DEPTH_M];
+        const endBottom = [end[0], end[1], end[2] - MESH_SEAM_CAP_DEPTH_M];
+        const toLocal = function (point) {
+            scratch.set(point[0], point[1], point[2]).applyMatrix4(inverseWorld);
+            return [scratch.x, scratch.y, scratch.z];
+        };
+        const topA = toLocal(start);
+        const bottomA = toLocal(startBottom);
+        const topB = toLocal(end);
+        const bottomB = toLocal(endBottom);
+        bucket.positions.push(
+            topA[0], topA[1], topA[2], bottomA[0], bottomA[1], bottomA[2], bottomB[0], bottomB[1], bottomB[2],
+            topA[0], topA[1], topA[2], bottomB[0], bottomB[1], bottomB[2], topB[0], topB[1], topB[2]
+        );
+        const uvA = interpolatedUv(uvAttribute, indices, hit.start.barycentric);
+        const uvB = interpolatedUv(uvAttribute, indices, hit.end.barycentric);
+        bucket.uvs.push(
+            uvA[0], uvA[1], uvA[0], uvA[1], uvB[0], uvB[1],
+            uvA[0], uvA[1], uvB[0], uvB[1], uvB[0], uvB[1]
+        );
+        bucket.segmentCount += 1;
+    }
+
+    function buildMeshSeamCaps(mesh) {
+        const THREE = window.THREE;
+        const seam = window.__photorealSeam;
+        const geometry = mesh && mesh.geometry;
+        const position = geometry && geometry.attributes && geometry.attributes.position;
+        if (!THREE || !seam || !seamBoundaryGrid || !position
+            || mesh.isSkinnedMesh || mesh.isInstancedMesh || mesh.isBatchedMesh) return [];
+
+        if (!geometry.boundingBox) geometry.computeBoundingBox();
+        if (!geometry.boundingBox) return [];
+        const worldBox = geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld);
+        const meshBounds = {
+            minX: worldBox.min.x,
+            minY: worldBox.min.y,
+            maxX: worldBox.max.x,
+            maxY: worldBox.max.y
+        };
+        if (!seam.boundsOverlap(seamBoundaryGrid.bounds, meshBounds)) return [];
+
+        const index = geometry.index;
+        const uv = geometry.attributes.uv || null;
+        const elementCount = index ? index.count : position.count;
+        const drawStart = Math.max(0, Number(geometry.drawRange && geometry.drawRange.start) || 0);
+        const requestedCount = Number(geometry.drawRange && geometry.drawRange.count);
+        const drawEnd = Math.min(elementCount,
+            Number.isFinite(requestedCount) ? drawStart + requestedCount : elementCount);
+        const groups = Array.isArray(geometry.groups) ? geometry.groups : [];
+        const buckets = new Map();
+        const matrixWorld = mesh.matrixWorld;
+        const inverseWorld = matrixWorld.clone().invert();
+        const va = new THREE.Vector3();
+        const vb = new THREE.Vector3();
+        const vc = new THREE.Vector3();
+        const localScratch = new THREE.Vector3();
+        const vertexIndex = function (offset) { return index ? index.getX(offset) : offset; };
+
+        for (let offset = drawStart; offset + 2 < drawEnd; offset += 3) {
+            const ia = vertexIndex(offset);
+            const ib = vertexIndex(offset + 1);
+            const ic = vertexIndex(offset + 2);
+            va.fromBufferAttribute(position, ia).applyMatrix4(matrixWorld);
+            vb.fromBufferAttribute(position, ib).applyMatrix4(matrixWorld);
+            vc.fromBufferAttribute(position, ic).applyMatrix4(matrixWorld);
+            const triangleBounds = {
+                minX: Math.min(va.x, vb.x, vc.x),
+                minY: Math.min(va.y, vb.y, vc.y),
+                maxX: Math.max(va.x, vb.x, vc.x),
+                maxY: Math.max(va.y, vb.y, vc.y)
+            };
+            const candidates = seam.querySegmentGrid(seamBoundaryGrid, triangleBounds);
+            if (!candidates.length) continue;
+            const triangle = [va.toArray(), vb.toArray(), vc.toArray()];
+            const materialIndex = materialIndexAtOffset(groups, offset);
+            let bucket = buckets.get(materialIndex);
+            if (!bucket) {
+                bucket = { positions: [], uvs: [], segmentCount: 0, materialIndex: materialIndex };
+                buckets.set(materialIndex, bucket);
+            }
+            const indices = [ia, ib, ic];
+            candidates.forEach(function (segment) {
+                const hit = seam.intersectTriangleWithVerticalSegment(triangle, segment);
+                if (hit) appendSeamQuad(bucket, hit, uv, indices, inverseWorld, localScratch);
+            });
+        }
+
+        const caps = [];
+        buckets.forEach(function (bucket) {
+            if (!bucket.positions.length) return;
+            const capGeometry = new THREE.BufferGeometry();
+            capGeometry.setAttribute('position', new THREE.Float32BufferAttribute(bucket.positions, 3));
+            capGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(bucket.uvs, 2));
+            capGeometry.computeBoundingSphere();
+            const cap = new THREE.Mesh(capGeometry, seamMaterialFor(sourceMaterialAt(mesh, bucket.materialIndex)));
+            cap.name = 'PhotorealSeamCap';
+            cap.userData.__photorealSeamCap = true;
+            cap.userData.segmentCount = bucket.segmentCount;
+            cap.frustumCulled = false;
+            if (meshSeamDebugActive()) cap.renderOrder = 10000;
+            mesh.add(cap);
+            caps.push(cap);
+        });
+        return caps;
+    }
+
+    function buildTileSeamCaps(scene) {
+        if (!scene || !internals || !seamBoundaryGrid || !meshSeamCapsActive()) return;
+        disposeTileSeamCaps(scene);
+        try { internals.scene.updateMatrixWorld(true); } catch (_) { }
+        const sourceMeshes = [];
+        scene.traverse(function (object) {
+            if (object.isMesh && !object.userData.__photorealSeamCap) sourceMeshes.push(object);
+        });
+        const caps = [];
+        sourceMeshes.forEach(function (mesh) {
+            try { buildMeshSeamCaps(mesh).forEach(function (cap) { caps.push(cap); }); } catch (_) { }
+        });
+        const segmentCount = caps.reduce(function (sum, cap) {
+            return sum + (Number(cap.userData.segmentCount) || 0);
+        }, 0);
+        tileSeamCaps.set(scene, { caps: caps, segmentCount: segmentCount });
+        seamReadyScenes += 1;
+        seamCapSegments += segmentCount;
+    }
+
+    function scheduleTileSeamCaps(scene) {
+        if (!scene || !meshSeamCapsActive() || !seamBoundaryGrid) return;
+        if (tileSeamCaps.has(scene)) return;
+        const generation = seamGeneration;
+        if (seamScheduled.get(scene) === generation) return;
+        seamScheduled.set(scene, generation);
+        const run = function () {
+            if (seamScheduled.get(scene) !== generation) return;
+            seamScheduled.delete(scene);
+            if (generation !== seamGeneration || !loadedTileScenes.has(scene) || !active) return;
+            buildTileSeamCaps(scene);
+        };
+        if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(run, { timeout: 350 });
+        } else {
+            setTimeout(run, 0);
+        }
+    }
+
+    function replaceSeamBoundaryGrid(segments) {
+        clearAllTileSeamCaps();
+        const seam = window.__photorealSeam;
+        seamBoundaryGrid = meshSeamCapsActive() && seam && segments.length
+            ? seam.buildSegmentGrid(segments, MESH_SEAM_GRID_CELL_M)
+            : null;
+        if (seamBoundaryGrid) loadedTileScenes.forEach(function (scene) {
+            // Detached cached scenes do not inherit a later seating matrix until the renderer makes
+            // them active again. Their visibility event schedules them with the then-current frame.
+            if (scene.parent) scheduleTileSeamCaps(scene);
+        });
+    }
+
     // Raycast the SEATED tile mesh straight down at a scene-XY point; z is true metres, directly
-    // comparable to our content's z. Same setup and far-earth guard as the seating probe.
-    function sampleTileGroundZ(x, y) {
+    // comparable to our content's z. This deliberately returns the FIRST/top surface. Taking the
+    // lowest hit in each column was rejected: overlapping coarse tiles and mesh undersides produced
+    // false pits. buildTerrainGrid removes canopy/roofs spatially after all columns are sampled.
+    function sampleTileSurfaceZ(x, y) {
         const THREE = window.THREE;
         if (!THREE || !tiles) return null;
         try {
             const raycaster = new THREE.Raycaster(new THREE.Vector3(x, y, 4000), new THREE.Vector3(0, 0, -1), 0, 9000);
             const hits = raycaster.intersectObject(tiles.group, true);
-            for (let i = 0; i < hits.length; i++) {
-                const z = hits[i].point.z;
-                if (Math.abs(z) <= FAR_EARTH_LIMIT_M) return z;
-            }
+            return window.__photorealGround.selectTopSurfaceHeight(hits.map(function (hit) {
+                return hit && hit.point ? hit.point.z : NaN;
+            }), FAR_EARTH_LIMIT_M);
         } catch (_) { }
         return null;
     }
 
-    // Sample a coarse tile-height grid over the bbox of all carve footprints, ONCE. The tile mesh
-    // has no BVH, so per-vertex raycasting every rebuild would hitch; the terrain doesn't move, so
-    // one grid (cast right after seating) serves every wall, and isolation/carve changes reuse it.
-    function buildTerrainGrid(entries) {
-        if (!internals || !tiles) { terrainGrid = null; return; }
-        // The seat shift was just applied — bake it into the world matrices before we raycast.
-        try { internals.scene.updateMatrixWorld(true); } catch (_) { }
+    function terrainBoundsForEntries(entries) {
+        if (!internals) return null;
         const toXY = internals.latLngToXY;
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         entries.forEach(function (entry) {
@@ -534,19 +843,36 @@
                 });
             });
         });
-        if (!isFinite(minX)) { terrainGrid = null; return; }
+        if (!isFinite(minX)) return null;
         const pad = CARVE_CORE_BUFFER_M + 6;
-        minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+        return { minX: minX - pad, minY: minY - pad, maxX: maxX + pad, maxY: maxY + pad };
+    }
+
+    // Sample a coarse tile-height grid over the bbox of all carve footprints, ONCE. The tile mesh
+    // has no BVH, so per-vertex raycasting every rebuild would hitch; the terrain doesn't move, so
+    // one grid serves every wall. A later carve outside the cached extent triggers a larger rebuild.
+    function buildTerrainGrid(entries, suppliedBounds) {
+        if (!internals || !tiles) { terrainGrid = null; return; }
+        // The seat shift was just applied — bake it into the world matrices before we raycast.
+        try { internals.scene.updateMatrixWorld(true); } catch (_) { }
+        const bounds = suppliedBounds || terrainBoundsForEntries(entries);
+        if (!bounds) { terrainGrid = null; return; }
+        const minX = bounds.minX, minY = bounds.minY, maxX = bounds.maxX, maxY = bounds.maxY;
         const w = Math.max(1, maxX - minX), h = Math.max(1, maxY - minY);
         const nx = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(w / TERRAIN_GRID_MIN_CELL_M) + 1));
         const ny = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(h / TERRAIN_GRID_MIN_CELL_M) + 1));
-        const z = new Float32Array(nx * ny);
+        const rawZ = new Float32Array(nx * ny);
         for (let j = 0; j < ny; j++) {
             for (let i = 0; i < nx; i++) {
-                const t = sampleTileGroundZ(minX + (w * i) / (nx - 1), minY + (h * j) / (ny - 1));
-                z[j * nx + i] = (t === null || !isFinite(t)) ? NaN : t;
+                const t = sampleTileSurfaceZ(minX + (w * i) / (nx - 1), minY + (h * j) / (ny - 1));
+                rawZ[j * nx + i] = (t === null || !isFinite(t)) ? NaN : t;
             }
         }
+        const z = window.__photorealGround.cleanGroundGrid(rawZ, nx, ny, {
+            openingRadiusCells: TERRAIN_OPENING_RADIUS_CELLS,
+            obstacleMinHeightM: TERRAIN_OBSTACLE_MIN_HEIGHT_M,
+            gapFillPasses: TERRAIN_GAP_FILL_PASSES
+        });
         terrainGrid = { minX: minX, minY: minY, dx: w / (nx - 1), dy: h / (ny - 1), nx: nx, ny: ny, z: z };
         updateGroundTexture();
     }
@@ -576,21 +902,9 @@
     }
 
     // Bilinear tile height at a scene-XY point from the cached grid; null if outside it or if every
-    // surrounding sample missed the mesh (partial hits average what did land).
+    // surrounding sample missed the mesh. Partial NoData weights are renormalised by the helper.
     function terrainZAt(x, y) {
-        const g = terrainGrid;
-        if (!g) return null;
-        const fx = (x - g.minX) / g.dx, fy = (y - g.minY) / g.dy;
-        if (fx < 0 || fy < 0 || fx > g.nx - 1 || fy > g.ny - 1) return null;
-        const i0 = Math.floor(fx), j0 = Math.floor(fy);
-        const i1 = Math.min(i0 + 1, g.nx - 1), j1 = Math.min(j0 + 1, g.ny - 1);
-        const tx = fx - i0, ty = fy - j0;
-        const z00 = g.z[j0 * g.nx + i0], z10 = g.z[j0 * g.nx + i1], z01 = g.z[j1 * g.nx + i0], z11 = g.z[j1 * g.nx + i1];
-        const finite = [z00, z10, z01, z11].filter(function (v) { return isFinite(v); });
-        if (!finite.length) return null;
-        if (finite.length < 4) return finite.reduce(function (a, b) { return a + b; }, 0) / finite.length;
-        const a = z00 * (1 - tx) + z10 * tx, b = z01 * (1 - tx) + z11 * tx;
-        return a * (1 - ty) + b * ty;
+        return window.__photorealGround.sampleBilinear(terrainGrid, x, y);
     }
 
     // A terrain-conforming earth wall around one ring: at each vertex the wall spans from the
@@ -638,9 +952,14 @@
         apronGroup.name = 'PhotorealCarvePlinth';
         const toXY = internals.latLngToXY;
         const entries = collectCarveGeometries();
+        const seamSegments = [];
         // Terrain sampling must never break the seal: a failure just leaves the grid null, and the
         // curtain falls back to the fixed skirt (old plinth behaviour).
-        if (!terrainGrid) { try { buildTerrainGrid(entries); } catch (_) { terrainGrid = null; } }
+        const terrainBounds = terrainBoundsForEntries(entries);
+        if (terrainBounds && (!terrainGrid
+            || !window.__photorealGround.coversBounds(terrainGrid, terrainBounds))) {
+            try { buildTerrainGrid(entries, terrainBounds); } catch (_) { terrainGrid = null; }
+        }
         entries.forEach(function (entry) {
             try {
                 const buf = (typeof entry.buffer === 'number') ? entry.buffer : CARVE_CORE_BUFFER_M;
@@ -648,6 +967,9 @@
                 const keepVeg = (entry.mode === 'keepveg');
                 const maskMat = keepVeg ? maskMaterialPark : maskMaterial;
                 polygonShapesAndRings(core, toXY).forEach(function (sr) {
+                    if (!keepVeg && meshSeamCapsActive()) {
+                        sr.rings.forEach(function (ring) { appendSeamRingSegments(ring, seamSegments); });
+                    }
                     const mask = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMat);
                     mask.frustumCulled = false;
                     // No depth buffer on the mask RT, so draw order decides overlaps: full discard
@@ -664,6 +986,7 @@
         });
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
+        replaceSeamBoundaryGrid(seamSegments);
     }
 
     function renderCarveMask(cx, cy) {
@@ -747,11 +1070,25 @@
 
     function onTileModelLoad(ev) {
         if (!ev || !ev.scene) return;
+        loadedTileScenes.add(ev.scene);
         ev.scene.traverse(function (o) {
             if (!o.isMesh || !o.material) return;
             if (Array.isArray(o.material)) o.material.forEach(patchTileMaterial);
             else patchTileMaterial(o.material);
         });
+        if (grounded && ev.scene.parent) scheduleTileSeamCaps(ev.scene);
+    }
+
+    function onTileModelDispose(ev) {
+        if (!ev || !ev.scene) return;
+        disposeTileSeamCaps(ev.scene);
+        loadedTileScenes.delete(ev.scene);
+        seamScheduled.delete(ev.scene);
+    }
+
+    function onTileVisibilityChange(ev) {
+        if (!ev || !ev.visible || !ev.scene || !grounded) return;
+        scheduleTileSeamCaps(ev.scene);
     }
 
     function disposeMask() {
@@ -764,6 +1101,7 @@
         maskMaterialPark = null;
         apronMaterial = null;
         terrainGrid = null;
+        replaceSeamBoundaryGrid([]);
         if (groundTexture) { try { groundTexture.dispose(); } catch (_) { } groundTexture = null; }
         corridorUniforms.uGroundTex.value = null;
         maskReady = false;
@@ -799,7 +1137,8 @@
             seatDebugAccumS += dtS;
             if (seatDebugAccumS >= 0.5) {
                 seatDebugAccumS = 0;
-                let g0 = null; try { g0 = sampleTileGroundZ(0, 0); } catch (_) { }
+                let surface0 = null; try { surface0 = sampleTileSurfaceZ(0, 0); } catch (_) { }
+                let terrain0 = null; try { terrain0 = terrainZAt(0, 0); } catch (_) { }
                 if (!seatDebugEl) {
                     // Fixed to the viewport (not the container) and above the 2D/3D buttons — the
                     // status toast at top-12px is hidden behind the controls panel on mobile.
@@ -807,12 +1146,36 @@
                     seatDebugEl.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);'
                         + 'z-index:100000;background:rgba(20,22,28,0.94);color:#fff;'
                         + 'font:600 12px/1.35 ui-monospace,monospace;padding:7px 11px;border-radius:8px;'
-                        + 'pointer-events:none;max-width:94vw;text-align:center;';
+                        + 'pointer-events:auto;cursor:copy;max-width:94vw;text-align:center;';
+                    const copyHint = photorealI18n('common.copyToClipboard', 'Copy to clipboard');
+                    seatDebugEl.tabIndex = 0;
+                    seatDebugEl.setAttribute('role', 'button');
+                    seatDebugEl.setAttribute('aria-label', copyHint);
+                    seatDebugEl.title = copyHint;
+                    const copySeatDiagnostic = function () {
+                        if (typeof window.copyTextWithFeedback === 'function') {
+                            window.copyTextWithFeedback(seatDebugEl.textContent);
+                        }
+                    };
+                    seatDebugEl.addEventListener('click', copySeatDiagnostic);
+                    seatDebugEl.addEventListener('keydown', function (event) {
+                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                        event.preventDefault();
+                        copySeatDiagnostic();
+                    });
                     document.body.appendChild(seatDebugEl);
                 }
                 seatDebugEl.textContent = 'seat grounded=' + grounded
                     + ' seatZ=' + (seatNode ? seatNode.position.z.toFixed(1) : '—')
-                    + ' ground@0=' + (g0 == null ? 'miss' : g0.toFixed(1))
+                    + ' surface@0=' + (surface0 == null ? 'miss' : surface0.toFixed(1))
+                    + ' terrain@0=' + (terrain0 == null ? 'miss' : terrain0.toFixed(1))
+                    + ' lock=' + (lockedGroundZ == null ? '—' : lockedGroundZ.toFixed(1))
+                    + (lastProbeSummary ? ' probes(min/p25/med/max)='
+                        + [lastProbeSummary.min, lastProbeSummary.p25, lastProbeSummary.median, lastProbeSummary.max]
+                            .map(function (v) { return v.toFixed(1); }).join('/') : '')
+                    + ' seam=' + (meshSeamCapsActive()
+                        ? meshSeamMode() + '(scenes=' + seamReadyScenes + ',caps=' + seamCapSegments + ')'
+                        : 'off')
                     + ' tiles=' + (tiles.group ? tiles.group.children.length : 0)
                     + ' lp=' + (Number.isFinite(prog) ? prog.toFixed(2) : '—');
             }
@@ -894,6 +1257,8 @@
             const anchor = internals.originLatLng();
             const frame = window.__photorealFrame;
             if (!frame) throw new Error('photoreal-frame helper missing');
+            if (!window.__photorealGround) throw new Error('photoreal-ground helper missing');
+            if (meshSeamCapsActive() && !window.__photorealSeam) throw new Error('photoreal-seam helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
 
             // URL-driven entry (frameProposal): hide the abstract 3D behind a loading cover until
@@ -957,6 +1322,8 @@
             tiles.registerPlugin(new TileCompressionPlugin());
             // Every streamed tile material gets the carve-mask shader patch.
             tiles.addEventListener('load-model', onTileModelLoad);
+            tiles.addEventListener('dispose-model', onTileModelDispose);
+            tiles.addEventListener('tile-visibility-change', onTileVisibilityChange);
 
             // Performance, straight from the sim: coarser error target (tunable via ?prq=<n>,
             // higher = lighter/blurrier), capped caches and queues so parsing never hitches.
@@ -1002,6 +1369,8 @@
             grounded = false;
             builtVisible = true;
             lockSamples = [];
+            lockedGroundZ = null;
+            lastProbeSummary = null;
             lockWaitS = 0;
             lockAccumS = 0;
             lastFrameNow = 0;
@@ -1063,8 +1432,13 @@
     }
 
     function hardDisposeTiles() {
+        clearAllTileSeamCaps();
+        loadedTileScenes.clear();
+        seamBoundaryGrid = null;
         if (tiles) {
             try { tiles.removeEventListener('load-model', onTileModelLoad); } catch (_) { }
+            try { tiles.removeEventListener('dispose-model', onTileModelDispose); } catch (_) { }
+            try { tiles.removeEventListener('tile-visibility-change', onTileVisibilityChange); } catch (_) { }
             try { tiles.dispose(); } catch (_) { }
         }
         tiles = null;
