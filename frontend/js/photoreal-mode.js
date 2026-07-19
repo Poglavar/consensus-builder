@@ -221,6 +221,7 @@
         // The world is in place: carve it under the proposals, swap the abstract built layers
         // for the mesh, and reveal — the first visible frame is the final composition.
         buildMaskShapes();
+        drapeContent();
         renderCarveMask(0, 0);
         if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
         tiles.group.visible = builtVisible;
@@ -377,7 +378,9 @@
                 // buffer 0: the 1.2 m anti-comb dilation exists for building FACADES; a flat road
                 // has none, and the ring it leaves shows as an olive apron strip beside the road.
                 // With no dilation the road mesh covers its cut and meets the terrain directly.
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg', buffer: 0 });
+                // apron:false — the road is DRAPED onto the terrain (see drapeContent), so it meets
+                // the ground directly; no cap/curtain earth wall (that was the olive-sheet artefact).
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg', buffer: 0, apron: false });
             }
         });
         // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
@@ -626,6 +629,18 @@
         group.add(new THREE.Mesh(geom, apronMaterial));
     }
 
+    // Drape three-mode's flat content onto the seated tile ground (needs the terrain grid, so call
+    // AFTER buildMaskShapes/buildTerrainGrid). three-mode owns the geometry mutation + its reversal.
+    function drapeContent() {
+        if (typeof window.drapeContentOnTerrain !== 'function') return;
+        try {
+            window.drapeContentOnTerrain(function (x, y) {
+                const h = terrainZAt(x, y);
+                return (h == null || !isFinite(h)) ? 0 : h;
+            });
+        } catch (err) { console.warn('[photoreal] terrain drape failed', err); }
+    }
+
     // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
     // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
     // around every ring (see the curtain comment above).
@@ -654,11 +669,15 @@
                     // (renderOrder 1) paints over keep-veg (0), so a road through a park still clears.
                     mask.renderOrder = keepVeg ? 0 : 1;
                     maskShapesGroup.add(mask);
-                    const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
-                    cap.position.z = CARVE_APRON_TOP_Z;
-                    cap.frustumCulled = false;
-                    apronGroup.add(cap);
-                    sr.rings.forEach(function (ring) { addCurtainRibbon(ring, apronGroup); });
+                    // apron:false (draped content, e.g. roads) meets the ground directly — no cap or
+                    // curtain wall. Everything else gets the flat cap + terrain-conforming curtain.
+                    if (entry.apron !== false) {
+                        const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
+                        cap.position.z = CARVE_APRON_TOP_Z;
+                        cap.frustumCulled = false;
+                        apronGroup.add(cap);
+                        sr.rings.forEach(function (ring) { addCurtainRibbon(ring, apronGroup); });
+                    }
                 });
             } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
@@ -918,6 +937,7 @@
                 internals.scene.background = new window.THREE.Color(0x87ceeb);
                 ensureMaskObjects();
                 buildMaskShapes();
+                drapeContent();
                 renderCarveMask(0, 0);
                 if (grounded) {
                     if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
@@ -1033,6 +1053,7 @@
         options = options || {};
         active = false;
         hideCover(); // never let the loading cover outlive the mode (e.g. no-coverage fallback)
+        if (typeof window.undrapeContent === 'function') window.undrapeContent(); // restore flat abstract view
         if (typeof window.unregisterThreeModeFrameHook === 'function') {
             window.unregisterThreeModeFrameHook(onFrame);
         }

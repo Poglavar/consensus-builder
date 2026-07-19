@@ -3876,7 +3876,10 @@
         buildRoads3D(flatGroup);
         // Corridors render into their own group (not flatGroup): in realistic mode the parcel
         // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
-        try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
+        try {
+            buildCorridorStrips3D(corridorGroup);
+            if (drapeActive && drapeHeightFn) drapeGroup(corridorGroup, drapeHeightFn); // re-drape fresh strips
+        } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -4842,6 +4845,61 @@
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; }
         };
     };
+    // --- Terrain drape (realistic/photoreal only): lift the flat z≈0 content onto the Google
+    // ground so roads/parks FOLLOW the terrain instead of standing on a flat table — no gap to
+    // seal, so the curtain and its olive walls disappear. The height provider comes from photoreal
+    // (its seated tile grid). Each mesh's flat Z is stashed once, so leaving realistic mode restores
+    // the abstract flat view exactly. v1 drapes corridors (the worst offender). ---
+    let drapeActive = false;
+    let drapeHeightFn = null;
+
+    function drapeGroup(group, heightFn) {
+        if (!group || typeof heightFn !== 'function') return;
+        group.traverse(function (obj) {
+            const geom = obj.geometry;
+            if (!geom || !geom.attributes || !geom.attributes.position) return;
+            const pos = geom.attributes.position;
+            if (!obj.userData.__flatZ) {
+                const fz = new Float32Array(pos.count);
+                for (let i = 0; i < pos.count; i++) fz[i] = pos.getZ(i);
+                obj.userData.__flatZ = fz;
+            }
+            const fz = obj.userData.__flatZ;
+            for (let i = 0; i < pos.count; i++) {
+                let h = heightFn(pos.getX(i), pos.getY(i));
+                if (h == null || !isFinite(h)) h = 0;
+                pos.setZ(i, fz[i] + h);
+            }
+            pos.needsUpdate = true;
+            try { geom.computeBoundingSphere(); } catch (_) { }
+        });
+    }
+
+    function undrapeGroup(group) {
+        if (!group) return;
+        group.traverse(function (obj) {
+            const geom = obj.geometry;
+            if (!geom || !obj.userData || !obj.userData.__flatZ) return;
+            const pos = geom.attributes.position, fz = obj.userData.__flatZ;
+            for (let i = 0; i < pos.count && i < fz.length; i++) pos.setZ(i, fz[i]);
+            pos.needsUpdate = true;
+            try { geom.computeBoundingSphere(); } catch (_) { }
+            delete obj.userData.__flatZ;
+        });
+    }
+
+    // Photoreal calls this once its tile-height grid is seated (heightFn: sceneXY -> ground z).
+    window.drapeContentOnTerrain = function (heightFn) {
+        drapeActive = true;
+        drapeHeightFn = heightFn;
+        drapeGroup(corridorGroup, heightFn);
+    };
+    window.undrapeContent = function () {
+        drapeActive = false;
+        drapeHeightFn = null;
+        undrapeGroup(corridorGroup);
+    };
+
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
     window.isThreeModeActive = function () { return isActive; };
