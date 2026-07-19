@@ -2671,6 +2671,7 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Building rendering",
+            "togglePanel": "Toggle controls",
             "streamingTiles": "Streaming 3D tiles…",
             "noCoverage": "No photorealistic coverage here — staying in abstract 3D.",
             "carveUnderProposals": "Hide real buildings under proposals",

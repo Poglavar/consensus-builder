@@ -116,6 +116,43 @@ body.sidebar-collapsed {
     z-index: 10;
 }
 
+/* Collapse toggle for the 3D controls panel — hidden on desktop, a gear icon on phones that
+   folds the panel to just itself (JS toggles `.collapsed`, and starts collapsed on phones). */
+#three-container .three-mode-ui-collapse {
+    display: none;
+    align-self: flex-end;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    margin: -2px -3px 0 auto;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+}
+@media (max-width: 768px) {
+    #three-container .three-mode-ui-collapse {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #three-container .three-mode-ui-panel.collapsed {
+        padding: 3px;
+        gap: 0;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+    }
+    #three-container .three-mode-ui-panel.collapsed > *:not(.three-mode-ui-collapse) {
+        display: none;
+    }
+    #three-container .three-mode-ui-panel.collapsed .three-mode-ui-collapse {
+        margin: 0;
+    }
+}
+
 /* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
    glTF models) are still loading. Upper-left, mirroring the photoreal tile-streaming pill. */
 #three-container .three-mode-buildings-loader {

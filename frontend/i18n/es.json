@@ -2720,6 +2720,7 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Representación de edificios",
+            "togglePanel": "Mostrar/ocultar controles",
             "streamingTiles": "Cargando datos 3D…",
             "noCoverage": "No hay cobertura fotorrealista aquí — permanecemos en 3D abstracto.",
             "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",

@@ -742,6 +742,21 @@
         buildingModeControlsEl.setAttribute('role', 'group');
         buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
 
+        // Collapse toggle — on phones the panel eats the top of the map, so it folds to a single
+        // gear icon (tap to expand). Hidden on desktop via CSS, where the panel is always open.
+        const collapseToggle = document.createElement('button');
+        collapseToggle.type = 'button';
+        collapseToggle.className = 'three-mode-ui-collapse';
+        collapseToggle.setAttribute('aria-label', threeI18n('threeMode.controls.togglePanel', 'Toggle controls'));
+        collapseToggle.innerHTML = '<span aria-hidden="true">⚙</span>';
+        collapseToggle.addEventListener('click', () => buildingModeControlsEl.classList.toggle('collapsed'));
+        buildingModeControlsEl.appendChild(collapseToggle);
+        try {
+            if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                buildingModeControlsEl.classList.add('collapsed');
+            }
+        } catch (_) { }
+
         // Radius row — controls how wide a band of built context is loaded/rendered.
         const radiusRow = document.createElement('div');
         radiusRow.className = 'three-mode-radius-row';

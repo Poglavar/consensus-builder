@@ -2701,6 +2701,7 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",
+            "togglePanel": "Prikaži/sakrij kontrole",
             "streamingTiles": "Učitavanje 3D podataka…",
             "noCoverage": "Ovde nema fotorealistične pokrivenosti — ostajemo u apstraktnom 3D prikazu.",
             "carveUnderProposals": "Sakrij stvarne zgrade ispod predloga",
