@@ -342,7 +342,10 @@
                 const geom = definition.surfaceFootprint || definition.polygon;
                 // keep-veg: a road removes the ground it paves but must not slice the roadside
                 // hedges/trees into transparent shells — they stand as real greenery.
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg' });
+                // buffer 0: the 1.2 m anti-comb dilation exists for building FACADES; a flat road
+                // has none, and the ring it leaves shows as an olive apron strip beside the road.
+                // With no dilation the road mesh covers its cut and meets the terrain directly.
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg', buffer: 0 });
             }
         });
         // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
@@ -608,7 +611,8 @@
         if (!terrainGrid) { try { buildTerrainGrid(entries); } catch (_) { terrainGrid = null; } }
         entries.forEach(function (entry) {
             try {
-                const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
+                const buf = (typeof entry.buffer === 'number') ? entry.buffer : CARVE_CORE_BUFFER_M;
+                const core = buf > 0 ? bufferGeometry(entry.geometry, buf) : entry.geometry;
                 const keepVeg = (entry.mode === 'keepveg');
                 const maskMat = keepVeg ? maskMaterialPark : maskMaterial;
                 polygonShapesAndRings(core, toXY).forEach(function (sr) {
