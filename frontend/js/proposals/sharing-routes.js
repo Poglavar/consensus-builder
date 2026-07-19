@@ -1388,14 +1388,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // end up framing, exactly as if it had been loaded alone.
         const linkOrder = new Map();
         queue.forEach((id, idx) => linkOrder.set(id, idx));
-        const cleanPlanUrl = () => {
-            try {
-                const newUrl = window.location.pathname.replace(/\/proposals\/[^/?#]+$/, '') + window.location.search + window.location.hash;
-                if (window.history && typeof window.history.replaceState === 'function') {
-                    window.history.replaceState({}, document.title, newUrl);
-                }
-            } catch (_) { }
-        };
+        // The /proposals/... path is the canonical share state and STAYS in the address bar:
+        // a refresh re-enters through the already-applied fast path, so stripping it (the old
+        // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
         const proposalTypeById = new Map();
@@ -1613,7 +1608,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     onClose: () => resolve()
                 });
             });
-            cleanPlanUrl();
             return;
         }
 
@@ -1718,7 +1712,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
             await focusOnAppliedProposals(focusId);
-            cleanPlanUrl();
             return;
         }
 
@@ -2256,7 +2249,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         hideProposalLoadOverlay();
 
-        cleanPlanUrl();
 
         const escape = typeof escapeHtml === 'function' ? escapeHtml : (value => value);
         const renderList = (items, formatter) => {
