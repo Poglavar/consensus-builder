@@ -340,7 +340,9 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'full' });
+                // keep-veg: a road removes the ground it paves but must not slice the roadside
+                // hedges/trees into transparent shells — they stand as real greenery.
+                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'keepveg' });
             }
         });
         // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
