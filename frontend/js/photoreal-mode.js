@@ -132,7 +132,7 @@
     }
 
     function removeUiElements() {
-        [statusEl, loaderEl, fpsEl].forEach(function (el) {
+        [statusEl, loaderEl, fpsEl, seatDebugEl].forEach(function (el) {
             if (el) { try { el.remove(); } catch (_) { } }
         });
         statusEl = loaderEl = loaderTextEl = fpsEl = seatDebugEl = null;
@@ -782,24 +782,21 @@
             if (seatDebugAccumS >= 0.5) {
                 seatDebugAccumS = 0;
                 let g0 = null; try { g0 = sampleTileGroundZ(0, 0); } catch (_) { }
-                const host = containerEl();
-                if (host) {
-                    if (!seatDebugEl) {
-                        // Bottom-centre, above the 2D/3D buttons — the status toast at top-12px
-                        // is hidden behind the controls panel on mobile.
-                        seatDebugEl = document.createElement('div');
-                        seatDebugEl.style.cssText = 'position:absolute;left:50%;bottom:80px;transform:translateX(-50%);'
-                            + 'z-index:9999;background:rgba(20,22,28,0.92);color:#fff;'
-                            + 'font:600 12px/1.35 ui-monospace,monospace;padding:6px 10px;border-radius:8px;'
-                            + 'pointer-events:none;max-width:94%;text-align:center;';
-                        host.appendChild(seatDebugEl);
-                    }
-                    seatDebugEl.textContent = 'seat grounded=' + grounded
-                        + ' seatZ=' + (seatNode ? seatNode.position.z.toFixed(1) : '—')
-                        + ' ground@0=' + (g0 == null ? 'miss' : g0.toFixed(1))
-                        + ' tiles=' + (tiles.group ? tiles.group.children.length : 0)
-                        + ' lp=' + (Number.isFinite(prog) ? prog.toFixed(2) : '—');
+                if (!seatDebugEl) {
+                    // Fixed to the viewport (not the container) and above the 2D/3D buttons — the
+                    // status toast at top-12px is hidden behind the controls panel on mobile.
+                    seatDebugEl = document.createElement('div');
+                    seatDebugEl.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);'
+                        + 'z-index:100000;background:rgba(20,22,28,0.94);color:#fff;'
+                        + 'font:600 12px/1.35 ui-monospace,monospace;padding:7px 11px;border-radius:8px;'
+                        + 'pointer-events:none;max-width:94vw;text-align:center;';
+                    document.body.appendChild(seatDebugEl);
                 }
+                seatDebugEl.textContent = 'seat grounded=' + grounded
+                    + ' seatZ=' + (seatNode ? seatNode.position.z.toFixed(1) : '—')
+                    + ' ground@0=' + (g0 == null ? 'miss' : g0.toFixed(1))
+                    + ' tiles=' + (tiles.group ? tiles.group.children.length : 0)
+                    + ' lp=' + (Number.isFinite(prog) ? prog.toFixed(2) : '—');
             }
         }
         if (profT && Number.isFinite(prog)) {

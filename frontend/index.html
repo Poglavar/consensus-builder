@@ -5,6 +5,9 @@
     <base href="/">
     <title>Consensus Builder</title>
     <meta charset="utf-8" />
+    <!-- Capture ?seat before the share flow rewrites the /proposals/... URL and drops the query;
+         photoreal-mode reads this back to show its on-screen seating diagnostic. -->
+    <script>try{if(new URLSearchParams(location.search).has('seat'))sessionStorage.setItem('cbSeatDebug','1');}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Open Graph / Social Media Meta Tags -->
