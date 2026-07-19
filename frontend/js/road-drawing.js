@@ -314,8 +314,6 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
             unresolvedHits: Array.from(combinedHits.values())
         };
     }
-    console.log('[tunnel-debug] profileEdit(ensureBuildingTunnelsForSegments) PROMPT for buildings', [...combinedHits.keys()],
-        '| alreadyTunnelledIds', [...alreadyTunnelledIds], '| liveTunnelRecords', list.length);
     const resolution = typeof resolveBuildingObstacles === 'function'
         ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
         : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
@@ -876,12 +874,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // exact edge no longer exists BEFORE building detection derives its already-tunnelled ids. The
     // moved edges then receive a fresh impact decision and new facade portals/tunnel records.
     if (typeof retainLiveCorridorTunnelRecords === 'function') {
-        const __beforeCount = (definition.tunnels || []).length;
-        const __snapIds = new Set();
-        (definitionSnapshot.tunnels || []).forEach(r => (r?.buildingIds || []).forEach(id => __snapIds.add(String(id))));
         definition.tunnels = retainLiveCorridorTunnelRecords(normalizedSegments, definition.tunnels || []);
-        console.log('[tunnel-debug] geomEdit retention: tunnel records', __beforeCount, '->', definition.tunnels.length,
-            '| snapshot tunnelled buildingIds', [...__snapIds]);
     }
     if (typeof retainLiveGradeSeparations === 'function') {
         definition.gradeSeparations = retainLiveGradeSeparations(normalizedSegments, definition.gradeSeparations || []);
@@ -926,8 +919,13 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // hair short of) another road — a willing join, so a near-miss merge is honoured here. The finish
     // (absorb) path now honours it too: the user drew the stroke onto an existing road, the same
     // willing join. Only geometry that never came near the drawn/edited footprint is left untouched.
+    // Never re-absorb a road this corridor deliberately grade-separates OVER/UNDER: the finish-path
+    // merge excludes those ids and the edit path must too, or a drag that brings the footprints into
+    // contact would swallow a road you intentionally bridged.
+    const editGradeSeparatedIds = (definition.gradeSeparations || [])
+        .map(record => record?.otherProposalId).filter(Boolean).map(String);
     const touchingRoads = (prelimPolygon && prelimPolygon.type)
-        ? findTouchingLocalCorridors(editKind, prelimPolygon, [key0], normalizedSegments, true)
+        ? findTouchingLocalCorridors(editKind, prelimPolygon, [key0, ...editGradeSeparatedIds], normalizedSegments, true)
         : [];
     const mergeProposalImpacts = touchingRoads.map(target => {
         const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(target) : null)
@@ -1035,8 +1033,6 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         if (edgeHits.length || mergeProposalImpacts.length) {
             const combined = new Map();
             edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
-            console.log('[tunnel-debug] geomEdit PROMPT for buildings', [...combined.keys()],
-                '| alreadyTunnelledIds', [...alreadyTunnelledIds], '| fullyDemolished', [...fullyDemolishedIds], '| dragCut', [...dragCutIds]);
             const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind, {
                 mergeProposalImpacts
             });
@@ -1150,6 +1146,17 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             (targetDefinition.tunnels || []).forEach(tunnel => {
                 definition.tunnels = definition.tunnels || [];
                 definition.tunnels.push(JSON.parse(JSON.stringify(tunnel)));
+            });
+            // Carry the absorbed road's grade-separation and demolition decisions too, exactly as the
+            // finish-path merge does (absorbConnectedLocalCorridors). A drag-time merge was dropping
+            // them, silently losing the other road's bridged crossings and razed buildings.
+            (targetDefinition.gradeSeparations || []).forEach(record => {
+                definition.gradeSeparations = definition.gradeSeparations || [];
+                definition.gradeSeparations.push(JSON.parse(JSON.stringify(record)));
+            });
+            (targetDefinition.demolishedBuildings || []).forEach(record => {
+                definition.demolishedBuildings = definition.demolishedBuildings || [];
+                definition.demolishedBuildings.push(JSON.parse(JSON.stringify(record)));
             });
             const targetKey = (typeof getProposalKey === 'function' ? getProposalKey(target) : null) || target.proposalId;
             clearSelectionVisualsForRemovedProposal(target);
@@ -1626,6 +1633,9 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
         gradeSeparations: JSON.parse(JSON.stringify(roadGradeSeparations || [])),
         demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
+        // Structures (parks/lakes/squares) the user approved building through — persisted so continuing
+        // this road never re-asks about a structure it already runs through (seeded back on continue).
+        approvedStructures: (typeof getApprovedStructureIds === 'function') ? getApprovedStructureIds() : [],
         segmentProfiles: JSON.parse(JSON.stringify(roadSegmentProfiles || {}))
     };
 
@@ -1807,6 +1817,9 @@ function seedRoadDrawing(seed) {
     roadBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
     roadGradeSeparations = Array.isArray(seed.gradeSeparations) ? JSON.parse(JSON.stringify(seed.gradeSeparations)) : [];
     roadDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
+    // Re-approve the structures this road already builds through (reset cleared the session set just
+    // before this seed) — so continuing the road never re-prompts about a park/lake/square it crosses.
+    if (typeof seedApprovedStructureCrossings === 'function') seedApprovedStructureCrossings(seed.approvedStructures);
     roadSegmentProfiles = (seed.segmentProfiles && typeof seed.segmentProfiles === 'object')
         ? JSON.parse(JSON.stringify(seed.segmentProfiles))
         : {};
@@ -3056,6 +3069,11 @@ async function handleRoadClick(e) {
         if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
             const fullyDemolishedIds = new Set(roadDemolishedBuildings.filter(record => !record.remainder).map(record => String(record.id)));
             const cutIds = new Set(roadDemolishedBuildings.filter(record => record.remainder).map(record => String(record.id)));
+            // A building this drawing already tunnels keeps that decision. Continuing/extending a
+            // corridor reloads its tunnels into roadBuildingTunnels (seedRoadDrawing), so a new segment
+            // that grazes a building already tunnelled must NOT re-ask — same building-keyed reuse the
+            // two edit paths use, so a road's relation to a building is decided once, everywhere.
+            const alreadyTunnelledIds = new Set((roadBuildingTunnels || []).flatMap(record => (record?.buildingIds || []).map(String)));
             const detected = detectLoadedBuildingTunnelIntersections(segmentPolygon)
                 .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
             // A building already CUT this session extends its cut silently — the decision for
@@ -3064,12 +3082,8 @@ async function handleRoadClick(e) {
                 detected.filter(hit => cutIds.has(String(hit.id)))
                     .forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
             }
-            const hits = detected.filter(hit => !cutIds.has(String(hit.id)));
+            const hits = detected.filter(hit => !cutIds.has(String(hit.id)) && !alreadyTunnelledIds.has(String(hit.id)));
             if (hits.length) {
-                console.log('[tunnel-debug] draw(handleRoadClick) PROMPT for buildings', hits.map(h => String(h.id)),
-                    '| sessionDemolished', [...fullyDemolishedIds], '| sessionCut', [...cutIds],
-                    '| roadBuildingTunnels', (roadBuildingTunnels || []).flatMap(r => r?.buildingIds || []),
-                    '| (drawing path has NO applied-road tunnel exemption)');
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, 'road')
                     : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [], cutHits: [] };

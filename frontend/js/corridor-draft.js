@@ -28,7 +28,10 @@
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
             profile: cloneDraftValue(profileOverride || definition.profile) || null,
             tunnels: cloneDraftValue(definition.tunnels) || [],
-            gradeSeparations: cloneDraftValue(definition.gradeSeparations) || []
+            gradeSeparations: cloneDraftValue(definition.gradeSeparations) || [],
+            // Carry the build-through park/lake/square approvals so continuing the road reuses them
+            // (seedRoadDrawing → seedApprovedStructureCrossings) instead of re-prompting.
+            approvedStructures: cloneDraftValue(definition.approvedStructures) || []
         };
     }
 

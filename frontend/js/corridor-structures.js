@@ -122,6 +122,17 @@
         approvedStructureIds.clear();
     }
 
+    // Persist/seed the build-through approvals so continuing an applied road does not re-ask about a
+    // structure it already runs through. The approval was session-only; the road definition now carries
+    // the approved structure ids (serialiseRoadDefinition) and seedRoadDrawing feeds them back here —
+    // the same reuse buildings/tunnels get. Only proposalId-based ids survive a reload meaningfully.
+    function getApprovedStructureIds() {
+        return [...approvedStructureIds];
+    }
+    function seedApprovedStructureCrossings(ids) {
+        (Array.isArray(ids) ? ids : []).forEach(id => { if (id) approvedStructureIds.add(String(id)); });
+    }
+
     // Applied structure proposals whose geometry covers the given parcel (centroid test).
     // Id-based matching fails when a structure's declared parcel ids drifted (old imports);
     // geometry doesn't drift, so clicking inside a lake finds the lake regardless.
@@ -167,6 +178,8 @@
         detectStructureCrossings,
         resolveStructureCrossings,
         resetApprovedStructureCrossings,
+        getApprovedStructureIds,
+        seedApprovedStructureCrossings,
         structureProposalsCoveringFeature,
         roadProposalsCoveringFeature
     });
