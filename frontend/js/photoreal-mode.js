@@ -26,6 +26,8 @@
     const LOCK_SAMPLE_INTERVAL_S = 0.25;
     const FAR_EARTH_LIMIT_M = 1500;       // |ground z| beyond this = a coarse far-earth tile
     const NO_COVERAGE_TIMEOUT_S = 20;     // nothing streamed at all -> declare no coverage
+    // Diagnostic: `?seat` shows the live seating state on-screen (readable on mobile, no console).
+    const SEAT_DEBUG = (typeof window !== 'undefined') && new URLSearchParams(window.location.search || '').has('seat');
 
     // ---- lazy tiles library (ESM, resolved through the page's import map) ----
     let TilesRenderer, CesiumIonAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin,
@@ -64,6 +66,7 @@
     let lockSamples = [];
     let lockWaitS = 0;
     let lockAccumS = 0;
+    let seatDebugAccumS = 0;
     let lastFrameNow = 0;
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
@@ -763,6 +766,18 @@
         tiles.update();
         const prog = Number(tiles.loadProgress);
         updateLoader(Number.isFinite(prog) ? prog : 1);
+        if (SEAT_DEBUG) {
+            seatDebugAccumS += dtS;
+            if (seatDebugAccumS >= 0.5) {
+                seatDebugAccumS = 0;
+                let g0 = null; try { g0 = sampleTileGroundZ(0, 0); } catch (_) { }
+                setStatus('seat grounded=' + grounded
+                    + ' seatZ=' + (seatNode ? seatNode.position.z.toFixed(1) : '—')
+                    + ' ground@0=' + (g0 == null ? 'miss' : g0.toFixed(1))
+                    + ' tiles=' + (tiles.group ? tiles.group.children.length : 0)
+                    + ' lp=' + (Number.isFinite(prog) ? prog.toFixed(2) : '—'));
+            }
+        }
         if (profT && Number.isFinite(prog)) {
             if (!profT.firstTile && prog < 1) profT.firstTile = performance.now();
             if (profT.firstTile && !profT.streamed && prog >= 0.95) profT.streamed = performance.now();
