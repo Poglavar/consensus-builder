@@ -27,7 +27,17 @@
     const FAR_EARTH_LIMIT_M = 1500;       // |ground z| beyond this = a coarse far-earth tile
     const NO_COVERAGE_TIMEOUT_S = 20;     // nothing streamed at all -> declare no coverage
     // Diagnostic: `?seat` shows the live seating state on-screen (readable on mobile, no console).
-    const SEAT_DEBUG = (typeof window !== 'undefined') && new URLSearchParams(window.location.search || '').has('seat');
+    // Checked at runtime and persisted for the session, because the share flow rewrites the
+    // /proposals/... URL and can drop the query before this reads it.
+    function seatDebugActive() {
+        try {
+            if (new URLSearchParams(window.location.search || '').has('seat')) {
+                try { sessionStorage.setItem('cbSeatDebug', '1'); } catch (_) { }
+                return true;
+            }
+            return sessionStorage.getItem('cbSeatDebug') === '1';
+        } catch (_) { return false; }
+    }
 
     // ---- lazy tiles library (ESM, resolved through the page's import map) ----
     let TilesRenderer, CesiumIonAuthPlugin, GLTFExtensionsPlugin, TileCompressionPlugin,
@@ -767,7 +777,7 @@
         tiles.update();
         const prog = Number(tiles.loadProgress);
         updateLoader(Number.isFinite(prog) ? prog : 1);
-        if (SEAT_DEBUG) {
+        if (seatDebugActive()) {
             seatDebugAccumS += dtS;
             if (seatDebugAccumS >= 0.5) {
                 seatDebugAccumS = 0;
