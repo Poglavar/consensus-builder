@@ -909,8 +909,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     );
     const prelimPolygon = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(prelimUnion));
     // allowNearMiss: this is the drag/edit path, where the user deliberately drops a node onto (or a
-    // hair short of) another road — a willing join, so a near-miss merge is honoured here. Drawing and
-    // absorbing (the finish path) use the strict default and never fuse roads that merely came close.
+    // hair short of) another road — a willing join, so a near-miss merge is honoured here. The finish
+    // (absorb) path now honours it too: the user drew the stroke onto an existing road, the same
+    // willing join. Only geometry that never came near the drawn/edited footprint is left untouched.
     const touchingRoads = (prelimPolygon && prelimPolygon.type)
         ? findTouchingLocalCorridors(editKind, prelimPolygon, [key0], normalizedSegments, true)
         : [];
@@ -4855,7 +4856,13 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         .map(record => record?.otherProposalId)
         .filter(Boolean)
         .map(String);
-    const targets = findTouchingLocalCorridors(kind, newGeoPolygon, gradeSeparatedProposalIds, drawnSegments);
+    // allowNearMiss: the finish path is now the deliberate-join path. The user drew this stroke to
+    // START on / END on an existing road (clicking its centerline), so a road the stroke lands on — or
+    // stops a hair short of — is a willing junction. Drawing no longer absorbs a road on click, so this
+    // merge is the ONLY place a drawn connection becomes a real shared node; a strict exact-touch test
+    // silently dropped the road the stroke started from whenever the click landed mid-span (pixel snap
+    // is only pixel-precise, never within the exact-intersection tolerance).
+    const targets = findTouchingLocalCorridors(kind, newGeoPolygon, gradeSeparatedProposalIds, drawnSegments, true);
     if (!targets.length) return null;
     targets.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
     const oldest = targets[0];
@@ -4900,9 +4907,14 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     mergedSegments.push(...welded.segments);
     mergedSegmentIds.length = 0;
     mergedSegmentIds.push(...welded.segmentIds);
-    // Only genuine crossings become shared nodes when absorbing a touching road; near-miss snapping
-    // (welding nearby vertices / healing an endpoint onto a nearby centerline) is a deliberate drag-time
-    // action, not something the auto-merge performs.
+    // A drawn endpoint that came to rest ON (pixel-snapped, so a hair off) or just short of a target
+    // road's centerline is snapped exactly onto it and given a shared vertex, and a near-duplicate
+    // vertex is welded onto its neighbour — so the connecting stroke FORMS a real junction at BOTH the
+    // road it started from and the road it ended on, not only where it happened to hit an exact vertex.
+    // Runs BEFORE crossing-node insertion so the healed coincidence is what normalization sees. This
+    // mirrors the drag/edit path: a stroke drawn onto a road is the same willing join as a dragged node.
+    if (typeof weldNearbyVertices === 'function') weldNearbyVertices(mergedSegments);
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(mergedSegments);
     normalizeCorridorGraph(
         mergedSegments,
         mergedSegmentIds,

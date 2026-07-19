@@ -504,11 +504,11 @@
     }
 
     // Do two centerline sets genuinely connect — sharing a vertex or crossing? With
-    // `allowNearMiss` (a deliberate drag-time join), a near-miss T-junction — one road's endpoint
-    // stopped a couple of metres short of the other's mid-span — also counts. That near-miss match is
-    // OPT-IN: auto-merge on drawing/absorbing must NOT fuse roads that merely came close (joining is a
-    // willing act the user makes by dragging), so those callers leave it off. Two parallel roads
-    // grazing each other's width are never a connection.
+    // `allowNearMiss` (a deliberate join), a near-miss T-junction — one road's endpoint stopped a
+    // couple of metres short of the other's mid-span — also counts. That near-miss match is OPT-IN:
+    // callers pass it when the join is a willing user act — dragging a node onto a road, or drawing a
+    // stroke onto one (the finish/absorb merge). A background pass that must never fuse roads merely
+    // near each other leaves it off. Two parallel roads grazing each other's width are never a join.
     function centerlinesTouch(segmentsA, segmentsB, allowNearMiss = false) {
         const EPS = 1e-7;
         const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
