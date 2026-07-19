@@ -1321,6 +1321,20 @@
             "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
         },
+        "impactTour": {
+            "applyToAll": "Aplicar a todos:",
+            "cutAll": "Cortar todos",
+            "demolishAll": "Demoler todos",
+            "tunnelAll": "Tunelar todos",
+            "prev": "Edificio anterior",
+            "next": "Edificio siguiente",
+            "counter": "Edificio {{n}} / {{total}}",
+            "cut": "Cortar",
+            "demolish": "Demoler",
+            "tunnel": "Túnel",
+            "apply": "Aplicar",
+            "existingProposal": "propuesta existente"
+        },
         "corridorGrade": {
             "offer": "Esta ruta peatonal cruza {{count}} vía(s) no peatonal(es). ¿Cómo debe cruzarlas?",
             "atGrade": "Cruce a nivel",

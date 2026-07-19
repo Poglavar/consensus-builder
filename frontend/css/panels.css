@@ -1774,3 +1774,183 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
     font-size: 10px;
     white-space: nowrap;
 }
+
+/* ── Road impact tour ─────────────────────────────────────────────────────────
+   The per-building "cut / demolish / tunnel" walkthrough. Not a dimming modal: the
+   map stays visible and is driven behind it (interaction disabled in JS). Desktop
+   docks to the right; mobile is a bottom sheet leaving the map top half visible. */
+/* Transparent full-screen shield that captures mouse/scroll so nothing reaches the map or sidebar
+   while the tour is open. Sits just below the panel; the map (with the proposed road) shows through. */
+.cb-impact-tour-capture {
+    position: fixed;
+    inset: 0;
+    z-index: 29990;
+    background: transparent;
+    cursor: default;
+    touch-action: none;
+}
+
+.cb-impact-tour {
+    position: fixed;
+    z-index: 30000;
+    background: #ffffff;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.cb-impact-tour-dock {
+    top: 16px;
+    right: 16px;
+    width: 360px;
+    max-width: calc(100% - 32px);
+    max-height: calc(100vh - 32px);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.cb-impact-tour-sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50vh;
+    border-radius: 14px 14px 0 0;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+
+.cb-impact-tour-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.cb-impact-tour-message {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #334155;
+    margin-bottom: 12px;
+}
+
+.cb-impact-tour-global {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.cb-impact-tour-global-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.cb-impact-tour-global-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cb-impact-tour-chip {
+    flex: 1;
+    min-width: 84px;
+    padding: 7px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cb-impact-tour-chip.is-active {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.cb-impact-tour-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.cb-impact-tour-navbtn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #1f2937;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.cb-impact-tour-navbtn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.cb-impact-tour-counter {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.cb-impact-tour-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+.cb-impact-tour-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cb-impact-tour-choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.cb-impact-tour-choice:has(input:checked) {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.cb-impact-tour-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex: none;
+}
+
+.cb-impact-tour-tally {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.cb-impact-tour-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex: none;
+}
+
+.cb-impact-tour-actions .btn {
+    flex: 1;
+}

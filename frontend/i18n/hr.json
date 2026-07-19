@@ -1273,6 +1273,20 @@
             "confirm": "Tunel kroz zgradu",
             "cancel": "Odaberi drugu trasu"
         },
+        "impactTour": {
+            "applyToAll": "Primijeni na sve:",
+            "cutAll": "Prosijeci sve",
+            "demolishAll": "Sruši sve",
+            "tunnelAll": "Tuneliraj sve",
+            "prev": "Prethodna zgrada",
+            "next": "Sljedeća zgrada",
+            "counter": "Zgrada {{n}} / {{total}}",
+            "cut": "Prosijeci",
+            "demolish": "Sruši",
+            "tunnel": "Tunel",
+            "apply": "Primijeni",
+            "existingProposal": "postojeći prijedlog"
+        },
         "corridorGrade": {
             "offer": "Ova pješačka ruta križa {{count}} nepješačku prometnicu/prometnice. Kako ih treba prijeći?",
             "atGrade": "Prijelaz u razini",

@@ -1273,6 +1273,20 @@
             "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
         },
+        "impactTour": {
+            "applyToAll": "Primeni na sve:",
+            "cutAll": "Preseci sve",
+            "demolishAll": "Sruši sve",
+            "tunnelAll": "Tuneliraj sve",
+            "prev": "Prethodna zgrada",
+            "next": "Sledeća zgrada",
+            "counter": "Zgrada {{n}} / {{total}}",
+            "cut": "Preseci",
+            "demolish": "Sruši",
+            "tunnel": "Tunel",
+            "apply": "Primeni",
+            "existingProposal": "postojeći predlog"
+        },
         "corridorGrade": {
             "offer": "Ova pešačka ruta ukršta {{count}} nepešački put/puteve. Kako treba da ih pređe?",
             "atGrade": "Prelaz u nivou",

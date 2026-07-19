@@ -476,21 +476,25 @@ function hideDguBuildingLayer() {
 }
 window.hideDguBuildingLayer = hideDguBuildingLayer;
 
-// Rebuild the visible 2D GDI building layer from the pooled features, minus every building an
-// APPLIED corridor has demolished. Called after fetches and after corridor apply/unapply/edit.
+// Rebuild the visible 2D GDI building layer from the pooled features, recoloured by what every
+// APPLIED corridor did to each building. Called after fetches and after corridor apply/unapply/edit.
 //
 // This is a VIEW of the pool, never the other way round. The pool is the working set and stays
-// complete; only what is DRAWN is filtered here.
+// complete; only how each building is DRAWN is decided here. The persistent outcome colour scheme:
+// destroyed = dashed red outline (kept visible so the road reads through), cut = orange remainder,
+// tunnelled = yellow, untouched = blue (see buildingOutcomeStyle in corridor-tunnel.js).
 function rebuildBuildingLayerFromPool() {
     const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
     // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-    // Records WITHOUT `remainder` hide the building entirely; records WITH it are PARTIAL
-    // demolitions — the building keeps standing with the remainder footprint.
+    // Records WITHOUT `remainder` are a full demolition; records WITH it are PARTIAL demolitions
+    // (the building keeps standing with the remainder footprint).
     const demolishedById = new Map();
     collectDemolishedBuildingRecords().forEach(record => {
         if (record && record.id) demolishedById.set(String(record.id), record);
     });
-    // Identity must be the SAME one demolition records were written with (corridor-tunnel.js):
+    const tunnelledIds = (typeof window.collectTunnelledBuildingIds === 'function')
+        ? window.collectTunnelledBuildingIds() : new Set();
+    // Identity must be the SAME one demolition/tunnel records were written with (corridor-tunnel.js):
     // the GDI object_id.
     const keyOf = (feature) => {
         if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
@@ -498,13 +502,20 @@ function rebuildBuildingLayerFromPool() {
         const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
         return (direct !== undefined && direct !== null) ? String(direct) : '';
     };
-    const visible = demolishedById.size
+    const classify = (typeof window.classifyBuildingOutcome === 'function') ? window.classifyBuildingOutcome : null;
+    // Tag each feature with its persistent outcome (and swap to the remainder footprint for a cut) so
+    // the style function below can colour it. No recolouring needed when nothing was touched.
+    const features = (demolishedById.size || tunnelledIds.size)
         ? pool.map(feature => {
-            const record = demolishedById.get(keyOf(feature));
-            if (!record) return feature;
-            if (!record.remainder) return null; // full demolition
-            return { ...feature, geometry: record.remainder };
-        }).filter(Boolean)
+            const id = keyOf(feature);
+            const record = demolishedById.get(id);
+            const outcome = classify
+                ? classify(id, { demolishedById, tunnelledIds })
+                : (record ? (record.remainder ? 'cut' : 'destroyed') : (tunnelledIds.has(id) ? 'tunnelled' : null));
+            // A cut draws its standing remainder; destroyed/tunnelled keep the full footprint.
+            const geometry = (record && record.remainder) ? record.remainder : feature.geometry;
+            return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
+        })
         : pool;
     // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
@@ -514,16 +525,13 @@ function rebuildBuildingLayerFromPool() {
     if (buildingLayer) {
         map.removeLayer(buildingLayer);
     }
-    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features: visible }, {
+    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
         // Context only: existing buildings must never intercept clicks meant for the parcels
         // beneath them (they are inspectable in 3D, not in 2D).
         interactive: false,
-        style: {
-            fillColor: 'blue',
-            fillOpacity: 0.2,
-            color: 'blue',
-            weight: 1
-        }
+        style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
+            ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
+            : { fillColor: 'blue', fillOpacity: 0.2, color: 'blue', weight: 1 }
     });
     if (shouldShow) buildingLayer.addTo(map);
     try { window.buildingLayer = buildingLayer; } catch (_) { }

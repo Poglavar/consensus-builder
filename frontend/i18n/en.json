@@ -1272,6 +1272,20 @@
             "confirm": "Tunnel through",
             "cancel": "Choose another route"
         },
+        "impactTour": {
+            "applyToAll": "Apply to all:",
+            "cutAll": "Cut all",
+            "demolishAll": "Demolish all",
+            "tunnelAll": "Tunnel all",
+            "prev": "Previous building",
+            "next": "Next building",
+            "counter": "Building {{n}} / {{total}}",
+            "cut": "Cut",
+            "demolish": "Demolish",
+            "tunnel": "Tunnel",
+            "apply": "Apply",
+            "existingProposal": "existing proposal"
+        },
         "corridorGrade": {
             "offer": "This pedestrian route crosses {{count}} non-pedestrian road(s). How should it cross?",
             "atGrade": "At-grade crossing",
