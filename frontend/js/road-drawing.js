@@ -314,6 +314,8 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
             unresolvedHits: Array.from(combinedHits.values())
         };
     }
+    console.log('[tunnel-debug] profileEdit(ensureBuildingTunnelsForSegments) PROMPT for buildings', [...combinedHits.keys()],
+        '| alreadyTunnelledIds', [...alreadyTunnelledIds], '| liveTunnelRecords', list.length);
     const resolution = typeof resolveBuildingObstacles === 'function'
         ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
         : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
@@ -874,7 +876,12 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // exact edge no longer exists BEFORE building detection derives its already-tunnelled ids. The
     // moved edges then receive a fresh impact decision and new facade portals/tunnel records.
     if (typeof retainLiveCorridorTunnelRecords === 'function') {
+        const __beforeCount = (definition.tunnels || []).length;
+        const __snapIds = new Set();
+        (definitionSnapshot.tunnels || []).forEach(r => (r?.buildingIds || []).forEach(id => __snapIds.add(String(id))));
         definition.tunnels = retainLiveCorridorTunnelRecords(normalizedSegments, definition.tunnels || []);
+        console.log('[tunnel-debug] geomEdit retention: tunnel records', __beforeCount, '->', definition.tunnels.length,
+            '| snapshot tunnelled buildingIds', [...__snapIds]);
     }
     if (typeof retainLiveGradeSeparations === 'function') {
         definition.gradeSeparations = retainLiveGradeSeparations(normalizedSegments, definition.gradeSeparations || []);
@@ -1028,6 +1035,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         if (edgeHits.length || mergeProposalImpacts.length) {
             const combined = new Map();
             edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
+            console.log('[tunnel-debug] geomEdit PROMPT for buildings', [...combined.keys()],
+                '| alreadyTunnelledIds', [...alreadyTunnelledIds], '| fullyDemolished', [...fullyDemolishedIds], '| dragCut', [...dragCutIds]);
             const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind, {
                 mergeProposalImpacts
             });
@@ -3057,6 +3066,10 @@ async function handleRoadClick(e) {
             }
             const hits = detected.filter(hit => !cutIds.has(String(hit.id)));
             if (hits.length) {
+                console.log('[tunnel-debug] draw(handleRoadClick) PROMPT for buildings', hits.map(h => String(h.id)),
+                    '| sessionDemolished', [...fullyDemolishedIds], '| sessionCut', [...cutIds],
+                    '| roadBuildingTunnels', (roadBuildingTunnels || []).flatMap(r => r?.buildingIds || []),
+                    '| (drawing path has NO applied-road tunnel exemption)');
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, 'road')
                     : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [], cutHits: [] };
