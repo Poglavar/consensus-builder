@@ -185,6 +185,7 @@
         const use = stable ? lockSamples[lockSamples.length - 1] : sorted[Math.floor(sorted.length / 2)];
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
+        terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
         // The world is in place: carve it under the proposals, swap the abstract built layers
         // for the mesh, and reveal — the first visible frame is the final composition.
         buildMaskShapes();
@@ -226,15 +227,24 @@
     // interior, a sightline hits mirrored terrain texture — never the background.
     const CARVE_FLOOR_Z = -0.3;      // fragments above this, inside a footprint, are discarded
     const CARVE_CORE_BUFFER_M = 1.2; // dilation against mask-texel combs along cut facades
-    // A solid PLINTH under every cut. Our content is a flat terrace at z≈0 while the real
-    // terrain rolls beneath it: wherever the ground dips below the table's edge, daylight
-    // showed under the plan (in one rim and out the other, straight to the sky). The plinth
-    // gives the terrace earth sides — a graded site's cut-and-fill embankment — sealing every
-    // under-surface sightline for any terrain shape. It doubles as the cleared-lot pad under
-    // razed buildings.
-    const CARVE_APRON_TOP_Z = -0.02;  // just under the z=0 content
-    const CARVE_PLINTH_DEPTH_M = 4;   // deep enough to meet terrain in any local dip
+    // Sealing the cut edge — a TERRAIN-CONFORMING CURTAIN. Our content is a flat table at z≈0, but
+    // we seat the whole Google mesh from ONE probe, so away from that point the real ground rides
+    // above or below the table. A fixed-depth earth skirt sealed the DOWNHILL edges (ground below
+    // the table) but never the UPHILL ones (ground above it): a downward wall cannot fill an upward
+    // gap, and that was the residual light-blue. So we sample the tile mesh's real height along
+    // every cut edge — a coarse grid raycast once per seating and cached (the terrain doesn't move)
+    // — and build the earth wall from the content up OR down to that height, meeting the rim
+    // wherever it sits. A flat earth cap over the footprint handles the top-down view + razed pad.
+    const CARVE_APRON_TOP_Z = -0.02;    // cap height: just under the z=0 content
+    const CARVE_PLINTH_DEPTH_M = 4;     // fallback skirt depth where no terrain sample is available
     const CARVE_APRON_COLOR = 0x6e7563; // muted earth-green: plausible under grass and asphalt alike
+    const CURTAIN_CONTENT_TOP_Z = 0.06;    // reach up to the park/plaza surface level
+    const CURTAIN_TOP_MARGIN_M = 0.1;      // overlap the rim / content — no hairline seam
+    const CURTAIN_BOTTOM_MARGIN_M = 1.0;   // sink below the lower of content/terrain
+    const CURTAIN_MAX_RISE_M = 8;          // clamp rim height: ignore a stray tree/roof hit at the edge
+    const CURTAIN_MAX_DIP_M = 25;          // clamp embankment depth on steep drops
+    const TERRAIN_GRID_MAX = 22;           // grid samples per axis (<= ~484 raycasts, once per seat)
+    const TERRAIN_GRID_MIN_CELL_M = 12;    // target grid spacing in scene metres
 
     let maskRT = null;
     let maskScene = null;
@@ -243,6 +253,7 @@
     let maskMaterial = null;
     let apronGroup = null;
     let apronMaterial = null;
+    let terrainGrid = null; // cached tile-height field, sampled once per seating (see the curtain)
     let maskReady = false;
     let maskCenterX = 0;
     let maskCenterY = 0;
@@ -371,12 +382,10 @@
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
         maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
-        // DOUBLE-SIDED, like the mask: the plinth is a solid earth block, but ExtrudeGeometry
-        // orients its side walls by the polygon's ring winding (GeoJSON/turf hand us clockwise
-        // rings about half the time), so a single-sided wall is back-face culled for half of all
-        // footprints — the camera then looks straight through the embankment into the hole and out
-        // to the sky. That is the residual light-blue seam: visible at grazing angles (the walls),
-        // never top-down (the cap's winding is auto-corrected by the shape triangulator).
+        // DOUBLE-SIDED, like the mask: this material paints both the flat cap and the curtain
+        // walls, and either can face the camera from either side depending on ring winding — a
+        // single-sided earth surface would be back-face culled for ~half of all footprints and the
+        // camera would look straight through the seal into the hole. A solid earth wall has no back.
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         corridorUniforms.uCorridorMask.value = maskRT.texture;
@@ -406,36 +415,140 @@
         } catch (_) { return geometry; }
     }
 
-    function shapesOfGeometry(geometry, toXY) {
+    // Carve footprint polygons → a THREE.Shape per polygon (for the cut mask + the flat cap) AND
+    // that polygon's ring coordinates in scene XY (outer + holes), so the curtain walls can follow
+    // the exact cut edge the mask cut.
+    function polygonShapesAndRings(geometry, toXY) {
         const THREE = window.THREE;
-        const shapes = [];
+        const out = [];
         polygonsOf(geometry).forEach(function (rings) {
             const outer = rings && rings[0];
             if (!Array.isArray(outer) || outer.length < 3) return;
             try {
                 const shape = new THREE.Shape();
-                outer.forEach(function (c, i) {
-                    const xy = toXY(c[1], c[0]);
-                    if (i === 0) shape.moveTo(xy[0], xy[1]); else shape.lineTo(xy[0], xy[1]);
-                });
+                const ringXY = [];
+                const outerXY = outer.map(function (c) { return toXY(c[1], c[0]); });
+                outerXY.forEach(function (xy, i) { if (i === 0) shape.moveTo(xy[0], xy[1]); else shape.lineTo(xy[0], xy[1]); });
+                ringXY.push(outerXY);
                 for (let h = 1; h < rings.length; h++) {
                     const ring = rings[h];
                     if (!Array.isArray(ring) || ring.length < 3) continue;
+                    const holeXY = ring.map(function (c) { return toXY(c[1], c[0]); });
                     const hole = new THREE.Path();
-                    ring.forEach(function (c, i) {
-                        const xy = toXY(c[1], c[0]);
-                        if (i === 0) hole.moveTo(xy[0], xy[1]); else hole.lineTo(xy[0], xy[1]);
-                    });
+                    holeXY.forEach(function (xy, i) { if (i === 0) hole.moveTo(xy[0], xy[1]); else hole.lineTo(xy[0], xy[1]); });
                     shape.holes.push(hole);
+                    ringXY.push(holeXY);
                 }
-                shapes.push(shape);
+                out.push({ shape: shape, rings: ringXY });
             } catch (_) { /* one bad polygon must not cost the rest their carve */ }
         });
-        return shapes;
+        return out;
     }
 
-    // Carve footprints (lat/lng GeoJSON) → mask shapes in scene XY, and the sealing plinth
-    // INTO THE SCENE under every cut (see the plinth comment above).
+    // Raycast the SEATED tile mesh straight down at a scene-XY point; z is true metres, directly
+    // comparable to our content's z. Same setup and far-earth guard as the seating probe.
+    function sampleTileGroundZ(x, y) {
+        const THREE = window.THREE;
+        if (!THREE || !tiles) return null;
+        try {
+            const raycaster = new THREE.Raycaster(new THREE.Vector3(x, y, 4000), new THREE.Vector3(0, 0, -1), 0, 9000);
+            const hits = raycaster.intersectObject(tiles.group, true);
+            for (let i = 0; i < hits.length; i++) {
+                const z = hits[i].point.z;
+                if (Math.abs(z) <= FAR_EARTH_LIMIT_M) return z;
+            }
+        } catch (_) { }
+        return null;
+    }
+
+    // Sample a coarse tile-height grid over the bbox of all carve footprints, ONCE. The tile mesh
+    // has no BVH, so per-vertex raycasting every rebuild would hitch; the terrain doesn't move, so
+    // one grid (cast right after seating) serves every wall, and isolation/carve changes reuse it.
+    function buildTerrainGrid(entries) {
+        if (!internals || !tiles) { terrainGrid = null; return; }
+        // The seat shift was just applied — bake it into the world matrices before we raycast.
+        try { internals.scene.updateMatrixWorld(true); } catch (_) { }
+        const toXY = internals.latLngToXY;
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        entries.forEach(function (entry) {
+            polygonsOf(entry.geometry).forEach(function (rings) {
+                (rings[0] || []).forEach(function (c) {
+                    const xy = toXY(c[1], c[0]);
+                    if (xy[0] < minX) minX = xy[0]; if (xy[0] > maxX) maxX = xy[0];
+                    if (xy[1] < minY) minY = xy[1]; if (xy[1] > maxY) maxY = xy[1];
+                });
+            });
+        });
+        if (!isFinite(minX)) { terrainGrid = null; return; }
+        const pad = CARVE_CORE_BUFFER_M + 6;
+        minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+        const w = Math.max(1, maxX - minX), h = Math.max(1, maxY - minY);
+        const nx = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(w / TERRAIN_GRID_MIN_CELL_M) + 1));
+        const ny = Math.max(2, Math.min(TERRAIN_GRID_MAX, Math.ceil(h / TERRAIN_GRID_MIN_CELL_M) + 1));
+        const z = new Float32Array(nx * ny);
+        for (let j = 0; j < ny; j++) {
+            for (let i = 0; i < nx; i++) {
+                const t = sampleTileGroundZ(minX + (w * i) / (nx - 1), minY + (h * j) / (ny - 1));
+                z[j * nx + i] = (t === null || !isFinite(t)) ? NaN : t;
+            }
+        }
+        terrainGrid = { minX: minX, minY: minY, dx: w / (nx - 1), dy: h / (ny - 1), nx: nx, ny: ny, z: z };
+    }
+
+    // Bilinear tile height at a scene-XY point from the cached grid; null if outside it or if every
+    // surrounding sample missed the mesh (partial hits average what did land).
+    function terrainZAt(x, y) {
+        const g = terrainGrid;
+        if (!g) return null;
+        const fx = (x - g.minX) / g.dx, fy = (y - g.minY) / g.dy;
+        if (fx < 0 || fy < 0 || fx > g.nx - 1 || fy > g.ny - 1) return null;
+        const i0 = Math.floor(fx), j0 = Math.floor(fy);
+        const i1 = Math.min(i0 + 1, g.nx - 1), j1 = Math.min(j0 + 1, g.ny - 1);
+        const tx = fx - i0, ty = fy - j0;
+        const z00 = g.z[j0 * g.nx + i0], z10 = g.z[j0 * g.nx + i1], z01 = g.z[j1 * g.nx + i0], z11 = g.z[j1 * g.nx + i1];
+        const finite = [z00, z10, z01, z11].filter(function (v) { return isFinite(v); });
+        if (!finite.length) return null;
+        if (finite.length < 4) return finite.reduce(function (a, b) { return a + b; }, 0) / finite.length;
+        const a = z00 * (1 - tx) + z10 * tx, b = z01 * (1 - tx) + z11 * tx;
+        return a * (1 - ty) + b * ty;
+    }
+
+    // A terrain-conforming earth wall around one ring: at each vertex the wall spans from the
+    // content down/up to the local tile height, so it meets the Google rim whether the ground sits
+    // above the plan (uphill: wall rises to it) or below it (downhill: wall drops to it).
+    function addCurtainRibbon(ringXY, group) {
+        const THREE = window.THREE;
+        const n = ringXY.length;
+        if (n < 2) return;
+        const topBot = function (x, y) {
+            let t = terrainZAt(x, y);
+            if (t === null || !isFinite(t)) {                 // no sample -> degrade to the fixed skirt
+                return [CURTAIN_CONTENT_TOP_Z + CURTAIN_TOP_MARGIN_M, -CARVE_PLINTH_DEPTH_M];
+            }
+            t = Math.max(-CURTAIN_MAX_DIP_M, Math.min(CURTAIN_MAX_RISE_M, t));
+            return [Math.max(CURTAIN_CONTENT_TOP_Z, t) + CURTAIN_TOP_MARGIN_M, Math.min(0, t) - CURTAIN_BOTTOM_MARGIN_M];
+        };
+        const pos = [];
+        let prev = null;
+        for (let i = 0; i < n; i++) {
+            const x = ringXY[i][0], y = ringXY[i][1];
+            const tb = topBot(x, y);
+            const cur = { x: x, y: y, top: tb[0], bot: tb[1] };
+            if (prev) {
+                pos.push(prev.x, prev.y, prev.top, prev.x, prev.y, prev.bot, cur.x, cur.y, cur.bot);
+                pos.push(prev.x, prev.y, prev.top, cur.x, cur.y, cur.bot, cur.x, cur.y, cur.top);
+            }
+            prev = cur;
+        }
+        if (!pos.length) return;
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+        group.add(new THREE.Mesh(geom, apronMaterial));
+    }
+
+    // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
+    // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
+    // around every ring (see the curtain comment above).
     function buildMaskShapes() {
         const THREE = window.THREE;
         if (!THREE || !maskScene || !internals) return;
@@ -444,18 +557,24 @@
         apronGroup = new THREE.Group();
         apronGroup.name = 'PhotorealCarvePlinth';
         const toXY = internals.latLngToXY;
-        collectCarveGeometries().forEach(function (entry) {
-            const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
-            shapesOfGeometry(core, toXY).forEach(function (shape) {
-                const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), maskMaterial);
-                mesh.frustumCulled = false;
-                maskShapesGroup.add(mesh);
-                const plinth = new THREE.Mesh(
-                    new THREE.ExtrudeGeometry(shape, { depth: CARVE_PLINTH_DEPTH_M, bevelEnabled: false }),
-                    apronMaterial);
-                plinth.position.z = CARVE_APRON_TOP_Z - CARVE_PLINTH_DEPTH_M;
-                apronGroup.add(plinth);
-            });
+        const entries = collectCarveGeometries();
+        // Terrain sampling must never break the seal: a failure just leaves the grid null, and the
+        // curtain falls back to the fixed skirt (old plinth behaviour).
+        if (!terrainGrid) { try { buildTerrainGrid(entries); } catch (_) { terrainGrid = null; } }
+        entries.forEach(function (entry) {
+            try {
+                const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
+                polygonShapesAndRings(core, toXY).forEach(function (sr) {
+                    const mask = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMaterial);
+                    mask.frustumCulled = false;
+                    maskShapesGroup.add(mask);
+                    const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
+                    cap.position.z = CARVE_APRON_TOP_Z;
+                    cap.frustumCulled = false;
+                    apronGroup.add(cap);
+                    sr.rings.forEach(function (ring) { addCurtainRibbon(ring, apronGroup); });
+                });
+            } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
@@ -542,6 +661,7 @@
         maskCamera = null;
         maskMaterial = null;
         apronMaterial = null;
+        terrainGrid = null;
         maskReady = false;
         corridorUniforms.uCorridorMask.value = null;
         corridorUniforms.uCorridorOn.value = 0;
