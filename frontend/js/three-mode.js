@@ -3395,6 +3395,59 @@
         return color;
     }
 
+    // Floor lines: thin horizontal divisions every storey, so a proposal box reads as an
+    // N-storey building rather than an undifferentiated mass. Proposal buildings ONLY —
+    // createBuildingSlices is the proposed-building path (existing/context buildings go through
+    // buildNearbyProposalBuildings3D). The step is the SAME storey height the height estimator
+    // uses (building-height.js), so a level-derived building's lines land exactly on its storeys.
+    // Perspective handles the spacing for free (closer buildings show their floors farther apart,
+    // like the lane markings); the lines sit a few centimetres proud of the wall so depth-testing
+    // keeps them on the near faces only, never x-rayed through.
+    const floorLineMaterial = new THREE.LineBasicMaterial({
+        color: 0x2a2f36, transparent: true, opacity: 0.4, depthWrite: false
+    });
+
+    function buildingFloorRingsXY(buildingFeature) {
+        // Outer + courtyard rings of the footprint, nudged ~0.06 m outward (real metres) so the
+        // floor lines clear the wall plane and win the depth test on the faces we can see.
+        let feature = buildingFeature;
+        try {
+            const buffered = turf.buffer(buildingFeature, 0.06, { units: 'meters' });
+            if (buffered && buffered.geometry) feature = buffered;
+        } catch (_) { }
+        const geom = feature.geometry;
+        const polys = geom.type === 'Polygon' ? [geom.coordinates]
+            : geom.type === 'MultiPolygon' ? geom.coordinates : [];
+        const rings = [];
+        polys.forEach(poly => poly.forEach(ring => {
+            if (!Array.isArray(ring) || ring.length < 4) return;
+            rings.push(ring.map(c => latLngToXY(c[1], c[0])));
+        }));
+        return rings;
+    }
+
+    function addBuildingFloorLines(buildingFeature, height, targetGroup) {
+        const step = (typeof window !== 'undefined' && Number(window.STOREY_HEIGHT_M)) || 3.3;
+        if (!(height > step * 1.5)) return; // nothing to divide on a ~1-storey box
+        let rings;
+        try { rings = buildingFloorRingsXY(buildingFeature); } catch (_) { return; }
+        if (!rings.length) return;
+        const positions = [];
+        for (let z = step; z < height - 0.4; z += step) {
+            rings.forEach(xy => {
+                for (let i = 0; i < xy.length - 1; i++) {
+                    positions.push(xy[i][0], xy[i][1], z, xy[i + 1][0], xy[i + 1][1], z);
+                }
+            });
+        }
+        if (!positions.length) return;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const lines = new THREE.LineSegments(geometry, floorLineMaterial);
+        lines.userData.isBuildingFloorLines = true;
+        targetGroup.add(lines);
+    }
+
     function createBuildingSlices(buildingFeature, height, material, targetGroup) {
         if (!buildingFeature || !buildingFeature.geometry || typeof parcelLayer === 'undefined' || !parcelLayer) {
             const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
@@ -3553,6 +3606,9 @@
             const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
             meshes.forEach(m => targetGroup.add(m));
         }
+
+        // Storey divisions wrap the whole building once, whether it drew sliced or unsliced.
+        try { addBuildingFloorLines(buildingFeature, height, targetGroup); } catch (_) { }
     }
 
     function getBuildingParcelIntersectionPoints(buildingFeature) {

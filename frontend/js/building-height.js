@@ -44,6 +44,7 @@
 
     if (typeof window !== 'undefined') {
         window.estimateBuildingHeightMeters = estimateBuildingHeightMeters;
+        window.STOREY_HEIGHT_M = STOREY_HEIGHT_M; // shared with three-mode's floor lines
     }
 
     if (typeof module !== 'undefined' && module.exports) {
