@@ -226,10 +226,14 @@
     // interior, a sightline hits mirrored terrain texture — never the background.
     const CARVE_FLOOR_Z = -0.3;      // fragments above this, inside a footprint, are discarded
     const CARVE_CORE_BUFFER_M = 1.2; // dilation against mask-texel combs along cut facades
-    // Razed buildings get the cut plus a shallow SOLID SLAB of bare soil: nothing of ours
-    // covers them, and a dirt pad where a building was demolished reads as a cleared lot.
+    // A solid PLINTH under every cut. Our content is a flat terrace at z≈0 while the real
+    // terrain rolls beneath it: wherever the ground dips below the table's edge, daylight
+    // showed under the plan (in one rim and out the other, straight to the sky). The plinth
+    // gives the terrace earth sides — a graded site's cut-and-fill embankment — sealing every
+    // under-surface sightline for any terrain shape. It doubles as the cleared-lot pad under
+    // razed buildings.
     const CARVE_APRON_TOP_Z = -0.02;  // just under the z=0 content
-    const CARVE_APRON_DEPTH_M = 0.5;  // slab thickness, reaching below the carve floor (−0.3)
+    const CARVE_PLINTH_DEPTH_M = 4;   // deep enough to meet terrain in any local dip
     const CARVE_APRON_COLOR = 0x6e7563; // muted earth-green: plausible under grass and asphalt alike
 
     let maskRT = null;
@@ -424,15 +428,15 @@
         return shapes;
     }
 
-    // Carve footprints (lat/lng GeoJSON) → mask shapes in scene XY, plus a bare-soil slab
-    // INTO THE SCENE under razed buildings (nothing of ours covers those cuts).
+    // Carve footprints (lat/lng GeoJSON) → mask shapes in scene XY, and the sealing plinth
+    // INTO THE SCENE under every cut (see the plinth comment above).
     function buildMaskShapes() {
         const THREE = window.THREE;
         if (!THREE || !maskScene || !internals) return;
         disposeMaskShapes();
         maskShapesGroup = new THREE.Group();
         apronGroup = new THREE.Group();
-        apronGroup.name = 'PhotorealCarveApron';
+        apronGroup.name = 'PhotorealCarvePlinth';
         const toXY = internals.latLngToXY;
         collectCarveGeometries().forEach(function (entry) {
             const core = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
@@ -440,17 +444,12 @@
                 const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), maskMaterial);
                 mesh.frustumCulled = false;
                 maskShapesGroup.add(mesh);
+                const plinth = new THREE.Mesh(
+                    new THREE.ExtrudeGeometry(shape, { depth: CARVE_PLINTH_DEPTH_M, bevelEnabled: false }),
+                    apronMaterial);
+                plinth.position.z = CARVE_APRON_TOP_Z - CARVE_PLINTH_DEPTH_M;
+                apronGroup.add(plinth);
             });
-            if (entry.kind === 'razed') {
-                const pad = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
-                shapesOfGeometry(pad, toXY).forEach(function (shape) {
-                    const mesh = new THREE.Mesh(
-                        new THREE.ExtrudeGeometry(shape, { depth: CARVE_APRON_DEPTH_M, bevelEnabled: false }),
-                        apronMaterial);
-                    mesh.position.z = CARVE_APRON_TOP_Z - CARVE_APRON_DEPTH_M;
-                    apronGroup.add(mesh);
-                });
-            }
         });
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
