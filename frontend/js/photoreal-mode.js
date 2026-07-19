@@ -233,7 +233,12 @@
     // a building was demolished reads as a cleared lot.
     const CARVE_APRON_TOP_Z = -0.02;  // just under the z=0 content
     const CARVE_APRON_DEPTH_M = 0.5;  // slab thickness, reaching below the carve floor (−0.3)
-    const CARVE_APRON_COLOR = 0x74736c;
+    const CARVE_APRON_COLOR = 0x6e7563; // muted earth-green: plausible under grass and asphalt alike
+    // The fused mesh has NO ground under trees — the canopy IS the surface — so trimming an
+    // edge tree opens a tree-shaped skylight. A backstop slab sits under the whole ring, BELOW
+    // ground level (so real terrain always covers it), and shows only through such holes as a
+    // recessed patch of earth instead of sky.
+    const CARVE_BACKSTOP_TOP_Z = -0.6;
 
     let maskRT = null;
     let maskScene = null;
@@ -458,6 +463,13 @@
                     mesh.renderOrder = 0;
                     mesh.frustumCulled = false;
                     maskShapesGroup.add(mesh);
+                    // Below-ground backstop under the same extent (visible only through the
+                    // holes left where trimmed canopy WAS the ground surface).
+                    const backstop = new THREE.Mesh(
+                        new THREE.ExtrudeGeometry(shape, { depth: CARVE_APRON_DEPTH_M, bevelEnabled: false }),
+                        apronMaterial);
+                    backstop.position.z = CARVE_BACKSTOP_TOP_Z - CARVE_APRON_DEPTH_M;
+                    apronGroup.add(backstop);
                 });
             } else {
                 const pad = bufferGeometry(entry.geometry, CARVE_CORE_BUFFER_M);
