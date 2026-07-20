@@ -623,27 +623,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `);
 
-    // SimCity object actions: an object on the map can be edited, parked, or deleted right here.
-    const deleteButtonHtml = (proposalKey && typeof deleteProposal === 'function')
-        ? `
-        <button class="btn btn-outline-danger btn-delete-proposal" onclick="deleteProposal('${proposalKey}')"
-            title="${tProposal('panel.proposal.actions.deleteHint', 'Deletes the object and its idea entirely.')}">
-            <i class="fas fa-trash"></i> ${tProposal('panel.proposal.actions.delete', 'Delete')}
-        </button>
-    `
-        : '';
-
     // Fixed slots so buttons never shuffle between selections: Edit · Propose/Details ·
-    // Apply/Unapply · Share · Delete. Contextual extras (Buy, Drive) append at the end.
+    // Apply/Unapply · Share. Contextual extras (Buy, Drive) append at the end. Deletion lives
+    // in the proposal lists (type-aware there) — the panel only offers the reversible Unapply,
+    // which means the same thing for local, server, and on-chain proposals.
     // Colors are role-coded: blue = propose/details, green = apply, yellow = unapply,
-    // red outline = delete, neutral outline = edit/share.
+    // neutral outline = edit/share.
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${crossSectionButtonHtml}
             ${editButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
-            ${deleteButtonHtml}
             ${buyButtonHtml}
             ${driveButtonHtml}
         </div>

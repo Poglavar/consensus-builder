@@ -1746,17 +1746,22 @@ textarea.proposal-description-input {
     }
 }
 
-/* Proposal actions group - buttons share row on desktop */
+/* Proposal actions group - two buttons per row on narrow screens (2x2 with 4 buttons),
+   three per row on desktop (below). */
 .proposal-actions-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin: 12px 0;
 }
 
 .proposal-actions-group button {
-    width: 100%;
+    width: auto;
     min-height: 40px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (min-width: 769px) {
