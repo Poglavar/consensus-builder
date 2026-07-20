@@ -1,10 +1,9 @@
 # 3D Terrain Fitting — Photoreal Mode
 
-> Living record of the effort to make our flat proposal geometry sit correctly on Google's
-> Photorealistic 3D Tiles in `rw` (realistic/photoreal) mode. Written after a long session that
-> tried many approaches; **the core problem is not fully solved.** Read this before touching the
-> carve/seal/drape code again — most "obvious" fixes have already been tried and are recorded here
-> with *why they failed*.
+> Living record of the effort to make proposal geometry sit correctly on Google's Photorealistic
+> 3D Tiles in `rw` (realistic/photoreal) mode. The chronology records several failed flat/drape
+> approaches; the current road path is the DGU-relative, Google-anchored station formation in §5.8. Read this
+> before touching the carve/seal/drape code again — most "obvious" fixes have already been tried.
 
 ---
 
@@ -36,12 +35,13 @@ Everything below is the fight to make the two surfaces meet cleanly.
   the content (buildings appear as blue holes with the boxes far below — see §9 mobile note).
 - **The carve:** the tiles are a **hollow shell of one fused skin** (ground = trees = buildings, no
   separate terrain layer). To show our content, a fragment shader on every tile material **discards**
-  fragments that fall inside our footprints. The footprints are rasterised into a sliding 1024²
+  fragments that fall inside our footprints. The footprints are rasterised into a sliding 2048²
   top-down R/G mask; the shader samples it and `discard`s. Two discard modes now exist:
-  - **RED = full discard** (roads' old mode, razed & proposed buildings): remove everything above a
-    floor plane.
-  - **GREEN = keep-vegetation** (parks, and now roads): discard only the **ground layer** — below
+  - **RED = floor-bounded discard** (razed & proposed buildings): remove everything above a floor.
+  - **GREEN = keep-vegetation** (parks): discard only the **ground layer** — below
     `localGroundHeight + band(~1 m)` — so hedges/trees stand instead of being sliced (see §5).
+  - **BLUE = height-aware road discard:** alpha stores the local road formation, and the Google
+    shell is removed only above `formation - 0.4 m`. Terrain below an elevated road remains intact.
 - **The seal:** because the cut edge (real terrain height) ≠ our fill edge (flat z≈0), the gap has
   been sealed by, in sequence, aprons → plinth → **terrain-conforming curtain** (§4). This is the
   part that keeps producing artifacts.
@@ -141,7 +141,7 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
 - **Result: roads FLOAT in the air with sky underneath.** Cause (§7): the grid sampled the **tree
   canopy**, not the ground.
 
-### 5.7 Canopy contamination (the current frontier) — still not good
+### 5.7 Historical canopy-contamination failure
 - `sampleTileGroundZ` took the **first** ray hit going down. Over vegetation that's the **canopy
   top**, so both the drape (roads lifted to treetops → float) AND the curtain (walls to canopy →
   tall olive sheets) were built to the wrong height.
@@ -149,6 +149,43 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
   canopy). User reports **"still not good"** after this. So min-hit alone does not fix it — likely a
   mix of: coarse grid (~18 m) faceting a draped road, min over-correcting into low mesh points, grid
   holes (NaN→0) warping vertices, and/or roads extending beyond the sampled grid bbox.
+
+### 5.8 DGU-relative station formation on `main` (current solution)
+
+- The coarse grid was the source of the false broad sag: its 22-sample cap meant a long road could
+  use 25–30 m cells, and bilinear interpolation spread one bad low cell across tens of metres.
+- Roads densify their centreline to **≤4 m stations** and raycast the **seated Google mesh
+  directly** at every station. Each station samples the centre plus two probes outside the actual
+  road half-width. This is the immediate/fallback formation and the local-scene anchor.
+- In Zagreb, `POST /api/terrain/profile` supplies the DGU 20 m EVRF2000 bare-earth profile. We keep
+  its relative metre-for-metre shape and fit only a robust median additive offset to the Google
+  samples. Coverage, inlier and MAD gates reject a bad/missing reference back to the valid Google
+  formation. Absolute EVRF2000 and local tile Z are never compared directly.
+- The longitudinal filter is conditional, not a low-pass: it replaces only locally unsupported
+  excursions of at least 1.5 m. Genuine shallow Google terrain hollows and steady grades remain
+  unchanged. Only short bounded NoData gaps interpolate; missing edge/long regions disable the
+  formation instead of becoming z=0.
+- Every lateral strip at a station shares one formation Z. Roads are explicit ruled quads between
+  adjacent stations, so Earcut cannot discard densification vertices and turn a 399 m road into a
+  few long tilted triangles. Kerbs, markings, junctions and decorations add their semantic offsets
+  to the same profile.
+- Sampling snapshots current visible Google tile meshes once per carve rebuild, caches XY probes,
+  ignores the tiles-root reveal flag during the first hidden composition, and performs up to three
+  quiet-burst refits as finer visible LODs arrive. The old cleaned grid remains for parks and
+  non-road curtain support only.
+- The road cut is height-aware. Its alpha channel carries the same explicit 4 m formation quilt as
+  the visible deck; Google fragments are removed only above the local formation minus 0.4 m. The
+  exact station quilt now owns the mask by itself — the former union with a separately
+  Turf-buffered footprint was removed because its round endpoint/bend lobes had no matching deck.
+  A solid station-derived foundation extends 1 m outside the sidewalk on sides and open endpoints;
+  the raster cut sits halfway through it at 0.5 m, leaving its complete nearest-texel uncertainty
+  on opaque geometry. The foundation top is 1 cm below the lowest road strip and its 0.6 m skirt
+  closes grazing views. Source-textured per-tile fascias remain only for vertical facade/tree cuts;
+  their horizontal flanges are clamped below the continuous foundation instead of being the seal.
+- Browser check, Road 2007-0151: 101 true-metre-spaced stations, 781 cached visible-mesh probes,
+  zero misses, one DGU reference accepted (0.56 m initial calibration MAD, 0.10 m after finer-LOD
+  refits), and a +0.17 m endpoint grade instead of the false Google-only −2.05 m drop. Close
+  top-down inspection shows a continuous sidewalk edge without raster scallops.
 
 ---
 
@@ -172,68 +209,49 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
 
 ## 7. Current state
 
-### On `main` (deployed, build ~299)
-- Carve = double-sided tiles + single clean cut.
-- Seal = **terrain-conforming curtain** (grid-sampled earth walls up/down to terrain) + flat cap.
-- **Keep-vegetation** for parks AND roads (green mask channel + ground-band discard via `uGroundTex`
-  R32F heightfield).
-- Roads carve at `buffer: 0` (no apron ring).
-- **Known remaining issues on main:** olive curtain walls where terrain rises above the plan and,
-  crucially, **tall** where the grid sampled the canopy (the min-hit fix in §5.7 is NOT on main
-  yet); occasional blue scallops.
-- Adjacent UX shipped this session (not terrain, but in the same builds): `?seat` on-screen seating
-  diagnostic (§9), `rw` loading cover (2D→loading→composed), mobile-collapsible 3D controls panel.
+### On `main` (current working tree; not automatically deployed)
+- Road formation = direct Google mesh sampling and explicit ≤4 m ruled stations (§5.8).
+- Road carve = dedicated blue height-aware mask whose alpha carries local formation height; an
+  exact station-derived mask is buried halfway through a continuous 1 m road foundation with real
+  endpoint caps and a downward skirt. Per-tile fascia geometry is cosmetic vertical-shell closure,
+  never the primary horizontal seal.
+- Park/non-road ground support = the cleaned coarse grid. It is deliberately **not** a road profile
+  source anymore.
+- The original abstract-3D corridor group remains untouched. Photoreal mode builds a temporary
+  terrain corridor group and removes it on exit, giving exact restoration.
+- Remaining hard case: Google photogrammetry is a surface model. When a road is drawn through a
+  large building, no visible-mesh ray can reveal the bare earth underneath; side probes and bounded
+  interpolation can solve small obstacles, not a whole block-wide occlusion.
 
-### In worktree `../consensus-builder-terrain-drape` (branch `terrain-drape`, NOT merged)
-- Commit `1a3c49f` = drape v1 (corridors) + apron:false for roads.
-- **Uncommitted** = `sampleTileGroundZ` min-hit (lowest hit = ground under canopy).
-- **Status: not working** — roads float / warp; user rejected it twice.
-- Served for laptop testing at `http://localhost:5099` pointed at the prod backend
-  (`?backend=https://api.urbangametheory.xyz`, CORS allows localhost). `serve … --single` for the
-  `/proposals/…` SPA route.
+### Historical `terrain-drape` branch/worktree
+- Commit `1a3c49f` and its min-hit experiment are superseded, not the current implementation.
+- It mutated generic corridor vertices against the coarse grid, warped cross-sections, and could
+  lift roads onto canopy. Do not merge or revive it as the basis of the current formation.
 
 ---
 
-## 8. The open problem + candidate next steps
+## 8. Remaining terrain-source question
 
-**The unsolved crux: getting a clean GROUND heightfield out of Google's noisy photogrammetric mesh**
-(no ground layer, canopy/roofs/buildings on top, no BVH). Every current artifact needs it.
+Google does not publish a guarantee that Photorealistic 3D Tiles and the Elevation API share one
+source surface. The Elevation API returns metres relative to **local mean sea level** and reports a
+per-result resolution; multi-point/path requests can be coarser. 3D Tiles commonly occupy WGS84
+ECEF/ellipsoidal space, then this app adds an arbitrary local seating shift. They are therefore not
+drop-in absolute-height equivalents.
 
-Candidate directions, roughly ordered by effort:
-
-1. **Keep the curtain; just feed it clean ground heights (min-hit or a robust percentile).** Lowest
-   risk, one-file change on `main`. Should collapse the tall olive walls to small lips **without any
-   drape**. Min-hit alone "still not good" per the user, so needs a better ground estimator: e.g.
-   per-grid-point take a small spread and use a low percentile (like the seat's p25) to reject both
-   canopy (high) and spurious low hits; or median-filter the grid; or reject hits that sit far above
-   the neighbourhood minimum (canopy) and far below it (mesh underside).
-2. **Drape with a smooth, dense, de-noised heightfield.** The coarse 18 m grid facets a draped road.
-   Needs a finer grid (cost — no BVH), plus smoothing, plus draping the *whole* corridor
-   cross-section consistently (not per-vertex independently) so the ribbon stays planar across its
-   width. Buildings must offset by their **footing** height (whole-object), not per-vertex, or they
-   shear.
-3. **External DEM (Croatian DGU, used in `zagreb-isochrone`).** Clean bare-earth ground, but ~20 m
-   resolution and a **different datum/surface than Google's mesh** — so it would MISMATCH the tiles
-   (fresh gaps) unless only used to *drape our content* while the *curtain still seals to Google's
-   own mesh height*. Possibly: DGU for draping content, Google-raycast (ground percentile) only for
-   the thin seal. Untested.
-4. **Accept the curtain as the seal and stop draping.** With clean ground heights (option 1) the
-   walls become minor earth lips — arguably acceptable. This is the pragmatic fallback the session
-   was heading toward when it stopped.
-
-**Recommendation:** try option 1 with a proper ground estimator first (cheap, safe, on `main`); only
-pursue draping (option 2) if the lips are still unacceptable. Treat this whole area as the natural
-first customer of a future shared `sim-3d` engine — it's the same terrain-conformance problem the
-osm-3d and photoreal engines both have.
+The Elevation API is still a useful independent comparison/fallback candidate: sample the road path,
+subtract the API height at a local anchor, then add the seated Google-mesh Z at that anchor. The
+constant datum offset largely cancels over a city-scale road. Before substituting it, compare the
+*shape after fitting that constant offset* and retain the API's returned resolution. The current
+implementation applies that relative-shape method to DGU EVRF2000 and falls back to direct visible
+Google-mesh sampling when the DGU profile fails its coverage/MAD gates.
 
 ---
 
 ## 9. Constraints & gotchas for whoever continues
 
-- **Cannot be verified by the AI agent directly.** The automation browser can't stream Google tiles
-  (an unfocused tab throttles rAF/timers → `tiles.update` starves → `loadProgress 1, 0 children`).
-  It is **NOT an ion quota throttle** — driving `update()` by hand starts loading. So **every
-  photoreal fix must be verified in a real focused browser session** (the user's).
+- The in-app browser can verify Google tiles when the tab is focused and the proposal is framed
+  before entering realistic mode. Entering at Zagreb's default centre while the road is several
+  kilometres away correctly yields no road samples because those tiles have not streamed yet.
 - **`?seat` on-screen diagnostic** (build 292+): shows `grounded / seatZ / ground@0 / tiles / lp` as
   a fixed bottom pill. `ground@0 ≈ 0` = seated correctly; `≈ +120` = seating failed (tiles at
   ellipsoid height). Captured in an inline `<head>` script → sessionStorage because the share flow
@@ -248,5 +266,5 @@ osm-3d and photoreal engines both have.
 
 ---
 
-*Last updated: 2026-07-19, after the drape/min-hit attempt was rejected. The terrain fitting is
-still open; start from §8 option 1.*
+*Last updated: 2026-07-20, after DGU-relative/Google-anchored formation and the height-aware cut
+were browser-verified on Road 2007-0151. Start from §5.8, not the historical generic drape.*

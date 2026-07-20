@@ -35,6 +35,108 @@
         return null;
     }
 
+    // A proposed road normally has a useful visible Google surface under its centreline. When that
+    // ray lands on a car, canopy or roof, two agreeing samples beyond the corridor edges can safely
+    // pull it down. Higher side hits never lift a valid centreline onto adjacent buildings, and
+    // disagreeing sides are not averaged into fictional terrain.
+    function selectRoadSurfaceHeight(center, left, right, options) {
+        const opts = options || {};
+        const sideAgreementM = finite(Number(opts.sideAgreementM))
+            ? Math.max(0, Number(opts.sideAgreementM)) : 1.5;
+        const centerHighThresholdM = finite(Number(opts.centerHighThresholdM))
+            ? Math.max(0, Number(opts.centerHighThresholdM)) : 1.5;
+        const hasCenter = finite(center);
+        const hasLeft = finite(left);
+        const hasRight = finite(right);
+
+        if (hasCenter) {
+            if (hasLeft && hasRight && Math.abs(left - right) <= sideAgreementM
+                && center - Math.max(left, right) >= centerHighThresholdM) {
+                return (left + right) / 2;
+            }
+            return center;
+        }
+        if (hasLeft && hasRight) {
+            return Math.abs(left - right) <= sideAgreementM ? (left + right) / 2 : null;
+        }
+        if (hasLeft) return left;
+        if (hasRight) return right;
+        return null;
+    }
+
+    // The road mask is an RGBA8 texture. Its alpha channel carries the local formation height,
+    // normalised over an adaptive range so ordinary city roads quantise to centimetres rather than
+    // metres. Zero remains in-range for legacy/fallback flat roads.
+    function roadFloorEncodingRange(values, options) {
+        const opts = options || {};
+        const paddingM = finite(Number(opts.paddingM)) ? Math.max(0, Number(opts.paddingM)) : 4;
+        const minimumRangeM = finite(Number(opts.minimumRangeM))
+            ? Math.max(1e-9, Number(opts.minimumRangeM)) : 8;
+        const heights = [0];
+        (values || []).forEach(function (value) { if (finite(value)) heights.push(value); });
+        const low = Math.min.apply(null, heights);
+        const high = Math.max.apply(null, heights);
+        const min = low - paddingM;
+        const range = Math.max(minimumRangeM, high - low + paddingM * 2);
+        return { min: min, range: range, max: min + range, quantizationM: range / 255 };
+    }
+
+    function encodeRoadFloor(height, encoding) {
+        if (!finite(height) || !encoding || !finite(encoding.min) || !(encoding.range > 0)) return 0;
+        return Math.max(0, Math.min(1, (height - encoding.min) / encoding.range));
+    }
+
+    function decodeRoadFloor(encoded, encoding) {
+        if (!finite(encoded) || !encoding || !finite(encoding.min) || !(encoding.range > 0)) return null;
+        return encoding.min + Math.max(0, Math.min(1, encoded)) * encoding.range;
+    }
+
+    // Cut patches are produced for every applied road, but photoreal proposal/parcel isolation
+    // must paint only the same roads as the vector mask entries. A stale patch with no matching
+    // deck or seam would otherwise leave an unsupported hole in the Google shell.
+    function filterRoadFloorPatches(patches, isolationFilter) {
+        const list = Array.isArray(patches) ? patches : [];
+        if (isolationFilter === '__parcel__') return [];
+        if (!isolationFilter) return list.slice();
+        return list.filter(function (patch) {
+            return String(patch && patch.proposalId) === String(isolationFilter);
+        });
+    }
+
+    // Tile LOD can advance in several distinct bursts. Track source revisions separately from
+    // applied refits so a later fine-mesh burst can supersede an earlier coarse "quiet" period,
+    // while an explicit pass budget prevents camera-driven tile churn from rebuilding forever.
+    function createTerrainRefreshTracker(maxRefreshes) {
+        const requested = Number(maxRefreshes);
+        return {
+            revision: 0,
+            appliedRevision: 0,
+            refreshes: 0,
+            maxRefreshes: Number.isFinite(requested) ? Math.max(1, Math.floor(requested)) : 3,
+            lastReason: null
+        };
+    }
+
+    function noteTerrainSourceChange(tracker, reason) {
+        if (!tracker || !(tracker.maxRefreshes > 0)) return null;
+        tracker.revision += 1;
+        tracker.lastReason = reason == null ? 'tile-source-change' : String(reason);
+        return tracker.revision;
+    }
+
+    function claimTerrainRefresh(tracker) {
+        if (!tracker || tracker.refreshes >= tracker.maxRefreshes
+            || tracker.revision <= tracker.appliedRevision) return null;
+        tracker.refreshes += 1;
+        tracker.appliedRevision = tracker.revision;
+        return {
+            revision: tracker.appliedRevision,
+            refresh: tracker.refreshes,
+            maxRefreshes: tracker.maxRefreshes,
+            reason: tracker.lastReason
+        };
+    }
+
     function finiteNeighbourValues(values, nx, ny, x, y, radiusX, radiusY) {
         const out = [];
         const ry = Number.isFinite(radiusY) ? radiusY : radiusX;
@@ -183,6 +285,14 @@
 
     return {
         selectTopSurfaceHeight: selectTopSurfaceHeight,
+        selectRoadSurfaceHeight: selectRoadSurfaceHeight,
+        roadFloorEncodingRange: roadFloorEncodingRange,
+        encodeRoadFloor: encodeRoadFloor,
+        decodeRoadFloor: decodeRoadFloor,
+        filterRoadFloorPatches: filterRoadFloorPatches,
+        createTerrainRefreshTracker: createTerrainRefreshTracker,
+        noteTerrainSourceChange: noteTerrainSourceChange,
+        claimTerrainRefresh: claimTerrainRefresh,
         cleanGroundGrid: cleanGroundGrid,
         sampleBilinear: sampleBilinear,
         coversBounds: coversBounds

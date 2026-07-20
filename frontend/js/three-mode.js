@@ -101,6 +101,15 @@
     // Groups for layers
     let flatGroup = null; // existing parcels + existing roads (always part of "built")
     let corridorGroup = null; // applied corridor cross-sections — kept visible in realistic mode
+    // Realistic mode gets a separately-built ruled road group. Keeping the abstract group untouched
+    // makes leaving photoreal an exact restoration instead of a lossy reverse vertex mutation.
+    let terrainCorridorGroup = null;
+    let corridorTerrainProfiles = [];
+    let corridorTerrainCutPatches = [];
+    let corridorTerrainSampler = null;
+    let corridorTerrainReferenceGeneration = 0;
+    let corridorTerrainReferences = new Map();
+    const corridorDguProfileCache = new Map();
     let realisticLayerActive = false; // photoreal mesh is the built world; abstract built layers hide
     let plannedFlatGroup = null; // park/square/lake grounds, paths, ponds, water, etc.
     let buildingGroup = null; // buildings extrusion
@@ -2106,6 +2115,322 @@
         targetGroup.add(mesh);
     }
 
+    const CORRIDOR_TERRAIN_STATION_SPACING_M = 4;
+    const CORRIDOR_TERRAIN_SMOOTHING_RADIUS = 2; // local gross-outlier window, not a low-pass
+    const CORRIDOR_TERRAIN_OUTLIER_THRESHOLD_M = 1.5;
+    const CORRIDOR_TERRAIN_MAX_NODATA_GAP_M = 16;
+    const CORRIDOR_DGU_PROFILE_STEP_M = 20;
+    const CORRIDOR_DGU_MAX_GAP_M = 40;
+    // Keep the engineered formation deliberately clear of the Google support surface. Asphalt is
+    // another CORRIDOR_STRIP_Z above this, so the visible carriageway is about 10 cm over the
+    // sampled mesh instead of becoming coplanar with individual photogrammetry triangles.
+    const CORRIDOR_TERRAIN_CLEARANCE_M = 0.05;
+
+    function corridorFormationForPoints(points, sampleHeight, corridorProfile, verticalOffsetM, terrainReference) {
+        const formation = window.__corridorTerrainFormation;
+        if (!formation || typeof sampleHeight !== 'function' || !Array.isArray(points) || points.length < 2) return null;
+        const xy = points.map(point => latLngToXY(point.lat, point.lng));
+        const width = (typeof corridorProfileWidth === 'function')
+            ? Number(corridorProfileWidth(corridorProfile)) : 0;
+        let mercatorScale = 1;
+        try {
+            const origin = xyToLatLng(0, 0);
+            if (window.__photorealFrame && typeof window.__photorealFrame.mercatorScaleFactor === 'function') {
+                mercatorScale = window.__photorealFrame.mercatorScaleFactor(origin.lat);
+            }
+        } catch (_) { }
+        if (!Number.isFinite(mercatorScale) || !(mercatorScale > 0)) mercatorScale = 1;
+        const contextualSample = function (x, y, station) {
+            return sampleHeight(x, y, {
+                station: station,
+                halfWidthSceneM: Number.isFinite(width) && width > 0
+                    ? width * mercatorScale / 2 : 0
+            });
+        };
+        const requestedOffset = Number.isFinite(verticalOffsetM)
+            ? verticalOffsetM : CORRIDOR_TERRAIN_CLEARANCE_M;
+        const buildOptions = {
+            maxSpacingM: CORRIDOR_TERRAIN_STATION_SPACING_M,
+            distanceScale: 1 / mercatorScale,
+            smoothingRadiusStations: CORRIDOR_TERRAIN_SMOOTHING_RADIUS,
+            outlierThresholdM: CORRIDOR_TERRAIN_OUTLIER_THRESHOLD_M,
+            maxNoDataGapM: CORRIDOR_TERRAIN_MAX_NODATA_GAP_M,
+            verticalOffsetM: requestedOffset
+        };
+        const visibleProfile = formation.buildFormation(xy, contextualSample, buildOptions);
+        let profile = visibleProfile;
+        if (terrainReference && terrainReference.source === 'dgu-dtm-20m'
+            && terrainReference.datum === 'EVRF2000'
+            && Array.isArray(terrainReference.points)
+            && typeof formation.referenceElevationAt === 'function'
+            && typeof formation.calibrateReferenceFormation === 'function') {
+            const referenceProfile = formation.buildFormation(xy, function (_x, _y, station) {
+                return formation.referenceElevationAt(
+                    terrainReference.points, station && station.s, CORRIDOR_DGU_MAX_GAP_M);
+            }, { ...buildOptions, verticalOffsetM: 0 });
+            const calibrated = formation.calibrateReferenceFormation(referenceProfile, visibleProfile, {
+                verticalOffsetM: requestedOffset,
+                source: terrainReference.source,
+                datum: terrainReference.datum,
+                resolutionM: terrainReference.resolutionM,
+                minimumPairs: 3,
+                minimumCoverage: 0.5,
+                maximumMadM: 1.5
+            });
+            if (calibrated && calibrated.ok) {
+                profile = calibrated;
+                profile.referenceStatus = 'accepted';
+            } else if (visibleProfile) {
+                visibleProfile.referenceStatus = referenceProfile && referenceProfile.ok
+                    ? 'rejected-calibration' : 'invalid-reference-profile';
+            }
+        }
+        if (profile) {
+            // Profile projections clamp to their endpoints, so callers must not let one road arm
+            // supply terrain to an unrelated road across the scene. This still leaves enough room
+            // for the widest strip, its junction patch and the cut-wall overlap.
+            profile.supportRadiusSceneM = Math.max(12,
+                (Number.isFinite(width) && width > 0 ? width / 2 : 0) + 8) * mercatorScale;
+            profile.widthM = Number.isFinite(width) ? width : null;
+            profile.mercatorScale = mercatorScale;
+        }
+        return profile || null;
+    }
+
+    function corridorFormationFailureSummary(profile) {
+        const stations = profile && Array.isArray(profile.stations) ? profile.stations : [];
+        return {
+            reason: profile && profile.reason ? profile.reason : 'no-profile',
+            stations: stations.length,
+            sampledStations: stations.filter(station => Number.isFinite(station.rawZ)).length,
+            firstSampled: !!(stations.length && Number.isFinite(stations[0].rawZ)),
+            lastSampled: !!(stations.length && Number.isFinite(stations[stations.length - 1].rawZ)),
+            unresolvedRanges: (profile && Array.isArray(profile.unresolvedRanges)
+                ? profile.unresolvedRanges : []).map(range => ({
+                    startS: range.startS,
+                    endS: range.endS,
+                    bounded: range.bounded,
+                    spanM: Number.isFinite(range.spanM) ? range.spanM : null
+                }))
+        };
+    }
+
+    function terrainHeightFromProfiles(profiles, x, y) {
+        const formation = window.__corridorTerrainFormation;
+        if (!formation || !Array.isArray(profiles)) return null;
+        let best = null;
+        profiles.forEach(profile => {
+            const sample = formation.projectToProfile(profile, x, y);
+            if (!sample || !Number.isFinite(sample.z) || !Number.isFinite(sample.distance)) return;
+            const supportRadius = Number(profile && profile.supportRadiusSceneM);
+            if (Number.isFinite(supportRadius) && sample.distance > supportRadius) return;
+            if (!best || sample.distance < best.distance) best = sample;
+        });
+        return best ? best.z : null;
+    }
+
+    function terrainHeightOrZero(heightAt, x, y) {
+        const value = typeof heightAt === 'function' ? heightAt(x, y) : null;
+        return Number.isFinite(value) ? value : 0;
+    }
+
+    // Terrain roads are explicit station-to-station quads. ShapeGeometry/Earcut is intentionally
+    // not used here: it may discard collinear densification vertices and span a whole 200 m road
+    // with one tilted triangle, which is exactly the floating-at-one-end failure this path fixes.
+    function addTerrainStrip3D(targetGroup, formationProfile, strip, lane, laneType) {
+        const helper = window.__corridorTerrainFormation;
+        if (!helper || !formationProfile) return false;
+        const kerb = Math.max(0, Number(lane && lane.height) || 0);
+        const ruled = helper.buildRuledStripPositions(
+            formationProfile,
+            Number(strip.left),
+            Number(strip.right),
+            CORRIDOR_STRIP_Z,
+            kerb
+        );
+        if (!ruled || !ruled.ok || !ruled.positions.length) return false;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(ruled.positions, 3));
+        geometry.computeVertexNormals();
+        geometry.computeBoundingSphere();
+        const mesh = new THREE.Mesh(geometry, corridorRibbonMaterial(laneType));
+        mesh.userData.isCorridorStrip = true;
+        mesh.userData.isTerrainCorridorStrip = true;
+        mesh.userData.laneType = laneType;
+        targetGroup.add(mesh);
+        return true;
+    }
+
+    function corridorTerrainEntryKey(proposal, entry) {
+        const proposalId = proposal && (proposal.proposalId ?? proposal.id ?? proposal.hash ?? 'proposal');
+        const segmentId = entry && entry.segmentId != null ? String(entry.segmentId) : '';
+        const geometry = (entry && Array.isArray(entry.points) ? entry.points : []).map(function (point) {
+            return Number(point.lat).toFixed(7) + ',' + Number(point.lng).toFixed(7);
+        }).join(';');
+        return String(proposalId) + '|' + segmentId + '|' + geometry;
+    }
+
+    function corridorPointSequencesEqual(a, b) {
+        return Array.isArray(a) && Array.isArray(b) && a.length === b.length
+            && a.every(function (point, index) {
+                const other = b[index];
+                return other && Number(point && point.lat) === Number(other.lat)
+                    && Number(point && point.lng) === Number(other.lng);
+            });
+    }
+
+    function corridorRenderEntriesForDefinition(definition) {
+        const fallbackProfile = corridorProfileOf(definition);
+        const centerline = corridorCenterlineOf(definition);
+        if (!fallbackProfile || !centerline.length) return [];
+        const entries = ((typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [])
+            .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
+            .map(entry => entry.profile ? entry : { ...entry, profile: fallbackProfile });
+        return entries.length ? entries : centerline.map(points => ({ points, profile: fallbackProfile }));
+    }
+
+    function corridorDguTerrainProfileUrl() {
+        const override = window.__CORRIDOR_TERRAIN_PROFILE_URL__;
+        if (typeof override === 'string' && override.trim()) return override.trim();
+        const configuredBase = window.__ZAGREB_RUNTIME_CONFIG__
+            && window.__ZAGREB_RUNTIME_CONFIG__.zagrebApiBaseUrl;
+        if (configuredBase) return String(configuredBase).replace(/\/+$/, '') + '/terrain/profile';
+        const hostname = String(window.location && window.location.hostname || '').toLowerCase();
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:3001/api/terrain/profile';
+        }
+        return String(window.location.origin || '').replace(/\/+$/, '') + '/api/terrain/profile';
+    }
+
+    function fetchCorridorDguProfile(points) {
+        const url = corridorDguTerrainProfileUrl();
+        const coordinates = (points || []).map(point => [Number(point.lng), Number(point.lat)]);
+        if (coordinates.length < 2 || coordinates.some(pair => !pair.every(Number.isFinite))) {
+            return Promise.resolve(null);
+        }
+        const cacheKey = url + '|' + coordinates.map(pair => pair.map(value => value.toFixed(7)).join(',')).join(';');
+        if (corridorDguProfileCache.has(cacheKey)) return corridorDguProfileCache.get(cacheKey);
+        const request = (async function () {
+            let timeout = null;
+            let controller = null;
+            try {
+                if (typeof AbortController === 'function') {
+                    controller = new AbortController();
+                    timeout = setTimeout(function () { controller.abort(); }, 5000);
+                }
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ coordinates: coordinates, stepM: CORRIDOR_DGU_PROFILE_STEP_M }),
+                    signal: controller ? controller.signal : undefined
+                });
+                if (!response.ok) {
+                    console.warn('[three-mode] DGU terrain profile request failed: HTTP '
+                        + response.status + ' from ' + url);
+                    return null;
+                }
+                const result = await response.json();
+                if (!result || result.source !== 'dgu-dtm-20m' || result.datum !== 'EVRF2000'
+                    || !Array.isArray(result.points) || result.points.length < 2) {
+                    console.warn('[three-mode] DGU terrain profile response has an invalid contract', {
+                        source: result && result.source,
+                        datum: result && result.datum,
+                        points: result && Array.isArray(result.points) ? result.points.length : null
+                    });
+                    return null;
+                }
+                return result;
+            } catch (error) {
+                console.warn('[three-mode] DGU terrain profile request unavailable; retaining Google profile',
+                    error && (error.name || error.message) ? (error.name || error.message) : error);
+                return null;
+            } finally {
+                if (timeout) clearTimeout(timeout);
+            }
+        })();
+        corridorDguProfileCache.set(cacheKey, request);
+        // A transient outage must not poison this geometry for the rest of the page session.
+        // Keep successful profiles (the settled-LOD refit reuses them), but let a later rebuild
+        // retry any timeout, HTTP error or invalid response.
+        void request.then(function (result) {
+            if (!result && corridorDguProfileCache.get(cacheKey) === request) {
+                corridorDguProfileCache.delete(cacheKey);
+            }
+        });
+        return request;
+    }
+
+    function publishCorridorTerrainReferenceState(generation, state) {
+        if (generation !== corridorTerrainReferenceGeneration || !corridorTerrainSampler) return;
+        try {
+            document.body.dataset.corridorTerrainReference = JSON.stringify(state);
+        } catch (_) { }
+    }
+
+    async function loadCorridorDguReferences(generation) {
+        const references = new Map();
+        const failures = [];
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function'
+            || typeof isAppliedCorridorProposal !== 'function') {
+            publishCorridorTerrainReferenceState(generation, {
+                state: 'unavailable', requested: 0, loaded: 0, failed: 0,
+                error: 'proposal-storage-unavailable'
+            });
+            return references;
+        }
+        const work = [];
+        proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(function (proposal) {
+            const definition = corridorProposalDefinition(proposal);
+            corridorRenderEntriesForDefinition(definition).forEach(function (entry) {
+                const key = corridorTerrainEntryKey(proposal, entry);
+                work.push(fetchCorridorDguProfile(entry.points).then(function (reference) {
+                    if (reference) references.set(key, reference);
+                    else failures.push(key);
+                }));
+            });
+        });
+        publishCorridorTerrainReferenceState(generation, {
+            state: 'loading', requested: work.length, loaded: 0, failed: 0, error: null
+        });
+        await Promise.all(work);
+        publishCorridorTerrainReferenceState(generation, {
+            state: 'ready', requested: work.length, loaded: references.size,
+            failed: failures.length,
+            error: failures.length ? 'profile-unavailable' : null
+        });
+        if (generation === corridorTerrainReferenceGeneration && corridorTerrainSampler) {
+            console.log('[three-mode] DGU terrain references loaded: ' + references.size + '/' + work.length);
+        }
+        return references;
+    }
+
+    function addTerrainCutPatch(out, formationProfile, corridorProfile, proposal, entry) {
+        const helper = window.__corridorTerrainFormation;
+        if (!helper || !formationProfile || !formationProfile.ok
+            || typeof helper.buildRuledStripPositions !== 'function'
+            || typeof corridorStripSpans !== 'function') return;
+        const spans = corridorStripSpans(corridorProfile);
+        if (!spans.length) return;
+        const left = Math.max.apply(null, spans.map(span => Number(span.left)).filter(Number.isFinite));
+        const right = Math.min.apply(null, spans.map(span => Number(span.right)).filter(Number.isFinite));
+        if (!Number.isFinite(left) || !Number.isFinite(right) || !(left > right)) return;
+        const ruled = helper.buildRuledStripPositions(formationProfile, left, right, 0, 0);
+        if (!ruled || !ruled.ok || !ruled.topPositions || !ruled.topPositions.length) return;
+        out.push({
+            proposalId: proposal && proposal.proposalId != null ? String(proposal.proposalId) : null,
+            segmentId: entry && entry.segmentId != null ? String(entry.segmentId) : null,
+            positions: ruled.topPositions,
+            boundaryRings: ruled.boundaryRings,
+            // Keep the source profile and authored lateral limits privately available so the
+            // photoreal mask can rebuild this same station quilt through its exact raster-owned
+            // edge collar.  A generic ShapeGeometry across that collar would interpolate between
+            // sparse polygon vertices and can miss a nonlinear dip half-way along a long road.
+            _formationProfile: formationProfile,
+            _leftM: left,
+            _rightM: right
+        });
+    }
+
     function corridorStripToFeature(polygon) {
         const sourceRings = Array.isArray(polygon?.[0]) ? polygon : [polygon];
         const rings = sourceRings.map(source => {
@@ -2205,7 +2530,7 @@
         return corridorSymbolMaterials[kind];
     }
 
-    function addCorridorDecorations3D(targetGroup, decorations) {
+    function addCorridorDecorations3D(targetGroup, decorations, terrainHeightAt) {
         const treePoints = decorations.filter(item => item.kind === 'tree');
         const signs = decorations.filter(item => item.kind !== 'tree');
         signs.forEach(item => {
@@ -2213,7 +2538,7 @@
             const size = Math.max(1.2, Math.min(3, Number(item.stripWidth) * 0.85));
             const geometry = new THREE.PlaneGeometry(size, size);
             const mesh = new THREE.Mesh(geometry, corridorSymbolMaterial(item.kind));
-            mesh.position.set(x, y, CORRIDOR_STRIP_Z + 0.18);
+            mesh.position.set(x, y, terrainHeightOrZero(terrainHeightAt, x, y) + CORRIDOR_STRIP_Z + 0.18);
             mesh.rotation.z = Number(item.angle) || 0;
             mesh.userData.isCorridorDecoration = true;
             mesh.userData.decorationKind = item.kind;
@@ -2231,12 +2556,13 @@
             const totalHeight = 5 + random * 3;
             const trunkHeight = totalHeight * 0.48;
             const crownRadius = totalHeight * 0.2 + 0.4;
-            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
+            const terrainZ = terrainHeightOrZero(terrainHeightAt, x, y);
+            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
             dummy.scale.set(1, 1, trunkHeight);
             dummy.rotation.set(0, 0, 0);
             dummy.updateMatrix();
             trunks.setMatrixAt(index, dummy.matrix);
-            dummy.position.set(x, y, CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
+            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
             dummy.scale.set(crownRadius, crownRadius, crownRadius * 1.15);
             dummy.updateMatrix();
             crowns.setMatrixAt(index, dummy.matrix);
@@ -2250,19 +2576,23 @@
         targetGroup.add(trunks, crowns);
     }
 
-    function addCorridorJunctions3D(targetGroup, junctions) {
+    function addCorridorJunctions3D(targetGroup, junctions, terrainHeightAt) {
         const asphalt = corridorLaneMaterial('driving');
         const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
         junctions.forEach(junction => {
+            const center = latLngToXY(junction.lat, junction.lng);
+            const terrainZ = terrainHeightOrZero(terrainHeightAt, center[0], center[1]);
             (junction.surfacePolygons || []).forEach(polygon => {
-                polygonFeatureToMeshes(corridorStripToFeature(polygon), asphalt, CORRIDOR_STRIP_Z + 0.16, 0)
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), asphalt,
+                    terrainZ + CORRIDOR_STRIP_Z + 0.16, 0)
                     .forEach(mesh => {
                         mesh.userData.isCorridorJunction = true;
                         targetGroup.add(mesh);
                     });
             });
             (junction.crosswalkPolygons || []).forEach(polygon => {
-                polygonFeatureToMeshes(corridorStripToFeature(polygon), white, CORRIDOR_STRIP_Z + 0.17, 0)
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), white,
+                    terrainZ + CORRIDOR_STRIP_Z + 0.17, 0)
                     .forEach(mesh => {
                         mesh.userData.isCorridorCrosswalk = true;
                         targetGroup.add(mesh);
@@ -2290,31 +2620,32 @@
 
     // The two triangles of one flat paint rectangle from XY point `a` to `b`, `half` metres to each side,
     // appended to a flat positions array. MeshBasicMaterial is unlit, so no normals are needed.
-    function pushCorridorMarkingQuad(positions, a, b, half) {
+    function pushCorridorMarkingQuad(positions, a, b, half, terrainHeightAt) {
         const dx = b[0] - a[0];
         const dy = b[1] - a[1];
         const length = Math.hypot(dx, dy);
         if (length < 1e-6) return;
         const nx = (-dy / length) * half;
         const ny = (dx / length) * half;
-        const z = CORRIDOR_MARKING_Z;
+        const zA = terrainHeightOrZero(terrainHeightAt, a[0], a[1]) + CORRIDOR_MARKING_Z;
+        const zB = terrainHeightOrZero(terrainHeightAt, b[0], b[1]) + CORRIDOR_MARKING_Z;
         const ax = a[0], ay = a[1], bx = b[0], by = b[1];
         positions.push(
-            ax + nx, ay + ny, z, bx + nx, by + ny, z, bx - nx, by - ny, z,
-            ax + nx, ay + ny, z, bx - nx, by - ny, z, ax - nx, ay - ny, z
+            ax + nx, ay + ny, zA, bx + nx, by + ny, zB, bx - nx, by - ny, zB,
+            ax + nx, ay + ny, zA, bx - nx, by - ny, zB, ax - nx, ay - ny, zA
         );
     }
 
     // Lay one marking polyline (Leaflet LatLngs) as flat paint: a solid ribbon, or dashes when `dash`
     // ({ on, off } in metres) is given. Dashes restart at each vertex — fine for the near-straight road
     // segments these lines run along.
-    function addCorridorMarkingPolyline(positions, line, half, dash) {
+    function addCorridorMarkingPolyline(positions, line, half, dash, terrainHeightAt) {
         if (!Array.isArray(line) || line.length < 2) return;
         const pts = line.map(point => latLngToXY(point.lat, point.lng));
         for (let i = 0; i < pts.length - 1; i++) {
             const a = pts[i];
             const b = pts[i + 1];
-            if (!dash) { pushCorridorMarkingQuad(positions, a, b, half); continue; }
+            if (!dash) { pushCorridorMarkingQuad(positions, a, b, half, terrainHeightAt); continue; }
             const dx = b[0] - a[0];
             const dy = b[1] - a[1];
             const length = Math.hypot(dx, dy);
@@ -2324,7 +2655,8 @@
             for (let d = 0; d < length; d += dash.on + dash.off) {
                 const end = Math.min(d + dash.on, length);
                 pushCorridorMarkingQuad(positions,
-                    [a[0] + ux * d, a[1] + uy * d], [a[0] + ux * end, a[1] + uy * end], half);
+                    [a[0] + ux * d, a[1] + uy * d], [a[0] + ux * end, a[1] + uy * end],
+                    half, terrainHeightAt);
             }
         }
     }
@@ -2332,7 +2664,7 @@
     // Every white line of one corridor segment — lane separators (dashed, the solid-flow divide heavier)
     // and parking bays (solid edge + bay dividers) — batched into ONE opaque mesh, so a long road is a
     // single draw call rather than thousands of little ones.
-    function addCorridorMarkings3D(targetGroup, entry) {
+    function addCorridorMarkings3D(targetGroup, entry, terrainHeightAt) {
         try {
         const positions = [];
         const markings = (typeof buildCorridorLaneMarkings === 'function')
@@ -2341,11 +2673,13 @@
             const isCenterline = marking.kind === 'centerline';
             const half = isCenterline ? 0.09 : 0.075;
             const dash = isCenterline ? { on: 3, off: 2.5 } : { on: 1.5, off: 2.5 };
-            (marking.lines || []).forEach(line => addCorridorMarkingPolyline(positions, line, half, dash));
+            (marking.lines || []).forEach(line => addCorridorMarkingPolyline(
+                positions, line, half, dash, terrainHeightAt));
         });
         const bays = (typeof buildCorridorParkingBays === 'function')
             ? buildCorridorParkingBays([entry.points], entry.profile) : [];
-        bays.forEach(bay => addCorridorMarkingPolyline(positions, bay.line, bay.kind === 'edge' ? 0.075 : 0.06, null));
+        bays.forEach(bay => addCorridorMarkingPolyline(
+            positions, bay.line, bay.kind === 'edge' ? 0.075 : 0.06, null, terrainHeightAt));
 
         // Direction arrows arrive as convex rings; a fan from vertex 0 triangulates each into the same
         // flat white mesh as the lines.
@@ -2355,9 +2689,10 @@
             const pts = ring.map(point => latLngToXY(point.lat, point.lng));
             for (let i = 1; i < pts.length - 1; i++) {
                 positions.push(
-                    pts[0][0], pts[0][1], CORRIDOR_MARKING_Z,
-                    pts[i][0], pts[i][1], CORRIDOR_MARKING_Z,
-                    pts[i + 1][0], pts[i + 1][1], CORRIDOR_MARKING_Z
+                    pts[0][0], pts[0][1], terrainHeightOrZero(terrainHeightAt, pts[0][0], pts[0][1]) + CORRIDOR_MARKING_Z,
+                    pts[i][0], pts[i][1], terrainHeightOrZero(terrainHeightAt, pts[i][0], pts[i][1]) + CORRIDOR_MARKING_Z,
+                    pts[i + 1][0], pts[i + 1][1],
+                    terrainHeightOrZero(terrainHeightAt, pts[i + 1][0], pts[i + 1][1]) + CORRIDOR_MARKING_Z
                 );
             }
         });
@@ -2374,7 +2709,7 @@
         }
     }
 
-    function addBuildingTunnelLiners3D(targetGroup, definition) {
+    function addBuildingTunnelLiners3D(targetGroup, definition, terrainHeightAt) {
         const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels : [];
         if (!tunnels.length) return;
         const isTrack = corridorIsTrack(definition);
@@ -2392,9 +2727,15 @@
             const [x2, y2] = latLngToXY(Number(tunnel.to.lat), Number(tunnel.to.lng));
             const length = Math.hypot(x2 - x1, y2 - y1);
             if (!Number.isFinite(length) || length < 0.5) return;
+            const z1 = terrainHeightOrZero(terrainHeightAt, x1, y1);
+            const z2 = terrainHeightOrZero(terrainHeightAt, x2, y2);
+            const dz = z2 - z1;
+            const slopedLength = Math.hypot(length, dz);
             const assembly = new THREE.Group();
-            assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2, CORRIDOR_STRIP_Z + 0.05);
+            assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2,
+                (z1 + z2) / 2 + CORRIDOR_STRIP_Z + 0.05);
             assembly.rotation.z = Math.atan2(y2 - y1, x2 - x1);
+            assembly.rotation.y = -Math.atan2(dz, length);
 
             const addBox = (geometry, material, x, y, z) => {
                 const mesh = new THREE.Mesh(geometry, material);
@@ -2404,14 +2745,14 @@
                 assembly.add(mesh);
             };
 
-            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+            addBox(new THREE.BoxGeometry(slopedLength, thickness, clearHeight), linerMaterial,
                 0, -clearWidth / 2, clearHeight / 2);
-            addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
+            addBox(new THREE.BoxGeometry(slopedLength, thickness, clearHeight), linerMaterial,
                 0, clearWidth / 2, clearHeight / 2);
-            addBox(new THREE.BoxGeometry(length, clearWidth, thickness), linerMaterial,
+            addBox(new THREE.BoxGeometry(slopedLength, clearWidth, thickness), linerMaterial,
                 0, 0, clearHeight);
 
-            [-length / 2, length / 2].forEach(x => {
+            [-slopedLength / 2, slopedLength / 2].forEach(x => {
                 addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
                     x, -clearWidth / 2, clearHeight / 2);
                 addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
@@ -2452,16 +2793,16 @@
         return before.distanceSq <= after.distanceSq ? before.z : after.z;
     }
 
-    function elevateGradeMeshes(meshes, record) {
+    function elevateGradeMeshes(meshes, record, terrainHeightAt) {
         (meshes || []).forEach(mesh => {
             const position = mesh?.geometry?.getAttribute?.('position');
             if (!position) return;
             for (let index = 0; index < position.count; index++) {
-                position.setZ(index, position.getZ(index) + gradeElevationAtXY(
-                    record,
-                    position.getX(index),
-                    position.getY(index)
-                ));
+                const x = position.getX(index);
+                const y = position.getY(index);
+                position.setZ(index, position.getZ(index)
+                    + terrainHeightOrZero(terrainHeightAt, x, y)
+                    + gradeElevationAtXY(record, x, y));
             }
             position.needsUpdate = true;
             try { mesh.geometry.computeVertexNormals(); } catch (_) { }
@@ -2472,11 +2813,15 @@
         });
     }
 
-    function addGradeSeparationEdges3D(targetGroup, record) {
+    function addGradeSeparationEdges3D(targetGroup, record, terrainHeightAt) {
         const points = [record?.from, record?.crossing, record?.to].map(gradeRecordPointXY);
         if (points.some(point => !point)) return;
         const peak = Number(record.elevation) || (record.mode === 'overpass' ? 5.2 : -3.2);
-        const heights = [0, peak, 0];
+        const heights = [
+            terrainHeightOrZero(terrainHeightAt, points[0].x, points[0].y),
+            terrainHeightOrZero(terrainHeightAt, points[1].x, points[1].y) + peak,
+            terrainHeightOrZero(terrainHeightAt, points[2].x, points[2].y)
+        ];
         const width = Math.max(2, Number(record.width) || 2);
         const railMaterial = new THREE.MeshLambertMaterial({
             color: record.mode === 'overpass' ? 0xc47608 : 0x315f9f
@@ -2513,17 +2858,19 @@
                 const t = 0.58;
                 const x = outer.x + (inner.x - outer.x) * t;
                 const y = outer.y + (inner.y - outer.y) * t;
-                const height = Math.max(0.8, peak * t - 0.18);
+                const groundZ = terrainHeightOrZero(terrainHeightAt, x, y);
+                const deckZ = groundZ + gradeElevationAtXY(record, x, y);
+                const height = Math.max(0.8, deckZ - groundZ - 0.18);
                 const pier = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, height, 10), supportMaterial);
                 pier.rotation.x = Math.PI / 2;
-                pier.position.set(x, y, height / 2);
+                pier.position.set(x, y, groundZ + height / 2);
                 pier.userData.isGradeSeparationPier = true;
                 targetGroup.add(pier);
             });
         }
     }
 
-    function addGradeSeparatedCorridors3D(targetGroup, definition, entries, fallbackProfile) {
+    function addGradeSeparatedCorridors3D(targetGroup, definition, entries, fallbackProfile, terrainHeightAt) {
         const records = Array.isArray(definition?.gradeSeparations) ? definition.gradeSeparations : [];
         records.forEach(record => {
             if (!record?.from || !record?.crossing || !record?.to
@@ -2543,7 +2890,7 @@
                         CORRIDOR_STRIP_Z,
                         kerb
                     );
-                    elevateGradeMeshes(meshes, record);
+                    elevateGradeMeshes(meshes, record, terrainHeightAt);
                     meshes.forEach(mesh => {
                         mesh.userData.isCorridorStrip = true;
                         mesh.userData.laneType = strip.type;
@@ -2551,13 +2898,48 @@
                     });
                 });
             });
-            addGradeSeparationEdges3D(targetGroup, record);
+            addGradeSeparationEdges3D(targetGroup, record, terrainHeightAt);
         });
     }
 
-    function buildCorridorStrips3D(targetGroup) {
+    function buildCorridorStrips3D(targetGroup, options) {
         if (typeof buildCorridorStrips !== 'function' || typeof isAppliedCorridorProposal !== 'function') return;
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+        options = options || {};
+        const terrainSampler = typeof options.terrainSampler === 'function' ? options.terrainSampler : null;
+        const terrainMode = !!terrainSampler && !!window.__corridorTerrainFormation;
+        const terrainProfilesOut = Array.isArray(options.profilesOut) ? options.profilesOut : [];
+        const terrainFailuresOut = Array.isArray(options.failuresOut) ? options.failuresOut : [];
+        const terrainCutPatchesOut = Array.isArray(options.cutPatchesOut) ? options.cutPatchesOut : [];
+        const terrainReferences = options.terrainReferences instanceof Map
+            ? options.terrainReferences : new Map();
+
+        const renderFlatSurface = function (points, entry) {
+            buildCorridorStrips([points], entry.profile).forEach(strip => {
+                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                const kerb = Number(lane.height) || 0;
+                strip.polygons.forEach(polygon => {
+                    const meshPolygon = corridorStripPolygon3D(points, strip, polygon);
+                    // A flat OPEN strip whose outline crosses itself (a star, a hairpin) can't be
+                    // earcut — the fill floods the whole enclosed area. Lay the same per-edge band.
+                    if (kerb === 0 && meshPolygon === polygon && corridorStripRingSelfIntersects(polygon)) {
+                        addFlatStripRibbon3D(targetGroup, points, strip.left, strip.right,
+                            corridorRibbonMaterial(strip.type), strip.type);
+                        return;
+                    }
+                    corridorStripMeshes3D(
+                        corridorStripToFeature(meshPolygon),
+                        corridorLaneMaterial(strip.type),
+                        CORRIDOR_STRIP_Z,
+                        kerb
+                    ).forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.laneType = strip.type;
+                        targetGroup.add(mesh);
+                    });
+                });
+            });
+        };
 
         proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
             try {
@@ -2570,64 +2952,159 @@
             // profile (width, lanes, tree groves). Rendering the whole centerline with the
             // default profile flattened every network to one width and dropped override-only
             // lanes (a segment's tree grove never made it into 3D).
-            const entries = ((typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [])
-                .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
-                .map(entry => entry.profile ? entry : { ...entry, profile: fallbackProfile });
-            const renderEntries = entries.length
-                ? entries
-                : centerline.map(points => ({ points, profile: fallbackProfile }));
+            const renderEntries = corridorRenderEntriesForDefinition(definition);
 
+            // Full-entry profiles remain available through grade-separated and tunnel spans. Surface
+            // runs below get their own station quads, but every semantic consumer samples one shared
+            // smoothed longitudinal family rather than raw tile hits.
+            const proposalTerrainProfiles = [];
+            const terrainProfileByEntry = new Map();
+            const terrainAttemptByEntry = new Map();
+            const registerTerrainProfile = function (profile, entry) {
+                if (!profile || !profile.ok) return false;
+                profile.proposalId = proposal && proposal.proposalId != null
+                    ? String(proposal.proposalId) : null;
+                profile.segmentId = entry && entry.segmentId != null
+                    ? String(entry.segmentId) : null;
+                if (!proposalTerrainProfiles.includes(profile)) proposalTerrainProfiles.push(profile);
+                if (!terrainProfilesOut.includes(profile)) terrainProfilesOut.push(profile);
+                return true;
+            };
+            if (terrainMode) renderEntries.forEach(entry => {
+                const reference = terrainReferences.get(corridorTerrainEntryKey(proposal, entry)) || null;
+                const profile = corridorFormationForPoints(
+                    entry.points, terrainSampler, entry.profile, undefined, reference);
+                terrainAttemptByEntry.set(entry, profile);
+                if (!profile || !profile.ok) {
+                    terrainFailuresOut.push(corridorFormationFailureSummary(profile));
+                    return;
+                }
+                terrainProfileByEntry.set(entry, profile);
+                registerTerrainProfile(profile, entry);
+            });
+            const formationHelper = window.__corridorTerrainFormation;
             const gradeSpanRecords = (typeof gradeSeparationSpanRecords === 'function')
                 ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
                 : [];
+            const protectedRecords = (typeof corridorProtectedSpanRecordsForDefinition === 'function')
+                ? corridorProtectedSpanRecordsForDefinition(definition) : gradeSpanRecords;
             const surfaceRenderEntries = [];
+            const surfaceRunRecords = [];
             renderEntries.forEach(entry => {
                 const surfaceRuns = gradeSpanRecords.length && typeof corridorSurfaceRuns === 'function'
                     ? corridorSurfaceRuns([entry.points], gradeSpanRecords)
                     : [entry.points];
                 surfaceRuns.forEach(points => {
                     surfaceRenderEntries.push({ ...entry, points });
-                    buildCorridorStrips([points], entry.profile).forEach(strip => {
-                        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
-                        const kerb = Number(lane.height) || 0;
-                        strip.polygons.forEach(polygon => {
-                            const meshPolygon = corridorStripPolygon3D(points, strip, polygon);
-                            // A flat OPEN strip whose outline crosses itself (a star, a hairpin) can't be
-                            // earcut — the fill floods the whole enclosed area. Lay the SAME band as a
-                            // per-edge ribbon instead. Closed-loop strips were just rebuilt as proper
-                            // rings by corridorStripPolygon3D (meshPolygon !== polygon), and extruded
-                            // strips keep the mitred earcut ring either way.
-                            if (kerb === 0 && meshPolygon === polygon && corridorStripRingSelfIntersects(polygon)) {
-                                addFlatStripRibbon3D(targetGroup, points, strip.left, strip.right,
-                                    corridorRibbonMaterial(strip.type), strip.type);
-                                return;
-                            }
-                            const meshes = corridorStripMeshes3D(
-                                corridorStripToFeature(meshPolygon),
-                                corridorLaneMaterial(strip.type),
-                                CORRIDOR_STRIP_Z,
-                                kerb
-                            );
-                            meshes.forEach(mesh => {
-                                mesh.userData.isCorridorStrip = true;
-                                mesh.userData.laneType = strip.type;
-                                targetGroup.add(mesh);
-                            });
-                        });
+                    const fullFormation = terrainProfileByEntry.get(entry);
+                    const inheritsFullFormation = !!(fullFormation && fullFormation.ok);
+                    const derivesFromFullFormation = terrainMode && points !== entry.points
+                        && inheritsFullFormation;
+                    const runAttempt = terrainMode
+                        ? (points === entry.points
+                            ? terrainAttemptByEntry.get(entry)
+                            : (derivesFromFullFormation
+                                ? null
+                                : corridorFormationForPoints(points, terrainSampler,
+                                    entry.profile,
+                                    CORRIDOR_TERRAIN_CLEARANCE_M)))
+                        : null;
+                    if (terrainMode && points !== entry.points && !derivesFromFullFormation
+                        && (!runAttempt || !runAttempt.ok)) {
+                        terrainFailuresOut.push(corridorFormationFailureSummary(runAttempt));
+                    }
+                    const runResolution = terrainMode && !derivesFromFullFormation
+                        ? formationHelper.resolveSurfaceRunFormation(fullFormation, runAttempt, {
+                            proposalId: proposal && proposal.proposalId,
+                            segmentId: entry && entry.segmentId
+                        })
+                        : { formation: null, supportProfile: null };
+                    const runFormation = runResolution.formation;
+                    // A broad NoData/protected span can invalidate the complete entry while each
+                    // remaining surface run still has a sound formation. Promote those successful
+                    // runs so terrain queries and the photoreal mask cannot fall back to datum zero.
+                    if (runResolution.supportProfile) {
+                        registerTerrainProfile(runResolution.supportProfile, entry);
+                    }
+                    surfaceRunRecords.push({
+                        entry,
+                        points,
+                        formation: runFormation,
+                        parentFormation: derivesFromFullFormation ? fullFormation : null
                     });
-                    const decorations = (typeof buildCorridorDecorations === 'function')
-                        ? buildCorridorDecorations([points], entry.profile) : [];
-                    addCorridorDecorations3D(targetGroup, decorations);
-                    addCorridorMarkings3D(targetGroup, { ...entry, points });
                 });
             });
-            addGradeSeparatedCorridors3D(targetGroup, definition, renderEntries, fallbackProfile);
+            // Segment profiles are fitted independently, but graph-connected endpoints are one
+            // physical road node. Include recovered surface runs in the same reconciliation as valid
+            // full entries, then derive split children so they inherit the final shared-node height.
+            if (proposalTerrainProfiles.length > 1 && formationHelper
+                && typeof formationHelper.reconcileProfileEndpointHeights === 'function') {
+                formationHelper.reconcileProfileEndpointHeights(proposalTerrainProfiles);
+            }
+            surfaceRunRecords.forEach(record => {
+                if (!record.parentFormation) return;
+                record.formation = corridorFormationForPoints(record.points, function (x, y) {
+                    return window.__corridorTerrainFormation.heightAt(record.parentFormation, x, y);
+                }, record.entry.profile, 0);
+                if (!record.formation || !record.formation.ok) {
+                    terrainFailuresOut.push(corridorFormationFailureSummary(record.formation));
+                    record.formation = null;
+                }
+            });
+            const proposalTerrainHeightAt = proposalTerrainProfiles.length
+                ? function (x, y) { return terrainHeightFromProfiles(proposalTerrainProfiles, x, y); }
+                : null;
+
+            surfaceRunRecords.forEach(record => {
+                const entry = record.entry;
+                const points = record.points;
+                const runFormation = record.formation;
+                    const runTerrainHeightAt = runFormation
+                        ? function (x, y) { return window.__corridorTerrainFormation.heightAt(runFormation, x, y); }
+                        : null;
+                    if (runFormation && typeof corridorStripSpans === 'function') {
+                        corridorStripSpans(entry.profile).forEach(strip => {
+                            const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined'
+                                && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                            if (!addTerrainStrip3D(targetGroup, runFormation, strip, lane, strip.type)) {
+                                console.warn('[three-mode] terrain strip skipped', strip.type);
+                            }
+                        });
+                    } else {
+                        // NoData is never treated as z=0. If a bounded profile cannot be formed, this
+                        // one run retains the established flat rendering instead of diving to datum.
+                        renderFlatSurface(points, entry);
+                    }
+                    const decorations = (typeof buildCorridorDecorations === 'function')
+                        ? buildCorridorDecorations([points], entry.profile) : [];
+                    addCorridorDecorations3D(targetGroup, decorations, runTerrainHeightAt);
+                    addCorridorMarkings3D(targetGroup, { ...entry, points }, runTerrainHeightAt);
+
+                    // The shader cut uses the exact successful run formation that produced the
+                    // visible road. Protected tunnel/underpass/overpass edges are removed from that
+                    // run first; a resulting sub-run inherits its parent's already-lifted profile.
+                    if (terrainMode && runFormation && typeof corridorSurfaceRuns === 'function') {
+                        const cutRuns = protectedRecords && protectedRecords.length
+                            ? corridorSurfaceRuns([points], protectedRecords) : [points];
+                        cutRuns.forEach(cutPoints => {
+                            const cutFormation = corridorPointSequencesEqual(cutPoints, points)
+                                ? runFormation
+                                : corridorFormationForPoints(cutPoints, function (x, y) {
+                                    return window.__corridorTerrainFormation.heightAt(runFormation, x, y);
+                                }, entry.profile, 0);
+                            addTerrainCutPatch(
+                                terrainCutPatchesOut, cutFormation, entry.profile, proposal, entry);
+                        });
+                    }
+            });
+            addGradeSeparatedCorridors3D(
+                targetGroup, definition, renderEntries, fallbackProfile, proposalTerrainHeightAt);
             // Junction patches sized per arm cover the seams where different widths meet.
             const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
                 ? buildCorridorJunctionTreatmentsForEntries(surfaceRenderEntries)
                 : ((typeof buildCorridorJunctionTreatments === 'function')
                     ? buildCorridorJunctionTreatments(centerline, fallbackProfile) : []);
-            addCorridorJunctions3D(targetGroup, junctions);
+            addCorridorJunctions3D(targetGroup, junctions, proposalTerrainHeightAt);
             } catch (error) {
                 // One corrupt road must not strip the asphalt off EVERY road in 3D (the 2D renderer
                 // already isolates per-proposal failures the same way).
@@ -2641,7 +3118,10 @@
             const definition = corridorProposalDefinition(proposal);
             if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
             if (!isApplied(proposal, proposal.roadProposal)) return;
-            addBuildingTunnelLiners3D(targetGroup, definition);
+            const terrainHeightAt = terrainProfilesOut.length
+                ? function (x, y) { return terrainHeightFromProfiles(terrainProfilesOut, x, y); }
+                : null;
+            addBuildingTunnelLiners3D(targetGroup, definition, terrainHeightAt);
         });
     }
 
@@ -3709,6 +4189,141 @@
         for (let i = group.children.length - 1; i >= 0; i--) group.remove(group.children[i]);
     }
 
+    function disposeTerrainCorridorGroup() {
+        if (terrainCorridorGroup) {
+            terrainCorridorGroup.traverse(object => {
+                // Instanced corridor trees reuse the global tree geometries; everything else in this
+                // temporary group owns its geometry and can release it on a mode switch/rebuild.
+                if (object && object.isMesh && !object.isInstancedMesh && object.geometry) {
+                    try { object.geometry.dispose(); } catch (_) { }
+                }
+            });
+            if (terrainCorridorGroup.parent) terrainCorridorGroup.parent.remove(terrainCorridorGroup);
+        }
+        terrainCorridorGroup = null;
+        corridorTerrainProfiles = [];
+        corridorTerrainCutPatches = [];
+        if (corridorGroup) corridorGroup.visible = true;
+        try { delete document.body.dataset.corridorTerrain; } catch (_) { }
+    }
+
+    function rebuildTerrainCorridorGroup(sampleHeight, terrainReferences) {
+        disposeTerrainCorridorGroup();
+        if (typeof sampleHeight !== 'function' || !scene || !corridorGroup) return null;
+        const profiles = [];
+        const failures = [];
+        const cutPatches = [];
+        const group = new THREE.Group();
+        group.name = 'TerrainFollowingCorridors';
+        buildCorridorStrips3D(group, {
+            terrainSampler: sampleHeight,
+            profilesOut: profiles,
+            failuresOut: failures,
+            cutPatchesOut: cutPatches,
+            terrainReferences: terrainReferences
+        });
+        if (!group.children.length) return null;
+        terrainCorridorGroup = group;
+        corridorTerrainProfiles = profiles;
+        corridorTerrainCutPatches = cutPatches;
+        corridorGroup.visible = false;
+        scene.add(group);
+        const stationHeights = profiles.flatMap(profile => profile.stations.map(station => station.z))
+            .filter(Number.isFinite);
+        const minZ = stationHeights.length ? Math.min(...stationHeights) : null;
+        const maxZ = stationHeights.length ? Math.max(...stationHeights) : null;
+        const profileStats = profiles.map(profile => {
+            const stations = Array.isArray(profile.stations) ? profile.stations : [];
+            const valid = stations.filter(station => Number.isFinite(station.z));
+            if (valid.length < 2) return null;
+            const first = valid[0];
+            const last = valid[valid.length - 1];
+            const span = last.s - first.s;
+            let maxLineDeviationM = 0;
+            let maxAbsGrade = 0;
+            let maxRawAdjustmentM = 0;
+            valid.forEach((station, index) => {
+                const t = span > 0 ? (station.s - first.s) / span : 0;
+                const lineZ = first.z + (last.z - first.z) * t;
+                maxLineDeviationM = Math.max(maxLineDeviationM, Math.abs(station.z - lineZ));
+                if (Number.isFinite(station.rawZ)) {
+                    maxRawAdjustmentM = Math.max(maxRawAdjustmentM,
+                        Math.abs(station.z - station.rawZ));
+                }
+                if (index) {
+                    const ds = station.s - valid[index - 1].s;
+                    if (ds > 0) maxAbsGrade = Math.max(maxAbsGrade,
+                        Math.abs(station.z - valid[index - 1].z) / ds);
+                }
+            });
+            return {
+                source: profile.source || 'google-visible-mesh',
+                lengthM: span,
+                startZ: first.z,
+                endZ: last.z,
+                endpointDeltaM: last.z - first.z,
+                minZ: Math.min(...valid.map(station => station.z)),
+                maxZ: Math.max(...valid.map(station => station.z)),
+                maxLineDeviationM: maxLineDeviationM,
+                maxRawAdjustmentM: maxRawAdjustmentM,
+                maxAbsGrade: maxAbsGrade,
+                calibrationOffsetM: Number.isFinite(profile.calibrationOffsetM)
+                    ? profile.calibrationOffsetM : null,
+                calibrationMadM: Number.isFinite(profile.calibrationMadM)
+                    ? profile.calibrationMadM : null,
+                referenceStatus: profile.referenceStatus || null
+            };
+        }).filter(Boolean);
+        const dguProfiles = profiles.filter(profile => profile.source === 'dgu-dtm-20m').length;
+        try {
+            document.body.dataset.corridorTerrain = JSON.stringify({
+                source: dguProfiles ? 'dgu-dtm-20m+google-anchor' : 'google-visible-mesh',
+                profiles: profiles.length,
+                dguProfiles: dguProfiles,
+                dguReferences: terrainReferences instanceof Map ? terrainReferences.size : 0,
+                cutPatches: cutPatches.length,
+                stations: stationHeights.length,
+                minZ: minZ,
+                maxZ: maxZ,
+                failures: failures,
+                profileStats: profileStats
+            });
+        } catch (_) { }
+        console.log('[three-mode] terrain corridors built: profiles=' + profiles.length
+            + ' dgu=' + dguProfiles + ' cutPatches=' + cutPatches.length
+            + ' stations=' + stationHeights.length
+            + (minZ === null ? '' : ' elevation=' + minZ.toFixed(2) + '..' + maxZ.toFixed(2) + 'm'));
+        return { profiles: profiles, cutPatches: cutPatches, dguProfiles: dguProfiles };
+    }
+
+    function setCorridorTerrainSampler(sampleHeight) {
+        corridorTerrainSampler = typeof sampleHeight === 'function' ? sampleHeight : null;
+        corridorTerrainReferenceGeneration += 1;
+        const generation = corridorTerrainReferenceGeneration;
+        const result = rebuildTerrainCorridorGroup(corridorTerrainSampler, corridorTerrainReferences);
+        if (!corridorTerrainSampler) {
+            try { delete document.body.dataset.corridorTerrainReference; } catch (_) { }
+            return result;
+        }
+        void loadCorridorDguReferences(generation).then(function (references) {
+            if (generation !== corridorTerrainReferenceGeneration
+                || corridorTerrainSampler !== sampleHeight || !(references instanceof Map)) return;
+            let changed = references.size !== corridorTerrainReferences.size;
+            if (!changed) references.forEach(function (value, key) {
+                if (corridorTerrainReferences.get(key) !== value) changed = true;
+            });
+            if (!changed || !references.size) return;
+            corridorTerrainReferences = references;
+            const refined = rebuildTerrainCorridorGroup(corridorTerrainSampler, corridorTerrainReferences);
+            if (refined) {
+                window.dispatchEvent(new CustomEvent('corridorTerrainUpdated', {
+                    detail: { source: refined.dguProfiles ? 'dgu-dtm-20m+google-anchor' : 'google-visible-mesh' }
+                }));
+            }
+        });
+        return result;
+    }
+
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
         clearGroupChildren(buildingGroup);
@@ -4216,6 +4831,9 @@
     function disposeScene() {
         cancelLoop();
         stopIntroAutoRotate();
+        corridorTerrainSampler = null;
+        corridorTerrainReferenceGeneration += 1;
+        disposeTerrainCorridorGroup();
         hideRenderingOverlay();
         isTransitioning3D = false;
         if (controls && controls.dispose) {
@@ -4250,6 +4868,9 @@
         sceneTreeLoadGeometry = null;
         sceneTreeLoadGeometrySource = 'camera';
         flatGroup = null;
+        corridorGroup = null;
+        terrainCorridorGroup = null;
+        corridorTerrainProfiles = [];
         plannedFlatGroup = null;
         buildingGroup = null;
         parkGroup = null;
@@ -4831,6 +5452,66 @@
     window.unregisterThreeModeFrameHook = function (fn) {
         const i = frameHooks.indexOf(fn);
         if (i >= 0) frameHooks.splice(i, 1);
+    };
+    window.setCorridorTerrainSampler = setCorridorTerrainSampler;
+    function rebuiltCorridorTerrainPatches(options) {
+        options = options || {};
+        const paddingM = Math.max(0, Number(options.paddingM) || 0);
+        const baseZ = Number.isFinite(Number(options.baseZ)) ? Number(options.baseZ) : 0;
+        const depthM = Math.max(0, Number(options.depthM) || 0);
+        const includeDepth = !!options.includeDepth;
+        const helper = window.__corridorTerrainFormation;
+        if (!helper || typeof helper.buildPaddedRuledStripPositions !== 'function') {
+            return corridorTerrainCutPatches.slice();
+        }
+        return corridorTerrainCutPatches.map(function (patch) {
+            if (!patch || !patch._formationProfile
+                || !Number.isFinite(patch._leftM) || !Number.isFinite(patch._rightM)) return patch;
+            const ruled = helper.buildPaddedRuledStripPositions(
+                patch._formationProfile,
+                patch._leftM,
+                patch._rightM,
+                paddingM,
+                baseZ,
+                depthM
+            );
+            const positions = includeDepth ? ruled && ruled.positions : ruled && ruled.topPositions;
+            return ruled && ruled.ok && positions && positions.length
+                ? { ...patch, positions: positions, boundaryRings: ruled.boundaryRings }
+                : patch;
+        });
+    }
+    window.getCorridorTerrainCutPatches = function (options) {
+        const paddingM = Math.max(0, Number(options && options.lateralPaddingM) || 0);
+        return rebuiltCorridorTerrainPatches({ paddingM: paddingM });
+    };
+    // Realistic mode owns the raster cut only inside this solid station-derived foundation.
+    // Its top sits just below the visible lane quilt and its sides/end caps penetrate downward,
+    // matching photoreal-sim's continuous slab-over-mask contract.
+    window.getCorridorTerrainFoundationPatches = function (options) {
+        options = options || {};
+        const paddingM = Math.max(0, Number(options.paddingM) || 0);
+        const topOffsetM = Number.isFinite(Number(options.topOffsetM))
+            ? Number(options.topOffsetM) : 0;
+        const skirtDepthM = Math.max(0, Number(options.skirtDepthM) || 0);
+        return rebuiltCorridorTerrainPatches({
+            paddingM: paddingM,
+            baseZ: topOffsetM - skirtDepthM,
+            depthM: skirtDepthM,
+            includeDepth: true
+        });
+    };
+    window.corridorTerrainHeightAt = function (x, y) {
+        const z = terrainHeightFromProfiles(corridorTerrainProfiles, Number(x), Number(y));
+        return Number.isFinite(z) ? z : null;
+    };
+    window.corridorTerrainHeightAtForProposal = function (proposalId, x, y) {
+        const id = proposalId == null ? null : String(proposalId);
+        if (id === null) return null;
+        const ownedProfiles = corridorTerrainProfiles.filter(profile => profile
+            && profile.proposalId != null && String(profile.proposalId) === id);
+        const z = terrainHeightFromProfiles(ownedProfiles, Number(x), Number(y));
+        return Number.isFinite(z) ? z : null;
     };
     // The photoreal tile layer builds INTO this scene — hand it the live internals rather
     // than letting it run a second renderer (the whole point of retiring Cesium).

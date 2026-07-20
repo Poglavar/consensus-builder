@@ -26,6 +26,9 @@
     const LOCK_SAMPLE_INTERVAL_S = 0.25;
     const FAR_EARTH_LIMIT_M = 1500;       // |ground z| beyond this = a coarse far-earth tile
     const NO_COVERAGE_TIMEOUT_S = 20;     // nothing streamed at all -> declare no coverage
+    const ROAD_BOUNDARY_SAMPLE_SPACING_M = 4;
+    const TERRAIN_REFRESH_QUIET_MS = 1400;
+    const TERRAIN_REFRESH_MAX_REFITS = 3;
     // Diagnostic: `?seat` shows the live seating state on-screen (readable on mobile, no console).
     // Checked at runtime and persisted for the session, because the share flow rewrites the
     // /proposals/... URL and can drop the query before this reads it.
@@ -39,17 +42,18 @@
         } catch (_) { return false; }
     }
 
-    // Experimental exact caps for every Google mesh triangle crossed by a full-discard boundary.
-    // `debug` uses the same geometry as `mesh`, but renders it visibly through everything so we
-    // can distinguish bad placement from a texture/depth-order problem. Persist like ?seat because
-    // proposal-route normalization can remove query parameters early.
+    // Exact caps for every Google mesh triangle crossed by a road-cut boundary. They are part of
+    // the normal seal now; `?seam=off` is the emergency/performance escape hatch and `debug` renders
+    // the same geometry visibly through everything. Persist like ?seat because proposal-route
+    // normalization can remove query parameters early.
     function meshSeamMode() {
         try {
             const params = new URLSearchParams(window.location.search || '');
             if (params.has('seam')) sessionStorage.setItem('cbPhotorealSeam', params.get('seam'));
             const mode = sessionStorage.getItem('cbPhotorealSeam');
-            return mode === 'mesh' || mode === 'debug' ? mode : 'off';
-        } catch (_) { return 'off'; }
+            if (mode === 'off') return 'off';
+            return mode === 'debug' ? 'debug' : 'mesh';
+        } catch (_) { return 'mesh'; }
     }
 
     function meshSeamCapsActive() {
@@ -118,6 +122,14 @@
     let seamGeneration = 0;
     let seamReadyScenes = 0;
     let seamCapSegments = 0;
+    let terrainRefreshTimer = null;
+    let terrainRefreshTracker = null;
+    // One snapshot/cache per carve rebuild. Direct road stations otherwise repeat the same
+    // unaccelerated tile-tree raycasts for the centre, edge, seam and curtain probes.
+    let tileSurfaceMeshes = null;
+    let tileSurfaceRaycaster = null;
+    let tileSurfaceSampleCache = new Map();
+    let tileSurfaceSamplingStats = null;
 
     const containerEl = () => document.getElementById('three-container');
     const toggleBtn = () => document.getElementById('mode-realistic-toggle');
@@ -257,10 +269,12 @@
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
+        resetTerrainRefreshTracking();
         // The world is in place: carve it under the proposals, swap the abstract built layers
         // for the mesh, and reveal — the first visible frame is the final composition.
         buildMaskShapes();
         renderCarveMask(0, 0);
+        scheduleSettledTerrainRefresh('ground-lock');
         if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
         tiles.group.visible = builtVisible;
         console.log('[photoreal] world seated: ground shifted ' + (use + GROUND_BELOW_CONTENT_M).toFixed(2)
@@ -286,7 +300,7 @@
     // uniform updates, never geometry work. The holes are filled by three-mode's own corridor
     // strips, park grounds and proposed buildings, which keep rendering at z≈0.
     const MASK_WINDOW_HALF_M = 512;  // scene metres to each side of the window centre
-    const MASK_RES = 1024;           // texels across the window (1 scene-metre per texel)
+    const MASK_RES = 2048;           // 0.5 scene-metre texels: bounded, sub-road-edge quantisation
     const MASK_MOVE_M = 150;         // re-render the window when the orbit target strays this far
     // ONE clean carve, sealed by construction. The Google tiles are a HOLLOW SHELL of one
     // fused surface (ground, trees and buildings are the same skin): any partial trim of that
@@ -298,6 +312,11 @@
     // interior, a sightline hits mirrored terrain texture — never the background.
     const CARVE_FLOOR_Z = -0.3;      // fragments above this, inside a footprint, are discarded
     const CARVE_CORE_BUFFER_M = 1.2; // dilation against mask-texel combs along cut facades
+    // The raster cut lives OUTSIDE the semantic sidewalk edge, inside an overlap collar owned by
+    // our road formation. One half-texel diagonal plus a 10 cm guard guarantees that no nearest-
+    // filtered Google fragment survives on the pavement at any road angle. Turf buffers use true
+    // metres, so the scene-space band is divided by the local Mercator inflation at runtime.
+    const MASK_EDGE_GUARD_SCENE_M = 0.1;
     // Sealing the cut edge — a TERRAIN-CONFORMING CURTAIN. Our content is a flat table at z≈0, but
     // we seat the whole Google mesh from ONE probe, so away from that point the real ground rides
     // above or below the table. A fixed-depth earth skirt sealed the DOWNHILL edges (ground below
@@ -327,19 +346,40 @@
     const TERRAIN_OPENING_RADIUS_CELLS = 2;
     const TERRAIN_OBSTACLE_MIN_HEIGHT_M = 1.5;
     const TERRAIN_GAP_FILL_PASSES = 2;
-    // ?seam=mesh prototype: intersect streamed triangles with the actual vector cut boundary and
-    // give every clipped surface (ground, canopy, roof, facade) a short texture-matched fascia.
-    // The earth curtain still handles the ground-to-road elevation difference below it.
-    const MESH_SEAM_CAP_DEPTH_M = 1.25;
+    // Road elevations come from the Google surface that is actually being rendered, not the
+    // low-envelope curtain grid. Side probes land beyond the proposed corridor and only override a
+    // high centre hit when both sides agree, which removes cars/canopy without inventing a low bowl.
+    const ROAD_SURFACE_SIDE_MARGIN_M = 4;
+    const ROAD_CUT_FLOOR_OFFSET_M = -0.4;
+    // Intersections get a formation-height wall plus a short cross-plane flange. The latter is what
+    // seals vertical facade/trunk triangles, for which a straight-down extrusion has zero area.
+    const MESH_SEAM_FALLBACK_DEPTH_M = 4;
+    const MESH_SEAM_INWARD_TOP_OFFSET_M = 0.04; // stay 1 cm below the lowest asphalt top
+    // A nearest-filter mask edge can differ from its vector edge by half a texel diagonal. Bury
+    // that entire scene-space uncertainty plus 10 cm inside the source-textured flange, following
+    // photoreal-sim's rule that a raster cut belongs inside owned overlap geometry.
+    const MASK_HALF_DIAGONAL_SCENE_M = Math.SQRT1_2 * (2 * MASK_WINDOW_HALF_M / MASK_RES);
+    const MASK_EDGE_OWNERSHIP_SCENE_M = MASK_HALF_DIAGONAL_SCENE_M + MASK_EDGE_GUARD_SCENE_M;
+    const MESH_SEAM_RETAINED_OVERLAP_SCENE_M = MASK_EDGE_OWNERSHIP_SCENE_M;
     const MESH_SEAM_GRID_CELL_M = 16;
+    // The mask is buried halfway through one metre of continuous road-owned foundation. This is
+    // the same conservative geometry-over-raster contract as photoreal-sim: mask pixels may step,
+    // but every possible step lands on opaque civil geometry rather than the sky background.
+    const ROAD_FOUNDATION_PADDING_TRUE_M = 1;
+    const ROAD_MASK_WITHIN_FOUNDATION_T = 0.5;
+    const ROAD_FOUNDATION_TOP_OFFSET_M = 0.04; // 1 cm below the lowest visible road strip
+    const ROAD_FOUNDATION_SKIRT_DEPTH_M = 0.6;
+    const ROAD_FOUNDATION_COLOR = 0xc2beb4; // same concrete family as the authored sidewalk
 
     let maskRT = null;
     let maskScene = null;
     let maskCamera = null;
     let maskShapesGroup = null;
     let maskMaterial = null;
+    let maskMaterialRoad = null; // blue + alpha mask = road class + encoded local formation height
     let apronGroup = null;
     let apronMaterial = null;
+    let roadFoundationMaterial = null;
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
     let terrainGrid = null; // cached cleaned ground field, sampled once per covered plan extent
     let groundTexture = null; // DataTexture of terrainGrid heights, fed to the keep-veg shader
@@ -357,6 +397,8 @@
         uCorridorScale: { value: 1 / (2 * MASK_WINDOW_HALF_M) },
         uCorridorOn: { value: 0 },
         uFloorZ: { value: CARVE_FLOOR_Z },
+        uRoadFloorMin: { value: -4 },
+        uRoadFloorRange: { value: 8 },
         // Keep-vegetation (green mask channel = parks only): discard the tile ground layer below
         // groundHeight + band, so hedges/trees stay standing instead of being sliced into windows.
         uGroundTex: { value: null },       // DataTexture of tile ground heights over the plan bbox
@@ -392,6 +434,20 @@
         } catch (_) { return []; }
     }
 
+    function roadMaskBufferTrueM() {
+        const seam = window.__photorealSeam;
+        const contract = seam && typeof seam.maskEdgeContract === 'function'
+            ? seam.maskEdgeContract(
+                MASK_WINDOW_HALF_M, MASK_RES,
+                Number.isFinite(mercatorK) && mercatorK > 0 ? mercatorK : 1,
+                MASK_EDGE_GUARD_SCENE_M)
+            : null;
+        const minimum = contract ? contract.bufferTrueM
+            : MASK_EDGE_OWNERSHIP_SCENE_M / Math.max(1e-6, mercatorK || 1);
+        return Math.max(minimum,
+            ROAD_FOUNDATION_PADDING_TRUE_M * ROAD_MASK_WITHIN_FOUNDATION_T);
+    }
+
     // The part of a razed building's footprint not already covered by an applied structure —
     // carving building-by-building inside a structure is redundant (its own polygon carves).
     function razedFootprintOutsideStructures(geometry) {
@@ -423,12 +479,21 @@
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
                 const geom = definition.surfaceFootprint || definition.polygon;
-                // Roads need a deterministic full cut. A keep-vegetation cut depends on the cached
-                // terrain heightfield; when finer tile LODs replace the surface after that one-time
-                // sample, their ground can rise above the stale cutoff and occlude the road again.
-                // buffer 0 keeps this full cut exact: vegetation beside the paved footprint remains,
-                // while anything actually inside the replacement road is intentionally removed.
-                if (geom && geom.type) out.push({ geometry: geom, kind: 'covered', mode: 'full', buffer: 0 });
+                // A terrain-following road may legitimately fall below the old global z=-0.3 cut
+                // floor. Roads get their own height-aware mask channel; its exact surface boundary
+                // is shared by the replacement deck, curtain and streamed-mesh fascia, while alpha
+                // carries the local formation floor copied from the 4 m ruled road quilt.
+                if (geom && geom.type) out.push({
+                    geometry: geom,
+                    kind: 'road',
+                    mode: 'road',
+                    buffer: roadMaskBufferTrueM(),
+                    seamCap: true,
+                    skipCap: true,
+                    terrainSupport: true,
+                    proposalId: proposal && proposal.proposalId != null
+                        ? String(proposal.proposalId) : null
+                });
             }
         });
         // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
@@ -474,8 +539,8 @@
         const THREE = window.THREE;
         if (!THREE || maskRT) return;
         maskRT = new THREE.WebGLRenderTarget(MASK_RES, MASK_RES, { depthBuffer: false });
-        maskRT.texture.minFilter = THREE.LinearFilter;
-        maskRT.texture.magFilter = THREE.LinearFilter;
+        maskRT.texture.minFilter = THREE.NearestFilter;
+        maskRT.texture.magFilter = THREE.NearestFilter;
         maskRT.texture.generateMipmaps = false;
         maskScene = new THREE.Scene();
         maskScene.background = new THREE.Color(0x000000);
@@ -485,12 +550,42 @@
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
         maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });      // full discard
+        maskMaterialRoad = new THREE.ShaderMaterial({
+            uniforms: {
+                uRoadFloorMin: corridorUniforms.uRoadFloorMin,
+                uRoadFloorRange: corridorUniforms.uRoadFloorRange
+            },
+            vertexShader: [
+                'attribute float roadFloor;',
+                'varying float vRoadFloor;',
+                'void main() {',
+                '  vRoadFloor = roadFloor;',
+                '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xy, 0.0, 1.0);',
+                '}'
+            ].join('\n'),
+            fragmentShader: [
+                'uniform float uRoadFloorMin;',
+                'uniform float uRoadFloorRange;',
+                'varying float vRoadFloor;',
+                'void main() {',
+                '  float encoded = clamp((vRoadFloor - uRoadFloorMin) / uRoadFloorRange, 0.0, 1.0);',
+                '  gl_FragColor = vec4(0.0, 0.0, 1.0, encoded);',
+                '}'
+            ].join('\n'),
+            side: THREE.DoubleSide,
+            depthTest: false,
+            depthWrite: false
+        });
         maskMaterialPark = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });  // keep-veg (ground only)
         // DOUBLE-SIDED, like the mask: this material paints both the flat cap and the curtain
         // walls, and either can face the camera from either side depending on ring winding — a
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
         // camera would look straight through the seal into the hole. A solid earth wall has no back.
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
+        roadFoundationMaterial = new THREE.MeshLambertMaterial({
+            color: ROAD_FOUNDATION_COLOR,
+            side: THREE.DoubleSide
+        });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         if (!corridorUniforms.uGroundMin.value) corridorUniforms.uGroundMin.value = new THREE.Vector2();
         if (!corridorUniforms.uGroundInvSpan.value) corridorUniforms.uGroundInvSpan.value = new THREE.Vector2();
@@ -551,18 +646,117 @@
         return out;
     }
 
-    function appendSeamRingSegments(ring, out) {
-        if (!Array.isArray(ring) || ring.length < 2) return;
-        for (let i = 1; i < ring.length; i++) {
-            const a = ring[i - 1];
-            const b = ring[i];
-            if (!a || !b || (a[0] === b[0] && a[1] === b[1])) continue;
-            out.push({ a: [a[0], a[1]], b: [b[0], b[1]] });
+    function roadFloorValuesFromPatches(patches) {
+        const values = [];
+        (patches || []).forEach(function (patch) {
+            const positions = patch && patch.positions;
+            for (let i = 2; positions && i < positions.length; i += 3) {
+                if (Number.isFinite(positions[i])) values.push(positions[i]);
+            }
+        });
+        return values;
+    }
+
+    function roadMaskShapeGeometry(shape, supportAt) {
+        const THREE = window.THREE;
+        const geometry = new THREE.ShapeGeometry(shape);
+        const positions = geometry.getAttribute('position');
+        const floors = new Float32Array(positions ? positions.count : 0);
+        for (let i = 0; positions && i < positions.count; i++) {
+            const value = typeof supportAt === 'function'
+                ? supportAt(positions.getX(i), positions.getY(i)) : null;
+            floors[i] = Number.isFinite(value) ? value : 0;
         }
-        const first = ring[0];
-        const last = ring[ring.length - 1];
+        geometry.setAttribute('roadFloor', new THREE.Float32BufferAttribute(floors, 1));
+        return geometry;
+    }
+
+    function addRoadFloorPatchMeshes(group, patches) {
+        const THREE = window.THREE;
+        (patches || []).forEach(function (patch) {
+            const source = patch && patch.positions;
+            if (!source || source.length < 9) return;
+            const positions = new Float32Array(source.length);
+            const floors = new Float32Array(source.length / 3);
+            for (let i = 0, vertex = 0; i < source.length; i += 3, vertex++) {
+                positions[i] = source[i];
+                positions[i + 1] = source[i + 1];
+                positions[i + 2] = 0;
+                floors[vertex] = Number.isFinite(source[i + 2]) ? source[i + 2] : 0;
+            }
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('roadFloor', new THREE.Float32BufferAttribute(floors, 1));
+            const mesh = new THREE.Mesh(geometry, maskMaterialRoad);
+            mesh.frustumCulled = false;
+            mesh.renderOrder = 3;
+            mesh.userData.proposalId = patch.proposalId;
+            mesh.userData.segmentId = patch.segmentId;
+            group.add(mesh);
+        });
+    }
+
+    // Visible, solid counterpart of the height-mask quilt. It extends past every possible mask
+    // texel on both sides and at open-road endpoints; the authored lane/sidewalk meshes sit 1 cm
+    // above its top while its outer walls penetrate below the Google surface.
+    function addRoadFoundationPatchMeshes(group, patches) {
+        const THREE = window.THREE;
+        if (!THREE || !group || !roadFoundationMaterial) return;
+        (patches || []).forEach(function (patch) {
+            const source = patch && patch.positions;
+            if (!source || source.length < 9) return;
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(source, 3));
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+            const mesh = new THREE.Mesh(geometry, roadFoundationMaterial);
+            mesh.name = 'PhotorealRoadFoundation';
+            mesh.frustumCulled = false;
+            mesh.userData.proposalId = patch.proposalId;
+            mesh.userData.segmentId = patch.segmentId;
+            mesh.userData.isPhotorealRoadFoundation = true;
+            group.add(mesh);
+        });
+    }
+
+    function ringSignedArea(ring) {
+        let twiceArea = 0;
+        if (!Array.isArray(ring)) return 0;
+        for (let i = 0; i < ring.length; i++) {
+            const a = ring[i];
+            const b = ring[(i + 1) % ring.length];
+            if (a && b) twiceArea += a[0] * b[1] - b[0] * a[1];
+        }
+        return twiceArea / 2;
+    }
+
+    // Normalize outer rings CCW and holes CW. The polygon's carved side is then consistently the
+    // left side of every directed edge, so streamed-mesh fascias know which way to overlap the cut.
+    function appendSeamRingSegments(ring, out, isHole, supportAt) {
+        if (!Array.isArray(ring) || ring.length < 2) return;
+        const normalized = ring.slice();
+        const wantsPositive = !isHole;
+        if ((ringSignedArea(normalized) > 0) !== wantsPositive) normalized.reverse();
+        const append = function (a, b) {
+            if (!a || !b || (a[0] === b[0] && a[1] === b[1])) return;
+            const dx = b[0] - a[0];
+            const dy = b[1] - a[1];
+            const length = Math.hypot(dx, dy);
+            if (length < 1e-9) return;
+            out.push({
+                a: [a[0], a[1]],
+                b: [b[0], b[1]],
+                inward: [-dy / length, dx / length],
+                supportAt: supportAt
+            });
+        };
+        for (let i = 1; i < normalized.length; i++) {
+            append(normalized[i - 1], normalized[i]);
+        }
+        const first = normalized[0];
+        const last = normalized[normalized.length - 1];
         if (first && last && (first[0] !== last[0] || first[1] !== last[1])) {
-            out.push({ a: [last[0], last[1]], b: [first[0], first[1]] });
+            append(last, first);
         }
     }
 
@@ -651,30 +845,40 @@
         return [u, v];
     }
 
-    function appendSeamQuad(bucket, hit, uvAttribute, indices, inverseWorld, scratch) {
-        const start = hit.start.position;
-        const end = hit.end.position;
-        const startBottom = [start[0], start[1], start[2] - MESH_SEAM_CAP_DEPTH_M];
-        const endBottom = [end[0], end[1], end[2] - MESH_SEAM_CAP_DEPTH_M];
+    function appendSeamQuads(bucket, hit, segment, uvAttribute, indices, inverseWorld, scratch) {
+        const seam = window.__photorealSeam;
+        const quads = seam.buildSeamFasciaQuads(hit, segment, {
+            fallbackDepth: MESH_SEAM_FALLBACK_DEPTH_M,
+            // Both values are scene-space by construction. The inward endpoint lands exactly on
+            // the semantic road edge; all source-height interpolation therefore stays outside it.
+            retainedOverlapM: MESH_SEAM_RETAINED_OVERLAP_SCENE_M,
+            inwardWidthM: MASK_EDGE_OWNERSHIP_SCENE_M,
+            // The continuous foundation now owns the horizontal seal. Bury both sides of the
+            // source-textured flange beneath it so individual Google triangles cannot reappear as
+            // grey/olive shards; the vertical `down` fascia remains available for cut facades.
+            retainedTopOffsetM: MESH_SEAM_INWARD_TOP_OFFSET_M - 0.01,
+            inwardTopOffsetM: MESH_SEAM_INWARD_TOP_OFFSET_M - 0.01,
+            bottomAt: typeof segment.supportAt === 'function' ? segment.supportAt : null
+        });
+        if (!quads.length) return;
         const toLocal = function (point) {
             scratch.set(point[0], point[1], point[2]).applyMatrix4(inverseWorld);
             return [scratch.x, scratch.y, scratch.z];
         };
-        const topA = toLocal(start);
-        const bottomA = toLocal(startBottom);
-        const topB = toLocal(end);
-        const bottomB = toLocal(endBottom);
-        bucket.positions.push(
-            topA[0], topA[1], topA[2], bottomA[0], bottomA[1], bottomA[2], bottomB[0], bottomB[1], bottomB[2],
-            topA[0], topA[1], topA[2], bottomB[0], bottomB[1], bottomB[2], topB[0], topB[1], topB[2]
-        );
         const uvA = interpolatedUv(uvAttribute, indices, hit.start.barycentric);
         const uvB = interpolatedUv(uvAttribute, indices, hit.end.barycentric);
-        bucket.uvs.push(
-            uvA[0], uvA[1], uvA[0], uvA[1], uvB[0], uvB[1],
-            uvA[0], uvA[1], uvB[0], uvB[1], uvB[0], uvB[1]
-        );
-        bucket.segmentCount += 1;
+        quads.forEach(function (quad) {
+            const local = quad.vertices.map(toLocal);
+            bucket.positions.push(
+                local[0][0], local[0][1], local[0][2], local[1][0], local[1][1], local[1][2], local[2][0], local[2][1], local[2][2],
+                local[0][0], local[0][1], local[0][2], local[2][0], local[2][1], local[2][2], local[3][0], local[3][1], local[3][2]
+            );
+            bucket.uvs.push(
+                uvA[0], uvA[1], uvA[0], uvA[1], uvB[0], uvB[1],
+                uvA[0], uvA[1], uvB[0], uvB[1], uvB[0], uvB[1]
+            );
+            bucket.segmentCount += 1;
+        });
     }
 
     function buildMeshSeamCaps(mesh) {
@@ -738,7 +942,7 @@
             const indices = [ia, ib, ic];
             candidates.forEach(function (segment) {
                 const hit = seam.intersectTriangleWithVerticalSegment(triangle, segment);
-                if (hit) appendSeamQuad(bucket, hit, uv, indices, inverseWorld, localScratch);
+                if (hit) appendSeamQuads(bucket, hit, segment, uv, indices, inverseWorld, localScratch);
             });
         }
 
@@ -813,21 +1017,133 @@
         });
     }
 
-    // Raycast the SEATED tile mesh straight down at a scene-XY point; z is true metres, directly
-    // comparable to our content's z. This deliberately returns the FIRST/top surface. Taking the
-    // lowest hit in each column was rejected: overlapping coarse tiles and mesh undersides produced
-    // false pits. buildTerrainGrid removes canopy/roofs spatially after all columns are sampled.
-    function sampleTileSurfaceZ(x, y) {
+    function googleSourceHitVisibility(hit) {
+        let object = hit && hit.object;
+        let visible = true;
+        while (object) {
+            if (object.userData && object.userData.__photorealSeamCap) return null;
+            // The root is deliberately hidden until the first composed frame is ready. Its reveal
+            // flag is not an LOD decision, so do not let it invalidate every first-build sample.
+            if (tiles && object === tiles.group) return visible;
+            if (object.visible === false) visible = false;
+            object = object.parent;
+        }
+        return null;
+    }
+
+    function resetTileSurfaceSampling() {
+        tileSurfaceMeshes = null;
+        tileSurfaceRaycaster = null;
+        tileSurfaceSampleCache = new Map();
+        tileSurfaceSamplingStats = {
+            visibleMeshes: 0,
+            loadedMeshes: 0,
+            visibleHits: 0,
+            loadedHits: 0,
+            recursiveFallbackHits: 0,
+            misses: 0
+        };
         const THREE = window.THREE;
-        if (!THREE || !tiles) return null;
+        if (!THREE || !tiles || !tiles.group) return;
         try {
-            const raycaster = new THREE.Raycaster(new THREE.Vector3(x, y, 4000), new THREE.Vector3(0, 0, -1), 0, 9000);
-            const hits = raycaster.intersectObject(tiles.group, true);
-            return window.__photorealGround.selectTopSurfaceHeight(hits.map(function (hit) {
-                return hit && hit.point ? hit.point.z : NaN;
-            }), FAR_EARTH_LIMIT_M);
+            if (internals && internals.scene) internals.scene.updateMatrixWorld(true);
+            const visible = [];
+            const loaded = [];
+            tiles.group.traverse(function (object) {
+                if (!object.isMesh) return;
+                const visibility = googleSourceHitVisibility({ object: object });
+                if (visibility === null) return;
+                loaded.push(object);
+                if (visibility) visible.push(object);
+            });
+            tileSurfaceMeshes = { visible: visible, loaded: loaded };
+            tileSurfaceSamplingStats.visibleMeshes = visible.length;
+            tileSurfaceSamplingStats.loadedMeshes = loaded.length;
+            tileSurfaceRaycaster = new THREE.Raycaster(
+                new THREE.Vector3(0, 0, 4000),
+                new THREE.Vector3(0, 0, -1),
+                0,
+                9000
+            );
+        } catch (_) {
+            tileSurfaceMeshes = null;
+            tileSurfaceRaycaster = null;
+        }
+    }
+
+    // Raycast the SEATED tile mesh straight down at a scene-XY point; z is true metres, directly
+    // comparable to our content's z. Prefer the currently visible Google LOD. Stations just outside
+    // the camera/frustum still need a continuous formation, so when no visible tile covers a point
+    // fall back to the loaded Google source mesh there. Generated seam caps never participate.
+    function sampleTileSurfaceZ(x, y) {
+        if (!window.THREE || !tiles || !Number.isFinite(x) || !Number.isFinite(y)) return null;
+        try {
+            if (!tileSurfaceMeshes || !tileSurfaceRaycaster) resetTileSurfaceSampling();
+            if (!tileSurfaceMeshes || !tileSurfaceRaycaster) return null;
+            // Five-centimetre quantisation is far below source precision but makes repeated edge and
+            // profile probes share results across the same synchronous rebuild.
+            const key = Math.round(x * 20) + ',' + Math.round(y * 20);
+            if (tileSurfaceSampleCache.has(key)) return tileSurfaceSampleCache.get(key);
+            tileSurfaceRaycaster.ray.origin.set(x, y, 4000);
+            tileSurfaceRaycaster.ray.direction.set(0, 0, -1);
+            const plausibleHeight = function (hits) {
+                return window.__photorealGround.selectTopSurfaceHeight((hits || []).map(function (hit) {
+                    return hit && hit.point ? hit.point.z : NaN;
+                }), FAR_EARTH_LIMIT_M);
+            };
+            let source = 'visible';
+            let result = tileSurfaceMeshes.visible.length
+                ? plausibleHeight(tileSurfaceRaycaster.intersectObjects(tileSurfaceMeshes.visible, false))
+                : null;
+            if (result === null && tileSurfaceMeshes.loaded.length) {
+                source = 'loaded';
+                result = plausibleHeight(tileSurfaceRaycaster.intersectObjects(tileSurfaceMeshes.loaded, false));
+            }
+            // Some 3d-tiles-renderer content types only participate correctly when raycast through
+            // their owning hierarchy. Keep that path as a cached compatibility fallback, with the
+            // same visible-LOD preference and generated-cap exclusion.
+            if (result === null) {
+                const records = tileSurfaceRaycaster.intersectObject(tiles.group, true).map(function (hit) {
+                    return { hit: hit, visible: googleSourceHitVisibility(hit) };
+                }).filter(function (record) { return record.visible !== null; });
+                const visibleRecords = records.filter(function (record) { return record.visible; });
+                result = plausibleHeight(visibleRecords.map(function (record) {
+                    return record.hit;
+                }));
+                if (result === null) result = plausibleHeight(records.map(function (record) {
+                    return record.hit;
+                }));
+                source = 'recursive';
+            }
+            if (tileSurfaceSamplingStats) {
+                if (result === null) tileSurfaceSamplingStats.misses += 1;
+                else if (source === 'visible') tileSurfaceSamplingStats.visibleHits += 1;
+                else if (source === 'loaded') tileSurfaceSamplingStats.loadedHits += 1;
+                else tileSurfaceSamplingStats.recursiveFallbackHits += 1;
+            }
+            tileSurfaceSampleCache.set(key, result);
+            return result;
         } catch (_) { }
         return null;
+    }
+
+    function roadVisibleSurfaceZAt(x, y, context) {
+        const station = context && context.station;
+        const center = sampleTileSurfaceZ(x, y);
+        if (!station || !Number.isFinite(station.normalX) || !Number.isFinite(station.normalY)) {
+            return center;
+        }
+        const halfWidth = Math.max(0, Number(context.halfWidthSceneM) || 0);
+        const offset = halfWidth + ROAD_SURFACE_SIDE_MARGIN_M * mercatorK;
+        const left = sampleTileSurfaceZ(
+            x + station.normalX * offset,
+            y + station.normalY * offset
+        );
+        const right = sampleTileSurfaceZ(
+            x - station.normalX * offset,
+            y - station.normalY * offset
+        );
+        return window.__photorealGround.selectRoadSurfaceHeight(center, left, right);
     }
 
     function terrainBoundsForEntries(entries) {
@@ -907,20 +1223,41 @@
         return window.__photorealGround.sampleBilinear(terrainGrid, x, y);
     }
 
+    function supportAtForEntry(entry) {
+        if (!entry || !entry.terrainSupport) return function () { return 0; };
+        return function (x, y) {
+            if (entry.proposalId != null
+                && typeof window.corridorTerrainHeightAtForProposal === 'function') {
+                const owned = window.corridorTerrainHeightAtForProposal(entry.proposalId, x, y);
+                // Do not borrow a crossing/parallel proposal when this road has no local support.
+                return Number.isFinite(owned) ? owned : 0;
+            }
+            if (typeof window.corridorTerrainHeightAt !== 'function') return 0;
+            const z = window.corridorTerrainHeightAt(x, y);
+            return Number.isFinite(z) ? z : 0;
+        };
+    }
+
     // A terrain-conforming earth wall around one ring: at each vertex the wall spans from the
     // content down/up to the local tile height, so it meets the Google rim whether the ground sits
     // above the plan (uphill: wall rises to it) or below it (downhill: wall drops to it).
-    function addCurtainRibbon(ringXY, group) {
+    function addCurtainRibbon(ringXY, group, supportAt, visibleSurfaceAt) {
         const THREE = window.THREE;
         const n = ringXY.length;
         if (n < 2) return;
         const topBot = function (x, y) {
-            let t = terrainZAt(x, y);
+            let content = typeof supportAt === 'function' ? supportAt(x, y) : 0;
+            if (!Number.isFinite(content)) content = 0;
+            content += CURTAIN_CONTENT_TOP_Z;
+            let t = typeof visibleSurfaceAt === 'function'
+                ? visibleSurfaceAt(x, y)
+                : terrainZAt(x, y);
             if (t === null || !isFinite(t)) {                 // no sample -> degrade to the fixed skirt
-                return [CURTAIN_CONTENT_TOP_Z + CURTAIN_TOP_MARGIN_M, -CARVE_PLINTH_DEPTH_M];
+                return [content + CURTAIN_TOP_MARGIN_M, content - CARVE_PLINTH_DEPTH_M];
             }
-            t = Math.max(-CURTAIN_MAX_DIP_M, Math.min(CURTAIN_MAX_RISE_M, t));
-            return [Math.max(CURTAIN_CONTENT_TOP_Z, t) + CURTAIN_TOP_MARGIN_M, Math.min(0, t) - CURTAIN_BOTTOM_MARGIN_M];
+            t = Math.max(content - CURTAIN_MAX_DIP_M, Math.min(content + CURTAIN_MAX_RISE_M, t));
+            return [Math.max(content, t) + CURTAIN_TOP_MARGIN_M,
+                Math.min(content, t) - CURTAIN_BOTTOM_MARGIN_M];
         };
         const pos = [];
         let prev = null;
@@ -943,13 +1280,15 @@
     // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
     // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
     // around every ring (see the curtain comment above).
-    function buildMaskShapes() {
+    function buildMaskShapes(options) {
+        options = options || {};
         const THREE = window.THREE;
         if (!THREE || !maskScene || !internals) return;
         disposeMaskShapes();
         maskShapesGroup = new THREE.Group();
         apronGroup = new THREE.Group();
         apronGroup.name = 'PhotorealCarvePlinth';
+        resetTileSurfaceSampling();
         const toXY = internals.latLngToXY;
         const entries = collectCarveGeometries();
         const seamSegments = [];
@@ -960,33 +1299,132 @@
             || !window.__photorealGround.coversBounds(terrainGrid, terrainBounds))) {
             try { buildTerrainGrid(entries, terrainBounds); } catch (_) { terrainGrid = null; }
         }
+        // Roads follow direct samples of the currently visible Google mesh. The cleaned coarse grid
+        // remains useful for park/structure ground bands and fallback curtains, but it is not precise
+        // enough to be an elevation source for a long engineered formation.
+        if (!options.skipTerrainRefit && tiles && typeof window.setCorridorTerrainSampler === 'function') {
+            try { window.setCorridorTerrainSampler(roadVisibleSurfaceZAt); } catch (error) {
+                console.warn('[photoreal] terrain-following corridor build failed', error);
+            }
+        }
+        const roadMaskBufferM = roadMaskBufferTrueM();
+        const allRoadFloorPatches = (typeof window.getCorridorTerrainCutPatches === 'function')
+            ? window.getCorridorTerrainCutPatches({ lateralPaddingM: roadMaskBufferM }) : [];
+        // The mask must obey the same proposal/parcel isolation policy as its footprint entries.
+        // Otherwise an isolated or hidden road can leave a blue cut behind with no deck or seam.
+        const roadFloorPatches = window.__photorealGround.filterRoadFloorPatches(
+            allRoadFloorPatches, isolationFilter);
+        const allRoadFoundationPatches = (typeof window.getCorridorTerrainFoundationPatches === 'function')
+            ? window.getCorridorTerrainFoundationPatches({
+                paddingM: ROAD_FOUNDATION_PADDING_TRUE_M,
+                topOffsetM: ROAD_FOUNDATION_TOP_OFFSET_M,
+                skirtDepthM: ROAD_FOUNDATION_SKIRT_DEPTH_M
+            }) : [];
+        const roadFoundationPatches = window.__photorealGround.filterRoadFloorPatches(
+            allRoadFoundationPatches, isolationFilter);
+        const exactRoadProposalIds = new Set(roadFloorPatches.map(function (patch) {
+            return patch && patch.proposalId != null ? String(patch.proposalId) : null;
+        }).filter(function (id) { return id !== null; }));
+        const roadEntryByProposalId = new Map();
+        entries.forEach(function (entry) {
+            if (entry && entry.mode === 'road' && entry.proposalId != null) {
+                roadEntryByProposalId.set(String(entry.proposalId), entry);
+            }
+        });
+        const roadEncoding = window.__photorealGround
+            && typeof window.__photorealGround.roadFloorEncodingRange === 'function'
+            ? window.__photorealGround.roadFloorEncodingRange(
+                roadFloorValuesFromPatches(roadFloorPatches))
+            : { min: -4, range: 8, quantizationM: 8 / 255 };
+        corridorUniforms.uRoadFloorMin.value = roadEncoding.min;
+        corridorUniforms.uRoadFloorRange.value = roadEncoding.range;
         entries.forEach(function (entry) {
             try {
                 const buf = (typeof entry.buffer === 'number') ? entry.buffer : CARVE_CORE_BUFFER_M;
-                const core = buf > 0 ? bufferGeometry(entry.geometry, buf) : entry.geometry;
+                const core = buf !== 0 ? bufferGeometry(entry.geometry, buf) : entry.geometry;
                 const keepVeg = (entry.mode === 'keepveg');
-                const maskMat = keepVeg ? maskMaterialPark : maskMaterial;
+                const road = (entry.mode === 'road');
+                // Successful terrain roads paint only their exact station-derived mask quilt.
+                // The old Turf-buffered ShapeGeometry added rounded endpoint/bend lobes that had
+                // neither a deck nor matching elevation data and produced the largest cyan teeth.
+                if (road && entry.proposalId != null
+                    && exactRoadProposalIds.has(String(entry.proposalId))) return;
+                const maskMat = road ? maskMaterialRoad : (keepVeg ? maskMaterialPark : maskMaterial);
+                const supportAt = supportAtForEntry(entry);
                 polygonShapesAndRings(core, toXY).forEach(function (sr) {
-                    if (!keepVeg && meshSeamCapsActive()) {
-                        sr.rings.forEach(function (ring) { appendSeamRingSegments(ring, seamSegments); });
+                    if (entry.seamCap && meshSeamCapsActive()) {
+                        sr.rings.forEach(function (ring, ringIndex) {
+                            const sampledRing = road && window.__photorealSeam
+                                && typeof window.__photorealSeam.densifyClosedRing === 'function'
+                                ? window.__photorealSeam.densifyClosedRing(
+                                    ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                                : ring;
+                            appendSeamRingSegments(sampledRing, seamSegments, ringIndex > 0, supportAt);
+                        });
                     }
-                    const mask = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMat);
+                    const maskGeometry = road
+                        ? roadMaskShapeGeometry(sr.shape, supportAt)
+                        : new THREE.ShapeGeometry(sr.shape);
+                    const mask = new THREE.Mesh(maskGeometry, maskMat);
                     mask.frustumCulled = false;
                     // No depth buffer on the mask RT, so draw order decides overlaps: full discard
                     // (renderOrder 1) paints over keep-veg (0), so a road through a park still clears.
-                    mask.renderOrder = keepVeg ? 0 : 1;
+                    mask.renderOrder = road ? 2 : (keepVeg ? 0 : 1);
                     maskShapesGroup.add(mask);
-                    const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
-                    cap.position.z = CARVE_APRON_TOP_Z;
-                    cap.frustumCulled = false;
-                    apronGroup.add(cap);
-                    sr.rings.forEach(function (ring) { addCurtainRibbon(ring, apronGroup); });
+                    if (!entry.skipCap) {
+                        const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
+                        cap.position.z = CARVE_APRON_TOP_Z;
+                        cap.frustumCulled = false;
+                        apronGroup.add(cap);
+                    }
+                    sr.rings.forEach(function (ring) {
+                        const sampledRing = road && window.__photorealSeam
+                            && typeof window.__photorealSeam.densifyClosedRing === 'function'
+                            ? window.__photorealSeam.densifyClosedRing(
+                                ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                            : ring;
+                        addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null);
+                    });
                 });
             } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
+        // Exact mask perimeters also drive facade/tree closure. This keeps cosmetic Google-tile
+        // fascias aligned with the real cut while the continuous foundation remains the primary
+        // horizontal seal.
+        if (meshSeamCapsActive() && window.__photorealSeam
+            && typeof window.__photorealSeam.densifyClosedRing === 'function') {
+            roadFloorPatches.forEach(function (patch) {
+                const entry = patch && patch.proposalId != null
+                    ? roadEntryByProposalId.get(String(patch.proposalId)) : null;
+                const supportAt = supportAtForEntry(entry || { terrainSupport: true });
+                (patch && Array.isArray(patch.boundaryRings) ? patch.boundaryRings : [])
+                    .forEach(function (ring) {
+                        const xyRing = ring.map(function (point) { return [point[0], point[1]]; });
+                        const sampledRing = window.__photorealSeam.densifyClosedRing(
+                            xyRing, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK);
+                        appendSeamRingSegments(sampledRing, seamSegments, false, supportAt);
+                    });
+            });
+        }
+        addRoadFloorPatchMeshes(maskShapesGroup, roadFloorPatches);
+        addRoadFoundationPatchMeshes(apronGroup, roadFoundationPatches);
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
         replaceSeamBoundaryGrid(seamSegments);
+        try {
+            document.body.dataset.photorealSampling = JSON.stringify({
+                ...(tileSurfaceSamplingStats || {}),
+                uniqueProbes: tileSurfaceSampleCache.size,
+                roadFloorPatches: roadFloorPatches.length,
+                roadFoundationPatches: roadFoundationPatches.length,
+                exactRoadMasks: exactRoadProposalIds.size,
+                roadFloorMin: roadEncoding.min,
+                roadFloorRange: roadEncoding.range,
+                roadFloorQuantizationM: roadEncoding.quantizationM,
+                roadMaskBufferM: roadMaskBufferM,
+                roadFoundationPaddingM: ROAD_FOUNDATION_PADDING_TRUE_M
+            });
+        } catch (_) { }
     }
 
     function renderCarveMask(cx, cy) {
@@ -1011,9 +1449,9 @@
         }
     }
 
-    function rebuildCarveMask() {
+    function rebuildCarveMask(options) {
         if (!active || !maskScene) return;
-        buildMaskShapes();
+        buildMaskShapes(options);
         renderCarveMask(maskCenterX, maskCenterY);
     }
 
@@ -1022,6 +1460,7 @@
         if (!material || (material.userData && material.userData.__corridorPatched)) return;
         material.userData = material.userData || {};
         material.userData.__corridorPatched = true;
+        material.side = window.THREE.DoubleSide;
         // Deliberately NOT forcing FrontSide (the sim did, and covered its cuts with walls):
         // the tiles ship double-sided, and that is load-bearing here — with backfaces culled,
         // any hole lets a grazing sightline travel inside the hollow shell and out to the sky.
@@ -1040,6 +1479,8 @@
                     + 'uniform float uCorridorScale;\n'
                     + 'uniform float uCorridorOn;\n'
                     + 'uniform float uFloorZ;\n'
+                    + 'uniform float uRoadFloorMin;\n'
+                    + 'uniform float uRoadFloorRange;\n'
                     + 'uniform sampler2D uGroundTex;\n'
                     + 'uniform vec2 uGroundMin;\n'
                     + 'uniform vec2 uGroundInvSpan;\n'
@@ -1048,15 +1489,22 @@
                     + 'if (uCorridorOn > 0.5) {\n'
                     + '    vec2 cuv = (vCorridorWorld.xy - uCorridorMin) * uCorridorScale;\n'
                     + '    if (cuv.x > 0.0 && cuv.x < 1.0 && cuv.y > 0.0 && cuv.y < 1.0) {\n'
-                    // Threshold 0.3, not 0.5: linear filtering leaves boundary texels partial, and a
-                    // mid threshold turned them into per-texel combs along facades. Red wins ties.
+                    // Nearest filtering bounds edge error to half a texel; the road's vector
+                    // outset and source-textured collar own that complete uncertainty band.
                     + '        vec4 cmask = texture2D(uCorridorMask, cuv);\n'
-                    // RED = full discard (roads, razed & proposed buildings): everything above the floor.
-                    + '        if (cmask.r > 0.3) {\n'
+                    // BLUE = terrain-following road. Alpha carries the local formation Z, so only
+                    // source mesh ABOVE the road floor is removed; ground remains below bridges and
+                    // a clipped building/tree can no longer open an infinite column to the sky.
+                    + '        if (cmask.b > 0.5) {\n'
+                    + '            float roadFloorZ = uRoadFloorMin + cmask.a * uRoadFloorRange + '
+                    + ROAD_CUT_FLOOR_OFFSET_M.toFixed(2) + ';\n'
+                    + '            if (vCorridorWorld.z > roadFloorZ) discard;\n'
+                    // RED = other full cuts: discard everything above the shared floor.
+                    + '        } else if (cmask.r > 0.5) {\n'
                     + '            if (vCorridorWorld.z > uFloorZ) discard;\n'
                     // GREEN = keep-vegetation (parks): discard ONLY the tile ground layer — below the
                     // local ground height + band — so hedges and trees stand instead of being sliced.
-                    + '        } else if (cmask.g > 0.3) {\n'
+                    + '        } else if (cmask.g > 0.5) {\n'
                     + '            vec2 guv = (vCorridorWorld.xy - uGroundMin) * uGroundInvSpan;\n'
                     + '            float gh = uFloorZ;\n'
                     + '            if (guv.x >= 0.0 && guv.x <= 1.0 && guv.y >= 0.0 && guv.y <= 1.0) gh = texture2D(uGroundTex, guv).r;\n'
@@ -1068,6 +1516,68 @@
         material.needsUpdate = true;
     }
 
+    // The first stable seating probes can complete while finer tile LODs are still arriving. A quiet
+    // period claims one refit, but a later visible source revision may claim another: slow networks
+    // routinely pause between coarse and fine bursts. The pure tracker coalesces each burst and caps
+    // the lifetime cost, so later camera-driven LOD churn cannot rebuild the formation forever.
+    function publishTerrainRefreshState(state, claim) {
+        const tracker = terrainRefreshTracker;
+        try {
+            if (!tracker) {
+                delete document.body.dataset.photorealTerrainRefresh;
+                return;
+            }
+            document.body.dataset.photorealTerrainRefresh = JSON.stringify({
+                state: state,
+                revision: tracker.revision,
+                appliedRevision: tracker.appliedRevision,
+                refreshes: tracker.refreshes,
+                maxRefreshes: tracker.maxRefreshes,
+                pending: tracker.refreshes < tracker.maxRefreshes
+                    && tracker.revision > tracker.appliedRevision,
+                lastReason: tracker.lastReason,
+                applied: claim || null
+            });
+        } catch (_) { }
+    }
+
+    function resetTerrainRefreshTracking() {
+        if (terrainRefreshTimer) clearTimeout(terrainRefreshTimer);
+        terrainRefreshTimer = null;
+        terrainRefreshTracker = window.__photorealGround.createTerrainRefreshTracker(
+            TERRAIN_REFRESH_MAX_REFITS);
+        publishTerrainRefreshState('idle');
+    }
+
+    function scheduleSettledTerrainRefresh(reason) {
+        if (!active || !grounded) return;
+        if (!terrainRefreshTracker) resetTerrainRefreshTracking();
+        window.__photorealGround.noteTerrainSourceChange(terrainRefreshTracker, reason);
+        if (terrainRefreshTracker.refreshes >= terrainRefreshTracker.maxRefreshes) {
+            publishTerrainRefreshState('budget-exhausted');
+            return;
+        }
+        if (terrainRefreshTimer) clearTimeout(terrainRefreshTimer);
+        publishTerrainRefreshState('waiting-for-quiet');
+        terrainRefreshTimer = setTimeout(function () {
+            terrainRefreshTimer = null;
+            if (!active || !grounded || !terrainRefreshTracker) return;
+            const claim = window.__photorealGround.claimTerrainRefresh(terrainRefreshTracker);
+            if (!claim) {
+                publishTerrainRefreshState(terrainRefreshTracker.refreshes
+                    >= terrainRefreshTracker.maxRefreshes ? 'budget-exhausted' : 'up-to-date');
+                return;
+            }
+            terrainGrid = null;
+            rebuildCarveMask();
+            publishTerrainRefreshState(claim.refresh >= claim.maxRefreshes
+                ? 'budget-exhausted' : 'applied', claim);
+            try {
+                window.dispatchEvent(new CustomEvent('photorealTerrainRefit', { detail: claim }));
+            } catch (_) { }
+        }, TERRAIN_REFRESH_QUIET_MS);
+    }
+
     function onTileModelLoad(ev) {
         if (!ev || !ev.scene) return;
         loadedTileScenes.add(ev.scene);
@@ -1076,7 +1586,10 @@
             if (Array.isArray(o.material)) o.material.forEach(patchTileMaterial);
             else patchTileMaterial(o.material);
         });
-        if (grounded && ev.scene.parent) scheduleTileSeamCaps(ev.scene);
+        if (grounded && ev.scene.parent) {
+            scheduleTileSeamCaps(ev.scene);
+            scheduleSettledTerrainRefresh('visible-model-loaded');
+        }
     }
 
     function onTileModelDispose(ev) {
@@ -1089,6 +1602,7 @@
     function onTileVisibilityChange(ev) {
         if (!ev || !ev.visible || !ev.scene || !grounded) return;
         scheduleTileSeamCaps(ev.scene);
+        scheduleSettledTerrainRefresh('tile-became-visible');
     }
 
     function disposeMask() {
@@ -1098,9 +1612,23 @@
         maskScene = null;
         maskCamera = null;
         maskMaterial = null;
+        maskMaterialRoad = null;
         maskMaterialPark = null;
         apronMaterial = null;
+        roadFoundationMaterial = null;
         terrainGrid = null;
+        tileSurfaceMeshes = null;
+        tileSurfaceRaycaster = null;
+        tileSurfaceSampleCache = new Map();
+        tileSurfaceSamplingStats = null;
+        try { delete document.body.dataset.photorealSampling; } catch (_) { }
+        if (terrainRefreshTimer) clearTimeout(terrainRefreshTimer);
+        terrainRefreshTimer = null;
+        terrainRefreshTracker = null;
+        try { delete document.body.dataset.photorealTerrainRefresh; } catch (_) { }
+        if (typeof window.setCorridorTerrainSampler === 'function') {
+            try { window.setCorridorTerrainSampler(null); } catch (_) { }
+        }
         replaceSeamBoundaryGrid([]);
         if (groundTexture) { try { groundTexture.dispose(); } catch (_) { } groundTexture = null; }
         corridorUniforms.uGroundTex.value = null;
@@ -1478,6 +2006,13 @@
     // Keep the carve in sync while the layer is up (proposal edits re-mirror this global).
     window.addEventListener('proposedBuildingsUpdated', function () {
         if (active && grounded) rebuildCarveMask();
+    });
+
+    // DGU arrives asynchronously after the first Google-visible formation. Rebuild only the mask,
+    // seams and height quilt from the already-refined corridor group; calling the sampler again here
+    // would start a recursive terrain refit.
+    window.addEventListener('corridorTerrainUpdated', function () {
+        if (active && grounded) rebuildCarveMask({ skipTerrainRefit: true });
     });
 
     // Isolation hides other proposals' surfaces; lift their carve holes with them.
