@@ -4526,7 +4526,9 @@
         // In realistic mode the photoreal mesh IS the built world: abstract existing buildings
         // and rail stay hidden (demolitions are carved out of the mesh by the photoreal layer).
         const showExisting = builtPolicy.visible && !realisticLayerActive;
-        const showProposed = plannedDisplay !== 'off';
+        // Photo mode always shows the proposals (the Google mesh is cut to make way for them, so the
+        // scene reads as survivors-only): the built/proposed display controls are hidden there.
+        const showProposed = realisticLayerActive || plannedDisplay !== 'off';
         if (existingTransitAlignmentGroup) {
             existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
         }
@@ -5446,6 +5448,10 @@
 
     function handleParcelClick(evt) {
         if (evt.button !== 0) return;
+        // Photo mode is view-only: clicks still pan/tilt the camera (orbit controls), but never
+        // select a parcel or proposal — no isolation, no "Proposal info" panel. Model 3D keeps
+        // full click interaction.
+        if (realisticLayerActive) return;
         if (suppressClickAfterRotateStop) { suppressClickAfterRotateStop = false; return; }
         // Walk-pick owns clicks while it's active.
         if (walkPickActive) return;
@@ -5633,6 +5639,16 @@
         realisticLayerActive = !!on;
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
+        // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
+        // proposals are shown. Restored on return to model 3D.
+        if (buildingModeControlsEl) buildingModeControlsEl.style.display = realisticLayerActive ? 'none' : '';
+        if (realisticLayerActive) {
+            isolatedParcelId = null;
+            isolatedProposalId = null;
+            try { updateIsolationButton(); } catch (_) { }
+            try { hideParcelInfoPanel(); } catch (_) { }
+        }
         if (isActive) rebuild3DBuildingsOnly();
     };
     window.registerThreeModeFrameHook = function (fn) {
