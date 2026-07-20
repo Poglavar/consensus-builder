@@ -211,6 +211,11 @@
         }
         const maxRadius = Number(options.maxRadius) > 0 ? Number(options.maxRadius) : 7000;
         const gauge = Number(options.gaugeM) > 0 ? Number(options.gaugeM) : 1.0;
+        // Optional terrain hook: base ground z at a scene point, added to the (fixed) trackbed/rail/
+        // sleeper heights so a proposal track rides the corridor terrain instead of floating at a
+        // fixed z. Existing-tram callers pass none → flat surface z, exactly as before.
+        const zAt = typeof options.zAt === 'function' ? options.zAt : function () { return 0; };
+        const groundZ = function (x, y) { const z = Number(zAt(x, y)); return Number.isFinite(z) ? z : 0; };
         const segments = projectRailSegments(featureCollection, coordsToXY, maxRadius);
         if (!segments.length) return null;
 
@@ -243,7 +248,9 @@
         const railMesh = new THREE.InstancedMesh(railGeo, railMat, segments.length * 2);
 
         segments.forEach((segment, index) => {
-            dummy.position.set(segment.cx, segment.cy, SURFACE_TRACKBED_Z);
+            // One ground z per station keeps the bed and its two rails coplanar across the gauge.
+            const gz = groundZ(segment.cx, segment.cy);
+            dummy.position.set(segment.cx, segment.cy, SURFACE_TRACKBED_Z + gz);
             dummy.rotation.set(0, 0, segment.angle);
             dummy.scale.set(segment.length, 1, 1);
             dummy.updateMatrix();
@@ -253,7 +260,7 @@
             const ny = Math.cos(segment.angle);
             [-1, 1].forEach((side, railIndex) => {
                 const offset = side * gauge * 0.5;
-                dummy.position.set(segment.cx + nx * offset, segment.cy + ny * offset, SURFACE_RAIL_Z);
+                dummy.position.set(segment.cx + nx * offset, segment.cy + ny * offset, SURFACE_RAIL_Z + gz);
                 dummy.rotation.set(0, 0, segment.angle);
                 dummy.scale.set(segment.length, 1, 1);
                 dummy.updateMatrix();
@@ -261,7 +268,7 @@
             });
         });
         sleepers.forEach((sleeper, index) => {
-            dummy.position.set(sleeper.x, sleeper.y, SURFACE_SLEEPER_Z);
+            dummy.position.set(sleeper.x, sleeper.y, SURFACE_SLEEPER_Z + groundZ(sleeper.x, sleeper.y));
             dummy.rotation.set(0, 0, sleeper.angle);
             dummy.scale.set(1, 1, 1);
             dummy.updateMatrix();

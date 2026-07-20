@@ -1379,14 +1379,19 @@
         const cutPatches = Number(s.cutPatches) || 0;
         const missingKeys = Number(s.missingKeys) || 0;
         const priorCarve = !!s.priorCarve;
+        // Would committing this build DROP a corridor the currently-committed build covered? Retaining
+        // the prior build only makes sense to avoid that loss. A partial build that still covers
+        // everything the prior did — e.g. the DGU re-fit that improves the SAME corridors — is an
+        // update, not a loss, and must commit (otherwise the better fit is silently discarded).
+        const losesPriorKey = !!s.losesPriorKey;
         if (builtChildren <= 0) return { commit: false, reason: 'empty-build' };
         if (cutPatches <= 0) {
-            return priorCarve
+            return (priorCarve && losesPriorKey)
                 ? { commit: false, reason: 'no-carve-keep-prior' }
                 : { commit: true, reason: 'flat-only' };
         }
         if (missingKeys <= 0) return { commit: true, reason: 'full' };
-        return priorCarve
+        return (priorCarve && losesPriorKey)
             ? { commit: false, reason: 'partial-keep-prior' }
             : { commit: true, reason: 'partial' };
     }

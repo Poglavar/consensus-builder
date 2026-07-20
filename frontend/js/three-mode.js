@@ -106,6 +106,7 @@
     let terrainCorridorGroup = null;
     let corridorTerrainProfiles = [];
     let corridorTerrainCutPatches = [];
+    let corridorTerrainCommittedKeys = new Set(); // corridor keys the currently-committed build covers
     let corridorTerrainSampler = null;
     let corridorTerrainReferenceGeneration = 0;
     let corridorTerrainReferences = new Map();
@@ -2432,7 +2433,7 @@
     // tracks — so proposal track and existing track look identical. Uses the lane's own centerline
     // (the corridor centerline offset to the lane's centre) and its gauge. Same call for the terrain
     // and flat paths, exactly as the existing tram uses one style everywhere.
-    function addProposalTrack3D(group, points, strip) {
+    function addProposalTrack3D(group, points, strip, formation) {
         if (typeof window.buildSurfaceRail3D !== 'function' || !Array.isArray(points) || points.length < 2) return false;
         try {
             let coords = points.map(p => [Number(p.lng), Number(p.lat)])
@@ -2449,7 +2450,14 @@
                 } catch (_) { }
             }
             const fc = { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }] };
-            const child = window.buildSurfaceRail3D(fc, coordsToXY, { gaugeM: railGaugeMetres(strip) });
+            // In photo mode the track rides the corridor terrain (formation heightAt) so it sits on
+            // the road instead of floating at the existing-tram's fixed z; flat model 3D has no
+            // formation and keeps the fixed surface z.
+            const helper = window.__corridorTerrainFormation;
+            const zAt = (formation && formation.ok && helper && typeof helper.heightAt === 'function')
+                ? function (x, y) { return helper.heightAt(formation, x, y); }
+                : null;
+            const child = window.buildSurfaceRail3D(fc, coordsToXY, { gaugeM: railGaugeMetres(strip), zAt: zAt });
             if (!child) return false;
             child.userData.isCorridorStrip = true;
             child.userData.laneType = 'rail';
@@ -3298,8 +3306,9 @@
                         : null;
                     if (runFormation && typeof corridorStripSpans === 'function') {
                         corridorStripSpans(entry.profile).forEach(strip => {
-                            // A rail lane is drawn as real track, in the existing-tram style.
-                            if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip); return; }
+                            // A rail lane is drawn as real track, in the existing-tram style, riding
+                            // the corridor terrain (runFormation) so it sits on the road in photo mode.
+                            if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip, runFormation); return; }
                             const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined'
                                 && CORRIDOR_LANE_TYPES[strip.type]) || {};
                             if (!addTerrainStrip3D(targetGroup, runFormation, strip, lane, strip.type)) {
@@ -4511,6 +4520,7 @@
         terrainCorridorGroup = null;
         corridorTerrainProfiles = [];
         corridorTerrainCutPatches = [];
+        corridorTerrainCommittedKeys = new Set();
         if (corridorGroup) corridorGroup.visible = true;
         try { delete document.body.dataset.corridorTerrain; } catch (_) { }
     }
@@ -4555,13 +4565,20 @@
         // cases that would REGRESS a carve (an incomplete rebuild over an existing carve, or a
         // no-carve/empty build) — so this only ADDS the first-fit partial commit that used to
         // produce zero carve when any corridor's tiles were not yet streamed.
+        // Retaining the prior build is only worth it when this build would DROP a corridor the prior
+        // one covered — otherwise a partial rebuild that still covers everything (e.g. the DGU re-fit)
+        // must commit, or the better fit is silently discarded (the "dgu=0 despite 14/14" bug).
+        const losesPriorKey = Array.from(corridorTerrainCommittedKeys).some(function (key) {
+            return !completedKeys.has(key);
+        });
         const commitDecision = (window.__corridorTerrainFormation
             && typeof window.__corridorTerrainFormation.decideTerrainCorridorCommit === 'function')
             ? window.__corridorTerrainFormation.decideTerrainCorridorCommit({
                 builtChildren: group.children.length,
                 cutPatches: cutPatches.length,
                 missingKeys: missingKeys.length,
-                priorCarve: !!(terrainCorridorGroup && corridorTerrainCutPatches.length)
+                priorCarve: !!(terrainCorridorGroup && corridorTerrainCutPatches.length),
+                losesPriorKey: losesPriorKey
             })
             : { commit: !(!group.children.length || missingKeys.length), reason: 'fallback' };
         if (!commitDecision.commit) {
@@ -4582,6 +4599,7 @@
         terrainCorridorGroup = group;
         corridorTerrainProfiles = profiles;
         corridorTerrainCutPatches = cutPatches;
+        corridorTerrainCommittedKeys = completedKeys;
         corridorGroup.visible = false;
         scene.add(group);
         const stationHeights = profiles.flatMap(profile => profile.stations.map(station => station.z))

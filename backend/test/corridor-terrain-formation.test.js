@@ -38,14 +38,20 @@ describe('decideTerrainCorridorCommit', () => {
         expect(d.reason).toBe('partial');
     });
 
-    it('retains the prior build on an incomplete rebuild — never drops an already-carved corridor', () => {
-        const d = decideTerrainCorridorCommit({ builtChildren: 8, cutPatches: 2, missingKeys: 1, priorCarve: true });
+    it('retains the prior build only when the rebuild DROPS a corridor the prior carved', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 8, cutPatches: 2, missingKeys: 1, priorCarve: true, losesPriorKey: true });
         expect(d.commit).toBe(false);
         expect(d.reason).toBe('partial-keep-prior');
     });
 
+    it('commits a partial rebuild that loses no prior corridor — the fix: a DGU re-fit of the same corridors is not discarded', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 8, cutPatches: 2, missingKeys: 1, priorCarve: true, losesPriorKey: false });
+        expect(d.commit).toBe(true);
+        expect(d.reason).toBe('partial');
+    });
+
     it('does not replace an existing carve with a flat, uncarved group', () => {
-        const d = decideTerrainCorridorCommit({ builtChildren: 6, cutPatches: 0, missingKeys: 1, priorCarve: true });
+        const d = decideTerrainCorridorCommit({ builtChildren: 6, cutPatches: 0, missingKeys: 1, priorCarve: true, losesPriorKey: true });
         expect(d.commit).toBe(false);
         expect(d.reason).toBe('no-carve-keep-prior');
     });
