@@ -4,6 +4,12 @@
 
 Research date: 2026-07-14
 
+> Implementation status, 2026-07-20: the authoritative-DTM architecture below remains the target
+> for durable planning data. The current realistic road renderer now streams Google Photorealistic
+> 3D Tiles directly into the Three.js scene and fits level-0 proposals with a visible-mesh station
+> formation plus an exact paired mask/foundation/depth-tested collar. See
+> [`3d-terrain-fitting.md`](3d-terrain-fitting.md) for the implemented path and its source limits.
+
 ## Executive summary
 
 `consensus-builder` and `zagreb-isochrone-main` both need a terrain model, but the correct abstraction is not simply to add a third coordinate to every OSM vertex. The implementation should distinguish three vertical layers:

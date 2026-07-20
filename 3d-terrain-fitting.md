@@ -2,7 +2,8 @@
 
 > Living record of the effort to make proposal geometry sit correctly on Google's Photorealistic
 > 3D Tiles in `rw` (realistic/photoreal) mode. The chronology records several failed flat/drape
-> approaches; the current road path is the DGU-relative, Google-anchored station formation in §5.8. Read this
+> approaches; the current road path is the Google-mesh station formation and depth-tested ruled
+> interface in §5.8. Read this
 > before touching the carve/seal/drape code again — most "obvious" fixes have already been tried.
 
 ---
@@ -35,16 +36,19 @@ Everything below is the fight to make the two surfaces meet cleanly.
   the content (buildings appear as blue holes with the boxes far below — see §9 mobile note).
 - **The carve:** the tiles are a **hollow shell of one fused skin** (ground = trees = buildings, no
   separate terrain layer). To show our content, a fragment shader on every tile material **discards**
-  fragments that fall inside our footprints. The footprints are rasterised into a sliding 2048²
-  top-down R/G mask; the shader samples it and `discard`s. Two discard modes now exist:
+  fragments that fall inside our footprints. The footprints are rasterised into a sliding 4096²
+  top-down RGBA mask (0.25 scene-metre texels); the shader samples it and `discard`s. Three discard
+  classes now exist:
   - **RED = floor-bounded discard** (razed & proposed buildings): remove everything above a floor.
   - **GREEN = keep-vegetation** (parks): discard only the **ground layer** — below
     `localGroundHeight + band(~1 m)` — so hedges/trees stand instead of being sliced (see §5).
-  - **BLUE = height-aware road discard:** alpha stores the local road formation, and the Google
-    shell is removed only above `formation - 0.4 m`. Terrain below an elevated road remains intact.
-- **The seal:** because the cut edge (real terrain height) ≠ our fill edge (flat z≈0), the gap has
-  been sealed by, in sequence, aprons → plinth → **terrain-conforming curtain** (§4). This is the
-  part that keeps producing artifacts.
+  - **BLUE = height-aware road discard:** alpha encodes the local road floor over blue coverage;
+    Google is removed only above a quantisation-safe cutoff bounded below the opaque foundation
+    cover. Lower source mesh remains intact beneath an elevated road.
+- **The seal:** because a cut edge and replacement edge can differ in both plan and height, generic
+  proposals retain the terrain-conforming curtain history in §5. Roads now use a stricter ownership
+  contract: the exact mask quilt, an opaque paired foundation, and a depth-tested station-ruled
+  collar generated from the same profile (§5.8).
 
 Key files: `frontend/js/photoreal-mode.js` (carve/seal/seat/grid), `frontend/js/three-mode.js`
 (content, drape hooks), `frontend/js/photoreal-frame.js` (frame math, unit-tested).
@@ -112,9 +116,9 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
   wall can't reach. Fix: sample the tile mesh's real height along every cut edge (a coarse grid
   raycast once per seating, cached, bilinear-interpolated per wall vertex — tiles have **no BVH** so
   per-vertex casting each rebuild would hitch) and build the earth wall from content **up OR down**
-  to that height. Flat earth cap keeps the top-down seal + razed pad. This is the current seal on
-  `main`. **It works but produces the olive walls** (it's an earth wall, and — see §7 — it walled to
-  the canopy, so the walls were tall).
+  to that height. Flat earth cap keeps the top-down seal + razed pad. This remains the generic
+  non-road seal on `main`; roads use §5.8 instead. **It works but produces the olive walls** (it's
+  an earth wall, and — see §7 — it walled to the canopy, so the walls were tall).
 
 ### 5.4 Keep-vegetation (don't slice shrubs)
 - **Parks keep vegetation** (`006d3ef`, build 288): cutting Google's hedgerows at park edges opened
@@ -150,49 +154,67 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
   mix of: coarse grid (~18 m) faceting a draped road, min over-correcting into low mesh points, grid
   holes (NaN→0) warping vertices, and/or roads extending beyond the sampled grid bbox.
 
-### 5.8 DGU-relative station formation on `main` (current solution)
+### 5.8 Google-mesh station formation and depth-tested ruled interface on `main`
 
 - The coarse grid was the source of the false broad sag: its 22-sample cap meant a long road could
   use 25–30 m cells, and bilinear interpolation spread one bad low cell across tens of metres.
 - Roads densify their centreline to **≤4 m stations** and raycast the **seated Google mesh
   directly** at every station. Each station samples the centre plus two probes outside the actual
   road half-width. This is the immediate/fallback formation and the local-scene anchor.
-- In Zagreb, `POST /api/terrain/profile` supplies the DGU 20 m EVRF2000 bare-earth profile. We keep
-  its relative metre-for-metre shape and fit only a robust median additive offset to the Google
-  samples. Coverage, inlier and MAD gates reject a bad/missing reference back to the valid Google
-  formation. Absolute EVRF2000 and local tile Z are never compared directly.
+- In Zagreb, `POST /api/terrain/profile` can supply the DGU 20 m EVRF2000 bare-earth profile as a
+  reference. We fit only a median additive datum offset, then accept it only if **every station** is
+  within 0.25 m of the visible Google formation. A robust global fit is not enough: one locally
+  divergent reference station would visibly detach the road. Road 2007-0151 currently rejects DGU
+  on this local-variance gate and stays on Google.
 - The longitudinal filter is conditional, not a low-pass: it replaces only locally unsupported
-  excursions of at least 1.5 m. Genuine shallow Google terrain hollows and steady grades remain
+  excursions of at least 0.45 m. Genuine broad Google terrain hollows and steady grades remain
   unchanged. Only short bounded NoData gaps interpolate; missing edge/long regions disable the
   formation instead of becoming z=0.
+- Centre, outside-left and outside-right probes keep roofs, cars and canopy from becoming the road
+  datum. When those three hits form a plausible cross-section plane, exact left/right sidewalk-edge
+  probes raise the shared station only to the predicted high edge. This clears normal terrain
+  crossfall without treating a facade or parked car as ground.
 - Every lateral strip at a station shares one formation Z. Roads are explicit ruled quads between
   adjacent stations, so Earcut cannot discard densification vertices and turn a 399 m road into a
   few long tilted triangles. Kerbs, markings, junctions and decorations add their semantic offsets
-  to the same profile.
+  to the same profile. An upper vertical-curve envelope removes only short concave photogrammetry
+  kinks (it never lowers accepted Google support), while preserving sustained terrain grades.
 - Sampling snapshots current visible Google tile meshes once per carve rebuild, caches XY probes,
   ignores the tiles-root reveal flag during the first hidden composition, and performs up to three
-  quiet-burst refits as finer visible LODs arrive. The old cleaned grid remains for parks and
-  non-road curtain support only.
+  quiet-burst refits as finer visible LODs arrive. A refit is built off-scene and swapped only after
+  every applied corridor entry has a complete profile; a close camera that unloads any distant road
+  therefore retains the last complete road/mask/foundation set atomically. The old cleaned grid
+  remains for parks and non-road curtain support only.
 - The road cut is height-aware. Its alpha channel carries the same explicit 4 m formation quilt as
-  the visible deck; Google fragments are removed only above the local formation minus 0.4 m. The
-  exact station quilt now owns the mask by itself — the former union with a separately
-  Turf-buffered footprint was removed because its round endpoint/bend lobes had no matching deck.
-  A solid station-derived foundation extends 1 m outside the sidewalk on sides and open endpoints;
-  the raster cut sits halfway through it at 0.5 m, leaving its complete nearest-texel uncertainty
-  on opaque geometry. The foundation top is 1 cm below the lowest road strip and its 0.6 m skirt
-  closes grazing views. Source-textured per-tile fascias remain only for vertical facade/tree cuts;
-  their horizontal flanges are clamped below the continuous foundation instead of being the seal.
-- Browser check, Road 2007-0151: 101 true-metre-spaced stations, 781 cached visible-mesh probes,
-  zero misses, one DGU reference accepted (0.56 m initial calibration MAD, 0.10 m after finer-LOD
-  refits), and a +0.17 m endpoint grade instead of the false Google-only −2.05 m drop. Close
-  top-down inspection shows a continuous sidewalk edge without raster scallops.
+  the visible deck. Google ground remains intact below the proposal as a permanent no-sky backstop;
+  only fragments high enough to protrude through the opaque underlay are removed. The RGBA8 height
+  cutoff subtracts its measured half-quantisation error so retained Google can never decode above
+  the solid cover.
+- The raster mask is the **exact semantic station quilt**, linearly filtered at 0.25 scene-metre
+  texels. A paired station-derived foundation extends only the complete half-texel diagonal plus a
+  10 cm guard (0.193 true m in the tested Zagreb view), rises to formation + 0.04 m and has a 0.6 m
+  downward skirt. A depth-tested sidewalk-coloured collar is made from explicit ruled quads at the
+  same stations and continues each actual outer lane/sidewalk top height through that narrow band;
+  a tiny polygon bias resolves only coplanar precision fights, so the collar cannot paint through
+  nearer terrain, trees or facades. Non-road mask classes use an explicit alpha-zero shader so
+  linear filtering cannot contaminate the road-height channel. Mask and foundation share a unique
+  replacement key and publish fail-closed; generic Turf road cuts are forbidden.
+- Road source-textured seam caps are disabled. They were the grey shards over asphalt; retained
+  lower Google plus the opaque foundation now close the road cut. Other proposal families keep
+  their established seam treatment.
+- Browser check, Road 2007-0151: one exact mask, one foundation and one vector collar; 101 Google
+  stations at ≤4 true-metre intervals, 747 visible-mesh probe hits, zero misses, DGU reference loaded
+  but rejected for local variance. The upper envelope reduced the worst adjacent grade from about
+  14.7% to 8.3%. Close top-down and oblique inspection shows a continuous owned interface without
+  the large cyan gaps, grey source shards or raster-scale scallops from the previous approaches.
 
 ---
 
 ## 6. Root causes / durable learnings
 
-1. **Single-point seating + flat content ⇒ guaranteed mismatch away from the origin.** This is the
-   parent of every artifact. No fixed-geometry seal fully fixes it.
+1. **Single-point seating + flat content ⇒ guaranteed mismatch away from the origin.** This remains
+   the parent of generic flat-proposal artifacts; roads avoid it with their explicit station
+   formation. No fixed-geometry seal fully fixes ordinary flat content.
 2. **Google tiles are a hollow, double-sided, fused shell.** Keep them double-sided. Never trim
    canopy partially. The only clean cut is the exact footprint of a surface you're replacing.
 3. **Blue = the sky background through a gap.** Always. Diagnose by *where* it shows (top-down vs
@@ -203,7 +225,8 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
 5. **Winding-dependent culling is a real, subtle bug.** Any single-sided extruded seal is culled for
    ~half of footprints. Make seals `DoubleSide`.
 6. **No BVH on the tiles** ⇒ raycasting is brute-force; a per-vertex height query per rebuild
-   hitches. Hence the cached coarse grid (and its coarseness is now a problem for draping).
+   hitches. Roads therefore cache a bounded set of direct station probes; the coarse grid remains
+   only for parks and generic non-road curtain support.
 
 ---
 
@@ -211,10 +234,12 @@ Deploys are `deploy-N` build tokens; commits are on `main` unless noted.
 
 ### On `main` (current working tree; not automatically deployed)
 - Road formation = direct Google mesh sampling and explicit ≤4 m ruled stations (§5.8).
-- Road carve = dedicated blue height-aware mask whose alpha carries local formation height; an
-  exact station-derived mask is buried halfway through a continuous 1 m road foundation with real
-  endpoint caps and a downward skirt. Per-tile fascia geometry is cosmetic vertical-shell closure,
-  never the primary horizontal seal.
+- Road carve = a paired, fail-closed replacement contract. An exact, linearly filtered height mask
+  removes protruding Google surface; a matching foundation and depth-tested, station-ruled 0.193 m
+  vector collar own the full raster uncertainty with real end walls and a downward skirt. The collar
+  continues the authored exterior strip height instead of flattening the draped profile. Google
+  remains below the road as a no-sky backstop. Road source-textured seam caps and generic Turf
+  fallback cuts are disabled.
 - Park/non-road ground support = the cleaned coarse grid. It is deliberately **not** a road profile
   source anymore.
 - The original abstract-3D corridor group remains untouched. Photoreal mode builds a temporary
@@ -242,8 +267,9 @@ The Elevation API is still a useful independent comparison/fallback candidate: s
 subtract the API height at a local anchor, then add the seated Google-mesh Z at that anchor. The
 constant datum offset largely cancels over a city-scale road. Before substituting it, compare the
 *shape after fitting that constant offset* and retain the API's returned resolution. The current
-implementation applies that relative-shape method to DGU EVRF2000 and falls back to direct visible
-Google-mesh sampling when the DGU profile fails its coverage/MAD gates.
+implementation may load DGU EVRF2000 as a relative-shape candidate, but accepts it only when every
+calibrated station remains within 0.25 m of the visible Google profile; otherwise it keeps the
+direct visible-Google formation.
 
 ---
 
@@ -266,5 +292,5 @@ Google-mesh sampling when the DGU profile fails its coverage/MAD gates.
 
 ---
 
-*Last updated: 2026-07-20, after DGU-relative/Google-anchored formation and the height-aware cut
-were browser-verified on Road 2007-0151. Start from §5.8, not the historical generic drape.*
+*Last updated: 2026-07-20, after the Google-mesh formation and exact-cut/depth-tested ruled-collar
+interface were browser-verified on Road 2007-0151. Start from §5.8, not the historical generic drape.*

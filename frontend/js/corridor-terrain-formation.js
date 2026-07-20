@@ -151,6 +151,25 @@
         };
     }
 
+    // A robust median datum fit is not enough for a road: a coarse reference can still diverge at
+    // individual stations and visibly leave the Google surface. Photoreal mode therefore accepts a
+    // calibrated reference only when its complete station envelope remains close to the visible
+    // Google-derived formation that it is meant to refine.
+    function referenceFormationWithinVisibleTolerance(candidate, visibleProfile, maximumDeltaM) {
+        const candidateStations = candidate && Array.isArray(candidate.stations)
+            ? candidate.stations : [];
+        const visibleStations = visibleProfile && Array.isArray(visibleProfile.stations)
+            ? visibleProfile.stations : [];
+        const limit = finite(Number(maximumDeltaM)) ? Math.max(0, Number(maximumDeltaM)) : 0.25;
+        if (!candidate || !candidate.ok || !visibleProfile || !visibleProfile.ok
+            || !candidateStations.length || candidateStations.length !== visibleStations.length) return false;
+        return candidateStations.every(function (station, index) {
+            const visible = visibleStations[index];
+            return visible && finite(station.z) && finite(visible.z)
+                && Math.abs(station.z - visible.z) <= limit + EPSILON;
+        });
+    }
+
     function applyStationFrame(station, previous, next) {
         let tangent = null;
         if (previous && next) tangent = normalise(previous[0] + next[0], previous[1] + next[1]);
@@ -349,6 +368,27 @@
         return result;
     }
 
+    // A civil road should not reproduce every short concave photogrammetry facet. Repeated local
+    // chord lifts form a bounded vertical-curve envelope: steady grades remain exact, narrow dips
+    // rise toward their neighbours, and no station ever moves below its accepted Google support.
+    function applyVerticalCurveEnvelope(stations, values, passes) {
+        const count = Math.max(0, Math.floor(Number(passes) || 0));
+        let result = values.slice();
+        for (let pass = 0; pass < count; pass++) {
+            const next = result.slice();
+            for (let i = 1; i < result.length - 1; i++) {
+                if (!finite(result[i - 1]) || !finite(result[i]) || !finite(result[i + 1])) continue;
+                const span = stations[i + 1].s - stations[i - 1].s;
+                if (!(span > EPSILON)) continue;
+                const t = (stations[i].s - stations[i - 1].s) / span;
+                const chord = result[i - 1] + (result[i + 1] - result[i - 1]) * t;
+                next[i] = Math.max(result[i], (result[i] + chord) / 2);
+            }
+            result = next;
+        }
+        return result;
+    }
+
     function buildFormation(pointsXY, sampleHeight, options) {
         const opts = options || {};
         const maxSpacingM = finite(opts.maxSpacingM) && opts.maxSpacingM > 0
@@ -360,6 +400,8 @@
         const outlierThresholdM = finite(opts.outlierThresholdM)
             ? Math.max(0, opts.outlierThresholdM)
             : DEFAULT_OUTLIER_THRESHOLD_M;
+        const verticalCurvePasses = finite(Number(opts.verticalCurvePasses))
+            ? Math.max(0, Math.floor(Number(opts.verticalCurvePasses))) : 0;
         const maxNoDataGapM = finite(opts.maxNoDataGapM)
             ? Math.max(0, opts.maxNoDataGapM)
             : DEFAULT_MAX_NODATA_GAP_M;
@@ -383,7 +425,10 @@
             return finite(value) ? value : null;
         });
         const gaps = boundedGapInterpolation(stations, sampled, maxNoDataGapM);
-        const smoothed = smoothFiniteRuns(stations, gaps.values, smoothingRadius, outlierThresholdM);
+        const outlierSmoothed = smoothFiniteRuns(
+            stations, gaps.values, smoothingRadius, outlierThresholdM);
+        const smoothed = applyVerticalCurveEnvelope(
+            stations, outlierSmoothed, verticalCurvePasses);
         if (stations.length >= 4
             && Math.hypot(stations[0].x - stations[stations.length - 1].x,
                 stations[0].y - stations[stations.length - 1].y) <= EPSILON
@@ -410,6 +455,7 @@
             verticalOffsetM: verticalOffsetM,
             smoothingRadiusStations: smoothingRadius,
             outlierThresholdM: outlierThresholdM,
+            verticalCurvePasses: verticalCurvePasses,
             maxNoDataGapM: maxNoDataGapM,
             unresolvedRanges: gaps.unresolvedRanges
         };
@@ -1028,17 +1074,90 @@
         );
     }
 
+    // Build the narrow visible annulus outside a ruled road without sending it through a generic
+    // polygon triangulator. Both side bands keep every longitudinal station, so a nonlinear grade
+    // remains identical to the road/foundation quilt; open endpoints receive explicit cap quads.
+    function buildRuledStripCollarPositions(
+        profile, left, right, paddingM, leftVerticalOffsetM, rightVerticalOffsetM
+    ) {
+        const padding = finite(paddingM) ? Math.max(0, paddingM) : 0;
+        const leftVerticalOffset = finite(leftVerticalOffsetM) ? leftVerticalOffsetM : 0;
+        const rightVerticalOffset = finite(rightVerticalOffsetM)
+            ? rightVerticalOffsetM : leftVerticalOffset;
+        const stations = profile && Array.isArray(profile.stations) ? profile.stations : [];
+        if (!(padding > EPSILON) || stations.length < 2
+            || !finite(left) || !finite(right) || !(left > right)) {
+            return { ok: false, positions: new Float32Array(0), triangleCount: 0 };
+        }
+        const leftBand = buildRuledStripPositions(
+            profile, left + padding, left, leftVerticalOffset, 0);
+        const rightBand = buildRuledStripPositions(
+            profile, right, right - padding, rightVerticalOffset, 0);
+        if (!leftBand.ok || !rightBand.ok) {
+            return { ok: false, positions: new Float32Array(0), triangleCount: 0 };
+        }
+        const positions = Array.from(leftBand.topPositions).concat(Array.from(rightBand.topPositions));
+        const closed = stations.length >= 4
+            && Math.hypot(stations[0].x - stations[stations.length - 1].x,
+                stations[0].y - stations[stations.length - 1].y) <= EPSILON;
+        if (!closed) {
+            const distanceScale = profile && finite(profile.distanceScale) && profile.distanceScale > 0
+                ? profile.distanceScale : 1;
+            const scenePadding = padding / distanceScale;
+            const firstDirection = normalise(
+                stations[1].x - stations[0].x, stations[1].y - stations[0].y);
+            const lastDirection = normalise(
+                stations[stations.length - 1].x - stations[stations.length - 2].x,
+                stations[stations.length - 1].y - stations[stations.length - 2].y);
+            const shifted = function (point, direction, distance) {
+                return [
+                    point[0] + direction[0] * distance,
+                    point[1] + direction[1] * distance,
+                    point[2]
+                ];
+            };
+            if (firstDirection) {
+                const first = stations[0];
+                const innerLeft = offsetPoint(first, left, leftVerticalOffset);
+                const innerRight = offsetPoint(first, right, rightVerticalOffset);
+                const outerLeft = shifted(
+                    offsetPoint(first, left + padding, leftVerticalOffset), firstDirection, -scenePadding);
+                const outerRight = shifted(
+                    offsetPoint(first, right - padding, rightVerticalOffset), firstDirection, -scenePadding);
+                pushQuad(positions, outerLeft, outerRight, innerRight, innerLeft);
+            }
+            if (lastDirection) {
+                const last = stations[stations.length - 1];
+                const innerLeft = offsetPoint(last, left, leftVerticalOffset);
+                const innerRight = offsetPoint(last, right, rightVerticalOffset);
+                const outerLeft = shifted(
+                    offsetPoint(last, left + padding, leftVerticalOffset), lastDirection, scenePadding);
+                const outerRight = shifted(
+                    offsetPoint(last, right - padding, rightVerticalOffset), lastDirection, scenePadding);
+                pushQuad(positions, innerLeft, innerRight, outerRight, outerLeft);
+            }
+        }
+        return {
+            ok: positions.length > 0,
+            positions: Float32Array.from(positions),
+            triangleCount: positions.length / 9
+        };
+    }
+
     return {
         densifyPolyline: densifyPolyline,
         buildFormation: buildFormation,
+        applyVerticalCurveEnvelope: applyVerticalCurveEnvelope,
         referenceElevationAt: referenceElevationAt,
         calibrateReferenceFormation: calibrateReferenceFormation,
+        referenceFormationWithinVisibleTolerance: referenceFormationWithinVisibleTolerance,
         reconcileProfileEndpointHeights: reconcileProfileEndpointHeights,
         projectToProfile: projectToProfile,
         heightAt: heightAt,
         resolveSurfaceRunFormation: resolveSurfaceRunFormation,
         offsetPoint: offsetPoint,
         buildRuledStripPositions: buildRuledStripPositions,
-        buildPaddedRuledStripPositions: buildPaddedRuledStripPositions
+        buildPaddedRuledStripPositions: buildPaddedRuledStripPositions,
+        buildRuledStripCollarPositions: buildRuledStripCollarPositions
     };
 });

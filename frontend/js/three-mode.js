@@ -2117,10 +2117,15 @@
 
     const CORRIDOR_TERRAIN_STATION_SPACING_M = 4;
     const CORRIDOR_TERRAIN_SMOOTHING_RADIUS = 2; // local gross-outlier window, not a low-pass
-    const CORRIDOR_TERRAIN_OUTLIER_THRESHOLD_M = 1.5;
+    // A road must not follow one photogrammetry triangle seam or pothole. The residual-median
+    // filter changes only locally unsupported stations, so broad terrain hollows and steady grades
+    // remain intact while a single ~0.5 m LOD step cannot create a 15% road kink.
+    const CORRIDOR_TERRAIN_OUTLIER_THRESHOLD_M = 0.45;
+    const CORRIDOR_TERRAIN_VERTICAL_CURVE_PASSES = 8;
     const CORRIDOR_TERRAIN_MAX_NODATA_GAP_M = 16;
     const CORRIDOR_DGU_PROFILE_STEP_M = 20;
     const CORRIDOR_DGU_MAX_GAP_M = 40;
+    const CORRIDOR_DGU_MAX_LOCAL_VARIANCE_M = 0.25;
     // Keep the engineered formation deliberately clear of the Google support surface. Asphalt is
     // another CORRIDOR_STRIP_Z above this, so the visible carriageway is about 10 cm over the
     // sampled mesh instead of becoming coplanar with individual photogrammetry triangles.
@@ -2154,6 +2159,7 @@
             distanceScale: 1 / mercatorScale,
             smoothingRadiusStations: CORRIDOR_TERRAIN_SMOOTHING_RADIUS,
             outlierThresholdM: CORRIDOR_TERRAIN_OUTLIER_THRESHOLD_M,
+            verticalCurvePasses: CORRIDOR_TERRAIN_VERTICAL_CURVE_PASSES,
             maxNoDataGapM: CORRIDOR_TERRAIN_MAX_NODATA_GAP_M,
             verticalOffsetM: requestedOffset
         };
@@ -2177,12 +2183,18 @@
                 minimumCoverage: 0.5,
                 maximumMadM: 1.5
             });
-            if (calibrated && calibrated.ok) {
+            const locallyAligned = calibrated && calibrated.ok
+                && typeof formation.referenceFormationWithinVisibleTolerance === 'function'
+                && formation.referenceFormationWithinVisibleTolerance(
+                    calibrated, visibleProfile, CORRIDOR_DGU_MAX_LOCAL_VARIANCE_M);
+            if (locallyAligned) {
                 profile = calibrated;
                 profile.referenceStatus = 'accepted';
             } else if (visibleProfile) {
-                visibleProfile.referenceStatus = referenceProfile && referenceProfile.ok
-                    ? 'rejected-calibration' : 'invalid-reference-profile';
+                visibleProfile.referenceStatus = calibrated && calibrated.ok
+                    ? 'rejected-local-variance'
+                    : (referenceProfile && referenceProfile.ok
+                        ? 'rejected-calibration' : 'invalid-reference-profile');
             }
         }
         if (profile) {
@@ -2414,8 +2426,29 @@
         const left = Math.max.apply(null, spans.map(span => Number(span.left)).filter(Number.isFinite));
         const right = Math.min.apply(null, spans.map(span => Number(span.right)).filter(Number.isFinite));
         if (!Number.isFinite(left) || !Number.isFinite(right) || !(left > right)) return;
+        const topOffsetForSpan = function (span) {
+            const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined'
+                && CORRIDOR_LANE_TYPES[span && span.type]) || {};
+            return CORRIDOR_STRIP_Z + Math.max(0, Number(lane.height) || 0);
+        };
+        const leftEdgeSpan = spans.reduce(function (best, span) {
+            return !best || Number(span.left) > Number(best.left) ? span : best;
+        }, null);
+        const rightEdgeSpan = spans.reduce(function (best, span) {
+            return !best || Number(span.right) < Number(best.right) ? span : best;
+        }, null);
         const ruled = helper.buildRuledStripPositions(formationProfile, left, right, 0, 0);
         if (!ruled || !ruled.ok || !ruled.topPositions || !ruled.topPositions.length) return;
+        const stations = formationProfile.stations || [];
+        const first = stations[0] || {};
+        const last = stations[stations.length - 1] || {};
+        const replacementKey = [
+            proposal && proposal.proposalId != null ? String(proposal.proposalId) : '',
+            entry && entry.segmentId != null ? String(entry.segmentId) : '',
+            Number(first.x).toPrecision(15), Number(first.y).toPrecision(15),
+            Number(last.x).toPrecision(15), Number(last.y).toPrecision(15),
+            stations.length
+        ].join('|');
         out.push({
             proposalId: proposal && proposal.proposalId != null ? String(proposal.proposalId) : null,
             segmentId: entry && entry.segmentId != null ? String(entry.segmentId) : null,
@@ -2427,7 +2460,10 @@
             // sparse polygon vertices and can miss a nonlinear dip half-way along a long road.
             _formationProfile: formationProfile,
             _leftM: left,
-            _rightM: right
+            _rightM: right,
+            _leftTopOffsetM: topOffsetForSpan(leftEdgeSpan),
+            _rightTopOffsetM: topOffsetForSpan(rightEdgeSpan),
+            _replacementKey: replacementKey
         });
     }
 
@@ -2911,6 +2947,8 @@
         const terrainProfilesOut = Array.isArray(options.profilesOut) ? options.profilesOut : [];
         const terrainFailuresOut = Array.isArray(options.failuresOut) ? options.failuresOut : [];
         const terrainCutPatchesOut = Array.isArray(options.cutPatchesOut) ? options.cutPatchesOut : [];
+        const terrainExpectedKeysOut = options.expectedKeysOut instanceof Set
+            ? options.expectedKeysOut : null;
         const terrainReferences = options.terrainReferences instanceof Map
             ? options.terrainReferences : new Map();
 
@@ -2953,6 +2991,11 @@
             // default profile flattened every network to one width and dropped override-only
             // lanes (a segment's tree grove never made it into 3D).
             const renderEntries = corridorRenderEntriesForDefinition(definition);
+            if (terrainMode && terrainExpectedKeysOut) {
+                renderEntries.forEach(function (entry) {
+                    terrainExpectedKeysOut.add(corridorTerrainEntryKey(proposal, entry));
+                });
+            }
 
             // Full-entry profiles remain available through grade-separated and tunnel spans. Surface
             // runs below get their own station quads, but every semantic consumer samples one shared
@@ -2966,6 +3009,7 @@
                     ? String(proposal.proposalId) : null;
                 profile.segmentId = entry && entry.segmentId != null
                     ? String(entry.segmentId) : null;
+                profile.terrainEntryKey = corridorTerrainEntryKey(proposal, entry);
                 if (!proposalTerrainProfiles.includes(profile)) proposalTerrainProfiles.push(profile);
                 if (!terrainProfilesOut.includes(profile)) terrainProfilesOut.push(profile);
                 return true;
@@ -4189,15 +4233,21 @@
         for (let i = group.children.length - 1; i >= 0; i--) group.remove(group.children[i]);
     }
 
-    function disposeTerrainCorridorGroup() {
-        if (terrainCorridorGroup) {
-            terrainCorridorGroup.traverse(object => {
+    function disposeTerrainCorridorGeometry(group) {
+        if (group) {
+            group.traverse(object => {
                 // Instanced corridor trees reuse the global tree geometries; everything else in this
                 // temporary group owns its geometry and can release it on a mode switch/rebuild.
                 if (object && object.isMesh && !object.isInstancedMesh && object.geometry) {
                     try { object.geometry.dispose(); } catch (_) { }
                 }
             });
+        }
+    }
+
+    function disposeTerrainCorridorGroup() {
+        if (terrainCorridorGroup) {
+            disposeTerrainCorridorGeometry(terrainCorridorGroup);
             if (terrainCorridorGroup.parent) terrainCorridorGroup.parent.remove(terrainCorridorGroup);
         }
         terrainCorridorGroup = null;
@@ -4208,11 +4258,14 @@
     }
 
     function rebuildTerrainCorridorGroup(sampleHeight, terrainReferences) {
-        disposeTerrainCorridorGroup();
-        if (typeof sampleHeight !== 'function' || !scene || !corridorGroup) return null;
+        if (typeof sampleHeight !== 'function' || !scene || !corridorGroup) {
+            disposeTerrainCorridorGroup();
+            return null;
+        }
         const profiles = [];
         const failures = [];
         const cutPatches = [];
+        const expectedKeys = new Set();
         const group = new THREE.Group();
         group.name = 'TerrainFollowingCorridors';
         buildCorridorStrips3D(group, {
@@ -4220,9 +4273,40 @@
             profilesOut: profiles,
             failuresOut: failures,
             cutPatchesOut: cutPatches,
+            expectedKeysOut: expectedKeys,
             terrainReferences: terrainReferences
         });
-        if (!group.children.length) return null;
+        if (!expectedKeys.size) {
+            disposeTerrainCorridorGeometry(group);
+            disposeTerrainCorridorGroup();
+            return null;
+        }
+        // Tile streaming is view-dependent. A close camera may unload the road's distant tiles,
+        // making a later refit incomplete even though the previous settled profile is still valid.
+        // Build off-scene and swap atomically only when every currently applied corridor entry has
+        // at least one complete profile. A partial multi-road success must not erase a distant old
+        // road's mask/envelope merely because its current tiles unloaded.
+        const completedKeys = new Set(profiles.map(function (profile) {
+            return profile && profile.terrainEntryKey;
+        }).filter(Boolean));
+        const missingKeys = Array.from(expectedKeys).filter(function (key) {
+            return !completedKeys.has(key);
+        });
+        if (!group.children.length || missingKeys.length) {
+            disposeTerrainCorridorGeometry(group);
+            if (terrainCorridorGroup && corridorTerrainProfiles.length) {
+                try {
+                    document.body.dataset.corridorTerrainRetained = JSON.stringify({
+                        reason: 'incomplete-visible-lod',
+                        missingEntries: missingKeys,
+                        failures: failures
+                    });
+                } catch (_) { }
+            }
+            return null;
+        }
+        disposeTerrainCorridorGroup();
+        try { delete document.body.dataset.corridorTerrainRetained; } catch (_) { }
         terrainCorridorGroup = group;
         corridorTerrainProfiles = profiles;
         corridorTerrainCutPatches = cutPatches;
@@ -5462,7 +5546,9 @@
         const includeDepth = !!options.includeDepth;
         const helper = window.__corridorTerrainFormation;
         if (!helper || typeof helper.buildPaddedRuledStripPositions !== 'function') {
-            return corridorTerrainCutPatches.slice();
+            // A top-only fallback would let mask/envelope pairing publish a cut whose solid skirt
+            // was never built. Fail closed and leave the Google shell intact instead.
+            return [];
         }
         return corridorTerrainCutPatches.map(function (patch) {
             if (!patch || !patch._formationProfile
@@ -5477,8 +5563,15 @@
             );
             const positions = includeDepth ? ruled && ruled.positions : ruled && ruled.topPositions;
             return ruled && ruled.ok && positions && positions.length
-                ? { ...patch, positions: positions, boundaryRings: ruled.boundaryRings }
-                : patch;
+                ? {
+                    ...patch,
+                    positions: positions,
+                    boundaryRings: ruled.boundaryRings,
+                    _paddingM: paddingM,
+                    _baseZ: baseZ,
+                    _depthM: depthM
+                }
+                : null;
         });
     }
     window.getCorridorTerrainCutPatches = function (options) {

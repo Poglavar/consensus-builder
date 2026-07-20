@@ -49,19 +49,61 @@
         const hasLeft = finite(left);
         const hasRight = finite(right);
 
+        let selected = null;
         if (hasCenter) {
             if (hasLeft && hasRight && Math.abs(left - right) <= sideAgreementM
                 && center - Math.max(left, right) >= centerHighThresholdM) {
-                return (left + right) / 2;
+                selected = (left + right) / 2;
+            } else {
+                selected = center;
             }
-            return center;
+        } else if (hasLeft && hasRight) {
+            selected = Math.abs(left - right) <= sideAgreementM ? (left + right) / 2 : null;
+        } else if (hasLeft) {
+            selected = left;
+        } else if (hasRight) {
+            selected = right;
         }
-        if (hasLeft && hasRight) {
-            return Math.abs(left - right) <= sideAgreementM ? (left + right) / 2 : null;
+
+        // When all three probes lie on one plausible transverse plane, lift the level formation to
+        // the predicted high semantic edge. A unilateral roof/tree fails the centre≈side-mean test
+        // and leaves the established centre/obstacle selector unchanged.
+        const halfWidth = finite(Number(opts.halfWidth)) ? Math.max(0, Number(opts.halfWidth)) : 0;
+        const probeDistance = finite(Number(opts.probeDistance))
+            ? Math.max(0, Number(opts.probeDistance)) : 0;
+        const planeToleranceM = finite(Number(opts.planeToleranceM))
+            ? Math.max(0, Number(opts.planeToleranceM)) : 0.35;
+        const maximumCrossSlope = finite(Number(opts.maximumCrossSlope))
+            ? Math.max(0, Number(opts.maximumCrossSlope)) : 0.18;
+        let expectedLeftEdge = selected;
+        let expectedRightEdge = selected;
+        if (finite(selected) && hasCenter && hasLeft && hasRight
+            && halfWidth > 0 && probeDistance > halfWidth) {
+            const sideMean = (left + right) / 2;
+            const crossSlope = (left - right) / (2 * probeDistance);
+            if (Math.abs(center - sideMean) <= planeToleranceM
+                && Math.abs(crossSlope) <= maximumCrossSlope) {
+                expectedLeftEdge = center + crossSlope * halfWidth;
+                expectedRightEdge = center - crossSlope * halfWidth;
+                selected = Math.max(selected, expectedLeftEdge, expectedRightEdge);
+            }
         }
-        if (hasLeft) return left;
-        if (hasRight) return right;
-        return null;
+        // Direct semantic-edge probes capture the sub-metre Google triangulation that can otherwise
+        // poke through a flat sidewalk. Accept only hits close to the plausible cross-section plane;
+        // parked cars, trunks and facades remain outliers and do not lift the whole road.
+        const edgeToleranceM = finite(Number(opts.edgeToleranceM))
+            ? Math.max(0, Number(opts.edgeToleranceM)) : 0.45;
+        [
+            [opts.edgeLeft == null ? null : Number(opts.edgeLeft), expectedLeftEdge],
+            [opts.edgeRight == null ? null : Number(opts.edgeRight), expectedRightEdge]
+        ].forEach(function (pair) {
+            const edge = pair[0];
+            const expected = pair[1];
+            if (finite(edge) && finite(expected) && Math.abs(edge - expected) <= edgeToleranceM) {
+                selected = Math.max(selected, edge);
+            }
+        });
+        return selected;
     }
 
     // The road mask is an RGBA8 texture. Its alpha channel carries the local formation height,
@@ -91,6 +133,24 @@
         return encoding.min + Math.max(0, Math.min(1, encoded)) * encoding.range;
     }
 
+    // Alpha is stored in an RGBA8 render target, so a decoded road height can round upward by half
+    // a quantisation step. Keep the worst-case retained Google fragment below the opaque foundation
+    // by a fixed safety margin; unusually large elevation ranges become more conservative rather
+    // than silently letting source triangles poke through the replacement surface.
+    function quantizationSafeRoadCutOffset(encoding, options) {
+        const opts = options || {};
+        const targetOffsetM = finite(Number(opts.targetOffsetM)) ? Number(opts.targetOffsetM) : 0.02;
+        const coverTopOffsetM = finite(Number(opts.coverTopOffsetM))
+            ? Number(opts.coverTopOffsetM) : 0.04;
+        const safetyMarginM = finite(Number(opts.safetyMarginM))
+            ? Math.max(0, Number(opts.safetyMarginM)) : 0.01;
+        const quantizationM = encoding && finite(Number(encoding.quantizationM))
+            ? Math.max(0, Number(encoding.quantizationM)) : Infinity;
+        if (!finite(quantizationM)) return null;
+        return Math.min(targetOffsetM,
+            coverTopOffsetM - safetyMarginM - quantizationM / 2);
+    }
+
     // Cut patches are produced for every applied road, but photoreal proposal/parcel isolation
     // must paint only the same roads as the vector mask entries. A stale patch with no matching
     // deck or seam would otherwise leave an unsupported hole in the Google shell.
@@ -101,6 +161,42 @@
         return list.filter(function (patch) {
             return String(patch && patch.proposalId) === String(isolationFilter);
         });
+    }
+
+    function roadPatchKey(patch) {
+        if (!patch || patch._replacementKey == null) return null;
+        const key = String(patch._replacementKey);
+        return key ? key : null;
+    }
+
+    // A road cut is safe only when the same terrain-profile segment also produced its opaque solid
+    // envelope. Pair the two families before either is published; unmatched envelopes are harmless,
+    // while unmatched masks are deliberately suppressed to keep the Google shell closed.
+    function pairRoadReplacementPatches(maskPatches, envelopePatches) {
+        const masks = Array.isArray(maskPatches) ? maskPatches : [];
+        const envelopes = Array.isArray(envelopePatches) ? envelopePatches : [];
+        const counts = function (patches) {
+            const out = new Map();
+            patches.forEach(function (patch) {
+                const key = roadPatchKey(patch);
+                if (key) out.set(key, (out.get(key) || 0) + 1);
+            });
+            return out;
+        };
+        const maskCounts = counts(masks);
+        const envelopeCounts = counts(envelopes);
+        const uniquelyPaired = new Set();
+        maskCounts.forEach(function (count, key) {
+            if (count === 1 && envelopeCounts.get(key) === 1) uniquelyPaired.add(key);
+        });
+        return {
+            masks: masks.filter(function (patch) {
+                return uniquelyPaired.has(roadPatchKey(patch));
+            }),
+            envelopes: envelopes.filter(function (patch) {
+                return uniquelyPaired.has(roadPatchKey(patch));
+            })
+        };
     }
 
     // Tile LOD can advance in several distinct bursts. Track source revisions separately from
@@ -289,7 +385,9 @@
         roadFloorEncodingRange: roadFloorEncodingRange,
         encodeRoadFloor: encodeRoadFloor,
         decodeRoadFloor: decodeRoadFloor,
+        quantizationSafeRoadCutOffset: quantizationSafeRoadCutOffset,
         filterRoadFloorPatches: filterRoadFloorPatches,
+        pairRoadReplacementPatches: pairRoadReplacementPatches,
         createTerrainRefreshTracker: createTerrainRefreshTracker,
         noteTerrainSourceChange: noteTerrainSourceChange,
         claimTerrainRefresh: claimTerrainRefresh,

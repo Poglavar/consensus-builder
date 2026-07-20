@@ -300,7 +300,7 @@
     // uniform updates, never geometry work. The holes are filled by three-mode's own corridor
     // strips, park grounds and proposed buildings, which keep rendering at z≈0.
     const MASK_WINDOW_HALF_M = 512;  // scene metres to each side of the window centre
-    const MASK_RES = 2048;           // 0.5 scene-metre texels: bounded, sub-road-edge quantisation
+    const MASK_RES = 4096;           // 0.25 scene-metre texels: small retained edge band, no extra RT pass
     const MASK_MOVE_M = 150;         // re-render the window when the orbit target strays this far
     // ONE clean carve, sealed by construction. The Google tiles are a HOLLOW SHELL of one
     // fused surface (ground, trees and buildings are the same skin): any partial trim of that
@@ -312,10 +312,9 @@
     // interior, a sightline hits mirrored terrain texture — never the background.
     const CARVE_FLOOR_Z = -0.3;      // fragments above this, inside a footprint, are discarded
     const CARVE_CORE_BUFFER_M = 1.2; // dilation against mask-texel combs along cut facades
-    // The raster cut lives OUTSIDE the semantic sidewalk edge, inside an overlap collar owned by
-    // our road formation. One half-texel diagonal plus a 10 cm guard guarantees that no nearest-
-    // filtered Google fragment survives on the pavement at any road angle. Turf buffers use true
-    // metres, so the scene-space band is divided by the local Mercator inflation at runtime.
+    // Road coverage is rasterised from the exact station quilt. A narrow solid collar owns the
+    // complete nearest-cell uncertainty outside that quilt, so Google is cut right to the sidewalk
+    // instead of surviving as a jagged inner band. At 4096² this collar is only about 20 cm in Zagreb.
     const MASK_EDGE_GUARD_SCENE_M = 0.1;
     // Sealing the cut edge — a TERRAIN-CONFORMING CURTAIN. Our content is a flat table at z≈0, but
     // we seat the whole Google mesh from ONE probe, so away from that point the real ground rides
@@ -350,23 +349,22 @@
     // low-envelope curtain grid. Side probes land beyond the proposed corridor and only override a
     // high centre hit when both sides agree, which removes cars/canopy without inventing a low bowl.
     const ROAD_SURFACE_SIDE_MARGIN_M = 4;
-    const ROAD_CUT_FLOOR_OFFSET_M = -0.4;
+    // Google ground remains below the road as a permanent no-sky backstop. RGBA8 alpha carries the
+    // local formation height, so its cutoff is lowered by the measured quantisation error at each
+    // rebuild instead of relying on a fixed offset that can rise through the opaque underlay.
+    const ROAD_CUT_TARGET_OFFSET_M = 0.02;
+    const ROAD_CUT_SAFETY_MARGIN_M = 0.01;
     // Intersections get a formation-height wall plus a short cross-plane flange. The latter is what
     // seals vertical facade/trunk triangles, for which a straight-down extrusion has zero area.
     const MESH_SEAM_FALLBACK_DEPTH_M = 4;
     const MESH_SEAM_INWARD_TOP_OFFSET_M = 0.04; // stay 1 cm below the lowest asphalt top
-    // A nearest-filter mask edge can differ from its vector edge by half a texel diagonal. Bury
-    // that entire scene-space uncertainty plus 10 cm inside the source-textured flange, following
-    // photoreal-sim's rule that a raster cut belongs inside owned overlap geometry.
-    const MASK_HALF_DIAGONAL_SCENE_M = Math.SQRT1_2 * (2 * MASK_WINDOW_HALF_M / MASK_RES);
+    const MASK_TEXEL_SCENE_M = 2 * MASK_WINDOW_HALF_M / MASK_RES;
+    const MASK_HALF_DIAGONAL_SCENE_M = Math.SQRT1_2 * MASK_TEXEL_SCENE_M;
     const MASK_EDGE_OWNERSHIP_SCENE_M = MASK_HALF_DIAGONAL_SCENE_M + MASK_EDGE_GUARD_SCENE_M;
     const MESH_SEAM_RETAINED_OVERLAP_SCENE_M = MASK_EDGE_OWNERSHIP_SCENE_M;
     const MESH_SEAM_GRID_CELL_M = 16;
-    // The mask is buried halfway through one metre of continuous road-owned foundation. This is
-    // the same conservative geometry-over-raster contract as photoreal-sim: mask pixels may step,
-    // but every possible step lands on opaque civil geometry rather than the sky background.
-    const ROAD_FOUNDATION_PADDING_TRUE_M = 1;
-    const ROAD_MASK_WITHIN_FOUNDATION_T = 0.5;
+    // Padding is computed at runtime because authored widths are true metres while the mask and
+    // Google tiles live in locally inflated Web-Mercator scene metres.
     const ROAD_FOUNDATION_TOP_OFFSET_M = 0.04; // 1 cm below the lowest visible road strip
     const ROAD_FOUNDATION_SKIRT_DEPTH_M = 0.6;
     const ROAD_FOUNDATION_COLOR = 0xc2beb4; // same concrete family as the authored sidewalk
@@ -380,6 +378,7 @@
     let apronGroup = null;
     let apronMaterial = null;
     let roadFoundationMaterial = null;
+    let roadCollarMaterial = null;
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
     let terrainGrid = null; // cached cleaned ground field, sampled once per covered plan extent
     let groundTexture = null; // DataTexture of terrainGrid heights, fed to the keep-veg shader
@@ -399,6 +398,7 @@
         uFloorZ: { value: CARVE_FLOOR_Z },
         uRoadFloorMin: { value: -4 },
         uRoadFloorRange: { value: 8 },
+        uRoadCutOffset: { value: 0 },
         // Keep-vegetation (green mask channel = parks only): discard the tile ground layer below
         // groundHeight + band, so hedges/trees stay standing instead of being sliced into windows.
         uGroundTex: { value: null },       // DataTexture of tile ground heights over the plan bbox
@@ -434,18 +434,8 @@
         } catch (_) { return []; }
     }
 
-    function roadMaskBufferTrueM() {
-        const seam = window.__photorealSeam;
-        const contract = seam && typeof seam.maskEdgeContract === 'function'
-            ? seam.maskEdgeContract(
-                MASK_WINDOW_HALF_M, MASK_RES,
-                Number.isFinite(mercatorK) && mercatorK > 0 ? mercatorK : 1,
-                MASK_EDGE_GUARD_SCENE_M)
-            : null;
-        const minimum = contract ? contract.bufferTrueM
-            : MASK_EDGE_OWNERSHIP_SCENE_M / Math.max(1e-6, mercatorK || 1);
-        return Math.max(minimum,
-            ROAD_FOUNDATION_PADDING_TRUE_M * ROAD_MASK_WITHIN_FOUNDATION_T);
+    function roadFoundationPaddingTrueM() {
+        return MASK_EDGE_OWNERSHIP_SCENE_M / Math.max(1e-6, mercatorK || 1);
     }
 
     // The part of a razed building's footprint not already covered by an applied structure —
@@ -487,8 +477,6 @@
                     geometry: geom,
                     kind: 'road',
                     mode: 'road',
-                    buffer: roadMaskBufferTrueM(),
-                    seamCap: true,
                     skipCap: true,
                     terrainSupport: true,
                     proposalId: proposal && proposal.proposalId != null
@@ -539,17 +527,42 @@
         const THREE = window.THREE;
         if (!THREE || maskRT) return;
         maskRT = new THREE.WebGLRenderTarget(MASK_RES, MASK_RES, { depthBuffer: false });
-        maskRT.texture.minFilter = THREE.NearestFilter;
-        maskRT.texture.magFilter = THREE.NearestFilter;
+        // Linear reconstruction turns the binary raster into a marching-squares-style contour.
+        // Thresholding that coverage in the tile shader removes the visible nearest-pixel scallops.
+        maskRT.texture.minFilter = THREE.LinearFilter;
+        maskRT.texture.magFilter = THREE.LinearFilter;
         maskRT.texture.generateMipmaps = false;
         maskScene = new THREE.Scene();
-        maskScene.background = new THREE.Color(0x000000);
+        maskScene.background = null;
         // Top-down orthographic camera, up = +Y: texture v grows with scene +Y, so the shader
         // samples (xy − min) · scale directly, no flip.
         maskCamera = new THREE.OrthographicCamera(
             -MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, MASK_WINDOW_HALF_M, -MASK_WINDOW_HALF_M, 1, 1000);
         maskCamera.up.set(0, 1, 0);
-        maskMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });      // full discard
+        // Non-road classes deliberately write alpha zero. Road height is reconstructed as alpha /
+        // blue coverage after linear filtering, so an opaque red/green alpha would corrupt that
+        // height wherever masks touch. Use a raw shader: opaque built-in materials force alpha=1.
+        const classMaskMaterial = function (red, green, blue) {
+            return new THREE.ShaderMaterial({
+                vertexShader: [
+                    'void main() {',
+                    '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xy, 0.0, 1.0);',
+                    '}'
+                ].join('\n'),
+                fragmentShader: [
+                    'void main() {',
+                    '  gl_FragColor = vec4(' + red.toFixed(1) + ', ' + green.toFixed(1)
+                        + ', ' + blue.toFixed(1) + ', 0.0);',
+                    '}'
+                ].join('\n'),
+                side: THREE.DoubleSide,
+                depthTest: false,
+                depthWrite: false,
+                transparent: false,
+                blending: THREE.NoBlending
+            });
+        };
+        maskMaterial = classMaskMaterial(1, 0, 0);      // full discard
         maskMaterialRoad = new THREE.ShaderMaterial({
             uniforms: {
                 uRoadFloorMin: corridorUniforms.uRoadFloorMin,
@@ -576,7 +589,7 @@
             depthTest: false,
             depthWrite: false
         });
-        maskMaterialPark = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });  // keep-veg (ground only)
+        maskMaterialPark = classMaskMaterial(0, 1, 0);  // keep-veg (ground only)
         // DOUBLE-SIDED, like the mask: this material paints both the flat cap and the curtain
         // walls, and either can face the camera from either side depending on ring winding — a
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
@@ -584,7 +597,25 @@
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
         roadFoundationMaterial = new THREE.MeshLambertMaterial({
             color: ROAD_FOUNDATION_COLOR,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
+            // The top is intentionally close to the visible road so the outer collar can meet
+            // Google without a ledge. Bias only its depth away: asphalt/sidewalk always win where
+            // they overlap, while the uncovered collar still renders as the seal.
+            polygonOffset: true,
+            polygonOffsetFactor: 1,
+            polygonOffsetUnits: 1
+        });
+        roadCollarMaterial = new THREE.MeshBasicMaterial({
+            color: ROAD_FOUNDATION_COLOR,
+            side: THREE.DoubleSide,
+            depthTest: true,
+            depthWrite: true,
+            // The road formation already clears the plausible high terrain edge. A small bias wins
+            // only the remaining coplanar precision fight; depth testing still prevents this late
+            // collar from painting through nearer trees, facades or terrain.
+            polygonOffset: true,
+            polygonOffsetFactor: -1,
+            polygonOffsetUnits: -2
         });
         if (!corridorUniforms.uCorridorMin.value) corridorUniforms.uCorridorMin.value = new THREE.Vector2();
         if (!corridorUniforms.uGroundMin.value) corridorUniforms.uGroundMin.value = new THREE.Vector2();
@@ -728,6 +759,55 @@
             if (a && b) twiceArea += a[0] * b[1] - b[0] * a[1];
         }
         return twiceArea / 2;
+    }
+
+    // Paint only the narrow plan annulus between the semantic sidewalk and padded foundation after
+    // the Google mesh. The mask may cut in sub-pixel steps, but this vector collar has one smooth
+    // outer edge and hides those steps without ever drawing over asphalt inside the exact hole.
+    function addRoadCollarPatchMeshes(group, maskPatches, foundationPatches) {
+        const THREE = window.THREE;
+        const helper = window.__corridorTerrainFormation;
+        if (!THREE || !group || !roadCollarMaterial || !helper
+            || typeof helper.buildRuledStripCollarPositions !== 'function') return 0;
+        let added = 0;
+        const masksByKey = new Map();
+        (maskPatches || []).forEach(function (patch) {
+            if (patch && patch._replacementKey != null) {
+                masksByKey.set(String(patch._replacementKey), patch);
+            }
+        });
+        (foundationPatches || []).forEach(function (foundation) {
+            const key = foundation && foundation._replacementKey != null
+                ? String(foundation._replacementKey) : null;
+            const mask = key ? masksByKey.get(key) : null;
+            const topOffsetM = Number(foundation && foundation._baseZ)
+                + Number(foundation && foundation._depthM);
+            const collar = mask && helper.buildRuledStripCollarPositions(
+                foundation._formationProfile,
+                Number(foundation._leftM), Number(foundation._rightM),
+                Number(foundation._paddingM),
+                Number.isFinite(Number(foundation._leftTopOffsetM))
+                    ? Number(foundation._leftTopOffsetM)
+                    : (Number.isFinite(topOffsetM) ? topOffsetM : ROAD_FOUNDATION_TOP_OFFSET_M),
+                Number.isFinite(Number(foundation._rightTopOffsetM))
+                    ? Number(foundation._rightTopOffsetM)
+                    : (Number.isFinite(topOffsetM) ? topOffsetM : ROAD_FOUNDATION_TOP_OFFSET_M)
+            );
+            if (!collar || !collar.ok || !collar.positions || !collar.positions.length) return;
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(collar.positions, 3));
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+            const mesh = new THREE.Mesh(geometry, roadCollarMaterial);
+            mesh.name = 'PhotorealRoadVectorCollar';
+            mesh.frustumCulled = false;
+            mesh.renderOrder = 20;
+            mesh.userData.proposalId = foundation.proposalId;
+            mesh.userData.isPhotorealRoadVectorCollar = true;
+            group.add(mesh);
+            added++;
+        });
+        return added;
     }
 
     // Normalize outer rings CCW and holes CW. The polygon's carved side is then consistently the
@@ -1135,6 +1215,14 @@
         }
         const halfWidth = Math.max(0, Number(context.halfWidthSceneM) || 0);
         const offset = halfWidth + ROAD_SURFACE_SIDE_MARGIN_M * mercatorK;
+        const edgeLeft = halfWidth > 0 ? sampleTileSurfaceZ(
+            x + station.normalX * halfWidth,
+            y + station.normalY * halfWidth
+        ) : center;
+        const edgeRight = halfWidth > 0 ? sampleTileSurfaceZ(
+            x - station.normalX * halfWidth,
+            y - station.normalY * halfWidth
+        ) : center;
         const left = sampleTileSurfaceZ(
             x + station.normalX * offset,
             y + station.normalY * offset
@@ -1143,7 +1231,12 @@
             x - station.normalX * offset,
             y - station.normalY * offset
         );
-        return window.__photorealGround.selectRoadSurfaceHeight(center, left, right);
+        return window.__photorealGround.selectRoadSurfaceHeight(center, left, right, {
+            halfWidth: halfWidth,
+            probeDistance: offset,
+            edgeLeft: edgeLeft,
+            edgeRight: edgeRight
+        });
     }
 
     function terrainBoundsForEntries(entries) {
@@ -1307,30 +1400,28 @@
                 console.warn('[photoreal] terrain-following corridor build failed', error);
             }
         }
-        const roadMaskBufferM = roadMaskBufferTrueM();
         const allRoadFloorPatches = (typeof window.getCorridorTerrainCutPatches === 'function')
-            ? window.getCorridorTerrainCutPatches({ lateralPaddingM: roadMaskBufferM }) : [];
-        // The mask must obey the same proposal/parcel isolation policy as its footprint entries.
-        // Otherwise an isolated or hidden road can leave a blue cut behind with no deck or seam.
-        const roadFloorPatches = window.__photorealGround.filterRoadFloorPatches(
-            allRoadFloorPatches, isolationFilter);
+            ? window.getCorridorTerrainCutPatches({ lateralPaddingM: 0 }) : [];
+        const roadFoundationPaddingM = roadFoundationPaddingTrueM();
         const allRoadFoundationPatches = (typeof window.getCorridorTerrainFoundationPatches === 'function')
             ? window.getCorridorTerrainFoundationPatches({
-                paddingM: ROAD_FOUNDATION_PADDING_TRUE_M,
+                paddingM: roadFoundationPaddingM,
                 topOffsetM: ROAD_FOUNDATION_TOP_OFFSET_M,
                 skirtDepthM: ROAD_FOUNDATION_SKIRT_DEPTH_M
             }) : [];
-        const roadFoundationPatches = window.__photorealGround.filterRoadFloorPatches(
+        const filteredRoadFloorPatches = window.__photorealGround.filterRoadFloorPatches(
+            allRoadFloorPatches, isolationFilter);
+        const filteredRoadFoundationPatches = window.__photorealGround.filterRoadFloorPatches(
             allRoadFoundationPatches, isolationFilter);
+        // Publish mask and solid cover as one contract. A missing/failed envelope suppresses its
+        // cut instead of opening the hollow Google shell; an unmatched envelope is harmless.
+        const pairedRoadPatches = window.__photorealGround.pairRoadReplacementPatches(
+            filteredRoadFloorPatches, filteredRoadFoundationPatches);
+        const roadFloorPatches = pairedRoadPatches.masks;
+        const roadFoundationPatches = pairedRoadPatches.envelopes;
         const exactRoadProposalIds = new Set(roadFloorPatches.map(function (patch) {
             return patch && patch.proposalId != null ? String(patch.proposalId) : null;
         }).filter(function (id) { return id !== null; }));
-        const roadEntryByProposalId = new Map();
-        entries.forEach(function (entry) {
-            if (entry && entry.mode === 'road' && entry.proposalId != null) {
-                roadEntryByProposalId.set(String(entry.proposalId), entry);
-            }
-        });
         const roadEncoding = window.__photorealGround
             && typeof window.__photorealGround.roadFloorEncodingRange === 'function'
             ? window.__photorealGround.roadFloorEncodingRange(
@@ -1338,17 +1429,27 @@
             : { min: -4, range: 8, quantizationM: 8 / 255 };
         corridorUniforms.uRoadFloorMin.value = roadEncoding.min;
         corridorUniforms.uRoadFloorRange.value = roadEncoding.range;
+        const safeRoadCutOffset = window.__photorealGround
+            && typeof window.__photorealGround.quantizationSafeRoadCutOffset === 'function'
+            ? window.__photorealGround.quantizationSafeRoadCutOffset(roadEncoding, {
+                targetOffsetM: ROAD_CUT_TARGET_OFFSET_M,
+                coverTopOffsetM: ROAD_FOUNDATION_TOP_OFFSET_M,
+                safetyMarginM: ROAD_CUT_SAFETY_MARGIN_M
+            }) : Math.min(ROAD_CUT_TARGET_OFFSET_M,
+                ROAD_FOUNDATION_TOP_OFFSET_M - ROAD_CUT_SAFETY_MARGIN_M
+                    - (Number(roadEncoding.quantizationM) || 0) / 2);
+        corridorUniforms.uRoadCutOffset.value = Number.isFinite(safeRoadCutOffset)
+            ? safeRoadCutOffset : -ROAD_CUT_SAFETY_MARGIN_M;
         entries.forEach(function (entry) {
             try {
+                const road = (entry.mode === 'road');
+                // Roads publish only a paired exact station quilt + narrow solid collar.
+                // A generic Turf fallback can cut outside owned geometry and expose the hollow
+                // Google shell, so a failed road contract deliberately leaves the source intact.
+                if (road) return;
                 const buf = (typeof entry.buffer === 'number') ? entry.buffer : CARVE_CORE_BUFFER_M;
                 const core = buf !== 0 ? bufferGeometry(entry.geometry, buf) : entry.geometry;
                 const keepVeg = (entry.mode === 'keepveg');
-                const road = (entry.mode === 'road');
-                // Successful terrain roads paint only their exact station-derived mask quilt.
-                // The old Turf-buffered ShapeGeometry added rounded endpoint/bend lobes that had
-                // neither a deck nor matching elevation data and produced the largest cyan teeth.
-                if (road && entry.proposalId != null
-                    && exactRoadProposalIds.has(String(entry.proposalId))) return;
                 const maskMat = road ? maskMaterialRoad : (keepVeg ? maskMaterialPark : maskMaterial);
                 const supportAt = supportAtForEntry(entry);
                 polygonShapesAndRings(core, toXY).forEach(function (sr) {
@@ -1388,26 +1489,13 @@
                 });
             } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
-        // Exact mask perimeters also drive facade/tree closure. This keeps cosmetic Google-tile
-        // fascias aligned with the real cut while the continuous foundation remains the primary
-        // horizontal seal.
-        if (meshSeamCapsActive() && window.__photorealSeam
-            && typeof window.__photorealSeam.densifyClosedRing === 'function') {
-            roadFloorPatches.forEach(function (patch) {
-                const entry = patch && patch.proposalId != null
-                    ? roadEntryByProposalId.get(String(patch.proposalId)) : null;
-                const supportAt = supportAtForEntry(entry || { terrainSupport: true });
-                (patch && Array.isArray(patch.boundaryRings) ? patch.boundaryRings : [])
-                    .forEach(function (ring) {
-                        const xyRing = ring.map(function (point) { return [point[0], point[1]]; });
-                        const sampledRing = window.__photorealSeam.densifyClosedRing(
-                            xyRing, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK);
-                        appendSeamRingSegments(sampledRing, seamSegments, false, supportAt);
-                    });
-            });
-        }
+        // Do not generate source-textured road seam caps. Google is retained beneath the road and
+        // the opaque foundation is the closure; copied roof/terrain quads visibly reappeared as
+        // grey shards over asphalt at close range. Other carve families keep their established caps.
         addRoadFloorPatchMeshes(maskShapesGroup, roadFloorPatches);
         addRoadFoundationPatchMeshes(apronGroup, roadFoundationPatches);
+        const roadVectorCollars = addRoadCollarPatchMeshes(
+            apronGroup, roadFloorPatches, roadFoundationPatches);
         maskScene.add(maskShapesGroup);
         internals.scene.add(apronGroup);
         replaceSeamBoundaryGrid(seamSegments);
@@ -1417,12 +1505,16 @@
                 uniqueProbes: tileSurfaceSampleCache.size,
                 roadFloorPatches: roadFloorPatches.length,
                 roadFoundationPatches: roadFoundationPatches.length,
+                roadVectorCollars: roadVectorCollars,
                 exactRoadMasks: exactRoadProposalIds.size,
                 roadFloorMin: roadEncoding.min,
                 roadFloorRange: roadEncoding.range,
                 roadFloorQuantizationM: roadEncoding.quantizationM,
-                roadMaskBufferM: roadMaskBufferM,
-                roadFoundationPaddingM: ROAD_FOUNDATION_PADDING_TRUE_M
+                roadCutOffsetM: corridorUniforms.uRoadCutOffset.value,
+                roadCutMaximumOffsetM: corridorUniforms.uRoadCutOffset.value
+                    + roadEncoding.quantizationM / 2,
+                roadMaskTexelSceneM: MASK_TEXEL_SCENE_M,
+                roadFoundationPaddingM: roadFoundationPaddingM
             });
         } catch (_) { }
     }
@@ -1430,14 +1522,24 @@
     function renderCarveMask(cx, cy) {
         if (!maskRT || !maskCamera || !internals) return;
         const renderer = internals.renderer;
+        let previousTarget = null;
+        let previousClearColor = null;
+        let previousClearAlpha = 0;
+        let rendererStateCaptured = false;
         try {
             maskCamera.position.set(cx, cy, 500);
             maskCamera.lookAt(cx, cy, 0);
             maskCamera.updateMatrixWorld();
-            const prev = renderer.getRenderTarget();
+            previousTarget = renderer.getRenderTarget();
+            previousClearColor = renderer.getClearColor(new THREE.Color()).clone();
+            previousClearAlpha = renderer.getClearAlpha();
+            rendererStateCaptured = true;
             renderer.setRenderTarget(maskRT);
+            // Alpha zero is part of the road-height contract: linear coverage multiplies both the
+            // blue occupancy and encoded alpha, so the tile shader can recover alpha / blue.
+            renderer.setClearColor(0x000000, 0);
+            renderer.clear(true, true, true);
             renderer.render(maskScene, maskCamera);
-            renderer.setRenderTarget(prev);
             corridorUniforms.uCorridorMin.value.set(cx - MASK_WINDOW_HALF_M, cy - MASK_WINDOW_HALF_M);
             corridorUniforms.uCorridorOn.value = 1;
             maskCenterX = cx;
@@ -1446,6 +1548,11 @@
         } catch (err) {
             console.warn('[photoreal] carve mask render failed', err);
             corridorUniforms.uCorridorOn.value = 0;
+        } finally {
+            if (rendererStateCaptured) {
+                try { renderer.setRenderTarget(previousTarget); } catch (_) { }
+                try { renderer.setClearColor(previousClearColor, previousClearAlpha); } catch (_) { }
+            }
         }
     }
 
@@ -1481,6 +1588,7 @@
                     + 'uniform float uFloorZ;\n'
                     + 'uniform float uRoadFloorMin;\n'
                     + 'uniform float uRoadFloorRange;\n'
+                    + 'uniform float uRoadCutOffset;\n'
                     + 'uniform sampler2D uGroundTex;\n'
                     + 'uniform vec2 uGroundMin;\n'
                     + 'uniform vec2 uGroundInvSpan;\n'
@@ -1489,15 +1597,13 @@
                     + 'if (uCorridorOn > 0.5) {\n'
                     + '    vec2 cuv = (vCorridorWorld.xy - uCorridorMin) * uCorridorScale;\n'
                     + '    if (cuv.x > 0.0 && cuv.x < 1.0 && cuv.y > 0.0 && cuv.y < 1.0) {\n'
-                    // Nearest filtering bounds edge error to half a texel; the road's vector
-                    // outset and source-textured collar own that complete uncertainty band.
                     + '        vec4 cmask = texture2D(uCorridorMask, cuv);\n'
-                    // BLUE = terrain-following road. Alpha carries the local formation Z, so only
-                    // source mesh ABOVE the road floor is removed; ground remains below bridges and
-                    // a clipped building/tree can no longer open an infinite column to the sky.
+                    // BLUE = terrain-following road. Linear filtering reconstructs a smooth coverage
+                    // contour; alpha was cleared to zero, so divide out coverage to recover the
+                    // independently interpolated local formation encoding.
                     + '        if (cmask.b > 0.5) {\n'
-                    + '            float roadFloorZ = uRoadFloorMin + cmask.a * uRoadFloorRange + '
-                    + ROAD_CUT_FLOOR_OFFSET_M.toFixed(2) + ';\n'
+                    + '            float roadFloorEncoded = clamp(cmask.a / max(cmask.b, 0.0001), 0.0, 1.0);\n'
+                    + '            float roadFloorZ = uRoadFloorMin + roadFloorEncoded * uRoadFloorRange + uRoadCutOffset;\n'
                     + '            if (vCorridorWorld.z > roadFloorZ) discard;\n'
                     // RED = other full cuts: discard everything above the shared floor.
                     + '        } else if (cmask.r > 0.5) {\n'
@@ -1616,6 +1722,7 @@
         maskMaterialPark = null;
         apronMaterial = null;
         roadFoundationMaterial = null;
+        roadCollarMaterial = null;
         terrainGrid = null;
         tileSurfaceMeshes = null;
         tileSurfaceRaycaster = null;

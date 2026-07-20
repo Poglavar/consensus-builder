@@ -9,13 +9,15 @@ const {
     buildFormation,
     referenceElevationAt,
     calibrateReferenceFormation,
+    referenceFormationWithinVisibleTolerance,
     reconcileProfileEndpointHeights,
     projectToProfile,
     heightAt,
     resolveSurfaceRunFormation,
     offsetPoint,
     buildRuledStripPositions,
-    buildPaddedRuledStripPositions
+    buildPaddedRuledStripPositions,
+    buildRuledStripCollarPositions
 } = require('../../frontend/js/corridor-terrain-formation.js');
 
 function crossMagnitude(positions, triangleOffset) {
@@ -124,6 +126,40 @@ describe('corridor terrain stations', () => {
         const middle = formation.stations.find(station => Math.abs(station.x - 100) < 1e-9);
         expect(middle.rawZ).toBeCloseTo(3.5, 9);
         expect(middle.z).toBeCloseTo(8.5, 9);
+    });
+
+    it('rejects a single moderate mesh seam with the civil-road threshold', () => {
+        const formation = buildFormation(
+            [[0, 0], [80, 0]],
+            x => 8 - x * 0.005 - (Math.abs(x - 40) < 1e-9 ? 0.62 : 0),
+            { maxSpacingM: 4, smoothingRadiusStations: 2, outlierThresholdM: 0.45 }
+        );
+
+        const middle = formation.stations.find(station => Math.abs(station.x - 40) < 1e-9);
+        expect(middle.rawZ).toBeCloseTo(7.18, 9);
+        expect(middle.z).toBeCloseTo(7.8, 9);
+    });
+
+    it('lifts a sub-threshold short dip into an upper vertical curve without moving below support', () => {
+        const formation = buildFormation(
+            [[0, 0], [80, 0]],
+            x => 8 - x * 0.005 - (Math.abs(x - 40) < 1e-9 ? 0.32 : 0),
+            {
+                maxSpacingM: 4,
+                smoothingRadiusStations: 2,
+                outlierThresholdM: 0.45,
+                verticalCurvePasses: 8,
+                verticalOffsetM: 0.05
+            }
+        );
+
+        const middle = formation.stations.find(station => Math.abs(station.x - 40) < 1e-9);
+        expect(middle.rawZ).toBeCloseTo(7.48, 9);
+        expect(middle.z).toBeGreaterThan(7.75);
+        formation.stations.forEach(station => {
+            expect(station.z).toBeGreaterThanOrEqual(station.rawZ + 0.05 - 1e-9);
+        });
+        expect(formation.stations[4].z - formation.stations[3].z).toBeCloseTo(-0.02, 9);
     });
 
     it('preserves a genuine shallow Google-terrain hollow instead of smoothing it flat', () => {
@@ -235,6 +271,26 @@ describe('DGU reference profile calibration', () => {
         });
 
         expect(calibrateReferenceFormation(reference, noisy)).toBeNull();
+    });
+
+    it('requires every calibrated station to remain close to the visible Google formation', () => {
+        const visible = buildFormation([[0, 0], [20, 0]], x => 2 - x * 0.01, {
+            maxSpacingM: 5, smoothingRadiusStations: 0, verticalOffsetM: 0.05
+        });
+        const aligned = {
+            ...visible,
+            stations: visible.stations.map(station => ({ ...station, z: station.z + 0.12 }))
+        };
+        const oneLocalDip = {
+            ...aligned,
+            stations: aligned.stations.map((station, index) => ({
+                ...station,
+                z: station.z - (index === 2 ? 0.6 : 0)
+            }))
+        };
+
+        expect(referenceFormationWithinVisibleTolerance(aligned, visible, 0.25)).toBe(true);
+        expect(referenceFormationWithinVisibleTolerance(oneLocalDip, visible, 0.25)).toBe(false);
     });
 });
 
@@ -370,27 +426,27 @@ describe('terrain-following ruled strip positions', () => {
         expect(quilt.stationVertices[middleIndex].left[2]).toBeLessThan(4.1);
     });
 
-    it('carries the same nonlinear station heights through a raster-owned edge collar', () => {
+    it('builds the visible collar from explicit nonlinear station quads and endpoint caps', () => {
         const formation = buildFormation(
             [[0, 0], [80, 0]],
             x => 5 - (Math.abs(x - 40) <= 12 ? 1.2 * (1 - Math.abs(x - 40) / 12) : 0),
             { maxSpacingM: 4, smoothingRadiusStations: 0, distanceScale: 0.7 }
         );
-        const edgeBufferM = 0.316;
-        const authored = buildRuledStripPositions(formation, 6, -6, 0, 0);
-        const maskOwned = buildRuledStripPositions(
-            formation, 6 + edgeBufferM, -6 - edgeBufferM, 0, 0);
+        const paddingM = 0.193;
+        const collar = buildRuledStripCollarPositions(formation, 6, -6, paddingM, 0.04, 0.2);
+        const values = Array.from(collar.positions);
+        const xs = values.filter((_value, index) => index % 3 === 0);
+        const zs = values.filter((_value, index) => index % 3 === 2);
 
-        expect(maskOwned.stationVertices).toHaveLength(authored.stationVertices.length);
-        maskOwned.stationVertices.forEach((vertices, index) => {
-            expect(vertices.left[1]).toBeCloseTo((6 + edgeBufferM) / 0.7, 9);
-            expect(vertices.right[1]).toBeCloseTo((-6 - edgeBufferM) / 0.7, 9);
-            expect(vertices.left[2]).toBeCloseTo(authored.stationVertices[index].left[2], 9);
-            expect(vertices.right[2]).toBeCloseTo(authored.stationVertices[index].right[2], 9);
+        expect(collar.ok).toBe(true);
+        expect(collar.triangleCount).toBeGreaterThan((formation.stations.length - 1) * 4);
+        formation.stations.forEach(station => {
+            expect(zs.some(z => Math.abs(z - (station.z + 0.04)) < 1e-5)).toBe(true);
+            expect(zs.some(z => Math.abs(z - (station.z + 0.2)) < 1e-5)).toBe(true);
         });
-        const middle = maskOwned.stationVertices[Math.floor(maskOwned.stationVertices.length / 2)];
-        expect(middle.left[2]).toBeLessThan(4);
-        expect(middle.right[2]).toBe(middle.left[2]);
+        expect(Math.min(...xs)).toBeCloseTo(-paddingM / 0.7, 5);
+        expect(Math.max(...xs)).toBeCloseTo(80 + paddingM / 0.7, 5);
+        expect(Math.min(...zs)).toBeLessThan(4);
     });
 
     it('builds one station-derived padded quilt across side and endpoint mask uncertainty', () => {
