@@ -1070,9 +1070,12 @@
                     color: entry.color,
                     weight: isActive ? 3 : 2,
                     fillColor: entry.color,
-                    fillOpacity: isActive ? 0.4 : 0.2
+                    fillOpacity: isActive ? 0.4 : 0.2,
+                    className: isActive ? 'single-building-fill single-building-fill--active'
+                        : 'single-building-fill single-building-fill--selectable'
                 },
-                interactive: isActive,
+                // Every footprint is interactive: the active one drags, the rest select on click.
+                interactive: true,
                 bubblingMouseEvents: false
             }).addTo(singleRectGroup);
             if (isActive) {
@@ -1082,6 +1085,14 @@
                         singleActivePolygonLayer = polygonLayer;
                     }
                 });
+            } else {
+                // Click any non-active footprint on the map to make it active (same as the dropdown).
+                const selectThisBuilding = (e) => {
+                    if (e && e.originalEvent && L.DomEvent) L.DomEvent.stop(e.originalEvent);
+                    setActiveBuilding(entry.id, { refreshUI: true });
+                };
+                layer.on('click', selectThisBuilding);
+                layer.eachLayer(subLayer => subLayer.on('click', selectThisBuilding));
             }
 
             if (entry.name) {

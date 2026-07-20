@@ -4880,6 +4880,17 @@
     outline-offset: 1px;
 }
 .polygon-geometry-editor__edge {
+    /* Clicking an edge inserts a vertex — a crosshair reads as "place a point here",
+       distinct from the move cursor shown over a draggable footprint. */
+    cursor: crosshair;
+}
+
+/* Single-building editor footprints: the active one is draggable (move), the others
+   are click-to-select (pointer), so the two affordances are no longer both a plain pointer. */
+.single-building-fill--active {
+    cursor: move;
+}
+.single-building-fill--selectable {
     cursor: pointer;
 }
 #blockify-manual-toggle,
