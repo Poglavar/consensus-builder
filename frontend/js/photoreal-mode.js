@@ -42,9 +42,10 @@
         } catch (_) { return false; }
     }
 
-    // Exact caps for every Google mesh triangle crossed by a road-cut boundary. They are part of
-    // the normal seal now; `?seam=off` is the emergency/performance escape hatch and `debug` renders
-    // the same geometry visibly through everything. Persist like ?seat because proposal-route
+    // Optional exact caps for proposal families that explicitly register a streamed-mesh boundary.
+    // Roads deliberately do not: copying individual canopy/roof triangles creates floating textured
+    // fins. `?seam=off` is the emergency/performance escape hatch and `debug` renders any registered
+    // cap geometry visibly through everything. Persist like ?seat because proposal-route
     // normalization can remove query parameters early.
     function meshSeamMode() {
         try {
@@ -840,6 +841,71 @@
         }
     }
 
+    // Boolean-union the paired foundation roofs before deriving the neutral clearance boundary.
+    // Publishing every strip ring independently would leave endpoint walls standing inside
+    // T-junctions and crossings.
+    // The padded foundation boundary is also the correct exterior contract: it lies beyond every
+    // linearly filtered mask texel while remaining covered by the visible vector collar.
+    function unionRoadFoundationGeometry(patches) {
+        if (typeof turf === 'undefined' || !turf || typeof turf.polygon !== 'function'
+            || typeof turf.union !== 'function') return null;
+        const features = [];
+        (patches || []).forEach(function (patch) {
+            const rings = (patch && Array.isArray(patch.boundaryRings)
+                ? patch.boundaryRings : []).map(function (ring) {
+                const closed = (ring || []).filter(function (point) {
+                    return point && Number.isFinite(point[0]) && Number.isFinite(point[1]);
+                }).map(function (point) { return [point[0], point[1]]; });
+                if (closed.length < 3) return null;
+                const first = closed[0];
+                const last = closed[closed.length - 1];
+                if (first[0] !== last[0] || first[1] !== last[1]) closed.push(first.slice());
+                return closed.length >= 4 ? closed : null;
+            }).filter(Boolean).sort(function (a, b) {
+                return Math.abs(ringSignedArea(b)) - Math.abs(ringSignedArea(a));
+            });
+            if (!rings.length) return;
+            // One ruled strip is connected: its largest ring is the exterior and any additional
+            // ring is a closed-centerline hole. Normalise winding for the boolean operation.
+            rings.forEach(function (ring, index) {
+                const wantsPositive = index === 0;
+                if ((ringSignedArea(ring) > 0) !== wantsPositive) ring.reverse();
+            });
+            try { features.push(turf.polygon(rings)); } catch (_) { }
+        });
+        if (!features.length) return null;
+        let merged = features[0];
+        const attemptUnion = function (a, b) {
+            try {
+                const direct = turf.union(a, b);
+                if (direct) return direct;
+            } catch (_) { }
+            try {
+                if (typeof turf.cleanCoords === 'function') {
+                    const cleanedA = turf.cleanCoords(a, { mutate: false }) || a;
+                    const cleanedB = turf.cleanCoords(b, { mutate: false }) || b;
+                    const cleaned = turf.union(cleanedA, cleanedB);
+                    if (cleaned) return cleaned;
+                }
+            } catch (_) { }
+            try {
+                if (typeof turf.truncate === 'function') {
+                    const snappedA = turf.truncate(a, { precision: 3, coordinates: 2, mutate: false }) || a;
+                    const snappedB = turf.truncate(b, { precision: 3, coordinates: 2, mutate: false }) || b;
+                    return turf.union(snappedA, snappedB) || null;
+                }
+            } catch (_) { }
+            return null;
+        };
+        for (let index = 1; index < features.length; index++) {
+            const next = attemptUnion(merged, features[index]);
+            // Fail closed: omitting the optional curtain is safer than publishing internal walls.
+            if (!next) return null;
+            merged = next;
+        }
+        return merged && merged.geometry ? merged.geometry : null;
+    }
+
     function disposeTileSeamCaps(scene) {
         const record = scene && tileSeamCaps.get(scene);
         if (!record) return;
@@ -1370,6 +1436,32 @@
         group.add(new THREE.Mesh(geom, apronMaterial));
     }
 
+    // Fill only the vertical clearance left by removing a canopy/building shell above the road. On
+    // exposed ground `visibleAt` is effectively the formation and no quad is emitted. Retained Google
+    // depth-occludes this neutral wall everywhere except an otherwise sky-blue void. Do not replace
+    // this with source-textured per-triangle fascias: disconnected canopy hits become floating fins.
+    function addRoadClearanceCurtain(ringXY, group, supportAt, visibleAt) {
+        const THREE = window.THREE;
+        const seam = window.__photorealSeam;
+        if (!THREE || !group || !apronMaterial || !seam
+            || typeof seam.buildClearanceCurtainPositions !== 'function') return 0;
+        const built = seam.buildClearanceCurtainPositions(ringXY, supportAt, visibleAt, {
+            bottomOffsetM: ROAD_FOUNDATION_TOP_OFFSET_M - 0.01,
+            minimumClearanceM: 0.5,
+            topMarginM: 0.1,
+            maximumHeightM: 30
+        });
+        if (!built.positions.length) return 0;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(built.positions, 3));
+        geometry.computeBoundingSphere();
+        const mesh = new THREE.Mesh(geometry, apronMaterial);
+        mesh.name = 'PhotorealRoadClearanceCurtain';
+        mesh.frustumCulled = false;
+        group.add(mesh);
+        return built.segmentCount;
+    }
+
     // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
     // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
     // around every ring (see the curtain comment above).
@@ -1489,9 +1581,45 @@
                 });
             } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
-        // Do not generate source-textured road seam caps. Google is retained beneath the road and
-        // the opaque foundation is the closure; copied roof/terrain quads visibly reappeared as
-        // grey shards over asphalt at close range. Other carve families keep their established caps.
+        // Lowering a road beneath canopy removes the shell high above its ground slab. From an
+        // oblique camera a ray through that cleared volume can leave the hollow Google mesh before
+        // reaching the slab, exposing sky beside the road. Close that volume with one neutral,
+        // depth-tested curtain around the exterior foundation union. Never copy source triangles:
+        // high disconnected canopy intersections become floating textured fins.
+        let roadSeamBoundarySegments = 0;
+        let roadClearanceCurtainSegments = 0;
+        const roadBoundary = unionRoadFoundationGeometry(roadFoundationPatches);
+        const supportAt = function (x, y) {
+            if (typeof window.corridorTerrainHeightAt !== 'function') return null;
+            const z = window.corridorTerrainHeightAt(x, y);
+            return Number.isFinite(z) ? z : null;
+        };
+        const visibleAt = function (x, y) {
+            const profileZ = typeof window.corridorTerrainVisibleSurfaceAt === 'function'
+                ? window.corridorTerrainVisibleSurfaceAt(x, y) : null;
+            // A local tree/facade can cross the exterior boundary without contaminating the nearest
+            // longitudinal station. Include the cached direct top hit so curtain-only closure reaches
+            // that real rim; the solid wall remains hidden behind retained source geometry.
+            const boundaryZ = sampleTileSurfaceZ(x, y);
+            if (Number.isFinite(profileZ) && Number.isFinite(boundaryZ)) {
+                return Math.max(profileZ, boundaryZ);
+            }
+            if (Number.isFinite(profileZ)) return profileZ;
+            return Number.isFinite(boundaryZ) ? boundaryZ : null;
+        };
+        if (roadBoundary) {
+            polygonsOf(roadBoundary).forEach(function (rings) {
+                (rings || []).forEach(function (ring) {
+                    const sampledRing = window.__photorealSeam
+                        && typeof window.__photorealSeam.densifyClosedRing === 'function'
+                        ? window.__photorealSeam.densifyClosedRing(
+                            ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                        : ring;
+                    roadClearanceCurtainSegments += addRoadClearanceCurtain(
+                        sampledRing, apronGroup, supportAt, visibleAt);
+                });
+            });
+        }
         addRoadFloorPatchMeshes(maskShapesGroup, roadFloorPatches);
         addRoadFoundationPatchMeshes(apronGroup, roadFoundationPatches);
         const roadVectorCollars = addRoadCollarPatchMeshes(
@@ -1506,6 +1634,8 @@
                 roadFloorPatches: roadFloorPatches.length,
                 roadFoundationPatches: roadFoundationPatches.length,
                 roadVectorCollars: roadVectorCollars,
+                roadSeamBoundarySegments: roadSeamBoundarySegments,
+                roadClearanceCurtainSegments: roadClearanceCurtainSegments,
                 exactRoadMasks: exactRoadProposalIds.size,
                 roadFloorMin: roadEncoding.min,
                 roadFloorRange: roadEncoding.range,

@@ -2125,7 +2125,6 @@
     const CORRIDOR_TERRAIN_MAX_NODATA_GAP_M = 16;
     const CORRIDOR_DGU_PROFILE_STEP_M = 20;
     const CORRIDOR_DGU_MAX_GAP_M = 40;
-    const CORRIDOR_DGU_MAX_LOCAL_VARIANCE_M = 0.25;
     // Keep the engineered formation deliberately clear of the Google support surface. Asphalt is
     // another CORRIDOR_STRIP_Z above this, so the visible carriageway is about 10 cm over the
     // sampled mesh instead of becoming coplanar with individual photogrammetry triangles.
@@ -2169,32 +2168,32 @@
             && terrainReference.datum === 'EVRF2000'
             && Array.isArray(terrainReference.points)
             && typeof formation.referenceElevationAt === 'function'
-            && typeof formation.calibrateReferenceFormation === 'function') {
+            && typeof formation.fitReferenceGroundFormation === 'function') {
             const referenceProfile = formation.buildFormation(xy, function (_x, _y, station) {
                 return formation.referenceElevationAt(
                     terrainReference.points, station && station.s, CORRIDOR_DGU_MAX_GAP_M);
             }, { ...buildOptions, verticalOffsetM: 0 });
-            const calibrated = formation.calibrateReferenceFormation(referenceProfile, visibleProfile, {
+            const fittedGround = formation.fitReferenceGroundFormation(referenceProfile, visibleProfile, {
                 verticalOffsetM: requestedOffset,
                 source: terrainReference.source,
                 datum: terrainReference.datum,
                 resolutionM: terrainReference.resolutionM,
-                minimumPairs: 3,
-                minimumCoverage: 0.5,
-                maximumMadM: 1.5
+                minimumPairs: 2,
+                minimumCoverage: 0.1,
+                maximumMadM: 1,
+                lowerQuantile: 0.15,
+                anchorBandM: 1,
+                agreementToleranceM: 0.75,
+                obstacleMinHeightM: 1.5,
+                maximumGroundGrade: 0.2
             });
-            const locallyAligned = calibrated && calibrated.ok
-                && typeof formation.referenceFormationWithinVisibleTolerance === 'function'
-                && formation.referenceFormationWithinVisibleTolerance(
-                    calibrated, visibleProfile, CORRIDOR_DGU_MAX_LOCAL_VARIANCE_M);
-            if (locallyAligned) {
-                profile = calibrated;
-                profile.referenceStatus = 'accepted';
+            if (fittedGround && fittedGround.ok) {
+                profile = fittedGround;
             } else if (visibleProfile) {
-                visibleProfile.referenceStatus = calibrated && calibrated.ok
-                    ? 'rejected-local-variance'
-                    : (referenceProfile && referenceProfile.ok
-                        ? 'rejected-calibration' : 'invalid-reference-profile');
+                visibleProfile.referenceStatus = referenceProfile && referenceProfile.ok
+                    ? (fittedGround && fittedGround.reason
+                        ? fittedGround.reason : 'no-obstacle-backed-reference')
+                    : 'invalid-reference-profile';
             }
         }
         if (profile) {
@@ -2239,6 +2238,44 @@
             if (!best || sample.distance < best.distance) best = sample;
         });
         return best ? best.z : null;
+    }
+
+    // Interpolate the original Google top-hit support belonging to the same nearest accepted road
+    // profile. Photoreal mode uses this only to close the vertical void left when a canopy component
+    // lies wholly inside the road footprint and therefore never intersects the exterior cut plane.
+    function terrainVisibleSurfaceFromProfiles(profiles, x, y) {
+        const formation = window.__corridorTerrainFormation;
+        if (!formation || !Array.isArray(profiles)) return null;
+        let best = null;
+        profiles.forEach(profile => {
+            const sample = formation.projectToProfile(profile, x, y);
+            const stations = profile && Array.isArray(profile.stations) ? profile.stations : [];
+            if (!sample || !Number.isFinite(sample.distance) || !stations.length) return;
+            const supportRadius = Number(profile.supportRadiusSceneM);
+            if (Number.isFinite(supportRadius) && sample.distance > supportRadius) return;
+            const stationValue = station => {
+                if (Number.isFinite(station && station.googleSupportZ)) return station.googleSupportZ;
+                if (Number.isFinite(station && station.rawZ)) {
+                    return station.rawZ + (Number(profile.verticalOffsetM) || 0);
+                }
+                return Number.isFinite(station && station.z) ? station.z : null;
+            };
+            const index = Math.max(0, Math.min(stations.length - 1,
+                Number.isFinite(sample.segmentIndex) ? sample.segmentIndex : 0));
+            const a = stations[index];
+            const b = stations[Math.min(stations.length - 1, index + 1)];
+            const aValue = stationValue(a);
+            const bValue = stationValue(b);
+            let value = null;
+            if (Number.isFinite(aValue) && Number.isFinite(bValue)) {
+                const t = Number.isFinite(sample.t) ? sample.t : 0;
+                value = aValue + (bValue - aValue) * t;
+            } else if (Number.isFinite(aValue)) value = aValue;
+            else if (Number.isFinite(bValue)) value = bValue;
+            if (!Number.isFinite(value)) return;
+            if (!best || sample.distance < best.distance) best = { distance: sample.distance, value };
+        });
+        return best ? best.value : null;
     }
 
     function terrainHeightOrZero(heightAt, x, y) {
@@ -4355,6 +4392,8 @@
                     ? profile.calibrationOffsetM : null,
                 calibrationMadM: Number.isFinite(profile.calibrationMadM)
                     ? profile.calibrationMadM : null,
+                obstacleRuns: Number(profile.obstacleRuns) || 0,
+                obstacleStations: Number(profile.obstacleStations) || 0,
                 referenceStatus: profile.referenceStatus || null
             };
         }).filter(Boolean);
@@ -5596,6 +5635,10 @@
     };
     window.corridorTerrainHeightAt = function (x, y) {
         const z = terrainHeightFromProfiles(corridorTerrainProfiles, Number(x), Number(y));
+        return Number.isFinite(z) ? z : null;
+    };
+    window.corridorTerrainVisibleSurfaceAt = function (x, y) {
+        const z = terrainVisibleSurfaceFromProfiles(corridorTerrainProfiles, Number(x), Number(y));
         return Number.isFinite(z) ? z : null;
     };
     window.corridorTerrainHeightAtForProposal = function (proposalId, x, y) {

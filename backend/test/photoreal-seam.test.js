@@ -8,6 +8,7 @@ const {
     maskEdgeContract,
     intersectTriangleWithVerticalSegment,
     buildSeamFasciaQuads,
+    buildClearanceCurtainPositions,
     triangleDoubleArea,
     densifyClosedRing,
     buildSegmentGrid,
@@ -122,6 +123,44 @@ describe('photoreal seam intersection', () => {
     it('clips the plane intersection to the finite proposal boundary edge', () => {
         const triangle = [[0, 0, 0], [1, 0, 0], [0, 1, 0]];
         expect(intersectTriangleWithVerticalSegment(triangle, { a: [0.5, 2], b: [0.5, 3] })).toBeNull();
+    });
+});
+
+describe('photoreal road clearance curtain', () => {
+    it('builds one anchored neutral wall beneath a high visible canopy', () => {
+        const built = buildClearanceCurtainPositions(
+            [[0, 0], [4, 0]],
+            () => 1,
+            () => 8,
+            { bottomOffsetM: 0.03, minimumClearanceM: 0.5, topMarginM: 0.1 }
+        );
+
+        expect(built.segmentCount).toBe(1);
+        expect(built.positions).toHaveLength(18);
+        const heights = built.positions.filter((_, index) => index % 3 === 2);
+        expect(Math.min(...heights)).toBeCloseTo(1.03, 12);
+        expect(Math.max(...heights)).toBeCloseTo(8.1, 12);
+    });
+
+    it('emits no wall where visible ground is within the clearance threshold', () => {
+        const built = buildClearanceCurtainPositions(
+            [[0, 0], [4, 0]],
+            () => 1,
+            () => 1.4,
+            { bottomOffsetM: 0.03, minimumClearanceM: 0.5 }
+        );
+
+        expect(built).toEqual({ positions: [], segmentCount: 0 });
+    });
+
+    it('fails closed instead of inventing a wall without formation support', () => {
+        const built = buildClearanceCurtainPositions(
+            [[0, 0], [4, 0]],
+            () => null,
+            () => 12
+        );
+
+        expect(built).toEqual({ positions: [], segmentCount: 0 });
     });
 });
 

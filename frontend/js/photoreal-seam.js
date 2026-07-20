@@ -162,6 +162,53 @@
         return quads;
     }
 
+    // Build one neutral, depth-tested wall around an authored road's exterior boundary. Unlike a
+    // source-textured per-triangle fascia, this curtain cannot duplicate isolated canopy/roof
+    // triangles as floating shards. It is emitted only where a trusted formation exists and the
+    // original visible Google surface is materially higher than that formation.
+    function buildClearanceCurtainPositions(ringXY, supportAt, visibleAt, options) {
+        options = options || {};
+        if (!Array.isArray(ringXY) || ringXY.length < 2
+            || typeof supportAt !== 'function' || typeof visibleAt !== 'function') {
+            return { positions: [], segmentCount: 0 };
+        }
+        const bottomOffsetM = Number.isFinite(options.bottomOffsetM)
+            ? options.bottomOffsetM : 0.03;
+        const minimumClearanceM = Number.isFinite(options.minimumClearanceM)
+            ? Math.max(0, options.minimumClearanceM) : 0.5;
+        const topMarginM = Number.isFinite(options.topMarginM)
+            ? Math.max(0, options.topMarginM) : 0.1;
+        const maximumHeightM = Number.isFinite(options.maximumHeightM)
+            ? Math.max(0, options.maximumHeightM) : 30;
+        const epsilon = Number.isFinite(options.epsilon) && options.epsilon > 0
+            ? options.epsilon : 1e-6;
+        const sample = function (point) {
+            if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) {
+                return null;
+            }
+            const support = supportAt(point[0], point[1]);
+            if (!Number.isFinite(support)) return null;
+            const bottom = support + bottomOffsetM;
+            const visible = visibleAt(point[0], point[1]);
+            const top = Number.isFinite(visible) && visible > bottom + minimumClearanceM
+                ? Math.min(visible + topMarginM, bottom + maximumHeightM) : bottom;
+            return { x: point[0], y: point[1], bottom, top };
+        };
+        const positions = [];
+        let segmentCount = 0;
+        for (let index = 1; index < ringXY.length; index++) {
+            const a = sample(ringXY[index - 1]);
+            const b = sample(ringXY[index]);
+            if (!a || !b || (a.top <= a.bottom + epsilon && b.top <= b.bottom + epsilon)) continue;
+            positions.push(
+                a.x, a.y, a.top, a.x, a.y, a.bottom, b.x, b.y, b.bottom,
+                a.x, a.y, a.top, b.x, b.y, b.bottom, b.x, b.y, b.top
+            );
+            segmentCount += 1;
+        }
+        return { positions, segmentCount };
+    }
+
     function addUniqueIntersection(out, position, barycentric, epsilon) {
         const epsilonSq = epsilon * epsilon;
         for (let i = 0; i < out.length; i++) {
@@ -362,6 +409,7 @@
         maskEdgeContract,
         intersectTriangleWithVerticalSegment,
         buildSeamFasciaQuads,
+        buildClearanceCurtainPositions,
         triangleDoubleArea,
         densifyClosedRing,
         buildSegmentGrid,

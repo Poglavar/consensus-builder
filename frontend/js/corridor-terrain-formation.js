@@ -36,6 +36,17 @@
         return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
     }
 
+    function observedLowerQuantile(values, fraction) {
+        const sorted = (values || []).filter(finite).slice().sort(function (a, b) { return a - b; });
+        if (!sorted.length) return null;
+        const q = Math.max(0, Math.min(1, finite(Number(fraction)) ? Number(fraction) : 0.5));
+        // The seed must be an observed residual. Linear interpolation can land in the empty gap
+        // between a small exposed-ground cluster and a much larger canopy cluster, causing the
+        // subsequent coherence band to reject both groups.
+        const index = Math.max(0, Math.min(sorted.length - 1, Math.ceil(sorted.length * q) - 1));
+        return sorted[index];
+    }
+
     // DGU's profile endpoint returns true-metre chainages with nullable EVRF2000 elevations.
     // Interpolate only between nearby valid cells; a broad NoData area must fall back to the visible
     // Google profile rather than becoming an invented bridge across missing terrain.
@@ -114,14 +125,40 @@
         const coverage = pairs.length > 1
             ? (pairs[pairs.length - 1].s - pairs[0].s) / routeLength : 0;
         if (coverage + EPSILON < minimumCoverage) return null;
-        const offset = median(pairs.map(function (pair) { return pair.residual; }));
-        const mad = median(pairs.map(function (pair) { return Math.abs(pair.residual - offset); }));
+        // A road through canopy can have more elevated Google samples than exposed-ground samples.
+        // For a bare-earth reference, optionally fit the lowest coherent residual band instead of
+        // the route-wide median. Top-hit Google rays are one-sided: foliage raises them, while the
+        // lower residual cluster is where the two sources can actually describe the same ground.
+        const lowerEnvelopeAnchors = opts.lowerEnvelopeAnchors === true;
+        let calibrationPairs = pairs;
+        if (lowerEnvelopeAnchors) {
+            const anchorSeed = observedLowerQuantile(pairs.map(function (pair) { return pair.residual; }),
+                finite(Number(opts.lowerQuantile)) ? Number(opts.lowerQuantile) : 0.25);
+            const anchorBandM = finite(Number(opts.anchorBandM))
+                ? Math.max(0, Number(opts.anchorBandM)) : 1;
+            calibrationPairs = pairs.filter(function (pair) {
+                return finite(anchorSeed) && Math.abs(pair.residual - anchorSeed) <= anchorBandM;
+            });
+            if (calibrationPairs.length < minimumPairs) return null;
+        }
+        const offset = median(calibrationPairs.map(function (pair) { return pair.residual; }));
+        const mad = median(calibrationPairs.map(function (pair) {
+            return Math.abs(pair.residual - offset);
+        }));
         if (!finite(offset) || !finite(mad) || mad > maximumMadM + EPSILON) return null;
-        const inlierToleranceM = Math.max(2, mad * 3);
-        const inliers = pairs.filter(function (pair) {
+        const inlierToleranceM = lowerEnvelopeAnchors
+            ? Math.max(0.25, mad * 3)
+            : Math.max(2, mad * 3);
+        const inliers = calibrationPairs.filter(function (pair) {
             return Math.abs(pair.residual - offset) <= inlierToleranceM;
         });
-        if (inliers.length / pairs.length < 0.6) return null;
+        if (inliers.length < minimumPairs) return null;
+        if (!lowerEnvelopeAnchors && inliers.length / pairs.length < 0.6) return null;
+        if (lowerEnvelopeAnchors) {
+            const anchorCoverage = inliers.length > 1
+                ? (inliers[inliers.length - 1].s - inliers[0].s) / routeLength : 0;
+            if (anchorCoverage + EPSILON < minimumCoverage) return null;
+        }
         const verticalOffsetM = finite(Number(opts.verticalOffsetM)) ? Number(opts.verticalOffsetM) : 0;
         const stations = referenceProfile.stations.map(function (station, index) {
             const visible = visibleProfile.stations[index] || {};
@@ -146,28 +183,210 @@
             calibrationMadM: mad,
             calibrationPairs: pairs.length,
             calibrationInliers: inliers.length,
+            calibrationLowerEnvelope: lowerEnvelopeAnchors,
             calibrationCoverage: coverage,
             verticalOffsetM: verticalOffsetM
         };
     }
 
-    // A robust median datum fit is not enough for a road: a coarse reference can still diverge at
-    // individual stations and visibly leave the Google surface. Photoreal mode therefore accepts a
-    // calibrated reference only when its complete station envelope remains close to the visible
-    // Google-derived formation that it is meant to refine.
-    function referenceFormationWithinVisibleTolerance(candidate, visibleProfile, maximumDeltaM) {
-        const candidateStations = candidate && Array.isArray(candidate.stations)
-            ? candidate.stations : [];
-        const visibleStations = visibleProfile && Array.isArray(visibleProfile.stations)
-            ? visibleProfile.stations : [];
-        const limit = finite(Number(maximumDeltaM)) ? Math.max(0, Number(maximumDeltaM)) : 0.25;
-        if (!candidate || !candidate.ok || !visibleProfile || !visibleProfile.ok
-            || !candidateStations.length || candidateStations.length !== visibleStations.length) return false;
-        return candidateStations.every(function (station, index) {
-            const visible = visibleStations[index];
-            return visible && finite(station.z) && finite(visible.z)
-                && Math.abs(station.z - visible.z) <= limit + EPSILON;
+    // Lowest profile reachable from both directions without exceeding a plausible road grade.
+    // This is evidence only: it identifies abrupt elevated surface runs, but never becomes the road
+    // height itself. Using it as a datum would recreate the rejected coarse/minimum-surface sag.
+    function lowerMaximumGradeEnvelope(stations, values, maximumGrade) {
+        const grade = finite(Number(maximumGrade)) ? Math.max(0, Number(maximumGrade)) : 0.2;
+        const forward = values.slice();
+        const backward = values.slice();
+        for (let i = 1; i < values.length; i++) {
+            if (!finite(forward[i]) || !finite(forward[i - 1])) continue;
+            const ds = Math.max(0, stations[i].s - stations[i - 1].s);
+            forward[i] = Math.min(forward[i], forward[i - 1] + grade * ds);
+        }
+        for (let i = values.length - 2; i >= 0; i--) {
+            if (!finite(backward[i]) || !finite(backward[i + 1])) continue;
+            const ds = Math.max(0, stations[i + 1].s - stations[i].s);
+            backward[i] = Math.min(backward[i], backward[i + 1] + grade * ds);
+        }
+        return values.map(function (value, index) {
+            if (!finite(value)) return null;
+            const candidates = [value, forward[index], backward[index]].filter(finite);
+            return candidates.length ? Math.min.apply(null, candidates) : null;
         });
+    }
+
+    // Fuse a DTM only where two independent signals identify an obstacle: calibrated DGU lies well
+    // below Google's top surface AND that visible run rises faster than a plausible ground profile.
+    // A low DGU artefact beneath level Google ground therefore has no longitudinal evidence and is
+    // ignored. Accepted runs inherit DGU's relative shape, adjusted to meet the nearest trustworthy
+    // Google-ground anchors continuously; all exposed-ground stations retain exact Google heights.
+    function fitReferenceGroundFormation(referenceProfile, visibleProfile, options) {
+        const opts = options || {};
+        const failure = function (reason, details) {
+            return { ok: false, reason: reason, ...(details || {}) };
+        };
+        if (!referenceProfile || !referenceProfile.ok || !visibleProfile || !visibleProfile.ok) {
+            return failure('invalid-reference-or-visible-profile');
+        }
+        const visibleStations = Array.isArray(visibleProfile.stations) ? visibleProfile.stations : [];
+        const referenceStations = Array.isArray(referenceProfile.stations) ? referenceProfile.stations : [];
+        if (visibleStations.length < 2 || visibleStations.length !== referenceStations.length) {
+            return failure('reference-station-mismatch');
+        }
+        const verticalOffsetM = finite(Number(opts.verticalOffsetM))
+            ? Number(opts.verticalOffsetM)
+            : (finite(Number(visibleProfile.verticalOffsetM)) ? Number(visibleProfile.verticalOffsetM) : 0);
+        const calibrated = calibrateReferenceFormation(referenceProfile, visibleProfile, {
+            ...opts,
+            verticalOffsetM: verticalOffsetM,
+            lowerEnvelopeAnchors: true
+        });
+        if (!calibrated || !calibrated.ok) return failure('reference-calibration-failed');
+
+        const obstacleMinHeightM = finite(Number(opts.obstacleMinHeightM))
+            ? Math.max(0, Number(opts.obstacleMinHeightM)) : 1.5;
+        const agreementToleranceM = finite(Number(opts.agreementToleranceM))
+            ? Math.max(0, Number(opts.agreementToleranceM)) : 0.75;
+        const maximumGroundGrade = finite(Number(opts.maximumGroundGrade))
+            ? Math.max(0, Number(opts.maximumGroundGrade)) : 0.2;
+        const minimumPairs = finite(Number(opts.minimumPairs))
+            ? Math.max(1, Math.floor(Number(opts.minimumPairs))) : 3;
+        const minimumCoverage = finite(Number(opts.minimumCoverage))
+            ? Math.max(0, Math.min(1, Number(opts.minimumCoverage))) : 0.1;
+        const visibleSupport = visibleStations.map(function (station) {
+            return finite(station && station.rawZ)
+                ? station.rawZ + verticalOffsetM
+                : (finite(station && station.z) ? station.z : null);
+        });
+        const gradeEnvelope = lowerMaximumGradeEnvelope(
+            visibleStations, visibleSupport, maximumGroundGrade);
+        const deltas = visibleSupport.map(function (value, index) {
+            const referenceZ = calibrated.stations[index] && calibrated.stations[index].z;
+            return finite(value) && finite(referenceZ) ? value - referenceZ : null;
+        });
+        const trustedAnchors = deltas.map(function (delta, index) {
+            return finite(delta) && Math.abs(delta) <= agreementToleranceM ? index : null;
+        }).filter(function (index) { return index !== null; });
+        const routeLength = Math.max(EPSILON, Number(visibleProfile.length) || 0);
+        const anchorCoverage = trustedAnchors.length > 1
+            ? (visibleStations[trustedAnchors[trustedAnchors.length - 1]].s
+                - visibleStations[trustedAnchors[0]].s) / routeLength
+            : 0;
+        if (trustedAnchors.length < minimumPairs || anchorCoverage + EPSILON < minimumCoverage) {
+            return failure('insufficient-reference-anchors', {
+                referenceAgreementAnchors: trustedAnchors.length,
+                referenceAnchorCoverage: anchorCoverage
+            });
+        }
+
+        const candidateRuns = [];
+        let cursor = 0;
+        while (cursor < deltas.length) {
+            if (!(finite(deltas[cursor]) && deltas[cursor] >= obstacleMinHeightM)) {
+                cursor += 1;
+                continue;
+            }
+            const start = cursor;
+            while (cursor + 1 < deltas.length && finite(deltas[cursor + 1])
+                && deltas[cursor + 1] >= obstacleMinHeightM) cursor += 1;
+            candidateRuns.push({ start: start, end: cursor });
+            cursor += 1;
+        }
+
+        const acceptedRuns = candidateRuns.filter(function (run) {
+            for (let index = run.start; index <= run.end; index++) {
+                if (finite(visibleSupport[index]) && finite(gradeEnvelope[index])
+                    && visibleSupport[index] - gradeEnvelope[index] >= obstacleMinHeightM) return true;
+            }
+            return false;
+        });
+        if (!acceptedRuns.length) return failure('no-obstacle-evidence');
+
+        const replacementZ = new Map();
+        acceptedRuns.forEach(function (run) {
+            let leftAnchor = null;
+            let rightAnchor = null;
+            for (let index = run.start - 1; index >= 0; index--) {
+                if (trustedAnchors.includes(index)) { leftAnchor = index; break; }
+            }
+            for (let index = run.end + 1; index < visibleStations.length; index++) {
+                if (trustedAnchors.includes(index)) { rightAnchor = index; break; }
+            }
+            if (leftAnchor === null && rightAnchor === null) return;
+            const leftCorrection = leftAnchor === null ? null : deltas[leftAnchor];
+            const rightCorrection = rightAnchor === null ? null : deltas[rightAnchor];
+            for (let index = run.start; index <= run.end; index++) {
+                let correction = leftCorrection;
+                if (!finite(correction)) correction = rightCorrection;
+                if (finite(leftCorrection) && finite(rightCorrection)) {
+                    const span = visibleStations[rightAnchor].s - visibleStations[leftAnchor].s;
+                    const t = span > EPSILON
+                        ? (visibleStations[index].s - visibleStations[leftAnchor].s) / span : 0;
+                    correction = leftCorrection + (rightCorrection - leftCorrection) * t;
+                }
+                const referenceZ = calibrated.stations[index] && calibrated.stations[index].z;
+                if (finite(referenceZ) && finite(correction)) replacementZ.set(index, referenceZ + correction);
+            }
+        });
+        if (!replacementZ.size) return failure('obstacle-run-without-ground-anchor');
+
+        // Re-run the existing longitudinal filters over the hybrid *support* sequence. The original
+        // upper vertical-curve pass may already have propagated a canopy spike several stations into
+        // exposed ground; merely replacing the canopy stations would leave those approach ramps in
+        // place. Rebuilding from raw Google support plus DGU obstacle runs removes that contamination
+        // while preserving the renderer's established outlier and vertical-curve policy.
+        const hybridSupport = visibleSupport.map(function (value, index) {
+            const replacement = replacementZ.get(index);
+            return finite(replacement) ? replacement : value;
+        });
+        const refiltered = smoothFiniteRuns(
+            visibleStations,
+            hybridSupport,
+            Math.max(0, Math.floor(Number(visibleProfile.smoothingRadiusStations) || 0)),
+            finite(Number(visibleProfile.outlierThresholdM))
+                ? Number(visibleProfile.outlierThresholdM) : DEFAULT_OUTLIER_THRESHOLD_M
+        );
+        const refinedSupport = applyVerticalCurveEnvelope(
+            visibleStations,
+            refiltered,
+            Math.max(0, Math.floor(Number(visibleProfile.verticalCurvePasses) || 0))
+        );
+        if (visibleStations.length >= 4
+            && Math.hypot(visibleStations[0].x - visibleStations[visibleStations.length - 1].x,
+                visibleStations[0].y - visibleStations[visibleStations.length - 1].y) <= EPSILON
+            && finite(refinedSupport[0]) && finite(refinedSupport[refinedSupport.length - 1])) {
+            const seamZ = (refinedSupport[0] + refinedSupport[refinedSupport.length - 1]) / 2;
+            refinedSupport[0] = seamZ;
+            refinedSupport[refinedSupport.length - 1] = seamZ;
+        }
+        const stations = visibleStations.map(function (station, index) {
+            const replacement = replacementZ.get(index);
+            return {
+                ...station,
+                z: finite(refinedSupport[index]) ? refinedSupport[index] : station.z,
+                googleSupportZ: visibleSupport[index],
+                referenceZ: calibrated.stations[index] && calibrated.stations[index].z,
+                groundSource: finite(replacement) ? 'dgu-bare-earth' : 'google-visible-mesh'
+            };
+        });
+        return {
+            ...visibleProfile,
+            ok: stations.every(function (station) { return finite(station.z); }),
+            stations: stations,
+            source: opts.source || calibrated.source || 'dgu-dtm-20m',
+            datum: opts.datum || calibrated.datum || null,
+            resolutionM: calibrated.resolutionM,
+            calibrationOffsetM: calibrated.calibrationOffsetM,
+            calibrationMadM: calibrated.calibrationMadM,
+            calibrationPairs: calibrated.calibrationPairs,
+            calibrationInliers: calibrated.calibrationInliers,
+            calibrationCoverage: calibrated.calibrationCoverage,
+            referenceStatus: 'accepted-obstacle-filter',
+            referenceAgreementAnchors: trustedAnchors.length,
+            referenceAnchorCoverage: anchorCoverage,
+            obstacleRuns: acceptedRuns.length,
+            obstacleStations: replacementZ.size,
+            obstacleMinHeightM: obstacleMinHeightM,
+            maximumGroundGrade: maximumGroundGrade
+        };
     }
 
     function applyStationFrame(station, previous, next) {
@@ -1150,7 +1369,7 @@
         applyVerticalCurveEnvelope: applyVerticalCurveEnvelope,
         referenceElevationAt: referenceElevationAt,
         calibrateReferenceFormation: calibrateReferenceFormation,
-        referenceFormationWithinVisibleTolerance: referenceFormationWithinVisibleTolerance,
+        fitReferenceGroundFormation: fitReferenceGroundFormation,
         reconcileProfileEndpointHeights: reconcileProfileEndpointHeights,
         projectToProfile: projectToProfile,
         heightAt: heightAt,

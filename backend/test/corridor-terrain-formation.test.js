@@ -9,7 +9,7 @@ const {
     buildFormation,
     referenceElevationAt,
     calibrateReferenceFormation,
-    referenceFormationWithinVisibleTolerance,
+    fitReferenceGroundFormation,
     reconcileProfileEndpointHeights,
     projectToProfile,
     heightAt,
@@ -273,25 +273,170 @@ describe('DGU reference profile calibration', () => {
         expect(calibrateReferenceFormation(reference, noisy)).toBeNull();
     });
 
-    it('requires every calibrated station to remain close to the visible Google formation', () => {
-        const visible = buildFormation([[0, 0], [20, 0]], x => 2 - x * 0.01, {
-            maxSpacingM: 5, smoothingRadiusStations: 0, verticalOffsetM: 0.05
-        });
-        const aligned = {
-            ...visible,
-            stations: visible.stations.map(station => ({ ...station, z: station.z + 0.12 }))
-        };
-        const oneLocalDip = {
-            ...aligned,
-            stations: aligned.stations.map((station, index) => ({
-                ...station,
-                z: station.z - (index === 2 ? 0.6 : 0)
-            }))
-        };
+    it('uses DGU only through a sustained canopy run and keeps exposed Google ground exact', () => {
+        const reference = buildFormation(
+            [[0, 0], [120, 0]],
+            x => 120 - x * 0.01,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0 }
+        );
+        const visible = buildFormation(
+            [[0, 0], [120, 0]],
+            x => 2 - x * 0.01 + (x >= 35 && x <= 85 ? 10 : 0),
+            {
+                maxSpacingM: 5,
+                smoothingRadiusStations: 0,
+                verticalCurvePasses: 0,
+                verticalOffsetM: 0.05
+            }
+        );
 
-        expect(referenceFormationWithinVisibleTolerance(aligned, visible, 0.25)).toBe(true);
-        expect(referenceFormationWithinVisibleTolerance(oneLocalDip, visible, 0.25)).toBe(false);
+        const fitted = fitReferenceGroundFormation(reference, visible, {
+            verticalOffsetM: 0.05,
+            source: 'dgu-dtm-20m',
+            datum: 'EVRF2000',
+            lowerQuantile: 0.15,
+            anchorBandM: 1,
+            minimumPairs: 3,
+            minimumCoverage: 0.1,
+            agreementToleranceM: 0.75,
+            obstacleMinHeightM: 1.5,
+            maximumGroundGrade: 0.2
+        });
+
+        expect(fitted).toBeTruthy();
+        expect(fitted.referenceStatus).toBe('accepted-obstacle-filter');
+        expect(fitted.obstacleRuns).toBe(1);
+        expect(fitted.obstacleStations).toBeGreaterThan(5);
+        fitted.stations.forEach((station, index) => {
+            const expectedGround = 2 - station.x * 0.01 + 0.05;
+            expect(station.z).toBeCloseTo(expectedGround, 8);
+            if (station.x >= 35 && station.x <= 85) {
+                expect(station.groundSource).toBe('dgu-bare-earth');
+            } else {
+                expect(station.groundSource).toBe('google-visible-mesh');
+                expect(station.z).toBe(visible.stations[index].z);
+            }
+        });
     });
+
+    it('does not mistake a low DGU artefact beneath level Google ground for canopy', () => {
+        const reference = buildFormation(
+            [[0, 0], [100, 0]],
+            x => 120 - (x >= 40 && x <= 60 ? 8 : 0),
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0 }
+        );
+        const visible = buildFormation(
+            [[0, 0], [100, 0]],
+            () => 2,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0, verticalOffsetM: 0.05 }
+        );
+
+        expect(fitReferenceGroundFormation(reference, visible, {
+            verticalOffsetM: 0.05,
+            lowerQuantile: 0.15,
+            anchorBandM: 1,
+            minimumPairs: 3,
+            minimumCoverage: 0.1,
+            obstacleMinHeightM: 1.5,
+            maximumGroundGrade: 0.2
+        })).toMatchObject({ ok: false, reason: 'no-obstacle-evidence' });
+    });
+
+    it('keeps real hills on Google and refuses to guess under route-wide canopy', () => {
+        const hillReference = buildFormation(
+            [[0, 0], [100, 0]],
+            x => 120 + x * 0.12,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0 }
+        );
+        const hillVisible = buildFormation(
+            [[0, 0], [100, 0]],
+            x => 2 + x * 0.12,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0, verticalOffsetM: 0.05 }
+        );
+        expect(fitReferenceGroundFormation(hillReference, hillVisible, {
+            verticalOffsetM: 0.05,
+            lowerEnvelopeAnchors: true,
+            minimumPairs: 3,
+            minimumCoverage: 0.1
+        })).toMatchObject({ ok: false, reason: 'no-obstacle-evidence' });
+
+        const flatReference = buildFormation(
+            [[0, 0], [100, 0]],
+            () => 120,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0 }
+        );
+        const allCanopy = buildFormation(
+            [[0, 0], [100, 0]],
+            () => 12,
+            { maxSpacingM: 5, smoothingRadiusStations: 0, verticalCurvePasses: 0, verticalOffsetM: 0.05 }
+        );
+        expect(fitReferenceGroundFormation(flatReference, allCanopy, {
+            verticalOffsetM: 0.05,
+            minimumPairs: 3,
+            minimumCoverage: 0.1
+        })).toMatchObject({ ok: false, reason: 'no-obstacle-evidence' });
+    });
+
+    it('anchors a mostly covered road from a small coherent exposed-ground tail', () => {
+        const lengthM = 64.83969626388384;
+        const googleRaw = [
+            5.46, 5.63, 4.89, 5.13, 5.14, 4.19, 4.04, 6.47, 6.69,
+            6.10, 8.31, 7.70, 6.18, 7.40, 6.24, 1.44, 2.09, 1.44
+        ];
+        const dguPoints = [
+            { dM: 0, elevAslM: 110.76 },
+            { dM: 20, elevAslM: 111.20 },
+            { dM: 40, elevAslM: 111.92 },
+            { dM: 60, elevAslM: 111.62 },
+            { dM: 64.73, elevAslM: 111.62 }
+        ];
+        const points = googleRaw.map((_, index) => [index * lengthM / (googleRaw.length - 1), 0]);
+        const reference = buildFormation(
+            points,
+            (_x, _y, station) => referenceElevationAt(dguPoints, station.s, 40),
+            { maxSpacingM: 4, smoothingRadiusStations: 0, verticalCurvePasses: 0 }
+        );
+        const visible = buildFormation(
+            points,
+            (_x, _y, station) => googleRaw[Math.round(station.s / lengthM * (googleRaw.length - 1))],
+            {
+                maxSpacingM: 4,
+                smoothingRadiusStations: 0,
+                verticalCurvePasses: 0,
+                verticalOffsetM: 0.05
+            }
+        );
+
+        const fitted = fitReferenceGroundFormation(reference, visible, {
+            verticalOffsetM: 0.05,
+            lowerQuantile: 0.15,
+            anchorBandM: 1,
+            minimumPairs: 2,
+            minimumCoverage: 0.1,
+            maximumMadM: 1,
+            agreementToleranceM: 0.75,
+            obstacleMinHeightM: 1.5,
+            maximumGroundGrade: 0.2
+        });
+
+        expect(fitted.ok).toBe(true);
+        expect(fitted.referenceStatus).toBe('accepted-obstacle-filter');
+        expect(fitted.calibrationOffsetM).toBeCloseTo(-110.18, 2);
+        expect(fitted.referenceAgreementAnchors).toBe(3);
+        expect(fitted.obstacleStations).toBe(15);
+        expect(fitted.stations.slice(0, 15).every(station => (
+            station.groundSource === 'dgu-bare-earth'
+        ))).toBe(true);
+        expect(fitted.stations.slice(15).every(station => (
+            station.groundSource === 'google-visible-mesh'
+        ))).toBe(true);
+        const maximumGrade = fitted.stations.slice(1).reduce((maximum, station, index) => {
+            const previous = fitted.stations[index];
+            return Math.max(maximum, Math.abs(station.z - previous.z) / (station.s - previous.s));
+        }, 0);
+        expect(maximumGrade).toBeLessThanOrEqual(0.2);
+    });
+
 });
 
 describe('shared graph-node elevations', () => {
