@@ -17,8 +17,51 @@ const {
     offsetPoint,
     buildRuledStripPositions,
     buildPaddedRuledStripPositions,
-    buildRuledStripCollarPositions
+    buildRuledStripCollarPositions,
+    decideTerrainCorridorCommit
 } = require('../../frontend/js/corridor-terrain-formation.js');
+
+// The commit/retain decision for the terrain-corridor swap. The bug it fixes: one corridor whose
+// tiles have not streamed leaves its formation incomplete, which used to discard the ENTIRE build
+// (all-or-nothing gate) and carve nothing — even the corridors that fitted perfectly. Now a partial
+// build commits when there is no prior carve to protect, while never regressing an existing carve.
+describe('decideTerrainCorridorCommit', () => {
+    it('commits a full build (all corridors fitted)', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 12, cutPatches: 3, missingKeys: 0, priorCarve: false });
+        expect(d.commit).toBe(true);
+        expect(d.reason).toBe('full');
+    });
+
+    it('commits a PARTIAL first build — the fix: one unstreamed corridor no longer zeroes the carve', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 8, cutPatches: 2, missingKeys: 1, priorCarve: false });
+        expect(d.commit).toBe(true);
+        expect(d.reason).toBe('partial');
+    });
+
+    it('retains the prior build on an incomplete rebuild — never drops an already-carved corridor', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 8, cutPatches: 2, missingKeys: 1, priorCarve: true });
+        expect(d.commit).toBe(false);
+        expect(d.reason).toBe('partial-keep-prior');
+    });
+
+    it('does not replace an existing carve with a flat, uncarved group', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 6, cutPatches: 0, missingKeys: 1, priorCarve: true });
+        expect(d.commit).toBe(false);
+        expect(d.reason).toBe('no-carve-keep-prior');
+    });
+
+    it('does not commit an empty build', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 0, cutPatches: 0, missingKeys: 0, priorCarve: true });
+        expect(d.commit).toBe(false);
+        expect(d.reason).toBe('empty-build');
+    });
+
+    it('commits a flat-only first build (nothing to protect) rather than showing nothing', () => {
+        const d = decideTerrainCorridorCommit({ builtChildren: 4, cutPatches: 0, missingKeys: 1, priorCarve: false });
+        expect(d.commit).toBe(true);
+        expect(d.reason).toBe('flat-only');
+    });
+});
 
 function crossMagnitude(positions, triangleOffset) {
     const ax = positions[triangleOffset];

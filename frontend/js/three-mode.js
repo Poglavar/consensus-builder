@@ -4395,12 +4395,26 @@
         const missingKeys = Array.from(expectedKeys).filter(function (key) {
             return !completedKeys.has(key);
         });
-        if (!group.children.length || missingKeys.length) {
+        // Commit the corridors that fitted rather than discarding the whole build for one
+        // unstreamed corridor. decideTerrainCorridorCommit still retains the prior build in the
+        // cases that would REGRESS a carve (an incomplete rebuild over an existing carve, or a
+        // no-carve/empty build) — so this only ADDS the first-fit partial commit that used to
+        // produce zero carve when any corridor's tiles were not yet streamed.
+        const commitDecision = (window.__corridorTerrainFormation
+            && typeof window.__corridorTerrainFormation.decideTerrainCorridorCommit === 'function')
+            ? window.__corridorTerrainFormation.decideTerrainCorridorCommit({
+                builtChildren: group.children.length,
+                cutPatches: cutPatches.length,
+                missingKeys: missingKeys.length,
+                priorCarve: !!(terrainCorridorGroup && corridorTerrainCutPatches.length)
+            })
+            : { commit: !(!group.children.length || missingKeys.length), reason: 'fallback' };
+        if (!commitDecision.commit) {
             disposeTerrainCorridorGeometry(group);
             if (terrainCorridorGroup && corridorTerrainProfiles.length) {
                 try {
                     document.body.dataset.corridorTerrainRetained = JSON.stringify({
-                        reason: 'incomplete-visible-lod',
+                        reason: commitDecision.reason,
                         missingEntries: missingKeys,
                         failures: failures
                     });
@@ -4472,6 +4486,10 @@
                 dguReferences: terrainReferences instanceof Map ? terrainReferences.size : 0,
                 cutPatches: cutPatches.length,
                 stations: stationHeights.length,
+                // A partial commit carved the corridors that fitted; the listed entries are still
+                // waiting on tile streaming and render flat until a later refit completes them.
+                partial: missingKeys.length > 0,
+                missingEntries: missingKeys,
                 minZ: minZ,
                 maxZ: maxZ,
                 failures: failures,

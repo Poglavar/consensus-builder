@@ -1363,8 +1363,37 @@
         };
     }
 
+    // Whether rebuildTerrainCorridorGroup should COMMIT the freshly-built terrain group or RETAIN
+    // the previous one. The group is already per-entry mixed — a corridor entry that fitted carries
+    // a terrain deck + shader cut patch, an incomplete one falls back to a flat deck with no patch —
+    // so committing a PARTIAL build carves the corridors that fitted while the rest stay flat, which
+    // is strictly better than discarding everything for one unstreamed corridor. The invariant to
+    // preserve is "never regress": don't replace an existing carve with a flat/uncarved group, and
+    // don't drop an already-carved corridor because its tiles momentarily unloaded. So a partial
+    // build commits only when there is no prior carve to protect (the first-fit case that was
+    // producing zero carve); once a carve exists, an incomplete rebuild retains it, exactly as before.
+    // state: { builtChildren, cutPatches, missingKeys, priorCarve } (counts / boolean).
+    function decideTerrainCorridorCommit(state) {
+        const s = state || {};
+        const builtChildren = Number(s.builtChildren) || 0;
+        const cutPatches = Number(s.cutPatches) || 0;
+        const missingKeys = Number(s.missingKeys) || 0;
+        const priorCarve = !!s.priorCarve;
+        if (builtChildren <= 0) return { commit: false, reason: 'empty-build' };
+        if (cutPatches <= 0) {
+            return priorCarve
+                ? { commit: false, reason: 'no-carve-keep-prior' }
+                : { commit: true, reason: 'flat-only' };
+        }
+        if (missingKeys <= 0) return { commit: true, reason: 'full' };
+        return priorCarve
+            ? { commit: false, reason: 'partial-keep-prior' }
+            : { commit: true, reason: 'partial' };
+    }
+
     return {
         densifyPolyline: densifyPolyline,
+        decideTerrainCorridorCommit: decideTerrainCorridorCommit,
         buildFormation: buildFormation,
         applyVerticalCurveEnvelope: applyVerticalCurveEnvelope,
         referenceElevationAt: referenceElevationAt,
