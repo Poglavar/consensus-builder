@@ -2780,9 +2780,10 @@ function isAnyModalOpen() {
 // re-asking. null until the user has picked once.
 let lastBuildingLayerChoice = null;
 
-function setBuildingReferenceLayers(gdi, dgu) {
+function setBuildingReferenceLayers(gdi, dgu, osm) {
     const gdiBox = document.getElementById('showBuildings');
     const dguBox = document.getElementById('showBuildingsDgu');
+    const osmBox = document.getElementById('showBuildingsOsm');
     if (gdiBox && gdiBox.checked !== gdi) {
         gdiBox.checked = gdi;
         if (typeof toggleLayer === 'function') toggleLayer('buildings');
@@ -2791,22 +2792,26 @@ function setBuildingReferenceLayers(gdi, dgu) {
         dguBox.checked = dgu;
         if (typeof toggleLayer === 'function') toggleLayer('buildingsDgu');
     }
+    if (osmBox && osmBox.checked !== osm) {
+        osmBox.checked = osm;
+        if (typeof toggleLayer === 'function') toggleLayer('buildingsOsm');
+    }
 }
 
-// B with NOTHING on and no remembered choice: explain the two surveys once and let the user pick.
+// B with NOTHING on and no remembered choice: describe the layers once and let the user pick.
 // This is the only path that opens a dialog — see handleRoadDrawHotkey.
 async function promptBuildingLayerChoice() {
-    const message = `${translateRoadText('modal.buildingLayers.title', 'Which buildings to show?')}\n`
-        + `${translateRoadText('modal.buildingLayers.intro', 'Two surveys of the same city — they disagree, and that is worth seeing.')}\n\n`
+    const message = `${translateRoadText('modal.buildingLayers.title', 'Which buildings to show?')}\n\n`
         + `${translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)')} — `
         + `${translateRoadText('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.')}\n\n`
-        + `${translateRoadText('modal.buildingLayers.dgu', 'DGU cadastre (legal reference)')} — `
-        + `${translateRoadText('modal.buildingLayers.dguHint', 'The cadastre: what is officially registered. Reference only — nothing is ever cut against it.')}`;
+        + `${translateRoadText('modal.buildingLayers.dguHint', 'DGU cadastre: what is officially registered.')}\n\n`
+        + `${translateRoadText('modal.buildingLayers.osmHint', 'OSM buildings: the community map — the outlines drawn on the basemap.')}`;
 
     const choices = [
         { value: 'gdi', label: translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)') },
         { value: 'dgu', label: translateRoadText('modal.buildingLayers.dgu', 'DGU cadastre (legal reference)') },
-        { value: 'both', label: translateRoadText('modal.buildingLayers.both', 'Both') },
+        { value: 'osm', label: translateRoadText('modal.buildingLayers.osm', 'OSM buildings (matches the map)') },
+        { value: 'all', label: translateRoadText('modal.buildingLayers.all', 'All') },
         { value: 'cancel', label: translateRoadText('modal.buildingLayers.cancel', 'Cancel') }
     ];
 
@@ -2815,10 +2820,11 @@ async function promptBuildingLayerChoice() {
         : 'gdi';
     if (!answer || answer === 'cancel') return;
 
-    const gdi = answer === 'gdi' || answer === 'both';
-    const dgu = answer === 'dgu' || answer === 'both';
-    lastBuildingLayerChoice = { gdi, dgu };
-    setBuildingReferenceLayers(gdi, dgu);
+    const gdi = answer === 'gdi' || answer === 'all';
+    const dgu = answer === 'dgu' || answer === 'all';
+    const osm = answer === 'osm' || answer === 'all';
+    lastBuildingLayerChoice = { gdi, dgu, osm };
+    setBuildingReferenceLayers(gdi, dgu, osm);
 }
 
 // B toggles the building REFERENCE layers — flipped constantly while drawing roads through fabric,
@@ -2827,18 +2833,20 @@ async function promptBuildingLayerChoice() {
 //
 //   something on  → remember it, turn everything off. INSTANT, no dialog.
 //   nothing on    → restore the remembered choice. INSTANT, no dialog.
-//   nothing on and nothing ever chosen → the one and only dialog: DGU / GDI / both.
+//   nothing on and nothing ever chosen → the one and only dialog: GDI / DGU / OSM / all.
 function toggleBuildingReferenceLayers() {
     const gdiOn = !!document.getElementById('showBuildings')?.checked;
     const dguOn = !!document.getElementById('showBuildingsDgu')?.checked;
+    const osmOn = !!document.getElementById('showBuildingsOsm')?.checked;
 
-    if (gdiOn || dguOn) {
-        lastBuildingLayerChoice = { gdi: gdiOn, dgu: dguOn };
-        setBuildingReferenceLayers(false, false);
+    if (gdiOn || dguOn || osmOn) {
+        lastBuildingLayerChoice = { gdi: gdiOn, dgu: dguOn, osm: osmOn };
+        setBuildingReferenceLayers(false, false, false);
         return;
     }
     if (lastBuildingLayerChoice) {
-        setBuildingReferenceLayers(lastBuildingLayerChoice.gdi, lastBuildingLayerChoice.dgu);
+        // `osm` may be absent in a choice remembered before OSM existed — default it off.
+        setBuildingReferenceLayers(lastBuildingLayerChoice.gdi, lastBuildingLayerChoice.dgu, !!lastBuildingLayerChoice.osm);
         return;
     }
     promptBuildingLayerChoice();

@@ -575,8 +575,10 @@ function corridorEditorShiftText(flat, shift) {
     return `${corridorEditorFormatMeters(Math.abs(shift))} m ${corridorEditorSideLabel(flat, shift < 0)}`;
 }
 
-// What the corridor min width becomes without one pinch obstacle — the "what would demolishing
-// it buy" number, one resample with that obstacle left out.
+// The widest buildable road without one obstacle in the way — the "what would demolishing it
+// buy" number, one resample with that obstacle left out. Reported as fitMaxWidth (the widest a
+// straight road can be placed), not the total gap, so it honestly reflects whether removing that
+// one wall actually unlocks room for a wider road.
 function corridorEditorWhatIfWithout(clearance, obstacleId) {
     const state = corridorEditorState;
     if (!state || !clearance) return null;
@@ -590,7 +592,7 @@ function corridorEditorWhatIfWithout(clearance, obstacleId) {
     const stats = flat.length
         ? corridorClearanceStats(flat, corridorProfileWidth(state.profile), { maxDistance: CORRIDOR_CLEARANCE_MAX })
         : null;
-    return stats ? { minWidth: stats.minWidth, unbounded: stats.minWidthUnbounded } : null;
+    return stats ? { fitMaxWidth: stats.fitMaxWidth, unbounded: stats.fitMaxUnbounded } : null;
 }
 
 // The width-profile chart: chainage along the road against the corridor width there, with the
@@ -663,10 +665,13 @@ function corridorEditorCorridorBodyHtml() {
         ? `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.noObstacles', 'No buildings are loaded near this road, so nothing constrains the corridor yet.')}</div>`
         : '';
 
-    const minText = `${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.minWidth)} m`;
-    const delta = stats.minWidth - width;
-    const deltaText = delta >= 0
-        ? `<span class="corridor-stats-delta corridor-stats-delta--ok">${corridorEditorI18n('modal.corridor.roomToWiden', 'Room to widen: +{{delta}} m', { delta: corridorEditorFormatMeters(delta) })}</span>`
+    // The headline is the honest buildable width — the widest a straight road can be placed here
+    // (fitMaxWidth), not the total gap. It agrees with the fit verdict below by construction: a
+    // negative delta means the road cannot fit even if moved.
+    const minText = `${stats.fitMaxUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.fitMaxWidth)} m`;
+    const delta = stats.fitMaxWidth - width;
+    const deltaText = delta >= -0.05
+        ? `<span class="corridor-stats-delta corridor-stats-delta--ok">${corridorEditorI18n('modal.corridor.roomToWiden', 'Room to widen: +{{delta}} m', { delta: corridorEditorFormatMeters(Math.max(0, delta)) })}</span>`
         : `<span class="corridor-stats-delta corridor-stats-delta--over">${corridorEditorI18n('modal.corridor.overCorridor', 'Too wide for the corridor by {{delta}} m', { delta: corridorEditorFormatMeters(-delta) })}</span>`;
 
     // Fit: only a single scoped segment can be moved as one piece (pick a segment on a network).
@@ -684,8 +689,13 @@ function corridorEditorCorridorBodyHtml() {
             <button type="button" class="btn btn-primary corridor-fit-move" data-shift="${fit.shift}"${minted ? ' disabled' : ''}>
                 ${corridorEditorI18n('modal.corridor.moveToFit', 'Move road {{move}}', { move: corridorEditorShiftText(flat, fit.shift) })}
             </button>`;
+    } else if (stats.minWidth >= width - 0.05) {
+        // The total gap is wide enough everywhere, but the corridor winds relative to the
+        // centerline, so a STRAIGHT road cannot follow it. Bending the road (drawing mode) is the
+        // honest fix here — not demolition, which wouldn't change the winding.
+        fitHtml = `<div class="corridor-stats-fit-none">${corridorEditorI18n('modal.corridor.noFitWinds', "Does not fit even if moved — there is room, but the corridor bends, so a straight {{width}} m road can't follow it. Switch to drawing mode to curve the road through the space.", { width: corridorEditorFormatMeters(width) })}</div>`;
     } else {
-        fitHtml = `<div class="corridor-stats-fit-none">${corridorEditorI18n('modal.corridor.noFit', 'Does not fit even if moved — the corridor narrows to {{min}} m.', { min: corridorEditorFormatMeters(stats.minWidth) })}</div>`;
+        fitHtml = `<div class="corridor-stats-fit-none">${corridorEditorI18n('modal.corridor.noFit', 'Does not fit even if moved — the widest straight road that fits here is {{max}} m.', { max: `${stats.fitMaxUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.fitMaxWidth)}` })}</div>`;
     }
 
     // A pending widening can be taken from one side instead of both: widen symmetrically, then
@@ -714,15 +724,19 @@ function corridorEditorCorridorBodyHtml() {
 
     // The pinch and what removing its obstacles would buy — the "what would demolition unlock" line.
     const pinchLines = [];
-    pinchLines.push(corridorEditorI18n('modal.corridor.narrowest', 'Narrowest point: {{width}} m (marked on the map)', { width: `${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.minWidth)}` }));
-    [['leftObstacle', false], ['rightObstacle', true]].forEach(([sideKey, flip]) => {
-        const obstacle = stats.pinch[sideKey];
+    pinchLines.push(corridorEditorI18n('modal.corridor.narrowest', 'Narrowest cross-section: {{width}} m of total space (marked on the map)', { width: `${stats.minWidthUnbounded ? '≥ ' : ''}${corridorEditorFormatMeters(stats.minWidth)}` }));
+    // What removing the wall that pins each side would buy — measured against the honest buildable
+    // width (fitMaxWidth) and targeting the walls at minLeft/minRight, which actually limit a
+    // straight road, rather than the narrowest-total-gap obstacles. Only shown when demolishing
+    // that one wall genuinely lets a wider road fit.
+    [['minLeftObstacle', false], ['minRightObstacle', true]].forEach(([sideKey, flip]) => {
+        const obstacle = stats[sideKey];
         if (!obstacle || obstacle.kind !== 'building') return;
         const whatIf = corridorEditorWhatIfWithout(clearance, obstacle.obstacleId);
-        if (!whatIf || whatIf.minWidth <= stats.minWidth + 0.05) return;
-        pinchLines.push(corridorEditorI18n('modal.corridor.whatIfDemolished', 'Without the building on the {{side}} side: {{width}} m', {
+        if (!whatIf || whatIf.fitMaxWidth <= stats.fitMaxWidth + 0.05) return;
+        pinchLines.push(corridorEditorI18n('modal.corridor.whatIfDemolished', 'Without the building to the {{side}}: build up to {{width}} m', {
             side: corridorEditorSideLabel(flat, flip),
-            width: `${whatIf.unbounded ? '≥ ' : ''}${corridorEditorFormatMeters(whatIf.minWidth)}`
+            width: `${whatIf.unbounded ? '≥ ' : ''}${corridorEditorFormatMeters(whatIf.fitMaxWidth)}`
         }));
     });
 

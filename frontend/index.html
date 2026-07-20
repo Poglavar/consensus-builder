@@ -584,11 +584,12 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <!-- Two surveys of the same city, and they disagree. GDI is the working set —
+                    <!-- Three views of the same city, and they disagree. GDI is the working set —
                          the objects the 3D model, the carve and every demolition record use. DGU is
-                         the cadastre, a legal reference only. Both can be ticked at once: overlaying
-                         them is how the disagreement becomes visible. Neither toggle changes what a
-                         corridor cuts. -->
+                         the cadastre, a legal reference only. OSM is the community map behind the
+                         basemap, so its outlines match the tiles on screen. Any can be ticked at
+                         once: overlaying them is how the disagreement becomes visible. None of these
+                         toggles changes what a corridor cuts. -->
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
@@ -598,6 +599,10 @@
                             <label>
                                 <input type="checkbox" id="showBuildingsDgu" onchange="toggleLayer('buildingsDgu')">
                                 <span data-i18n-key="sidebar.buildings.showDgu">DGU cadastre (legal reference)</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showBuildingsOsm" onchange="toggleLayer('buildingsOsm')">
+                                <span data-i18n-key="sidebar.buildings.showOsm">OSM buildings (matches the map)</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="showProposedBuildings"

@@ -70,6 +70,32 @@ describe('corridorClearanceStats', () => {
         expect(stats.pinch.rightObstacle.obstacleId).toBe('south');
         expect(stats.minLeft).toBeCloseTo(5, 6);
         expect(stats.minRight).toBeCloseTo(4, 6);
+        // Both walls pinch the same stretch, so the buildable width equals the total gap here.
+        expect(stats.fitMaxWidth).toBeCloseTo(9, 6);
+        expect(stats.fitMaxUnbounded).toBe(false);
+        expect(stats.minLeftObstacle.obstacleId).toBe('north');
+        expect(stats.minRightObstacle.obstacleId).toBe('south');
+    });
+
+    it('buildable width is minLeft+minRight, well below the total gap when the corridor winds', () => {
+        // A left wall pins one stretch and a right wall a different stretch, so the total gap is
+        // never tight (one side is always open) — yet a STRAIGHT road is limited to 3 + 3 m. This
+        // is the case that used to headline the generous 53 m and then say "does not fit".
+        const leftNear = box('leftnear', 10, 30, 3, 13);
+        const rightNear = box('rightnear', 70, 90, -13, -3);
+        const samples = corridorClearanceSamples(CENTERLINE, [leftNear, rightNear], OPTIONS);
+        const stats = corridorClearanceStats(samples, 8, OPTIONS);
+        expect(stats.minWidth).toBeCloseTo(53, 6);   // 3 + open(50): the total gap looks generous
+        expect(stats.fitMaxWidth).toBeCloseTo(6, 6);  // the honest number — a straight road fits 3 + 3
+        expect(stats.fitMaxUnbounded).toBe(false);
+        expect(stats.minLeftObstacle.obstacleId).toBe('leftnear');
+        expect(stats.minRightObstacle.obstacleId).toBe('rightnear');
+        // fitMaxWidth (6) < road (8) predicts the fit is infeasible — and corridorFitShift agrees.
+        expect(corridorFitShift(samples, 8, { ...OPTIONS, margin: 0 }).feasible).toBe(false);
+        // Demolishing the left wall re-opens that side, lifting buildable width to 3 + 50.
+        const withoutLeft = corridorClearanceStats(
+            corridorClearanceSamples(CENTERLINE, [rightNear], OPTIONS), 8, OPTIONS);
+        expect(withoutLeft.fitMaxWidth).toBeCloseTo(53, 6);
     });
 
     it('treats open stations as maxDistance of room, flagged unbounded', () => {

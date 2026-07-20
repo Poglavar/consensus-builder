@@ -120,16 +120,28 @@
         let minEntry = widths[0];
         let maxEntry = widths[0];
         let sum = 0;
-        let minLeft = Infinity;
-        let minRight = Infinity;
         widths.forEach(entry => {
             if (entry.width < minEntry.width) minEntry = entry;
             if (entry.width > maxEntry.width) maxEntry = entry;
             sum += entry.width;
         });
+        // Tightest clearance on each side, taken INDEPENDENTLY — the two minima can fall at
+        // different stations. Their sum is the widest a STRAIGHT road can be squeezed in here
+        // once slid to the best offset; min(L+R) is only reachable by a road that bends to
+        // follow the corridor, so it overstates the buildable width whenever the corridor winds.
+        // The obstacle forming each tight side is kept so "what would demolishing it buy" can
+        // target the real binding constraint rather than the narrowest total gap.
+        let minLeft = Infinity;
+        let minRight = Infinity;
+        let minLeftObstacle = null;
+        let minRightObstacle = null;
+        let minLeftUnbounded = true;
+        let minRightUnbounded = true;
         samples.forEach(sample => {
-            minLeft = Math.min(minLeft, sample.left ? sample.left.distance : maxDistance);
-            minRight = Math.min(minRight, sample.right ? sample.right.distance : maxDistance);
+            const L = sample.left ? sample.left.distance : maxDistance;
+            const R = sample.right ? sample.right.distance : maxDistance;
+            if (L < minLeft) { minLeft = L; minLeftObstacle = sample.left || null; minLeftUnbounded = !sample.left; }
+            if (R < minRight) { minRight = R; minRightObstacle = sample.right || null; minRightUnbounded = !sample.right; }
         });
 
         const pinchSample = samples[minEntry.index];
@@ -142,6 +154,14 @@
             avgWidth: sum / widths.length,
             minLeft,
             minRight,
+            // The widest a straight road can physically be placed here — centred at the best
+            // offset, i.e. after the sideways shift the fit tool offers. This is the honest
+            // "how wide can I build" number; when it is below the current width, no shift or
+            // demolition of a single wall will make a straight road of that width fit.
+            fitMaxWidth: minLeft + minRight,
+            fitMaxUnbounded: minLeftUnbounded || minRightUnbounded,
+            minLeftObstacle,
+            minRightObstacle,
             // The road fits in place when every station leaves half the road on each side.
             fitsAsIs: minLeft >= width / 2 - CLEARANCE_EPS && minRight >= width / 2 - CLEARANCE_EPS,
             pinch: {

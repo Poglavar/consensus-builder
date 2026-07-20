@@ -40,11 +40,13 @@ let TOTAL_SPENT = 0; // Total amount spent on roads in EUR
 // Global map variables
 // buildingLayer draws the GDI footprints — the WORKING SET (object_id), the same objects the 3D
 // meshes and the carve use. dguBuildingLayer draws the DGU cadastre (zgrada_id) as a pure visual
-// reference. They are independent: both can be on at once, which is how you SEE the two surveys
-// disagree. NEITHER is ever read by detection — that reads buildingFeaturePool (the DATA), so no
-// checkbox can change what a corridor cuts.
+// reference. osmBuildingLayer draws the OSM footprints behind the basemap — a third visual
+// reference that lines up with the tiles the user sees. They are independent: any of them can be on
+// at once, which is how you SEE the surveys disagree. NONE is ever read by detection — that reads
+// buildingFeaturePool (the DATA), so no checkbox can change what a corridor cuts.
 let buildingLayer = null;
 let dguBuildingLayer = null;
+let osmBuildingLayer = null;
 let roadLayer = null;
 let blockLayer = null;
 let currentCenterline = null;
@@ -476,6 +478,54 @@ function hideDguBuildingLayer() {
 }
 window.hideDguBuildingLayer = hideDguBuildingLayer;
 
+// The OSM buildings reference layer — the community footprints behind the basemap, so its outlines
+// coincide with the tiles the user sees (GDI/DGU come from other surveys and drift from them). Live
+// via Overpass through our backend (cached by viewport box), and like DGU it is purely visual: it
+// feeds nothing, is never detected against and is never cut. The bbox is WGS84 straight off the map
+// bounds — no HTRS96 conversion, unlike the GDI/DGU fetches.
+async function fetchOsmBuildings(boundsOverride = null) {
+    if (!boundsOverride) {
+        try {
+            const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+            if (!isFinite(z) || z < 17 || z > 19) return;
+        } catch (_) { /* noop */ }
+    }
+    try {
+        const bounds = boundsOverride || map.getBounds();
+        const sw = bounds.getSouthWest();
+        const ne = bounds.getNorthEast();
+        const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
+        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
+        const data = await response.json();
+
+        if (osmBuildingLayer) {
+            try { map.removeLayer(osmBuildingLayer); } catch (_) { }
+        }
+        osmBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (data?.features || []) }, {
+            // Reference only: it must never intercept clicks meant for the parcels beneath it.
+            interactive: false,
+            style: { fillColor: '#059669', fillOpacity: 0.08, color: '#059669', weight: 1, dashArray: '4 3' }
+        });
+        const checkbox = document.getElementById('showBuildingsOsm');
+        if (!checkbox || checkbox.checked) osmBuildingLayer.addTo(map);
+        try { window.osmBuildingLayer = osmBuildingLayer; } catch (_) { }
+    } catch (error) {
+        console.error('Error fetching OSM building data:', error);
+    }
+}
+window.fetchOsmBuildings = fetchOsmBuildings;
+
+function hideOsmBuildingLayer() {
+    if (osmBuildingLayer) {
+        try { map.removeLayer(osmBuildingLayer); } catch (_) { }
+    }
+}
+window.hideOsmBuildingLayer = hideOsmBuildingLayer;
+
 // Rebuild the visible 2D GDI building layer from the pooled features, recoloured by what every
 // APPLIED corridor did to each building. Called after fetches and after corridor apply/unapply/edit.
 //
@@ -570,6 +620,12 @@ function setupMapEventHandlers() {
             });
         }
 
+        // The OSM reference layer's whole point is to match the tiles in view, so it follows the
+        // map: refetch the new viewport when its checkbox is on (the backend caches by box, and the
+        // fetch is zoom-gated, so a pan is cheap and a repeat view is free).
+        const osmBox = document.getElementById('showBuildingsOsm');
+        if (osmBox && osmBox.checked && typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+
         isMapMoving = false;
     });
 
@@ -596,6 +652,7 @@ function setupMapEventHandlers() {
                 try { map.removeLayer(window.buildingLayer); } catch (_) { }
             }
             hideDguBuildingLayer();
+            hideOsmBuildingLayer();
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
         } else {
             // If user zoomed back in and parcels are enabled, ensure layer is added
