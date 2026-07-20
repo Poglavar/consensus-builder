@@ -125,7 +125,12 @@ async function fetchOsmBuildings(bbox, options = {}) {
     try {
         const resp = await fetch(overpassUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
+                // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
+                'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)'
+            },
             body: `data=${encodeURIComponent(buildOverpassQuery(bbox))}`,
             signal: controller.signal
         });
