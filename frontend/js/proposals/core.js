@@ -865,21 +865,25 @@ function resolveFrontendBaseUrl() {
     return 'https://urbangametheory.xyz';
 }
 
+// Abstract 3D "model" view. Canonical: ?model. Back-compat aliases: ?mode3d / ?3d.
 function is3DModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        // Realistic (photoreal) mode is a sub-mode of 3D, so any realistic request also requests 3D.
-        return isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d') || isRealisticModeRequestedFromUrl(p);
+        // The "photo" view is a sub-mode of "model", so any photo request also requests model.
+        return isTruthyUrlFlag(p, 'model') || isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d')
+            || isRealisticModeRequestedFromUrl(p);
     } catch (_) {
         return false;
     }
 }
 
-// Realistic (Google Photorealistic 3D Tiles) mode. Aliases: ?real / ?rl / ?rw.
+// Photorealistic (Google Photorealistic 3D Tiles) "photo" view. Canonical: ?photo.
+// Back-compat aliases: ?real / ?rl / ?rw.
 function isRealisticModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        return isTruthyUrlFlag(p, 'real') || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
+        return isTruthyUrlFlag(p, 'photo') || isTruthyUrlFlag(p, 'real')
+            || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
     } catch (_) {
         return false;
     }

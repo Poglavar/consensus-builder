@@ -3206,6 +3206,69 @@
         });
     }
 
+    // Every APPLIED park/square/lake footprint, as a clearance region { region, bbox }. A structure
+    // footprint IS a clearance region: it razes the ground under it by default. See
+    // structureClearanceCarve for why this record-less fallback exists.
+    function collectAppliedStructureClearanceRegions() {
+        const regions = [];
+        if (typeof turf === 'undefined' || typeof proposalStorage === 'undefined') return regions;
+        try {
+            (proposalStorage.getAllProposals() || []).forEach(proposal => {
+                const sp = proposal && proposal.structureProposal;
+                if (!sp || !sp.geometry || !sp.geometry.type) return;
+                if (!isApplied(proposal, sp)) return;
+                try {
+                    const region = { type: 'Feature', properties: {}, geometry: sp.geometry };
+                    regions.push({ region, bbox: turf.bbox(region) });
+                } catch (_) { }
+            });
+        } catch (error) {
+            console.error('[three-mode] structure clearance regions could not be collected', error);
+        }
+        return regions;
+    }
+
+    // Carve one 3D mesh against the applied structure regions, in the SAME shape the record-based
+    // carve returns: null (untouched) / { remainder: null, demolished } (razed whole) /
+    // { remainder, demolished } (partial, at the footprint edge). The record carve
+    // (carveBuildingByObjectId) hides a mesh only if the 2D footprint scan produced a record whose
+    // id === object_id; a building that scan missed — a coverage gap, or a /buildings/near mesh with
+    // no counterpart in the 2D footprint pool — has NO record and would otherwise survive inside the
+    // park. This is the record-less clearance carve commit 18cf211 removed, now scoped to structures
+    // only (roads keep their precise record-based cut, which handles tunnels and partial slices). A
+    // park is a region, not a precise cut, so the hull-footprint approximation is immaterial here.
+    function structureClearanceCarve(bld, regions) {
+        if (!regions || !regions.length || typeof turf === 'undefined') return null;
+        try {
+            const footprint = buildingFootprintPolygon(bld);
+            if (!footprint) return null;
+            const footprintBbox = turf.bbox(footprint);
+            const bboxesOverlap = (a, b) => a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
+            let demolishedUnion = null;
+            for (const { region, bbox } of regions) {
+                if (!bboxesOverlap(footprintBbox, bbox)) continue;
+                let part = null;
+                try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
+                if (!part || (Number(turf.area(part)) || 0) < 2) continue;
+                if (!demolishedUnion) demolishedUnion = part;
+                else { try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (_) { } }
+            }
+            if (!demolishedUnion) return null;
+            let remainder = null;
+            try { remainder = turf.difference(footprint, demolishedUnion); } catch (_) { remainder = null; }
+            const footprintArea = Number(turf.area(footprint)) || 0;
+            const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
+            const minArea = window.CARVE_MIN_REMAINDER_AREA_M2 || 10;
+            const minFraction = window.CARVE_MIN_REMAINDER_FRACTION || 0.15;
+            // Same sliver rule as the 2D cut: a remainder under max(10 m², 15%) is not worth keeping —
+            // the whole building reads as demolished (small sheds fully inside a park clear cleanly).
+            if (!remainder || remainderArea < Math.max(minArea, footprintArea * minFraction)) {
+                return { remainder: null, demolished: (demolishedUnion.geometry) || footprint.geometry };
+            }
+            return { remainder: remainder.geometry, demolished: demolishedUnion.geometry };
+        } catch (_) { return null; }
+    }
+
     function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, visibility = {}) {
         // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
         // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
@@ -3238,10 +3301,13 @@
             // null → untouched; { remainder: null, demolished } → whole building razed;
             // { remainder, demolished } → partial: prisms for both parts. Both are raw geometries.
             const asFeature = (geometry) => (geometry ? { type: 'Feature', properties: {}, geometry } : null);
+            // Structures clear their whole footprint even for meshes the 2D scan never recorded.
+            const structureRegions = collectAppliedStructureClearanceRegions();
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
                     try {
-                        const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords);
+                        const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords)
+                            || structureClearanceCarve(bld, structureRegions);
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
                             if (!renderParts.detailed) return;

@@ -329,6 +329,13 @@
     const CARVE_APRON_TOP_Z = -0.02;    // cap height: just under the z=0 content
     const CARVE_PLINTH_DEPTH_M = 4;     // fallback skirt depth where no terrain sample is available
     const CARVE_APRON_COLOR = 0x6e7563; // muted earth-green: plausible under grass and asphalt alike
+    // A structure clears its footprint down to the apron cap, so the cap IS the placed surface seen
+    // from above — colour it per kind instead of bare earth so a lake reads as water, a square as
+    // paving and a park as grass. (The abstract recessed lake basin sits below the cap and is hidden
+    // in photo mode; the flat coloured cap stands in for it.)
+    const CARVE_APRON_WATER_COLOR = 0x3a8ad3;  // lake water (matches the 3D water material family)
+    const CARVE_APRON_PARK_COLOR = 0x6f8f4f;   // mown grass
+    const CARVE_APRON_SQUARE_COLOR = 0xb8b0a2; // light concrete paving
     const CURTAIN_CONTENT_TOP_Z = 0.06;    // reach up to the park/plaza surface level
     const CURTAIN_TOP_MARGIN_M = 0.1;      // overlap the rim / content — no hairline seam
     const CURTAIN_BOTTOM_MARGIN_M = 1.0;   // sink below the lower of content/terrain
@@ -378,6 +385,9 @@
     let maskMaterialRoad = null; // blue + alpha mask = road class + encoded local formation height
     let apronGroup = null;
     let apronMaterial = null;
+    let apronMaterialWater = null;   // lake cap
+    let apronMaterialPark = null;    // park cap
+    let apronMaterialSquare = null;  // square/plaza cap
     let roadFoundationMaterial = null;
     let roadCollarMaterial = null;
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
@@ -485,13 +495,18 @@
                 });
             }
         });
-        // Applied structures. Squares/lakes/stations pave or flood the ground (full cut), but a
-        // PARK keeps its trees and hedges — it only removes the tile lawn (keep-veg), so Google's
-        // vegetation isn't sliced into sky-windows at the park edges.
+        // Applied structures clear their whole footprint (full cut): parks, squares, lakes and
+        // stations all flatten everything under them — buildings, trees, hedges and ground alike —
+        // leaving clean terrain for the CB structure design placed on top. (Parks used to keep-veg,
+        // preserving Google's trees, but a structure is meant to be a cleared slate for its proposal.)
         appliedStructureProposals().forEach(function (proposal) {
             if (!passesIsolation(proposal)) return;
-            const isPark = proposal.structureProposal && proposal.structureProposal.kind === 'park';
-            out.push({ geometry: proposal.structureProposal.geometry, kind: 'covered', mode: isPark ? 'keepveg' : 'full' });
+            out.push({
+                geometry: proposal.structureProposal.geometry,
+                kind: 'covered',
+                mode: 'full',
+                structureKind: proposal.structureProposal.kind || null
+            });
         });
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
         // that razed them). Cut records are skipped — their demolished part lies inside a
@@ -596,6 +611,10 @@
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
         // camera would look straight through the seal into the hole. A solid earth wall has no back.
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
+        // Per-structure cap surfaces (top cap only — curtain walls stay earth-coloured).
+        apronMaterialWater = new THREE.MeshBasicMaterial({ color: CARVE_APRON_WATER_COLOR, side: THREE.DoubleSide });
+        apronMaterialPark = new THREE.MeshBasicMaterial({ color: CARVE_APRON_PARK_COLOR, side: THREE.DoubleSide });
+        apronMaterialSquare = new THREE.MeshBasicMaterial({ color: CARVE_APRON_SQUARE_COLOR, side: THREE.DoubleSide });
         roadFoundationMaterial = new THREE.MeshLambertMaterial({
             color: ROAD_FOUNDATION_COLOR,
             side: THREE.DoubleSide,
@@ -1565,7 +1584,13 @@
                     mask.renderOrder = road ? 2 : (keepVeg ? 0 : 1);
                     maskShapesGroup.add(mask);
                     if (!entry.skipCap) {
-                        const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), apronMaterial);
+                        // The cap IS the placed structure surface seen from above: colour it by kind
+                        // (lake→water, square→paving, park→grass) so a cleared lake isn't bare earth.
+                        const capMaterial = entry.structureKind === 'lake' ? apronMaterialWater
+                            : (entry.structureKind === 'square' ? apronMaterialSquare
+                                : (entry.structureKind === 'park' ? apronMaterialPark
+                                    : apronMaterial));
+                        const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), capMaterial);
                         cap.position.z = CARVE_APRON_TOP_Z;
                         cap.frustumCulled = false;
                         apronGroup.add(cap);
@@ -1851,6 +1876,9 @@
         maskMaterialRoad = null;
         maskMaterialPark = null;
         apronMaterial = null;
+        apronMaterialWater = null;
+        apronMaterialPark = null;
+        apronMaterialSquare = null;
         roadFoundationMaterial = null;
         roadCollarMaterial = null;
         terrainGrid = null;

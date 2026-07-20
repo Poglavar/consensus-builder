@@ -2768,10 +2768,10 @@
         },
         "toggle": {
             "switchTo2d": "Cambiar a 2D",
-            "switchTo3d": "Cambiar a 3D",
+            "switchTo3d": "Cambiar a modelo (3D)",
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
-            "realistic": "Contexto realista (Google 3D fotorrealista)"
+            "realistic": "Vista foto (Google 3D fotorrealista)"
         },
         "parcelPanel": {
             "title": "Parcela",

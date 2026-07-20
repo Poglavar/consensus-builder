@@ -2749,10 +2749,10 @@
         },
         "toggle": {
             "switchTo2d": "Prebaci na 2D",
-            "switchTo3d": "Prebaci na 3D",
+            "switchTo3d": "Prebaci na model (3D)",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmene",
-            "realistic": "Realističan kontekst (Google fotorealistični 3D)"
+            "realistic": "Foto prikaz (Google fotorealistični 3D)"
         },
         "parcelPanel": {
             "title": "Parcela",

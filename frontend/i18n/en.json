@@ -2719,10 +2719,10 @@
         },
         "toggle": {
             "switchTo2d": "Switch to 2D",
-            "switchTo3d": "Switch to 3D",
+            "switchTo3d": "Switch to model (3D)",
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
-            "realistic": "Realistic context (Google Photorealistic 3D)"
+            "realistic": "Photo view (Google Photorealistic 3D)"
         },
         "parcelPanel": {
             "title": "Parcel",
