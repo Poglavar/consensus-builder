@@ -511,10 +511,15 @@
         try {
             const raycaster = new THREE.Raycaster(new THREE.Vector3(x, y, 4000), new THREE.Vector3(0, 0, -1), 0, 9000);
             const hits = raycaster.intersectObject(tiles.group, true);
+            // LOWEST valid hit, not the first: a down-ray hits the tree CANOPY before the ground
+            // beneath it, and draping/curtaining to canopy height floated the roads into the air.
+            // The ground is the bottom of the stack of hits at this column.
+            let minZ = null;
             for (let i = 0; i < hits.length; i++) {
                 const z = hits[i].point.z;
-                if (Math.abs(z) <= FAR_EARTH_LIMIT_M) return z;
+                if (Math.abs(z) <= FAR_EARTH_LIMIT_M && (minZ === null || z < minZ)) minZ = z;
             }
+            return minZ;
         } catch (_) { }
         return null;
     }
