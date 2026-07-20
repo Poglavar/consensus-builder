@@ -1097,9 +1097,14 @@ function corridorEditorSectionHtml(profile) {
         const laneLabel = corridorLaneTypeLabel(lane.type);
         const percent = (lane.width / total) * 100;
         const selected = index === corridorEditorState.selected ? ' corridor-section-lane--selected' : '';
+        // Parking bands look like driving bands (both dark). Mark them "(p)" so they read apart from
+        // the road at a glance.
+        const isParking = (typeof corridorParkingOrientation === 'function')
+            ? !!corridorParkingOrientation(lane.type) : /^parking/.test(lane.type);
+        const tag = isParking ? '<span class="corridor-section-lane-tag">(p)</span>' : '';
         return `<button type="button" class="corridor-section-lane${selected}" style="width:${percent}%;background:${laneType.surface}"
                     data-lane-index="${index}" title="${laneLabel} · ${lane.width} m"
-                    aria-label="${laneLabel}, ${lane.width} metres"></button>`;
+                    aria-label="${laneLabel}, ${lane.width} metres">${tag}</button>`;
     }).join('');
     // Drag handles on the seams between lanes: dragging moves width from one side to the
     // other (total unchanged) — the schematic IS the editor, not just a picture. A seam touching a

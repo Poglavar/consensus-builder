@@ -161,6 +161,21 @@ body.corridor-editor-open .leaflet-interactive {
     cursor: pointer;
     outline: none;
     min-width: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* "(p)" marker inside a parking band so it reads apart from a driving lane at a glance. */
+.corridor-section-lane-tag {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.65);
+    pointer-events: none;
+    white-space: nowrap;
 }
 
 /* The selected lane has to be findable at a glance in BOTH places — the diagram and the row list are

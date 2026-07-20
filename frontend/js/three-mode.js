@@ -870,7 +870,9 @@
     // Centre of the proposal being viewed (midpoint of the proposed buildings' bbox),
     // or null when there is no building proposal in the scene.
     function getProposalCenterLatLng() {
-        const geom = computeProposalQueryGeometry();
+        // Prefer the focused proposals' real geometry (roads/parks included) so a road link anchors
+        // the scene on the road, not on the union of unrelated applied buildings.
+        const geom = computeFocusFramingGeometry() || computeProposalQueryGeometry();
         if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0].length) {
             let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
             for (const p of geom.coordinates[0]) {
@@ -909,11 +911,53 @@
         return !!focusedProposalIds();
     }
 
+    // The bbox to frame when specific proposals are in focus (a shared link, or a map selection).
+    // computeProposalQueryGeometry only sees proposed BUILDINGS, so a road- or park-only link found
+    // zero matching building features and fell back to framing every applied proposal (the "ski view"
+    // zoom-out). This gathers the focused proposals' ACTUAL geometry from the store — road corridors,
+    // parks/structures, buildings alike — via collectProposalFeatureSets, so the camera lands on them.
+    function computeFocusFramingGeometry() {
+        const focusIds = focusedProposalIds();
+        if (!focusIds || !focusIds.size) return null;
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return null;
+        if (typeof collectProposalFeatureSets !== 'function' || typeof turf === 'undefined') return null;
+        const idsOf = (p) => {
+            const ids = [];
+            if (!p) return ids;
+            if (p.proposalId != null) ids.push(String(p.proposalId));
+            if (p.serverProposalId != null) ids.push(String(p.serverProposalId));
+            if (typeof window.getServerProposalId === 'function') {
+                const s = window.getServerProposalId(p); if (s != null) ids.push(String(s));
+            }
+            if (typeof window.getProposalKey === 'function') {
+                const k = window.getProposalKey(p); if (k) ids.push(String(k));
+            }
+            return ids;
+        };
+        const features = [];
+        try {
+            (proposalStorage.getAllProposals() || []).forEach(p => {
+                if (!idsOf(p).some(id => focusIds.has(id))) return;
+                const sets = collectProposalFeatureSets(p) || {};
+                (sets.primaryFeatures || []).forEach(f => { if (f && f.geometry) features.push(f); });
+            });
+        } catch (_) { return null; }
+        if (!features.length) return null;
+        try {
+            const bbox = turf.bbox(turf.featureCollection(features));
+            if (!bbox || bbox.some(v => !isFinite(v))) return null;
+            const [minX, minY, maxX, maxY] = bbox;
+            return { type: 'Polygon', coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]] };
+        } catch (_) { return null; }
+    }
+
     // The geometry the scene should anchor, frame and load context around: the selected proposal, and
     // nothing when nothing is selected — which makes every consumer fall through to the camera-focus
-    // path, so the built context loads around where the user actually is.
+    // path, so the built context loads around where the user actually is. Prefer the type-agnostic
+    // focus geometry (roads/parks included); fall back to the buildings-only query geometry.
     function proposalFramingGeometry() {
-        return isProposalFocusedEntry() ? computeProposalQueryGeometry() : null;
+        if (!isProposalFocusedEntry()) return null;
+        return computeFocusFramingGeometry() || computeProposalQueryGeometry();
     }
 
     function getOrigin3857() {
@@ -1749,6 +1793,67 @@
         });
     }
 
+    // Existing tram/rail alignments are context; an applied road or track PROPOSAL replaces the
+    // street it runs down, and the raised trackbed (z≈0.33–0.55) would otherwise float over the
+    // proposal deck (z=0.05) and overpower it. Clip the tram LINES so the stretch inside an applied
+    // road/track footprint is not drawn, while the rest — a junction off to the side, the line beyond
+    // the proposal — stays. Best-effort turf; on any failure the line passes through unchanged.
+    function clipTransitLinesOutsideProposals(featureCollection, footprints) {
+        if (typeof turf === 'undefined' || !Array.isArray(footprints) || !footprints.length) return featureCollection;
+        const T = turf;
+        if (typeof T.lineSplit !== 'function' || typeof T.booleanPointInPolygon !== 'function') return featureCollection;
+        let mask = null;
+        try { footprints.forEach(fp => { mask = mask ? (T.union(mask, fp) || mask) : fp; }); } catch (_) { mask = null; }
+        if (!mask) return featureCollection;
+        let maskBbox = null;
+        try { maskBbox = T.bbox(mask); } catch (_) { maskBbox = null; }
+        const bboxHit = (b) => !maskBbox || !b
+            || (b[0] <= maskBbox[2] && maskBbox[0] <= b[2] && b[1] <= maskBbox[3] && maskBbox[1] <= b[3]);
+        const insideMask = (pt) => { try { return T.booleanPointInPolygon(pt, mask); } catch (_) { return false; } };
+        const kept = [];
+        ((featureCollection && featureCollection.features) || []).forEach(feature => {
+            const geom = feature && feature.geometry;
+            if (!geom) return;
+            const lines = geom.type === 'MultiLineString'
+                ? geom.coordinates.map(c => T.lineString(c, feature.properties || {}))
+                : (geom.type === 'LineString' ? [feature] : null);
+            if (!lines) { kept.push(feature); return; } // non-line features pass through untouched
+            lines.forEach(line => {
+                let lb = null; try { lb = T.bbox(line); } catch (_) { }
+                if (!bboxHit(lb)) { kept.push(line); return; } // nowhere near a proposal — keep whole
+                let pieces;
+                try {
+                    const split = T.lineSplit(line, mask);
+                    pieces = (split && split.features && split.features.length) ? split.features : [line];
+                } catch (_) { pieces = [line]; }
+                pieces.forEach(piece => {
+                    try {
+                        const mid = T.along(piece, (T.length(piece) || 0) / 2);
+                        if (!insideMask(mid)) kept.push(piece);
+                    } catch (_) { kept.push(piece); }
+                });
+            });
+        });
+        return T.featureCollection(kept);
+    }
+
+    // Applied road/track proposal footprints (polygons), for clipping the existing tram under them.
+    function collectAppliedCorridorFootprints() {
+        const footprints = [];
+        try {
+            if (typeof proposalStorage === 'undefined' || typeof collectProposalFeatureSets !== 'function'
+                || typeof isApplied !== 'function') return footprints;
+            (proposalStorage.getAllProposals() || []).forEach(p => {
+                if (!p || !p.roadProposal || !isApplied(p, p.roadProposal)) return;
+                const sets = collectProposalFeatureSets(p) || {};
+                (sets.primaryFeatures || []).forEach(f => {
+                    if (f && f.geometry && /Polygon/.test(f.geometry.type)) footprints.push(f);
+                });
+            });
+        } catch (_) { }
+        return footprints;
+    }
+
     // Render the same immutable alignments used by 2D station snapping. Sources are loaded once,
     // while mesh construction is clipped to this scene's initial content bounds and never streams
     // additional geometry as the user pans the frozen 3D snapshot.
@@ -1763,12 +1868,15 @@
             const maxRadius = Math.min(7000, Math.max(2000, diagonal * 1.5));
             const root = new THREE.Group();
             root.name = 'ExistingTransitAlignments';
+            // The applied road/track proposals win: clip the existing tram out from under them.
+            const proposalFootprints = collectAppliedCorridorFootprints();
             for (const source of loadedSources || []) {
+                const featureCollection = clipTransitLinesOutsideProposals(source.featureCollection, proposalFootprints);
                 let child = null;
                 if (source.render3d === 'elevated' && typeof window.buildElevatedRail3D === 'function') {
-                    child = window.buildElevatedRail3D(source.featureCollection, coordsToXY, { maxRadius });
+                    child = window.buildElevatedRail3D(featureCollection, coordsToXY, { maxRadius });
                 } else if (source.render3d === 'surface' && typeof window.buildSurfaceRail3D === 'function') {
-                    child = window.buildSurfaceRail3D(source.featureCollection, coordsToXY, {
+                    child = window.buildSurfaceRail3D(featureCollection, coordsToXY, {
                         maxRadius,
                         gaugeM: source.mode === 'tram' ? 1.0 : 1.435
                     });
@@ -2308,6 +2416,49 @@
         mesh.userData.laneType = laneType;
         targetGroup.add(mesh);
         return true;
+    }
+
+    // Rail/tram TRACK rendering. A proposal's track lane is drawn with buildSurfaceRail3D — the SAME
+    // renderer that draws the existing tram tracks (trackbed + sleepers + rails) — so proposal and
+    // existing track read identically, rather than hand-rolled geometry that needs per-pixel tuning.
+
+    // Rail-to-rail spacing in metres from the lane's gauge (1.0 metre / 1.435 standard).
+    function railGaugeMetres(strip) {
+        const g = (typeof corridorRailGauge === 'function') ? Number(corridorRailGauge(strip && strip.gauge)) : NaN;
+        return (Number.isFinite(g) && g > 0 ? g : 1000) / 1000;
+    }
+
+    // A proposal's TRACK lane, drawn with buildSurfaceRail3D — the SAME renderer as the existing tram
+    // tracks — so proposal track and existing track look identical. Uses the lane's own centerline
+    // (the corridor centerline offset to the lane's centre) and its gauge. Same call for the terrain
+    // and flat paths, exactly as the existing tram uses one style everywhere.
+    function addProposalTrack3D(group, points, strip) {
+        if (typeof window.buildSurfaceRail3D !== 'function' || !Array.isArray(points) || points.length < 2) return false;
+        try {
+            let coords = points.map(p => [Number(p.lng), Number(p.lat)])
+                .filter(c => Number.isFinite(c[0]) && Number.isFinite(c[1]));
+            if (coords.length < 2) return false;
+            // Offset the corridor centerline onto the rail lane's own centre when it is not centred.
+            // turf's +distance is to the RIGHT of travel, so negate the left-positive strip offset.
+            const centre = (Number(strip.left) + Number(strip.right)) / 2;
+            if (Math.abs(centre) > 0.05 && typeof turf !== 'undefined' && typeof turf.lineOffset === 'function') {
+                try {
+                    const offset = turf.lineOffset(turf.lineString(coords), -centre, { units: 'meters' });
+                    const oc = offset && offset.geometry && offset.geometry.coordinates;
+                    if (Array.isArray(oc) && oc.length >= 2) coords = oc;
+                } catch (_) { }
+            }
+            const fc = { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }] };
+            const child = window.buildSurfaceRail3D(fc, coordsToXY, { gaugeM: railGaugeMetres(strip) });
+            if (!child) return false;
+            child.userData.isCorridorStrip = true;
+            child.userData.laneType = 'rail';
+            group.add(child);
+            return true;
+        } catch (e) {
+            console.warn('[three-mode] proposal track render failed', e);
+            return false;
+        }
     }
 
     function corridorTerrainEntryKey(proposal, entry) {
@@ -2991,6 +3142,8 @@
 
         const renderFlatSurface = function (points, entry) {
             buildCorridorStrips([points], entry.profile).forEach(strip => {
+                // Rail lanes render as real track in the existing-tram style, not a flat strip.
+                if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip); return; }
                 const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
                 const kerb = Number(lane.height) || 0;
                 strip.polygons.forEach(polygon => {
@@ -3145,6 +3298,8 @@
                         : null;
                     if (runFormation && typeof corridorStripSpans === 'function') {
                         corridorStripSpans(entry.profile).forEach(strip => {
+                            // A rail lane is drawn as real track, in the existing-tram style.
+                            if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip); return; }
                             const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined'
                                 && CORRIDOR_LANE_TYPES[strip.type]) || {};
                             if (!addTerrainStrip3D(targetGroup, runFormation, strip, lane, strip.type)) {

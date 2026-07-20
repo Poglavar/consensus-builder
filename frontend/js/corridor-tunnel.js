@@ -879,6 +879,20 @@
             return source.map(record => JSON.parse(JSON.stringify(record)));
         }
 
+        // Turf's polygon clipping recurses to a stack overflow on very high-vertex or near-degenerate
+        // rings — e.g. a footprint whose cut pieces were unioned from several overlapping proposals
+        // (Zagreb building 340664). Snapping coordinates to a grid and dropping redundant/near-
+        // coincident vertices collapses those rings so difference/union terminate. Best-effort: a turf
+        // build lacking these helpers, or one that throws, just uses the input unchanged.
+        const cleanForOp = (feature) => {
+            let f = feature;
+            try { if (typeof api.truncate === 'function') f = api.truncate(f, { precision: 7, coordinates: 2 }); } catch (_) { }
+            try { if (typeof api.cleanCoords === 'function') f = api.cleanCoords(f); } catch (_) { }
+            return f || feature;
+        };
+        const safeDifference = (a, b) => api.difference(cleanForOp(a), cleanForOp(b));
+        const safeUnion = (a, b) => api.union(cleanForOp(a), cleanForOp(b));
+
         const grouped = new Map();
         source.forEach(record => {
             const id = String(record.id);
@@ -917,7 +931,7 @@
                 let partGeometry = record.demolishedPart || null;
                 if (!partGeometry && record.remainder) {
                     try {
-                        const derived = api.difference(
+                        const derived = safeDifference(
                             { type: 'Feature', properties: {}, geometry: footprintGeometry },
                             { type: 'Feature', properties: {}, geometry: record.remainder }
                         );
@@ -930,8 +944,8 @@
                     removed = part;
                     return;
                 }
-                try { removed = api.union(removed, part) || removed; } catch (error) {
-                    console.error('[corridor-tunnel] cross-proposal cut accumulation failed', id, error);
+                try { removed = safeUnion(removed, part) || removed; } catch (error) {
+                    console.warn('[corridor-tunnel] cross-proposal cut accumulation skipped one piece', id);
                 }
             });
             if (!removed) {
@@ -941,8 +955,11 @@
 
             let remainder = null;
             const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
-            try { remainder = api.difference(footprint, removed); } catch (error) {
-                console.error('[corridor-tunnel] cross-proposal cut remainder failed — demolishing whole', id, error);
+            try { remainder = safeDifference(footprint, removed); } catch (error) {
+                // Sanitising the rings normally prevents this; if a footprint is still pathological,
+                // fall back to demolishing the whole building rather than crashing. Warn (not error):
+                // it is handled, and only affects the standing remainder of one over-cut building.
+                console.warn('[corridor-tunnel] cross-proposal cut remainder unavailable — demolishing whole', id);
             }
             const remainderArea = remainder ? (Number(api.area(remainder)) || 0) : 0;
             if (!remainder || remainderArea < Math.max(10, Math.max(0, footprintArea) * 0.15)) {
