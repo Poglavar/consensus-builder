@@ -65,7 +65,18 @@ describe('road drawing finalization contract', () => {
         const deriveTunnelEdgeKeys = edit.indexOf('const tunnelEdgeKeys = new Set();');
         expect(reconcile).toBeGreaterThanOrEqual(0);
         expect(deriveTunnelEdgeKeys).toBeGreaterThan(reconcile);
-        expect(edit).not.toContain('(record?.buildingIds || []).forEach');
+        // The tunnelled-building set must come from the PRE-EDIT snapshot. retainLiveCorridorTunnelRecords
+        // has already dropped the record whose edge key the drag changed, so `definition.tunnels` is empty
+        // exactly when the building is still tunnelled — deriving from it re-prompts and re-splices portals.
+        // (This used to be a blanket ban on the `(record?.buildingIds || []).forEach` idiom, which the
+        // correct snapshot-based derivation also uses, so it failed on the very fix it was guarding.)
+        const alreadyTunnelled = sourceSection(
+            edit,
+            'const alreadyTunnelledIds = new Set();',
+            '(definition.demolishedBuildings || []).forEach'
+        );
+        expect(alreadyTunnelled).toContain('(definitionSnapshot.tunnels || []).forEach');
+        expect(alreadyTunnelled).not.toContain('(definition.tunnels');
         expect(edit).toContain('.filter(hit => !fullyDemolishedIds.has(String(hit.id)))');
     });
 });
