@@ -303,18 +303,33 @@ counts is upload/mint: that snapshot is what other people replay and what owners
 absence means the proposal has never been published. It is not in `proposalContentFingerprint`'s
 allowlist, so adding it can never change a share id.
 
-### A2. Ship derived geometry with fabric-changers
+### A2. Ship derived geometry with fabric-changers — *INSURANCE, not a necessity. Demoted.*
 
-A road or reparcellization transmits its **resulting parcels** (geometry, not ids). Apply becomes
-"stamp these polygons down" instead of "re-derive and hope". The server already has a
-`childParcelIds` column; the geometry beside it is missing, and is deliberately dropped today:
+A road or reparcellization would transmit its **resulting parcels** (geometry, not ids), so apply
+becomes "stamp these polygons down" instead of "re-derive and hope". The server already has a
+`childParcelIds` column; the geometry beside it is deliberately dropped today:
 
 ```js
 // Do not persist child geometries on the proposal object; IDs and persisted storage are the source of truth
 delete roadProposal.childFeatures;
 ```
 
-Kills the reproducibility requirement entirely.
+**But shipping the road IS enough to re-derive its cuts** — provided every input is identical on the
+recipient's machine. The inputs are: the base cadastre, the corridor, and the cutting code. Derivation
+was never the broken part; the broken part was that proposals referenced DERIVED parcels, so a
+recipient needed the author's exact intermediate fabric, which they never had. With A1 (everything
+anchors to base parcels) and A6 (ordering from intersection + creation time), re-derivation is
+deterministic again — §3.6 showed order only ever matters for footprints that actually touch.
+
+So A2 only buys immunity to three kinds of drift, none of which is the current problem:
+
+1. **Cadastre drift.** Parcels are versioned (`current`, `date_missing`). A plan replayed a year later
+   derives against a different base than the author had.
+2. **Code drift.** A geometry-library upgrade that changes polygon clipping by an epsilon silently
+   changes everyone's derived parcels.
+3. **Speed.** Stamping is O(1); re-deriving is not.
+
+Worth doing eventually for (1). Not worth doing before A6.
 
 ### A3. Commutative fabric — *TESTED, see §3.6. Partially true, and the partial truth is the fix.*
 
@@ -375,11 +390,13 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
    stored end to end; `plan-order.js` implements the A6 ordering. Still to do: backfill existing rows
    (the analysis script already computes exactly what a backfill needs), and then make something
    actually read it.
-3. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
+3. **A6 before A2.** Ordering by intersection + creation time is what actually makes a plan
+   replayable; shipping derived geometry only guards against cadastre/code drift.
+4. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
    that was never missing. Say that the proposals depend on each other and cannot be rebuilt from
    scratch.
-4. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
-5. **Decide D2** before touching acceptance.
+5. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
+6. **Decide D2** before touching acceptance.
 
 ---
 
