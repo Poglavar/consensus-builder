@@ -236,3 +236,56 @@ describe('legacy road footprints', () => {
         expect(planOrder.footprintOf({ bounds: [1, 2, 3, 4] })).toBeNull();
     });
 });
+
+describe('parcel formation (A7)', () => {
+    const parcelsOf = () => baseParcels();
+
+    it('reports a pure merge when the footprint swallows a parcel whole', () => {
+        // #97's footprint is the whole of HR-339270-824.
+        const plan = planOrder.formationPlan(byId(97).footprint, parcelsOf());
+        expect(plan.merged.map(m => m.id)).toEqual(['HR-339270-824']);
+        expect(plan.cut).toHaveLength(0);
+    });
+
+    it('reports cuts, and what each one leaves behind', () => {
+        const plan = planOrder.formationPlan(byId(104).footprint, parcelsOf());
+        expect(plan.merged).toHaveLength(0);
+        expect(plan.cut.map(c => c.id).sort()).toEqual(['HR-339270-6804/1', 'HR-339270-6804/9']);
+        const big = plan.cut.find(c => c.id === 'HR-339270-6804/1');
+        expect(big.takenM2).toBeGreaterThan(3400);
+        expect(big.remainderM2).toBeGreaterThan(9000);
+    });
+
+    it('judges a remainder against its PARENT, not against a fixed compactness', () => {
+        // The trap: HR-339270-6804/1 scores 0.083 untouched — long and thin is normal for a real
+        // cadastral parcel. A remainder at 0.13 is an improvement, and must not be called a sliver.
+        const plan = planOrder.formationPlan(byId(101).footprint, parcelsOf());
+        const parent = plan.cut.find(c => c.id === 'HR-339270-6804/1');
+        expect(parent.parentCompactness).toBeLessThan(0.15);
+        const biggest = parent.pieces[0];
+        expect(biggest.compactness).toBeGreaterThan(parent.parentCompactness);
+        expect(plan.degraded.some(d => d.id === 'HR-339270-6804/1')).toBe(false);
+    });
+
+    it('still flags a genuinely tiny remainder', () => {
+        const plan = planOrder.formationPlan(byId(103).footprint, parcelsOf());
+        expect(plan.tiny.map(t => t.id)).toContain('HR-339270-823/6');
+        expect(plan.tiny.find(t => t.id === 'HR-339270-823/6').areaM2).toBeLessThan(50);
+    });
+
+    it('flags a parcel shattered into disconnected pieces', () => {
+        const plan = planOrder.formationPlan(byId(100).footprint, parcelsOf());
+        expect(plan.shattered.length).toBeGreaterThan(0);
+        const worst = plan.shattered.find(c => c.id === 'HR-339270-6804/1');
+        expect(worst.pieces.length).toBeGreaterThan(2);
+    });
+
+    it('reports footprint area that no cadastral parcel covers', () => {
+        // The precondition for A7: a target parcel can only be formed from cadastral land.
+        const offMap = turf.buffer(turf.point([16.9, 46.4]), 20, { units: 'meters' });
+        const plan = planOrder.formationPlan(offMap, parcelsOf());
+        expect(plan.uncoveredM2).toBeGreaterThan(0);
+        expect(plan.merged).toHaveLength(0);
+        expect(plan.cut).toHaveLength(0);
+    });
+});

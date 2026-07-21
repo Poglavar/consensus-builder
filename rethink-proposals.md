@@ -231,6 +231,39 @@ So roughly one parcel in twelve has been superseded at some point. A proposal th
 `HR-339270-1234` as a fact can therefore end up naming a parcel that no longer exists — structurally
 the same dangling reference as §3.1, on a slower clock.
 
+### 3.8 Formation is achievable everywhere, but it is not tidy
+
+Next step 8, run over the live plan (`analyze-plan-ancestry.js` section 5). For each footprint:
+`form(footprint) = merge(parcels wholly inside) ∪ cut(parcels straddling)`, then measure what the cuts
+leave behind.
+
+**The precondition holds.** Across all 8 proposals only **1 m²** of footprint fell on land belonging
+to no cadastral parcel — a rounding artefact. Every target parcel is formable from cadastral land, so
+A7's "portable lake" premise survives contact with real data.
+
+**Merges are the exception, cuts are the rule.** Only #97 was a pure merge (its footprint is exactly
+`HR-339270-824`). Everything else cuts: #104 merges 0 and cuts 2; #100 merges 0 and cuts 7.
+
+**The real cost is fragmentation.** All 8 proposals shattered at least one parcel into disconnected
+pieces. The worst, forming Road 2043, leaves the owner of `HR-339270-6804/1` holding **four** separate
+fragments (9471 + 2219 + 365 + 308 m²) where they had one parcel.
+
+Genuinely problematic remainders are rarer than fragmentation: **5** across the plan — four tiny
+(36, 34, 11, 11 m²) and one shape degradation (`823/2` at compactness 0.345 from a parent at 0.766).
+
+> **A metric that lied, and the control that caught it.** The first pass judged remainders by
+> compactness alone (4πA/P²) and reported 13 slivers. But real cadastral parcels are long and thin:
+> measured over the untouched parcels in this plan, the median is 0.517 and `HR-339270-6804/1` scores
+> **0.083 before anyone touches it**. Its 0.132 remainder is an *improvement*. A remainder is only
+> degraded relative to the parcel it came from, so `formationPlan` now records `parentCompactness` and
+> compares against it. 13 → 5.
+
+**What this says about A7.** Formation is feasible, not blocked. But it is not a clean operation: it
+routinely hands a neighbour several disconnected fragments. A real land-readjustment process would
+reshape those remainders too — which means A7 may imply that **every formation is a small
+reparcellization of the affected block**, not a simple merge-and-cut. That is a larger commitment than
+the model first suggests, and it should be priced in before adopting it.
+
 ---
 
 ## 4. The dilemmas
@@ -518,10 +551,10 @@ Croatia the way a building does. If not, parks are non-forming and the line move
    scratch.
 6. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
 7. **Decide D2** before touching acceptance.
-8. **Evaluate A7** — the largest idea here and the one that subsumes D3, D5 and A2. Cheapest first
-   test: take an existing park or building proposal and check whether `form(footprint)` against
-   today's fabric reproduces a sensible parcel, i.e. whether the merge ∪ cut is clean or leaves
-   slivers. Read-only, and it decides whether the redesign is worth starting.
+8. ~~Evaluate A7.~~ **DONE — see §3.8.** Formable everywhere (1 m² uncovered across the plan), but
+   every proposal fragments at least one neighbouring parcel; the worst leaves one owner with four
+   disconnected pieces. Open question it raises: does A7 imply that each formation is really a small
+   reparcellization of the affected block?
 
 ---
 

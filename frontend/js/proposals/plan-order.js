@@ -230,8 +230,120 @@
         };
     }
 
+    // --- A7: what would it take to FORM this footprint into a parcel of its own? -----------------
+    // A proposal that implies its own cadastral parcel (a building must sit on exactly one) does not
+    // reference other proposals' outputs — it states an output: "the land under this footprint shall
+    // become a parcel of this shape". Realising that against a given fabric is derived:
+    //
+    //     form(footprint) = merge(parcels wholly inside) ∪ cut(parcels straddling the boundary)
+    //
+    // This function does not perform the formation; it reports what the formation WOULD cost, so the
+    // idea can be judged on real data. The interesting output is the remainders: cutting a parcel to
+    // free a footprint leaves the rest behind, and if those leftovers are slivers or get shattered
+    // into fragments then the operation is not as tidy as the model assumes.
+
+    // 4πA/P² — 1.0 for a circle, →0 for a thin shard. Cheap, unitless, good enough to spot slivers.
+    function compactness(feature) {
+        const t = T();
+        try {
+            const area = t.area(feature);
+            const perimeter = t.length(t.polygonToLine(feature), { units: 'meters' });
+            if (!(area > 0) || !(perimeter > 0)) return 0;
+            return (4 * Math.PI * area) / (perimeter * perimeter);
+        } catch (_) { return 0; }
+    }
+
+    function explodePolygons(feature) {
+        const t = T();
+        if (!feature || !feature.geometry) return [];
+        const g = feature.geometry;
+        if (g.type === 'Polygon') return [t.feature(g)];
+        if (g.type === 'MultiPolygon') return g.coordinates.map(c => t.polygon(c));
+        return [];
+    }
+
+    // Judging a remainder by its compactness ALONE is wrong: real cadastral parcels are frequently
+    // long and thin. In the measured plan HR-339270-6804/1 scores 0.083 untouched, so a 0.132
+    // remainder is an IMPROVEMENT, not a sliver. A remainder is only degraded relative to the parcel
+    // it came from — hence parentCompactness below.
+    function formationPlan(footprint, parcels, options) {
+        const t = T();
+        const opts = options || {};
+        const tinyAreaM2 = Number.isFinite(opts.tinyAreaM2) ? opts.tinyAreaM2 : 50;
+        const degradedRatio = Number.isFinite(opts.degradedRatio) ? opts.degradedRatio : 0.5;
+        const wholeTolerance = Number.isFinite(opts.wholeToleranceM2) ? opts.wholeToleranceM2 : 1;
+
+        const empty = { targetM2: 0, merged: [], cut: [], uncoveredM2: 0, tiny: [], degraded: [], shattered: [] };
+        if (!t || !footprint || !Array.isArray(parcels)) return empty;
+
+        const targetM2 = Math.round(t.area(footprint));
+        const plan = { targetM2, merged: [], cut: [], uncoveredM2: 0, tiny: [], degraded: [], shattered: [] };
+        let claimed = null;
+
+        parcels.forEach(entry => {
+            if (!entry || !entry.feature || !entry.id) return;
+            let taken = null;
+            try { taken = t.intersect(footprint, entry.feature); } catch (_) { return; }
+            if (!taken) return;
+            const takenM2 = t.area(taken);
+            if (takenM2 < MIN_INTERSECTION_M2) return;
+
+            try { claimed = claimed ? (t.union(claimed, taken) || claimed) : taken; } catch (_) { }
+
+            let leftover = null;
+            try { leftover = t.difference(entry.feature, footprint); } catch (_) { leftover = null; }
+            const leftoverM2 = leftover ? t.area(leftover) : 0;
+
+            // Wholly inside (within tolerance) — a clean merge, nothing left behind.
+            if (leftoverM2 <= wholeTolerance) {
+                plan.merged.push({ id: String(entry.id), areaM2: Math.round(takenM2) });
+                return;
+            }
+
+            const pieces = explodePolygons(leftover)
+                .map(piece => ({ areaM2: Math.round(t.area(piece)), compactness: Number(compactness(piece).toFixed(3)) }))
+                .filter(piece => piece.areaM2 >= 1)
+                .sort((a, b) => b.areaM2 - a.areaM2);
+
+            const parentCompactness = Number(compactness(entry.feature).toFixed(3));
+            const record = {
+                id: String(entry.id),
+                takenM2: Math.round(takenM2),
+                remainderM2: Math.round(leftoverM2),
+                parentCompactness,
+                pieces
+            };
+            plan.cut.push(record);
+
+            // A cut that shatters a parcel into several pieces is a worse outcome than one that
+            // trims it, even when every area looks fine.
+            if (pieces.length > 1) plan.shattered.push(record);
+            pieces.forEach(piece => {
+                if (piece.areaM2 < tinyAreaM2) plan.tiny.push({ id: record.id, ...piece });
+                else if (parentCompactness > 0 && piece.compactness < parentCompactness * degradedRatio) {
+                    plan.degraded.push({ id: record.id, parentCompactness, ...piece });
+                }
+            });
+        });
+
+        // Land the footprint covers that belongs to no current parcel — the formation cannot draw on
+        // it, so a non-zero value means the target parcel is not achievable from cadastral land alone.
+        if (claimed) {
+            try {
+                const gap = t.difference(footprint, claimed);
+                plan.uncoveredM2 = gap ? Math.round(t.area(gap)) : 0;
+            } catch (_) { plan.uncoveredM2 = 0; }
+        } else {
+            plan.uncoveredM2 = targetM2;
+        }
+
+        return plan;
+    }
+
     const api = {
         MIN_INTERSECTION_M2,
+        compactness,
+        formationPlan,
         FABRIC_GOALS,
         isFabricGoal,
         intersectionArea,

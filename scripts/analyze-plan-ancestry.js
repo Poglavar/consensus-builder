@@ -277,6 +277,35 @@ Read-only. Fetches proposals and cadastral parcels; writes nothing.`);
         console.log(`   result ${++n}: ${v.sig.count} parcels, ${v.sig.total} m2, road ${v.sig.road} m2  (${v.orders.length} order(s), e.g. ${v.orders[0]})`);
     }
 
+    // === 5. A7: what would forming each footprint into its own parcel cost? ===================
+    console.log('\n=== 5. parcel formation: merge U cut, and what it leaves behind ===');
+    const planOrder = require('../frontend/js/proposals/plan-order.js');
+    globalThis.turf = turf;
+    const baseEntries = base.map(b => ({ id: b.id, feature: b.f }));
+    let totalSlivers = 0, totalShattered = 0, totalUncovered = 0;
+    withGeom.forEach(p => {
+        const plan = planOrder.formationPlan(p.footprint, baseEntries);
+        const merged = plan.merged.length, cut = plan.cut.length;
+        console.log(`#${p.id} ${p.title} [${p.goal}] target ${plan.targetM2} m2`);
+        console.log(`   merge ${merged} whole parcel(s), cut ${cut}`
+            + (plan.uncoveredM2 ? `, UNCOVERED ${plan.uncoveredM2} m2 (no cadastral land)` : ''));
+        plan.cut.forEach(c => {
+            const shape = c.pieces.map(x => `${x.areaM2} m2 c=${x.compactness}`).join(' + ');
+            console.log(`     cut ${c.id} (parent c=${c.parentCompactness}): takes ${c.takenM2}, `
+                + `leaves ${c.remainderM2} as ${c.pieces.length} piece(s) -> ${shape}`);
+        });
+        if (plan.tiny.length) console.log(`     !! ${plan.tiny.length} tiny remainder(s): ` +
+            plan.tiny.map(x => `${x.id} ${x.areaM2} m2`).join(', '));
+        if (plan.degraded.length) console.log(`     !! ${plan.degraded.length} degraded shape(s): ` +
+            plan.degraded.map(x => `${x.id} c=${x.compactness} vs parent ${x.parentCompactness}`).join(', '));
+        if (plan.shattered.length) console.log(`     !! ${plan.shattered.length} parcel(s) shattered into multiple pieces`);
+        totalSlivers += plan.tiny.length + plan.degraded.length;
+        totalShattered += plan.shattered.length;
+        totalUncovered += plan.uncoveredM2 ? 1 : 0;
+    });
+    console.log(`\nFORMATION SUMMARY: ${totalSlivers} problem remainder(s), ${totalShattered} shattered parcel(s), `
+        + `${totalUncovered} proposal(s) covering non-cadastral land, across ${withGeom.length} proposals`);
+
     console.log(`\ngeometry op errors: ${opErrors}`);
     console.log(`VERDICT: ${seen.size === 1
         ? 'fabric is IDENTICAL in every order — these changes commute'
