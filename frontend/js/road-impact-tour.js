@@ -214,10 +214,14 @@
                 cleanupFns.push(() => { try { styleEl.remove(); } catch (_) { } });
             }
 
-            const isMobile = !!(global.matchMedia && global.matchMedia('(max-width: 600px)').matches);
+            // 768px is the shared right-dock breakpoint (see .right-dock-panel in css/panels.css), so
+            // this dialog flips to the bottom sheet at the same width as every other right-hand panel.
+            const isMobile = !!(global.matchMedia && global.matchMedia('(max-width: 768px)').matches);
 
             const panel = document.createElement('div');
-            panel.className = 'cb-impact-tour' + (isMobile ? ' cb-impact-tour-sheet' : ' cb-impact-tour-dock');
+            // The dock variant carries .right-dock-panel so it inherits the one shared panel width and
+            // lines up with the road info panel it sits above. The sheet is full-bleed by its own rules.
+            panel.className = 'cb-impact-tour' + (isMobile ? ' cb-impact-tour-sheet' : ' cb-impact-tour-dock right-dock-panel');
             panel.setAttribute('role', 'dialog');
             panel.setAttribute('aria-modal', 'true');
 

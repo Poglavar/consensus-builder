@@ -15,6 +15,38 @@
     display: block;
 }
 
+/* ========== Right dock ==========
+   THE single source of truth for every panel that docks to the right edge of the map: the parcel
+   info panel (and the proposal buttons inside it), the proposal details panel, the road/track info
+   panel, and the road-impact dialog. They used to carry four different widths (300 / 400 / fit-content
+   400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-dock-panel`
+   and it inherits the width — never re-declare a width on the panel itself.
+
+   On mobile the same class flips to the bottom-sheet policy: full width, at most half the screen,
+   with whatever scrolls beyond that reachable inside (every one of these panels also has a minimize
+   control, so it can be collapsed to its header strip). */
+:root {
+    --right-dock-width: 400px;
+    --right-dock-gap: 10px;
+}
+
+.right-dock-panel {
+    width: var(--right-dock-width);
+    max-width: calc(100vw - 2 * var(--right-dock-gap));
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --right-dock-width: 100%;
+        --right-dock-gap: 0px;
+    }
+
+    .right-dock-panel {
+        max-height: 50vh;
+    }
+}
+
 .close-button {
     position: absolute;
     top: 10px;
@@ -55,15 +87,14 @@
     outline-offset: 2px;
 }
 
-/* 
-Parcel info panel should be in the bottom right corner of the map, 
-with a width of 300px, and a height of half of the map height minus 5px.
+/*
+Parcel info panel sits in the bottom right corner of the map, half the map height. Its width comes
+from .right-dock-panel — do not re-declare one here.
 */
 #parcel-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: 300px;
     height: 50vh;
     max-height: 50vh;
     box-sizing: border-box;
@@ -102,19 +133,18 @@ with a width of 300px, and a height of half of the map height minus 5px.
 }
 
 /*
-Road info panel sits in the bottom right corner of the map. It sizes to its own content
-(never below 400px, never past a cap that would swallow the map) because label lengths vary
-per language — Croatian/Spanish labels need ~30-40px more than English, and pinning a width
-clipped the right-hand values. The height is capped against the viewport, not a fixed number,
-so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scroll fold.
+Road info panel sits in the bottom right corner of the map. Its width comes from .right-dock-panel,
+shared with every other right-hand panel. It used to size to its own content because pinning a width
+clipped the right-hand values in Croatian/Spanish (labels run ~30-40px longer than English) — that is
+handled properly now by .road-metrics-grid, where the label wraps and the value never shrinks, so a
+fixed width costs a taller row rather than a cut-off number. The height is capped against the
+viewport, not a fixed number, so the last rows (Cost, Total Estimated Acquiring Difficulty) stay
+above the scroll fold.
 */
 #road-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: fit-content;
-    min-width: min(400px, calc(100vw - 20px));
-    max-width: min(560px, calc(100vw - 20px));
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     display: none;
@@ -1414,14 +1444,12 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 
 /* Proposal details panel now uses .panel-header and .panel-body structure */
 
-/* Responsive width for info panels.
-   #road-info-panel is deliberately NOT here: it sizes to its content (see its own rule above),
-   because its two-column metrics grid needs more room in longer languages than in English. */
-#proposal-details-panel,
-#parcel-info-panel,
+/* Responsive width for the info panels that are NOT part of the right dock. The dock's panels
+   (#parcel-info-panel, #proposal-details-panel, #road-info-panel, .cb-impact-tour-dock) are
+   deliberately absent: this rule has ID specificity, so listing one here silently overrides
+   .right-dock-panel and the shared --right-dock-width stops meaning anything. */
 #block-info-panel,
 #area-monitor-detail-panel,
-#parcel-info-panel,
 #road-analysis-panel {
     width: min(90vw, 400px);
 }
@@ -1758,14 +1786,9 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
         max-height: 33vh;
     }
     
-    /* Road info panel fits screen width on mobile; panels never take more than half the
-       screen — anything taller scrolls inside (or the user collapses it to the strip). */
+    /* Width and the half-screen cap come from .right-dock-panel; only the scroll behaviour is
+       specific to this panel. */
     #road-info-panel {
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        left: 10px !important;
-        right: 10px !important;
-        max-height: 50vh;
         overflow-y: auto;
     }
 
@@ -1841,9 +1864,8 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 .cb-impact-tour-dock {
     top: 16px;
     right: 16px;
-    /* Same width as the standard modals (css/modals.css) for visual consistency. */
-    width: min(480px, 96vw);
-    max-width: calc(100% - 32px);
+    /* Width comes from .right-dock-panel — this dialog docks above the road info panel and has to
+       line up with it. */
     max-height: calc(100vh - 32px);
     border-radius: 14px;
     padding: 18px 20px;
