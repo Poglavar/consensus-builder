@@ -135,14 +135,15 @@ Pairwise intersection of every proposal footprint in the plan:
 
 | Pair | Intersection | Relationship |
 |---|---|---|
-| #100 Road 2043 × #102 Subdivide 2048 | **0 m²** | the "cycle" pair — *no geometric relationship at all* |
+| #100 Road 2043 × #102 Subdivide 2048 | **0 m²** (raw 0.0012) | the "cycle" pair — they *abut*, sharing a border |
 | #97 Subdivide 2042 × #98 Road 2045 | 128 m² | road operates **inside** the subdivided area (nesting) |
 | #98 Road 2045 × #102 Subdivide 2048 | 15 m² | road clips the edge of the subdivided area |
 | #97 Subdivide 2042 × #99 Square 2054 | 4,388 m² (100%) | overlay sits inside fabric — by design |
 | #102 Subdivide 2048 × #103 Square 2049 | 2,907 m² (100%) | overlay sits inside fabric — by design |
 
-The pair that made the plan unshareable **does not touch on the map**. Where fabric-changers do
-intersect, one is *nested inside* the other's output — a sequence, not a conflict.
+The pair that made the plan unshareable **does not overlap on the map** — it shares a boundary and
+nothing else. Where fabric-changers genuinely do intersect, one is *nested inside* the other's output
+— a sequence, not a conflict.
 
 This makes sense structurally: two proposals that were applied simultaneously on the author's machine
 cannot be in true geographic conflict, or the apply would have refused. The exception is two
@@ -203,16 +204,17 @@ Cross-referenced against the measured footprint intersections from §3.3:
 
 - `#97 × #98 = 128 m²` → toggling their order moves ~129 m² and one parcel (23 ↔ 22)
 - `#98 × #102 = 15 m²` → toggling their order moves exactly 15 m²
-- `#100 × #102 = 0 m²` → toggling their order changes **nothing at all**
+- `#100 × #102 = 0 m²` (rounded; raw 0.0012 m², a sliver off their shared border — they abut, they
+  do not overlap) → toggling their order changes **nothing at all**
 - total road area is **identical (2,383 m²) in all 24 orders** — roads commute with each other
 
 So: **fabric changes commute unless their footprints intersect, and where they do not commute the
 discrepancy equals the intersection.** Order is not a global property of a plan; it is a pairwise
 constraint over the few pairs that physically touch.
 
-The decisive consequence: the pair that made the plan unshareable, `#100 ⇄ #102`, has a **0 m²**
-intersection. It commutes. Its ordering constraint was pure bookkeeping fiction — the two proposals
-have no physical relationship whatsoever.
+The decisive consequence: the pair that made the plan unshareable, `#100 ⇄ #102`, merely **abuts** —
+the two footprints share a border and overlap by 0.0012 m², four orders of magnitude below the noise
+floor. It commutes. Its ordering constraint was pure bookkeeping fiction.
 
 ---
 
