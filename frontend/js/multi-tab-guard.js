@@ -40,6 +40,9 @@
             dismiss.className = 'cb-multitab-banner__close';
             dismiss.setAttribute('aria-label', 'Dismiss');
             dismiss.textContent = '×';
+            // Dismissing hides the notice, not the read-only state — and the flag stays set, so the
+            // banner used to be a one-time warning after which work silently stopped being saved.
+            // Any later dropped write re-attaches it (see reportSecondaryWriteBlocked).
             dismiss.addEventListener('click', () => banner.remove());
 
             banner.appendChild(message);
@@ -118,6 +121,13 @@
             probe();
         }
     });
+
+    // Called by proposalStorage._persist when it drops a write because this tab is read-only. A
+    // dropped write IS the harm the banner warns about, so it brings the banner back even if it was
+    // dismissed — the warning cannot outlive its own dismissal while work is being lost.
+    scope.__cbReportSecondaryWriteBlocked = function () {
+        if (secondary) attachBanner();
+    };
 
     scope.__cbSecondaryTab = false;
     probe();

@@ -669,7 +669,18 @@ const proposalStorage = {
         if (typeof PersistentStorage === 'undefined') return;
         // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
         // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return;
+        // Say so every time: this used to return in complete silence, so a read-only tab looked
+        // like a working one — proposals could be created, applied and rendered, and then simply
+        // were not there after a reload, with nothing in the console to explain it. The guard's
+        // banner is dismissable, so it cannot be the only signal that work is being dropped.
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
+            this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
+            console.error('[proposalStorage] NOT SAVED — this tab is read-only because the app is open in another tab.'
+                + ` Nothing created here survives a reload (dropped writes: ${this._blockedWriteCount}).`
+                + ' Close the other tabs and reload this one to edit.');
+            try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
+            return;
+        }
         try {
             const serialisable = Array.from(this.proposals.values());
             PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));
