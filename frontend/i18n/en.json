@@ -311,6 +311,7 @@
         "proposals": {
             "title": "Proposals",
             "listButton": "Proposals List ({{count}})",
+            "unsavedCount": "{{count}} unsaved (not yet uploaded)",
             "mintedButton": "Minted Proposals",
             "shareButton": "Share entire plan (all proposals)",
             "shareButtonEmpty": "No applied plans. Apply some first",
@@ -782,7 +783,8 @@
                 "editGeometry": "Edit geometry",
                 "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
                 "details": "Proposal details",
-                "propose": "Propose"
+                "propose": "Propose",
+                "editDetails": "Details"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -1425,6 +1427,12 @@
                     "author": "Author",
                     "search": "Search",
                     "sort": "Sort by",
+                    "status": "Status",
+                    "statusAll": "All statuses",
+                    "applied": "Applied",
+                    "appliedAll": "Applied & not",
+                    "appliedYes": "Applied",
+                    "appliedNo": "Not applied",
                     "authorPlaceholder": "All authors",
                     "searchPlaceholder": "Search title or author",
                     "reset": "Reset",
@@ -1441,6 +1449,7 @@
                         "other": "Other"
                     }
                 },
+                "resultCountWord": "shown",
                 "sources": {
                     "local": "Local",
                     "server": "Server",
@@ -1513,6 +1522,7 @@
                     "conditional": "Conditional",
                     "partial": "Partial payouts",
                     "onServer": "On server",
+                    "unsaved": "Unsaved",
                     "inMemory": "In-memory",
                     "yes": "Yes",
                     "no": "No"
@@ -1760,6 +1770,7 @@
         },
         "createProposal": {
             "title": "Create Proposal",
+            "editTitle": "Proposal",
             "titlePark": "Create Park Proposal",
             "titleSquare": "Create Square Proposal",
             "closeAria": "Close proposal dialog",
@@ -1909,6 +1920,7 @@
             "ownerUnknown": "Unknown",
             "lensTooltip": "Open lens modal",
             "submit": "Create Proposal",
+            "submitEdit": "Save",
             "creating": "Creating...",
             "waiting": "Waiting for transaction...",
             "rejected": "Transaction rejected",

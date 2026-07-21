@@ -323,16 +323,20 @@ function updateAgentOwnedParcels(agentId) {
  * @param {string} fromAgentId - Current owner agent ID
  * @param {string} toAgentId - New owner agent ID
  */
-function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
+function transferParcelOwnership(parcelId, fromAgentId, toAgentId, options = {}) {
     // Update PersistentStorage
     PersistentStorage.setItem(`parcel_${parcelId}_owner`, toAgentId);
 
-    // Update both agents' owned parcels lists
-    if (fromAgentId) {
-        updateAgentOwnedParcels(fromAgentId);
-    }
-    if (toAgentId) {
-        updateAgentOwnedParcels(toAgentId);
+    // Update both agents' owned parcels lists. skipAgentSync lets a bulk caller (e.g. a reparcellization
+    // applying dozens of children) defer this to one keyspace pass afterwards — each updateAgentOwnedParcels
+    // scans the whole keyspace, so doing it per parcel is O(n²).
+    if (!options.skipAgentSync) {
+        if (fromAgentId) {
+            updateAgentOwnedParcels(fromAgentId);
+        }
+        if (toAgentId) {
+            updateAgentOwnedParcels(toAgentId);
+        }
     }
 
     console.log(`Transferred parcel ${parcelId} from ${fromAgentId || 'nobody'} to ${toAgentId}`);

@@ -604,7 +604,9 @@
                 defaultAction: 'cut',
                 // Geometry to outline the road (no fill) over the buildings, from the caller.
                 previewLatLngs: options.previewLatLngs,
-                roadWidth: options.roadWidth
+                roadWidth: options.roadWidth,
+                // The applied road being edited — hide only ITS strips during the tour (absent when drawing).
+                roadProposalKey: options.roadProposalKey
             });
         }
         if (typeof global.showStyledChoice === 'function') {

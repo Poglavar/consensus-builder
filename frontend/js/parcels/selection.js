@@ -32,6 +32,9 @@
 
     function highlightFeature(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // Proposal browse mode (the proposals list is open): the map is inert to parcels — no hover
+        // highlight, matching the click behaviour (only proposals are interactive).
+        if (global.proposalListBrowseMode) return;
         // Station placement owns every map-surface pointer event. Parcels stay visually inert
         // while the carried station preview and compatible-track overlay respond to the cursor.
         if (isStationPlacementMapInteractionActive()) return;

@@ -14,6 +14,23 @@ function getProposalCityId() {
     return null;
 }
 
+// True when the open dialog is editing a proposal already on the map that will be SAVED IN PLACE:
+// a non-minted local source keeps its id (see createProposal's editInPlace branch). A minted source
+// forks instead, so it is NOT edit-in-place. Drives the submit label ("Save") from every writer.
+function isEditingExistingProposalInPlace() {
+    try {
+        const srcId = (typeof window !== 'undefined' && window.pendingProposalReplacementSource)
+            ? window.pendingProposalReplacementSource.proposalId : null;
+        if (!srcId) return false;
+        const src = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+            ? proposalStorage.getProposal(srcId) : null;
+        if (!src) return false;
+        return !(typeof isProposalMinted === 'function' && isProposalMinted(src));
+    } catch (_) {
+        return false;
+    }
+}
+
 function updateCreateProposalSubmitState() {
     const btn = document.getElementById('createProposalSubmitButton');
     const hint = document.getElementById('proposalGeometryRequirementHint');
@@ -28,9 +45,12 @@ function updateCreateProposalSubmitState() {
         const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
         const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-        btn.textContent = isVote
-            ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
-            : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal');
+        // Editing an existing proposal saves in place — that label wins over the create/vote labels.
+        btn.textContent = isEditingExistingProposalInPlace()
+            ? (t ? t('modal.createProposal.submitEdit', 'Save') : 'Save')
+            : (isVote
+                ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
+                : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
     }
     if (hint) {
         hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';
@@ -1761,7 +1781,36 @@ async function createProposal() {
             waitingPopupVisible = true;
             setProposalModalDimmed(true);
         }
-        const proposalId = proposalStorage.addProposal(proposal);
+        // Editing an existing LOCAL proposal (opened through the "Details" dialog) updates it IN
+        // PLACE: keep its id and its already-applied geometry, overwrite only the editable
+        // properties, and drop any server id so re-sharing re-fingerprints (a fresh URL only when
+        // the content actually changed). A MINTED source is immutable and instead forks — it falls
+        // through to the add-new + parked-original path below, exactly like before.
+        const inPlaceSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
+        const inPlaceSource = inPlaceSourceId ? proposalStorage.getProposal(inPlaceSourceId) : null;
+        const editInPlace = !!(inPlaceSource && !(typeof isProposalMinted === 'function' && isProposalMinted(inPlaceSource)));
+        let proposalId;
+        if (editInPlace) {
+            // Only non-geometric, dialog-editable fields — the geometry payload and applied state
+            // stay untouched, so the map (which already shows this proposal) never desyncs.
+            const EDITABLE_KEYS = ['author', 'title', 'name', 'proposalName', 'description', 'offer',
+                'offerCurrency', 'budget', 'budgetCurrency', 'acquisitionMode', 'boundaryAdjustment',
+                'primaryType', 'goal', 'expiresAt', 'decayEnabled', 'decayPercent', 'decayDurationMs',
+                'depositEnabled', 'depositPercent', 'isConditional', 'disbursementMode', 'isVote',
+                'voteExpiryDays', 'facets', 'proposalFacets'];
+            EDITABLE_KEYS.forEach(k => { if (k in proposal) inPlaceSource[k] = proposal[k]; });
+            inPlaceSource.termsConfirmed = true; // Saving through the dialog confirms terms.
+            // Re-sharing decides new-vs-same URL from the content fingerprint, so drop the old server id.
+            ['serverProposalId', 'hash', 'replacementLifecycle', 'supersedesProposalIds'].forEach(k => delete inPlaceSource[k]);
+            if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(inPlaceSource);
+            if (typeof proposalStorage.save === 'function') proposalStorage.save();
+            proposalId = inPlaceSource.proposalId;
+            // The source IS the edited record now — nothing to absorb further down.
+            delete proposal.sourceProposalId;
+            delete proposal.replacementOfProposalId;
+        } else {
+            proposalId = proposalStorage.addProposal(proposal);
+        }
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();

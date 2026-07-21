@@ -2301,9 +2301,10 @@ const LAKE_GRAPHICS_VERSION = 3;
 const LAKE_SHORE_TARGET_RATIO = 0.2;
 
 const proposalListState = {
-    activeTab: 'active',
     source: 'local',
     filterType: 'all',
+    lifecycleFilter: 'all', // 'all' | any getProposalLifecycleKey value (replaced the Active/Executed tabs)
+    appliedFilter: 'all',   // 'all' | 'applied' | 'not-applied'
     authorFilter: '',
     searchText: '',
     sortKey: 'created-desc',

@@ -286,6 +286,7 @@
         "proposals": {
             "title": "Predlozi",
             "listButton": "Lista predloga ({{count}})",
+            "unsavedCount": "{{count}} nesačuvano (još nije otpremljeno)",
             "mintedButton": "Kovani predlozi",
             "shareButton": "Podeli ceo plan (svi predlozi)",
             "shareButtonEmpty": "Nema primenjenih planova. Prvo primeni neki",
@@ -807,7 +808,8 @@
                 "editGeometry": "Uredi geometriju",
                 "editGeometryUnavailable": "Ovaj tip predloga ne može se preoblikovati (ili je mintovan i nepromenljiv).",
                 "details": "Detalji predloga",
-                "propose": "Predloži"
+                "propose": "Predloži",
+                "editDetails": "Detalji"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1397,6 +1399,12 @@
                     "author": "Autor",
                     "search": "Pretraga",
                     "sort": "Sortiraj po",
+                    "status": "Status",
+                    "statusAll": "Svi statusi",
+                    "applied": "Primenjeno",
+                    "appliedAll": "Sve",
+                    "appliedYes": "Primenjeno",
+                    "appliedNo": "Nije primenjeno",
                     "authorPlaceholder": "Svi autori",
                     "searchPlaceholder": "Traži naslov ili autora",
                     "reset": "Resetuj",
@@ -1413,6 +1421,7 @@
                         "other": "Ostalo"
                     }
                 },
+                "resultCountWord": "prikazano",
                 "sources": {
                     "local": "Lokalni",
                     "server": "Server",
@@ -1489,6 +1498,7 @@
                     "conditional": "Uslovno",
                     "partial": "Delimične isplate",
                     "onServer": "Na serveru",
+                    "unsaved": "Nesačuvano",
                     "inMemory": "U memoriji",
                     "yes": "Da",
                     "no": "Ne"
@@ -1764,6 +1774,7 @@
         },
         "createProposal": {
             "title": "Kreiraj predlog",
+            "editTitle": "Predlog",
             "titlePark": "Kreiraj predlog parka",
             "titleSquare": "Kreiraj predlog trga",
             "closeAria": "Zatvori dijalog predloga",
@@ -1913,6 +1924,7 @@
             "ownerUnknown": "Nepoznato",
             "lensTooltip": "Otvori modal sočiva",
             "submit": "Kreiraj predlog",
+            "submitEdit": "Sačuvaj",
             "creating": "Kreiram...",
             "waiting": "Čekam transakciju...",
             "rejected": "Transakcija odbijena",

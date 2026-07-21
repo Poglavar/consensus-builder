@@ -3426,6 +3426,87 @@
     padding: 8px;
 }
 
+/* Compact list card: title row + one dim meta line + state badges, so several fit on screen. */
+.proposal-list-item--compact {
+    padding: 8px 10px;
+    margin-bottom: 6px;
+}
+
+.proposal-card-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.proposal-card-icon {
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.proposal-list-item--compact .proposal-list-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 14px;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.proposal-card-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #70788a;
+    margin-top: 2px;
+}
+
+.proposal-card-offer {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.proposal-card-dot {
+    color: #cbd2dc;
+}
+
+.proposal-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* Shrink the reused state badges inside the compact card. */
+.proposal-list-item--compact .proposal-status-indicator,
+.proposal-list-item--compact .proposal-application-status,
+.proposal-mint-state--compact {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 9px;
+    line-height: 1.5;
+}
+
+.proposal-mint-state--compact {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.proposal-list-item--compact .proposal-meta-number {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8a92a3;
+    flex-shrink: 0;
+}
+
 @keyframes proposalBlinkTwice {
     0% {
         stroke-opacity: 1;
@@ -3453,31 +3534,26 @@
     animation: proposalBlinkTwice 1.2s ease-out 1;
 }
 
+/* Flash the whole previewed proposal — fill AND a bold outline — a few times, so when several
+   proposals sit next to each other the clicked one is unmistakable (a thin outline blink alone got
+   lost among neighbours). fill-opacity is animated too, so area proposals (buildings/parks) light up
+   their footprint; line/road proposals rely on the thick stroke pulse. CSS animations override
+   Leaflet's SVG presentation attributes, so this wins over the base preview style. */
 @keyframes proposalPreviewPulse {
-    0% {
+    0%, 100% {
+        fill-opacity: 0.55;
         stroke-opacity: 1;
-        stroke-width: 3px;
-    }
-    45% {
-        stroke-opacity: 1;
-        stroke-width: 3px;
+        stroke-width: 6px;
     }
     50% {
-        stroke-opacity: 0;
-        stroke-width: 0px;
-    }
-    95% {
-        stroke-opacity: 0;
-        stroke-width: 0px;
-    }
-    100% {
-        stroke-opacity: 1;
-        stroke-width: 3px;
+        fill-opacity: 0.04;
+        stroke-opacity: 0.25;
+        stroke-width: 2px;
     }
 }
 
 .proposal-preview-blink {
-    animation: proposalPreviewPulse 1.4s ease-in-out 2;
+    animation: proposalPreviewPulse 0.55s ease-in-out 3;
 }
 
 @keyframes proposalHoverDash {

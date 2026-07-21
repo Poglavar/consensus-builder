@@ -485,6 +485,7 @@
         "proposals": {
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
+            "unsavedCount": "{{count}} sin guardar (aún no subidas)",
             "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir plan completo (todas las propuestas)",
             "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
@@ -829,7 +830,8 @@
                 "editGeometry": "Editar geometría",
                 "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles de la propuesta",
-                "propose": "Proponer"
+                "propose": "Proponer",
+                "editDetails": "Detalles"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1445,6 +1447,12 @@
                     "author": "Autor",
                     "search": "Buscar",
                     "sort": "Ordenar por",
+                    "status": "Estado",
+                    "statusAll": "Todos los estados",
+                    "applied": "Aplicado",
+                    "appliedAll": "Todas",
+                    "appliedYes": "Aplicado",
+                    "appliedNo": "No aplicado",
                     "authorPlaceholder": "Todos los autores",
                     "searchPlaceholder": "Buscar título o autor",
                     "reset": "Restablecer",
@@ -1461,6 +1469,7 @@
                         "other": "Otros"
                     }
                 },
+                "resultCountWord": "mostrados",
                 "sources": {
                     "local": "Locales",
                     "server": "Servidor",
@@ -1533,6 +1542,7 @@
                     "conditional": "Condicional",
                     "partial": "Pagos parciales",
                     "onServer": "En el servidor",
+                    "unsaved": "Sin guardar",
                     "inMemory": "En memoria",
                     "yes": "Sí",
                     "no": "No"
@@ -1809,6 +1819,7 @@
         },
         "createProposal": {
             "title": "Crear propuesta",
+            "editTitle": "Propuesta",
             "titlePark": "Crear propuesta de parque",
             "titleSquare": "Crear propuesta de plaza",
             "closeAria": "Cerrar diálogo de propuesta",
@@ -1958,6 +1969,7 @@
             "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
             "submit": "Crear propuesta",
+            "submitEdit": "Guardar",
             "creating": "Creando...",
             "waiting": "Esperando la transacción...",
             "rejected": "Transacción rechazada",

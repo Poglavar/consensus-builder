@@ -425,7 +425,11 @@ function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
         });
         layer.addTo(group);
         if (blinkClass) {
-            requestAnimationFrame(() => applyBlinkToLayerGroup(layer, blinkClass));
+            // Apply now (the SVG path exists synchronously after addTo) AND on the next frame so the
+            // animation restarts reliably. requestAnimationFrame alone is throttled to a standstill
+            // when the tab isn't actively rendering, which left the blink never applied.
+            applyBlinkToLayerGroup(layer, blinkClass);
+            try { requestAnimationFrame(() => applyBlinkToLayerGroup(layer, blinkClass)); } catch (_) { }
         }
         return layer;
     } catch (error) {
@@ -535,10 +539,17 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             className: 'proposal-primary-outline'
         };
 
-        // Parcel outlines: in-place style override (see note in track branch above).
+        // Parcel outlines: in-place style override (see note in track branch above). Reparcellization
+        // children carry a per-slice colour (per owner) — use it so a subdivision reads as distinct
+        // plots, not one uniform blue blob. Everything else keeps the shared blue.
+        const isReparcellization = !!(proposal && proposal.reparcellization);
         const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
         forEachProposalParcelInViewport(parcelIdSet, (layer) => {
-            proposalHighlightStyleOverride.apply(layer, parcelStyle);
+            const sliceColor = isReparcellization ? (layer && layer.feature && layer.feature.properties && layer.feature.properties.color) : null;
+            const style = sliceColor
+                ? { ...parcelStyle, color: sliceColor, fillColor: sliceColor }
+                : parcelStyle;
+            proposalHighlightStyleOverride.apply(layer, style);
         });
 
         // Always show primary features for applied proposals at all zoom levels
@@ -860,41 +871,16 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
             map.on('moveend', onMoveEnd);
 
-            // Calculate bounds and padding, accounting for proposal details panel on desktop
-            const isDesktop = window.innerWidth > 768;
-            let adjustedBounds = bounds;
-            let fitOptions = { padding: [50, 50] }; // Default: [top/bottom, left/right]
-
-            if (isDesktop && showDetails) {
-                // If showing details, expand bounds to account for the proposal details panel on the right
-                // Panel is 400px wide + 10px margin on each side = 420px total
-                const panelWidth = 400;
-                const panelMargin = 20;
-                const totalPanelSpace = panelWidth + panelMargin;
-
-                // Get map container to calculate expansion ratio
-                const mapContainer = map.getContainer();
-                const mapWidth = mapContainer ? mapContainer.clientWidth : window.innerWidth;
-
-                // Calculate expansion needed: visible area is (mapWidth - panelSpace)
-                // We need to expand bounds so they fit in this smaller visible area
-                const visibleWidth = mapWidth - totalPanelSpace;
-                const expansionRatio = mapWidth / visibleWidth;
-
-                // Expand bounds using pad() - pad takes a ratio (0.1 = 10% expansion)
-                // We need to expand by (expansionRatio - 1) to account for panel
-                // Reduced multiplier (0.5 instead of 0.8) to zoom in more
-                const padRatio = Math.max(0.1, (expansionRatio - 1) * 0.5);
-                adjustedBounds = bounds.pad(padRatio);
-
-                // Use standard padding
-                fitOptions = { padding: [50, 50] };
-            }
-
-            // Start the map centering
-            // Add maxZoom to prevent zooming out too far (where parcels shouldn't be visible)
-            fitOptions.maxZoom = 19;
-            map.fitBounds(adjustedBounds, fitOptions);
+            // Frame the proposal in the VISIBLE map, clear of whichever proposal panel is covering it
+            // (the details panel that opens on select, or the list panel when browsing). Asymmetric
+            // padding shifts the fit into the visible area, instead of the old symmetric bounds.pad()
+            // which centered on the FULL map and left the proposal partly behind the right panel.
+            const { paddingTopLeft, paddingBottomRight } = (typeof getProposalPanelFitPadding === 'function')
+                ? getProposalPanelFitPadding(50)
+                : { paddingTopLeft: [50, 50], paddingBottomRight: [50, 50] };
+            // animate:false — instant framing, and it avoids requestAnimationFrame (throttled to a
+            // standstill when the tab isn't actively rendering, which silently no-ops an animated fit).
+            map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19, animate: false });
         } else {
             // No bounds from road definition or parcel layers
             window.isApplyingProposalHighlights = false;
@@ -919,6 +905,16 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         if (!keepHighlightsWithoutUi && typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
             clearProposalHighlights();
             clearProposalInfoHoverOverlay();
+        }
+    } catch (_) { }
+
+    // Proposal browse mode: picking a proposal from any of the clickable map surfaces (a parcel that
+    // carries one, a corridor hit target, a building, a station) is the "commit" gesture — its
+    // details are now open, so the list has done its browsing job and closes. Highlights are kept so
+    // the just-selected proposal stays visible on the map.
+    try {
+        if (window.proposalListBrowseMode && showDetails && typeof closeProposalList === 'function') {
+            closeProposalList({ clearHighlights: false });
         }
     } catch (_) { }
 }

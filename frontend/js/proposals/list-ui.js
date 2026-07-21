@@ -602,6 +602,10 @@ function applyProposalListFilters(dataset) {
     const goalFilter = proposalListState.filterType;
     const authorFilter = proposalListState.authorFilter.trim().toLowerCase();
     const searchFilter = proposalListState.searchText.trim().toLowerCase();
+    // Lifecycle status (all + every getProposalLifecycleKey value) and applied state are two
+    // orthogonal dropdown filters — they replaced the old Active/Executed tabs.
+    const lifecycleFilter = proposalListState.lifecycleFilter || 'all';
+    const appliedFilter = proposalListState.appliedFilter || 'all';
 
     return dataset.filter(entry => {
         const { metrics } = entry;
@@ -618,6 +622,17 @@ function applyProposalListFilters(dataset) {
             if (!haystack.includes(searchFilter)) {
                 return false;
             }
+        }
+
+        if (lifecycleFilter !== 'all') {
+            const key = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(entry.proposal) : 'active';
+            if (key !== lifecycleFilter) return false;
+        }
+
+        if (appliedFilter !== 'all') {
+            const applied = (typeof isProposalApplied === 'function') ? !!isProposalApplied(entry.proposal) : !!(entry.proposal && entry.proposal.applied);
+            if (appliedFilter === 'applied' && !applied) return false;
+            if (appliedFilter === 'not-applied' && applied) return false;
         }
 
         return true;
@@ -722,10 +737,15 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const offerText = formatCurrencyMetric(metrics.offerValue);
         const createdDate = metrics.createdAt ? new Date(metrics.createdAt).toLocaleDateString() : '—';
         const isExecuted = getLifecycleStatus(proposal) === 'Executed';
+        // Save state is a property of the PROPOSAL, not of which tab it is shown in: it is "Unsaved"
+        // (local-only, at risk) unless it is minted on-chain or uploaded to the server (numeric serial).
+        const isMinted = isProposalMinted(proposal);
+        const isUnsaved = !isMinted && !serialProposalId;
         const classes = ['proposal-list-item'];
 
         if (metrics.isApplied) classes.push('is-applied');
         if (isExecuted) classes.push('is-executed');
+        if (isUnsaved) classes.push('is-unsaved');
         if (proposalHighlightState.activeProposalId === proposalId || proposalListState.selectedId === proposalId) {
             classes.push('is-selected');
         }
@@ -749,41 +769,27 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
             : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
 
-        // Determine minted/status badges
-        const isMinted = isProposalMinted(proposal);
+        // Save-state badge — driven by the proposal itself (see isUnsaved above), so uploaded and
+        // never-uploaded proposals are told apart even in the same local list. Minted → green,
+        // uploaded (has a server serial) → blue, otherwise → amber "Unsaved".
         const downloadEligible = isServerSource && !!proposalId;
         const isDownloaded = downloadEligible && downloadedLookup(proposal);
         const mintLabels = {
             minted: t('panel.proposal.lifecycle.minted', 'Minted'),
-            inMemory: t('panel.proposal.lifecycle.inMemory', 'In-memory'),
-            onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server')
+            onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server'),
+            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved')
         };
 
-        let mintLabel = mintLabels.inMemory;
-        let mintStyles = {
-            color: '#7a6000',
-            background: '#fff7d6',
-            border: '#ffe08a'
-        };
-
+        let mintLabel, mintStyles;
         if (isMinted) {
             mintLabel = mintLabels.minted;
-            mintStyles = {
-                color: '#065f46',
-                background: '#d1fae5',
-                border: '#34d399'
-            };
-        } else if (isServerSource) {
-            if (isDownloaded) {
-                mintLabel = mintLabels.inMemory;
-            } else {
-                mintLabel = mintLabels.onServer;
-                mintStyles = {
-                    color: '#0b4f91',
-                    background: '#e5f0ff',
-                    border: '#a7c2ff'
-                };
-            }
+            mintStyles = { color: '#065f46', background: '#d1fae5', border: '#34d399' };
+        } else if (serialProposalId) {
+            mintLabel = mintLabels.onServer;
+            mintStyles = { color: '#0b4f91', background: '#e5f0ff', border: '#a7c2ff' };
+        } else {
+            mintLabel = mintLabels.unsaved;
+            mintStyles = { color: '#7a6000', background: '#fff7d6', border: '#ffe08a' };
         }
         const downloadButtonHtml = downloadEligible
             ? `<button class="proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
@@ -793,51 +799,37 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                         <i class="fas fa-trash"></i>
                     </button>`;
 
-        const thumbHtml = buildProposalThumbHtml(proposal);
-        const bodyHtml = `
-            <div class="proposal-list-body">
-                <div class="proposal-list-header">
-                    <div class="proposal-color-dot" style="background-color: ${color};"></div>
-                    <span class="proposal-list-title">${safeTitle}</span>
-                    <span class="proposal-type-pill">${typeLabel}</span>
-                    ${buildProposalActionButtons(proposal, isExecuted)}
+        // Compact card: a full-width title (no longer squeezed to an ellipsis by the pill + buttons),
+        // one dim meta line, and just the state badges. The big thumbnail is dropped for a small
+        // goal-emoji icon (local proposals have no image anyway) and the auto-generated description is
+        // dropped, so 5+ cards fit on screen instead of 2–3.
+        const goalBadge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(metrics.goalKey) : null;
+        const goalIcon = (goalBadge && goalBadge.text) ? goalBadge.text : '📄';
+        const goalIconTitle = (goalBadge && goalBadge.label) ? goalBadge.label : typeLabel;
+        const buyButtonHtml = buildProposalActionButtons(proposal, isExecuted); // usually empty (Buy on open sale offers)
+        const metaBits = [
+            offerText ? `<span class="proposal-card-offer">${escapeHtml(offerText)}</span>` : '',
+            `<span>${safeAuthor}</span>`,
+            `<span>${escapeHtml(createdDate)}</span>`,
+            `<span title="${escapeHtml(metaLabels.parcels)} ${escapeHtml(String(metrics.parcelCount))}">${escapeHtml(String(metrics.parcelCount))}p</span>`,
+            `<span title="${escapeHtml(metaLabels.acceptance)}">${escapeHtml(acceptanceText)}</span>`
+        ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
+
+        return `
+            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}" style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
+                <div class="proposal-card-head">
+                    <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
+                    <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
+                    ${serialProposalId ? `<span class="proposal-meta-number">#${escapeHtml(serialProposalId)}</span>` : ''}
                     <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
                     ${downloadButtonHtml || deleteButtonHtml}
                 </div>
-                <div class="proposal-list-meta">
-                    ${serialProposalId ? `<span><span class="proposal-meta-value proposal-meta-number">#${escapeHtml(serialProposalId)}</span></span>` : ''}
-                    <span><strong>${escapeHtml(metaLabels.author)}</strong> <span class="proposal-meta-value">${safeAuthor}</span></span>
-                    <span><strong>${escapeHtml(metaLabels.created)}</strong> <span class="proposal-meta-value">${escapeHtml(createdDate)}</span></span>
-                    <span><strong>${escapeHtml(metaLabels.acceptance)}</strong> <span class="proposal-meta-value">${escapeHtml(acceptanceText)}</span></span>
-                    <span><strong>${escapeHtml(metaLabels.parcels)}</strong> <span class="proposal-meta-value">${escapeHtml(String(metrics.parcelCount))}</span></span>
-                    <span><strong>${escapeHtml(metaLabels.offer)}</strong> <span class="proposal-meta-value">${escapeHtml(offerText)}</span></span>
+                <div class="proposal-card-sub">${metaBits}</div>
+                <div class="proposal-card-badges">
+                    <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
+                    <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
+                    ${buyButtonHtml}
                 </div>
-                <div class="proposal-list-badges" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center;">
-                    <div class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</div>
-                    <div class="proposal-conditionality ${isConditional ? 'conditional' : 'partial'}">${escapeHtml(disbursementLabel)}</div>
-                    <div class="proposal-mint-state" style="
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 4px;
-                        padding: 2px 6px;
-                        border-radius: 10px;
-                        font-size: 11px;
-                        font-weight: 500;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                        color: ${mintStyles.color};
-                        background: ${mintStyles.background};
-                        border: 1px solid ${mintStyles.border};
-                    ">
-                        ${escapeHtml(mintLabel)}
-                    </div>
-                </div>
-                ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
-            </div>
-        `;
-        return `
-            <div class="${classAttr}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
-                ${thumbHtml ? `<div class="proposal-list-row">${thumbHtml}${bodyHtml}</div>` : bodyHtml}
             </div>
         `;
     }).join('');
@@ -928,18 +920,22 @@ async function handleProposalListItemClick(event) {
     }
 
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
-    proposalListState.selectedId = resolvedId;
 
-    resetParcelSelectionForProposalListInteraction();
-    openProposalFromList(resolvedId, {
-        proposal,
-        closeProposalList: true,
-        closeParcelInfo: true,
-        closeAgentDialog: false,
-        collapseSidebar: true,
-        centerOnProposal: true,
-        showDetails: true
-    });
+    // A list click only PREVIEWS the proposal: pan/zoom the map to it (framed in the visible area,
+    // clear of the list panel) and mark the row — the list stays open and nothing is committed.
+    // COMMITTING (select + open details + close the list + restore normal, fully-clickable map)
+    // happens when the user clicks the proposal ON THE MAP; see the browse-mode guard in
+    // onParcelClick / the tail of selectAndHighlightProposal.
+    try {
+        const listModal = document.querySelector('.proposal-list-modal');
+        if (listModal) {
+            listModal.querySelectorAll('.proposal-list-item.is-previewing').forEach(el => el.classList.remove('is-previewing'));
+            item.classList.add('is-previewing');
+        }
+    } catch (_) { }
+    if (typeof previewProposalOnMap === 'function') {
+        previewProposalOnMap(resolvedId, { center: true, blink: true });
+    }
 }
 
 function switchProposalTab(clickedTabOrName, maybeTabName) {
@@ -958,6 +954,8 @@ function switchProposalTab(clickedTabOrName, maybeTabName) {
 function closeProposalList(options = {}) {
     const normalized = options && typeof options === 'object' ? options : {};
     const clearHighlights = normalized.clearHighlights !== false;
+    // Leaving the list also exits browse mode, so the map returns to normal (parcels clickable again).
+    if (typeof window !== 'undefined') window.proposalListBrowseMode = false;
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
         modal.style.display = 'none';
@@ -967,6 +965,95 @@ function closeProposalList(options = {}) {
             try { clearProposalHighlights(); } catch (_) { }
         }
         proposalListState.selectedId = null;
+    }
+}
+
+// fitBounds padding that keeps content in the VISIBLE map, clear of whichever right/bottom-docked
+// proposal panel is currently covering it: the list panel while browsing, or the details panel once a
+// proposal is selected. That side is padded out (right ~third / 400px on desktop, lower half on
+// mobile). Returns a plain {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin
+// when neither panel is open. Shared by fit-all-on-open, the preview zoom, and proposal selection.
+function getProposalPanelFitPadding(margin = 40) {
+    let paddingTopLeft = [margin, margin];
+    let paddingBottomRight = [margin, margin];
+    try {
+        let rect = null;
+        const listModal = document.querySelector('.proposal-list-modal');
+        const listPanel = document.querySelector('.proposal-list-modal-content');
+        if (listModal && listModal.style.display === 'block' && listPanel) {
+            rect = listPanel.getBoundingClientRect();
+        } else {
+            const details = document.getElementById('proposal-details-panel');
+            if (details && details.classList.contains('visible')) rect = details.getBoundingClientRect();
+        }
+        if (rect && rect.width > 0 && rect.height > 0) {
+            const docksBottom = rect.top > window.innerHeight * 0.4; // bottom dock (mobile)
+            if (docksBottom) paddingBottomRight = [margin, Math.round(rect.height) + margin];
+            else paddingBottomRight = [Math.round(rect.width) + margin, margin];
+        }
+    } catch (_) { }
+    return { paddingTopLeft, paddingBottomRight };
+}
+
+// Frame every currently-applied proposal in one view — used when the list opens so the user starts
+// from an overview. Bounds come from each proposal's own geometry (resolveStandaloneProposalFocusBounds),
+// with a parcel-layer fallback, combined into one L.latLngBounds. The side the panel covers is padded
+// so nothing is framed behind it (right third on desktop, lower half on mobile).
+function fitMapToAppliedProposals() {
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
+    const all = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
+        ? proposalStorage.getAllProposals() : [];
+    const applied = all.filter(p => typeof isProposalCurrentlyApplied === 'function'
+        ? isProposalCurrentlyApplied(p)
+        : !!(p && p.applied));
+    if (!applied.length) return false;
+
+    let combined = null;
+    const extend = (b) => {
+        if (b && typeof b.isValid === 'function' && b.isValid()) {
+            combined = combined ? combined.extend(b) : L.latLngBounds(b.getSouthWest(), b.getNorthEast());
+        }
+    };
+    for (const proposal of applied) {
+        let bounds = null;
+        try {
+            if (typeof resolveStandaloneProposalFocusBounds === 'function') {
+                bounds = resolveStandaloneProposalFocusBounds(proposal);
+            }
+        } catch (_) { }
+        if (bounds) { extend(bounds); continue; }
+        // Fallback: frame the proposal's parent parcels' layers (same pattern selectAndHighlightProposal uses).
+        try {
+            const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+            ids.forEach(pid => {
+                const layer = (typeof findParcelLayerById === 'function') ? findParcelLayerById(pid) : null;
+                if (layer && typeof layer.getBounds === 'function') extend(layer.getBounds());
+            });
+        } catch (_) { }
+    }
+
+    if (!combined || !combined.isValid()) return false;
+
+    // Pad the side the panel covers so proposals aren't framed underneath it.
+    let paddingTopLeft = [40, 40];
+    let paddingBottomRight = [40, 40];
+    try {
+        const panel = document.querySelector('.proposal-list-modal-content');
+        if (panel) {
+            const rect = panel.getBoundingClientRect();
+            const docksBottom = rect.top > window.innerHeight * 0.4; // mobile: lower-half dock
+            if (docksBottom) paddingBottomRight = [40, Math.round(rect.height) + 40];
+            else paddingBottomRight = [Math.round(rect.width) + 40, 40];
+        }
+    } catch (_) { }
+
+    try {
+        // animate:false — an instant overview when the list opens (no distracting pan), and it avoids
+        // relying on requestAnimationFrame, which is throttled when the tab isn't actively rendering.
+        map.fitBounds(combined, { paddingTopLeft, paddingBottomRight, maxZoom: 18, animate: false });
+        return true;
+    } catch (_) {
+        return false;
     }
 }
 
@@ -1002,6 +1089,23 @@ function updateShowProposalsButton() {
             button.textContent = i18nApi.t('sidebar.proposals.listButton', { count: totalProposals });
         } else {
             button.textContent = `Proposals List (${totalProposals})`;
+        }
+        // Flag unsaved (local-only, neither minted nor uploaded) work right on the sidebar button, so
+        // it's visible without opening the list. Same predicate as the list's amber "Unsaved" badge.
+        // Re-appended each call because setting textContent above clears the previous badge.
+        const unsavedCount = allLocal.filter(p =>
+            !(typeof isProposalMinted === 'function' && isProposalMinted(p))
+            && !(typeof getSerialProposalId === 'function' && getSerialProposalId(p))
+        ).length;
+        if (unsavedCount > 0) {
+            const dot = document.createElement('span');
+            dot.className = 'proposal-unsaved-count';
+            dot.textContent = String(unsavedCount);
+            const unsavedTitle = (i18nApi && typeof i18nApi.t === 'function')
+                ? i18nApi.t('sidebar.proposals.unsavedCount', { count: unsavedCount })
+                : `${unsavedCount} unsaved (not yet uploaded)`;
+            dot.title = unsavedTitle;
+            button.appendChild(dot);
         }
     }
 

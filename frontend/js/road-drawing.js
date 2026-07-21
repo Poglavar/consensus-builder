@@ -1122,7 +1122,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind, {
                 mergeProposalImpacts,
                 previewLatLngs: normalizedSegments,
-                roadWidth: editWidth
+                roadWidth: editWidth,
+                roadProposalKey: key0
             });
             if (resolution.action === 'cancel') {
                 // Reroute: put the definition back exactly as it was and drop the edit. A node drag

@@ -1196,11 +1196,16 @@
             // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
             const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
             const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
-            submit.textContent = isVote
-                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
-                : (sourceIsMinted
-                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
-                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
+            // A non-minted existing source is edited IN PLACE (kept id) — the action is "Save". A
+            // minted source forks into a replacement; a sourceless draft is a plain create.
+            const editingInPlace = !!(source && !sourceIsMinted);
+            submit.textContent = editingInPlace
+                ? tDraft('modal.createProposal.submitEdit', 'Save')
+                : (isVote
+                    ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
+                    : (sourceIsMinted
+                        ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+                        : tDraft('proposalDrafts.actions.createProposal', 'Create proposal')));
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();

@@ -200,14 +200,18 @@
             let lastZoomedIndex = -1;
             const cleanupFns = [];
 
-            // The road's filled strips (corridorStripsPane) render above this tour and would hide the
-            // buildings it is about. Drop that fill while the tour is open so the buildings show through
-            // — the road is drawn here as an outline instead. Restored on close via cleanupFns.
-            const stripsPane = (typeof map.getPane === 'function') ? map.getPane('corridorStripsPane') : null;
-            if (stripsPane) {
-                const prevStripsDisplay = stripsPane.style.display;
-                stripsPane.style.display = 'none';
-                cleanupFns.push(() => { stripsPane.style.display = prevStripsDisplay; });
+            // The filled strips of the road being EDITED render above this tour and would hide the
+            // buildings it is about. Hide ONLY that road's strips while the tour is open (other roads
+            // stay for context) so the buildings show through — it is redrawn here as an outline. A
+            // <style> rule keyed on the road's owner class does it; removed on close. (A road being
+            // DRAWN isn't applied yet, so it has no strips here and roadProposalKey is absent.)
+            const ownerClass = (options.roadProposalKey != null && typeof global.corridorOwnerClass === 'function')
+                ? global.corridorOwnerClass(options.roadProposalKey) : null;
+            if (ownerClass) {
+                const styleEl = document.createElement('style');
+                styleEl.textContent = `.${ownerClass}{display:none !important;}`;
+                document.head.appendChild(styleEl);
+                cleanupFns.push(() => { try { styleEl.remove(); } catch (_) { } });
             }
 
             const isMobile = !!(global.matchMedia && global.matchMedia('(max-width: 600px)').matches);

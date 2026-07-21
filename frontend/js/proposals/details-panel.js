@@ -543,20 +543,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    // There is no editor dialog. Selection is direct manipulation (corridors: node handles +
-    // cross-section), and the terms/details complexity lives behind one "Propose" action that
-    // opens the create dialog prefilled from the object — submitting absorbs the unminted
-    // source, so re-proposing IS how terms get edited. Once proposed (terms confirmed via the
-    // dialog, or minted) the slot shows "Proposal details" instead; a later geometry edit makes
-    // a fresh unproposed object and Propose returns.
-    const proposalIsProposed = (fullProposal || proposal)?.termsConfirmed === true || isMinted;
-    const editButtonHtml = (proposalKey && !isMinted && !proposalIsProposed)
+    // Geometry is direct manipulation (corridors: node handles + cross-section); everything else —
+    // terms, offer, name, expiry, decay, deposit — is edited through one "Details" action that opens
+    // the full create dialog prefilled from the object. For a non-minted local proposal that dialog
+    // saves IN PLACE (same id, only a re-share under a changed fingerprint mints a fresh URL), so it
+    // is the single editing surface whether or not terms were already confirmed. A MINTED proposal is
+    // immutable, so its slot is the read-only "Proposal details" panel expand instead (editing a
+    // minted proposal forks it, which happens by editing its geometry, not from here).
+    const editButtonHtml = (proposalKey && !isMinted)
         ? `
         <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
-            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.propose', 'Propose')}
+            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.editDetails', 'Details')}
         </button>
     `
-        : (proposalKey && proposalIsProposed
+        : (proposalKey && isMinted
             ? `
         <button class="btn btn-primary btn-proposal-details-expand" onclick="toggleProposalDetailsPanelMinimized(false)">
             <i class="fas fa-file-alt"></i> ${tProposal('panel.proposal.actions.details', 'Proposal details')}

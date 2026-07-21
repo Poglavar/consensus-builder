@@ -326,10 +326,19 @@ function renderCorridorDirectionArrows(arrows, group, pane) {
 // symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
 // `centerlines` + `profile` are what the strips were built from; passing them lets the rail lanes among
 // them lay their rails, so no caller can draw a cross-section and forget its track.
+// A CSS-safe per-corridor class so a single corridor's strips can be targeted (e.g. hidden while the
+// building-impact tour outlines just that road). Same sanitiser used on the render and the toggle
+// sides, so they always agree.
+function corridorOwnerClass(id) {
+    if (id === undefined || id === null || id === '') return null;
+    return 'corridor-owner-' + String(id).replace(/[^a-zA-Z0-9_-]/g, '-');
+}
+
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
     const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : 0.85;
+    const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
         const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
@@ -342,7 +351,7 @@ function renderCorridorStrips(strips, options = {}) {
                 fillOpacity,
                 interactive: false,
                 pane: options.pane || undefined,
-                className: `corridor-strip corridor-strip--${strip.type}`
+                className: `corridor-strip corridor-strip--${strip.type}${ownerClass}`
             }).addTo(group);
         });
     });
@@ -599,6 +608,7 @@ function refreshAppliedCorridorStrips() {
 
         const group = L.layerGroup();
         const allStrips = [];
+        const ownerClass = corridorOwnerClass((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         entries.forEach(entry => {
             const strips = buildCorridorStrips([entry.points], entry.profile);
             const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
@@ -607,7 +617,7 @@ function refreshAppliedCorridorStrips() {
             const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
-                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [],
+                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [], ownerClass,
                 // A placed corridor's rails are black, like the asphalt it is laid in.
                 centerlines: [entry.points], profile: entry.profile,
                 railColor: '#000000', sleeperColor: '#666666'
@@ -722,6 +732,7 @@ if (typeof window !== 'undefined') {
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;
     window.CORRIDOR_STRIPS_PANE = CORRIDOR_STRIPS_PANE;
+    window.corridorOwnerClass = corridorOwnerClass;
 
     // Drop the amber selected-segment highlight the moment the selection changes to anything else
     // (another road, a parcel/building, or nothing). renderSelectedCorridorSegmentHighlight already
