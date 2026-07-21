@@ -19,7 +19,8 @@
         const proposal = global.getProposalByIdOrHash?.(key) || null;
         if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return null;
         if (!isApplied(proposal, proposal.roadProposal)) return null;
-        if (typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal)) return null;
+        // A minted road is node-editable too — the drag forks it into your local copy
+        // (updateLocalCorridorGeometry detaches its published pointers), never touching the NFT.
         return proposal;
     }
 

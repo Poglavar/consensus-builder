@@ -20,8 +20,11 @@
 // indicator) but does not block — the demolition was already consented, and Apply re-carves the cut
 // at the new width (road-drawing's runLocalCorridorGeometryUpdate).
 //
-// Local unminted roads take the change in place (footprint + parcel cuts rebuild on Apply); minted
-// proposals are immutable and reopen as a drawing draft instead.
+// A placed road takes the change in place (footprint + parcel cuts rebuild on Apply). A road that
+// carries a published identity (uploaded or minted) forks into your local copy as it is edited —
+// its server/chain pointers are detached, so the next Share/Upload re-mints — and the on-chain
+// original is never touched. Reopening as a drawing is only a fallback when the road cannot be
+// edited in place here (its parcels are not loaded in the current city).
 
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
@@ -725,8 +728,8 @@ function corridorEditorCorridorBodyHtml() {
         : `<span class="corridor-stats-delta corridor-stats-delta--over">${corridorEditorI18n('modal.corridor.overCorridor', 'Too wide for the corridor by {{delta}} m', { delta: corridorEditorFormatMeters(-delta) })}</span>`;
 
     // Fit: only a single scoped segment can be moved as one piece (pick a segment on a network).
+    // A minted road can be moved like any other — the move forks it into your local copy.
     const singleSegment = clearance.samplesBySegment.filter(samples => samples.length).length === 1;
-    const minted = typeof isProposalMinted === 'function' && isProposalMinted(state.source);
     const fit = corridorFitShift(flat, width, { maxDistance: CORRIDOR_CLEARANCE_MAX, margin: 0.05 });
     let fitHtml = '';
     if (stats.fitsAsIs) {
@@ -736,7 +739,7 @@ function corridorEditorCorridorBodyHtml() {
     } else if (fit && fit.feasible && fit.shift !== 0) {
         fitHtml = `
             <div class="corridor-stats-fit-move">${corridorEditorI18n('modal.corridor.fitIfMoved', 'The road would fit if moved {{move}}.', { move: corridorEditorShiftText(flat, fit.shift) })}</div>
-            <button type="button" class="btn btn-primary corridor-fit-move" data-shift="${fit.shift}"${minted ? ' disabled' : ''}>
+            <button type="button" class="btn btn-primary corridor-fit-move" data-shift="${fit.shift}">
                 ${corridorEditorI18n('modal.corridor.moveToFit', 'Move road {{move}}', { move: corridorEditorShiftText(flat, fit.shift) })}
             </button>`;
     } else if (stats.minWidth >= width - 0.05) {
@@ -761,16 +764,13 @@ function corridorEditorCorridorBodyHtml() {
         const buttons = options.map(option => {
             const possible = fit.feasible && option.shift >= fit.dMin - 1e-9 && option.shift <= fit.dMax + 1e-9;
             return `<button type="button" class="btn btn-outline-secondary corridor-fit-side" data-shift="${option.shift}"
-                ${possible && !minted ? '' : ' disabled'}>${corridorEditorI18n('modal.corridor.widenInto', 'Widen toward: {{side}}', { side: option.side })}</button>`;
+                ${possible ? '' : ' disabled'}>${corridorEditorI18n('modal.corridor.widenInto', 'Widen toward: {{side}}', { side: option.side })}</button>`;
         }).join('');
         sideHtml = `<div class="corridor-stats-sides">
             <div class="corridor-editor-group-label">${corridorEditorI18n('modal.corridor.widenIntoLabel', 'Take the added width ({{delta}} m) from one side', { delta: corridorEditorFormatMeters(width - originalWidth) })}</div>
             <div class="corridor-stats-side-buttons">${buttons}</div>
         </div>`;
     }
-    const mintedNote = minted
-        ? `<div class="corridor-stats-note">${corridorEditorI18n('modal.corridor.fitMinted', 'This proposal is minted and immutable — apply the cross-section to a drawing to move it.')}</div>`
-        : '';
 
     // The pinch and what removing its obstacles would buy — the "what would demolition unlock" line.
     const pinchLines = [];
@@ -803,7 +803,7 @@ function corridorEditorCorridorBodyHtml() {
                 ${deltaText}
             </div>
         </div>
-        <div class="corridor-stats-fit">${fitHtml}${sideHtml}${mintedNote}</div>
+        <div class="corridor-stats-fit">${fitHtml}${sideHtml}</div>
         ${corridorEditorChartSvg(stats, width, clearance.chainLength)}
         <div class="corridor-stats-pinch">${pinchLines.map(line => `<div>${line}</div>`).join('')}</div>
     </div>`;
@@ -939,7 +939,7 @@ async function corridorEditorApplyFitShift(shiftMeters) {
     });
     if (!corridorEditorState || corridorEditorState !== state) return;
     if (!updated) {
-        state.notice = corridorEditorI18n('modal.corridor.moveFailed', 'The road could not be moved (a minted proposal is immutable).');
+        state.notice = corridorEditorI18n('modal.corridor.moveFailed', 'The road could not be moved.');
         corridorEditorRender();
         return;
     }
@@ -1764,9 +1764,9 @@ async function corridorEditorSave() {
         return;
     }
     // A widening that newly hits a building is no longer refused: applying it runs the same
-    // cut/tunnel/demolish resolver the drawing tool uses (updateLocalCorridorGeometry re-checks a
-    // widened segment's footprint and prompts; a minted road resolves on finish in its fork). Settle
-    // any pending debounced check first so the indicators reflect the final width before we apply.
+    // cut/tunnel/demolish resolver the drawing tool uses, in place (updateLocalCorridorGeometry
+    // re-checks a widened segment's footprint and prompts). Settle any pending debounced check first
+    // so the indicators reflect the final width before we apply.
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
         corridorEditorObstacleTimer = null;
@@ -1777,11 +1777,13 @@ async function corridorEditorSave() {
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();
 
-    // SimCity object editing: a local, unminted road takes the new cross-section in place —
-    // the footprint rebuilds and the road re-applies. Only minted (immutable) proposals fall
-    // through to the redraw-as-replacement flow.
-    const minted = typeof isProposalMinted === 'function' && isProposalMinted(source);
-    if (!minted && typeof window.updateLocalCorridorGeometry === 'function') {
+    // SimCity object editing: a placed road takes the new cross-section IN PLACE — the footprint
+    // rebuilds and the road re-applies. A road carrying a published identity (uploaded or minted)
+    // forks into your local copy as part of that edit — updateLocalCorridorGeometry detaches its
+    // server/chain pointers — so touching a minted road no longer bars the edit, it just makes it
+    // yours. The redraw-as-a-drawing path below is only a fallback for when the in-place update
+    // cannot run (e.g. the source's parcels are not loaded in this city).
+    if (typeof window.updateLocalCorridorGeometry === 'function') {
         const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
             if (scope === 'segment' && scopedSegmentId) {
                 // One segment of the network takes the new cross-section; the rest is untouched.
