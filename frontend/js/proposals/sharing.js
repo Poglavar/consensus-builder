@@ -109,6 +109,52 @@ function getSerialProposalId(proposal) {
     return null;
 }
 
+// A ~64-bit content hash (two djb2 variants) rendered base36 — stable across sessions, no crypto.
+function proposalContentHash(str) {
+    let h1 = 5381;
+    let h2 = 52711;
+    for (let i = 0; i < str.length; i += 1) {
+        const c = str.charCodeAt(i);
+        h1 = ((h1 << 5) + h1 + c) | 0;
+        h2 = (((h2 << 5) + h2) ^ c) | 0;
+    }
+    return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36);
+}
+
+// A stable fingerprint of a proposal's IMPORTANT content — the geometry payload + the terms that
+// define what it IS — excluding view/identity/lifecycle state (applied, ids, timestamps, carved
+// children). Used as the dedup id when uploading: the server mints a NEW record only when this
+// changes, and a re-upload of unchanged content reuses the existing serial. So the local proposalId
+// stays stable across edits, and a new server id (new share url) is minted only at SAVE, only when
+// the content actually changed — a no-op edit reuses the old url.
+function proposalContentFingerprint(proposal) {
+    if (!proposal || typeof proposal !== 'object') return null;
+    const cleanPayload = (payload) => {
+        if (!payload || typeof payload !== 'object') return null;
+        const copy = { ...payload };
+        ['applied', 'appliedAt', 'childParcelIds', 'childFeatures', 'parentFeatures', 'hash']
+            .forEach(key => { delete copy[key]; });
+        return copy;
+    };
+    const goal = (typeof resolveProposalGoalKey === 'function')
+        ? resolveProposalGoalKey(proposal, null) : (proposal.goal || null);
+    const content = {
+        goal,
+        parentParcelIds: (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []).map(String).slice().sort(),
+        offer: (proposal.offer === undefined || proposal.offer === null) ? null : Number(proposal.offer),
+        offerCurrency: proposal.offerCurrency || null,
+        isConditional: !!proposal.isConditional,
+        geometry: proposal.geometry || null,
+        roadProposal: cleanPayload(proposal.roadProposal),
+        buildingProposal: cleanPayload(proposal.buildingProposal),
+        structureProposal: cleanPayload(proposal.structureProposal),
+        reparcellization: cleanPayload(proposal.reparcellization),
+        decideLaterProposal: cleanPayload(proposal.decideLaterProposal)
+    };
+    const str = (typeof stableStringify === 'function') ? stableStringify(content) : JSON.stringify(content);
+    return 'c-' + proposalContentHash(str);
+}
+
 function decodeSharedPayload(encoded) {
     if (!encoded) return null;
     let working = encoded.trim();
@@ -146,6 +192,7 @@ function decodeSharedPayload(encoded) {
 
 if (typeof window !== 'undefined') {
     window.getSerialProposalId = getSerialProposalId;
+    window.proposalContentFingerprint = proposalContentFingerprint;
     window.decodeSharedPayload = decodeSharedPayload;
     window.base64UrlEncodeBytes = base64UrlEncodeBytes;
     window.base64UrlDecodeToBytes = base64UrlDecodeToBytes;
@@ -163,6 +210,7 @@ if (typeof module !== 'undefined' && module.exports) {
         decodeBytesToJson,
         decodeSharedPayload,
         collectProposalParentParcelIdsForShare,
-        getSerialProposalId
+        getSerialProposalId,
+        proposalContentFingerprint
     };
 }

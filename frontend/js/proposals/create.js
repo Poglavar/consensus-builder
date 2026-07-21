@@ -2006,6 +2006,17 @@ function buildUploadReadyProposal(proposal) {
             uploadProposal.roadProposal.parentParcelIds = ensureArrayOfStrings(parentIds);
         }
     }
+
+    // Dedup by CONTENT, not by the stable local proposalId: the server keys on the uploaded id, so
+    // send a content fingerprint. A re-upload of UNCHANGED content reuses its serial (the server 409s
+    // and we adopt it); any real edit produces a new fingerprint → a new record + new share url,
+    // leaving the previously-shared version untouched at its old url. The local proposalId is
+    // unchanged (uploadProposal is a shallow copy), so nothing on this browser's map is disturbed.
+    const fingerprint = (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
+    if (fingerprint) {
+        uploadProposal.proposalId = fingerprint;
+        uploadProposal.hash = fingerprint;
+    }
     return uploadProposal;
 }
 
