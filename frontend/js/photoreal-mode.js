@@ -87,6 +87,7 @@
 
     // ---- state ----
     let active = false;
+    let loading = false; // photo view is composing (entry → first seat); drives the globe-icon spinner
     let tiles = null;
     let tilesAnchorKey = null; // anchor of the live tile session; reuse while it matches
     let tilesCamera = null;    // camera bound to the renderer (re-bound when three-mode rebuilds)
@@ -173,6 +174,13 @@
     }
     function hideCover() {
         if (coverEl) { try { coverEl.remove(); } catch (_) { } coverEl = null; }
+    }
+
+    // Flip the photo-loading flag and refresh the lower-left mode icons so the globe shows a spinner
+    // while the photo view composes (from entry until the first seat, or until it fails/exits).
+    function setPhotorealLoading(next) {
+        loading = !!next;
+        try { if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates(); } catch (_) { }
     }
 
     function updateLoader(progress) {
@@ -269,6 +277,7 @@
         lockedGroundZ = use;
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
+        setPhotorealLoading(false); // world composed & seated — stop the globe-icon spinner
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
         resetTerrainRefreshTracking();
         // The world is in place: carve it under the proposals, swap the abstract built layers
@@ -2195,6 +2204,7 @@
         options = options || {};
         active = false;
         hideCover(); // never let the loading cover outlive the mode (e.g. no-coverage fallback)
+        setPhotorealLoading(false); // clear the globe spinner on exit / failure to compose
         if (typeof window.unregisterThreeModeFrameHook === 'function') {
             window.unregisterThreeModeFrameHook(onFrame);
         }
@@ -2249,6 +2259,7 @@
     // 3D and waits for the scene to actually be up (threeModeReady) before attaching tiles.
     function goRealistic() {
         if (active) return;
+        setPhotorealLoading(true); // spin the globe icon from the click until the world is seated
         if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
             activate();
             return;
@@ -2311,6 +2322,7 @@
         deactivate: deactivate,
         toggle: toggle,
         isActive: function () { return active; },
+        isLoading: function () { return loading; },
         getViewer: function () { return tiles; },
         // three-mode's Built row drives the mesh while the layer is up.
         setBuiltVisible: function (v) {

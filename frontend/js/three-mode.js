@@ -141,12 +141,17 @@
     function updateModeButtonStates() {
         try {
             const rw = !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
+            // Loading spinners on the lower-left mode icons: photo (globe) while its tiles compose,
+            // model (3D) while its scene renders. Photo entry passes through 3D init, so photo-loading
+            // wins there — only the globe spins, never both.
+            const photoLoading = !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
+            const modelLoading = !!renderingOverlayEl && !photoLoading;
             const btn2d = document.getElementById('mode-2d-toggle');
             const btn3d = document.getElementById('mode-3d-toggle');
             const btnRw = document.getElementById('mode-realistic-toggle');
             if (btn2d) btn2d.classList.toggle('active', !isActive);
-            if (btn3d) btn3d.classList.toggle('active', isActive && !rw);
-            if (btnRw) btnRw.classList.toggle('active', rw);
+            if (btn3d) { btn3d.classList.toggle('active', isActive && !rw); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
+            if (btnRw) { btnRw.classList.toggle('active', rw); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
         } catch (_) { }
     }
     window.updateModeButtonStates = updateModeButtonStates;
@@ -4986,6 +4991,7 @@
             document.body.appendChild(el);
             renderingOverlayEl = el;
         } catch (_) { }
+        try { updateModeButtonStates(); } catch (_) { }
     }
 
     function hideRenderingOverlay() {
@@ -4995,6 +5001,7 @@
             }
         } catch (_) { }
         renderingOverlayEl = null;
+        try { updateModeButtonStates(); } catch (_) { }
     }
 
     // A small badge in the 3D view, shown while built buildings are loading: the /buildings/near

@@ -2700,8 +2700,9 @@ function handleRoadKeydown(e) {
         return;
     }
 
-    // F finishes the road: the drawing instantly becomes an applied object (SimCity lifecycle).
-    if ((e.key === 'f' || e.key === 'F') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+    // F (or Enter) finishes the road: the drawing instantly becomes an applied object (SimCity
+    // lifecycle). Enter is the natural "I'm done" key, so it mirrors the F shortcut / (F) button.
+    if ((e.key === 'f' || e.key === 'F' || e.key === 'Enter') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
         e.preventDefault();
         if (e.repeat || roadFinalizationGate.isRunning() || roadSegmentPlacementInProgress) return;
         finishRoadDrawing();

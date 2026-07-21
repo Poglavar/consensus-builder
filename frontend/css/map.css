@@ -38,6 +38,30 @@ body.sidebar-collapsed {
 #mode-2d-toggle.map-mode-toggle { bottom: 48px; }
 #mode-3d-toggle.map-mode-toggle { bottom: 96px; }
 
+/* Loading spinner over a lower-left mode icon while that view composes. three-mode.js sets
+   .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
+   streaming Google tiles). The ring uses currentColor so it reads on both the white 3D/2D buttons
+   and the blue globe button. */
+.map-mode-toggle.mode-btn-loading,
+.map-mode-realistic-btn.mode-btn-loading { pointer-events: none; }
+.map-mode-toggle.mode-btn-loading::after,
+.map-mode-realistic-btn.mode-btn-loading::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid rgba(128, 128, 128, 0.4);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: map-mode-spin 0.7s linear infinite;
+    z-index: 2;
+    pointer-events: none;
+}
+@keyframes map-mode-spin { to { transform: rotate(360deg); } }
+
 /* Walk-through button — stacked above the mode buttons (2D / 3D / globe) and only
    visible while in 3D mode. Hidden by default via the [hidden] attribute; three-mode.js
    toggles visibility on enter/exit. Yellow fill so it stands out from the mode buttons. */

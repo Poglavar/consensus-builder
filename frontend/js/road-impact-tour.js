@@ -435,6 +435,8 @@
 
             function onKeydown(event) {
                 if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); finish('cancel'); return; }
+                // Enter is the default action: apply the impacts as chosen (Apply is the focused button).
+                if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); finish('apply'); return; }
                 if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
                     event.preventDefault(); event.stopPropagation();
                     state = tourGoTo(state, state.index + 1); render(); return;
@@ -508,6 +510,9 @@
             document.body.appendChild(panel);
             positionDock();
             render();
+            // Apply is the default: focus it so it reads as selected and Enter activates it (the
+            // onKeydown Enter branch drives it regardless, but the focus ring shows which is default).
+            requestAnimationFrame(() => { try { applyBtn.focus({ preventScroll: true }); } catch (_) { try { applyBtn.focus(); } catch (_) { } } });
         });
     }
 

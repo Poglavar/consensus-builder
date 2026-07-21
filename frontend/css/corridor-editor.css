@@ -60,7 +60,14 @@ body.corridor-editor-open .leaflet-interactive {
 }
 
 /* The total width is a READOUT, not a control: it is the sum of the lanes. Sized like a headline
-   number because it is the one figure the whole panel is about. */
+   number because it is the one figure the whole panel is about. The ceiling sits right beside it. */
+.corridor-editor-total-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
+}
+
 .corridor-editor-total {
     white-space: nowrap;
     text-align: right;
@@ -68,6 +75,21 @@ body.corridor-editor-open .leaflet-interactive {
     font-weight: 700;
     color: #111;
     font-variant-numeric: tabular-nums;
+}
+
+/* The buildable ceiling shown next to the current width ("14 / 16 m"): the widest a full
+   cross-section fits here without a new demolition. Quieter than the total (it is a limit, not the
+   value being edited); red only when the current width has passed it. Hidden for open-sided roads. */
+.corridor-editor-ceiling {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #777;
+    font-variant-numeric: tabular-nums;
+    cursor: help;
+}
+
+.corridor-editor-ceiling--over {
+    color: #b3261e;
 }
 
 /* Obstacle chips for post-placement widening: buildings block Apply, structures just inform. */
@@ -167,16 +189,33 @@ body.corridor-editor-open .leaflet-interactive {
     overflow: hidden;
 }
 
-/* "(p)" marker inside a parking band so it reads apart from a driving lane at a glance. */
+/* Parking marker: a big white "P" in a blue square, so a parking band reads apart from a driving
+   lane at a glance. */
 .corridor-section-lane-tag {
-    font-size: 10px;
-    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.65);
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
     pointer-events: none;
-    white-space: nowrap;
 }
+
+/* Drag a lane band directly in the diagram to reorder it. While dragging, the dragged band collapses
+   to zero width (as if lifted out) and a gap of exactly its width opens at the drop boundary, so the
+   row rearranges to show where the lane will land. The width/margin transition is scoped to the
+   band-drag only — never global — because a SEAM drag rewrites widths live and must stay instant. */
+.corridor-section-lane[draggable="true"] { cursor: grab; }
+.corridor-section--band-dragging .corridor-section-lane { transition: width 0.14s ease, margin 0.14s ease; }
+.corridor-section-lane--dragging { opacity: 0.4; cursor: grabbing; min-width: 0; }
+.corridor-section-lane--slot-left { box-shadow: inset 3px 0 0 0 #1a73e8; z-index: 3; }
+.corridor-section-lane--slot-right { box-shadow: inset -3px 0 0 0 #1a73e8; z-index: 3; }
 
 /* The selected lane has to be findable at a glance in BOTH places — the diagram and the row list are
    one selection seen twice, so they get the same blue. */
@@ -204,27 +243,13 @@ body.corridor-editor-open .leaflet-interactive {
     box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.35);
 }
 
-/* Grab affordance for the drag-to-reorder handle (the ↑/↓ buttons remain the touch/keyboard path). */
-.corridor-lane-handle {
+/* The ↑/↓ reorder arrows live at the FRONT of each row (side by side), kept clear of the direction
+   arrow (→/←/↔) at the back so the two are never confused. Diagram band-drag is the desktop visual
+   path; these are the touch/keyboard path (HTML5 drag does not exist on a finger). */
+.corridor-lane-move {
     flex: 0 0 auto;
-    width: 14px;
-    text-align: center;
-    color: #9aa0a6;
-    cursor: grab;
-    user-select: none;
-    line-height: 1;
-}
-
-.corridor-lane-handle:active {
-    cursor: grabbing;
-}
-
-.corridor-lane-row--dragging {
-    opacity: 0.45;
-}
-
-.corridor-lane-row--drop {
-    box-shadow: inset 0 -2px 0 0 #1a73e8;
+    display: inline-flex;
+    gap: 3px;
 }
 
 .corridor-lane-swatch {
@@ -350,6 +375,20 @@ button.corridor-lane-standard--reset:hover {
     color: #b3261e;
 }
 
+/* The two reorder arrows sit side by side at the front, a touch narrower than a normal square button
+   so the pair does not crowd the row. On mobile the media-query .corridor-lane-btn size wins (defined
+   later), enlarging them for touch — which matters more now that these arrows are the only reorder
+   path on a phone. */
+.corridor-lane-move-btn {
+    width: 24px;
+    height: 30px;
+    padding: 0;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Presets and palette: the two "make the road" controls. The presets stamp a whole standard
    cross-section; the palette adds one lane at its standard width, and the road gets that much wider. */
 .corridor-editor-group-label {
@@ -369,9 +408,13 @@ button.corridor-lane-standard--reset:hover {
     margin-bottom: 12px;
 }
 
-.corridor-editor-pickers select {
+.corridor-editor-pickers select,
+.corridor-editor-pickers > .corridor-editor-add-lane {
     flex: 1 1 0;
     min-width: 0;
+}
+
+.corridor-editor-pickers select {
     border: 1px solid #cfd8e3;
     border-radius: 6px;
     background: #f7f9fc;
@@ -379,6 +422,63 @@ button.corridor-lane-standard--reset:hover {
     font-size: 0.8rem;
     padding: 6px 8px;
     cursor: pointer;
+}
+
+/* Add-lane is a custom dropdown (native <option> backgrounds are ignored by the platform popup, and
+   the point is to show each lane's surface colour). The toggle mimics the sibling <select>; the menu
+   is a coloured list — each row IS its lane's surface, with contrast-picked text. */
+.cb-lane-dropdown { position: relative; }
+
+.cb-lane-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+    border: 1px solid #cfd8e3;
+    border-radius: 6px;
+    background: #f7f9fc;
+    color: #1f2937;
+    font-size: 0.8rem;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.cb-lane-dropdown-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cb-lane-dropdown-caret { color: #6b7280; font-size: 0.7rem; flex: none; }
+
+.cb-lane-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid #cfd8e3;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    padding: 4px;
+}
+
+.cb-lane-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin: 2px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cb-lane-option:hover,
+.cb-lane-option:focus {
+    box-shadow: inset 0 0 0 2px #1a73e8;
+    outline: none;
 }
 
 /* Said out loud rather than silently refused: the one edit the editor can still turn down. */
