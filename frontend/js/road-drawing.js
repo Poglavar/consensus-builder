@@ -873,6 +873,16 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         .map(record => ({ id: String(record.id), geometry: record.geometry }));
     if (typeof mutateDefinition === 'function') mutateDefinition(definition);
 
+    // A local edit (profile change, node move, reroute…) changes this road's geometry, so the copy
+    // uploaded under its serverProposalId no longer matches. Detach it so the next Share/Upload
+    // creates a FRESH proposal (a new /proposals/:id) instead of silently reusing the original's
+    // link. The local proposalId is untouched — only the server upload is invalidated. Minted
+    // proposals are immutable and never reach here (guard above); an internal re-normalization can
+    // pass options.keepServerProposalId to opt out.
+    if (options.keepServerProposalId !== true && proposal.serverProposalId != null) {
+        proposal.serverProposalId = null;
+    }
+
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
     // whether the edit disconnected the body.
     const normalizedSegments = ((typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(definition) : [])

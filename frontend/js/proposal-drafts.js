@@ -788,6 +788,11 @@
             delete output.chainProposalId;
             delete output.onchain;
             delete output.nft;
+            // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
+            // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
+            // all commit through here); it must not inherit the source's server-upload identity, or an
+            // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
+            delete output.serverProposalId;
             output.sourceProposalId = draft.sourceProposalId || null;
             output.replacementOfProposalId = draft.sourceProposalId || null;
             output.proposalDraftId = draft.id;

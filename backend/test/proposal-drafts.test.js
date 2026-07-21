@@ -211,6 +211,21 @@ describe('ProposalDraftStore', () => {
         expect(proposal.proposalId).toBeUndefined();
     });
 
+    it('strips the source proposal\'s serverProposalId — an edit must re-upload, not reuse the share link', () => {
+        // No adapter → the fallback merge copies sourceSnapshot wholesale, which carries the source's
+        // serverProposalId; without the explicit strip the "new" proposal would inherit the old
+        // /proposals/:id and Share would reuse it instead of offering a fresh upload.
+        const { store } = harness({ adapterRegistry: { get: () => null } });
+        const draft = store.createDraftFromProposal({
+            proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
+            title: 'Park', parentParcelIds: ['1'], geometry: { type: 'Polygon' }
+        });
+        const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
+        expect(proposal).toBeTruthy();
+        expect(proposal.serverProposalId).toBeUndefined();
+        expect(proposal.proposalId).toBeUndefined();
+    });
+
     it('wipeAll erases every draft and the unload flush cannot resurrect the storage key', () => {
         const { store, storage } = harness();
         store.createDraft({ cityId: 'zagreb', goal: 'road-track', fields: { name: 'Drawn road' } });
