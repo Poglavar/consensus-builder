@@ -403,6 +403,11 @@ that kills cycles for good. See §3.6 and A6.
 Give each edit a version node, so `Road2043@v1 → Subdivide2048 → Road2043@v2` stays a DAG (§3.2).
 Honest to history, but adds a dimension everywhere. Probably unnecessary if A3 holds.
 
+### A5. Plan as the unit
+
+Share, vote and apply plans rather than individual proposals. Ordering becomes internal to a plan;
+cross-plan derived references never exist. Complements A1–A3; addresses D2.
+
 ### A6. Order by intersection + creation time — *the fix §3.6 points at*
 
 Replace the derived-id dependency graph entirely:
@@ -422,10 +427,63 @@ that reduces six possible fabric-changer pairs to **two** real constraints.
 Combines naturally with A1 (base ancestry supplies stable identity) and A2 (shipped geometry removes
 the need to re-derive). Does not require A4.
 
-### A5. Plan as the unit
+### A7. Proposals declare a target parcel FORMATION — *the unifying idea; supersedes much of the above*
 
-Share, vote and apply plans rather than individual proposals. Ordering becomes internal to a plan;
-cross-plan derived references never exist. Complements A1–A3; addresses D2.
+Several typologies implicitly imply a cadastral parcel of their own: a freeform building (in Croatia a
+building must sit on exactly one parcel), and plausibly a park, square or lake as a public surface.
+They do not merely sit *on* parcels — they define what the parcel underneath should *become*.
+
+So a proposal stops declaring inputs and declares an **output**: *"the land under this footprint shall
+become a parcel of exactly this shape."* Realising that against a given fabric is a derived operation:
+
+```
+form(footprint) = merge(parcels wholly inside) ∪ cut(parcels straddling the boundary)
+```
+
+**Not "merge on creation, cut later".** Measured on the live plan, no footprint is ever wholly
+contained even on the day it was drawn:
+
+| Proposal | Parcel | Covers | Parcel total | |
+|---|---|---|---|---|
+| #104 Freeform-building | `6804/1` | 3,562 m² | 13,354 m² | 27% |
+| #104 Freeform-building | `6804/9` | 1,016 m² | 1,666 m² | 61% |
+| #103 Square 2049 | `823/1` | 2,279 m² | 4,999 m² | 46% |
+
+Forming #104's parcel required cutting both parents on day one. So it is merge ∪ cut at every
+application, with no special first case — which makes the model simpler, not more complex.
+
+#### Why this is the important one: dependency becomes precondition
+
+Today a proposal says *"I need `HR-339270-823/1#p-2g0teu3onpu-2` to exist"* — a reference to another
+proposal's output. That is the direct cause of the ghosts (§3.1), the cycle (§3.2) and the failed
+replay (§2.3).
+
+Under A7 it says *"the land under my footprint must be formable into my target parcel"* — a
+**precondition on the current fabric**, checkable on any machine, at any time, with no knowledge of
+who cut what first. A lake becomes portable in exactly the sense that matters: apply it anywhere its
+footprint can still be formed.
+
+What that collapses:
+
+- **D5** (shape or name) — settled: the shape is the spec, the parcel operation is derived.
+- **D3** (how much parcel identity) — none as *input*; the target parcel is the *output*.
+- **A2** (ship derived geometry) — unnecessary: you ship the target, not the recipe nor the result.
+- The overlay/fabric split — dissolves. One operation over different footprints.
+
+#### What it costs
+
+This is a **behavioural redesign of apply, not bookkeeping.** `apply/buildings.js` and
+`apply/structures.js` contain no parcel-layer operations at all today — that is the basis of the §2.1
+fix and of invariant #4. Under A7 those typologies *do* consume: a park forms its own parcel and cuts
+what lies beneath. **Invariant #4 would have to be rewritten, not extended**, and the §2.1
+hole-prevention rule re-derived under the new regime.
+
+It also redraws the taxonomy along a better line — **forming** (building, park, square, lake, road,
+reparcellization, boundary adjustment) versus **non-forming** (votes, designations, decide-later),
+rather than overlay-versus-fabric.
+
+**Open question only Simun can answer:** whether a park or square legally requires its own parcel in
+Croatia the way a building does. If not, parks are non-forming and the line moves.
 
 ---
 
@@ -436,7 +494,9 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
    retarget-on-edit as a *stored* mutation; fine as a *derived view*).
 3. **Original parcels stay clickable** and show what is stacked on them.
 4. **Overlays never consume.** Buildings, parks, squares and lakes draw on top; they must never block
-   the fabric from re-forming (§2.1).
+   the fabric from re-forming (§2.1). — **CONTESTED by A7**, which argues these typologies should form
+   a parcel of their own. If A7 is adopted this invariant is rewritten, not extended; the §2.1
+   hole-prevention rule then has to be re-derived under the new regime.
 5. **A green apply is not proof.** Verify the resulting fabric, not the absence of an error.
 
 ---
@@ -458,6 +518,10 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
    scratch.
 6. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
 7. **Decide D2** before touching acceptance.
+8. **Evaluate A7** — the largest idea here and the one that subsumes D3, D5 and A2. Cheapest first
+   test: take an existing park or building proposal and check whether `form(footprint)` against
+   today's fabric reproduces a sensible parcel, i.e. whether the merge ∪ cut is clean or leaves
+   slivers. Read-only, and it decides whether the redesign is worth starting.
 
 ---
 
@@ -466,4 +530,5 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
 - `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes
 - `advanced-readjustment.md` — reparcellization internals
-- Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate)
+- Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate), `70d9f82` (cadastreParcelIds),
+  `32a01d0` (backfill + legacy road footprints)
