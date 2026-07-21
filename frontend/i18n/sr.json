@@ -2192,6 +2192,7 @@
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
+            "allPublic": "Sve javno",
             "ownerLegend": "Legenda vlasnika",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcela",

@@ -111,17 +111,6 @@
         this._assignSyntheticChildIdentities(proposalId, childFeatures);
         this._addFeaturesToMap(childFeatures, true, proposalData);
 
-        // A subdivision keeps the land with its owner: a child slice the user did NOT explicitly
-        // assign inherits the PARENT parcel's owner, rather than being routed to an "Unassigned"
-        // placeholder agent (which is what made every unowned child read as "unassigned").
-        let parentOwnerAgentId = null;
-        try {
-            const firstParent = Array.isArray(parentIds) && parentIds.length ? String(parentIds[0]) : null;
-            if (firstParent && typeof PersistentStorage !== 'undefined') {
-                parentOwnerAgentId = PersistentStorage.getItem(`parcel_${firstParent}_owner`) || null;
-            }
-        } catch (_) { }
-
         const childParcelIds = [];
         const touchedAgentIds = new Set();
         childFeatures.forEach(feature => {
@@ -133,21 +122,22 @@
             this._addProposalAsAncestor(parcelId, proposalId);
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));
-                // Per-slice ownership from the readjustment plan: a real assigned agent id wins; an
-                // unassigned slice inherits the parent's owner; a named recipient gets a find-or-create
-                // agent. skipAgentSync defers the per-agent owned-parcels rebuild to one pass after the
-                // loop — doing it per child re-scanned the whole keyspace each time (O(children²), the
-                // ~1s-per-parcel freeze).
+                // Per-slice ownership from the readjustment plan. The modal now REQUIRES a real owner
+                // for every plot (or "All public"), so there is NO silent fallback to an "Unassigned"
+                // placeholder agent: public land commits to the City, a real assigned agent wins, a
+                // named recipient gets a find-or-create agent, and an unresolved slice is simply left
+                // untransferred (no phantom owner). skipAgentSync defers the per-agent owned-parcels
+                // rebuild to one pass after the loop — per-child it re-scanned the whole keyspace
+                // (O(children²), the ~1s-per-parcel freeze).
                 if (typeof transferParcelOwnership === 'function') {
                     const ownerKey = feature.properties.ownerKey;
                     const displayName = feature.properties.displayName;
-                    const sliceUnassigned = !ownerKey && (!displayName || displayName === 'Unassigned');
                     let agentId = null;
-                    if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
+                    if (ownerKey === 'public-land') {
+                        agentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
+                    } else if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
                         agentId = ownerKey;
-                    } else if (sliceUnassigned && parentOwnerAgentId) {
-                        agentId = parentOwnerAgentId;
-                    } else if (displayName && typeof getOrCreateAgentForRecipient === 'function') {
+                    } else if (ownerKey && displayName && displayName !== 'Unassigned' && typeof getOrCreateAgentForRecipient === 'function') {
                         agentId = getOrCreateAgentForRecipient(displayName);
                     }
                     if (agentId) {

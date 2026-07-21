@@ -504,6 +504,25 @@ function forwardAppliedCorridorClick(proposal, event) {
     }
 }
 
+// Applied road PROPOSALS get a hover outline (parcels do; roads only had click). Module-scoped so a
+// mouseout on one hit target doesn't wipe the highlight of a corridor the cursor just moved onto.
+let _appliedCorridorHoverKey = null;
+
+function showAppliedCorridorHover(proposalKey, footprintFeature) {
+    if (!footprintFeature || typeof highlightFeaturesForHover !== 'function') return;
+    if (window.roadDrawingMode === true) return; // while drawing, a road is a surface, not a hover target
+    if (_appliedCorridorHoverKey === proposalKey) return; // already shown for this corridor
+    _appliedCorridorHoverKey = proposalKey;
+    highlightFeaturesForHover([footprintFeature]);
+}
+
+function clearAppliedCorridorHover(proposalKey) {
+    // A late mouseout must not wipe a corridor the cursor already moved onto.
+    if (proposalKey != null && _appliedCorridorHoverKey !== proposalKey) return;
+    _appliedCorridorHoverKey = null;
+    if (typeof highlightFeaturesForHover === 'function') highlightFeaturesForHover([]);
+}
+
 function renderAppliedCorridorHitTargets(strips, proposal, group, definition, segmentEntries = null) {
     if (!Array.isArray(strips) || !proposal || !group) return;
     ensureCorridorHitPane();
@@ -527,28 +546,44 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
         pane: CORRIDOR_HIT_PANE,
         className: 'corridor-applied-hit-target'
     };
+    // The full corridor footprint, outlined on hover so an applied road reacts to the cursor.
+    const footprint = definition && definition.polygon;
+    let footprintFeature = null;
+    if (footprint) {
+        try {
+            const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };
+            footprintFeature = { type: 'Feature', properties: {}, geometry };
+        } catch (_) { }
+    }
+    const attachHitBehaviour = (layer) => {
+        layer.on('mouseover', () => showAppliedCorridorHover(proposalKey, footprintFeature));
+        layer.on('mouseout', () => clearAppliedCorridorHover(proposalKey));
+    };
     strips.forEach(strip => {
         (strip.polygons || []).forEach(polygon => {
-            L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); }).addTo(group);
+            const hit = L.polygon(polygon, hitOptions)
+                .on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(hit);
+            hit.addTo(group);
         });
     });
     // The strips leave gaps (junction fills, verges, rounding); a hit target over the FULL
     // footprint keeps every click within the corridor on the corridor, instead of falling
     // through to the parcel underneath.
-    const footprint = definition && definition.polygon;
     if (footprint) {
         try {
             const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };
             // interactive/bubbling are LAYER options, not styles — passed at the geoJSON level so
             // the created polygons inherit them (bubbling must stay off or a click would reach
             // the map too and, while drawing, place a second point).
-            L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
+            const fp = L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
                 style: hitOptions,
                 pane: CORRIDOR_HIT_PANE,
                 interactive: true,
                 bubblingMouseEvents: false
-            }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); }).addTo(group);
+            }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(fp);
+            fp.addTo(group);
         } catch (_) { }
     }
     // Per-segment hit polygons go on LAST (topmost in the pane), so a click inside a segment's
@@ -558,9 +593,10 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             if (!entry.segmentId || !Array.isArray(entry.points) || entry.points.length < 2) return;
             const polygon = calculateRoadPolygon(entry.points, entry.width);
             if (!polygon) return;
-            L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); })
-                .addTo(group);
+            const hit = L.polygon(polygon, hitOptions)
+                .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(hit);
+            hit.addTo(group);
         });
     }
 }

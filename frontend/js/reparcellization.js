@@ -296,6 +296,7 @@
         const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
+        const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
 
         const algorithmControls = `
@@ -351,6 +352,7 @@
                         </section>
                         ${sidePanel}
                         <div class="reparcel-actions">
+                            <button type="button" class="btn" data-reparcel-all-public data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                             <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
                     </div>
@@ -395,6 +397,10 @@
                     showEphemeralMessage(savedMessage, 4000, 'success');
                 }
             });
+        });
+
+        Array.from(overlay.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
+            btn.addEventListener('click', assignPublicToAllSlices);
         });
 
         state.resizeHandler = () => {
@@ -626,7 +632,10 @@
         let unassignedCount = 0;
         for (const slice of state.slices) {
             const area = computeFeatureArea(sliceToFeature(slice));
-            const hasOwner = Array.isArray(slice.owners) && slice.owners.length > 0;
+            // A REAL owner is required — an owner slot with an empty ownerKey (the "Unassigned"
+            // placeholder) does not count, so a plan with any unowned plot cannot be committed. Public
+            // land counts (its ownerKey is PUBLIC_LAND_KEY). Use "All public" for a quick break-up.
+            const hasOwner = Array.isArray(slice.owners) && slice.owners.some(o => o && o.ownerKey);
             if (hasOwner) {
                 assignedArea += area;
             } else {
@@ -1629,6 +1638,21 @@
 
         popup.openOn(state.map);
         state.ownerAssignmentPopup = popup;
+    }
+
+    // "All public": assign every plot to public ownership in one click, so a plain break-up → Done
+    // flow is possible without hand-assigning each plot. Public land is a valid owner (it commits to
+    // the City), which satisfies the completeness gate.
+    function assignPublicToAllSlices() {
+        if (!Array.isArray(state.slices) || !state.slices.length) return;
+        const publicOwner = getPublicLandOwner();
+        state.slices.forEach((slice, i) => {
+            slice.owners = [{ ownerKey: publicOwner.ownerKey, displayName: publicOwner.displayName, color: publicOwner.color, share: 1 }];
+            syncSlicePrimaryOwner(i);
+        });
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
     }
 
     function toggleOwnerOnSlice(sliceIndex, owner, add) {

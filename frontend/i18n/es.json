@@ -2211,6 +2211,7 @@
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
             "done": "Listo",
+            "allPublic": "Todo público",
             "ownerLegend": "Leyenda de propietarios",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcela",

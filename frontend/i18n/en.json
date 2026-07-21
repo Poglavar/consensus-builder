@@ -2163,6 +2163,7 @@
             "algorithmTitle": "Land readjustment type",
             "closeAria": "Close",
             "done": "Done",
+            "allPublic": "All public",
             "ownerLegend": "Owner Legend",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcel",

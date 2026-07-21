@@ -107,10 +107,13 @@
             && global.proposalHighlightStyleOverride.has(layer)) {
             return;
         }
-        // Proposal-aware: only change border, not fill
+        // Proposal-aware: only change border, not fill. Road parcels have a dark asphalt fill
+        // (#2b2b2b), so the default grey #666 hover border blends into it and reads as "no hover" —
+        // give roads a bright, high-contrast border instead. Normal (transparent-fill) parcels keep #666.
+        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         layer.setStyle({
             weight: 5,
-            color: '#666',
+            color: isRoad ? '#00e5ff' : '#666',
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
