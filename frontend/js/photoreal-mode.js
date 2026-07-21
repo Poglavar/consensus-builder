@@ -198,6 +198,12 @@
         const show = active && progress < 1;
         loaderEl.classList.toggle('visible', show);
         if (show && loaderTextEl) loaderTextEl.textContent = Math.round(progress * 100) + '%';
+        // The globe-icon spinner MIRRORS this loader exactly — on while tiles stream (loader visible),
+        // off when they finish (loader hidden) — so the two start and stop together. loadProgress is
+        // not monotonic (it reaches 1, dips as more tiles queue, then settles), which is why the
+        // spinner is synced frame-by-frame here rather than stopped once. Only fires on a transition,
+        // so it does not re-run updateModeButtonStates every frame.
+        if (active && loading !== show) setPhotorealLoading(show);
     }
 
     function removeUiElements() {
@@ -277,7 +283,8 @@
         lockedGroundZ = use;
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
-        setPhotorealLoading(false); // world composed & seated — stop the globe-icon spinner
+        // The globe spinner is no longer stopped here — updateLoader syncs it to the "Streaming 3D
+        // tiles…" indicator, so it stops exactly when that does (seating can lag a little behind).
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
         resetTerrainRefreshTracking();
         // The world is in place: carve it under the proposals, swap the abstract built layers

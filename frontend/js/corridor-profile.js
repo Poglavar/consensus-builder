@@ -66,40 +66,47 @@ const CORRIDOR_DEFAULT_RAIL_GAUGE = 1435;
 
 // Presets keyed by the total widths the width picker already offers, so an existing road keeps its
 // footprint exactly and only gains an interior. Every preset sums to its key.
+//
+// Right-hand traffic (Croatia): the strip list runs LEFT-of-travel → right (corridorStripSpans
+// seeds the cursor at +total/2, the left offset, for index 0). So forward-travelling lanes must sit
+// on the RIGHT half (later in the list) and the oncoming/backward lanes on the LEFT half — the near
+// (right) kerb carries traffic moving in the drawing direction. Cycleways follow their adjacent
+// carriageway. A single lane added in the editor still defaults to 'forward'; only these placed-road
+// defaults must be handed the correct sides.
 const CORRIDOR_PROFILE_PRESETS = {
     7.5: [
-        { type: 'sidewalk', width: 1 }, { type: 'driving', width: 2.75, direction: 'forward' },
-        { type: 'driving', width: 2.75, direction: 'backward' }, { type: 'sidewalk', width: 1 }
+        { type: 'sidewalk', width: 1 }, { type: 'driving', width: 2.75, direction: 'backward' },
+        { type: 'driving', width: 2.75, direction: 'forward' }, { type: 'sidewalk', width: 1 }
     ],
     10: [
-        { type: 'sidewalk', width: 1.5 }, { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'sidewalk', width: 1.5 }
+        { type: 'sidewalk', width: 1.5 }, { type: 'driving', width: 3.5, direction: 'backward' },
+        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'sidewalk', width: 1.5 }
     ],
     18: [
-        { type: 'sidewalk', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'forward' }, { type: 'parking', width: 2 },
-        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'parking', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'backward' }, { type: 'sidewalk', width: 2 }
+        { type: 'sidewalk', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'backward' }, { type: 'parking', width: 2 },
+        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'parking', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'forward' }, { type: 'sidewalk', width: 2 }
     ],
     26: [
-        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'cycleway', width: 1.5, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'median', width: 2.5, landscape: 'grass' },
-        { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 1.5, direction: 'backward' },
+        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'cycleway', width: 1.5, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'median', width: 2.5, landscape: 'grass' },
+        { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 1.5, direction: 'forward' },
         { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'sidewalk', width: 3 }
     ],
     40: [
-        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'cycleway', width: 2, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'driving', width: 3.25, direction: 'forward' },
+        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'cycleway', width: 2, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'driving', width: 3.25, direction: 'backward' },
         { type: 'median', width: 6, landscape: 'grass' },
-        { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 },
-        { type: 'cycleway', width: 2, direction: 'backward' }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'sidewalk', width: 4 }
+        { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'parking', width: 2.5 },
+        { type: 'cycleway', width: 2, direction: 'forward' }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'sidewalk', width: 4 }
     ],
     80: [
-        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5, landscape: 'trees' }, { type: 'cycleway', width: 3, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5, landscape: 'trees' }, { type: 'cycleway', width: 3, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' },
+        { type: 'driving', width: 3.5, direction: 'backward' },
         { type: 'median', width: 24, landscape: 'grass' },
-        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'backward' }, { type: 'verge', width: 5, landscape: 'trees' },
+        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'forward' }, { type: 'verge', width: 5, landscape: 'trees' },
         { type: 'sidewalk', width: 7 }
     ]
 };
@@ -511,7 +518,8 @@ function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
     const lane = roundStripWidth((total - 2 * sidewalk) / 2);
     const strips = [];
     if (sidewalk) strips.push({ type: 'sidewalk', width: sidewalk });
-    strips.push({ type: 'driving', width: lane, direction: 'forward' }, { type: 'driving', width: lane, direction: 'backward' });
+    // Right-hand traffic: left-of-travel (lower index) is the oncoming/backward lane, the right the forward one.
+    strips.push({ type: 'driving', width: lane, direction: 'backward' }, { type: 'driving', width: lane, direction: 'forward' });
     if (sidewalk) strips.push({ type: 'sidewalk', width: sidewalk });
     return { strips };
 }

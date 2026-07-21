@@ -60,6 +60,19 @@ describe('corridor profile presets', () => {
             expect(strips[strips.length - 1].type, `preset ${total} right`).toBe('sidewalk');
         }
     });
+
+    it('puts forward traffic on the right and oncoming on the left (right-hand driving)', () => {
+        // corridorStripSpans measures positive offsets to the LEFT of travel, so on a right-hand-drive
+        // road every forward lane must sit to the right of (a smaller offset than) every backward lane.
+        for (const [total, strips] of Object.entries(CORRIDOR_PROFILE_PRESETS)) {
+            const spans = corridorStripSpans({ strips });
+            const center = s => (s.left + s.right) / 2;
+            const forward = spans.filter(s => s.type === 'driving' && s.direction === 'forward').map(center);
+            const backward = spans.filter(s => s.type === 'driving' && s.direction === 'backward').map(center);
+            if (!forward.length || !backward.length) continue;
+            expect(Math.max(...forward), `preset ${total}`).toBeLessThan(Math.min(...backward));
+        }
+    });
 });
 
 describe('normalizeCorridorProfile', () => {
@@ -124,11 +137,11 @@ describe('corridorProfileFromLegacy', () => {
         expect(profile.strips.filter(s => s.type === 'sidewalk').every(s => s.width === 2)).toBe(true);
     });
 
-    it('synthesises two lanes for an off-preset width', () => {
+    it('synthesises two lanes for an off-preset width (right-hand traffic: left is backward, right forward)', () => {
         const profile = corridorProfileFromLegacy(9, 0, false);
         expect(profile.strips).toEqual([
-            { type: 'driving', width: 4.5, direction: 'forward' },
-            { type: 'driving', width: 4.5, direction: 'backward' }
+            { type: 'driving', width: 4.5, direction: 'backward' },
+            { type: 'driving', width: 4.5, direction: 'forward' }
         ]);
     });
 
