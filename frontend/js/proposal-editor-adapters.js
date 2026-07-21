@@ -1157,7 +1157,7 @@
     registry.register('as-is', buildGenericAdapter('as-is'));
     registry.register('park', buildStructureAdapter('park'));
     registry.register('square', buildStructureAdapter('square'));
-    registry.register('lake', buildGenericAdapter('lake', { hasDesign: true }));
+    registry.register('lake', buildStructureAdapter('lake'));
     registry.register('station', buildStationAdapter(), { aliases: ['transit-station'] });
     // Existing stored merge proposals remain readable/applicable, but this removed goal cannot be
     // used as the source of a new or replacement draft.

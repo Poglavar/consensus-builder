@@ -595,10 +595,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Geometry editing in place: corridors get their cross-section editor (nodes are edited
     // directly on the map), building/reparcellization types reopen their design tool seeded
     // from the object. Minted objects are immutable — neither button appears.
+    // Minted roads are editable too — the cross-section edit forks the road into a local copy
+    // (runLocalCorridorGeometryUpdate detaches its published pointers), leaving the NFT untouched.
     const corridorProfileEditable = !!(proposalKey && appliedState
         && (fullProposal?.roadProposal?.definition || proposal?.roadProposal?.definition)
-        && typeof openCorridorProfileEditor === 'function'
-        && !isMinted);
+        && typeof openCorridorProfileEditor === 'function');
     const geometryEditable = !corridorProfileEditable && !!(proposalKey
         && typeof canEditProposalGeometry === 'function'
         && typeof editProposalGeometry === 'function'

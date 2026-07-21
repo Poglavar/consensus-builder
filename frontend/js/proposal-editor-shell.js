@@ -795,12 +795,14 @@
     // Esc discards the draft instead — the source object is left exactly as it was.
     let geometryEditCommitDraftId = null;
 
-    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square', 'station']);
+    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square', 'lake', 'station']);
 
     function canEditProposalGeometry(proposalOrId) {
         const proposal = typeof proposalOrId === 'object' ? proposalOrId : proposalById(proposalOrId);
         if (!proposal) return false;
-        if (typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal)) return false;
+        // A minted/published proposal is editable too: editing FORKS it into a local copy (a new
+        // local proposal that keeps the minted original in the list, see the commit path below), and
+        // the on-chain record is never touched. So minted no longer blocks the geometry editor.
         const adapter = global.proposalEditorAdapterRegistry?.get(proposal);
         if (!adapter || !GEOMETRY_EDITABLE_ADAPTERS.has(adapter.key)) return false;
         const capability = typeof adapter.canEdit === 'function' ? adapter.canEdit(proposal) : true;
@@ -1205,6 +1207,84 @@
         return true;
     }
 
+    // Geometry edit — the unified in-place mechanism (roads work this way via
+    // runLocalCorridorGeometryUpdate). Mutate the EXISTING proposal `source` in place, KEEPING its
+    // proposalId stable across edits (no per-edit id churn), then unapply → re-apply so the map
+    // re-derives the carved parcels + rendered geometry from the new shape. The PUBLISHED serial is
+    // detached (serverProposalId nulled, on-chain pointers dropped) so the UI offers re-upload and the
+    // NEXT save mints a new server id ONLY if the content actually changed (dedup by content
+    // fingerprint at upload). A synced/minted source is treated as your local copy — unapply only
+    // clears THIS browser's map, never the NFT. Returns the (unchanged) proposalId, or null to fall
+    // back to the add-new path.
+    async function commitGeometryEditInPlace(draftId, source, built) {
+        const storage = global.proposalStorage;
+        const manager = global.ProposalManager;
+        if (!storage || !manager || !source || !source.proposalId || typeof manager.applyProposal !== 'function') return null;
+        const id = source.proposalId;
+        const store = global.proposalDraftStore;
+        const wasApplied = typeof global.isProposalApplied === 'function' && global.isProposalApplied(source);
+        const wasSelected = typeof global.ProposalSelection?.is === 'function' && global.ProposalSelection.is(id);
+
+        // 1. Tear down the OLD geometry's applied state (rendered features + carved child parcels).
+        //    apply() is a no-op on an already-applied building/structure, so the unapply is mandatory.
+        if (wasApplied && typeof manager.unapplyProposal === 'function') {
+            try { await manager.unapplyProposal(id, { skipConfirm: true, skipRestoreSource: true }); }
+            catch (error) { console.warn('[ProposalEditor] in-place unapply failed', error); return null; }
+        }
+
+        // 2. Mutate the SOURCE record in place — overwrite only the edited payload/geometry/parents from
+        //    `built` (mirroring how roads overwrite `definition`), so every other field and the
+        //    proposalId are preserved. Detach the published serial + on-chain pointers, and drop
+        //    lifecycle/acceptance/supersession/old-child/hash state — a changed proposal is unproposed
+        //    again, and a lingering replacementOfProposalId would make apply try to supersede itself.
+        const typeKey = built.buildingProposal ? 'buildingProposal'
+            : built.structureProposal ? 'structureProposal' : 'reparcellization';
+        source[typeKey] = built[typeKey];
+        if (built.geometry !== undefined) source.geometry = built.geometry;
+        source.parentParcelIds = Array.isArray(built.parentParcelIds) ? built.parentParcelIds.slice() : (source.parentParcelIds || []);
+        // The geometry editor can also change these scalar fields; take the draft's final values.
+        ['goal', 'title', 'name', 'proposalName', 'description', 'offer', 'offerCurrency',
+            'primaryType', 'facets', 'proposalFacets', 'isConditional', 'expiresAt']
+            .forEach(key => { if (built[key] !== undefined) source[key] = built[key]; });
+        source.applied = false;
+        source.serverProposalId = null;
+        ['onchain', 'nft', 'isMinted', 'chainProposalId', 'tokenId', 'hash', 'sourceProposalId',
+            'replacementOfProposalId', 'supersedesProposalIds', 'replacementLifecycle',
+            'ownerAcceptances', 'acceptedParcelIds', 'termsConfirmed', 'childParcelIds']
+            .forEach(key => { delete source[key]; });
+        try { storage._indexProposal(source); } catch (error) { console.warn('[ProposalEditor] in-place re-index failed', error); return null; }
+        try { storage.save?.(); } catch (_) { }
+        try { store?.consumeAfterPublish?.(draftId, id); } catch (_) { }
+        clearProposalDraftComparison();
+
+        // 3. Re-apply the NEW geometry in place (re-carves child parcels + re-renders). Same options the
+        //    add-new path uses for this type, minus absorbSourceProposalId (the source is already
+        //    unapplied above, so it is no longer a conflict to park).
+        const applyOptions = (source.goal === 'road-track' || source.goal === 'station')
+            ? { applyAnyway: true, suppressMissingParentAlerts: true }
+            : { autoParkConflicts: true };
+        try {
+            try { manager._linkProposalToAncestors?.(id, source.parentParcelIds || []); } catch (_) { }
+            await manager.applyProposal(id, applyOptions);
+            try { manager._refreshUIAfterProposalChange?.(storage.getProposal?.(id)); } catch (_) { }
+        } catch (error) {
+            console.warn('[ProposalEditor] in-place re-apply failed; object stays parked', error);
+        }
+
+        // 4. Rebuild the selection overlay from the NEW footprint — the blue outline was drawn from the
+        //    old geometry and would otherwise linger.
+        if (wasSelected) {
+            try { global.clearProposalHighlights?.(); } catch (_) { }
+            try {
+                if (typeof global.selectAndHighlightProposal === 'function') {
+                    global.__openProposalDetailsCollapsed = true;
+                    global.selectAndHighlightProposal(id, null, false, true);
+                }
+            } catch (_) { }
+        }
+        return id;
+    }
+
     // SimCity-style creation: turn a finished draft directly into an applied object on the map —
     // no dialog, no review step. Overlapping applied proposals are auto-parked by the apply gate.
     // Falls back to opening the editor when the draft cannot validate or persist.
@@ -1288,6 +1368,21 @@
                 console.error('[ProposalEditor] building-typology demolition scan failed', error);
                 proposal.buildingProposal.demolishedBuildings = [];
             }
+        }
+
+        // Geometry edit: when this draft edits an EXISTING same-type proposal (buildings, structures,
+        // reparcellization), mutate that proposal in place and re-apply it — keeping its proposalId, no
+        // add-new + absorb-source + remove. Brand-new creations (no source) and roads (their own
+        // corridor path) fall through to the add-new flow below.
+        const editSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
+        const editSource = editSourceId ? global.proposalStorage?.getProposal?.(editSourceId) : null;
+        const editTypeKey = proposal.buildingProposal ? 'buildingProposal'
+            : proposal.structureProposal ? 'structureProposal'
+                : proposal.reparcellization ? 'reparcellization' : null;
+        if (editSource && editTypeKey && editSource[editTypeKey]) {
+            const inPlaceId = await commitGeometryEditInPlace(draftId, editSource, proposal);
+            if (inPlaceId) return inPlaceId;
+            // In-place bailed (storage/re-index failure) — fall through to the add-new path.
         }
 
         const proposalId = global.proposalStorage?.addProposal?.(proposal);
