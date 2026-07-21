@@ -144,3 +144,48 @@ describe('apply order', () => {
             .toEqual(planOrder.resolveApplyOrder(proposals()).order);
     });
 });
+
+describe('cadastre ancestry', () => {
+    it('strips a derived suffix back to the cadastral parcel', () => {
+        expect(planOrder.cadastreRootId('HR-339270-823/1#p-2g0teu3onpu-2')).toBe('HR-339270-823/1');
+        expect(planOrder.cadastreRootId('HR-339270-823/1')).toBe('HR-339270-823/1');
+    });
+
+    it('unwraps nested derived ids — a re-split of an already-split parcel', () => {
+        expect(planOrder.cadastreRootId('HR-335649-371/1#p-a-10#p-b-3')).toBe('HR-335649-371/1');
+    });
+
+    it('dedupes the roots of a declared parent list', () => {
+        expect(planOrder.cadastreIdsFromDeclared([
+            'HR-339270-823/1#p-a-1', 'HR-339270-823/1#p-a-2', 'HR-339270-824', null, ''
+        ])).toEqual(['HR-339270-823/1', 'HR-339270-824']);
+    });
+
+    it('prefers geometry but never records less land than the proposal declared', () => {
+        // #104 declares four derived parents whose roots are 6804/1, 6804/5 and 6804/9. Geometry
+        // finds only 6804/1 and 6804/9 — the third is declared but not actually covered, and must
+        // still be kept so a proposal never claims LESS than it did before.
+        const p = fixture.proposals.find(x => x.id === 104);
+        const ids = planOrder.computeCadastreParcelIds(
+            { parentParcelIds: p.declared, geometry: p.footprint },
+            baseParcels()
+        );
+        expect(ids).toContain('HR-339270-6804/1');
+        expect(ids).toContain('HR-339270-6804/9');
+        expect(ids).toContain('HR-339270-6804/5'); // declared-only, preserved
+        expect(ids.every(id => !id.includes('#'))).toBe(true);
+    });
+
+    it('recovers cadastral ancestry for a proposal whose geometry is unavailable', () => {
+        const ids = planOrder.computeCadastreParcelIds(
+            { parentParcelIds: ['HR-339270-823/1#p-a-1'], geometry: null }, baseParcels());
+        expect(ids).toEqual(['HR-339270-823/1']);
+    });
+
+    it('extracts a footprint from every typology in the plan', () => {
+        fixture.proposals.forEach(p => {
+            const built = planOrder.footprintOf({ geometry: p.footprint });
+            expect(built, `#${p.id} ${p.title}`).toBeTruthy();
+        });
+    });
+});

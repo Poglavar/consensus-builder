@@ -259,9 +259,9 @@ describe('POST /proposals', () => {
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
+        expect(insertParams[25]).toBeNull();
     });
 
     it('falls back to a generated local proposal id when no id field is supplied', async () => {
@@ -353,10 +353,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(38);
+        expect(insertParams).toHaveLength(39); // +1 for cadastre_parcel_ids
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
-        expect(JSON.parse(insertParams[25])).toEqual({ width: 6 });
-        expect(JSON.parse(insertParams[37])).not.toHaveProperty('applied');
+        expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
+        expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');
     });
 
     it('derives Active lifecycle for an older client that sends a legacy application status', async () => {
@@ -378,6 +378,32 @@ describe('POST /proposals', () => {
             .send(validProposalBody({ lifecycleStatus: 'pending' }));
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/lifecycleStatus must be one of/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('persists cadastreParcelIds — the base parcels a proposal covers', async () => {
+        // Stored alongside parentParcelIds, never instead of it. Cadastral ids are the same on every
+        // machine, unlike the derived ids parentParcelIds may hold. See rethink-proposals.md.
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: ['HR-339270-823/1#p-road-2'],
+                cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2']
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1#p-road-2']));
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
+    });
+
+    it('rejects a malformed cadastreParcelIds payload', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ cadastreParcelIds: [{ nope: true }] }));
+        expect(res.status).toBe(400);
         expect(pool.getCalls()).toHaveLength(0);
     });
 
@@ -406,18 +432,19 @@ describe('POST /proposals', () => {
 
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-child-1']));
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
-        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[31]).toBe(JSON.stringify(['parent-1']));
-        expect(insertParams[32]).toBeNull();
-        expect(insertParams[33]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[34]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[35]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[22]).toBeNull(); // cadastre_parcel_ids — absent from this payload
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-child-1']));
+        expect(insertParams[24]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[25]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[27]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[29]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[32]).toBe(JSON.stringify(['parent-1']));
+        expect(insertParams[33]).toBeNull();
+        expect(insertParams[34]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[35]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[36]).toBe(JSON.stringify({ txHash: '0x1' }));
     });
 
     it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
@@ -571,7 +598,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[35]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[36]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 

@@ -201,6 +201,9 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
         parentParcelIds: { required: false, validate: validators.optional(stringArrayValidator('parentParcelIds'), { nullValue: [] }) },
+        // Cadastral (base) parcels the geometry covers — stable across machines, unlike the derived
+        // ids parentParcelIds may hold. Additive: nothing reads it yet. See rethink-proposals.md.
+        cadastreParcelIds: { required: false, validate: validators.optional(stringArrayValidator('cadastreParcelIds'), { nullValue: [] }) },
         childParcelIds: { required: false, validate: validators.optional(stringArrayValidator('childParcelIds'), { nullValue: [] }) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
@@ -389,6 +392,7 @@ export function setupProposalsRoute(app, pool) {
             const disbursementMode = validated.disbursementMode ?? null;
 
             const parentParcelIds = validated.parentParcelIds ?? [];
+            const cadastreParcelIds = validated.cadastreParcelIds ?? [];
             const childParcelIds = validated.childParcelIds ?? [];
             const acceptedParcelIds = validated.acceptedParcelIds ?? [];
             const ownerAcceptances = validated.ownerAcceptances ?? {};
@@ -449,7 +453,7 @@ export function setupProposalsRoute(app, pool) {
                     decay_enabled, decay_percent, decay_duration_ms,
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
@@ -462,11 +466,11 @@ export function setupProposalsRoute(app, pool) {
                     $15, $16, $17,
                     $18, $19,
                     $20, $21,
-                    $22, $23, $24, $25,
-                    $26, $27, $28, $29,
-                    $30, $31,
-                    $32, $33,
-                    $34, $35, $36, $37, $38
+                    $22, $23, $24, $25, $26,
+                    $27, $28, $29, $30,
+                    $31, $32,
+                    $33, $34,
+                    $35, $36, $37, $38, $39
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -480,6 +484,7 @@ export function setupProposalsRoute(app, pool) {
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
                 parentParcelIds.length ? JSON.stringify(parentParcelIds) : null,
+                cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
                 childParcelIds.length ? JSON.stringify(childParcelIds) : null,
                 acceptedParcelIds.length ? JSON.stringify(acceptedParcelIds) : null,
                 Object.keys(ownerAcceptances).length ? JSON.stringify(ownerAcceptances) : null,
@@ -780,7 +785,7 @@ export function setupProposalsRoute(app, pool) {
                     decay_enabled, decay_percent, decay_duration_ms,
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,

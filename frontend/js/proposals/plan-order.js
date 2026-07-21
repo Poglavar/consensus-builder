@@ -39,6 +39,70 @@
         return FABRIC_GOALS.indexOf(String(goal || '').trim()) !== -1;
     }
 
+    // HR-339270-823/1#p-road-2#p-other-1  ->  HR-339270-823/1
+    // Derived ids can nest, so strip repeatedly until the id stops changing.
+    function cadastreRootId(parcelId) {
+        let current = (parcelId === undefined || parcelId === null) ? '' : String(parcelId).trim();
+        let previous = '';
+        while (current && current !== previous) {
+            previous = current;
+            current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
+        }
+        return current;
+    }
+
+    // The cadastral parcels implied by a declared parent list, in order, deduped. This is the floor:
+    // it can only recover parcels a proposal already named, so it misses land the geometry covers but
+    // the author never declared (measured: one proposal declared 1 parent while covering 5 parcels).
+    // Geometry is the better source; this backs it up when parcels are not loaded.
+    function cadastreIdsFromDeclared(parentParcelIds) {
+        const out = [];
+        (Array.isArray(parentParcelIds) ? parentParcelIds : []).forEach(id => {
+            const root = cadastreRootId(id);
+            if (root && out.indexOf(root) === -1) out.push(root);
+        });
+        return out;
+    }
+
+    // A proposal's own footprint, from whichever geometry its typology carries. Pure GeoJSON in/out.
+    function footprintOf(proposal) {
+        const t = T();
+        if (!t || !proposal) return null;
+        const polys = [];
+        const push = g => {
+            if (!g) return;
+            const geom = g.type === 'Feature' ? g.geometry : g;
+            if (geom && /Polygon/.test(geom.type || '')) polys.push(t.feature(geom));
+        };
+
+        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
+            proposal.reparcellization.polygons.forEach(p => push(p && p.geometry));
+        }
+        const definition = (proposal.roadProposal && proposal.roadProposal.definition) || proposal.definition;
+        if (definition && definition.polygon) push(definition.polygon);
+        if (proposal.structureProposal && proposal.structureProposal.geometry) push(proposal.structureProposal.geometry);
+        if (proposal.geometry && /Polygon/.test(proposal.geometry.type || '')) push(proposal.geometry);
+        if (proposal.buildingGeometry) push(proposal.buildingGeometry);
+        if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) proposal.geometry.buildings.forEach(push);
+
+        if (!polys.length) return null;
+        let acc = polys[0];
+        for (let i = 1; i < polys.length; i++) {
+            try { acc = t.union(acc, polys[i]) || acc; } catch (_) { /* keep what we have */ }
+        }
+        return acc;
+    }
+
+    // The cadastral ancestry to store on a proposal: what its geometry actually covers, plus the
+    // roots of whatever it declared, so a proposal is never recorded as touching LESS than it claims.
+    function computeCadastreParcelIds(proposal, baseParcels, options) {
+        const geometric = computeBaseAncestry(footprintOf(proposal), baseParcels, options).map(hit => hit.id);
+        const declared = cadastreIdsFromDeclared(proposal && proposal.parentParcelIds);
+        const merged = geometric.slice();
+        declared.forEach(id => { if (merged.indexOf(id) === -1) merged.push(id); });
+        return merged;
+    }
+
     function intersectionArea(a, b) {
         const t = T();
         if (!t || !a || !b) return 0;
@@ -134,6 +198,10 @@
         FABRIC_GOALS,
         isFabricGoal,
         intersectionArea,
+        cadastreRootId,
+        cadastreIdsFromDeclared,
+        footprintOf,
+        computeCadastreParcelIds,
         computeBaseAncestry,
         buildConstraintGraph,
         resolveApplyOrder

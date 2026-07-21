@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS proposal (
     
     -- Parcel relationships
     ancestor_parcel_ids JSONB, -- Array of parcel IDs that are ancestors (parent parcels)
+    cadastre_parcel_ids JSONB, -- Array of BASE cadastral parcel IDs the geometry covers (never derived ids)
     descendant_parcel_ids JSONB, -- Array of parcel IDs that are descendants (child parcels created by proposal)
     accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
@@ -84,6 +85,7 @@ CREATE INDEX IF NOT EXISTS idx_proposal_author ON proposal(author);
 CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_ancestor_parcel_ids ON proposal USING GIN(ancestor_parcel_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_cadastre_parcel_ids ON proposal USING GIN(cadastre_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_descendant_parcel_ids ON proposal USING GIN(descendant_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_parent_proposal_ids ON proposal USING GIN(parent_proposal_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_child_proposal_ids ON proposal USING GIN(child_proposal_ids);
@@ -93,6 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(prop
 COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
 COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
 COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
+COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Base cadastral parcel IDs the proposal geometry covers. Stable across machines, unlike ancestor_parcel_ids which may name derived (re-minted) parcels.';
 COMMENT ON COLUMN proposal.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
 COMMENT ON COLUMN proposal.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
 COMMENT ON COLUMN proposal.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';

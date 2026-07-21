@@ -270,7 +270,7 @@ given?
 
 ## 5. Approaches to investigate
 
-### A1. Base-parcel ancestry (flattening) — *strongly supported by §3.4*
+### A1. Base-parcel ancestry (flattening) — *WRITER SIDE BUILT; nothing reads it yet*
 
 Every proposal stores the **base cadastral** parcels its geometry intersects, computed at creation and
 recomputed on edit. Derived ids never appear in `parentParcelIds`.
@@ -281,6 +281,27 @@ descendants of **A**, not of C. Chains never form, so they can never dangle.
 - Fixes: ghost references, cross-machine replay, incomplete consent lists.
 - Loses: which *piece* of A a proposal sits on. §3.5 argues that loss is correct pre-execution.
 - Cost: an intersection pass on create/edit.
+
+Built so far — `cadastreParcelIds`, written alongside `parentParcelIds` and read by nothing:
+
+| Layer | Where |
+|---|---|
+| pure logic | `frontend/js/proposals/plan-order.js` — `computeCadastreParcelIds`, `cadastreRootId`, `footprintOf` |
+| map adapter | `frontend/js/proposals/cadastre-ancestry.js` — reads the live parcel index |
+| stamped at **publish** | `buildUploadReadyProposal()` in `proposals/create.js` — the single funnel for upload, plan share and mint |
+| API | `cadastreParcelIds` accepted, stored in `proposal.cadastre_parcel_ids`, returned by the serializer |
+| migration | `backend/scripts/add-cadastre-parcel-ids.js` — dry-run by default, additive, idempotent |
+
+Geometry is the primary source; the roots of whatever the proposal declared are merged in, so a
+proposal can never be recorded as touching *less* land than it already claimed.
+
+**Computed at publication, not at creation.** A road can be dragged around all afternoon, so there is
+no useful "the parcels of this proposal" while it is still local and mutable — and a creation-time
+stamp would freeze an answer nobody ever saw, then go stale on the first node drag. The moment that
+counts is upload/mint: that snapshot is what other people replay and what owners consent to. So
+`cadastreParcelIds` means *the cadastral parcels this proposal covered when it was published*, and its
+absence means the proposal has never been published. It is not in `proposalContentFingerprint`'s
+allowlist, so adding it can never change a share id.
 
 ### A2. Ship derived geometry with fabric-changers
 
@@ -350,9 +371,10 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
 
 1. ~~Test A3 (commutativity).~~ **DONE — see §3.6.** Order matters only between fabric-changers whose
    footprints intersect; the discrepancy equals the intersection area. Roads commute outright.
-2. **Prototype A1 + A6 together** — compute base ancestry on create/edit and store it *alongside* the
-   existing field, and derive ordering from footprint intersection + creation time rather than from
-   derived ids. Non-destructive; lets both models be compared on live data.
+2. ~~Prototype A1 + A6.~~ **Writer side DONE** — `cadastreParcelIds` is computed at publish and
+   stored end to end; `plan-order.js` implements the A6 ordering. Still to do: backfill existing rows
+   (the analysis script already computes exactly what a backfill needs), and then make something
+   actually read it.
 3. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
    that was never missing. Say that the proposals depend on each other and cannot be rebuilt from
    scratch.

@@ -61,6 +61,9 @@ export function serializeProposalRow(row, options = {}) {
     proposal.isConditional = choose(row.is_conditional, proposal.isConditional);
     proposal.disbursementMode = choose(row.disbursement_mode, proposal.disbursementMode);
     proposal.parentParcelIds = choose(row.ancestor_parcel_ids, proposal.parentParcelIds ?? null);
+    // The CADASTRAL parcels the geometry covers. Unlike ancestor_parcel_ids these are never derived
+    // ids, so they mean the same thing on every machine. See rethink-proposals.md.
+    proposal.cadastreParcelIds = choose(row.cadastre_parcel_ids, proposal.cadastreParcelIds ?? null);
     proposal.childParcelIds = choose(row.descendant_parcel_ids, proposal.childParcelIds ?? null);
     proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
     proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);

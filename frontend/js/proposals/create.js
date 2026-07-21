@@ -2009,6 +2009,21 @@ function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
     const uploadProposal = { ...proposal };
 
+    // Which CADASTRAL parcels this proposal covers, recomputed HERE — at publish — rather than at
+    // creation. A road can be dragged around all afternoon; what matters is the land it covered at
+    // the moment it was uploaded or minted, because that is the snapshot other people replay and
+    // owners consent to. Stamping at creation would freeze an answer nobody ever saw, and would go
+    // stale on the first node drag. Computed on the upload copy, so the user's local record is not
+    // disturbed, and it is absent from proposalContentFingerprint's allowlist, so adding it can
+    // never change a share id. See rethink-proposals.md.
+    try {
+        uploadProposal.cadastreParcelIds = window.__cadastreAncestry
+            ? window.__cadastreAncestry.computeCadastreParcelIds(proposal)
+            : [];
+    } catch (error) {
+        console.warn('[createProposal] cadastral ancestry unavailable for upload', error);
+    }
+
     // Ensure backend-required proposal.type is set using the proposal goal
     const rawType = uploadProposal.type ? String(uploadProposal.type).trim().toLowerCase() : '';
     const goalKey = resolveProposalGoalKey(uploadProposal, null);
