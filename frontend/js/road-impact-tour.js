@@ -1,8 +1,10 @@
-// Guided "impact tour" for the buildings a road/track runs into. Instead of one blanket choice for
-// the whole set, it steps through each affected building (prev/next), zooming to and highlighting it
-// on a live-but-non-interactive map, and lets the user keep one global default (Cut all / Demolish
-// all / Tunnel all) while overriding individual buildings. Resolves to { action, perBuilding } (the
-// global default plus a Map of per-building overrides), or the string 'cancel'.
+// Guided "impact tour" for the buildings a road/track runs into. It steps through each affected
+// building (prev/next), zooming to and highlighting it on a live-but-non-interactive map; for each
+// one the user picks cut / demolish / tunnel, and the primary button (or Enter) confirms that choice
+// and advances — on the last building it finalizes. An opt-in "Apply <action> to all" shortcut sets
+// every building to the current choice. Resolves to { action, perBuilding } (a fallback default plus
+// a Map of per-building choices; "apply to all" resolves with the forced action and an empty Map),
+// or the string 'cancel'.
 //
 // The pure decision model (createTourState + reducers) is exported separately so it can be unit
 // tested without a DOM; the DOM/map layer below is a thin driver over it.
@@ -175,7 +177,7 @@
             { value: 'cut', label: t('modal.corridorTunnel.cut', 'Cut through the buildings'), primary: true },
             { value: 'destroy', label: t('modal.corridorTunnel.destroy', 'Demolish the buildings') },
             { value: 'tunnel', label: t('modal.corridorTunnel.confirm', 'Tunnel through') },
-            { value: 'cancel', label: t('modal.corridorTunnel.cancel', 'Choose another route') }
+            { value: 'cancel', label: t('modal.impactTour.cancel', 'Cancel') }
         ];
         const answer = await global.showStyledChoice(options.message || '', choices);
         return answer || 'cancel';
@@ -198,6 +200,16 @@
             let lastZoomedIndex = -1;
             const cleanupFns = [];
 
+            // The road's filled strips (corridorStripsPane) render above this tour and would hide the
+            // buildings it is about. Drop that fill while the tour is open so the buildings show through
+            // — the road is drawn here as an outline instead. Restored on close via cleanupFns.
+            const stripsPane = (typeof map.getPane === 'function') ? map.getPane('corridorStripsPane') : null;
+            if (stripsPane) {
+                const prevStripsDisplay = stripsPane.style.display;
+                stripsPane.style.display = 'none';
+                cleanupFns.push(() => { stripsPane.style.display = prevStripsDisplay; });
+            }
+
             const isMobile = !!(global.matchMedia && global.matchMedia('(max-width: 600px)').matches);
 
             const panel = document.createElement('div');
@@ -212,33 +224,6 @@
             message.className = 'cb-impact-tour-message';
             renderMessageLines(message, options.message || '');
             body.appendChild(message);
-
-            // Global default row
-            const globalRow = document.createElement('div');
-            globalRow.className = 'cb-impact-tour-global';
-            const globalLabel = document.createElement('div');
-            globalLabel.className = 'cb-impact-tour-global-label';
-            globalLabel.textContent = t('modal.impactTour.applyToAll', 'Apply to all:');
-            globalRow.appendChild(globalLabel);
-            const globalButtons = document.createElement('div');
-            globalButtons.className = 'cb-impact-tour-global-buttons';
-            const GLOBAL_CHOICES = [
-                { value: 'cut', label: t('modal.impactTour.cutAll', 'Cut all') },
-                { value: 'destroy', label: t('modal.impactTour.demolishAll', 'Demolish all') },
-                { value: 'tunnel', label: t('modal.impactTour.tunnelAll', 'Tunnel all') }
-            ];
-            const globalButtonEls = {};
-            GLOBAL_CHOICES.forEach(choice => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'cb-impact-tour-chip';
-                btn.textContent = choice.label;
-                btn.addEventListener('click', () => { state = tourSetDefault(state, choice.value); render(); });
-                globalButtons.appendChild(btn);
-                globalButtonEls[choice.value] = btn;
-            });
-            globalRow.appendChild(globalButtons);
-            body.appendChild(globalRow);
 
             // Per-building tour: nav + name + override radios
             const nav = document.createElement('div');
@@ -281,14 +266,22 @@
             const cancelBtn = document.createElement('button');
             cancelBtn.type = 'button';
             cancelBtn.className = 'btn btn-secondary';
-            cancelBtn.textContent = t('modal.corridorTunnel.cancel', 'Choose another route');
+            cancelBtn.textContent = t('modal.impactTour.cancel', 'Cancel');
             cancelBtn.addEventListener('click', () => finish('cancel'));
+            // Opt-in bulk shortcut: apply THIS building's chosen action to every building and finish.
+            // Not the default (Enter walks building by building), and hidden when there is only one.
+            const applyAllBtn = document.createElement('button');
+            applyAllBtn.type = 'button';
+            applyAllBtn.className = 'btn btn-secondary cb-impact-tour-apply-all';
+            applyAllBtn.addEventListener('click', () => finish('apply', effectiveActionOf(list[state.index])));
+            // Primary: confirm this building's choice and move to the next; on the last building it
+            // finalizes and applies every building's choice. Enter mirrors it (see onKeydown).
             const applyBtn = document.createElement('button');
             applyBtn.type = 'button';
             applyBtn.className = 'btn btn-action';
-            applyBtn.textContent = t('modal.impactTour.apply', 'Apply');
-            applyBtn.addEventListener('click', () => finish('apply'));
+            applyBtn.addEventListener('click', () => advanceOrFinish());
             actions.appendChild(cancelBtn);
+            actions.appendChild(applyAllBtn);
             actions.appendChild(applyBtn);
             panel.appendChild(actions);
 
@@ -347,14 +340,26 @@
                         }
                     }));
                 }
-                // The proposed road on top (white casing + blue line) so it reads clearly at every zoom.
+                // The proposed road as an OUTLINE only (no fill), so the buildings underneath stay
+                // visible — the filled strip rendering is hidden while the tour is open (see setup).
+                // With a width we outline the actual footprint; without one, just a centerline casing.
+                const roadW = Number(options.roadWidth);
+                const outlineFootprint = Number.isFinite(roadW) && roadW > 0 && typeof global.calculateRoadPolygon === 'function';
                 proposedRoadSegments().forEach(segment => {
-                    const pts = (Array.isArray(segment) ? segment : [])
-                        .filter(p => p && isFinite(p.lat) && isFinite(p.lng))
-                        .map(p => [p.lat, p.lng]);
-                    if (pts.length < 2) return;
-                    group.addLayer(L.polyline(pts, { ...paneOpts, interactive: false, color: '#ffffff', weight: 6, opacity: 0.9 }));
-                    group.addLayer(L.polyline(pts, { ...paneOpts, interactive: false, color: '#2563eb', weight: 3, opacity: 1 }));
+                    const latLngs = (Array.isArray(segment) ? segment : []).filter(p => p && isFinite(p.lat) && isFinite(p.lng));
+                    if (latLngs.length < 2) return;
+                    const pts = latLngs.map(p => [p.lat, p.lng]);
+                    if (outlineFootprint) {
+                        let ring = null;
+                        try { ring = global.calculateRoadPolygon(latLngs, roadW); } catch (_) { ring = null; }
+                        if (ring) {
+                            group.addLayer(L.polygon(ring, { ...paneOpts, interactive: false, fill: false, color: '#ffffff', weight: 4, opacity: 0.9 }));
+                            group.addLayer(L.polygon(ring, { ...paneOpts, interactive: false, fill: false, color: '#2563eb', weight: 2, opacity: 1 }));
+                        }
+                    }
+                    // Centerline guide: a thin dashed line inside the footprint outline, or the casing itself.
+                    group.addLayer(L.polyline(pts, { ...paneOpts, interactive: false, color: '#ffffff', weight: outlineFootprint ? 2 : 6, opacity: outlineFootprint ? 0.7 : 0.9 }));
+                    group.addLayer(L.polyline(pts, { ...paneOpts, interactive: false, color: '#2563eb', weight: outlineFootprint ? 1 : 3, opacity: 1, dashArray: outlineFootprint ? '4 4' : null }));
                 });
                 highlightLayer = group;
                 highlightLayer.addTo(map);
@@ -371,13 +376,9 @@
             }
 
             function render() {
-                // Global chips reflect the current default.
-                Object.keys(globalButtonEls).forEach(value => {
-                    globalButtonEls[value].classList.toggle('is-active', state.defaultAction === value);
-                });
-
                 const hit = list[state.index];
                 const owner = hitIsProposalOwned(hit);
+                const lastBuilding = state.index >= state.count - 1;
                 counter.textContent = t('modal.impactTour.counter', 'Building {{n}} / {{total}}', {
                     n: state.index + 1, total: state.count
                 });
@@ -391,6 +392,16 @@
                 choicesEl.textContent = '';
                 const labels = ACTION_LABELS();
                 const current = effectiveActionOf(hit);
+
+                // Primary button walks the tour; on the last building it applies everything. The
+                // opt-in "Apply <action> to all" reflects THIS building's chosen action, and is hidden
+                // when there is only one building (then the primary button is the whole decision).
+                applyBtn.textContent = lastBuilding
+                    ? t('modal.impactTour.apply', 'Apply')
+                    : t('modal.impactTour.applyNext', 'Apply & next');
+                const currentWord = String(labels[current] || current).toLowerCase();
+                applyAllBtn.textContent = t('modal.impactTour.applyActionToAll', 'Apply {{action}} to all', { action: currentWord });
+                applyAllBtn.style.display = state.count > 1 ? '' : 'none';
                 tourAllowedActions(owner).forEach(action => {
                     const label = document.createElement('label');
                     label.className = 'cb-impact-tour-choice';
@@ -435,8 +446,8 @@
 
             function onKeydown(event) {
                 if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); finish('cancel'); return; }
-                // Enter is the default action: apply the impacts as chosen (Apply is the focused button).
-                if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); finish('apply'); return; }
+                // Enter confirms THIS building's choice and steps to the next (finalizes on the last).
+                if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); advanceOrFinish(); return; }
                 if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
                     event.preventDefault(); event.stopPropagation();
                     state = tourGoTo(state, state.index + 1); render(); return;
@@ -456,7 +467,7 @@
             const swallow = event => { event.preventDefault(); event.stopPropagation(); };
 
             let finished = false;
-            function finish(kind) {
+            function finish(kind, forcedAction) {
                 if (finished) return;
                 finished = true;
                 document.removeEventListener('keydown', onKeydown, true);
@@ -466,14 +477,25 @@
                 if (captureOverlay && captureOverlay.parentNode) captureOverlay.parentNode.removeChild(captureOverlay);
                 if (panel.parentNode) panel.parentNode.removeChild(panel);
                 if (kind === 'cancel') { resolve('cancel'); return; }
-                const perBuilding = new Map(Object.entries(state.overrides));
-                resolve({ action: state.defaultAction, perBuilding });
+                // forcedAction (the "apply X to all" shortcut) overrides every building; otherwise each
+                // building keeps its own per-building choice made during the walkthrough.
+                const perBuilding = forcedAction ? new Map() : new Map(Object.entries(state.overrides));
+                resolve({ action: forcedAction || state.defaultAction, perBuilding });
             }
 
-            // Desktop dock: align the panel's right edge and width to the road info panel and sit it in
-            // the space above, so the two read as one right-hand column instead of overlapping. Falls
-            // back to the CSS top-right dock when the road info panel isn't shown. The mobile sheet is
-            // laid out entirely by CSS.
+            // Primary action / Enter: lock in this building's choice and step to the next; on the last
+            // building, finalize and apply every building's decision.
+            function advanceOrFinish() {
+                if (state.index >= state.count - 1) { finish('apply'); return; }
+                state = tourGoTo(state, state.index + 1);
+                render();
+            }
+
+            // Desktop dock: align the panel's right edge to the road info panel and sit it in the space
+            // above, so the two read as one right-hand column instead of overlapping. Width is left to
+            // the CSS (the standard modal width) for visual consistency — only the position is set here.
+            // Falls back to the CSS top-right dock when the road info panel isn't shown. The mobile
+            // sheet is laid out entirely by CSS.
             function positionDock() {
                 if (isMobile) return;
                 const info = document.getElementById('road-info-panel');
@@ -491,7 +513,6 @@
                 // an unusually tall road info panel on a short screen would push it that far — then a
                 // small overlap is better than an unreadable sliver).
                 const bottomPx = Math.min(Math.round(vh - rect.top + gap), Math.max(0, vh - topPx - 260));
-                panel.style.width = Math.round(rect.width) + 'px';
                 panel.style.right = Math.round(vw - rect.right) + 'px';
                 panel.style.top = topPx + 'px';
                 panel.style.bottom = bottomPx + 'px';

@@ -325,7 +325,7 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
         };
     }
     const resolution = typeof resolveBuildingObstacles === 'function'
-        ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
+        ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind, { previewLatLngs: segments, roadWidth: width })
         : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
     if (resolution.action === 'cancel') return { accepted: false, records: list, demolished };
     // Per-building outcomes: destroy, cut and tunnel can all apply within the same set now (the tour
@@ -1120,7 +1120,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             const combined = new Map();
             edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
             const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind, {
-                mergeProposalImpacts
+                mergeProposalImpacts,
+                previewLatLngs: normalizedSegments,
+                roadWidth: editWidth
             });
             if (resolution.action === 'cancel') {
                 // Reroute: put the definition back exactly as it was and drop the edit. A node drag

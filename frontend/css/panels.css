@@ -1841,7 +1841,8 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 .cb-impact-tour-dock {
     top: 16px;
     right: 16px;
-    width: 360px;
+    /* Same width as the standard modals (css/modals.css) for visual consistency. */
+    width: min(480px, 96vw);
     max-width: calc(100% - 32px);
     max-height: calc(100vh - 32px);
     border-radius: 14px;

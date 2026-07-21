@@ -601,7 +601,10 @@
                 message: built.message,
                 proposalImpacts,
                 mergeProposalImpacts: built.mergeProposalImpacts,
-                defaultAction: 'cut'
+                defaultAction: 'cut',
+                // Geometry to outline the road (no fill) over the buildings, from the caller.
+                previewLatLngs: options.previewLatLngs,
+                roadWidth: options.roadWidth
             });
         }
         if (typeof global.showStyledChoice === 'function') {
