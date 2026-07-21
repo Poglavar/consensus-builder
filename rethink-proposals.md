@@ -216,6 +216,21 @@ The decisive consequence: the pair that made the plan unshareable, `#100 ⇄ #10
 the two footprints share a border and overlap by 0.0012 m², four orders of magnitude below the noise
 floor. It commutes. Its ordering constraint was pure bookkeeping fiction.
 
+### 3.7 The cadastre itself moves, and already has
+
+Parcels are versioned (`version`, `current`, `date_missing`, `geom_hash`). When a cadastral parcel is
+split or redrawn in the real world, the old row is marked `current = false` and new rows appear. That
+is not a future risk — it has already happened at scale, identically on prod and locally:
+
+```
+current = true    579,674
+current = false    54,918     ← ~8.6%, of which 40,631 carry a date_missing
+```
+
+So roughly one parcel in twelve has been superseded at some point. A proposal that stores
+`HR-339270-1234` as a fact can therefore end up naming a parcel that no longer exists — structurally
+the same dangling reference as §3.1, on a slower clock.
+
 ---
 
 ## 4. The dilemmas
@@ -266,6 +281,47 @@ also what mints a new generation of derived ids and orphans every reference to t
 Any model has to answer: when geometry moves, what happens to the references and to consent already
 given?
 
+### D5. Ancestor *geography* rather than ancestor *parcels*
+
+If a proposal is made against `HR-1234` and that parcel is later split in two, is it now a proposal
+against both? **Yes — and geometry gives you that answer for free, while a stored id gives you a
+dangling reference.**
+
+The clearest way to see it: `cadastreParcelIds` is produced by intersecting the proposal's geometry
+with the cadastre. The geometry is the input; the id list is the *output of a query*. So the geometry
+is already the truth, and the id list is **a materialised view of a query against a particular
+cadastre version** — currently stored as though it were a fact.
+
+This is *not* an argument to drop the field. Because it is stamped at PUBLISH (§A1), it already means
+"the parcels this covered when it was published", which is the right shape for a snapshot. Two things
+are missing to make that honest:
+
+1. **The cadastre version is not recorded.** The table has `version` / `geom_hash` / `date_missing`,
+   but we stamp the ids without saying what they were computed against, so a reader cannot distinguish
+   a current snapshot from a stale one.
+2. **Nothing marks it read-only-as-of-then.** Today nothing reads the field, so the cost of getting
+   this wrong is still zero. That makes now the cheap moment to write the rule down rather than the
+   moment to discover it.
+
+It collides with invariant #2 (consent is immutable): if an owner accepted as the owner of `HR-1234`
+and it then splits, their consent cannot be silently repointed at two parcels they never saw. The
+resolution needs three layers, not two:
+
+| Layer | Mutable? | Role |
+|---|---|---|
+| **Geometry** | no | the proposal's identity — what was published |
+| **Parcel ids @ time T** | recomputed | a view: "who is affected", against a *stated* cadastre version |
+| **Acceptances** | frozen | keyed to who consented, against the parcel as it was |
+
+**Recommendation: note it, do not build it.** The design already degrades gracefully — geometry is
+stored, so the view can be recomputed at any time against any cadastre version, including
+retroactively. The one cheap thing worth doing soon is recording the cadastre snapshot alongside the
+ids so staleness is detectable. Everything else can wait for a real split to matter.
+
+*(History: adjacent to this, the "cadastre drift" bullet under A2 noted that replaying a plan a year
+later derives against a different base. That was about replay. This is the sharper question — whether
+the ancestor is a shape or a name — and it was never previously considered or discarded.)*
+
 ---
 
 ## 5. Approaches to investigate
@@ -294,6 +350,9 @@ Built so far — `cadastreParcelIds`, written alongside `parentParcelIds` and re
 
 Geometry is the primary source; the roots of whatever the proposal declared are merged in, so a
 proposal can never be recorded as touching *less* land than it already claimed.
+
+`cadastreParcelIds` is best understood as a **timestamped view, not a fact** — see D5. It records what
+the geometry covered against the cadastre as it stood at publication; the geometry remains the truth.
 
 **Computed at publication, not at creation.** A road can be dragged around all afternoon, so there is
 no useful "the parcels of this proposal" while it is still local and mutable — and a creation-time
@@ -386,17 +445,19 @@ cross-plan derived references never exist. Complements A1–A3; addresses D2.
 
 1. ~~Test A3 (commutativity).~~ **DONE — see §3.6.** Order matters only between fabric-changers whose
    footprints intersect; the discrepancy equals the intersection area. Roads commute outright.
-2. ~~Prototype A1 + A6.~~ **Writer side DONE** — `cadastreParcelIds` is computed at publish and
-   stored end to end; `plan-order.js` implements the A6 ordering. Still to do: backfill existing rows
-   (the analysis script already computes exactly what a backfill needs), and then make something
-   actually read it.
-3. **A6 before A2.** Ordering by intersection + creation time is what actually makes a plan
+2. ~~Prototype A1 + A6.~~ **Writer side DONE and backfilled** — `cadastreParcelIds` is computed at
+   publish and stored end to end; `plan-order.js` implements the A6 ordering; 92 of 98 published rows
+   are backfilled (4 cities without a cadastral table, 2 legacy records holding only `bounds`). Still
+   to do: make something actually *read* it.
+3. **Stamp the cadastre snapshot** next to `cadastreParcelIds` (version or capture date), so a stale
+   view is detectable — cheap now, while nothing reads the field. See D5.
+4. **A6 before A2.** Ordering by intersection + creation time is what actually makes a plan
    replayable; shipping derived geometry only guards against cadastre/code drift.
-4. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
+5. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
    that was never missing. Say that the proposals depend on each other and cannot be rebuilt from
    scratch.
-5. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
-6. **Decide D2** before touching acceptance.
+6. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
+7. **Decide D2** before touching acceptance.
 
 ---
 
