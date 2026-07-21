@@ -960,6 +960,18 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
         return overrideWidth > 0 ? overrideWidth : editWidth;
     };
+    // The SAME, per segment, before the edit — so a profile change that WIDENS a segment can be told
+    // apart from a plain node move. A widening keeps every edge (same centerline) but its wider
+    // footprint covers new ground, so its pre-existing edges must be re-checked for buildings; a pure
+    // move introduces new edges and leaves the old ones alone. Building detection below uses this.
+    const snapWidth = Number(definitionSnapshot.width) || 10;
+    const snapWidthForSegment = segIndex => {
+        const id = normalizedIds[segIndex];
+        const override = (definitionSnapshot.segmentProfiles && id !== null && id !== undefined) ? definitionSnapshot.segmentProfiles[String(id)] : null;
+        const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
+        return overrideWidth > 0 ? overrideWidth : snapWidth;
+    };
+    const segmentWidthGrew = segIndex => editWidthForSegment(segIndex) > snapWidthForSegment(segIndex) + 1e-6;
 
     // Calculate road-to-road absorption in the SAME preflight as building impacts. This used to be
     // discovered only after the cutting/tunnelling dialog, so an edit could name the buildings and
@@ -1041,7 +1053,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 for (let i = 0; i < segment.length - 1; i++) {
                     if (typeof corridorTunnelEdgeKey === 'function') {
                         const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
-                        if (preEditEdgeKeys.has(key) || tunnelEdgeKeys.has(key)) continue;
+                        // Skip tunnel edges (underground) and unchanged pre-existing edges — but a WIDENED
+                        // segment's pre-existing edges are re-checked (its footprint grew over new ground).
+                        if (tunnelEdgeKeys.has(key) || (preEditEdgeKeys.has(key) && !segmentWidthGrew(segIndex))) continue;
                     }
                     try {
                         await ensureBuildingFootprintsForRoadEdge(segment[i], segment[i + 1], editWidthForSegment(segIndex));
@@ -1056,8 +1070,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             for (let i = 0; i < segment.length - 1; i++) {
                 if (typeof corridorTunnelEdgeKey === 'function') {
                     const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
-                    // Pre-existing edges were accepted when drawn; tunnel edges are underground.
-                    if (preEditEdgeKeys.has(key) || tunnelEdgeKeys.has(key)) continue;
+                    // Tunnel edges are underground; pre-existing edges were accepted when drawn — UNLESS
+                    // this segment was widened, whose wider footprint must be re-checked for new buildings.
+                    if (tunnelEdgeKeys.has(key) || (preEditEdgeKeys.has(key) && !segmentWidthGrew(segIndex))) continue;
                 }
                 const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], editWidthForSegment(segIndex));
                 if (!polygon) continue;
