@@ -1126,10 +1126,14 @@ function showSharePlanModal() {
             uploadedLabel.style.display = 'none';
 
             uploadBtn.addEventListener('click', async () => {
-                const gate = await ensureAncestorProposalsUploaded(proposal);
+                // Everything currently selected is being shared as one plan, so an ancestor inside
+                // the selection needs no upload of its own first — only an ancestor the user has
+                // unchecked (and which is not already on the server) is a real gap. Order-free, so a
+                // cyclic ancestry between two selected proposals can no longer deadlock the plan.
+                const gate = await ensureAncestorProposalsUploaded(proposal, { satisfiedBy: selected });
                 if (!gate.ok) {
                     const missingList = gate.missing.map(entry => entry.id || (entry.hash ? entry.hash.slice(0, 8) : '?')).filter(Boolean);
-                    setStatus(tShare('plan.uploadAncestorsMissing', 'Upload ancestor proposals first: {{list}}', {
+                    setStatus(tShare('plan.uploadAncestorsMissing', 'Include these ancestor proposals in the plan: {{list}}', {
                         list: missingList.join(', ')
                     }));
                     return;

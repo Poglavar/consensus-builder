@@ -1674,6 +1674,7 @@
                 "ancestorUploadButton": "Subir",
                 "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
                     "title": "Compartir plan",
                     "fetching": "Obteniendo propuesta #{{id}}…",
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",

@@ -1627,6 +1627,7 @@
                 "ancestorUploadButton": "Prenesi",
                 "sharePlanButton": "Podijeli cijeli plan (svi primijenjeni prijedlozi)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Uključite ove nadređene prijedloge u plan: {{list}}",
                     "title": "Podijeli plan",
                     "fetching": "Preuzimanje prijedloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje parcela predaka za prijedlog #{{id}}…",

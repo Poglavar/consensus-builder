@@ -1627,6 +1627,7 @@
                 "ancestorUploadButton": "Otpremi",
                 "sharePlanButton": "Podeli ceo plan (svi primenjeni predlozi)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Uključite ove nadređene predloge u plan: {{list}}",
                     "title": "Podeli plan",
                     "fetching": "Preuzimanje predloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",

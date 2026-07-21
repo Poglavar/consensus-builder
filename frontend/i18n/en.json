@@ -1654,6 +1654,7 @@
                 "ancestorUploadButton": "Upload",
                 "sharePlanButton": "Share the whole plan instead (all applied proposals)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
                     "title": "Share Plan",
                     "fetching": "Fetching proposal #{{id}}…",
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",

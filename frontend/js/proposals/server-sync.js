@@ -380,11 +380,31 @@ async function headProposalExists(proposalId, _city, proposalForSync) {
     return false;
 }
 
-async function ensureAncestorProposalsUploaded(proposal) {
+// Which ancestors of `proposal` are not going to reach the server.
+//
+// This used to gate on upload ORDER — every ancestor had to already be on the server before its
+// descendant could be POSTed. Nothing depends on that order: proposals are POSTed independently, the
+// server stores ancestor ids as an opaque column with no foreign key, and the order a recipient
+// APPLIES a plan in is decided at apply time. Worse, the order was not always satisfiable. Ancestry
+// is derived from live parcel state (findAncestorTree -> _getParcelAncestors -> most recent creator),
+// so two proposals that each re-cut the other's children are each genuinely downstream of the other:
+// a real cycle, and an unbreakable deadlock for an ordering gate. One plan on prod had
+// `Road 2107-2043 <-> Subdivide 2107-2048`, which left five proposals permanently unuploadable.
+//
+// What a recipient actually needs is COMPLETENESS: every ancestor PRESENT in the plan. So callers
+// that know the whole set being shared pass it as `options.satisfiedBy`, and any ancestor in that set
+// is fine no matter what order things upload in — cycles included, since every member of a cycle is
+// in the same plan by construction (the dialog auto-selects ancestors).
+async function ensureAncestorProposalsUploaded(proposal, options = {}) {
     const missing = [];
     if (!proposal || typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function' || typeof proposalStorage === 'undefined') {
         return { ok: true, missing };
     }
+
+    const rawSatisfied = options && options.satisfiedBy;
+    const satisfiedBy = rawSatisfied instanceof Set
+        ? rawSatisfied
+        : (Array.isArray(rawSatisfied) ? new Set(rawSatisfied.map(id => String(id))) : null);
 
     const proposalKey = getProposalKey(proposal) || proposal.proposalId;
     if (!proposalKey) {
@@ -405,6 +425,8 @@ async function ensureAncestorProposalsUploaded(proposal) {
     }
 
     const checks = await Promise.all(ancestorHashes.map(async hash => {
+        // Shipping alongside this proposal — presence is what matters, not who was POSTed first.
+        if (satisfiedBy && satisfiedBy.has(String(hash))) return null;
         const ancestor = proposalStorage.getProposal(hash);
         if (!ancestor) {
             return { hash, reason: 'missing-local', id: null };
@@ -738,6 +760,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         buildCityQueryParam,
         normalizeServerProposalSummary,
-        prepareProposalForImport
+        prepareProposalForImport,
+        ensureAncestorProposalsUploaded
     };
 }
