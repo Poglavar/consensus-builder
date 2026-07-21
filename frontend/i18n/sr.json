@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje."
+        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje.",
+        "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
     },
     "proposalDrafts": {
         "title": "Nacrti",

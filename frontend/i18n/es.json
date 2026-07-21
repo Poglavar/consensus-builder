@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar."
+        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar.",
+        "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
     },
     "proposalDrafts": {
         "title": "Borradores",

@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit."
+        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
+        "notSaved": "Proposal was NOT saved and will be lost on browser reload."
     },
     "proposalDrafts": {
         "title": "Drafts",
