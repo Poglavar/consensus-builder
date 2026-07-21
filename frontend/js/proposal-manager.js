@@ -640,10 +640,14 @@ function _buildAppliedDescendantIndex(excludeProposalId = null) {
         const appliedProposals = proposalStorage.getAllProposals().filter(p => {
             if (!p) return false;
             if (excludeProposalId && p.proposalId && String(p.proposalId) === String(excludeProposalId)) return false;
-            // Structures OVERLAY their parents (never hide them) — an applied park/lake/square
-            // must not block its parent slice from being (re)created, or the ground under it
-            // becomes an unclickable hole when the parent road re-applies after a geometry edit.
-            if (p.structureProposal && !p.roadProposal && !p.reparcellization && !p.buildingProposal && !p.decideLaterProposal) return false;
+            // Structures and buildings OVERLAY their parents (never hide or split them) — an
+            // applied park/lake/square or freeform building must not block its parent slice from
+            // being (re)created, or the ground under it becomes an unclickable hole when the parent
+            // road re-applies after a geometry edit. Only typologies that actually CONSUME their
+            // parents (road, reparcellization, decide-later) may block a slice.
+            const overlaysParentsOnly = (p.structureProposal || p.buildingProposal)
+                && !p.roadProposal && !p.reparcellization && !p.decideLaterProposal;
+            if (overlaysParentsOnly) return false;
             const roadStatus = p.roadProposal && appliedOf(p, p.roadProposal);
             const decideLaterStatus = p.decideLaterProposal && appliedOf(p, p.decideLaterProposal);
             const structureStatus = p.structureProposal && appliedOf(p, p.structureProposal);
@@ -4962,6 +4966,8 @@ if (typeof module !== 'undefined' && module.exports) {
         ProposalManager,
         _reapplyAppliedProposal,
         _shouldSkipUncutRemainder,
-        _shouldDrawLegacyRoadCenterline
+        _shouldDrawLegacyRoadCenterline,
+        _buildAppliedDescendantIndex,
+        _filterChildFeaturesBlockedByDescendants
     };
 }
