@@ -64,6 +64,40 @@
         return out;
     }
 
+    // Roads drawn before the corridor rework stored only a centerline and a width — no polygon. For
+    // ANCESTRY (which cadastral parcels does this cover) a buffered centerline is enough: we threshold
+    // at 2 m² anyway, and the difference from the app's rectangular-segment construction is confined
+    // to corner mitring. This is deliberately NOT cut geometry and must never be used as such — the
+    // authoritative corridor is calculateRoadPolygon() in road-drawing.js.
+    function corridorFootprintFromCenterline(definition) {
+        const t = T();
+        const width = Number(definition && definition.width);
+        if (!t || !definition || !Number.isFinite(width) || width <= 0) return null;
+
+        const raw = definition.points;
+        if (!Array.isArray(raw) || !raw.length) return null;
+        const isLatLng = p => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
+        // Either a single centerline or a list of disjoint ones.
+        const segments = isLatLng(raw[0]) ? [raw] : raw.filter(s => Array.isArray(s) && s.length >= 2 && isLatLng(s[0]));
+
+        const buffered = [];
+        segments.forEach(segment => {
+            const coords = segment.filter(isLatLng).map(p => [p.lng, p.lat]);
+            if (coords.length < 2) return;
+            try {
+                const band = t.buffer(t.lineString(coords), width / 2, { units: 'meters', steps: 8 });
+                if (band && band.geometry) buffered.push(band);
+            } catch (_) { /* a degenerate centerline contributes nothing */ }
+        });
+        if (!buffered.length) return null;
+
+        let acc = buffered[0];
+        for (let i = 1; i < buffered.length; i++) {
+            try { acc = t.union(acc, buffered[i]) || acc; } catch (_) { /* keep what we have */ }
+        }
+        return acc;
+    }
+
     // A proposal's own footprint, from whichever geometry its typology carries. Pure GeoJSON in/out.
     function footprintOf(proposal) {
         const t = T();
@@ -78,8 +112,11 @@
         if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
             proposal.reparcellization.polygons.forEach(p => push(p && p.geometry));
         }
-        const definition = (proposal.roadProposal && proposal.roadProposal.definition) || proposal.definition;
+        const definition = (proposal.roadProposal && proposal.roadProposal.definition)
+            || proposal.definition
+            || (proposal.geometry && proposal.geometry.roadPlan);
         if (definition && definition.polygon) push(definition.polygon);
+        else if (definition) push(corridorFootprintFromCenterline(definition));
         if (proposal.structureProposal && proposal.structureProposal.geometry) push(proposal.structureProposal.geometry);
         if (proposal.geometry && /Polygon/.test(proposal.geometry.type || '')) push(proposal.geometry);
         if (proposal.buildingGeometry) push(proposal.buildingGeometry);

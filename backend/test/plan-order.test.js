@@ -189,3 +189,50 @@ describe('cadastre ancestry', () => {
         });
     });
 });
+
+describe('legacy road footprints', () => {
+    it('buffers a centerline when the record predates stored corridor polygons', () => {
+        // Roads drawn before the corridor rework store only points + width. Without this fallback
+        // 29 of 94 zagreb rows had no footprint at all and could not be given cadastral ancestry.
+        const legacy = {
+            roadProposal: {
+                definition: {
+                    width: 10,
+                    points: [{ lat: 45.8053, lng: 15.9636 }, { lat: 45.8060, lng: 15.9650 }]
+                }
+            }
+        };
+        const fp = planOrder.footprintOf(legacy);
+        expect(fp).toBeTruthy();
+        const area = turf.area(fp);
+        // ~10 m wide over ~135 m, plus the rounded caps.
+        expect(area).toBeGreaterThan(1000);
+        expect(area).toBeLessThan(2500);
+    });
+
+    it('handles a multi-segment centerline', () => {
+        const fp = planOrder.footprintOf({
+            definition: {
+                width: 8,
+                points: [
+                    [{ lat: 45.8053, lng: 15.9636 }, { lat: 45.8058, lng: 15.9640 }],
+                    [{ lat: 45.8070, lng: 15.9660 }, { lat: 45.8075, lng: 15.9665 }]
+                ]
+            }
+        });
+        expect(fp).toBeTruthy();
+        expect(turf.area(fp)).toBeGreaterThan(500);
+    });
+
+    it('prefers a stored polygon over the buffered approximation', () => {
+        const square = turf.polygon([[[15.96, 45.80], [15.96, 45.801], [15.961, 45.801], [15.961, 45.80], [15.96, 45.80]]]);
+        const fp = planOrder.footprintOf({
+            definition: { width: 10, points: [{ lat: 45.9, lng: 16.0 }, { lat: 45.91, lng: 16.01 }], polygon: square.geometry }
+        });
+        expect(turf.area(fp)).toBeCloseTo(turf.area(square), 0);
+    });
+
+    it('returns nothing for a record carrying only bounds', () => {
+        expect(planOrder.footprintOf({ bounds: [1, 2, 3, 4] })).toBeNull();
+    });
+});
