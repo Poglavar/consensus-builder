@@ -1087,6 +1087,11 @@
             "rotateClockwiseLabel": "Zakreni 5 stupnjeva u smjeru kazaljke na satu",
             "deleteVertexLabel": "Obriši odabrani vrh",
             "vertexLabel": "Vrh tlocrta",
+            "surroundingsLabel": "Okoliš",
+            "surroundingsNone": "Ostavi kako jest",
+            "surroundingsPaved": "Popločano",
+            "surroundingsGreen": "Zelenilo",
+            "surroundingsInfo": "Jedan izbor za cijelu površinu čestica oko svih zgrada u ovom prijedlogu. Postojeće zgrade na tim česticama uklanjaju se u svakom slučaju.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
             "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
             "uploadOutside": "Učitani poligon ne preklapa se s ovim blokom na upotrebljiv način.",
@@ -1290,6 +1295,9 @@
             "demolish": "Sruši",
             "tunnel": "Tunel",
             "apply": "Primijeni",
+            "applyNext": "Primijeni i sljedeća",
+            "applyActionToAll": "Primijeni {{action}} na sve",
+            "cancel": "Odustani",
             "existingProposal": "postojeći prijedlog"
         },
         "corridorGrade": {

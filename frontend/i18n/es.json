@@ -1135,6 +1135,11 @@
             "rotateClockwiseLabel": "Girar 5 grados en sentido horario",
             "deleteVertexLabel": "Eliminar el vértice seleccionado",
             "vertexLabel": "Vértice de la huella",
+            "surroundingsLabel": "Entorno",
+            "surroundingsNone": "Dejar como está",
+            "surroundingsPaved": "Pavimentado",
+            "surroundingsGreen": "Verde",
+            "surroundingsInfo": "Una sola opción para toda la superficie de las parcelas alrededor de cada edificio de esta propuesta. Los edificios existentes en esas parcelas se eliminan en cualquier caso.",
             "uploadGeojsonLabel": "Subir GeoJSON",
             "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
@@ -1338,6 +1343,9 @@
             "demolish": "Demoler",
             "tunnel": "Túnel",
             "apply": "Aplicar",
+            "applyNext": "Aplicar y siguiente",
+            "applyActionToAll": "Aplicar {{action}} a todos",
+            "cancel": "Cancelar",
             "existingProposal": "propuesta existente"
         },
         "corridorGrade": {

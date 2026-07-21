@@ -104,6 +104,15 @@
             closeButton.dataset.parcelPanelBound = 'true';
         }
 
+        const minimizeButton = panel.querySelector('#parcel-info-minimize');
+        if (minimizeButton && minimizeButton.dataset.parcelPanelBound !== 'true') {
+            minimizeButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                setParcelInfoPanelMinimized(panel, !panel.classList.contains('is-minimized'));
+            });
+            minimizeButton.dataset.parcelPanelBound = 'true';
+        }
+
         const tabButtons = [
             ['info-tab', '.parcel-tab-btn[onclick*="info-tab"]'],
             ['proposals-tab', '.parcel-tab-btn[onclick*="proposals-tab"]'],
@@ -126,6 +135,31 @@
             });
             button.dataset.parcelTabBound = 'true';
         });
+    }
+
+    // Collapse the panel to its header: the tabs and the body fold away, the title stays. Used when
+    // the panel is the SECONDARY surface — selecting a road opens the road's own parcel beneath the
+    // proposal card without the parcel detail competing for the screen. Mirrors the proposal
+    // details panel's own minimize (setProposalDetailsPanelMinimized).
+    function setParcelInfoPanelMinimized(panel, minimized) {
+        if (!panel) return;
+        panel.classList.toggle('is-minimized', minimized);
+
+        const body = panel.querySelector('.panel-body');
+        if (body) body.hidden = minimized;
+        const tabs = panel.querySelector('.parcel-tabs');
+        if (tabs) tabs.hidden = minimized;
+
+        const toggleButton = panel.querySelector('#parcel-info-minimize');
+        if (toggleButton) {
+            const label = minimized
+                ? tParcel('sidebar.areaMonitor.expand', {}, 'Expand')
+                : tParcel('sidebar.areaMonitor.minimize', {}, 'Minimize');
+            toggleButton.setAttribute('aria-label', label);
+            toggleButton.setAttribute('title', label);
+            toggleButton.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+            toggleButton.innerHTML = minimized ? '+' : '&#8722;';
+        }
     }
 
     function showParcelInfoPanel(feature) {
@@ -827,7 +861,13 @@
 
         applyParcelTranslations(global.document.getElementById('parcel-info-panel'));
 
-        global.document.getElementById('parcel-info-panel').classList.add('visible');
+        const panelEl = global.document.getElementById('parcel-info-panel');
+        // One-shot flag (same idiom as __openProposalDetailsCollapsed): a proposal selection opens
+        // its own parcel collapsed, every other caller opens the panel in full.
+        const startCollapsed = global.__openParcelInfoCollapsed === true;
+        global.__openParcelInfoCollapsed = false;
+        setParcelInfoPanelMinimized(panelEl, startCollapsed);
+        panelEl.classList.add('visible');
 
         global.requestAnimationFrame(() => {
             if (typeof global.CityConfigManager !== 'undefined' &&
@@ -944,7 +984,8 @@
     global.ParcelsUIParcelPanel = {
         showParcelInfoPanel,
         resetMeasureAsRoadButton,
-        hideParcelInfoPanel
+        hideParcelInfoPanel,
+        setParcelInfoPanelMinimized
     };
 
     if (!global.showParcelInfoPanel) global.showParcelInfoPanel = showParcelInfoPanel;

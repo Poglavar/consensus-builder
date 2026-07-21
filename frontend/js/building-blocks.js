@@ -1107,6 +1107,14 @@ function hydrateProposedBuildingsFromProposals() {
 
         if (!features.length) return;
 
+        // Same lifecycle rule as the apply path (proposals/apply/buildings.js). This used to read a
+        // bare `status`, which in a browser silently resolves to window.status (the legacy
+        // status-bar string, '') — so an EXECUTED proposal's buildings came back stamped '' and were
+        // relabelled 'applied' downstream, and outside a browser it was a hard ReferenceError.
+        const status = (typeof getLifecycleStatus === 'function' && getLifecycleStatus(p) === 'Executed')
+            ? 'executed'
+            : 'applied';
+
         // Base props should act as defaults only. Per-building properties (parcelId, buildingIndex, etc.)
         // must NOT be overridden by proposal-level buildingProperties; otherwise we can collapse multiple
         // buildings into one on reload (e.g. 5 buildings -> 4).
@@ -1219,9 +1227,20 @@ function loadExecutedBuildingsFromStorage() {
 
         if (typeof window !== 'undefined') { window.proposedBuildings = list; }
 
-        // If there are buildings and checkbox is checked, update the layer
-        const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+        // The paved/green surround of a freeform proposal belongs to the proposal, not to the
+        // buildings layer, so it is painted on load regardless of the buildings checkbox below.
+        if (typeof window !== 'undefined') {
+            try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface hydration failed', error); }
+        }
+
+        // Applied buildings are part of the map, so a reload must show them — exactly as applying
+        // one does (every creation path ticks this box). #showProposedBuildings is a session toggle
+        // with no persisted OFF state: it starts unchecked on every load, so gating the first render
+        // on it meant an applied building proposal silently vanished on refresh while roads, which
+        // have no such gate, came back. The proposal itself was in storage all along.
+        if (list.length > 0) {
+            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+            if (showProposedBuildingsCheckbox) showProposedBuildingsCheckbox.checked = true;
             // Use setTimeout to ensure map is ready
             setTimeout(() => {
                 updateProposedBuildingsLayer();
@@ -1260,12 +1279,14 @@ function updateProposedBuildingsLayer() {
     }
 
     const list = ensureProposedBuildingsState();
+    // Announce every refresh, including one that empties the layer: unapplying the last proposed
+    // building has to reach 3D and the photoreal carve too, or their meshes go stale.
+    if (typeof window !== 'undefined') {
+        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+        // The paved/green surround of a freeform proposal follows its buildings on and off the map.
+        try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
+    }
     if (list.length > 0) {
-        // Sync global so 3D mode can rebuild immediately
-        if (typeof window !== 'undefined') {
-            window.proposedBuildings = list;
-            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
-        }
         proposedBuildingLayer = L.featureGroup().addTo(map);
 
         list.forEach((building, index) => {

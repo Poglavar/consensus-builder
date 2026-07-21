@@ -21,9 +21,32 @@
     let rectDragStartFeature = null;
     let rectDragLastValidFeature = null;
     let singleMapDragStarterBound = false;
+    let singleGroundPreviewLayer = null;
 
     // Rotation state
     let currentRotationDeg = 0; // current rotation in degrees
+
+    // Surroundings: one treatment per proposal for the whole merged parcel area around the
+    // buildings — left as it is, paved like a square, or grassed like a park. See building-ground.js.
+    let currentGroundTreatment = 'none';
+    let singleBuildingSeedGroundTreatment = null;
+
+    function buildingGroundApi() {
+        return (typeof window !== 'undefined' && window.BuildingGround) ? window.BuildingGround : null;
+    }
+
+    function normalizeGroundTreatment(value) {
+        const api = buildingGroundApi();
+        return api ? api.normalizeTreatment(value) : 'none';
+    }
+
+    // The polygon the proposal will pave or green: the block minus every building footprint on it.
+    function currentGroundSurface() {
+        const api = buildingGroundApi();
+        if (!api) return null;
+        const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
+        return api.buildSurface(currentGroundTreatment, singleBlockFeature, buildings);
+    }
 
     const single3D = {
         handle: null,
@@ -1048,7 +1071,8 @@
                 footprintMode: 'polygon'
             },
             buildingFeature: buildings[0] || null,
-            buildings
+            buildings,
+            groundSurface: currentGroundSurface()
         }, { coalesceKey: 'single-building-live' });
     }
 
@@ -1109,10 +1133,33 @@
             try { singleParcelBorderLayer.bringToFront(); } catch (_) { }
         }
         try { singleRectGroup.bringToFront(); } catch (_) { }
+        updateGroundPreview();
         bindRectangleLayerEvents();
         renderSharedPolygonEditor();
         syncRotationButtons();
         autosaveSingleBuildingDraft();
+    }
+
+    // Paint the surroundings the proposal would create, under the footprints, so the choice is
+    // visible while placing rather than only after applying.
+    function updateGroundPreview() {
+        if (!singleMap) return;
+        if (singleGroundPreviewLayer) {
+            try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
+            singleGroundPreviewLayer = null;
+        }
+        const surface = currentGroundSurface();
+        const style = surface ? buildingGroundApi()?.SURFACE_STYLE_2D[surface.treatment] : null;
+        if (!surface || !style) return;
+        try {
+            singleGroundPreviewLayer = L.geoJSON({ type: 'Feature', properties: {}, geometry: surface.polygon }, {
+                style: { ...style, weight: 1, opacity: 1 },
+                interactive: false
+            }).addTo(singleMap);
+            singleGroundPreviewLayer.bringToBack();
+        } catch (error) {
+            console.warn('[single-building] ground preview failed', error);
+        }
     }
 
     function updateEditedFootprintPreview(feature) {
@@ -1432,6 +1479,8 @@
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
             if (singleParcelBorderLayer) try { singleMap.removeLayer(singleParcelBorderLayer); } catch (_) { }
             if (singleRectGroup) try { singleMap.removeLayer(singleRectGroup); } catch (_) { }
+            if (singleGroundPreviewLayer) try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
+            singleGroundPreviewLayer = null;
             singleRectGroup = null;
             singleRectLayer = null;
             singleActivePolygonLayer = null;
@@ -1445,6 +1494,7 @@
         singleBlockFeature = null;
         singleRectFeature = null;
         currentRotationDeg = 0;
+        currentGroundTreatment = 'none';
         if (!preservePending) {
             clearSingleBuildingPendingState();
         }
@@ -1573,7 +1623,8 @@
                 footprintMode: 'polygon'
             },
             buildingFeature: buildingFeatures[0] || null,
-            buildings: buildingFeatures
+            buildings: buildingFeatures,
+            groundSurface: currentGroundSurface()
         };
         if (typeof setPendingBuildingProposalContext === 'function') {
             setPendingBuildingProposalContext(singleContext);
@@ -1934,6 +1985,14 @@
             rotateCounterclockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateCounterclockwiseLabel', 'Rotate counterclockwise 5 degrees'),
             rotateClockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateClockwiseLabel', 'Rotate clockwise 5 degrees'),
             uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload GeoJSON'),
+            surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
+            surroundingsNone: translateSingleBuildingText('modal.singleBuilding.surroundingsNone', 'Leave as they are'),
+            surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paved'),
+            surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),
+            surroundingsInfo: translateSingleBuildingText(
+                'modal.singleBuilding.surroundingsInfo',
+                'One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.'
+            ),
             infoText: translateSingleBuildingText(
                 'modal.singleBuilding.infoText',
                 'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.'
@@ -1997,6 +2056,15 @@
                         </div>
                     </div>
                     <div class="parameter-group">
+                        <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
+                        <select id="single-ground-treatment" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #ccc;">
+                            <option value="none">${modalText.surroundingsNone}</option>
+                            <option value="paved">${modalText.surroundingsPaved}</option>
+                            <option value="green">${modalText.surroundingsGreen}</option>
+                        </select>
+                        <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
+                    </div>
+                    <div class="parameter-group">
                         <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;">${modalText.uploadGeojsonLabel}</button>
                         <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
@@ -2033,6 +2101,15 @@
                 .addEventListener('click', () => rotateActiveFootprint(5));
             document.getElementById('single-rotate-clockwise')
                 .addEventListener('click', () => rotateActiveFootprint(-5));
+
+            const groundSelect = document.getElementById('single-ground-treatment');
+            if (groundSelect) {
+                groundSelect.addEventListener('change', (e) => {
+                    currentGroundTreatment = normalizeGroundTreatment(e.target.value);
+                    updateGroundPreview();
+                    autosaveSingleBuildingDraft();
+                });
+            }
 
             const geojsonButton = document.getElementById('single-building-geojson-upload');
             const geojsonInput = document.getElementById('single-building-geojson-input');
@@ -2149,6 +2226,11 @@
         buildingEntries = [];
         activeBuildingId = null;
         nextBuildingId = 1;
+
+        currentGroundTreatment = normalizeGroundTreatment(singleBuildingSeedGroundTreatment);
+        singleBuildingSeedGroundTreatment = null;
+        const groundSelectEl = document.getElementById('single-ground-treatment');
+        if (groundSelectEl) groundSelectEl.value = currentGroundTreatment;
         try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
         const initialPlacement = computeInitialPlacement(singleBlockFeature);
         const startCenter = initialPlacement.center || getBlockCentroid(singleBlockFeature);
@@ -2204,13 +2286,15 @@
 
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
-    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null }) {
+    // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
+    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null, initialGroundTreatment = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
             return;
         }
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
+        singleBuildingSeedGroundTreatment = initialGroundTreatment;
         const ids = rawParcels.map(layer => {
             try {
                 return resolveParcelId(layer?.feature);

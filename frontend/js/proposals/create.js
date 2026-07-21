@@ -1036,6 +1036,11 @@ async function createProposal() {
 
             if (!proposal.geometry) proposal.geometry = {};
             proposal.geometry.buildings = buildingFeatures;
+            // Freeform proposals may pave or green the parcel area around their buildings; no other
+            // typology offers the choice, so its surround never travels with them.
+            const groundSurface = selectedTool === 'single' ? safeClone(pendingBuildingContext.groundSurface) : null;
+            if (groundSurface) proposal.geometry.groundSurface = groundSurface;
+            else delete proposal.geometry.groundSurface;
 
             proposal.buildingProposal = {
                 parentParcelIds: normalizedParentParcelIds.slice(),

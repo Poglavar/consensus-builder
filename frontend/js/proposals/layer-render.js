@@ -634,6 +634,33 @@ function reapplyProposalHighlights() {
     }
 }
 
+// A proposal that BECOMES a parcel (a road is one corridor parcel however many it crosses; a merge
+// is one merged parcel) shows that parcel's info alongside the proposal card, collapsed to its
+// header so the proposal stays the primary surface. Proposals that create no parcel of their own
+// (parks, squares, lakes) and those that create many (reparcellization) open nothing here.
+function showOwnParcelInfoForProposal(proposal) {
+    const resolver = window.ProposalOwnParcel;
+    const showPanel = window.Parcels?.uiParcelPanel?.showParcelInfoPanel || window.showParcelInfoPanel;
+    if (!resolver || typeof showPanel !== 'function') return;
+    const byId = (typeof window.getParcelLayerIdMap === 'function')
+        ? window.getParcelLayerIdMap()
+        : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+    if (!byId) return;
+    const lookup = id => byId.get(String(id))?.feature || null;
+    let ownId = null;
+    try { ownId = resolver.ownParcelId(proposal, lookup); } catch (error) {
+        console.error('[selectAndHighlightProposal] own-parcel lookup failed', error);
+        return;
+    }
+    const feature = ownId ? lookup(ownId) : null;
+    if (!feature) return;
+    window.__openParcelInfoCollapsed = true;
+    try { showPanel(feature); } catch (error) {
+        console.error('[selectAndHighlightProposal] could not open the proposal own parcel', ownId, error);
+        window.__openParcelInfoCollapsed = false;
+    }
+}
+
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
     // While a corridor tool is drawing, NOTHING may select a proposal — the session opened with a
     // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
@@ -682,6 +709,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         if (showDetails) {
             window.__openProposalDetailsCollapsed = true;
             showProposalInfo(proposal, parcelId);
+            showOwnParcelInfoForProposal(proposal);
         } else {
             hideProposalDetailsPanel();
         }
@@ -721,6 +749,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         console.debug('[selectAndHighlightProposal] Calling showProposalInfo...');
         window.__openProposalDetailsCollapsed = true;
         showProposalInfo(proposal, parcelId);
+        showOwnParcelInfoForProposal(proposal);
         console.debug('[selectAndHighlightProposal] showProposalInfo called');
     } else {
         console.debug('[selectAndHighlightProposal] showDetails is false, hiding proposal details panel');

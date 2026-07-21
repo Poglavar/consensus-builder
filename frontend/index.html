@@ -952,6 +952,9 @@
         <div id="parcel-info-panel" class="info-panel">
             <div class="panel-header">
                 <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
+                <button type="button" id="parcel-info-minimize" class="close-circle-btn close-circle-btn--lg"
+                    aria-label="Minimize" title="Minimize" aria-expanded="true"
+                    data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title">&#8722;</button>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                     aria-label="Close parcel info panel"
                     onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
@@ -1370,6 +1373,8 @@
             'js/proposals/lifecycle.js',
             'js/proposals/parcel-id.js',
             'js/footprint-geometry.js',
+            'js/building-ground.js',
+            'js/proposal-own-parcel.js',
             'js/proposals/geometry.js',
             'js/proposals/chain.js',
             'js/proposals/roads.js',

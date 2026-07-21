@@ -1086,6 +1086,11 @@
             "rotateClockwiseLabel": "Rotate clockwise 5 degrees",
             "deleteVertexLabel": "Delete selected vertex",
             "vertexLabel": "Footprint vertex",
+            "surroundingsLabel": "Surroundings",
+            "surroundingsNone": "Leave as they are",
+            "surroundingsPaved": "Paved",
+            "surroundingsGreen": "Green",
+            "surroundingsInfo": "One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.",
             "uploadGeojsonLabel": "Upload GeoJSON",
             "uploadNoPolygon": "No usable polygon found in that file.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
@@ -1289,6 +1294,9 @@
             "demolish": "Demolish",
             "tunnel": "Tunnel",
             "apply": "Apply",
+            "applyNext": "Apply & next",
+            "applyActionToAll": "Apply {{action}} to all",
+            "cancel": "Cancel",
             "existingProposal": "existing proposal"
         },
         "corridorGrade": {

@@ -349,7 +349,8 @@ async function launchSingleBuildingToolForSelection() {
     openSingleBuildingForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcels: selection.layers,
-        initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null
+        initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
+        initialGroundTreatment: seed?.groundSurface?.treatment || null
     });
     return true;
 }

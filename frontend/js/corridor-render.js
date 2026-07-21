@@ -676,6 +676,8 @@ function refreshAppliedCorridorStrips() {
     try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
     try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
     try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+    // Same for the paved/green surround of a freeform building proposal, which is cut the same way.
+    try { if (typeof window.updateBuildingGroundLayer === 'function') window.updateBuildingGroundLayer(); } catch (_) { }
     renderSelectedCorridorSegmentHighlight();
 
     // Demolitions live on applied corridors: any corridor change can raze or restore buildings.

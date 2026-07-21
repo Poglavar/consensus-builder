@@ -1674,6 +1674,39 @@
         });
     }
 
+    // The paved/green surround of an applied freeform building proposal — the parcel area around
+    // its buildings. Same two surfaces as squares and parks, minus all the furniture: it is ground
+    // treatment, not a designed structure. See building-ground.js.
+    function buildProposalGrounds3D(flatTarget) {
+        const api = (typeof window !== 'undefined') ? window.BuildingGround : null;
+        if (!api || typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+        let surfaces = [];
+        try {
+            surfaces = api.appliedSurfaces(proposalStorage.getAllProposals(), isApplied);
+        } catch (error) {
+            console.error('[three-mode] building ground surfaces could not be collected', error);
+            return;
+        }
+        if (!surfaces.length) return;
+
+        const pavingMat = squareSurfaceMaterials().paving;
+        const grassMat = new THREE.MeshLambertMaterial({
+            color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+        });
+        surfaces.forEach(surface => {
+            try {
+                const feature = { type: 'Feature', properties: {}, geometry: surface.geometry };
+                const material = surface.treatment === 'paved' ? pavingMat : grassMat;
+                polygonFeatureToMeshes(feature, material, 0.06, 0).forEach(mesh => {
+                    mesh.userData.isProposalGround = true;
+                    flatTarget.add(mesh);
+                });
+            } catch (error) {
+                console.error('[three-mode] failed to build a proposal ground surface', surface.proposalId, error);
+            }
+        });
+    }
+
     // Build Lakes (shore + water + fish)
     function buildLakes3D(flatTarget, decoTarget) {
         const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
@@ -4882,6 +4915,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        try { buildProposalGrounds3D(plannedFlatGroup); } catch (error) { console.error('[three-mode] proposal grounds failed', error); }
         try { buildTransitStations3D(stationGroup); } catch (error) { console.warn('[three-mode] transit stations failed', error); }
         try { buildPlannedReparcellization3D(plannedFlatGroup); } catch (_) { }
         try { buildExistingTransitAlignments3D(scene); } catch (error) { console.error('[three-mode] transit alignments failed', error); }
@@ -5479,6 +5513,7 @@
             buildSquares: () => buildSquares3D(plannedFlatGroup, squareGroup),
             buildLakes: () => buildLakes3D(plannedFlatGroup, lakeGroup),
             buildStations: () => buildTransitStations3D(stationGroup),
+            buildProposalGrounds: () => buildProposalGrounds3D(plannedFlatGroup),
             buildReparcellization: () => buildPlannedReparcellization3D(plannedFlatGroup),
             applyDisplay: applyModeVisibility,
             rebuildBuildings: rebuild3DBuildingsOnly,
@@ -5487,7 +5522,7 @@
         });
     }
 
-    ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated'].forEach(eventName => {
+    ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated'].forEach(eventName => {
         window.addEventListener(eventName, refreshStructures3D);
     });
 

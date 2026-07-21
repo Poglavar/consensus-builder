@@ -232,7 +232,9 @@
             blockName: bp.blockName || null,
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
-            buildings: clone(buildings.length ? buildings : (primary ? [primary] : []))
+            buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
+            // Freeform proposals may pave or green the parcel area around their buildings.
+            groundSurface: clone(proposal?.geometry?.groundSurface || null)
         };
     }
 
@@ -910,7 +912,12 @@
                 const typology = draft.editorPayload?.typology || key;
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 if (typology === 'single' && typeof global.openSingleBuildingForParcels === 'function') {
-                    global.openSingleBuildingForParcels({ blockName: context.blockName, parcels: selection.layers, initialBuildings: features });
+                    global.openSingleBuildingForParcels({
+                        blockName: context.blockName,
+                        parcels: selection.layers,
+                        initialBuildings: features,
+                        initialGroundTreatment: context.groundSurface?.treatment || null
+                    });
                     return true;
                 }
                 if (typology === 'row' && typeof global.openRowHouseForParcels === 'function') {
@@ -943,6 +950,11 @@
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
+                // Only the freeform editor offers a surroundings treatment; every other typology
+                // leaves the ground alone, so a stale surface must never survive a retypology.
+                const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
+                if (groundSurface) output.geometry.groundSurface = groundSurface;
+                else delete output.geometry.groundSurface;
                 output.buildingGeometry = clone(features[0]?.geometry || null);
                 output.buildingProperties = clone(features[0]?.properties || {});
                 output.buildingProposal = {
@@ -964,6 +976,13 @@
                 const beforeFeatures = beforeContext.buildings?.length ? beforeContext.buildings : [beforeContext.buildingFeature].filter(Boolean);
                 const afterFeatures = afterContext.buildings?.length ? afterContext.buildings : [afterContext.buildingFeature].filter(Boolean);
                 const height = feature => Number(feature?.properties?.height || feature?.properties?.heightM || feature?.properties?.floors || 0) || null;
+                const groundTreatment = context => context?.groundSurface?.treatment || 'none';
+                summary.groundTreatment = {
+                    before: groundTreatment(beforeContext),
+                    after: groundTreatment(afterContext)
+                };
+                summary.groundTreatment.changed = summary.groundTreatment.before !== summary.groundTreatment.after;
+                summary.unchanged = summary.unchanged && !summary.groundTreatment.changed;
                 summary.geometry = {
                     changed: !same(beforeFeatures, afterFeatures),
                     beforeArea: beforeFeatures.reduce((sum, feature) => sum + (geometryArea(feature) || 0), 0),

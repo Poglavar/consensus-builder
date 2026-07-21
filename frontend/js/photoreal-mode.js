@@ -105,6 +105,7 @@
     let lastProbeSummary = null; // raw round distribution, exposed by ?seat for ground-vs-roof diagnosis
     let lockWaitS = 0;
     let lockAccumS = 0;
+    let reportedProbeFamine = false; // the "no tile geometry to seat on" report fires once per entry
     let seatDebugAccumS = 0;
     let lastFrameNow = 0;
     let sinceAnyLoadS = 0;
@@ -269,7 +270,22 @@
                 };
             }
         } catch (_) { return; }
-        if (groundZ === null) return;
+        // No probe hit anything. The stability/timeout gates below are never reached in this state,
+        // so without this report the world simply never seats: the mesh stays hidden and pressing
+        // the globe looks like it does nothing at all. Zero probes past the wait budget means no
+        // Google tile geometry arrived (network, Ion token, or quota) — say so, once, and loudly.
+        if (groundZ === null) {
+            if (!reportedProbeFamine && lockWaitS > LOCK_MAX_WAIT_S) {
+                reportedProbeFamine = true;
+                const progress = Number(tiles.loadProgress);
+                console.error('[photoreal] cannot seat the world: no Google 3D Tiles geometry to probe after '
+                    + lockWaitS.toFixed(1) + 's (loadProgress='
+                    + (Number.isFinite(progress) ? progress.toFixed(2) : 'n/a')
+                    + '). The mesh stays hidden — check the network tab for failed Cesium Ion / Google tile requests.');
+                setStatus('Photo view could not load Google 3D Tiles — see the console.');
+            }
+            return;
+        }
         // Let the local tiles refine a little before trusting early readings.
         const prog = Number(tiles.loadProgress);
         if (Number.isFinite(prog) && prog < 0.95 && lockWaitS < LOCK_MAX_WAIT_S * 0.5) return;
@@ -461,6 +477,19 @@
         } catch (_) { return []; }
     }
 
+    // The paved/green surround of an applied freeform building proposal. See building-ground.js.
+    function appliedBuildingGroundSurfaces() {
+        if (typeof window.BuildingGround === 'undefined' || !window.BuildingGround) return [];
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return [];
+        if (typeof isApplied !== 'function') return [];
+        try {
+            return window.BuildingGround.appliedSurfaces(proposalStorage.getAllProposals(), isApplied);
+        } catch (error) {
+            console.error('[photoreal] building ground surfaces could not be collected', error);
+            return [];
+        }
+    }
+
     function roadFoundationPaddingTrueM() {
         return MASK_EDGE_OWNERSHIP_SCENE_M / Math.max(1e-6, mercatorK || 1);
     }
@@ -522,6 +551,17 @@
                 kind: 'covered',
                 mode: 'full',
                 structureKind: proposal.structureProposal.kind || null
+            });
+        });
+        // A freeform building proposal can pave or green the parcel area around its buildings. That
+        // surround clears the mesh exactly like a square or a park, and takes the matching apron cap.
+        appliedBuildingGroundSurfaces().forEach(function (surface) {
+            if (isolationFilter && String(surface.proposalId) !== isolationFilter) return;
+            out.push({
+                geometry: surface.geometry,
+                kind: 'covered',
+                mode: 'full',
+                structureKind: surface.treatment === 'paved' ? 'square' : 'park'
             });
         });
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
@@ -2099,6 +2139,8 @@
                 }
                 lastFrameNow = 0;
                 sinceAnyLoadS = 0;
+                // A reused session that never seated gets to report again on this entry.
+                reportedProbeFamine = false;
                 if (typeof window.registerThreeModeFrameHook === 'function') {
                     window.registerThreeModeFrameHook(onFrame);
                 }
@@ -2182,6 +2224,7 @@
             lastProbeSummary = null;
             lockWaitS = 0;
             lockAccumS = 0;
+            reportedProbeFamine = false;
             lastFrameNow = 0;
             sinceAnyLoadS = 0;
             if (new URLSearchParams(window.location.search || '').get('fps')) {
@@ -2288,6 +2331,11 @@
 
     // Keep the carve in sync while the layer is up (proposal edits re-mirror this global).
     window.addEventListener('proposedBuildingsUpdated', function () {
+        if (active && grounded) rebuildCarveMask();
+    });
+
+    // The paved/green surround of a freeform proposal carves the mesh like a structure does.
+    window.addEventListener('buildingGroundsUpdated', function () {
         if (active && grounded) rebuildCarveMask();
     });
 

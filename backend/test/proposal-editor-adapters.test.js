@@ -283,6 +283,57 @@ describe('building proposal adapters', () => {
         expect(replacement.typologyType).toBe(typology);
     });
 
+    // The paved/green surround of a freeform proposal (building-ground.js) has to survive an edit
+    // that never reopens the design editor, and must not follow the design into another typology.
+    describe('freeform surroundings', () => {
+        const groundSurface = {
+            treatment: 'paved',
+            polygon: { type: 'Polygon', coordinates: [manualRing] }
+        };
+        const freeform = {
+            ...proposal,
+            proposalId: 'building-single',
+            goal: 'single',
+            typologyType: 'single',
+            geometry: { buildings: [feature], groundSurface },
+            buildingProposal: {
+                ...proposal.buildingProposal,
+                typologyType: 'single',
+                parameters: { typology: 'single', height: 21 }
+            }
+        };
+
+        it('round-trips the surround through an untouched draft', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, freeform);
+            expect(draft.editorPayload.context.groundSurface).toEqual(groundSurface);
+            expect(adapter.serializeProposal(draft).geometry.groundSurface).toEqual(groundSurface);
+        });
+
+        it('drops the surround when the design moves to another typology', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, freeform);
+            draft.editorPayload = { ...draft.editorPayload, typology: 'row' };
+            expect(adapter.serializeProposal(draft).geometry.groundSurface).toBeUndefined();
+        });
+
+        it('leaves a proposal without a surround alone', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, { ...freeform, geometry: { buildings: [feature] } });
+            expect(draft.editorPayload.context.groundSurface).toBeNull();
+            expect(adapter.serializeProposal(draft).geometry.groundSurface).toBeUndefined();
+        });
+
+        it('reports a changed treatment as a real change', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, freeform);
+            draft.editorPayload.context.groundSurface = { ...groundSurface, treatment: 'green' };
+            const summary = adapter.summarizeChanges(freeform, draft);
+            expect(summary.groundTreatment).toMatchObject({ before: 'paved', after: 'green', changed: true });
+            expect(summary.unchanged).toBe(false);
+        });
+    });
+
     it('classifies invalid legacy building data as read-only', () => {
         const adapter = buildBuildingAdapter('single');
         expect(adapter.canEdit({ goal: 'single', buildingProposal: { parameters: { height: 10 } } })).toEqual({

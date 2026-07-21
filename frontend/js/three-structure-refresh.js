@@ -109,6 +109,7 @@
         callSafely('squares', options.buildSquares, options.onError);
         callSafely('lakes', options.buildLakes, options.onError);
         callSafely('stations', options.buildStations, options.onError);
+        callSafely('proposalGrounds', options.buildProposalGrounds, options.onError);
         callSafely('reparcellization', options.buildReparcellization, options.onError);
         callSafely('display', options.applyDisplay, options.onError);
 

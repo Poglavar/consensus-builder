@@ -79,6 +79,28 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-direction: column;
 }
 
+/* Collapsed to ONE line: the header, which reads "Parcel <number>". The panel is the SECONDARY
+   surface when a proposal selection opened its own parcel underneath the proposal card.
+   `display: none` is set here rather than left to the [hidden] attribute, because .parcel-tabs
+   and .panel-body both declare a display of their own and would win over the UA rule. */
+#parcel-info-panel.is-minimized {
+    height: auto;
+    max-height: none;
+}
+
+#parcel-info-panel.is-minimized .parcel-tabs,
+#parcel-info-panel.is-minimized .panel-body {
+    display: none;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize {
+    margin-left: auto;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize + .close-button {
+    margin-left: 8px;
+}
+
 /*
 Road info panel sits in the bottom right corner of the map. It sizes to its own content
 (never below 400px, never past a cap that would swallow the map) because label lengths vary
