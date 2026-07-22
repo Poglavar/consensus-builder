@@ -1026,6 +1026,15 @@ function showProposalDialog(overrides = null) {
                     const resolveGoalBadge = () => getProposalGoalBadge(currentProposalTool || 'square');
                     updateProposalScreenshotGoalIcon(currentProposalTool || 'square');
 
+                    // Tint the polygon to the initial goal's effect; goal switches restyle it live
+                    // via updateProposalScreenshotGoalIcon.
+                    const initialGoalKey = (typeof normalizeGoalKey === 'function')
+                        ? normalizeGoalKey(currentProposalTool || 'square')
+                        : (currentProposalTool || 'square');
+                    const initialPolygonStyle = (typeof window.goalPreviewStyle === 'function')
+                        ? window.goalPreviewStyle(initialGoalKey)
+                        : null;
+
                     window.MapScreenshot.renderPolygonPreview(previewWrapper, {
                         polygon: screenshotContext.polygon,
                         bounds: screenshotContext.bounds || null,
@@ -1034,7 +1043,8 @@ function showProposalDialog(overrides = null) {
                         neighbours: screenshotContext.neighbours || [],
                         fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly,
                         polygonOrder: screenshotContext.polygonOrder || 'auto',
-                        parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto'
+                        parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto',
+                        polygonStyle: initialPolygonStyle
                     });
 
                     // Capture the screenshot after tiles have loaded and store it for minting

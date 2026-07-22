@@ -4,6 +4,14 @@ function updateProposalScreenshotGoalIcon(toolKey) {
     const container = document.querySelector('#proposalScreenshotContainer .map-screenshot-container');
     if (!container) return;
 
+    // Tint the preview polygon to the goal's effect (lake→blue, park→green, …). Called from every
+    // goal-switch site, so recoloring rides along for free. Falls back to the default orange.
+    if (window.MapScreenshot && typeof window.MapScreenshot.restylePreviewPolygon === 'function') {
+        const goalKey = (typeof normalizeGoalKey === 'function') ? normalizeGoalKey(toolKey) : toolKey;
+        const style = (typeof window.goalPreviewStyle === 'function') ? window.goalPreviewStyle(goalKey) : null;
+        window.MapScreenshot.restylePreviewPolygon(container, style);
+    }
+
     const iconConfig = getProposalGoalBadge(toolKey);
 
     let badge = container.querySelector('.proposal-goal-badge');

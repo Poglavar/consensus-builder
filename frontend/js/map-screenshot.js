@@ -970,7 +970,8 @@
             parcelLabel = null,
             fitToPolygonOnly = false,
             polygonOrder = 'auto',
-            parcelPolygonOrder = 'auto'
+            parcelPolygonOrder = 'auto',
+            polygonStyle = null
         } = options;
 
         destroyPreviewMap(container);
@@ -982,7 +983,9 @@
             return;
         }
 
-        const polygonLayer = globalScope.L.polygon(normalized, {
+        // The default is the neutral orange outline; a goal can tint the fill/stroke (lake→blue,
+        // park→green, …) so the preview hints the actual effect.
+        const polygonLayer = globalScope.L.polygon(normalized, Object.assign({
             color: '#ff6600',
             weight: 3,
             opacity: 0.9,
@@ -990,7 +993,7 @@
             fillOpacity: 0.18,
             lineJoin: 'round',
             lineCap: 'round'
-        });
+        }, polygonStyle || {}));
 
         const parcelLayers = [];
         if (Array.isArray(parcelPolygons) && parcelPolygons.length) {
@@ -1137,6 +1140,22 @@
         });
 
         container._leafletPreviewMap = map;
+        container._leafletPreviewPolygon = polygonLayer;
+    }
+
+    // Restyle an already-rendered preview polygon in place — used when the create dialog's goal
+    // changes, so we recolor without rebuilding the whole Leaflet preview. Returns true if applied.
+    function restylePreviewPolygon(container, style) {
+        const layer = container && container._leafletPreviewPolygon;
+        if (!layer || typeof layer.setStyle !== 'function') return false;
+        try {
+            layer.setStyle(Object.assign({
+                color: '#ff6600', fillColor: '#ff6600', fillOpacity: 0.18
+            }, style || {}));
+            return true;
+        } catch (_) {
+            return false;
+        }
     }
 
     async function capturePolygonImage(options = {}) {
@@ -1154,7 +1173,8 @@
             parcelLabel = null,
             badge = null,
             polygonOrder = 'auto',
-            parcelPolygonOrder = 'auto'
+            parcelPolygonOrder = 'auto',
+            polygonStyle = null
         } = options;
 
         const normalized = normalizePolygon(polygon, bounds, polygonOrder);
@@ -1174,7 +1194,7 @@
         container.style.opacity = '0';
         document.body.appendChild(container);
 
-        const polygonLayer = globalScope.L.polygon(normalized, {
+        const polygonLayer = globalScope.L.polygon(normalized, Object.assign({
             color: '#ff6600',
             weight: 3,
             opacity: 0.9,
@@ -1182,7 +1202,7 @@
             fillOpacity: 0.18,
             lineJoin: 'round',
             lineCap: 'round'
-        });
+        }, polygonStyle || {}));
 
         const parcelLayers = [];
         if (Array.isArray(parcelPolygons) && parcelPolygons.length) {
@@ -1404,6 +1424,7 @@
 
     globalScope.MapScreenshot = {
         renderPolygonPreview,
+        restylePreviewPolygon,
         capturePolygonImage,
         captureFromPreview,
         captureViaTileStitch
