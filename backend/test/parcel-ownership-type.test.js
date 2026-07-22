@@ -44,6 +44,8 @@ describe('classifyOwnershipLabel', () => {
     it('classifies religious and civic bodies as institutions', () => {
         expect(classifyOwnershipLabel('Zagrebačka nadbiskupija')).toBe('institution');
         expect(classifyOwnershipLabel('Udruga za urbanizam')).toBe('institution');
+        // Hrvatska matica iseljenika is a cultural institution, not a private individual.
+        expect(classifyOwnershipLabel('HRVATSKA MATICA ISELJENIKA')).toBe('institution');
     });
 
     it('classifies companies by their legal-form marker', () => {

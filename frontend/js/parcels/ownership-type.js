@@ -77,7 +77,8 @@
         'SAVEZ',
         'NADBISKUPIJA',
         'BISKUPIJA',
-        'ŽUPA'
+        'ŽUPA',
+        'MATICA ISELJENIKA'
     ]);
 
     const COMPANY_MARKERS = createNormalizedKeywordList([
