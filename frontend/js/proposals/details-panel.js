@@ -543,6 +543,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
+    const downloadButtonHtml = `
+        <button class="btn btn-outline-secondary btn-download-proposal" onclick="downloadProposalFromDetails()"
+            title="${tProposal('panel.proposal.actions.downloadJsonHint', 'Download this proposal as a JSON file')}">
+            <i class="fas fa-download"></i> ${tProposal('panel.proposal.actions.downloadJson', 'Download JSON')}
+        </button>
+    `;
+
     // Geometry is direct manipulation (corridors: node handles + cross-section); everything else —
     // terms, offer, name, expiry, decay, deposit — is edited through one "Details" action that opens
     // the full create dialog prefilled from the object. For a non-minted local proposal that dialog
@@ -636,6 +643,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${editButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
+            ${downloadButtonHtml}
             ${buyButtonHtml}
             ${driveButtonHtml}
         </div>

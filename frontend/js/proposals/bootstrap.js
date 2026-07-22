@@ -794,6 +794,7 @@ if (typeof window !== 'undefined') {
 
 // Share helper for Proposal Details: always prefer the proposal currently shown
 window.shareProposalFromDetails = shareProposalFromDetails;
+window.downloadProposalFromDetails = downloadProposalFromDetails;
 
 // Focused dialog used as a gate before the 3D walk-mode launcher: lists every
 // applied proposal that does not yet have a numeric server-side ID, lets the

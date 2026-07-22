@@ -784,7 +784,9 @@
                 "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
                 "details": "Proposal details",
                 "propose": "Propose",
-                "editDetails": "Details"
+                "editDetails": "Details",
+                "downloadJson": "Download JSON",
+                "downloadJsonHint": "Download this proposal as a JSON file"
             },
             "expiry": {
                 "expired": "Proposal Expired",

@@ -196,6 +196,62 @@ function shareProposalFromDetails() {
     }
 }
 
+// Download the proposal currently open in the details panel as a JSON file. Uses the same
+// portable, upload-ready shape as the share dialog's "Download JSON", so a downloaded file can be
+// re-uploaded elsewhere. Resolves from the remembered details context, falling back to the panel's
+// data-proposal-id when the context was lost (e.g. after a rerender).
+function downloadProposalFromDetails() {
+    try {
+        let proposal = currentProposalDetailsContext;
+        if (!proposal) {
+            const panel = document.getElementById('proposal-details-content');
+            const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
+            const fallbackId = idElement ? idElement.getAttribute('data-proposal-id') : null;
+            if (fallbackId && typeof getProposalByIdOrHash === 'function') {
+                proposal = getProposalByIdOrHash(fallbackId);
+            }
+        }
+
+        const tShare = (key, fallback) => (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+            ? window.i18n.t(`modal.proposalShare.${key}`, fallback)
+            : fallback;
+
+        const proposalData = (proposal && typeof buildUploadReadyProposal === 'function')
+            ? buildUploadReadyProposal(proposal)
+            : proposal;
+        if (!proposalData) {
+            throw new Error(tShare('downloadError', 'Failed to download proposal'));
+        }
+
+        const jsonString = JSON.stringify(proposalData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const proposalId = (proposal && proposal.proposalId) || 'proposal';
+        downloadLink.download = `proposal-${proposalId}-${timestamp}.json`;
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(tShare('downloadSuccess', 'Proposal downloaded as JSON'), 3000, 'success');
+        }
+    } catch (error) {
+        console.error('downloadProposalFromDetails failed', error);
+        if (typeof showEphemeralMessage === 'function') {
+            const tShare = (key, fallback) => (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+                ? window.i18n.t(`modal.proposalShare.${key}`, fallback)
+                : fallback;
+            showEphemeralMessage(error.message || tShare('downloadError', 'Failed to download proposal'), 5000, 'error');
+        }
+    }
+}
+
 function buildSharedProposalsPayload(appliedProposals) {
     if (!Array.isArray(appliedProposals) || appliedProposals.length === 0) {
         return null;

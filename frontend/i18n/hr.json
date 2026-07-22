@@ -809,7 +809,9 @@
                 "editGeometryUnavailable": "Ovaj tip prijedloga ne može se preoblikovati (ili je mintan i nepromjenjiv).",
                 "details": "Detalji prijedloga",
                 "propose": "Predloži",
-                "editDetails": "Detalji"
+                "editDetails": "Detalji",
+                "downloadJson": "Preuzmi JSON",
+                "downloadJsonHint": "Preuzmi ovaj prijedlog kao JSON datoteku"
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",

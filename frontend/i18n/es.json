@@ -831,7 +831,9 @@
                 "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles de la propuesta",
                 "propose": "Proponer",
-                "editDetails": "Detalles"
+                "editDetails": "Detalles",
+                "downloadJson": "Descargar JSON",
+                "downloadJsonHint": "Descargar esta propuesta como archivo JSON"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
