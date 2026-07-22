@@ -2131,7 +2131,8 @@
                 "buildingCount": "Buildings:",
                 "totalArea": "Total Footprint (m²):",
                 "totalVolume": "Total Volume (m³):",
-                "avgFloors": "Avg Floors:"
+                "avgFloors": "Avg Floors:",
+                "uniformMax": "Show all at max"
             },
             "helper": {
                 "maxFloors": "Max Floors: each building gets a random number of floors from 1 to this value.",

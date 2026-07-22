@@ -2161,7 +2161,8 @@
                 "buildingCount": "Zgrade:",
                 "totalArea": "Ukupna površina osnove (m²):",
                 "totalVolume": "Ukupna zapremina (m³):",
-                "avgFloors": "Prosečno spratova:"
+                "avgFloors": "Prosečno spratova:",
+                "uniformMax": "Prikaži sve na maksimumu"
             },
             "helper": {
                 "maxFloors": "Maks. spratova: svaka zgrada dobija nasumičan broj spratova od 1 do ove vrednosti.",

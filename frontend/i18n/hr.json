@@ -2161,7 +2161,8 @@
                 "buildingCount": "Zgrade:",
                 "totalArea": "Ukupna tlocrtna površina (m²):",
                 "totalVolume": "Ukupni volumen (m³):",
-                "avgFloors": "Prosječno katova:"
+                "avgFloors": "Prosječno katova:",
+                "uniformMax": "Prikaži sve na maksimumu"
             },
             "helper": {
                 "maxFloors": "Maks. katova: svaka zgrada dobiva nasumičan broj katova od 1 do ove vrijednosti.",

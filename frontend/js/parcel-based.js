@@ -27,6 +27,10 @@
     const DEFAULT_FLOOR_HEIGHT = 3; // meters per floor
     let currentMaxFloors = DEFAULT_MAX_FLOORS;
     let currentMinDistance = DEFAULT_MIN_DISTANCE;
+    // "Show all max": drop the per-building randomisation and put every building at its maximum
+    // envelope and floor count, so the block reads as its full permitted massing rather than a
+    // varied sample. Off by default (random is the tool's normal character).
+    let currentUniformMax = false;
 
     // Parameters to restore when the modal next opens, instead of the defaults. Set by
     // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
@@ -240,7 +244,7 @@
     }
 
     // Generate building for a single parcel
-    function generateBuildingForParcel(parcel, index, minDistance, maxFloors) {
+    function generateBuildingForParcel(parcel, index, minDistance, maxFloors, uniformMax) {
         const feature = parcel.feature;
         if (!feature) return null;
 
@@ -258,11 +262,14 @@
         }
 
         // The setbacks are MINIMUMS, not the building form: randomize the footprint's size and
-        // its position within the envelope, so Regenerate explores real variety.
-        const buildingPolygon = randomFootprintWithinEnvelope(envelope) || envelope;
+        // its position within the envelope, so Regenerate explores real variety. In "show all max"
+        // mode the footprint is the full setback envelope instead — maximum permitted footprint.
+        const buildingPolygon = uniformMax
+            ? envelope
+            : (randomFootprintWithinEnvelope(envelope) || envelope);
 
-        // Pick random number of floors between 1 and maxFloors
-        const floors = Math.floor(Math.random() * maxFloors) + 1;
+        // Floors: random 1..maxFloors normally, or every building at maxFloors in "show all max".
+        const floors = uniformMax ? maxFloors : (Math.floor(Math.random() * maxFloors) + 1);
         const height = floors * DEFAULT_FLOOR_HEIGHT;
 
         // Set building properties
@@ -281,14 +288,14 @@
     }
 
     // Generate all buildings for the block
-    function generateBuildingsForBlock(block, minDistance, maxFloors) {
+    function generateBuildingsForBlock(block, minDistance, maxFloors, uniformMax) {
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             return [];
         }
 
         const buildings = [];
         block.parcels.forEach((parcel, index) => {
-            const building = generateBuildingForParcel(parcel, index, minDistance, maxFloors);
+            const building = generateBuildingForParcel(parcel, index, minDistance, maxFloors, uniformMax);
             if (building) {
                 buildings.push(building);
             }
@@ -416,6 +423,7 @@
             parameters: {
                 maxFloors: Number(currentMaxFloors) || DEFAULT_MAX_FLOORS,
                 minDistance: Number(currentMinDistance) || DEFAULT_MIN_DISTANCE,
+                uniformMax: currentUniformMax === true,
                 typology: 'parcelBased'
             },
             buildings,
@@ -436,7 +444,7 @@
             // Ensure 3D is initialized
             try { if (!parcelBased3D || !parcelBased3D.renderer) initParcelBased3DSimple(); } catch (_) { }
 
-            const buildings = generateBuildingsForBlock(block, currentMinDistance, currentMaxFloors);
+            const buildings = generateBuildingsForBlock(block, currentMinDistance, currentMaxFloors, currentUniformMax);
 
             if (!buildings || buildings.length === 0) {
                 throw new Error('Failed to generate any buildings');
@@ -744,6 +752,12 @@
                         <input type="range" id="parcelbased-maxfloors-slider" min="1" max="20" value="${DEFAULT_MAX_FLOORS}" step="1">
                     </div>
                     <div class="parameter-group">
+                        <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="parcelbased-uniform-max" style="width: auto;">
+                            <span data-i18n-key="parcelBased.modal.labels.uniformMax" data-i18n-attr="text">Show all at max</span>
+                        </label>
+                    </div>
+                    <div class="parameter-group">
                         <label for="parcelbased-mindistance-slider">
                             <span data-i18n-key="parcelBased.modal.labels.minDistance" data-i18n-attr="text">Min Distance from Borders (m):</span>
                             <span id="parcelbased-mindistance-value">${DEFAULT_MIN_DISTANCE.toFixed(1)}</span>
@@ -821,6 +835,11 @@
                 generateBuildingsInModal();
             });
 
+            document.getElementById('parcelbased-uniform-max').addEventListener('change', function (e) {
+                currentUniformMax = e.target.checked === true;
+                generateBuildingsInModal();
+            });
+
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
@@ -851,19 +870,22 @@
         // Reset parameters
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+        currentUniformMax = false;
 
         // Restore a saved design over the defaults (e.g. a copied proposal). Buildings here are a
-        // pure function of these two parameters, so seeding them reproduces the exact geometry.
+        // pure function of these parameters, so seeding them reproduces the exact geometry.
         const seed = parcelBasedSeedParameters;
         parcelBasedSeedParameters = null;
         if (seed) {
             if (Number.isFinite(Number(seed.maxFloors))) currentMaxFloors = Number(seed.maxFloors);
             if (Number.isFinite(Number(seed.minDistance))) currentMinDistance = Number(seed.minDistance);
+            if (typeof seed.uniformMax === 'boolean') currentUniformMax = seed.uniformMax;
         }
 
         // Update sliders
         const maxFloorsSlider = document.getElementById('parcelbased-maxfloors-slider');
         const minDistanceSlider = document.getElementById('parcelbased-mindistance-slider');
+        const uniformMaxToggle = document.getElementById('parcelbased-uniform-max');
 
         if (maxFloorsSlider) {
             maxFloorsSlider.value = currentMaxFloors;
@@ -872,6 +894,9 @@
         if (minDistanceSlider) {
             minDistanceSlider.value = currentMinDistance;
             document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
+        }
+        if (uniformMaxToggle) {
+            uniformMaxToggle.checked = currentUniformMax;
         }
 
         // Generate buildings immediately

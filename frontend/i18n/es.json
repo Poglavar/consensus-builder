@@ -2180,7 +2180,8 @@
                 "buildingCount": "Edificios:",
                 "totalArea": "Huella total (m²):",
                 "totalVolume": "Volumen total (m³):",
-                "avgFloors": "Pisos promedio:"
+                "avgFloors": "Pisos promedio:",
+                "uniformMax": "Mostrar todo al máximo"
             },
             "helper": {
                 "maxFloors": "Pisos máximos: cada edificio recibe un número aleatorio de pisos entre 1 y este valor.",
