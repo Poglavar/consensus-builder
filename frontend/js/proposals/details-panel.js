@@ -205,6 +205,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         source: fullProposal.roadProposal ? 'roadProposal' : fullProposal.buildingProposal ? 'buildingProposal' : 'parcelIds'
     });
 
+    // Show the current user's own parcels first — a proposal covering many parcels is easier to read
+    // when mine are at the top. A parcel is mine when its stored owner is the current user agent. The
+    // partition is stable, so it also drives the initial synchronous batch and the lazy remainder.
+    try {
+        const currentAgent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+        const currentAgentId = currentAgent && currentAgent.id != null ? String(currentAgent.id) : null;
+        if (currentAgentId && typeof PersistentStorage !== 'undefined' && window.OwnParcelsFirst) {
+            const isOwnParcel = (id) => {
+                try { return String(PersistentStorage.getItem(`parcel_${id}_owner`)) === currentAgentId; } catch (_) { return false; }
+            };
+            parentParcelIds = window.OwnParcelsFirst.sortOwnParcelsFirst(parentParcelIds, isOwnParcel);
+        }
+    } catch (_) { /* ordering is cosmetic — never let it break the panel */ }
+
     // Lazy ancestor list: we resolve each row's feature only when its DOM is rendered, so a
     // 700-parent proposal opens just as fast as a 7-parent one. The first batch resolves
     // synchronously to populate the panel, and setupLazyList streams the rest as the user
