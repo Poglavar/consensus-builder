@@ -462,6 +462,7 @@
             <div class="structure-geometry-options">
                 <button type="button" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
             </div>
+            <div class="structure-geometry-shape-warning" data-role="shape-warning" hidden></div>
             <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" data-action="save" class="is-primary">${t('save', 'Save design')}</button></div></footer>`;
     }
 
@@ -484,6 +485,20 @@
             : (state.tool
                 ? t('hintPlace', 'Click the map to place the selected item.')
                 : t('hintSelect', 'Select an item to begin.'));
+
+        // A "square" (trg) is a plaza, not paving: if the drawn boundary is a long thin ribbon,
+        // gently say so. Advisory only — it never blocks saving, and parks are exempt.
+        const warning = panel.querySelector('[data-role="shape-warning"]');
+        if (warning) {
+            const verdict = (state.kind === 'square' && global.SquareShape)
+                ? global.SquareShape.assessSquareShape(state.boundary)
+                : null;
+            const notSquare = !!(verdict && verdict.isSquareLike === false);
+            warning.hidden = !notSquare;
+            warning.textContent = notSquare
+                ? t('notASquare', 'This is not a square, this is a paved surface!')
+                : '';
+        }
     }
 
     function handlePanelClick(event) {

@@ -2805,6 +2805,7 @@
     },
     "structureEditor": {
         "ariaLabel": "Uređivač geometrije strukture",
+        "notASquare": "Ovo nije trg, ovo je popločana površina!",
         "titlePark": "Uređivanje parka",
         "titleSquare": "Uređivanje trga",
         "instructions": "Izaberi element, zatim klikni unutar granice. Prevuci bilo koji element da ga pomeriš.",

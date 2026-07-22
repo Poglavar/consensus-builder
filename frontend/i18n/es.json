@@ -2824,6 +2824,7 @@
     },
     "structureEditor": {
         "ariaLabel": "Editor de geometría de la estructura",
+        "notASquare": "¡Esto no es una plaza, es una superficie pavimentada!",
         "titlePark": "Editor de parque",
         "titleSquare": "Editor de plaza",
         "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra cualquier elemento para moverlo.",
