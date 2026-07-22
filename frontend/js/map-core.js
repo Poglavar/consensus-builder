@@ -92,10 +92,19 @@ const map = L.map('map', {
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
 
+// ?latlng=lat,lng[,zoom] jumps to any location on the planet, overriding the city default view.
+// It loses to a proposal deep link (that path drives its own framing) but wins over city config.
+const DEEP_LINK_LATLNG = (typeof window !== 'undefined' && window.LatLngParam)
+    ? window.LatLngParam.parseLatLngParam(window.location && window.location.search)
+    : null;
+
 if (IS_PROPOSAL_DEEP_LINK) {
     // Keep parcels idle but start from city context so coverage/debug tools don't blow up
     const fallbackCenter = CITY_MAP_CONFIG.defaultCenter || DEFAULT_FALLBACK_LATLNG;
     map.setView(fallbackCenter, resolveInitialZoom());
+} else if (DEEP_LINK_LATLNG) {
+    const zoom = Number.isFinite(DEEP_LINK_LATLNG.zoom) ? DEEP_LINK_LATLNG.zoom : resolveInitialZoom();
+    map.setView([DEEP_LINK_LATLNG.lat, DEEP_LINK_LATLNG.lng], zoom);
 } else if (INITIAL_VIEW && INITIAL_VIEW.type === 'bounds' && Array.isArray(INITIAL_VIEW.value) && INITIAL_VIEW.value.length === 2) {
     map.fitBounds(INITIAL_VIEW.value);
 } else if (INITIAL_VIEW && INITIAL_VIEW.type === 'center' && (Array.isArray(INITIAL_VIEW.center) || hasDefaultCenter)) {
