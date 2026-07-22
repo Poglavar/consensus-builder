@@ -30,6 +30,7 @@
 
     let polygonGroup = null;
     let parcelsGroup = null;
+    let footprintsGroup = null;
     let currentMonitorData = null;
     let currentMonitorParcelIds = new Set();
     let currentMonitorOwnershipByParcelId = new Map();
@@ -65,11 +66,35 @@
         if (!parcelsGroup) {
             parcelsGroup = L.featureGroup().addTo(map);
         }
+        if (!footprintsGroup) {
+            footprintsGroup = L.featureGroup().addTo(map);
+        }
     }
 
     function clear() {
         if (polygonGroup) polygonGroup.clearLayers();
         if (parcelsGroup) parcelsGroup.clearLayers();
+        if (footprintsGroup) footprintsGroup.clearLayers();
+    }
+
+    // Building footprints inside the monitor, toggled from the detail panel. Idempotent: called with
+    // features to show them, with nothing to hide them.
+    function showFootprints(features) {
+        ensureGroups();
+        if (!footprintsGroup) return 0;
+        footprintsGroup.clearLayers();
+        const list = Array.isArray(features) ? features : (features && features.features) || [];
+        if (!list.length) return 0;
+        const layer = L.geoJSON({ type: 'FeatureCollection', features: list }, {
+            interactive: false,
+            style: { color: '#7c2d12', weight: 1, fillColor: '#ea580c', fillOpacity: 0.35 }
+        });
+        footprintsGroup.addLayer(layer);
+        return list.length;
+    }
+
+    function hideFootprints() {
+        if (footprintsGroup) footprintsGroup.clearLayers();
     }
 
     function resetParcelStyles() {
@@ -314,6 +339,8 @@
         setCurrentMonitor,
         loadOverlayGeometries,
         reapplyStyles,
+        showFootprints,
+        hideFootprints,
         COLORS
     };
 

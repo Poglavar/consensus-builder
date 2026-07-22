@@ -306,6 +306,10 @@
         const formattedArea = polygonAreaSqm > 0 ? formatArea(polygonAreaSqm) : '';
         const lblCopyLink = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link';
         const lblListOtherMonitors = t('sidebar.areaMonitor.listOtherMonitors') || 'List other monitors';
+        const lblBuildings = t('sidebar.areaMonitor.buildings') || 'Buildings';
+        const lblCounting = t('sidebar.areaMonitor.buildingsCounting') || 'counting…';
+        const lblShowFootprints = t('sidebar.areaMonitor.showFootprints') || 'Show footprints';
+        const lblHideFootprints = t('sidebar.areaMonitor.hideFootprints') || 'Hide footprints';
         const lblMinimize = t('sidebar.areaMonitor.minimize') || 'Minimize';
         const lblExpand = t('sidebar.areaMonitor.expand') || 'Expand';
         const lblClose = t('modal.common.close') || 'Close';
@@ -343,6 +347,7 @@
                         <div class="area-monitor-detail-summary__fill" style="width:${pct}%;"></div>
                     </div>
                     ${formattedArea ? `<div class="area-monitor-detail-summary__area">${escapeHtml(lblMonitoredArea)}: ${escapeHtml(formattedArea)}</div>` : ''}
+                    <div class="area-monitor-detail-summary__area" id="am-building-count">${escapeHtml(lblBuildings)}: ${escapeHtml(lblCounting)}</div>
                 </div>
                 ${externalLinks.length ? `<div class="area-monitor-detail-links">${externalLinks.join('<span class="area-monitor-detail-links__sep">&middot;</span>')}</div>` : ''}
                 <div class="area-monitor-detail-actions">
@@ -351,6 +356,9 @@
                     </button>
                     <button id="am-list-others" type="button" class="btn btn-secondary area-monitor-detail-button">
                         ${escapeHtml(lblListOtherMonitors)}
+                    </button>
+                    <button id="am-footprints-toggle" type="button" class="btn btn-secondary area-monitor-detail-button" disabled>
+                        ${escapeHtml(lblShowFootprints)}
                     </button>
                 </div>
                 <div class="area-monitor-detail-subscribe">
@@ -408,6 +416,66 @@
                 setTimeout(() => { btn.textContent = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link'; }, 2000);
             });
         });
+
+        loadMonitorBuildingsIntoPanel(monitor);
+    }
+
+    // Fetch the building footprints in the monitor's bbox, clip them to the polygon, and fill in the
+    // count line + footprint toggle. Best-effort: any failure just hides those two controls.
+    function loadMonitorBuildingsIntoPanel(monitor) {
+        const countEl = () => document.getElementById('am-building-count');
+        const toggleBtn = () => document.getElementById('am-footprints-toggle');
+        const hideBoth = () => {
+            const c = countEl(); if (c) c.style.display = 'none';
+            const b = toggleBtn(); if (b) b.style.display = 'none';
+        };
+        if (!monitor || !monitor.polygon || typeof L === 'undefined'
+            || typeof global.getBboxFromBounds !== 'function' || !global.AreaMonitorBuildings) {
+            hideBoth();
+            return;
+        }
+        (async () => {
+            try {
+                const bounds = L.geoJSON(monitor.polygon).getBounds();
+                if (!bounds || !bounds.isValid()) { hideBoth(); return; }
+                const bbox = global.getBboxFromBounds(bounds);
+                const res = await fetch(`${getBackendBase()}/buildings?bbox=${encodeURIComponent(bbox)}`);
+                if (!res.ok) throw new Error(`buildings ${res.status}`);
+                const raw = await res.json();
+                // /buildings returns EPSG:3765 geometry — reproject to WGS84 before clipping/rendering
+                // (same as map-core's building fetch), so it lines up with the WGS84 monitor polygon.
+                const fc = (typeof global.convertGeoJSON === 'function')
+                    ? global.convertGeoJSON(raw, { sourceSrid: 3765 })
+                    : raw;
+                const { count, features } = global.AreaMonitorBuildings.countBuildingsInPolygon(fc, monitor.polygon);
+                // The bbox layer caps the result; a hit cap means the count is a lower bound.
+                const truncated = raw && raw.truncated === true;
+                const lblBuildings = t('sidebar.areaMonitor.buildings') || 'Buildings';
+                const cEl = countEl();
+                if (cEl) cEl.textContent = `${lblBuildings}: ${count}${truncated ? '+' : ''}`;
+
+                const btn = toggleBtn();
+                if (!btn) return;
+                if (!features.length) { btn.style.display = 'none'; return; }
+                btn.disabled = false;
+                btn.addEventListener('click', () => {
+                    const showing = btn.dataset.showing === '1';
+                    const AM = global.AreaMonitorMap;
+                    if (showing) {
+                        if (AM && AM.hideFootprints) AM.hideFootprints();
+                        btn.dataset.showing = '0';
+                        btn.textContent = t('sidebar.areaMonitor.showFootprints') || 'Show footprints';
+                    } else {
+                        if (AM && AM.showFootprints) AM.showFootprints(features);
+                        btn.dataset.showing = '1';
+                        btn.textContent = t('sidebar.areaMonitor.hideFootprints') || 'Hide footprints';
+                    }
+                });
+            } catch (err) {
+                console.warn('[area-monitor] building count failed', err);
+                hideBoth();
+            }
+        })();
     }
 
     function removeDetailPanel() {
