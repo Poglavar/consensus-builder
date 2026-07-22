@@ -612,9 +612,72 @@ body.three-mode-active #toggle-sidebar-desktop,
 body.three-mode-active #toggle-sidebar-mobile,
 body.three-mode-active #username-display,
 body.three-mode-active #agent-bubbles-container,
-body.three-mode-active #address-search {
+body.three-mode-active #address-search,
+body.three-mode-active #latest-plans-prompt {
     display: none !important;
     pointer-events: none;
+}
+
+/* Arrival nudge: a small dismissible pill, bottom-centre, linking to the proposals list. */
+#latest-plans-prompt.latest-plans-prompt {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #111827;
+    color: #fff;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    padding: 4px 6px 4px 4px;
+    max-width: calc(100vw - 32px);
+}
+
+.latest-plans-prompt__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.latest-plans-prompt__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.latest-plans-prompt__close {
+    border: 0;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 18px;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.latest-plans-prompt__close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
 }
 
 /* Address search — a compact top-centre bar over the map. */

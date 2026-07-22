@@ -2777,6 +2777,10 @@
             "avgPerParcel": "Avg / parcel"
         }
     },
+    "latestPlans": {
+        "cta": "See the latest plans",
+        "dismiss": "Dismiss"
+    },
     "addressSearch": {
         "placeholder": "Search address…",
         "button": "Search",

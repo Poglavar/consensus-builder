@@ -2807,6 +2807,10 @@
             "avgPerParcel": "Prosek / parceli"
         }
     },
+    "latestPlans": {
+        "cta": "Pogledaj najnovije planove",
+        "dismiss": "Zatvori"
+    },
     "addressSearch": {
         "placeholder": "Pretraži adresu…",
         "button": "Pretraži",

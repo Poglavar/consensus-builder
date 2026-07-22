@@ -2826,6 +2826,10 @@
             "avgPerParcel": "Media / parcela"
         }
     },
+    "latestPlans": {
+        "cta": "Ver los últimos planes",
+        "dismiss": "Descartar"
+    },
     "addressSearch": {
         "placeholder": "Buscar dirección…",
         "button": "Buscar",
