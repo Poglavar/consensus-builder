@@ -83,18 +83,25 @@ function renderCorridorJunctions(junctions, group, pane) {
 function corridorDecorationHtml(decoration) {
     if (decoration.kind === 'tree') return '<i class="fas fa-tree" aria-hidden="true"></i>';
     if (decoration.kind === 'bike') return '<i class="fas fa-bicycle" aria-hidden="true"></i>';
+    if (decoration.kind === 'manhole') return '<i class="fas fa-circle-dot" aria-hidden="true"></i>';
+    if (decoration.kind === 'grate') return '<i class="fas fa-grip-lines" aria-hidden="true"></i>';
     return '<span class="corridor-pedestrian-pair"><i class="fas fa-person-dress" aria-hidden="true"></i><i class="fas fa-child" aria-hidden="true"></i></span>';
 }
+
+// A round manhole cover reads the same at any heading, so it (like a tree) is not rotated to travel.
+const CORRIDOR_UNROTATED_DECORATIONS = new Set(['tree', 'manhole']);
+const CORRIDOR_SMALL_DECORATIONS = new Set(['tree', 'manhole', 'grate']);
 
 function renderCorridorDecorations(decorations, group, pane) {
     if (!Array.isArray(decorations)) return;
     decorations.forEach(decoration => {
-        const rotation = decoration.kind === 'tree' ? 0 : (Number(decoration.angle) * 180 / Math.PI);
+        const rotation = CORRIDOR_UNROTATED_DECORATIONS.has(decoration.kind) ? 0 : (Number(decoration.angle) * 180 / Math.PI);
+        const small = CORRIDOR_SMALL_DECORATIONS.has(decoration.kind);
         const icon = L.divIcon({
             className: `corridor-decoration corridor-decoration--${decoration.kind}`,
             html: `<span class="corridor-decoration-inner" style="transform:rotate(${rotation}deg)">${corridorDecorationHtml(decoration)}</span>`,
-            iconSize: decoration.kind === 'tree' ? [18, 18] : [26, 26],
-            iconAnchor: decoration.kind === 'tree' ? [9, 9] : [13, 13]
+            iconSize: small ? [18, 18] : [26, 26],
+            iconAnchor: small ? [9, 9] : [13, 13]
         });
         const markerOptions = { icon, interactive: false, keyboard: false };
         if (pane) markerOptions.pane = pane;

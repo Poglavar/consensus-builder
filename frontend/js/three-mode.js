@@ -2768,7 +2768,28 @@
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        if (kind === 'bike') {
+        if (kind === 'manhole') {
+            // Dark iron cover with a lighter rim and pick-hole cross.
+            ctx.fillStyle = '#3a3a3a';
+            ctx.beginPath(); ctx.arc(64, 64, 42, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#c9c9c9'; ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.arc(64, 64, 42, 0, Math.PI * 2); ctx.stroke();
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(64, 30); ctx.lineTo(64, 98);
+            ctx.moveTo(30, 64); ctx.lineTo(98, 64);
+            ctx.stroke();
+        } else if (kind === 'grate') {
+            // Dark drainage grate with parallel slots.
+            ctx.fillStyle = '#3a3a3a';
+            ctx.fillRect(22, 40, 84, 48);
+            ctx.strokeStyle = '#c9c9c9'; ctx.lineWidth = 5;
+            for (let gx = 34; gx <= 94; gx += 12) {
+                ctx.beginPath(); ctx.moveTo(gx, 46); ctx.lineTo(gx, 82); ctx.stroke();
+            }
+            ctx.lineWidth = 4;
+            ctx.strokeRect(22, 40, 84, 48);
+        } else if (kind === 'bike') {
             ctx.beginPath(); ctx.arc(32, 83, 22, 0, Math.PI * 2); ctx.stroke();
             ctx.beginPath(); ctx.arc(96, 83, 22, 0, Math.PI * 2); ctx.stroke();
             ctx.beginPath();
@@ -2805,7 +2826,9 @@
         const signs = decorations.filter(item => item.kind !== 'tree');
         signs.forEach(item => {
             const [x, y] = latLngToXY(item.lat, item.lng);
-            const size = Math.max(1.2, Math.min(3, Number(item.stripWidth) * 0.85));
+            // Utility covers are small fixed objects; painted symbols scale to their strip.
+            const isUtility = item.kind === 'manhole' || item.kind === 'grate';
+            const size = isUtility ? 0.9 : Math.max(1.2, Math.min(3, Number(item.stripWidth) * 0.85));
             const geometry = new THREE.PlaneGeometry(size, size);
             const mesh = new THREE.Mesh(geometry, corridorSymbolMaterial(item.kind));
             mesh.position.set(x, y, terrainHeightOrZero(terrainHeightAt, x, y) + CORRIDOR_STRIP_Z + 0.18);

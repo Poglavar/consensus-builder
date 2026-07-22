@@ -39,6 +39,14 @@
     text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
+/* Manhole covers and storm grates: dark iron on the asphalt, small and unobtrusive. */
+.corridor-decoration--manhole .corridor-decoration-inner,
+.corridor-decoration--grate .corridor-decoration-inner {
+    color: #1c1c1c;
+    font-size: 12px;
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
 /* Selected road segment: the amber dashes crawl so the scoped segment is unmistakable.
    Colors/weights come from the Leaflet path options; CSS only animates the dash offset. */
 .corridor-segment-selected {

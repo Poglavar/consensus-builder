@@ -296,6 +296,44 @@ describe('corridor decorations and junction topology', () => {
         delete global.wgs84ToHTRS96;
         delete global.htrs96ToWGS84;
     });
+
+    it('drops manholes down the carriageway centre and grates at the sidewalk gutters', () => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        // sidewalk | driving | driving | sidewalk → gutters at ±3.5 m off the centreline.
+        const profile = { strips: [
+            { type: 'sidewalk', width: 3 },
+            { type: 'driving', width: 3.5, direction: 'forward' },
+            { type: 'driving', width: 3.5, direction: 'backward' },
+            { type: 'sidewalk', width: 3 }
+        ] };
+        const decorations = buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile);
+
+        const manholes = decorations.filter(d => d.kind === 'manhole');
+        const grates = decorations.filter(d => d.kind === 'grate');
+        expect(manholes.length).toBeGreaterThan(0);
+        expect(grates.length).toBeGreaterThan(0);
+        // Manholes ride the centreline (lat ≈ 0); grates sit at a gutter (|lat| ≈ 3.5).
+        expect(manholes.every(d => Math.abs(d.lat) < 1e-6)).toBe(true);
+        expect(grates.every(d => Math.abs(Math.abs(d.lat) - 3.5) < 1e-6)).toBe(true);
+        // Both gutters get grates.
+        expect(grates.some(d => d.lat > 0) && grates.some(d => d.lat < 0)).toBe(true);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
+    });
+
+    it('adds no manholes or grates to a path with no carriageway', () => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        const profile = { strips: [
+            { type: 'sidewalk', width: 3 },
+            { type: 'cycleway', width: 2, direction: 'forward' }
+        ] };
+        const decorations = buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile);
+        expect(decorations.some(d => d.kind === 'manhole' || d.kind === 'grate')).toBe(false);
+        delete global.wgs84ToHTRS96;
+        delete global.htrs96ToWGS84;
+    });
 });
 
 // Shoelace area of a planar ring; negative means clockwise.

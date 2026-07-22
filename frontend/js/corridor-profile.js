@@ -43,7 +43,7 @@ const CORRIDOR_LANE_TYPES = {
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
-const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
+const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6, manhole: 45, grate: 30 };
 
 // The orientation a parking lane paints its bays at, or null for a lane that is not parking. The three
 // parking types are the only ones that carry it; everything that draws or exports bays asks this rather
@@ -1215,22 +1215,10 @@ function buildCorridorDecorations(segments, profile) {
     const junctionClearance = corridorProfileWidth(profile) / 2 + 4;
     const decorations = [];
 
-    spans.forEach(strip => {
-        let kind = null;
-        let spacing = null;
-        if (strip.type === 'cycleway') { kind = 'bike'; spacing = CORRIDOR_DECORATION_SPACING.bike; }
-        else if (strip.type === 'sidewalk') { kind = 'pedestrian'; spacing = CORRIDOR_DECORATION_SPACING.pedestrian; }
-        else if (CORRIDOR_GREEN_TYPES.has(strip.type) && corridorLandscapeOf(strip) === 'trees') {
-            kind = 'tree'; spacing = CORRIDOR_DECORATION_SPACING.tree;
-        } else if (corridorParkingOrientation(strip.type) && strip.treeEvery > 0) {
-            // A tree in every Nth parking bay: spaced N bays apart, so the trees line up with the stalls.
-            kind = 'tree';
-            const bay = CORRIDOR_PARKING_BAYS[corridorParkingOrientation(strip.type)] || CORRIDOR_PARKING_BAYS.parallel;
-            spacing = strip.treeEvery * bay.spacingAlong;
-        }
-        if (!kind) return;
-
-        const offset = (strip.left + strip.right) / 2;
+    // Emit one decoration of `kind` every `spacing` metres along the centerline offset by `offset`
+    // (signed, positive = left of travel), skipping the junction clearance zone. Shared by the
+    // per-strip symbols and the whole-corridor utility passes (manholes/grates) below.
+    const emitAlongOffset = (offset, spacing, kind, strip) => {
         centerlines.forEach((centerline, segmentIndex) => {
             const offsetLine = buildCorridorOffsetLine(centerline, offset);
             if (!offsetLine) return;
@@ -1245,13 +1233,44 @@ function buildCorridorDecorations(segments, profile) {
                     lat,
                     lng,
                     angle: sample.angle,
-                    stripIndex: strip.index,
-                    stripWidth: strip.width,
+                    stripIndex: strip ? strip.index : -1,
+                    stripWidth: strip ? strip.width : 0,
                     segmentIndex
                 });
             });
         });
+    };
+
+    spans.forEach(strip => {
+        let kind = null;
+        let spacing = null;
+        if (strip.type === 'cycleway') { kind = 'bike'; spacing = CORRIDOR_DECORATION_SPACING.bike; }
+        else if (strip.type === 'sidewalk') { kind = 'pedestrian'; spacing = CORRIDOR_DECORATION_SPACING.pedestrian; }
+        else if (CORRIDOR_GREEN_TYPES.has(strip.type) && corridorLandscapeOf(strip) === 'trees') {
+            kind = 'tree'; spacing = CORRIDOR_DECORATION_SPACING.tree;
+        } else if (corridorParkingOrientation(strip.type) && strip.treeEvery > 0) {
+            // A tree in every Nth parking bay: spaced N bays apart, so the trees line up with the stalls.
+            kind = 'tree';
+            const bay = CORRIDOR_PARKING_BAYS[corridorParkingOrientation(strip.type)] || CORRIDOR_PARKING_BAYS.parallel;
+            spacing = strip.treeEvery * bay.spacingAlong;
+        }
+        if (!kind) return;
+        emitAlongOffset((strip.left + strip.right) / 2, spacing, kind, strip);
     });
+
+    // Utilities are drawn only on a real carriageway (a road, not a bare cycle/foot path): manholes
+    // run in one tidy row down the centreline, storm grates sit in the gutter at each sidewalk's
+    // road-facing edge.
+    const hasCarriageway = spans.some(strip => strip.type === 'driving');
+    if (hasCarriageway) {
+        emitAlongOffset(0, CORRIDOR_DECORATION_SPACING.manhole, 'manhole', null);
+        spans.forEach(strip => {
+            if (strip.type !== 'sidewalk') return;
+            const gutter = Math.abs(strip.left) < Math.abs(strip.right) ? strip.left : strip.right;
+            emitAlongOffset(gutter, CORRIDOR_DECORATION_SPACING.grate, 'grate', strip);
+        });
+    }
+
     return decorations;
 }
 
