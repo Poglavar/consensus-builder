@@ -32,7 +32,7 @@ const CORRIDOR_LANE_TYPES = {
     parking: { label: 'Parallel parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
     parking_perpendicular: { label: 'Perpendicular parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
     parking_angled: { label: 'Angled parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
-    cycleway: { label: 'Cycle path', surface: '#7d3b34', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
+    cycleway: { label: 'Cycle path', surface: '#c0392b', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
     verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
