@@ -1495,6 +1495,21 @@ function appliedCorridorSnapSegments() {
     return entries;
 }
 
+// Existing-road centrelines as snap sources, so a new road can begin exactly on one. Only present
+// while the reference layer is shown; capped so a dense viewport can't slow the per-mousemove snap.
+const LEGACY_ROAD_SNAP_CAP = 600;
+function legacyRoadSnapEntries() {
+    let entries = [];
+    try {
+        entries = (typeof getLegacyRoadSnapEntries === 'function') ? (getLegacyRoadSnapEntries() || []) : [];
+    } catch (_) { entries = []; }
+    if (entries.length > LEGACY_ROAD_SNAP_CAP) {
+        console.debug(`[road-snap] ${entries.length} legacy road segments in view — snapping to the first ${LEGACY_ROAD_SNAP_CAP} only.`);
+        entries = entries.slice(0, LEGACY_ROAD_SNAP_CAP);
+    }
+    return entries;
+}
+
 function findRoadSnapTarget(latlng) {
     if (typeof map === 'undefined' || !map || !latlng) return null;
     const cursor = map.latLngToLayerPoint(latlng);
@@ -1504,7 +1519,8 @@ function findRoadSnapTarget(latlng) {
     // Project every candidate vertex to screen pixels; the pure ladder decides the winner.
     const toPx = (v) => { const pt = map.latLngToLayerPoint(v); return { x: pt.x, y: pt.y }; };
     const localSegments = roadSegments.map(seg => (Array.isArray(seg) ? seg : []).map(toPx));
-    const externalEntries = appliedCorridorSnapSegments();
+    // Applied corridors (mergeable) first, then existing legacy roads (a coordinate to start on).
+    const externalEntries = appliedCorridorSnapSegments().concat(legacyRoadSnapEntries());
     const externalSegments = externalEntries.map(e => ({ points: e.segment.map(toPx) }));
 
     const raw = window.CorridorGeometry.pickSnapTarget(
@@ -1525,6 +1541,15 @@ function findRoadSnapTarget(latlng) {
     }
 
     const entry = externalEntries[raw.externalIndex];
+    // A legacy (existing) road is not a proposal: it only contributes a coordinate to start on, so
+    // it carries no proposalId and never triggers the connect/merge path an applied corridor does.
+    if (entry.legacy) {
+        if (raw.kind === 'external-edge') {
+            return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), type: 'legacy-edge' };
+        }
+        const v = entry.segment[raw.vertexIndex];
+        return { distance: raw.distance, latlng: L.latLng(v.lat, v.lng), type: 'legacy-vertex' };
+    }
     if (raw.kind === 'external-edge') {
         return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), type: 'external-edge', proposalId: entry.proposalId, minted: entry.minted };
     }
@@ -1571,9 +1596,10 @@ function showRoadSnapMarker(snap) {
         clearRoadSnapMarker();
         return;
     }
-    // Snapping onto a PLACED road (connect + merge) reads differently from snapping onto the
-    // drawing's own segments: a bigger blue ring says "click to attach to this road".
-    const external = snap.type === 'external-endpoint' || snap.type === 'external-node' || snap.type === 'external-edge';
+    // Snapping onto a PLACED or EXISTING road reads differently from snapping onto the drawing's own
+    // segments: a bigger blue ring says "click to attach to / start on this road".
+    const external = snap.type === 'external-endpoint' || snap.type === 'external-node' || snap.type === 'external-edge'
+        || snap.type === 'legacy-edge' || snap.type === 'legacy-vertex';
     const style = external
         ? { radius: 11, color: '#2563eb', weight: 3, fillColor: '#ffffff', fillOpacity: 0.9 }
         : { radius: 8, color: '#006400', weight: 2, fillColor: '#ffffff', fillOpacity: 0.9 };

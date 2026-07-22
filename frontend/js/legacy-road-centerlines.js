@@ -15,6 +15,9 @@
     let enabled = false;
     let refreshTimer = null;
     let lastKey = '';
+    // Snap segments for the currently-shown centrelines, so road drawing can start a new road on an
+    // existing one. Only populated while the layer is enabled (see getLegacyRoadSnapEntries).
+    let currentSnapEntries = [];
 
     function map() { return global.map; }
 
@@ -49,10 +52,14 @@
         const m = map();
         if (layer && m && m.hasLayer(layer)) m.removeLayer(layer);
         layer = null;
+        currentSnapEntries = [];
     }
 
     function render(geojson) {
         clearLayer();
+        currentSnapEntries = (geojson && global.RoadSnapLegacy)
+            ? global.RoadSnapLegacy.geojsonToSnapSegments(geojson)
+            : [];
         if (!geojson || !Array.isArray(geojson.features) || !global.L) return;
         ensurePane();
         layer = global.L.geoJSON(geojson, {
@@ -125,4 +132,6 @@
 
     global.toggleLegacyRoadCenterlines = toggleLegacyRoadCenterlines;
     global.refreshLegacyRoadCenterlines = () => refresh(true);
+    // Snap targets for road drawing — only while the reference layer is on and drawn.
+    global.getLegacyRoadSnapEntries = () => (enabled ? currentSnapEntries : []);
 })(typeof window !== 'undefined' ? window : globalThis);
