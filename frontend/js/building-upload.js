@@ -166,6 +166,77 @@
         animate();
     }
 
+    // Pull a lng/lat outer ring out of a selected parcel layer — GeoJSON feature first, else the
+    // Leaflet polygon's own latlngs (unwrapping ring nesting).
+    function layerToLngLatRing(layer) {
+        const geom = layer && layer.feature && layer.feature.geometry;
+        if (geom) {
+            if (geom.type === 'Polygon' && Array.isArray(geom.coordinates[0])) return geom.coordinates[0];
+            if (geom.type === 'MultiPolygon' && geom.coordinates[0] && geom.coordinates[0][0]) return geom.coordinates[0][0];
+        }
+        if (layer && typeof layer.getLatLngs === 'function') {
+            let ll = layer.getLatLngs();
+            while (Array.isArray(ll) && ll.length && Array.isArray(ll[0])) ll = ll[0];
+            if (Array.isArray(ll)) return ll.map(p => [p.lng, p.lat]);
+        }
+        return null;
+    }
+
+    // Lay the selected parcel(s) flat under the model as a translucent slab + outline, so the upload
+    // is seen on its plot rather than floating in a void. Returns the footprint's planar radius (m)
+    // for camera framing, or 0 when nothing was drawn. Added to modelGroup so clearModelGroup disposes it.
+    function renderParcelFootprints() {
+        if (!preview.modelGroup || !window.ParcelFootprint3D || typeof THREE === 'undefined') return 0;
+        if (!currentContext || !Array.isArray(currentContext.parcels)) return 0;
+        const rings = [];
+        currentContext.parcels.forEach(layer => {
+            const ring = layerToLngLatRing(layer);
+            if (ring && ring.length >= 3) rings.push(ring);
+        });
+        const projected = window.ParcelFootprint3D.projectRingsToLocalMeters(rings);
+        if (!projected) return 0;
+
+        const fillMat = new THREE.MeshBasicMaterial({ color: 0xd6deea, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false });
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0x5b6b82 });
+        let maxR = 0;
+        projected.rings.forEach(ring => {
+            if (ring.length < 3) return;
+            const shape = new THREE.Shape(ring.map(p => new THREE.Vector2(p.x, p.y)));
+            const geometry = new THREE.ShapeGeometry(shape);
+            geometry.rotateX(-Math.PI / 2); // shape XY (east, north) → ground XZ, north maps to −Z
+            const mesh = new THREE.Mesh(geometry, fillMat);
+            mesh.position.y = 0.02;
+            mesh.userData.isParcelFootprint = true;
+            preview.modelGroup.add(mesh);
+
+            const outline = new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(ring.map(p => new THREE.Vector3(p.x, 0.03, -p.y))),
+                edgeMat
+            );
+            outline.userData.isParcelFootprint = true;
+            preview.modelGroup.add(outline);
+
+            ring.forEach(p => { maxR = Math.max(maxR, Math.hypot(p.x, p.y)); });
+        });
+        return maxR;
+    }
+
+    // Frame the camera to a given ground radius (used when the parcel is larger than the model).
+    function frameToRadius(radius, targetY) {
+        if (!preview.camera) return;
+        const dist = radius * 2.0 + 5;
+        preview.camera.position.set(dist, dist * 0.8, dist);
+        const ty = targetY || 0;
+        if (preview.controls && preview.controls.target) {
+            preview.controls.target.set(0, ty, 0);
+            if (preview.controls.update) preview.controls.update();
+        } else {
+            preview.camera.lookAt(0, ty, 0);
+        }
+        preview.camera.far = dist * 10;
+        preview.camera.updateProjectionMatrix();
+    }
+
     function clearModelGroup() {
         if (!preview.modelGroup) return;
         for (let i = preview.modelGroup.children.length - 1; i >= 0; i--) {
@@ -249,6 +320,16 @@
                 if (!dims) {
                     setStatus(t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.'), true);
                     return;
+                }
+                // Show the plot under the model; reframe to include it when it is the larger object.
+                try {
+                    const parcelRadius = renderParcelFootprints();
+                    if (parcelRadius > 0) {
+                        const modelRadius = Math.max(dims.width, dims.length, dims.height);
+                        frameToRadius(Math.max(modelRadius, parcelRadius), dims.height / 2);
+                    }
+                } catch (err) {
+                    console.warn('[building-upload] parcel footprint render failed', err);
                 }
                 loadedDims = dims;
                 setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: file.name })
