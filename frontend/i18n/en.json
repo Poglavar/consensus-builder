@@ -2773,6 +2773,13 @@
             "avgPerParcel": "Avg / parcel"
         }
     },
+    "addressSearch": {
+        "placeholder": "Search address…",
+        "button": "Search",
+        "searching": "Searching…",
+        "notFound": "No match found.",
+        "error": "Search failed, try again."
+    },
     "structureEditor": {
         "ariaLabel": "Structure geometry editor",
         "titlePark": "Park editor",

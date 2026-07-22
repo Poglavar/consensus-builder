@@ -2822,6 +2822,13 @@
             "avgPerParcel": "Media / parcela"
         }
     },
+    "addressSearch": {
+        "placeholder": "Buscar dirección…",
+        "button": "Buscar",
+        "searching": "Buscando…",
+        "notFound": "No se encontró ninguna coincidencia.",
+        "error": "La búsqueda falló, inténtalo de nuevo."
+    },
     "structureEditor": {
         "ariaLabel": "Editor de geometría de la estructura",
         "notASquare": "¡Esto no es una plaza, es una superficie pavimentada!",

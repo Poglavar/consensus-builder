@@ -926,6 +926,18 @@
     <div id="map-container">
         <div id="map"></div>
 
+        <!-- Address search (top-centre): geocode a place and fly there -->
+        <form id="address-search" class="address-search" role="search" autocomplete="off">
+            <input id="address-search-input" type="search" name="address"
+                placeholder="Search address…" aria-label="Search address"
+                data-i18n-key="addressSearch.placeholder" data-i18n-attr="placeholder,aria-label">
+            <button type="submit" id="address-search-btn" title="Search" aria-label="Search"
+                data-i18n-key="addressSearch.button" data-i18n-attr="title,aria-label">
+                <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+            <div id="address-search-status" class="address-search-status" role="status" aria-live="polite" hidden></div>
+        </form>
+
         <!-- Floating status message (visible when sidebar is closed) -->
         <div id="floating-status" class="floating-status">
             <span id="floating-status-text"></span>
@@ -1333,6 +1345,7 @@
             'js/parcels/activity-listener.js',
             'js/latlng-param.js',
             'js/map-core.js',
+            'js/address-search.js',
             'js/user-management.js',
             'js/sidebar-management.js',
             'js/parcels/parcel-id.js',

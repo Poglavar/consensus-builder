@@ -2803,6 +2803,13 @@
             "avgPerParcel": "Prosjek / čestici"
         }
     },
+    "addressSearch": {
+        "placeholder": "Pretraži adresu…",
+        "button": "Pretraži",
+        "searching": "Pretraživanje…",
+        "notFound": "Nema rezultata.",
+        "error": "Pretraga nije uspjela, pokušajte ponovo."
+    },
     "structureEditor": {
         "ariaLabel": "Uređivač geometrije strukture",
         "notASquare": "Ovo nije trg, ovo je popločana površina!",
