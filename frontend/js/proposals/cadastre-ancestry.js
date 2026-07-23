@@ -47,6 +47,66 @@
         return out;
     }
 
+    // Every parcel currently LIVE on the map — base or derived — that a footprint could resolve
+    // onto. Unlike loadedCadastreParcels this keeps derived slices (a shared building may sit on a
+    // road remainder) but drops parents already consumed by children: re-parenting onto one of
+    // those would target fabric that no longer exists.
+    function loadedLiveParcels() {
+        const out = [];
+        try {
+            const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
+            if (!byId || typeof byId.forEach !== 'function') return out;
+            const replaced = (typeof global.isParcelReplacedByChildren === 'function')
+                ? global.isParcelReplacedByChildren
+                : null;
+            byId.forEach((layer, id) => {
+                const key = id === undefined || id === null ? '' : String(id);
+                if (!key) return;
+                if (replaced) {
+                    try { if (replaced(key)) return; } catch (_) { /* treat as live */ }
+                }
+                if (!layer || typeof layer.toGeoJSON !== 'function') return;
+                try {
+                    const gj = layer.toGeoJSON();
+                    const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
+                    if (feature && feature.geometry && /Polygon/.test(feature.geometry.type || '')) {
+                        out.push({ id: key, feature });
+                    }
+                } catch (_) { /* a layer that cannot serialise is simply not a candidate */ }
+            });
+        } catch (error) {
+            console.warn('[cadastre-ancestry] could not read the parcel index', error);
+        }
+        return out;
+    }
+
+    // Resolve a proposal's parents from its GEOMETRY against the live fabric, for payloads whose
+    // declared parents are ghosts (§3.1 of rethink-proposals.md). Returns { ids, coverage } where
+    // coverage is the share of the footprint the resolved parcels actually cover — callers must
+    // treat low coverage as "the land is genuinely absent", not as a rename to paper over.
+    function resolveParentsByGeometry(proposal) {
+        const api = planOrder();
+        const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
+        if (!api || !t || !proposal) return { ids: [], coverage: 0 };
+        try {
+            const footprint = api.footprintOf(proposal);
+            if (!footprint) return { ids: [], coverage: 0 };
+            const footprintM2 = t.area(footprint);
+            if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
+            const hits = api.computeBaseAncestry(footprint, loadedLiveParcels());
+            const coveredM2 = hits.reduce((sum, hit) => sum + (hit.area || 0), 0);
+            // Live parcels tessellate (consumed parents are excluded), so the hits partition the
+            // footprint and the ratio cannot meaningfully exceed 1; clamp for rounding noise.
+            return {
+                ids: hits.map(hit => hit.id),
+                coverage: Math.min(1, coveredM2 / footprintM2)
+            };
+        } catch (error) {
+            console.warn('[cadastre-ancestry] geometry re-parent resolution failed', error);
+            return { ids: [], coverage: 0 };
+        }
+    }
+
     // Never throws and never blocks a save: this is additive bookkeeping, so a failure here must cost
     // the field, not the proposal.
     function computeCadastreParcelIds(proposal) {
@@ -65,7 +125,7 @@
         return ids;
     }
 
-    const api = { loadedCadastreParcels, computeCadastreParcelIds };
+    const api = { loadedCadastreParcels, loadedLiveParcels, computeCadastreParcelIds, resolveParentsByGeometry };
 
     if (typeof window !== 'undefined') window.__cadastreAncestry = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -289,3 +289,50 @@ describe('parcel formation (A7)', () => {
         expect(plan.cut).toHaveLength(0);
     });
 });
+
+describe('rewriteParentParcelIds', () => {
+    const makeProposal = () => ({
+        proposalId: 'p-x',
+        parentParcelIds: ['HR-339270-823/1#p-ghost-2', 'HR-339270-824'],
+        roadProposal: { parentParcelIds: ['HR-339270-823/1#p-ghost-2'], definition: { width: 12 } },
+        buildingProposal: { parentParcelIds: [] }
+    });
+
+    it('rewrites the top-level list and every typology sub-object that exists', () => {
+        const proposal = makeProposal();
+        const touched = planOrder.rewriteParentParcelIds(proposal, ['HR-339270-823/1', 'HR-339270-6804/1']);
+        expect(touched).toEqual([
+            'parentParcelIds',
+            'roadProposal.parentParcelIds',
+            'buildingProposal.parentParcelIds'
+        ]);
+        expect(proposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
+        expect(proposal.roadProposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
+        expect(proposal.buildingProposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
+        // Absent sub-objects must not be invented.
+        expect(proposal.structureProposal).toBeUndefined();
+        expect(proposal.decideLaterProposal).toBeUndefined();
+        expect(proposal.reparcellization).toBeUndefined();
+    });
+
+    it('hands each list its own copy, not a shared array', () => {
+        const proposal = makeProposal();
+        planOrder.rewriteParentParcelIds(proposal, ['HR-1']);
+        proposal.roadProposal.parentParcelIds.push('mutation');
+        expect(proposal.parentParcelIds).toEqual(['HR-1']);
+    });
+
+    it('is a no-op without a proposal or without ids', () => {
+        expect(planOrder.rewriteParentParcelIds(null, ['HR-1'])).toEqual([]);
+        const proposal = makeProposal();
+        expect(planOrder.rewriteParentParcelIds(proposal, [])).toEqual([]);
+        expect(planOrder.rewriteParentParcelIds(proposal, null)).toEqual([]);
+        expect(proposal.parentParcelIds).toEqual(['HR-339270-823/1#p-ghost-2', 'HR-339270-824']);
+    });
+
+    it('coerces ids to strings and drops empties', () => {
+        const proposal = { parentParcelIds: ['old'] };
+        planOrder.rewriteParentParcelIds(proposal, [42, '', null, 'HR-2']);
+        expect(proposal.parentParcelIds).toEqual(['42', 'HR-2']);
+    });
+});

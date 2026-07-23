@@ -1715,6 +1715,46 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return;
         }
 
+        // A6 (rethink-proposals.md §5): order the plan by its constraint graph — footprint
+        // intersection + creation time — instead of trusting link order. Link order is usually
+        // oldest-first already, but hand-assembled URLs are not, and the requeue below should be
+        // a safety net, not the ordering mechanism. Payloads fetched here are cached in
+        // loadedById, so the apply loop reuses them instead of fetching twice.
+        try {
+            if (typeof window !== 'undefined' && window.__planOrder && queue.length > 1) {
+                await Promise.all(queue.map(async (qid) => {
+                    if (loadedById.has(qid)) return;
+                    try {
+                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
+                        await addResponseBytes(resp);
+                        if (resp.ok) loadedById.set(qid, await resp.json());
+                    } catch (_) { /* the apply loop retries and reports this id itself */ }
+                }));
+                const items = queue.map(qid => {
+                    const payload = loadedById.get(qid);
+                    if (!payload) return { id: qid, goal: null, footprint: null, createdAt: null };
+                    let footprint = null;
+                    try { footprint = window.__planOrder.footprintOf(payload); } catch (_) { }
+                    return {
+                        id: qid,
+                        goal: payload.goal,
+                        footprint,
+                        createdAt: payload.createdAt || payload.created_at || null
+                    };
+                });
+                const resolution = window.__planOrder.resolveApplyOrder(items);
+                if (resolution && Array.isArray(resolution.order) && resolution.order.length === queue.length) {
+                    queue = resolution.order.slice();
+                    console.log('[handleSharedPlanRoute] Apply order resolved from constraint graph:', {
+                        order: queue,
+                        constraints: resolution.constraints
+                    });
+                }
+            }
+        } catch (orderError) {
+            console.warn('[handleSharedPlanRoute] Constraint-graph ordering failed; keeping link order', orderError);
+        }
+
         const startFetchBaseParcels = async (parcelIds, options = {}) => {
             const ids = ensureArrayOfStrings(parcelIds);
             if (!ids.length) return { attempted: [], missingAfter: [] };
@@ -1792,6 +1832,70 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             });
 
             return { attempted: toFetch, missingAfter };
+        };
+
+        // Ghost prerequisites: a payload can name derived parents (…#p-…) minted in the CREATOR'S
+        // browser that this one will never mint (§3.1 of rethink-proposals.md: 3/14 references in
+        // one live plan were already dead on the server). No amount of requeueing conjures them.
+        // But when the plan's ancestors HAVE applied here, the land those ids named exists under
+        // different local names — so resolve this proposal's parents from its geometry against the
+        // live fabric, rewrite the parent lists, and retry once. Low footprint coverage means an
+        // ancestor genuinely is missing; that stays a visible failure, never a silent rename.
+        const reparentAttempted = new Set();
+        const tryReparentGhostPrereqs = (queueId, proposal) => {
+            try {
+                const key = normalizeId(queueId);
+                if (!proposal || !key || reparentAttempted.has(key)) return false;
+                const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+                const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
+                if (!ancestry || typeof ancestry.resolveParentsByGeometry !== 'function') return false;
+                if (!planOrderApi || typeof planOrderApi.rewriteParentParcelIds !== 'function') return false;
+
+                const stillMissing = (pid) => {
+                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
+                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
+                    return true;
+                };
+                const missing = getPrerequisiteParcelIdsForProposal(proposal).filter(stillMissing);
+                // Missing BASE parcels are a fetch problem the loop already solves; rewriting
+                // parents would only mask it. Only pure ghost-derived misses qualify.
+                if (!missing.length || !missing.every(isDerivedParcelId)) return false;
+
+                const resolution = ancestry.resolveParentsByGeometry(proposal);
+                if (!resolution || !Array.isArray(resolution.ids) || !resolution.ids.length) return false;
+                if (!(resolution.coverage >= 0.95)) {
+                    console.warn('[handleSharedPlanRoute] Ghost prerequisites, but live fabric covers only '
+                        + `${Math.round((resolution.coverage || 0) * 100)}% of the footprint — not re-parenting`, { id: key, missing });
+                    return false;
+                }
+
+                reparentAttempted.add(key);
+                const touched = planOrderApi.rewriteParentParcelIds(proposal, resolution.ids);
+                // applyProposal reads the STORED copy once the payload has been imported, so the
+                // rewrite must land there too or the retry re-reads the ghosts.
+                try {
+                    const stored = (typeof proposalStorage !== 'undefined' && proposalStorage && proposal.proposalId)
+                        ? proposalStorage.getProposal(proposal.proposalId)
+                        : null;
+                    if (stored) {
+                        planOrderApi.rewriteParentParcelIds(stored, resolution.ids);
+                        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(stored);
+                        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+                    }
+                } catch (_) { /* stored copy may not exist yet — the payload rewrite still counts */ }
+
+                console.log('[handleSharedPlanRoute] Re-parented by geometry', {
+                    id: key,
+                    ghosts: missing,
+                    resolved: resolution.ids,
+                    coverage: Math.round(resolution.coverage * 1000) / 1000,
+                    touched
+                });
+                return true;
+            } catch (err) {
+                console.warn('[handleSharedPlanRoute] Geometry re-parent failed', err);
+                return false;
+            }
         };
 
         while (queue.length > 0) {
@@ -2090,8 +2194,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         lastMissingPrereqsById.set(String(id), missingNow);
                         if (proposalId) lastMissingPrereqsById.set(String(proposalId), missingNow);
                     } catch (_) { }
-                    queue.push(id);
-                    stepsSinceProgress += 1;
+                    if (tryReparentGhostPrereqs(id, proposal)) {
+                        // Retry immediately with the rewritten parents — this is real progress,
+                        // not another lap of the requeue carousel.
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                    } else {
+                        queue.push(id);
+                        stepsSinceProgress += 1;
+                    }
                 } else {
                     failed.push({
                         id: proposalId,
@@ -2123,7 +2234,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = (error && error.message) ? error.message : 'Unexpected error';
                 try { lastReasonById.set(String(id), String(reason || '')); } catch (_) { }
                 if (isDependencyFailure(error) || isDependencyFailure(reason)) {
-                    queue.push(id);
+                    if (tryReparentGhostPrereqs(id, loadedById.get(id))) {
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                    } else {
+                        queue.push(id);
+                    }
                 } else {
                     const cachedProposal = loadedById.get(id) || null;
                     failed.push({
