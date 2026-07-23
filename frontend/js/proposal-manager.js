@@ -4654,11 +4654,15 @@ const ProposalManager = {
             try {
                 if (analysis.conflicts.length > 0 && analysis.notLoaded.length === 0) {
                     // Pure geography conflict: retrying will never help — report it as occupancy.
+                    // The occupiers' PROPOSAL IDS ride along so callers can tell an intra-plan
+                    // "conflict" (stale id bookkeeping between proposals that coexisted applied —
+                    // rethink-proposals.md §3.3) from a genuine cross-plan occupation.
                     const occupiers = analysis.conflicts.map(c => c.title).filter(Boolean);
                     this._setLastApplyFailure(idLabel, {
                         code: 'parcel-conflict',
                         message: `Overlaps applied proposal(s): ${occupiers.join(', ')}`,
                         conflictTitles: occupiers,
+                        conflictProposalIds: analysis.conflicts.map(c => String(c.proposalId)).filter(Boolean),
                         missingIds: []
                     });
                 } else {

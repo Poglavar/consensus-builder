@@ -1048,6 +1048,9 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 
     const skipDependencyFetch = options && options.skipDependencyFetch === true;
     const applyOptions = skipDependencyFetch ? { suppressMissingParentAlerts: true } : {};
+    // Plan replay may explicitly accept intra-plan occupancy (§3.3: proposals that coexisted
+    // applied never geometrically conflict) — proceed with the parents that are present.
+    if (options && options.applyAnyway === true) applyOptions.applyAnyway = true;
 
     // Some flows (notably /proposals/:id1,id2,...) want to apply a queue where missing parcels
     // are expected to appear after other proposals apply. In that case do NOT fetch parcels here;
@@ -1357,6 +1360,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
                 if (proposal && Array.isArray(proposal.parentParcelIds)) {
                     ensureArrayOfStrings(proposal.parentParcelIds).forEach(id => ids.push(id));
+                }
+                // The published base-cadastre ancestry (stamped at upload, backfilled for old rows).
+                // Fetching these roots loads the true ground under the footprint even when every
+                // declared parent is a derived id from the creator's browser — which is what lets
+                // geometry re-parenting see the live fabric instead of refusing on low coverage.
+                if (proposal && Array.isArray(proposal.cadastreParcelIds)) {
+                    ensureArrayOfStrings(proposal.cadastreParcelIds).forEach(id => ids.push(id));
                 }
 
                 return Array.from(new Set(ids.map(x => String(x)).filter(Boolean)));
@@ -1898,6 +1908,28 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         };
 
+        // Every LOCAL proposal id belonging to this plan. A parcel-conflict whose occupiers all
+        // sit in this set is not a real conflict: these proposals coexisted APPLIED in the
+        // sharer's browser (§3.3 — coexisting fabric never geometrically conflicts), so the
+        // "occupation" is stale id bookkeeping between generations, and the right response is to
+        // retry accepting intra-plan occupancy rather than park the proposal as overlapped.
+        const planMemberLocalIds = () => {
+            const ids = new Set();
+            incomingIds.forEach(sid => ids.add(String(sid)));
+            loadedById.forEach(payload => {
+                if (payload && payload.proposalId) ids.add(String(payload.proposalId));
+                if (payload && payload.serverProposalId) ids.add(String(payload.serverProposalId));
+            });
+            incomingAlreadyApplied.forEach(p => {
+                if (p && p.proposalId) ids.add(String(p.proposalId));
+                if (p && p.serverProposalId) ids.add(String(p.serverProposalId));
+            });
+            return ids;
+        };
+        // Ids whose next apply attempt may proceed over intra-plan occupancy.
+        const applyAnywayIds = new Set();
+        const conflictRetryAttempted = new Set();
+
         while (queue.length > 0) {
             const id = queue.shift();
             try { attemptedSinceProgress.add(normalizeId(id)); } catch (_) { }
@@ -2014,7 +2046,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const computeMissingParentsNow = () => {
                     try {
                         const unique = Array.from(new Set(ensureArrayOfStrings(prereqIds)));
-                        return unique.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
+                        return unique.filter(pid => {
+                            if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
+                            // Consumed by an earlier applied proposal — off the map by design, not missing.
+                            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
+                            return true;
+                        });
                     } catch (_) {
                         return [];
                     }
@@ -2089,7 +2126,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 try {
                     // For /proposals/:id1,id2,… we intentionally do NOT fetch/resolve parcels here.
                     // Missing parcels are expected to be created by earlier applies.
-                    result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
+                    result = await importAndApplySharedProposal(proposal, {
+                        skipDependencyFetch: true,
+                        applyAnyway: applyAnywayIds.has(normalizeId(id))
+                    });
                 } catch (err) {
                     // Convert thrown dependency errors into retryable results.
                     if (isDependencyFailure(err)) {
@@ -2143,6 +2183,25 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while applying.');
                 const failureInfo = (result && result.failureInfo) ? result.failureInfo : null;
                 if (failureInfo && String(failureInfo.code || '') === 'parcel-conflict') {
+                    const conflictIds = ensureArrayOfStrings(failureInfo.conflictProposalIds || []);
+                    const members = planMemberLocalIds();
+                    const intraPlan = conflictIds.length > 0 && conflictIds.every(cid => members.has(String(cid)));
+                    console.log('[handleSharedPlanRoute] Parcel conflict while applying plan member', {
+                        id: normalizeId(id),
+                        occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],
+                        conflictIds,
+                        intraPlan
+                    });
+                    if (intraPlan && !conflictRetryAttempted.has(normalizeId(id))) {
+                        // Chaining misread as occupation: rewrite any ghost parents from geometry,
+                        // then retry once accepting the intra-plan occupancy.
+                        conflictRetryAttempted.add(normalizeId(id));
+                        tryReparentGhostPrereqs(id, proposal);
+                        applyAnywayIds.add(normalizeId(id));
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                        continue;
+                    }
                     overlapped.push({
                         id: proposalId,
                         label,

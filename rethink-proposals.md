@@ -783,6 +783,20 @@ bookkeeping, per-parcel acceptance rows, the vote flow and share fingerprinting 
    (`plan-order.js: rewriteParentParcelIds`), and retries once. Guard: live fabric must cover ≥95%
    of the footprint, so genuinely missing land still fails visibly — a rename is never used to paper
    over an absent ancestor. The requeue loop remains as a safety net, not the mechanism.
+   **Second iteration (same day), after the first incognito replay came back 6 applied + 2
+   "occupied":** chaining was being misread as conflict. The two stragglers declared parents that
+   are fellow plan members' children (the fixture shows the cycle in the flesh: #100's parents
+   include #102's child `823/1#p-1mkonr8j4t2-1`, while #102's parents are #100's older-generation
+   children), and the occupancy index exact-matches declared id strings, so stale generations
+   surfaced as `parcel-conflict` — a path the dependency-only re-parent hook never saw. Three
+   additions: (a) `parcel-conflict` failures now carry `conflictProposalIds`, (b) when every
+   occupier is a member of the incoming plan the route re-parents ghosts and retries once with
+   `applyAnyway` — proposals that coexisted applied at share time cannot genuinely conflict
+   (§3.3), so intra-plan occupancy is stale bookkeeping by definition; cross-plan occupiers still
+   park as overlapped, and (c) `cadastreParcelIds` joined the prerequisite set, so the route
+   fetches the true ground under each footprint before applying — the field's first reader in the
+   apply path, and what keeps the ≥95% coverage guard honest when every declared parent is
+   derived.
    *Not yet covered:* the payload-share route (`applySharedProposalsFromPayload`) and the
    single-proposal upload gates (next steps 6) still use the old logic.
 2. **Stamp ownership flow at publish.** Additive, like `cadastreParcelIds` was: per crossed base
