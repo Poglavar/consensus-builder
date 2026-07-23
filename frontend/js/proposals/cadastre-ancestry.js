@@ -59,9 +59,27 @@
             const replaced = (typeof global.isParcelReplacedByChildren === 'function')
                 ? global.isParcelReplacedByChildren
                 : null;
+
+            // A parent whose derived children are themselves on the map is consumed fabric, even
+            // when the bookkeeping flag disagrees (measured on the 97-104 replay: base 824 stayed
+            // "ready" and unreplaced next to its own subdivision slices, and resolving onto it
+            // handed the apply a parent occupied by the very proposal that cut it). The id
+            // structure is the ground truth: every '#'-prefix of a live derived id is consumed.
+            const consumedByStructure = new Set();
+            byId.forEach((_, id) => {
+                let key = id === undefined || id === null ? '' : String(id);
+                let cut = key.lastIndexOf('#');
+                while (cut > 0) {
+                    key = key.slice(0, cut);
+                    consumedByStructure.add(key);
+                    cut = key.lastIndexOf('#');
+                }
+            });
+
             byId.forEach((layer, id) => {
                 const key = id === undefined || id === null ? '' : String(id);
                 if (!key) return;
+                if (consumedByStructure.has(key)) return;
                 if (replaced) {
                     try { if (replaced(key)) return; } catch (_) { /* treat as live */ }
                 }

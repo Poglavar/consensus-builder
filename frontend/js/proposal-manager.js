@@ -1140,11 +1140,22 @@ const ProposalManager = {
                     .map(id => id && id.toString ? id.toString() : String(id || ''))
                     .filter(Boolean)))
                 : [];
+            const asStrings = (arr) => Array.from(new Set((Array.isArray(arr) ? arr : [])
+                .map(x => x && x.toString ? x.toString() : String(x || ''))
+                .filter(Boolean)));
+            // Occupier identity must survive storage: the shared-plan route decides whether an
+            // occupation is intra-plan (stale bookkeeping between plan members — retry) or a real
+            // cross-plan conflict (park as overlapped) from conflictProposalIds. Dropping them
+            // here is what made every conflict look cross-plan.
+            const conflictTitles = asStrings(failure && failure.conflictTitles);
+            const conflictProposalIds = asStrings(failure && failure.conflictProposalIds);
             if (!message) return;
             this._lastApplyFailureByProposalId.set(key, {
                 message,
                 code,
                 missingIds,
+                conflictTitles,
+                conflictProposalIds,
                 at: Date.now()
             });
         } catch (_) { /* best-effort */ }
@@ -1179,6 +1190,8 @@ const ProposalManager = {
                 message: String(entry.message),
                 code: entry.code ? String(entry.code) : null,
                 missingIds: Array.isArray(entry.missingIds) ? entry.missingIds.slice() : [],
+                conflictTitles: Array.isArray(entry.conflictTitles) ? entry.conflictTitles.slice() : [],
+                conflictProposalIds: Array.isArray(entry.conflictProposalIds) ? entry.conflictProposalIds.slice() : [],
                 at: entry.at || null
             };
         } catch (_) {

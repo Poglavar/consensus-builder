@@ -610,6 +610,10 @@ function getStoredApplyFailureInfo(proposalId) {
                     message: String(info.message),
                     code: info.code ? String(info.code) : null,
                     missingIds: ensureArrayOfStrings(info.missingIds || []),
+                    // Occupier identity rides along so the shared-plan route can tell intra-plan
+                    // occupancy (retry) from a genuine cross-plan conflict (park as overlapped).
+                    conflictTitles: ensureArrayOfStrings(info.conflictTitles || []),
+                    conflictProposalIds: ensureArrayOfStrings(info.conflictProposalIds || []),
                     at: info.at || null
                 };
             }

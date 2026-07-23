@@ -797,6 +797,19 @@ bookkeeping, per-parcel acceptance rows, the vote flow and share fingerprinting 
    fetches the true ground under each footprint before applying — the field's first reader in the
    apply path, and what keeps the ≥95% coverage guard honest when every declared parent is
    derived.
+   **Third iteration (verified in a live browser before shipping):** the second run still parked
+   one road, and a clean-state sandbox replay (localhost origin + prod API, driven via
+   claude-in-chrome) exposed two more layers of the same disease. (a) The intra-plan retry never
+   engaged because occupier identity was stripped THREE times on its way to the route —
+   `_setLastApplyFailure`, `getLastApplyFailureInfo` and `getStoredApplyFailureInfo` each
+   whitelist fields, and none kept `conflictTitles`/`conflictProposalIds` (so the overlapped
+   modal had also never once named an occupier). All three now pass them through. (b) The
+   geometry resolver trusted `isParcelReplacedByChildren`, but on replay a subdivided base (824)
+   stayed layer-ready and unreplaced NEXT TO its own slices, so the resolver handed apply a
+   parent occupied by the very proposal that cut it. `loadedLiveParcels` now derives consumption
+   from the id structure itself: every `#`-prefix of a live derived id is consumed fabric,
+   whatever the flag says. With both fixed, the 97–104 plan replays **8/8** from clean state —
+   observed directly, map fabric and parent rewrites inspected, zero residual failure records.
    *Not yet covered:* the payload-share route (`applySharedProposalsFromPayload`) and the
    single-proposal upload gates (next steps 6) still use the old logic.
 2. **Stamp ownership flow at publish.** Additive, like `cadastreParcelIds` was: per crossed base
