@@ -76,10 +76,15 @@ the server stores ancestor ids as an opaque `ancestor_parcel_ids` column with no
 apply order is decided at apply time. — **SHIPPED for the plan dialog only.** The single-proposal
 upload paths (`dialog-upload.js`, `dialog-create.js`) still gate on order and can still deadlock.
 
-### 2.3 Replay in a fresh browser (open)
+### 2.3 Replay in a fresh browser (FIXED — §12 step 1)
 
 The uploaded plan (#97–#104) applied 6/8 in a clean browser. The two failures were both
 fabric-changers, both reporting "Missing prerequisite parcels". Root cause below.
+
+Fixed 2026-07-23: the shared-plan route now (a) orders the queue by the A6 constraint graph
+instead of trusting link order, and (b) when a dependency failure names only ghost derived ids,
+re-resolves the proposal's parents from its geometry against the live fabric and retries once —
+guarded by a ≥95% footprint-coverage check so genuinely missing land still fails loudly. See §12.
 
 ---
 
@@ -282,6 +287,10 @@ Evidence from §3.3 suggests a third option: if fabric changes are **commutative
 all road corridors, then repartitioned), then order does not matter and neither model is needed in
 full.
 
+**RESOLVED by A6 + A7:** ship final state, order geometrically at apply time (intersection +
+creation time), resolve targets from geometry against whatever fabric the receiver has. The log is
+never shipped; the ordering it would have encoded is recomputed from footprints.
+
 ### D2. What is the unit of consent?
 
 If an owner's parcel is reparcelled, and an urban rule is then proposed on the resulting parcels, what
@@ -293,7 +302,9 @@ does the original owner vote on?
 - **Per plan.** One vote, fully specified outcome, no hypothetical chaining. Matches how these are
   actually authored ("we create these complex plans"). Loses the ability to accept part of a plan.
 
-**Open.** Leaning per-plan, undecided.
+**RESOLVED — see §10.** Neither. The unit is the owner's **slice**: the plan restricted to
+everything whose base ancestry touches their parcel, accepted per proposal but fingerprint-bound to
+the slice. Nobody ever confronts (or blocks) the city-wide object.
 
 ### D3. How much parcel identity does a proposal need?
 
@@ -313,6 +324,11 @@ Dragging a road node changes the geometry of parcels under other proposals. It w
 also what mints a new generation of derived ids and orphans every reference to the old ones (§3.1).
 Any model has to answer: when geometry moves, what happens to the references and to consent already
 given?
+
+**RESOLVED across §10–§11:** references are stamped at PUBLISH (not creation, not edit), so local
+dragging mints nothing anyone else can see; consent binds to the **effect hash** (footprint +
+per-owner cession), so a re-frame that leaves the effect unchanged keeps consent and a material
+change voids it automatically.
 
 ### D5. Ancestor *geography* rather than ancestor *parcels*
 
@@ -441,7 +457,7 @@ Honest to history, but adds a dimension everywhere. Probably unnecessary if A3 h
 Share, vote and apply plans rather than individual proposals. Ordering becomes internal to a plan;
 cross-plan derived references never exist. Complements A1–A3; addresses D2.
 
-### A6. Order by intersection + creation time — *the fix §3.6 points at*
+### A6. Order by intersection + creation time — *WIRED into shared-plan apply (2026-07-23, §12 step 1)*
 
 Replace the derived-id dependency graph entirely:
 
@@ -538,19 +554,25 @@ Croatia the way a building does. If not, parks are non-forming and the line move
 
 1. ~~Test A3 (commutativity).~~ **DONE — see §3.6.** Order matters only between fabric-changers whose
    footprints intersect; the discrepancy equals the intersection area. Roads commute outright.
-2. ~~Prototype A1 + A6.~~ **Writer side DONE and backfilled** — `cadastreParcelIds` is computed at
-   publish and stored end to end; `plan-order.js` implements the A6 ordering; 92 of 98 published rows
-   are backfilled (4 cities without a cadastral table, 2 legacy records holding only `bounds`). Still
-   to do: make something actually *read* it.
+2. ~~Prototype A1 + A6.~~ **DONE end to end** — `cadastreParcelIds` is computed at publish, stored,
+   and backfilled (92 of 98 rows); `plan-order.js` implements the A6 ordering; and as of 2026-07-23
+   the shared-plan apply route *reads* it: constraint-graph ordering + geometry re-parenting (§12
+   step 1).
 3. **Stamp the cadastre snapshot** next to `cadastreParcelIds` (version or capture date), so a stale
-   view is detectable — cheap now, while nothing reads the field. See D5.
-4. **A6 before A2.** Ordering by intersection + creation time is what actually makes a plan
-   replayable; shipping derived geometry only guards against cadastre/code drift.
-5. **Improve the failure message.** "Missing prerequisite parcels: …" sends you hunting for a parcel
-   that was never missing. Say that the proposals depend on each other and cannot be rebuilt from
-   scratch.
-6. **Extend the completeness gate** to the single-proposal upload paths, or remove the gate there.
-7. **Decide D2** before touching acceptance.
+   view is detectable — cheap now. See D5. Superseded in shape by §11: what should be recorded is
+   the **effective-frame version**, not just the official snapshot.
+4. ~~A6 before A2.~~ **A6 shipped; A2 stays demoted** — ordering + geometric resolution made the
+   plan replayable without shipping derived geometry.
+5. **Improve the failure message.** Partly moot: the ghost case now self-heals (§12 step 1), so a
+   surviving "Missing prerequisite parcels: …" means the land is genuinely absent (<95% coverage) —
+   the message should say *that*, and name the proposal whose output is missing rather than the
+   parcel ids.
+6. **Extend the completeness gate + re-parenting** to the single-proposal upload paths
+   (`dialog-upload.js`, `dialog-create.js`) and the payload-share route
+   (`applySharedProposalsFromPayload`), which still use the old order-based gating and can still
+   deadlock.
+7. ~~Decide D2.~~ **DECIDED — §10.** Unit of consent = the owner's slice, per-proposal acceptance
+   bound to the slice fingerprint.
 8. ~~Evaluate A7.~~ **DONE — see §3.8.** Formable everywhere (1 m² uncovered across the plan), but
    every proposal fragments at least one neighbouring parcel; the worst leaves one owner with four
    disconnected pieces. Open question it raises: does A7 imply that each formation is really a small
@@ -558,10 +580,240 @@ Croatia the way a building does. If not, parks are non-forming and the line move
 
 ---
 
-## 8. Related notes
+## 9. Formation + content: the typology normal form
+
+The observation that completes the collapse (2026-07-23): once roads decompose, **nothing in the
+typology zoo is primitive**. Every proposal is the same two-part object:
+
+```
+proposal = formation (re-form parcels, with an ownership flow) + content (what goes on the result)
+```
+
+| Typology | Formation part | Content part |
+|---|---|---|
+| Reparcellization | merge ∪ cut, ownership per plan | *none* — pure formation |
+| Road | cut corridor from every crossed parcel, merge, ownership → public | use = road (profile, lanes…) |
+| Park / square / lake | merge ∪ cut into the footprint parcel, ownership → public (usually) | use = park / square / water |
+| Freeform building | form the building's own parcel (one building, one parcel) | the building |
+| Building on an existing parcel | *none* | the building |
+| Urban rule | *none* | rule — pure content |
+| Vote | *none* | a question |
+
+Reparcellization and rules are the degenerate ends — formation with no content, content with no
+formation. A road only *looked* special because its footprint is authored as centerline + width; the
+operation it performs is the same `formationPlan` as a lake's.
+
+**Roads already do cut-then-merge.** Verified in `_buildChildFeaturesFromDefinition`
+(`proposal-manager.js:1855`): the road mints **one** corridor feature whose geometry is the whole
+corridor, with `parentParcelIds` listing every crossed parent; the per-parent derived slices are the
+*remainders* carved out afterwards. Two artefacts of that code worth naming:
+
+- **The corridor's identity is a naming accident.** Its id borrows the FIRST crossed parcel's root
+  (`HR-339270-823/1#p-road-2` can name a corridor spanning a dozen parents). Base ancestry records
+  the truth regardless of what the id claims.
+- **The formation happens but the ownership flow is forgotten.** The merged corridor's
+  `ownershipDetails` is the proposer at 100%; nobody records who ceded how much, even though
+  per-parent cession (parent minus remainder) is trivially computable at the cut stage, before the
+  merge erases it.
+
+What the normal form buys:
+
+1. **Uniform consent triage** (§10) — nothing typology-specific; the triage reads the formation's
+   ownership flow and the content's nature.
+2. **Ownership flow becomes one declared word per typology** — road/park/square/lake → public,
+   freeform building → proposer or per-deal, reparcellization → explicit mapping. It is also what
+   distinguishes a road from a private driveway with identical geometry.
+3. **One formation engine, eventually** — roads, structures and reparcellization become callers of
+   one primitive (`formationPlan` prototypes it). Refactor-when-it-hurts, not a prerequisite (§12
+   step 5).
+
+The §3.8 remainder problem now applies uniformly — and bites hardest for roads (Road 2043 leaves one
+owner four disconnected fragments). Answering "does a formation owe the block reshaped remainders?"
+once answers it for every typology.
+
+**Ownership is ASSUMED WORKING for now** (Simun, 2026-07-23): design the declared-flow field, do not
+build redistribution/valuation machinery yet.
+
+Jurisdictions plug in at exactly three seams: who must accept a formation (unanimity vs qualified
+majority), which contents are proprietary offers vs political votes, and formation constraints like
+Croatia's one-building-one-parcel. The geometry core is jurisdiction-free.
+
+---
+
+## 10. Consent: dossiers in the current frame (resolves D2)
+
+The knot D2 circles — "reparcellization turns your parcel A into B, and a second proposal targets
+B; what do you vote on?" — dissolves once "against parcel X" stops being treated as primitive.
+
+**B is a name, not a thing.** B is R's *output*, a name inside R's hypothesis. "P is against B" is
+shorthand for "P is against the piece of ground R would call B" — and that ground, today, is part of
+A. Consent must be collected in the **current frame**, because it is the only frame where owners
+exist: who owns B is an output of R, not an input. Every consent question, however deep the chain,
+is pulled back to current parcels — and the pullback is the machinery we already built.
+`cadastreParcelIds` **is** the projection; replay pulls geometry back to the base frame, consent
+pulls rights-questions back. One mechanism, two uses.
+
+**What the owner of A sees: both proposals — but not as two votes of the same kind.**
+
+| The (owner, proposal) pair | Channel |
+|---|---|
+| Formation consuming/reshaping their parcel (R itself) | **binding acceptance**, per affected base parcel — the existing per-parcel acceptance rows |
+| Content on a descendant they RETAIN (building/purchase on B they keep) | **offer** — acceptance addressed to them |
+| Pure rule anywhere (zoning-like) | **vote** — the existing non-binding vote flow; rules are political, never per-owner vetoed |
+| Content on a descendant they CEDE (school on the strip taken for it) | **disclosure** — it prices their decision on R; not theirs to veto |
+
+The general rule: *walk the chain, track whose rights each step consumes; that is whose acceptance
+it needs. Everything else reaching your land is a vote or disclosure.* The classification needs one
+datum the model currently lacks: the formation's **ownership flow** (§9) — without it we can compute
+relevance (done, geometrically) but not the acceptance/disclosure split.
+
+**The unit of consent is the slice, bound by fingerprint.** The owner's dossier = the plan
+restricted to proposals whose base ancestry touches their parcel, told as one story ("R recuts A
+into B1 — stays yours — and B2 — becomes public; on B1, rule P; on B2, school S"). Their acceptance
+of R binds to the **content-hash of that dossier** (the `a3eef9c` share-fingerprint discipline,
+reused):
+
+- Edits across town don't change the slice-hash → acceptance stands. City-scale plans stop being a
+  consent problem: the 600-parcel railway is 600 one-strip dossiers, never one 600-parcel question.
+  The city-wide object belongs to elections, not owners.
+- Any change inside the slice → hash changes → acceptance lapses, re-consent.
+
+**Dials and defaults:**
+
+- *Ceded-content in the fingerprint?* Default **yes** — accepting a taking "for a school" and
+  getting a casino is bait-and-switch; the cost (authors can't repurpose ceded land without
+  re-consent until execution) is arguably the point.
+- *Severability:* accepting P implies accepting every formation beneath it on your land; rejecting R
+  moots everything above it. "Yes to R, no to the school" is a counter-proposal, not a partial vote.
+- *Holdouts:* R spanning A and a refusing neighbour cannot execute as drawn. Default unanimity per
+  connected component of fabric change; qualified-majority schemes (as real komasacija/Umlegung use)
+  are a jurisdiction plug-in, not core model.
+
+This is also how a century of land-readjustment law splits it: owners consent to the readjustment of
+*their* unit with intended use disclosed (parcel value depends on designated use); zoning itself
+stays political. The model is boring in the best way.
+
+---
+
+## 11. Three frames: official, effective, hypothetical
+
+Execution is **legal**, not registral (Simun, 2026-07-23): proposals live on-chain, and when all
+required acceptances arrive the proposal **auto-executes** — funds disburse, obligations bind. The
+official cadastre is a separate registry CB cannot write; it catches up on its own schedule. That
+gives a three-layer stack:
+
+1. **Official frame** — the cadastre as imported. Observed, never written.
+2. **Effective (legal) frame** — official frame + every *executed* formation replayed in execution
+   order. Legal reality: the contract binds even while uknjižba is pending. **Owners exist in this
+   frame** — consent for new proposals pulls back to here, not to the official frame.
+3. **Hypothetical frames** — per-plan, on top of effective, as everywhere above.
+
+An executed-but-unregistered parcel and a derived parcel in someone's browser are the same *kind* of
+object — a formation output — differing only in status. One derivation stack, with a watermark:
+below it official, between watermark and legal line executed-awaiting-registry, above it hypothesis.
+
+**Executed formations are shared ground truth.** They stop being optional overlays: the server holds
+an append-only executed-formations log and every client force-applies it before rendering anything.
+The "nudge to build on resulting parcels" then solves itself — users draw against what they see, and
+what they see is the effective frame. One UI element needed: a badge on effective-but-unofficial
+parcels — *"legal, awaiting registry"* — so the map's disagreement with the official cadastre viewer
+is explained, not confusing.
+
+**"Reality changed" is not a label, it is a computable three-state status.** After any frame advance
+(an execution nearby, or an official-cadastre import), re-project every pending proposal's geography
+onto the new effective frame (`formationPlan` again) and compare **effects**:
+
+- **unaffected** — footprint disjoint from the changed area (cheap: `cadastreParcelIds` ∩ changed
+  set = ∅). The vast majority; show nothing.
+- **re-based** — touches changed land but the re-projected formation is materially identical (same
+  footprint, same per-owner cessions within tolerance). Silently restamp; at most a passive marker.
+- **impacted** — the effect changed (the executed road ate a corner of the pending lake; cessions
+  now fall on different owners). Prominent label; author must revise.
+
+**Consent survives re-framing iff the consented effect is unchanged.** Acceptance therefore binds
+not to frame-relative parcel ids but to an **effect hash** — footprint + per-owner cession.
+Re-based → acceptances stand; impacted → affected owners' acceptances lapse automatically. Frame ids
+churn; effects are what people consented to. (This is the §D5/invariant-#2 tension resolved: consent
+is frozen against the *effect*, and the parcel-id view is free to be recomputed.)
+
+**Reconciliation** (registry catches up) is geometric matching — geography-as-invariant one more
+time. The registry assigns numbers we cannot predict and surveyors redraw boundaries by centimeters,
+so: match executed outputs against new official parcels within tolerance; on match, swap synthetic
+ids for official, restamp ancestry above, and the formation sinks below the waterline. Material
+divergence → human review. And the executed log **is the paperwork**: each entry carries geometry,
+ownership flow and collected consents — essentially a parcelacijski elaborat. Exporting it
+surveyor-ready turns the registry lag from a nuisance into the product's output: CB becomes the
+queue that feeds the official registry, not a simulation waiting for it.
+
+**Lifecycle** (extends the existing `lifecycle_status` direction):
+
+```
+draft → published → accepted → executed → registered
+                                  (+ re-based / impacted as orthogonal flags on anything pending)
+```
+
+Open questions this layer adds (none block §12):
+
+- **Reversal.** Courts annul; deals unwind off-chain even if funds moved on-chain. Keep the log
+  append-only and record a reversal as a compensating formation; consent downstream of a reverted
+  execution needs thought.
+- **Tolerance policy** — one number for "same effect" and registry matching (sub-meter surveyor
+  drift vs material change).
+- **Partial registration** — the registry registering 2 of 5 outputs of one formation;
+  reconciliation must work per-parcel.
+- **Cross-plan conflicts.** "Two applied proposals never overlap" holds *within* one hypothesis. Two
+  independent plans forming over the same land conflict for real. Presumably an owner may accept
+  both slices (competing offers) and conflict resolves at execution — first to execute wins the
+  frame, the loser goes *impacted* — but this is undesigned.
+
+---
+
+## 12. The rework plan
+
+Shippable steps, each independently valuable. Authoring UX, local apply, derived ids as local
+bookkeeping, per-parcel acceptance rows, the vote flow and share fingerprinting all stay.
+
+1. **Fix replay: order + geometry re-parenting.** — **DONE 2026-07-23.**
+   `handleSharedPlanRoute` now (a) pre-fetches the plan's payloads and orders the queue with
+   `resolveApplyOrder` (footprint intersection + creation time) instead of trusting link order, and
+   (b) on a dependency failure whose missing ids are all ghost-derived (`…#p-…`), resolves the
+   proposal's parents from its geometry against the LIVE fabric
+   (`cadastre-ancestry.js: resolveParentsByGeometry` — derived slices included, consumed parents
+   excluded), rewrites every parent list the apply path reads
+   (`plan-order.js: rewriteParentParcelIds`), and retries once. Guard: live fabric must cover ≥95%
+   of the footprint, so genuinely missing land still fails visibly — a rename is never used to paper
+   over an absent ancestor. The requeue loop remains as a safety net, not the mechanism.
+   *Not yet covered:* the payload-share route (`applySharedProposalsFromPayload`) and the
+   single-proposal upload gates (next steps 6) still use the old logic.
+2. **Stamp ownership flow at publish.** Additive, like `cadastreParcelIds` was: per crossed base
+   parcel, ceded area (parent minus remainder, computed before the merge erases it) and destination
+   (public / proposer / mapping). Backfillable from stored geometry. Fills §10's one data gap.
+   Ownership *machinery* stays assumed-working (§9).
+3. **Dossiers, read-only.** "As the owner of A": every proposal whose base ancestry touches A,
+   triaged per §10, including the remainder report ("you end up with four fragments of
+   9471/2219/365/308 m²" — §3.8 as disclosure, not blocker). Pure read over steps 1–2 + the
+   existing fingerprint discipline. First user-visible product of the rethink.
+4. **Bind acceptance to slice fingerprints / effect hashes.** The semantic change (§10, §11). Do it
+   after dossiers make slices a visible, understood thing.
+5. **One formation engine — only when it hurts.** Unify roads/structures/reparcellization behind
+   `formationPlan` with characterization tests, per typology, opportunistically. Roads already do
+   cut-then-merge; conceptual clarity does not require immediate code unification.
+
+Between 4 and 5 sits the **executed-formations log** (§11): server-held, force-applied, badge-worthy
+— its trigger (on-chain auto-execution) is already decided.
+
+---
+
+## 13. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes
 - `advanced-readjustment.md` — reparcellization internals
+- Code: `frontend/js/proposals/plan-order.js` (pure: ancestry, ordering, formation, re-parent
+  rewrite), `frontend/js/proposals/cadastre-ancestry.js` (map adapter: live parcels, geometry
+  resolution), `frontend/js/proposals/sharing-routes.js` (`handleSharedPlanRoute`: A6 ordering +
+  ghost re-parenting)
+- Tests: `backend/test/plan-order.test.js`, `backend/test/cadastre-ancestry-resolve.test.js`,
+  fixture `backend/test/fixtures/plan-97-104.json`
 - Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate), `70d9f82` (cadastreParcelIds),
   `32a01d0` (backfill + legacy road footprints)
