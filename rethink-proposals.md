@@ -831,7 +831,58 @@ Between 4 and 5 sits the **executed-formations log** (§11): server-held, force-
 
 ---
 
-## 13. Related notes
+## 13. The claims model: what a click means (resolves the clickability tension)
+
+Decided 2026-07-23, built on branch `proposals-rework`. The tension: invariant #3 said base
+parcels stay clickable, but the implementation drifted to frame-swapping — applied fabric-changers
+hide their parents and the derived pieces become the map. The resolution follows from this week's
+identity work: once nothing identity-critical lives in derived ids, "which layer is clickable"
+becomes a free choice.
+
+**Everything clickable is a CLAIM about a piece of ground.** A proposal's content (building,
+lake), a fabric-changer's output piece (corridor, remainder, slice), or the null claim — the bare
+cadastral parcel, meaning "no change proposed here". One uniform click semantics; z-order:
+content > fabric piece > ground. Two surfaces, not three: base parcels (land identity) and
+proposals (their outputs, reachable as proposal interaction); derived parcels stop being an
+interactive class of their own.
+
+Built and browser-verified (clean-state sandbox against the prod API):
+
+- **Structures flip** — park/square/lake base fills are clickable and open their proposal
+  (`bindStructureClaimClick` in structures.js). Reverses the deliberate earlier choice; the
+  ground stays one tap away via the breadcrumb.
+- **The breadcrumb** (invariant #3 restored) — every proposal details panel opens with "On
+  parcels: [823/1] …", the BASE parcels the proposal stands on (`__claims.baseParcelIdsOf`:
+  cadastreParcelIds stamp first, declared roots as fallback). Clicking one opens the base
+  parcel's panel **even when the parcel is consumed and hidden** — claims-ui falls back to the
+  layer index, which is why hidden layers were kept all along.
+- **The dossier** — the parcel panel's Proposals tab gains a claims rescue: any proposal whose
+  base ancestry includes this parcel's root lists there, whatever generation its declared ids
+  are from. Verified: 6804/1 (hidden under the plan) lists Road 2043 + Park 2047 + Freeform 2053.
+- **Cadastre view** — a map-corner toggle; the original cadastral parcels render full-strength
+  and interactive (clones in a dedicated pane, consumed parents included), every proposal pane
+  dims to 0.25 and goes inert. This is the dossier surface and the first rung of the §11 frame
+  ladder (official / effective / plan).
+
+**The conflict tour** (§12 step 1 companion, same branch): cross-plan occupations during a
+shared-plan replay stop the ordered apply, highlight both footprints, and ask — Replace existing
+or Keep existing, optionally for all remaining conflicts. Intra-plan occupancy stays automatic;
+dismissing is the non-destructive keep; nothing is unapplied before the user says so (the silent
+scenario-2 auto-replace from `84d30ea` is gone). Skip-cascades need no bookkeeping: a member that
+loses its ground to a kept existing proposal simply surfaces as the next stop, and one that
+chained onto a REPLACED occupier's fabric is detected (applied-state sweep) and requeued to
+re-apply on the post-replace fabric. Verified both paths in the sandbox: keep → 7 applied + kept
+section naming the occupier; replace → 8/8 applied, the existing proposal unapplied but preserved
+in the list.
+
+Two modal-helper gotchas locked into comments because they cost a debugging cycle each:
+`showSimpleShareModal` fires `onClose` BEFORE the clicked action's `onClick` (the dismiss-default
+must yield a tick), and it removes the modal DOM before `onClick` runs (checkbox state must be
+cached on change, not read at decision time).
+
+---
+
+## 14. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes

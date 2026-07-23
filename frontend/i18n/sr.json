@@ -1708,6 +1708,14 @@
                         "one": "Primenjen {{count}} predlog.",
                         "few": "Primenjena {{count}} predloga.",
                         "other": "Primenjeno {{count}} predloga."
+                    },
+                    "tour": {
+                        "title": "Sukob prostora",
+                        "body": "„{{incoming}}“ treba zemljište koje trenutno zauzima:",
+                        "replace": "Zameni postojeće",
+                        "keep": "Zadrži postojeće",
+                        "applyToAll": "Primeni na sve preostale sukobe",
+                        "keptCountDetailed": "Zadržali ste postojeće predloge — {{count}} dolazni predlog(a) ostaje neprimenjen (pronađite ih na listi predloga):"
                     }
                 },
                 "processingImageForUpload": "Obrada slike za otpremanje...",
@@ -2838,5 +2846,9 @@
         "cancel": "Otkaži",
         "save": "Gotovo",
         "saved": "Geometrija stanice je sačuvana."
+    },
+    "claims": {
+        "onParcels": "Na parcelama:",
+        "cadastreViewToggle": "Katastarski prikaz: samo izvorne parcele"
     }
 }

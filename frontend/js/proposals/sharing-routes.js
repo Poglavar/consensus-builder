@@ -1282,6 +1282,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // Geography conflicts are not failures: the proposal imported fine and simply stays
         // unapplied because another applied proposal already occupies its parcels.
         const overlapped = [];
+        // Conflicts the user resolved as "keep the existing proposal" during the conflict tour.
+        const keptExisting = [];
+        // local proposalId -> queue id for everything reported applied, so a replace that drags
+        // an already-applied plan member down (it chained onto the occupier's fabric before the
+        // occupier was unapplied) can re-queue that member instead of leaving the summary lying.
+        const appliedQueueIdByLocal = new Map();
         let lastLoadedProposalIdFor3D = null;
 
         const fetchProgressIds = new Set();
@@ -1621,77 +1627,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return;
         }
 
-        // Scenario 2: other proposals are already on the map. Instead of prompting, auto-unapply only
-        // the CONFLICTING ones — proposals that consume the same base parcels as an incoming proposal
-        // (e.g. an alternative form for the same block). Non-conflicting proposals on other parcels
-        // are left applied, so unrelated proposals stack rather than being cleared.
-        if (hasOtherApplied) {
-            // Learn the incoming proposals' ancestor parcels. Pre-fetching caches each payload in
-            // loadedById so the apply loop below reuses it instead of fetching a second time.
-            const incomingAncestors = new Set();
-            for (const rawId of queue) {
-                const id = normalizeId(rawId);
-                if (!id) continue;
-                let proposal = loadedById.get(id);
-                if (!proposal) {
-                    try {
-                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
-                        if (resp.ok) { proposal = await resp.json(); loadedById.set(id, proposal); }
-                    } catch (err) {
-                        console.warn('[handleSharedPlanRoute] Conflict pre-fetch failed for', id, err);
-                    }
-                }
-                getPrerequisiteParcelIdsForProposal(proposal).forEach(pid => incomingAncestors.add(pid));
-            }
-
-            // A currently-applied proposal conflicts when its ancestor parcels overlap the incoming
-            // ones (both consume the same base parcels, so they are mutually exclusive).
-            const proposalKey = (p) => String(p.proposalId || p.serverProposalId || '');
-            const conflicting = otherAppliedProposals.filter(p =>
-                getPrerequisiteParcelIdsForProposal(p).some(pid => incomingAncestors.has(pid))
-            );
-
-            if (conflicting.length > 0 && typeof ProposalManager !== 'undefined') {
-                console.log('[handleSharedPlanRoute] Auto-unapplying', conflicting.length, 'conflicting proposal(s)');
-                for (const p of conflicting) {
-                    const pid = p.proposalId || p.serverProposalId;
-                    if (!pid) continue;
-                    try {
-                        if (typeof ProposalManager.unapplyWholeFamily === 'function') {
-                            await ProposalManager.unapplyWholeFamily(pid, new Set(), { skipRestoreSource: true });
-                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true, skipRestoreSource: true });
-                        }
-                    } catch (err) {
-                        console.warn('[handleSharedPlanRoute] Failed to unapply conflicting proposal', pid, err);
-                    }
-                }
-                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
-                    ProposalManager._refreshUIAfterProposalChange(null);
-                }
-                // Drop the unapplied ones from the applied-tracking so later logic stays consistent.
-                const conflictingKeys = new Set(conflicting.map(proposalKey));
-                otherAppliedProposals = otherAppliedProposals.filter(p => !conflictingKeys.has(proposalKey(p)));
-                allAppliedProposals = allAppliedProposals.filter(p => !conflictingKeys.has(proposalKey(p)));
-
-                if (typeof showEphemeralMessage === 'function') {
-                    const names = conflicting.map(p => {
-                        const sid = p.serverProposalId || (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null);
-                        return sid ? `#${sid}` : (p.title || p.proposalId);
-                    }).filter(Boolean);
-                    showEphemeralMessage(tShare('plan.replacedConflicting', 'Replaced {{count}} proposal(s) on the same parcels: {{list}}', {
-                        count: conflicting.length,
-                        list: names.join(', ')
-                    }));
-                }
-            }
-
-            // Re-show the loading overlay and continue applying the incoming proposals.
-            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
-                total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
-            });
-        }
+        // Scenario 2: other proposals are already on the map. This used to auto-unapply the
+        // id-overlap conflicts silently ("Replaced N proposal(s)…"). That agency now belongs to
+        // the CONFLICT TOUR: cross-plan occupations surface one by one during the ordered apply,
+        // and the user decides per conflict — replace the existing proposal or keep it — with an
+        // optional blanket decision. Nothing is unapplied before the user has said so.
 
         // Scenario 3: No proposals on map → proceed silently (no dialog needed)
 
@@ -1929,6 +1869,123 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // Ids whose next apply attempt may proceed over intra-plan occupancy.
         const applyAnywayIds = new Set();
         const conflictRetryAttempted = new Set();
+
+        // --- Conflict tour: CROSS-plan occupations ask the user, one conflict at a time --------
+        // (rethink-proposals.md §12). Intra-plan occupancy stays automatic above; this only runs
+        // when ground the plan needs is held by a proposal that is NOT part of the plan. The user
+        // replaces the existing proposal or keeps it (skipping the incoming one), optionally for
+        // all remaining conflicts. Decisions live in the pure __conflictTour state.
+        const tourState = (window.__conflictTour && typeof window.__conflictTour.createTourState === 'function')
+            ? window.__conflictTour.createTourState()
+            : null;
+        const TOUR_HIGHLIGHT_PANE = 'tourHighlightPane';
+        let tourHighlightLayer = null;
+        const escForTour = (value) => (typeof escapeHtml === 'function') ? escapeHtml(String(value)) : String(value);
+
+        const clearTourHighlights = () => {
+            try {
+                if (tourHighlightLayer && typeof map !== 'undefined' && map) {
+                    map.removeLayer(tourHighlightLayer);
+                }
+            } catch (_) { }
+            tourHighlightLayer = null;
+        };
+
+        // Blue dashed = the incoming proposal's footprint; red = the ground the occupiers hold.
+        const showTourHighlights = (incomingPayload, occupierIds) => {
+            try {
+                if (typeof map === 'undefined' || !map || !window.__planOrder) return;
+                if (typeof map.getPane === 'function' && !map.getPane(TOUR_HIGHLIGHT_PANE)) {
+                    const pane = map.createPane(TOUR_HIGHLIGHT_PANE);
+                    pane.style.zIndex = 646;
+                    pane.style.pointerEvents = 'none';
+                }
+                clearTourHighlights();
+                const group = L.layerGroup([], { pane: TOUR_HIGHLIGHT_PANE });
+                let union = null;
+                const add = (proposalLike, style) => {
+                    try {
+                        const footprint = window.__planOrder.footprintOf(proposalLike);
+                        if (!footprint) return;
+                        const layer = L.geoJSON(footprint, { pane: TOUR_HIGHLIGHT_PANE, style, interactive: false });
+                        group.addLayer(layer);
+                        const b = layer.getBounds && layer.getBounds();
+                        if (b && b.isValid && b.isValid()) union = union ? union.extend(b) : L.latLngBounds(b.getSouthWest(), b.getNorthEast());
+                    } catch (_) { }
+                };
+                add(incomingPayload, { color: '#1d4ed8', weight: 3, dashArray: '8,6', fillColor: '#3b82f6', fillOpacity: 0.18 });
+                (Array.isArray(occupierIds) ? occupierIds : []).forEach(cid => {
+                    const record = (typeof proposalStorage !== 'undefined' && proposalStorage && proposalStorage.getProposal)
+                        ? proposalStorage.getProposal(cid)
+                        : null;
+                    if (record) add(record, { color: '#b91c1c', weight: 3, fillColor: '#ef4444', fillOpacity: 0.22 });
+                });
+                group.addTo(map);
+                tourHighlightLayer = group;
+                // animate:false — a background tab throttles rAF and would strand the view mid-flight.
+                if (union && union.isValid()) map.fitBounds(union, { padding: [80, 80], maxZoom: 18, animate: false });
+            } catch (err) {
+                console.warn('[handleSharedPlanRoute] tour highlight failed', err);
+            }
+        };
+
+        const runCrossPlanConflictStop = async (queueId, payload, label, conflictIds, conflictTitles) => {
+            const tour = window.__conflictTour;
+            if (!tour || !tourState) return 'keep';
+            const key = tour.stopKey(queueId, conflictIds);
+            const decided = tour.resolveAction(tourState, key);
+            if (decided !== 'ask') return decided;
+
+            hideProposalLoadOverlay();
+            showTourHighlights(payload, conflictIds);
+            const occupierNames = (Array.isArray(conflictTitles) && conflictTitles.length ? conflictTitles : conflictIds)
+                .map(x => String(x)).filter(Boolean);
+            const checkboxId = 'plan-tour-apply-all';
+            // showSimpleShareModal removes the modal BEFORE running the clicked action, so the
+            // checkbox cannot be read at decision time — its state is cached on every change.
+            let applyAllChecked = false;
+            const readAll = () => applyAllChecked;
+            const choice = await new Promise(resolve => {
+                let settled = false;
+                const finish = (value) => { if (!settled) { settled = true; resolve(value); } };
+                const modalApi = showSimpleShareModal({
+                    title: tShare('plan.tour.title', 'Space conflict'),
+                    body: `<p>${tShare('plan.tour.body', '"{{incoming}}" needs ground currently held by:', { incoming: escForTour(label) })}</p>`
+                        + `<ul>${occupierNames.map(n => `<li>${escForTour(n)}</li>`).join('')}</ul>`
+                        + `<label style="display:flex;align-items:center;gap:6px;margin-top:10px;">`
+                        + `<input type="checkbox" id="${checkboxId}">`
+                        + `<span>${tShare('plan.tour.applyToAll', 'Do this for all remaining conflicts')}</span></label>`,
+                    actions: [
+                        {
+                            label: tShare('plan.tour.replace', 'Replace existing'),
+                            primary: true,
+                            onClick: () => finish({ action: 'replace', all: readAll() })
+                        },
+                        {
+                            label: tShare('plan.tour.keep', 'Keep existing'),
+                            primary: false,
+                            onClick: () => finish({ action: 'keep', all: readAll() })
+                        }
+                    ],
+                    // Dismissing (×, Escape, overlay click) is the non-destructive choice.
+                    // showSimpleShareModal runs onClose BEFORE the clicked action's onClick, so
+                    // the dismiss-default must yield a tick — an action click settles the promise
+                    // synchronously right after closeModal, and only a true dismissal reaches this.
+                    onClose: () => setTimeout(() => finish({ action: 'keep', all: false }), 0)
+                });
+                try {
+                    const checkbox = modalApi && modalApi.body ? modalApi.body.querySelector('#' + checkboxId) : null;
+                    if (checkbox) checkbox.addEventListener('change', () => { applyAllChecked = !!checkbox.checked; });
+                } catch (_) { }
+            });
+            clearTourHighlights();
+            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+                total: totalProposals,
+                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+            });
+            tour.recordDecision(tourState, key, choice.action, choice.all);
+            return choice.action;
+        };
 
         while (queue.length > 0) {
             const id = queue.shift();
@@ -2174,6 +2231,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
                 if (result && result.applied) {
                     applied.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
+                    if (proposalId) appliedQueueIdByLocal.set(String(proposalId), normalizeId(id));
                     if (proposalId) lastLoadedProposalIdFor3D = proposalId;
                     stepsSinceProgress = 0;
                     attemptedSinceProgress.clear();
@@ -2200,6 +2258,69 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         applyAnywayIds.add(normalizeId(id));
                         queue.unshift(id);
                         stepsSinceProgress = 0;
+                        continue;
+                    }
+                    if (!intraPlan && conflictIds.length > 0) {
+                        // Cross-plan occupation: the user decides, one conflict at a time.
+                        const decision = await runCrossPlanConflictStop(
+                            id, proposal, label, conflictIds,
+                            Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : []);
+                        if (decision === 'replace') {
+                            for (const cid of conflictIds) {
+                                try {
+                                    if (typeof ProposalManager.unapplyWholeFamily === 'function') {
+                                        await ProposalManager.unapplyWholeFamily(cid, new Set(), { skipRestoreSource: true });
+                                    } else if (typeof ProposalManager.unapplyProposal === 'function') {
+                                        await ProposalManager.unapplyProposal(cid, { skipConfirm: true, skipRestoreSource: true });
+                                    }
+                                } catch (unapplyErr) {
+                                    console.warn('[handleSharedPlanRoute] Failed to unapply occupier', cid, unapplyErr);
+                                }
+                            }
+                            try {
+                                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
+                                    ProposalManager._refreshUIAfterProposalChange(null);
+                                }
+                            } catch (_) { }
+                            // A plan member that chained onto the occupier's fabric earlier in
+                            // this run goes down with the occupier's family unapply. Detect it,
+                            // pull it from the applied bucket, reset its retry guards and requeue
+                            // it — it re-applies onto the post-replace fabric via geometry.
+                            try {
+                                for (let i = applied.length - 1; i >= 0; i--) {
+                                    const entry = applied[i];
+                                    const record = proposalStorage.getProposal(entry.id);
+                                    const stillApplied = record && typeof isProposalCurrentlyApplied === 'function'
+                                        ? isProposalCurrentlyApplied(record)
+                                        : true;
+                                    if (record && !stillApplied) {
+                                        const draggedQueueId = appliedQueueIdByLocal.get(String(entry.id));
+                                        if (draggedQueueId) {
+                                            console.log('[handleSharedPlanRoute] Replace dragged down an applied plan member — requeueing', draggedQueueId);
+                                            applied.splice(i, 1);
+                                            reparentAttempted.delete(draggedQueueId);
+                                            conflictRetryAttempted.delete(draggedQueueId);
+                                            applyAnywayIds.delete(draggedQueueId);
+                                            if (queue.indexOf(draggedQueueId) === -1) queue.push(draggedQueueId);
+                                        }
+                                    }
+                                }
+                            } catch (_) { }
+                            // The freed ground may still carry different local names than the
+                            // payload declares — let geometry re-resolve before the retry.
+                            tryReparentGhostPrereqs(id, proposal);
+                            queue.unshift(id);
+                            stepsSinceProgress = 0;
+                            continue;
+                        }
+                        keptExisting.push({
+                            id: proposalId,
+                            label,
+                            occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : conflictIds,
+                            ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1
+                        });
+                        stepsSinceProgress = 0;
+                        attemptedSinceProgress.clear();
                         continue;
                     }
                     overlapped.push({
@@ -2456,6 +2577,19 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 count: overlapped.length
             })}</p>${overlappedItems}`);
         }
+        if (keptExisting.length > 0) {
+            if (bodyLines.length > 0) bodyLines.push('<br>');
+            const keptItems = renderList(keptExisting, item => {
+                const label = escape(item.label || formatSharedProposalLabel(null, item.id));
+                const occupiers = Array.isArray(item.occupiers) && item.occupiers.length
+                    ? ` — ${escape(item.occupiers.map(String).join(', '))}`
+                    : '';
+                return `<li>${label}${occupiers}</li>`;
+            });
+            bodyLines.push(`<p>${tShare('plan.tour.keptCountDetailed', 'You kept the existing proposals — {{count}} incoming proposal(s) stay unapplied (find them in the proposals list):', {
+                count: keptExisting.length
+            })}</p>${keptItems}`);
+        }
         if (failed.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');
             // Raw prerequisite-id dumps belong in the console, not in the user's face.
@@ -2537,7 +2671,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // Only make the user read/dismiss the summary when something genuinely FAILED. Duplicates
         // (reloading the same link) and occupancy overlaps are normal outcomes — they get a toast,
         // never a modal that blocks every load of a shared 3D link.
-        const summaryHasIssues = failed.length > 0;
+        // Kept-existing entries are user decisions worth restating in the summary, not issues —
+        // but they must never be silently swallowed by the 3D auto-advance either.
+        const summaryHasIssues = failed.length > 0 || keptExisting.length > 0;
         const showSummaryModal = bodyLines.length > 0 && (summaryHasIssues || !wants3DFromUrl);
 
         let planSummaryModal = null;

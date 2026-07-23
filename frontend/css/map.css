@@ -18,7 +18,8 @@ body.sidebar-collapsed {
 }
 
 #mode-2d-toggle.map-mode-toggle,
-#mode-3d-toggle.map-mode-toggle {
+#mode-3d-toggle.map-mode-toggle,
+#cadastre-view-toggle.map-mode-toggle {
     position: absolute;
     left: var(--map-mode-stack-left);
     z-index: 1000;
@@ -41,6 +42,49 @@ body.sidebar-collapsed {
 
 #mode-2d-toggle.map-mode-toggle { bottom: 48px; }
 #mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+/* Top of the lower-left mode stack: 2D 48 / 3D 96 / globe 144 / walk 192. */
+#cadastre-view-toggle.map-mode-toggle { bottom: 240px; }
+#cadastre-view-toggle.map-mode-toggle.active { background: #b91c1c; color: #fff; }
+
+/* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
+   only interactive citizens; every proposal layer dims to context. The clone pane and the base
+   tiles stay full-strength. Leaflet strips the 'Pane' suffix when naming pane classes, so the
+   'cadastreViewPane' pane renders as .leaflet-cadastreView-pane. */
+body.cadastre-view .leaflet-map-pane > .leaflet-pane {
+    opacity: 0.25;
+    pointer-events: none;
+}
+body.cadastre-view .leaflet-map-pane > .leaflet-tile-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-cadastreView-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Claims breadcrumb: the base parcels a proposal stands on, at the top of its details panel. */
+.claim-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    background: #fef3c7;
+    border: 1px solid #f4d38a;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.claim-breadcrumb-label { color: #7c5a11; font-weight: 600; }
+.claim-breadcrumb-link {
+    border: 1px solid #d6b656;
+    background: #fff;
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: #7c2d12;
+    cursor: pointer;
+}
+.claim-breadcrumb-link:hover { background: #fde68a; }
 
 /* Loading spinner over a lower-left mode icon while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view

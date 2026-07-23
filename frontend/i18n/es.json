@@ -1755,6 +1755,14 @@
                         "one": "Se aplicó {{count}} propuesta.",
                         "few": "Se aplicaron {{count}} propuestas.",
                         "other": "Se aplicaron {{count}} propuestas."
+                    },
+                    "tour": {
+                        "title": "Conflicto de espacio",
+                        "body": "«{{incoming}}» necesita terreno ocupado actualmente por:",
+                        "replace": "Reemplazar existente",
+                        "keep": "Mantener existente",
+                        "applyToAll": "Aplicar a todos los conflictos restantes",
+                        "keptCountDetailed": "Mantuviste las propuestas existentes — {{count}} propuesta(s) entrante(s) quedan sin aplicar (búscalas en la lista de propuestas):"
                     }
                 }
             },
@@ -2857,5 +2865,9 @@
         "cancel": "Cancelar",
         "save": "Listo",
         "saved": "Geometría de estación guardada."
+    },
+    "claims": {
+        "onParcels": "En las parcelas:",
+        "cadastreViewToggle": "Vista catastral: solo parcelas originales"
     }
 }

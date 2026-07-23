@@ -317,6 +317,24 @@
                 if (record) parcelProposals.push(record);
             });
         } catch (_) { }
+        // Claims rescue (rethink-proposals.md §13): any proposal whose BASE ancestry — the
+        // published cadastreParcelIds stamp, or the roots of whatever it declares — includes this
+        // parcel's root lists here too, whatever generation its declared ids are from. This is
+        // the dossier: the panel answers "what is claimed on this land", not "who names my id".
+        try {
+            if (global.__claims && global.__planOrder && storage?.getAllProposals) {
+                const claimRoot = global.__planOrder.cadastreRootId(resolveParcelId(feature));
+                if (claimRoot) {
+                    (storage.getAllProposals() || []).forEach(record => {
+                        if (!record || !record.proposalId) return;
+                        if (parcelProposals.some(p => String(p.proposalId) === String(record.proposalId))) return;
+                        if (global.__claims.baseParcelIdsOf(record).indexOf(claimRoot) !== -1) {
+                            parcelProposals.push(record);
+                        }
+                    });
+                }
+            }
+        } catch (_) { }
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)

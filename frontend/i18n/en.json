@@ -1735,7 +1735,15 @@
                         "other": "Failed to apply {{count}} proposals:"
                     },
                     "applyBlockedByDependencies": "Blocked: dependencies not satisfied after retries.",
-                    "summary": "Shared Plan Result"
+                    "summary": "Shared Plan Result",
+                    "tour": {
+                        "title": "Space conflict",
+                        "body": "\"{{incoming}}\" needs ground currently held by:",
+                        "replace": "Replace existing",
+                        "keep": "Keep existing",
+                        "applyToAll": "Do this for all remaining conflicts",
+                        "keptCountDetailed": "You kept the existing proposals — {{count}} incoming proposal(s) stay unapplied (find them in the proposals list):"
+                    }
                 }
             },
             "sharedInspector": {
@@ -2808,5 +2816,9 @@
         "cancel": "Cancel",
         "save": "Done",
         "saved": "Station geometry saved."
+    },
+    "claims": {
+        "onParcels": "On parcels:",
+        "cadastreViewToggle": "Cadastre view: original parcels only"
     }
 }

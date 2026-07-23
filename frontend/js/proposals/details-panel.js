@@ -1144,6 +1144,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const runPostRender = () => {
+        // Claims breadcrumb: the BASE parcels this proposal stands on, always one tap away.
+        try {
+            if (window.__claimsUi && typeof window.__claimsUi.injectProposalBreadcrumb === 'function') {
+                window.__claimsUi.injectProposalBreadcrumb(detailsContent, fullProposal || proposal);
+            }
+        } catch (_) { }
         // Lazy append remaining ancestor parcels
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels
