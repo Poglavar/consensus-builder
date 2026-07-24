@@ -22,6 +22,14 @@ module.exports = {
       // Leaving it unset would let visitors pick any allowlisted model — including the expensive
       // ones — so it must stay set in production. Change it here (versioned, deployed), not by hand.
       AI_SCENE_FORCED_MODEL: 'gemini-2.5-flash-image',
+      // The prompt is pinned server-side too: a prompt sent by the client is accepted and then
+      // DISCARDED in favour of the canonical one, so calling the endpoint directly with a crafted
+      // prompt cannot steer the paid model. The UI makes its textarea read-only to match, and the
+      // response carries warning:"prompt_overridden" whenever a differing prompt was thrown away.
+      AI_SCENE_FORCE_PROMPT: '1',
+      // Hard lifetime ceiling on total spend, enforced from the ai_scene_spend ledger (survives
+      // restarts). Once reached, /ai-scene/render returns 402 budget_exhausted and spends nothing.
+      AI_SCENE_BUDGET_USD: 10,
       // Per-IP limits on the paid endpoint (keyed on CF-Connecting-IP, the true visitor behind
       // Cloudflare). Cooldown counts every attempt; the quota counts only successful renders.
       AI_SCENE_COOLDOWN_MS: 20000,        // at most one render per IP per 20s

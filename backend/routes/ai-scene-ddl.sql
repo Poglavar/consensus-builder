@@ -20,3 +20,15 @@ CREATE TABLE IF NOT EXISTS ai_scene (
 
 CREATE INDEX IF NOT EXISTS ai_scene_slug_idx ON ai_scene (slug);
 CREATE INDEX IF NOT EXISTS ai_scene_focus_idx ON ai_scene (focus_proposal_id);
+
+-- One row per paid render, so the lifetime spend cap survives restarts and deploys (an in-memory
+-- counter would reset to zero every time the process restarted, making the cap unenforceable).
+-- Not every render is shared, so this cannot be derived from ai_scene.
+CREATE TABLE IF NOT EXISTS ai_scene_spend (
+    id SERIAL PRIMARY KEY,
+    model VARCHAR(100),
+    cost_usd NUMERIC(12, 6) NOT NULL,
+    created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS ai_scene_spend_created_idx ON ai_scene_spend (created_at);

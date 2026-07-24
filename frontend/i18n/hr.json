@@ -2834,7 +2834,11 @@
             "errQuota": "Dosegli ste ograničenje broja slika za sada. Pokušajte kasnije.",
             "errNoFunds": "Generiranje slika trenutno nije dostupno. Pokušajte kasnije.",
             "errTimeout": "Generiranje slike trajalo je predugo. Pokušajte ponovno.",
-            "errNotConfigured": "Generiranje slika trenutno nije dostupno."
+            "errNotConfigured": "Generiranje slika trenutno nije dostupno.",
+            "promptLocked": "Prompt je zadan na poslužitelju i ne može se uređivati.",
+            "warnPromptOverridden": "Napomena: korišten je standardni prompt poslužitelja — poslani prompt je zanemaren.",
+            "errBudget": "Proračun za generiranje slika je potrošen. Pokušajte neki drugi put.",
+            "errBudgetCheck": "Generiranje slika je nakratko nedostupno. Pokušajte uskoro."
         },
         "aiFollow": {
             "title": "AI prikaz",

@@ -2804,7 +2804,11 @@
             "errQuota": "You have reached your image limit for now. Please try again later.",
             "errNoFunds": "Image generation is temporarily unavailable. Please try again later.",
             "errTimeout": "The image took too long to generate. Please try again.",
-            "errNotConfigured": "Image generation is not available right now."
+            "errNotConfigured": "Image generation is not available right now.",
+            "promptLocked": "The prompt is set by the server and cannot be edited.",
+            "warnPromptOverridden": "Note: the standard server prompt was used — the prompt sent was ignored.",
+            "errBudget": "The image generation budget has been used up. Please try again another time.",
+            "errBudgetCheck": "Image generation is briefly unavailable. Please try again shortly."
         },
         "aiFollow": {
             "title": "AI render",

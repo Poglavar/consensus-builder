@@ -248,6 +248,7 @@
                     <div class="ai-scene-result" hidden>
                         <div class="ai-scene-label">${t('threeMode.ai.resultLabel', 'Result')}</div>
                         <img class="ai-scene-result-img" alt="AI photorealistic render" />
+                        <div class="ai-scene-warning" hidden></div>
                         <div class="ai-scene-result-actions">
                             <a class="btn btn-action ai-scene-download" download="ai-scene.png">${t('threeMode.ai.download', 'Download')}</a>
                             <button type="button" class="btn btn-action ai-scene-copy" hidden>${t('threeMode.ai.copyLink', 'Copy link')}</button>
@@ -322,6 +323,16 @@
     async function populateModelSelect() {
         const sel = overlayEl.querySelector('.ai-scene-model');
         const data = await fetchModels();
+
+        // Prod pins the prompt server-side too: make the textarea read-only so it can't suggest an
+        // edit that would be silently discarded. (Applied before any early return below.)
+        const promptEl = overlayEl.querySelector('.ai-scene-prompt');
+        promptEl.readOnly = !!data.forcedPrompt;
+        promptEl.classList.toggle('ai-scene-prompt--locked', !!data.forcedPrompt);
+        promptEl.title = data.forcedPrompt
+            ? t('threeMode.ai.promptLocked', 'The prompt is set by the server and cannot be edited.')
+            : '';
+
         sel.hidden = data.models.length === 0;
         sel.previousElementSibling.hidden = sel.hidden; // the "Model" label
         if (sel.hidden || sel.options.length) { updateCostHint(); return; }
@@ -441,6 +452,10 @@
                 return t('threeMode.ai.errNoFunds', 'Image generation is temporarily unavailable. Please try again later.');
             case 'timeout':
                 return t('threeMode.ai.errTimeout', 'The image took too long to generate. Please try again.');
+            case 'budget_exhausted':
+                return t('threeMode.ai.errBudget', 'The image generation budget has been used up. Please try again another time.');
+            case 'budget_check_failed':
+                return t('threeMode.ai.errBudgetCheck', 'Image generation is briefly unavailable. Please try again shortly.');
             case 'not_configured':
                 return t('threeMode.ai.errNotConfigured', 'Image generation is not available right now.');
             default:
@@ -464,6 +479,9 @@
                     image: lastCapture.image,
                     heightMap: lastCapture.heightMap,
                     prompt,
+                    // Scene facts the server needs to rebuild the canonical prompt itself when it
+                    // is configured to ignore ours (prod). All coerced/sanitised server-side.
+                    summary: lastCapture.summary,
                     model: selectedModel() || undefined
                 })
             });
@@ -477,6 +495,16 @@
             resultImg.src = data.image;
             dl.href = data.image;
             resultBox.hidden = false;
+            // The server can discard the submitted prompt and use its own — say so plainly rather
+            // than letting the user believe their edit shaped the image.
+            const warnEl = overlayEl.querySelector('.ai-scene-warning');
+            if (data.warning === 'prompt_overridden') {
+                warnEl.textContent = t('threeMode.ai.warnPromptOverridden',
+                    'Note: the standard server prompt was used — the prompt sent was ignored.');
+                warnEl.hidden = false;
+            } else {
+                warnEl.hidden = true;
+            }
             updateSessionTotal();
             setStatus(t('threeMode.ai.done', 'Done in {{s}}s — this render cost {{c}}', {
                 s: Math.round((Date.now() - startedAt) / 1000),
