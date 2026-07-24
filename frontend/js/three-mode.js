@@ -6101,11 +6101,40 @@
     // Capture the current 3D scene as a PNG data URL, for the AI photorealistic render.
     // The renderer is created without preserveDrawingBuffer, so we force a fresh synchronous
     // render and read the drawing buffer in the same tick (before the browser swaps/clears it).
+    // The canvas backing store is viewport x devicePixelRatio (capped at 2), so on any retina
+    // display a capture is ~7.5 MP. As a lossless PNG that is 6-12 MB — megabytes the image models
+    // discard anyway (they resample to roughly 1-1.5k on the long side), and enough to blow the
+    // upload size limit. Downscale before sending: same result from the model, a fraction of the
+    // bytes and the upload time.
+    const AI_CAPTURE_MAX_DIM = 1536;
+    function captureDownscaledDataURL(mimeType, quality) {
+        const src = renderer.domElement;
+        const scale = Math.min(1, AI_CAPTURE_MAX_DIM / Math.max(src.width, src.height));
+        const w = Math.max(1, Math.round(src.width * scale));
+        const h = Math.max(1, Math.round(src.height * scale));
+        const off = document.createElement('canvas');
+        off.width = w;
+        off.height = h;
+        const ctx = off.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        // JPEG has no alpha: paint an opaque base first so any transparent pixel becomes black
+        // rather than an undefined colour.
+        if (mimeType === 'image/jpeg') {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+        }
+        ctx.drawImage(src, 0, 0, w, h);
+        return off.toDataURL(mimeType, quality);
+    }
+
     function captureSceneDataURL() {
         if (!isActive || !renderer || !scene || !camera) return null;
         try {
             renderer.render(scene, camera);
-            return renderer.domElement.toDataURL('image/png');
+            // JPEG for the colour view — it is photographic, so this is ~10x smaller than PNG with
+            // no difference the model can act on.
+            return captureDownscaledDataURL('image/jpeg', 0.92);
         } catch (_) { return null; }
     }
     window.captureThreeSceneDataURL = captureSceneDataURL;
@@ -6146,7 +6175,9 @@
             scene.overrideMaterial = makeHeightMaterial(minZ, maxZ);
             scene.background = new THREE.Color(0x000000);            // empty space = 0 m = black
             renderer.render(scene, camera);
-            const url = renderer.domElement.toDataURL('image/png');
+            // PNG, not JPEG: this image encodes heights as grey levels, so lossy artifacts would
+            // literally change the building heights the model reads off it. Still downscaled.
+            const url = captureDownscaledDataURL('image/png');
             scene.overrideMaterial = prevOverride;
             scene.background = prevBg;
             renderer.render(scene, camera);                         // restore the normal view in the buffer
