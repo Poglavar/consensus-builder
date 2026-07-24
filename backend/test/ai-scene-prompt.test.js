@@ -15,7 +15,11 @@ describe('buildScenePrompt', () => {
 
     it('omits the location clause when there is no city label', () => {
         const p = buildScenePrompt({ isolatedProposal: false });
-        expect(p).not.toContain(' in ');
+        // Assert the CLAUSE is gone, not that the word "in" is absent: banning a preposition from a
+        // whole English paragraph makes every later sentence a landmine (it broke on "none in the
+        // traffic lanes"), and it was never what this test meant to check.
+        expect(p).toContain('Recreate this scene as a photorealistic');
+        expect(p).not.toMatch(/Recreate this scene in /);
     });
 
     it('emphasizes the proposed building when a proposal is isolated', () => {
@@ -50,5 +54,26 @@ describe('buildScenePrompt', () => {
         const p = buildScenePrompt({});
         expect(p).toMatch(/lanes into photorealistic lanes/i);
         expect(p).toMatch(/order, widths and proportions/i);
+    });
+});
+
+// A model left to its own devices fills the street with traffic and parks cars on the new
+// pavement — drawing today's street rather than the proposed one, and putting cars on the very
+// footway the redesign creates. The ban is stated per-place because a bare "no cars" gets applied
+// to the carriageway and ignored on the sidewalk.
+describe('vehicles', () => {
+    it('forbids cars everywhere, not just on the road', () => {
+        const prompt = buildScenePrompt({ cityLabel: 'Zagreb' }).toLowerCase();
+        expect(prompt).toContain('never generate any cars');
+        expect(prompt).toContain('no cars anywhere');
+        ['sidewalk', 'parking space', 'traffic lane', 'kerb'].forEach(place => {
+            expect(prompt).toContain(place);
+        });
+    });
+
+    it('bans them whatever else the scene asks for', () => {
+        [{}, { hasHeightMap: true, maxHeightM: 40 }, { isolatedProposal: true }].forEach(summary => {
+            expect(buildScenePrompt(summary)).toContain('No cars anywhere.');
+        });
     });
 });

@@ -2809,7 +2809,7 @@
             "tweetText": "Photorealistic view of my urban proposal",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Preparing share link…",
-            "linkCopied": "Link copied!",
+            "linkCopied": "Link copied",
             "copyFailed": "Copy failed — long-press the link to copy it.",
             "shareFailed": "Could not create a share link: {{m}}",
             "errCooldown": "Please wait a few seconds before generating another image.",

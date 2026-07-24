@@ -101,8 +101,28 @@
         el.classList.toggle('ai-scene-status--error', !!isError);
     }
 
+    // Confirm ON the button that was pressed. A line of text below the row is easy to miss and
+    // leaves the button looking like it did nothing; the label changing IS the receipt.
+    let copyLabelTimer = null;
+    function flashCopied() {
+        const button = overlayEl && overlayEl.querySelector('.ai-scene-copy');
+        if (!button) return;
+        const original = button.dataset.label || button.textContent;
+        button.dataset.label = original;
+        button.textContent = t('threeMode.ai.linkCopied', 'Link copied');
+        button.classList.add('ai-scene-copy--copied');
+        if (copyLabelTimer) clearTimeout(copyLabelTimer);
+        copyLabelTimer = setTimeout(() => {
+            copyLabelTimer = null;
+            const current = overlayEl && overlayEl.querySelector('.ai-scene-copy');
+            if (!current) return;
+            current.textContent = current.dataset.label || t('threeMode.ai.copyLink', 'Copy link');
+            current.classList.remove('ai-scene-copy--copied');
+        }, 1800);
+    }
+
     function copyToClipboard(text) {
-        const done = () => setShareStatus(t('threeMode.ai.linkCopied', 'Link copied!'));
+        const done = () => flashCopied();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
         } else {
@@ -204,6 +224,11 @@
         // plus 3D-modelled road lanes — upscale what is there instead of dreaming up a new scene.
         lines.push('The facades are grainy: improve them to a higher, believable resolution — do not invent completely new ones. Probabilistically determine what an unclear patch shows (e.g. a dark window-shaped spot on a light facade becomes a proper window).');
         lines.push('Pay special attention to the street: convert the 3D-modelled lanes into photorealistic lanes, keeping their order, widths and proportions exactly as shown.');
+        // The scene is a PROPOSAL. A model that fills the street with traffic and parks cars on the
+        // new pavement is drawing today's street, not the one being proposed — and cars on a footway
+        // read as an endorsement of exactly what the redesign removes. Stated exhaustively because a
+        // single "no cars" gets applied to the carriageway and quietly ignored everywhere else.
+        lines.push('Never generate any cars or other vehicles anywhere in the image: none on the sidewalks, none in parking spaces, none in the traffic lanes, none parked at the kerb, none in the distance. No cars anywhere.');
         lines.push('Natural daylight, clear weather. No text, labels, or watermarks.');
         return lines.join(' ');
     }
@@ -249,11 +274,16 @@
                         <div class="ai-scene-label">${t('threeMode.ai.resultLabel', 'Result')}</div>
                         <img class="ai-scene-result-img" alt="AI photorealistic render" />
                         <div class="ai-scene-warning" hidden></div>
+                        <!-- Sharing first, saving last: the point of a render is to show someone.
+                             Download and Share on X stay ANCHORS on purpose — the download
+                             attribute names the file and target=_blank keeps middle-click and
+                             "open in new tab" working, neither of which a button can do — so the
+                             CSS makes them read as buttons instead (see .ai-scene-result-actions). -->
                         <div class="ai-scene-result-actions">
-                            <a class="btn btn-action ai-scene-download" download="ai-scene.png">${t('threeMode.ai.download', 'Download')}</a>
-                            <button type="button" class="btn btn-action ai-scene-copy" hidden>${t('threeMode.ai.copyLink', 'Copy link')}</button>
                             <button type="button" class="btn btn-action ai-scene-share" hidden>${t('threeMode.ai.share', 'Share')}</button>
+                            <button type="button" class="btn btn-action ai-scene-copy" hidden>${t('threeMode.ai.copyLink', 'Copy link')}</button>
                             <a class="btn btn-action ai-scene-tweet" target="_blank" rel="noopener noreferrer" hidden>${t('threeMode.ai.tweet', 'Share on X')}</a>
+                            <a class="btn btn-action ai-scene-download" download="ai-scene.png">${t('threeMode.ai.download', 'Download')}</a>
                         </div>
                         <div class="ai-scene-share-status" role="status" aria-live="polite"></div>
                     </div>

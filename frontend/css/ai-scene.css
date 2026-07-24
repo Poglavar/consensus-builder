@@ -207,6 +207,34 @@
 .ai-scene-result-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
 .ai-scene-result-actions [hidden] { display: none; }
 
+/* Two of these four are anchors (Download needs its `download` attribute, Share on X needs
+   target=_blank) and two are buttons. Left alone they read as different controls: the anchors
+   inherit the page's link styling — underlined, left-aligned, and taking the document font rather
+   than the button font — while the buttons centre their label. Normalising here means the row looks
+   like one set of buttons without giving up what an anchor does natively. */
+.ai-scene-result-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    font: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.ai-scene-result-actions .btn:hover,
+.ai-scene-result-actions .btn:focus-visible {
+    text-decoration: none;
+}
+
+/* "Link copied" replaces the label for a moment — the confirmation belongs on the control that
+   was pressed, not on a line underneath that is easy to miss. */
+.ai-scene-copy--copied {
+    background: #1e8e3e;
+    border-color: #1e8e3e;
+}
+
 /* Inline AI-render card shown to someone who opened a shared ?scene link, over the 3D world. */
 .ai-scene-follow-card {
     position: fixed;
