@@ -6,11 +6,14 @@
 //   /proposals/:ids?scene=<slug>          -> a shared AI render: card = the AI image itself
 // Humans get the same HTML (SPA still boots); only <head> is augmented.
 
+// Fallback card, used when an upstream lookup fails. We strip the page's own static og tags before
+// injecting, so these values REPLACE them — they must be at least as good as the site's originals,
+// and `image` must be a real existing asset (it is: the logo the static tags already used).
 const DEFAULTS = {
     siteName: 'Urban Game Theory',
-    title: 'Urban Game Theory',
-    description: 'Propose, negotiate and visualise changes to the city.',
-    image: 'https://urbangametheory.xyz/og-default.png' // bundled/branded fallback card
+    title: 'Consensus Builder',
+    description: 'Help communities reach consensus on future land development.',
+    image: 'https://urbangametheory.xyz/images/consensus-builder-logo-2.png'
 };
 
 function escapeHtml(s) {
@@ -22,8 +25,9 @@ function escapeHtml(s) {
         .replace(/'/g, '&#39;');
 }
 
-// Injects/overrides the social meta tags in <head>. We append fresh tags; duplicates with the same
-// property are tolerated by crawlers (last one generally wins), and the SPA ignores them.
+// Injects the social meta tags at the end of <head>. The page's own og:/twitter:/<title> tags are
+// stripped first (see handleHtml) — leaving duplicates is NOT safe: crawlers commonly honour the
+// FIRST occurrence, which would be the SPA's generic site card, silently defeating the whole Worker.
 class HeadInjector {
     constructor(meta) { this.meta = meta; }
     element(head) {
@@ -119,7 +123,14 @@ async function handleHtml(url, request, env) {
         else if (firstId) meta = await proposalMeta(firstId, url, env, meta);
     } catch (_) { /* keep defaults on any upstream failure */ }
 
-    return new HTMLRewriter().on('head', new HeadInjector(meta)).transform(originResp);
+    // Strip the SPA's static social tags so ours are the only ones the crawler can see, then append.
+    const strip = { element(el) { el.remove(); } };
+    return new HTMLRewriter()
+        .on('head title', strip)
+        .on('head meta[property^="og:"]', strip)
+        .on('head meta[name^="twitter:"]', strip)
+        .on('head', new HeadInjector(meta))
+        .transform(originResp);
 }
 
 export default {
