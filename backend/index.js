@@ -331,7 +331,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupEnsRoute(app, activePool);
     setupEnsPlansRoute(app, activePool);
     setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
-    setupAiSceneRoute(app); // AI photorealistic scene render — no DB pool (talks to Gemini image API)
+    setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

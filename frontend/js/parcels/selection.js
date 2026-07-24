@@ -4,6 +4,12 @@
     let lastHoverLayer = null;
     let lastHoverParcelId = null;
 
+    function isStationPlacementMapInteractionActive() {
+        return global.transitStationPlacementMode === true
+            || (typeof global.isTransitStationPlacementActive === 'function'
+                && global.isTransitStationPlacementActive());
+    }
+
     function getParcelIdFromFeature(feature) {
         if (!feature) return null;
         const props = feature.properties || {};
@@ -26,8 +32,15 @@
 
     function highlightFeature(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // Proposal browse mode (the proposals list is open): the map is inert to parcels — no hover
+        // highlight, matching the click behaviour (only proposals are interactive).
+        if (global.proposalListBrowseMode) return;
+        // Station placement owns every map-surface pointer event. Parcels stay visually inert
+        // while the carried station preview and compatible-track overlay respond to the cursor.
+        if (isStationPlacementMapInteractionActive()) return;
         // No parcel hover while the structure geometry editor owns the map.
         if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
+        if (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
@@ -48,7 +61,7 @@
         // Only use proposal hover overlay when Proposal UI is active
         try {
             if (proposalUIActive && typeof global.proposalStorage !== 'undefined') {
-                const proposals = global.proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => p.status !== 'Executed');
+                const proposals = global.proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => getLifecycleStatus(p) !== 'Executed');
                 if (proposals && proposals.length > 0) {
                     // When a proposal is already open, only highlight its parcels on hover
                     const allowProposalHover = !restrictHoverToActiveProposal || parcelInActiveProposal;
@@ -94,10 +107,13 @@
             && global.proposalHighlightStyleOverride.has(layer)) {
             return;
         }
-        // Proposal-aware: only change border, not fill
+        // Proposal-aware: only change border, not fill. Road parcels have a dark asphalt fill
+        // (#2b2b2b), so the default grey #666 hover border blends into it and reads as "no hover" —
+        // give roads a bright, high-contrast border instead. Normal (transparent-fill) parcels keep #666.
+        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         layer.setStyle({
             weight: 5,
-            color: '#666',
+            color: isRoad ? '#00e5ff' : '#666',
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
@@ -241,6 +257,20 @@
         restoreParcelLayerStyle(layer);
     }
 
+    function clearParcelHover() {
+        const previousLayer = lastHoverLayer;
+        lastHoverLayer = null;
+        lastHoverParcelId = null;
+        if (previousLayer) {
+            try { restoreParcelLayerStyle(previousLayer); } catch (_) { }
+        }
+        try {
+            if (typeof global.clearProposalInfoHoverOverlay === 'function') {
+                global.clearProposalInfoHoverOverlay();
+            }
+        } catch (_) { }
+    }
+
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
         const events = {
@@ -267,6 +297,7 @@
     }
 
     function selectParcel(parcelOrId, showPanel = true) {
+        if (isStationPlacementMapInteractionActive()) return;
         if (!global.parcelLayer) return;
         const parcelId = parcelOrId && parcelOrId.feature
             ? getParcelIdFromFeature(parcelOrId.feature)
@@ -414,6 +445,7 @@
 
     global.highlightFeature = highlightFeature;
     global.resetHighlight = resetHighlight;
+    global.clearParcelHover = clearParcelHover;
     global.onEachFeature = onEachFeature;
     global.restoreParcelLayerStyle = restoreParcelLayerStyle;
     global.selectParcel = selectParcel;

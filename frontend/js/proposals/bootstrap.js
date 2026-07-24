@@ -95,6 +95,8 @@ if (typeof window !== 'undefined') {
     window._startParcelWriteCache = _startParcelWriteCache;
     window._flushParcelWriteCache = _flushParcelWriteCache;
     window._discardParcelWriteCache = _discardParcelWriteCache;
+    window.withParcelWriteBatch = withParcelWriteBatch;
+    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
 }
 
 
@@ -823,7 +825,7 @@ if (typeof window !== 'undefined') {
 
 // Simple HTML escape to safely insert dynamic strings into innerHTML
 
-// PARCEL_NUMBER_PROPERTY_CANDIDATES is defined in proposals/sharing.js
+// Parcel display-number schema and accessors are owned by proposals/parcel-id.js.
 
 
 
@@ -1038,41 +1040,19 @@ window.addEventListener('parcelDataLoaded', async () => {
 
     // 1) Auto-apply executed and applied proposals to ensure parent parcels are removed and child parcels are clickable
     // This is critical: without this, parent parcels remain on the map and block child parcel clicks
-    // applyProposal is idempotent - it checks roadProposal.status === 'applied' and returns early if already applied
+    // applyProposal is idempotent - it checks the roadProposal's applied flag and returns early if already applied
     if (typeof proposalStorage !== 'undefined' && typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
         try {
             const allProposals = proposalStorage.getAllProposals();
             const isAppliedLike = (p) => {
-                const status = (p.status || '').toLowerCase();
-                const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
-                const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
-                const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
-                const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
-                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
-                return status === 'executed' || status === 'applied'
-                    || roadStatus === 'applied' || roadStatus === 'executed'
-                    || structureStatus === 'applied' || structureStatus === 'executed'
-                    || buildingStatus === 'applied' || buildingStatus === 'executed'
-                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
-                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
+                if (!p) return false;
+                if (isApplied(p)) return true;
+                return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                    .some(key => p[key] && isApplied(p, p[key]));
             };
 
-            // Filter for both executed and applied proposals
-            const proposalsToRestore = allProposals.filter(p => {
-                const status = (p.status || '').toLowerCase();
-                const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
-                const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
-                const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
-                const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
-                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
-                // Include executed proposals and applied proposals (for roads, buildings, structures, reparcellizations, etc.)
-                return status === 'executed' || status === 'applied'
-                    || roadStatus === 'applied' || roadStatus === 'executed'
-                    || structureStatus === 'applied' || structureStatus === 'executed'
-                    || buildingStatus === 'applied' || buildingStatus === 'executed'
-                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
-                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
-            });
+            // Filter for both executed and applied proposals (roads, buildings, structures, reparcellizations, etc.)
+            const proposalsToRestore = allProposals.filter(isAppliedLike);
 
             // Drop ancestor proposals when any of their children are already applied/executed in the same restore set
             const proposalsById = new Map();

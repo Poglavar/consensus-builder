@@ -21,19 +21,34 @@ describe('buildScenePrompt', () => {
     it('emphasizes the proposed building when a proposal is isolated', () => {
         const p = buildScenePrompt({ cityLabel: 'Split, Croatia', isolatedProposal: true });
         expect(p.toLowerCase()).toContain('highlighted proposed building');
-        expect(p).not.toContain('grey massing blocks');
     });
 
-    it('falls back to the generic massing description with no isolated proposal', () => {
-        const p = buildScenePrompt({ isolatedProposal: false });
-        expect(p).toContain('grey massing blocks');
+    it('references the height map and its scale only when one was captured', () => {
+        const withMap = buildScenePrompt({ hasHeightMap: true, maxHeightM: 72 });
+        expect(withMap).toMatch(/height map/i);
+        expect(withMap).toContain('72 m');
+
+        const noMap = buildScenePrompt({ hasHeightMap: false });
+        expect(noMap).not.toMatch(/height map/i);
     });
 
-    it('always instructs the model to stay faithful to the geometry', () => {
-        for (const s of [undefined, {}, { cityLabel: 'X', isolatedProposal: true }]) {
+    it('always frames the task as a structure-preserving edit', () => {
+        for (const s of [undefined, {}, { cityLabel: 'X', isolatedProposal: true, hasHeightMap: true, maxHeightM: 50 }]) {
             const p = buildScenePrompt(s);
             expect(typeof p).toBe('string');
-            expect(p).toMatch(/do not add, move, or resize/i);
+            expect(p).toMatch(/do not add, remove, move, or resize/i);
         }
+    });
+
+    it('asks for facade enhancement instead of invention', () => {
+        const p = buildScenePrompt({});
+        expect(p).toMatch(/facades are grainy/i);
+        expect(p).toMatch(/do not invent completely new ones/i);
+    });
+
+    it('asks for photorealistic street lanes with preserved dimensions', () => {
+        const p = buildScenePrompt({});
+        expect(p).toMatch(/lanes into photorealistic lanes/i);
+        expect(p).toMatch(/order, widths and proportions/i);
     });
 });

@@ -6,6 +6,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function proposalSupersessionFactory() {
     'use strict';
 
+    // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
+    const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./proposals/status.js').isApplied;
+
+    // Sub-proposal keys whose applied state also makes a source applied-for-replacement.
+    const SUB_KEYS = ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal', 'ownershipTransferProposal'];
+
     const STATUS_PATHS = [
         ['status'],
         ['roadProposal', 'status'],
@@ -21,17 +27,16 @@
         try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
     }
 
-    function appliedLike(status) {
-        const value = String(status || '').toLowerCase();
-        return value === 'applied' || value === 'executed';
-    }
-
     function valueAtPath(target, path) {
         return path.reduce((value, key) => value?.[key], target);
     }
 
+    // A source is applied-for-replacement if the proposal itself is applied, or any of its
+    // sub-proposals is applied — mirroring the old STATUS_PATHS traversal on the applied axis.
     function proposalIsAppliedForReplacement(proposal) {
-        return !!proposal && STATUS_PATHS.some(path => appliedLike(valueAtPath(proposal, path)));
+        if (!proposal) return false;
+        if (appliedOf(proposal)) return true;
+        return SUB_KEYS.some(key => proposal[key] && appliedOf(proposal, proposal[key]));
     }
 
     function proposalReplacementSourceId(proposal) {

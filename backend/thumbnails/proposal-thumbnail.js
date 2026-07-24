@@ -16,6 +16,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'square': '⛲️',
     'park': '🌳',
     'lake': '🐟',
+    'station': '🚉',
     'single': '🏠',
     'buildings': '🏠',
     'road-track': '🛣️🛤️',

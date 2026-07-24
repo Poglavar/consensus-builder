@@ -5,6 +5,8 @@
     <base href="/">
     <title>Consensus Builder</title>
     <meta charset="utf-8" />
+    <!-- Capture photoreal diagnostics before the share flow rewrites /proposals/... and drops the query. -->
+    <script>try{(function(){var params=new URLSearchParams(location.search);if(params.has('seat'))sessionStorage.setItem('cbSeatDebug','1');if(params.has('seam'))sessionStorage.setItem('cbPhotorealSeam',params.get('seam'));})();}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Open Graph / Social Media Meta Tags -->
@@ -71,10 +73,14 @@
             window.addEventListener('load', function () {
                 document.body.classList.remove('app-loading');
             });
-            window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths) {
+            // opts.defer emits `defer` script tags: deferred classic scripts run in insertion
+            // order AFTER module scripts (like the THREE ESM bootstrap), so a list that needs
+            // `window.THREE` at parse time opts in and keeps its intra-list order.
+            window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths, opts) {
+                var attrs = (opts && opts.defer) ? ' defer' : '';
                 var html = '';
                 paths.forEach(function (path) {
-                    html += '<script src="' + escapeHtmlAttribute(appendBuildToken(path)) + '"><\/script>';
+                    html += '<script' + attrs + ' src="' + escapeHtmlAttribute(appendBuildToken(path)) + '"><\/script>';
                 });
                 document.write(html);
             };
@@ -97,6 +103,7 @@
                 'css/proposals.css',
                 'css/proposal-editor.css',
                 'css/structure-geometry-editor.css',
+                'css/station-geometry-editor.css',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
@@ -527,6 +534,46 @@
                 </div>
             </div>
 
+            <!-- Transit Stations Section -->
+            <div class="accordion-section" data-section="stations">
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span class="accordion-title">
+                        <i class="fas fa-train-subway"></i>
+                        <span class="accordion-title-text" data-section-title="stations"
+                            data-i18n-key="sidebar.stations.title">Stations</span>
+                    </span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="control-group-title" data-i18n-key="sidebar.stations.placeTitle">Place a station</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-action" data-station-type="bus"
+                                onclick="startTransitStationPlacement('bus')">
+                                <span data-i18n-key="sidebar.stations.bus">Bus station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="tram"
+                                onclick="startTransitStationPlacement('tram')">
+                                <span data-i18n-key="sidebar.stations.tram">Tram station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="underground"
+                                onclick="startTransitStationPlacement('underground')">
+                                <span data-i18n-key="sidebar.stations.underground">Underground station</span>
+                            </button>
+                            <button type="button" class="btn btn-action" data-station-type="elevated"
+                                onclick="startTransitStationPlacement('elevated')">
+                                <span data-i18n-key="sidebar.stations.elevated">Elevated train station</span>
+                            </button>
+                            <button type="button" class="btn" onclick="cancelTransitStationPlacement()">
+                                <span data-i18n-key="sidebar.stations.cancel">Cancel placement</span>
+                            </button>
+                        </div>
+                        <div id="station-placement-status" class="control-help-text"
+                            data-i18n-key="sidebar.stations.hint">Rail stations snap to rail tracks. Bus stations snap to the selected roadside.</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Buildings Section -->
             <div class="accordion-section" data-section="buildings">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
@@ -538,11 +585,12 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <!-- Two surveys of the same city, and they disagree. GDI is the working set —
+                    <!-- Three views of the same city, and they disagree. GDI is the working set —
                          the objects the 3D model, the carve and every demolition record use. DGU is
-                         the cadastre, a legal reference only. Both can be ticked at once: overlaying
-                         them is how the disagreement becomes visible. Neither toggle changes what a
-                         corridor cuts. -->
+                         the cadastre, a legal reference only. OSM is the community map behind the
+                         basemap, so its outlines match the tiles on screen. Any can be ticked at
+                         once: overlaying them is how the disagreement becomes visible. None of these
+                         toggles changes what a corridor cuts. -->
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
@@ -552,6 +600,10 @@
                             <label>
                                 <input type="checkbox" id="showBuildingsDgu" onchange="toggleLayer('buildingsDgu')">
                                 <span data-i18n-key="sidebar.buildings.showDgu">DGU cadastre (legal reference)</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showBuildingsOsm" onchange="toggleLayer('buildingsOsm')">
+                                <span data-i18n-key="sidebar.buildings.showOsm">OSM buildings (matches the map)</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="showProposedBuildings"
@@ -885,15 +937,14 @@
             <i class="fas fa-person-walking" aria-hidden="true"></i>
         </button>
         <button id="mode-2d-toggle" class="map-mode-toggle" title="Switch to 2D" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title">2D</button>
-        <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to 3D" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title">3D</button>
-        <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Realistic context (Google Photorealistic 3D)" aria-label="Realistic context (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
+        <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to model (3D)" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title">3D</button>
+        <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Photo view (Google Photorealistic 3D)" aria-label="Photo view (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
             <i class="fas fa-globe" aria-hidden="true"></i>
         </button>
         <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
             <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
         </button>
         <div id="three-container" aria-hidden="true"></div>
-        <div id="cesium-container" aria-hidden="true"></div>
 
         <!-- Username Display -->
         <div id="username-display" class="username-display">
@@ -902,9 +953,12 @@
         </div>
 
         <!-- Parcel Info Panel -->
-        <div id="parcel-info-panel" class="info-panel">
+        <div id="parcel-info-panel" class="info-panel right-dock-panel">
             <div class="panel-header">
                 <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
+                <button type="button" id="parcel-info-minimize" class="close-circle-btn close-circle-btn--lg"
+                    aria-label="Minimize" title="Minimize" aria-expanded="true"
+                    data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title">&#8722;</button>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                     aria-label="Close parcel info panel"
                     onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
@@ -1010,7 +1064,7 @@
         </div>
 
         <!-- Proposal Details Panel -->
-        <div id="proposal-details-panel" class="info-panel">
+        <div id="proposal-details-panel" class="info-panel right-dock-panel">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Proposal Details</h3>
                 <div class="panel-header__actions">
@@ -1065,7 +1119,7 @@
         </div>
 
         <!-- Road Info Panel -->
-        <div id="road-info-panel" class="info-panel">
+        <div id="road-info-panel" class="info-panel right-dock-panel">
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
                 <button type="button" id="editRoadCrossSectionButton" class="road-cross-section-btn"
@@ -1254,6 +1308,9 @@
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            'js/proposals/status.js',
+            'js/proposals/chain-status.js',
+            'js/proposal-parcel-identity.js',
             'js/wallet-connection.js',
             'js/solana/wallet-adapter.js',
             'js/solana/chain-data-loader.js',
@@ -1319,7 +1376,11 @@
             'js/proposals/state.js',
             'js/proposals/lifecycle.js',
             'js/proposals/parcel-id.js',
+            'js/proposals/plan-order.js',
+            'js/proposals/cadastre-ancestry.js',
             'js/footprint-geometry.js',
+            'js/building-ground.js',
+            'js/proposal-own-parcel.js',
             'js/proposals/geometry.js',
             'js/proposals/chain.js',
             'js/proposals/roads.js',
@@ -1356,16 +1417,30 @@
             'js/proposal-supersession.js',
             'js/synthetic-parcel-identity.js',
             'js/corridor-geometry.js',
+            'js/proposals/apply/route.js',
+            'js/proposals/apply/finalize.js',
+            'js/proposals/apply/conflicts.js',
+            'js/proposals/apply/transaction.js',
+            'js/proposal-road-geometry.js',
+            'js/proposals/apply/road.js',
+            'js/proposals/apply/buildings.js',
+            'js/proposals/apply/structures.js',
+            'js/proposals/apply/parcels.js',
+            'js/proposals/apply/unapply.js',
             'js/proposal-manager.js',
             'js/reparcellization-shares.js',
             'js/reparcellization-slice.js',
+            'js/reparcellization-ui-state.js',
             'js/reparcellization.js',
             'js/financials.js',
             'js/agents.js',
             'js/agent-bubbles.js',
             'js/game.js',
             'js/structures.js',
-            'js/structure-geometry-editor.js'
+            'js/structure-geometry-editor.js',
+            'js/vendor/transit-station-models.js',
+            'js/transit-alignments.js',
+            'js/transit-stations.js'
         ]);
     </script>
 
@@ -1415,33 +1490,92 @@
             'js/road-detection.js',
             'js/legacy-road-centerlines.js',
             'js/corridor-profile.js',
+            'js/corridor-terrain-formation.js',
+            'js/corridor-clearance.js',
             'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',
             'js/corridor-tunnel.js',
+            'js/road-impact-tour.js',
+            'js/corridor-grade-separation.js',
+            'js/corridor-topology-migration.js',
             'js/corridor-structures.js',
             'js/road-stroke-state.js',
+            'js/road-finalization-state.js',
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/centerline-animation.js'
         ]);
     </script>
-    <!-- Three.js for 3D preview (0.147.0 is the last release shipping the classic examples/js UMD builds used here) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // Resolves once the ESM bootstrap below has populated window.THREE (or after a timeout
+        // if the CDN failed). Defined as a parse-time classic script so every later classic
+        // script can call it unconditionally before touching THREE.
+        window.whenThreeReady = (() => {
+            let promise = null;
+            return () => {
+                if (typeof window.THREE !== 'undefined') return Promise.resolve(true);
+                if (!promise) {
+                    promise = new Promise((resolve) => {
+                        window.addEventListener('threeReady', () => resolve(true), { once: true });
+                        setTimeout(() => resolve(typeof window.THREE !== 'undefined'), 10000);
+                    });
+                }
+                return promise;
+            };
+        })();
+    </script>
+    <!-- Three.js r184 as ESM: the import map + bootstrap module below populate the global
+         `THREE` that every classic script keeps using, including the OrbitControls/GLTFLoader
+         addons that used to ship as examples/js UMD builds (dropped after r147). Same pinned
+         URLs as zagreb-isochrone's photoreal sim, so both projects share one 3d-tiles-renderer
+         stack (and the browser cache). Module scripts are deferred, so no classic script may
+         touch THREE at parse time — all 3D code runs on user interaction, after `threeReady`. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+            "3d-tiles-renderer/three": "https://esm.sh/3d-tiles-renderer@0.5.0/three?external=three",
+            "3d-tiles-renderer/three/plugins": "https://esm.sh/3d-tiles-renderer@0.5.0/three/plugins?external=three"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE_NS from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        // Module namespace objects are frozen — spread into a plain object so the addon
+        // classes can sit where the classic scripts expect them (THREE.OrbitControls etc.).
+        window.THREE = Object.assign({}, THREE_NS, { OrbitControls, GLTFLoader });
+        window.dispatchEvent(new Event('threeReady'));
+    </script>
     <script>
         window.writeVersionedLocalScripts([
             'js/local-frame.js',
             'js/building-height.js',
             'js/proposals/gain.js',
+            'js/three-mesh-sanitize.js',
+            'js/three-screen-door.js',
+            'js/three-smooth-transparency.js',
+            'js/three-building-display.js',
+            'js/three-structure-refresh.js',
+            'js/three-square-paving.js',
+            'js/three-snapshot-navigation.js',
+            'js/three-keyboard-context.js',
+            'js/elevated-rail-3d.js',
             'js/three-mode.js',
+            'js/photoreal-frame.js',
+            'js/photoreal-ground.js',
+            'js/photoreal-seam.js',
             'js/photoreal-mode.js',
             'js/ai-scene.js',
+            'js/ai-scene-follow.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',
             'js/parcel-blocks.js',
             'js/proposal-warnings.js',
+            'js/polygon-geometry-editor.js',
             'js/building-blocks.js',
             'js/single-building-geometry.js',
             'js/single-building.js',
@@ -1449,7 +1583,10 @@
             'js/row-house.js',
             'js/parcel-based.js',
             'js/government-roads.js?v=20260404b'
-        ]);
+            // deferred: this stack assumes `window.THREE` exists when it evaluates (three-mode's
+            // whole IIFE bails without it). The ESM bootstrap above is a module (= deferred), and
+            // deferred classics run after it, in order — parse-time tags would run BEFORE it.
+        ], { defer: true });
     </script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 
@@ -1461,7 +1598,7 @@
             'js/area-monitor/paint.js?v=20260404i',
             'js/area-monitor/ui.js?v=20260428a',
             'js/area-monitor/routing.js?v=20260404a',
-            'js/elevated-rail-3d.js',
+            'js/unsaved-work-guard.js',
             'js/boot-ready.js'
         ]);
     </script>

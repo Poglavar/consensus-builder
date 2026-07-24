@@ -7,14 +7,19 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Legacy fallback only: pre-split in-memory records that never carried the `applied` boolean.
     const appliedLike = status => {
         const normalized = String(status || '').toLowerCase();
         return normalized === 'applied' || normalized === 'executed';
     };
 
+    // Map-application axis. The root boolean is authoritative; nested state is legacy-only.
     function roadProposalIsApplied(proposal) {
         if (!proposal || !proposal.roadProposal) return false;
-        return appliedLike(proposal.roadProposal.status) || appliedLike(proposal.status);
+        const rp = proposal.roadProposal;
+        if (typeof proposal.applied === 'boolean') return proposal.applied;
+        if (typeof rp.applied === 'boolean') return rp.applied;
+        return appliedLike(rp.status) || appliedLike(proposal.status);
     }
 
     function roadProposalKey(proposal, fallback = null) {
@@ -35,10 +40,10 @@
         const sourceId = String(roadProposalKey(source, copiedFrom) || copiedFrom);
         if (!resolvedReplacementId || sourceId === resolvedReplacementId) return null;
 
-        source.roadProposal.statusBeforeSuperseded = source.roadProposal.status || 'applied';
-        source.statusBeforeSuperseded = source.status || 'Applied';
-        source.roadProposal.status = 'unapplied';
-        source.status = 'Active';
+        source.appliedBeforeSuperseded = typeof source.applied === 'boolean' ? source.applied : true;
+        // Superseding is application-axis-only: park the source without rewriting its lifecycle.
+        delete source.roadProposal.applied;
+        source.applied = false; // superseded roads leave the map until restored
         source.roadProposal.supersededByProposalId = resolvedReplacementId;
         source.supersededByProposalId = resolvedReplacementId;
 
@@ -64,10 +69,10 @@
             if (!source || !source.roadProposal) return;
             const marker = source.roadProposal.supersededByProposalId || source.supersededByProposalId;
             if (String(marker || '') !== resolvedReplacementId) return;
-            source.roadProposal.status = source.roadProposal.statusBeforeSuperseded || 'applied';
-            source.status = source.statusBeforeSuperseded || 'Applied';
-            delete source.roadProposal.statusBeforeSuperseded;
-            delete source.statusBeforeSuperseded;
+            const restoredApplied = typeof source.appliedBeforeSuperseded === 'boolean' ? source.appliedBeforeSuperseded : true;
+            source.applied = restoredApplied;
+            delete source.roadProposal.applied;
+            delete source.appliedBeforeSuperseded;
             delete source.roadProposal.supersededByProposalId;
             delete source.supersededByProposalId;
             restored.push(source);

@@ -40,10 +40,11 @@ let wingPositions = [];
 let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
 let lastSuperparcel = null;      // the exact parcel outline, to clip the building so nothing pokes out
 let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
-let blockifyLiveLayer = null;    // transient dashed outline shown while dragging a manual vertex
+let blockifyPolygonEditor = null; // shared manual-outline editor (also used by freeform buildings)
+let blockifyPendingVertexActionIndex = null; // survives the synchronous rebuild after drag release
 // Manual (freeform) footprint mode: a one-way branch from the parametric sliders. In manual mode the
-// outer ring's vertices are draggable, the footprint sliders are inert, and the courtyard is still
-// re-inset by the (frozen) building width. Height stays live. "Back to sliders" regenerates
+// outer ring's vertices are draggable, the shape-producing sliders are inert, and the courtyard is
+// re-inset by the live building-width slider. Height also stays live. "Back to sliders" regenerates
 // parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
 let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
@@ -146,7 +147,6 @@ function describeParcelSelection(ids) {
 }
 
 // --- 3D preview state ---
-let blockifyThreeLoadPromise = null;
 let blockify3D = {
     renderer: null,
     scene: null,
@@ -620,19 +620,9 @@ let blockifyDebugLayer = null;
 
 async function ensureThreeForBlockify() {
     if (typeof THREE !== 'undefined') return true;
-    if (blockifyThreeLoadPromise) {
-        await blockifyThreeLoadPromise;
-        return typeof THREE !== 'undefined';
-    }
-    blockifyThreeLoadPromise = new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js';
-        script.async = true;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-    });
-    await blockifyThreeLoadPromise;
+    // THREE comes from index.html's ESM bootstrap — never load a second copy here, an old
+    // UMD build would clobber the r184 global for the whole app.
+    if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
     return typeof THREE !== 'undefined';
 }
 
@@ -844,8 +834,9 @@ function initBlockify3DSimple() {
         controls.enablePan = true;
     }
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.9);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
+    // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+    const amb = new THREE.AmbientLight(0xffffff, 0.9 * Math.PI);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.7 * Math.PI);
     dir.position.set(300, 300, 500);
     scene.add(amb);
     scene.add(dir);
@@ -1098,9 +1089,7 @@ function hydrateProposedBuildingsFromProposals() {
     proposals.forEach(p => {
         if (!p || !p.buildingProposal) return;
 
-        const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-        const isActive = status === 'applied' || status === 'executed';
-        if (!isActive) return;
+        if (!isApplied(p, p.buildingProposal)) return;
 
         if (cityId && isInCityFn) {
             const cityIds = (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
@@ -1117,6 +1106,14 @@ function hydrateProposedBuildingsFromProposals() {
         const features = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings : [];
 
         if (!features.length) return;
+
+        // Same lifecycle rule as the apply path (proposals/apply/buildings.js). This used to read a
+        // bare `status`, which in a browser silently resolves to window.status (the legacy
+        // status-bar string, '') — so an EXECUTED proposal's buildings came back stamped '' and were
+        // relabelled 'applied' downstream, and outside a browser it was a hard ReferenceError.
+        const status = (typeof getLifecycleStatus === 'function' && getLifecycleStatus(p) === 'Executed')
+            ? 'executed'
+            : 'applied';
 
         // Base props should act as defaults only. Per-building properties (parcelId, buildingIndex, etc.)
         // must NOT be overridden by proposal-level buildingProperties; otherwise we can collapse multiple
@@ -1184,9 +1181,7 @@ function loadExecutedBuildingsFromStorage() {
                 const activeBuildingCounts = new Map(); // proposalId -> count (0 means unknown)
                 proposals.forEach(p => {
                     if (!p || !p.buildingProposal) return;
-                    const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-                    const isActive = status === 'applied' || status === 'executed';
-                    if (!isActive) return;
+                    if (!isApplied(p, p.buildingProposal)) return;
                     const pid = p.proposalId || p.id;
                     if (!pid) return;
                     const count = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings.length : 0;
@@ -1232,9 +1227,20 @@ function loadExecutedBuildingsFromStorage() {
 
         if (typeof window !== 'undefined') { window.proposedBuildings = list; }
 
-        // If there are buildings and checkbox is checked, update the layer
-        const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+        // The paved/green surround of a freeform proposal belongs to the proposal, not to the
+        // buildings layer, so it is painted on load regardless of the buildings checkbox below.
+        if (typeof window !== 'undefined') {
+            try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface hydration failed', error); }
+        }
+
+        // Applied buildings are part of the map, so a reload must show them — exactly as applying
+        // one does (every creation path ticks this box). #showProposedBuildings is a session toggle
+        // with no persisted OFF state: it starts unchecked on every load, so gating the first render
+        // on it meant an applied building proposal silently vanished on refresh while roads, which
+        // have no such gate, came back. The proposal itself was in storage all along.
+        if (list.length > 0) {
+            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+            if (showProposedBuildingsCheckbox) showProposedBuildingsCheckbox.checked = true;
             // Use setTimeout to ensure map is ready
             setTimeout(() => {
                 updateProposedBuildingsLayer();
@@ -1273,12 +1279,14 @@ function updateProposedBuildingsLayer() {
     }
 
     const list = ensureProposedBuildingsState();
+    // Announce every refresh, including one that empties the layer: unapplying the last proposed
+    // building has to reach 3D and the photoreal carve too, or their meshes go stale.
+    if (typeof window !== 'undefined') {
+        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+        // The paved/green surround of a freeform proposal follows its buildings on and off the map.
+        try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
+    }
     if (list.length > 0) {
-        // Sync global so 3D mode can rebuild immediately
-        if (typeof window !== 'undefined') {
-            window.proposedBuildings = list;
-            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
-        }
         proposedBuildingLayer = L.featureGroup().addTo(map);
 
         list.forEach((building, index) => {
@@ -1709,6 +1717,7 @@ function showBlockifyModal() {
     gapPositions = [];
     wingPositions = [];
     blockifyMode = 'parametric';
+    blockifyPendingVertexActionIndex = null;
     manualOuterRing = [];
     existingRule = 'exact';
     currentProposedHeightFloors = DEFAULT_PROPOSED_HEIGHT_FLOORS;
@@ -1843,6 +1852,8 @@ function handleBlockifyKeydown(event) {
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
     document.removeEventListener('keydown', handleBlockifyKeydown);
+    blockifyPendingVertexActionIndex = null;
+    clearGapWingHandles();
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -2784,11 +2795,14 @@ function displayBuildingInModal(buildingFeature) {
 // Draw a draggable handle on the modal map at each gap/wing position. Dragging one snaps it back onto
 // the outer ring, updates its fraction (0..1 along the ring), and regenerates the block.
 function clearGapWingHandles() {
+    if (blockifyPolygonEditor) {
+        try { blockifyPolygonEditor.destroy(); } catch (_) { }
+        blockifyPolygonEditor = null;
+    }
     if (blockifyHandleLayer && blockifyMap) {
         try { blockifyMap.removeLayer(blockifyHandleLayer); } catch (_) { }
     }
     blockifyHandleLayer = null;
-    clearManualLiveOutline();
 }
 
 function renderGapWingHandles() {
@@ -2848,7 +2862,11 @@ const FOOTPRINT_SLIDER_IDS = ['setback-slider', 'chamfer-slider', 'simplify-slid
 function setFootprintSlidersEnabled(enabled) {
     FOOTPRINT_SLIDER_IDS.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.disabled = !enabled;
+        if (!el) return;
+        // Manual mode owns the outer outline, but width remains a useful independent parameter: it
+        // changes only the inward offset/courtyard and leaves every hand-edited vertex untouched.
+        const manualWidth = blockifyMode === 'manual' && id === 'width-slider';
+        el.disabled = !(enabled || manualWidth);
     });
 }
 
@@ -2870,6 +2888,7 @@ function enterManualMode() {
         return;
     }
     blockifyMode = 'manual';
+    blockifyPendingVertexActionIndex = null;
     // Seed the editable ring from the last clean outer ring (drop the closing duplicate vertex).
     const ring = lastOuterRing.slice();
     if (ring.length >= 2) {
@@ -2887,10 +2906,10 @@ function enterManualMode() {
     updateManualToggleLabel();
     if (rawVertices > manualOuterRing.length) {
         setBlockifyInfo('blockify.modal.manual.hintSimplified',
-            'Manual mode: outline simplified to {{count}} draggable points so you can reshape it. Drag any point; height stays adjustable.',
+            'Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.',
             { count: manualOuterRing.length });
     } else {
-        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.');
     }
     generateManualBuilding();
 }
@@ -2901,6 +2920,7 @@ function exitToParametricMode() {
         : true;
     if (!proceed) return;
     blockifyMode = 'parametric';
+    blockifyPendingVertexActionIndex = null;
     manualOuterRing = [];
     setFootprintSlidersEnabled(true);
     updateManualToggleLabel();
@@ -3165,7 +3185,7 @@ function displayBuildingsInModal(features) {
     autosaveBlockifyDraft(features);
 }
 
-// Build the block from the user-edited outer ring: re-inset by the (frozen) building width so it
+// Build the block from the user-edited outer ring: re-inset by the current building width so it
 // stays a ring-with-hole (or a solid building if the courtyard collapses).
 function generateManualBuilding() {
     if (blockifyMode !== 'manual') return;
@@ -3207,7 +3227,7 @@ function generateManualBuilding() {
         generatedBuildingFeature = buildingFeature;
         manualBuildSucceeded = true;
         displayBuildingInModal(buildingFeature);
-        renderManualVertexHandles();
+        renderManualPolygonEditor();
 
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) doneButton.disabled = false;
@@ -3234,71 +3254,48 @@ function generateManualBuilding() {
     }
 }
 
-// Draggable handle at each outer-ring vertex; drag reshapes the manual outline.
-function renderManualVertexHandles() {
+// The block editor and freeform-building editor intentionally share this controller. It preserves
+// manual mode's proven drag cadence (cheap live outline, full rebuild on release) and adds the same
+// edge-click insertion and selected-vertex deletion behavior to both tools.
+function renderManualPolygonEditor() {
+    const initialSelectedVertexIndex = blockifyPendingVertexActionIndex;
+    blockifyPendingVertexActionIndex = null;
     clearGapWingHandles();
     if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
-    blockifyHandleLayer = L.layerGroup().addTo(blockifyMap);
-    manualOuterRing.forEach((coord, idx) => {
-        const marker = L.marker([coord[1], coord[0]], {
-            draggable: true,
-            title: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
-            icon: L.divIcon({
-                className: 'blockify-handle blockify-handle--vertex',
-                html: '<span></span>',
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            })
-        });
-        // Live: the outline follows the vertex as it moves (a cheap dashed polygon, no re-inset).
-        marker.on('drag', () => {
-            const ll = marker.getLatLng();
-            manualOuterRing[idx] = [ll.lng, ll.lat];
-            drawManualLiveOutline();
-        });
-        // Release: constrain the vertex to the parcel, then do the full rebuild (inset + clip).
-        marker.on('dragend', () => {
-            const ll = marker.getLatLng();
-            let pt = [ll.lng, ll.lat];
-            if (lastSuperparcel && lastSuperparcel.geometry) {
-                try {
-                    if (!turf.booleanPointInPolygon(turf.point(pt), lastSuperparcel)) {
-                        const line = turf.polygonToLine(lastSuperparcel);
-                        const snapped = turf.nearestPointOnLine(line, turf.point(pt));
-                        if (snapped && snapped.geometry) pt = snapped.geometry.coordinates;
-                    }
-                } catch (_) { }
-            }
-            manualOuterRing[idx] = pt;
-            marker.setLatLng([pt[1], pt[0]]);
-            clearManualLiveOutline();
-            generateManualBuilding();
-        });
-        marker.addTo(blockifyHandleLayer);
-    });
-}
-
-// Lightweight dashed outline of the manual ring, redrawn while a vertex is being dragged so the shape
-// visibly follows the cursor without paying for the full inset/clip rebuild on every mouse move.
-function clearManualLiveOutline() {
-    if (blockifyLiveLayer && blockifyMap) {
-        try { blockifyMap.removeLayer(blockifyLiveLayer); } catch (_) { }
+    if (!window.PolygonGeometryEditor || typeof window.PolygonGeometryEditor.create !== 'function') {
+        console.error('Shared polygon geometry editor is unavailable.');
+        return;
     }
-    blockifyLiveLayer = null;
-}
-
-function drawManualLiveOutline() {
-    clearManualLiveOutline();
-    if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
-    const latlngs = manualOuterRing.map(c => [c[1], c[0]]);
-    blockifyLiveLayer = L.polygon(latlngs, {
-        color: '#fb8c00', weight: 2, dashArray: '5,5', fill: false, interactive: false
-    }).addTo(blockifyMap);
+    blockifyPolygonEditor = window.PolygonGeometryEditor.create({
+        map: blockifyMap,
+        leaflet: L,
+        turf,
+        ring: manualOuterRing,
+        boundary: () => lastSuperparcel,
+        initialSelectedVertexIndex,
+        showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
+        vertexTitle: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
+        deleteTitle: translateBuildingText('blockify.modal.manual.deleteVertex', 'Delete selected vertex'),
+        onLiveChange: ({ ring }) => {
+            manualOuterRing = ring;
+        },
+        onCommit: ({ ring, reason, vertexIndex }) => {
+            blockifyPendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
+            manualOuterRing = ring;
+            generateManualBuilding();
+            // Successful regeneration consumes this while recreating the controller; a failed
+            // regeneration leaves the current controller alive to show its own release action.
+            blockifyPendingVertexActionIndex = null;
+        }
+    });
 }
 
 // Pull the largest Polygon out of an uploaded GeoJSON (Feature / FeatureCollection / geometry) and
 // return its outer ring as [lng,lat] vertices (closing duplicate stripped), or null if none.
 function extractOuterRingFromGeojson(data) {
+    if (window.PolygonGeometryEditor?.extractOuterRingFromGeoJSON) {
+        return window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(data, turf);
+    }
     const geoms = [];
     const collect = (g) => {
         if (!g || typeof g !== 'object') return;
@@ -3339,7 +3336,7 @@ function loadGeojsonFootprint(file) {
         manualOuterRing = ring;
         setFootprintSlidersEnabled(false);
         updateManualToggleLabel();
-        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex to remove it. Width and height stay adjustable.');
         generateManualBuilding();
     };
     reader.onerror = () => showBuildingAlert('blockify.modal.manual.uploadError', 'Could not read that file.');

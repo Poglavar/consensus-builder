@@ -2,18 +2,24 @@
 (function attachProposalEditorAdapters(global) {
     'use strict';
 
+    // Canonical map-application accessor from proposals/status.js. Global in the browser (status.js
+    // loads first), required directly in node tests. The require branch never runs in the browser.
+    const appliedOf = (typeof isApplied === 'function')
+        ? isApplied
+        : require('./proposals/status.js').isApplied;
+
     const CREATABLE_PROPOSAL_GOALS = [
         'as-is',
         'square',
         'park',
         'lake',
+        'station',
         'single',
         'buildings',
         'row',
         'parcelBased',
         'urban-rule',
         'road-track',
-        'decide-later',
         'reparcellization',
         'ownership-transfer'
     ];
@@ -86,15 +92,10 @@
     }
 
     function sourceIsApplied(proposal) {
-        const statuses = [
-            proposal?.status,
-            proposal?.roadProposal?.status,
-            proposal?.buildingProposal?.status,
-            proposal?.structureProposal?.status,
-            proposal?.reparcellization?.status,
-            proposal?.decideLaterProposal?.status
-        ];
-        return statuses.some(status => ['applied', 'executed'].includes(String(status || '').toLowerCase()));
+        if (!proposal) return false;
+        if (appliedOf(proposal)) return true;
+        return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+            .some(k => proposal[k] && appliedOf(proposal, proposal[k]));
     }
 
     function sourceFields(proposal) {
@@ -168,6 +169,7 @@
             width: definition?.width,
             sidewalkWidth: definition?.sidewalkWidth,
             tunnels: clone(definition?.tunnels || []),
+            gradeSeparations: clone(definition?.gradeSeparations || []),
             demolishedBuildings: clone(definition?.demolishedBuildings || []),
             segmentProfiles: clone(definition?.segmentProfiles || {}),
             trackSpeed: definition?.metadata?.trackSpeed,
@@ -188,6 +190,7 @@
             width: seed?.width,
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: clone(seed?.tunnels || []),
+            gradeSeparations: clone(seed?.gradeSeparations || sourceDefinition?.gradeSeparations || []),
             demolishedBuildings: clone(seed?.demolishedBuildings || sourceDefinition?.demolishedBuildings || []),
             segmentProfiles: clone(seed?.segmentProfiles || sourceDefinition?.segmentProfiles || {}),
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
@@ -229,7 +232,9 @@
             blockName: bp.blockName || null,
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
-            buildings: clone(buildings.length ? buildings : (primary ? [primary] : []))
+            buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
+            // Freeform proposals may pave or green the parcel area around their buildings.
+            groundSurface: clone(proposal?.geometry?.groundSurface || null)
         };
     }
 
@@ -368,7 +373,7 @@
         const output = stripImmutableProposalIdentity(draft.sourceSnapshot || {});
         output.goal = draft.goal;
         output.city = draft.cityId || output.city || null;
-        output.status = 'unapplied';
+        output.applied = false;
         return applyFieldsToProposal(output, draft);
     }
 
@@ -530,6 +535,7 @@
         const labels = {
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
             single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            station: 'Transit station',
             'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
@@ -605,7 +611,7 @@
             const geometry = structureGeometry(proposal);
             const structureProposal = clone(proposal?.structureProposal || {
                 kind: key,
-                status: 'unapplied',
+                applied: false,
                 geometry,
                 parentParcelIds: sourceParcels(proposal)
             });
@@ -654,6 +660,87 @@
             structureProposal.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
             output.structureProposal = structureProposal;
             output.geometry = clone(draft?.editorPayload?.geometry || structureProposal.geometry);
+            return output;
+        };
+        return adapter;
+    }
+
+    function buildStationAdapter() {
+        const adapter = buildGenericAdapter('station', {
+            label: 'Transit station',
+            sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+            hasDesign: true
+        });
+        adapter.draftFromProposal = function draftStationFromProposal(proposal) {
+            const structureProposal = clone(proposal?.structureProposal || {});
+            structureProposal.kind = 'station';
+            if (structureProposal.stationType === 'elevated' && !Number.isFinite(Number(structureProposal.platformHeightM))) {
+                structureProposal.platformHeightM = Number(global.TransitStationModels?.specFor?.('elevated')?.defaultPlatformHeightM) || 10;
+            }
+            const geometry = clone(structureProposal.geometry || proposal?.geometry?.stationGraphics || proposal?.geometry || null);
+            structureProposal.geometry = geometry;
+            return {
+                adapterKey: 'station',
+                proposalType: proposal.primaryType || proposalTypeLabel('station'),
+                fields: sourceFields(proposal),
+                editorPayload: {
+                    geometry: clone(geometry),
+                    structureProposal,
+                    facets: clone(proposal.facets || proposal.proposalFacets || null)
+                },
+                previewGeometry: clone(geometry)
+            };
+        };
+        adapter.validate = function validateStation(draft) {
+            const { errors, warnings } = commonValidation(draft);
+            const station = draft?.editorPayload?.structureProposal || {};
+            const geometry = station.geometry || draft?.editorPayload?.geometry;
+            if (!featureGeometryValid(geometry)) {
+                errors.push(issue('invalid-station-footprint', 'The station needs a valid footprint.', 'editorPayload.structureProposal.geometry'));
+            }
+            if (!['bus', 'tram', 'underground', 'elevated'].includes(String(station.stationType || ''))) {
+                errors.push(issue('invalid-station-type', 'Choose a bus, tram, underground, or elevated station.', 'editorPayload.structureProposal.stationType'));
+            }
+            const center = station.center;
+            if (!Array.isArray(center) || center.length < 2 || !center.every(Number.isFinite)) {
+                errors.push(issue('invalid-station-centre', 'The station needs a valid centre point.', 'editorPayload.structureProposal.center'));
+            }
+            if (station.stationType === 'elevated') {
+                const platformHeightM = Number(station.platformHeightM);
+                if (!Number.isFinite(platformHeightM) || platformHeightM < 3 || platformHeightM > 40) {
+                    errors.push(issue('invalid-station-platform-height', 'Elevated platform height must be between 3 and 40 metres.', 'editorPayload.structureProposal.platformHeightM'));
+                }
+            }
+            return { valid: errors.length === 0, errors, warnings };
+        };
+        adapter.renderPreview = function renderStationPreview(draft, viewMode) {
+            const station = clone(draft?.editorPayload?.structureProposal || {});
+            return {
+                kind: 'structure',
+                structureKind: 'station',
+                stationType: station.stationType || null,
+                bearing: Number.isFinite(Number(station.bearing)) ? Number(station.bearing) : 0,
+                platformHeightM: Number.isFinite(Number(station.platformHeightM)) ? Number(station.platformHeightM) : null,
+                viewMode: viewMode || '2d',
+                parcelIds: clone(draft?.fields?.parentParcelIds || []),
+                geometry: clone(station.geometry || draft?.editorPayload?.geometry || null)
+            };
+        };
+        adapter.openDesignEditor = function openStationDesignEditor(draft) {
+            if (typeof global.openTransitStationGeometryEditor !== 'function') return false;
+            return global.openTransitStationGeometryEditor(draft);
+        };
+        adapter.serializeProposal = function serializeStation(draft) {
+            const output = commonProposalFromDraft(draft);
+            const station = clone(draft?.editorPayload?.structureProposal || {});
+            station.kind = 'station';
+            station.geometry = clone(station.geometry || draft?.editorPayload?.geometry || null);
+            station.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
+            output.goal = 'station';
+            output.primaryType = proposalTypeLabel('station');
+            output.type = 'structure';
+            output.structureProposal = station;
+            output.geometry = { stationGraphics: clone(station.geometry) };
             return output;
         };
         return adapter;
@@ -733,7 +820,7 @@
                 definition: clone(definition),
                 parentParcelIds: clone(draft.fields?.parentParcelIds || []),
                 childParcelIds: [],
-                status: 'unapplied',
+                applied: false,
                 isCorridor: true
             };
             return output;
@@ -750,10 +837,12 @@
                 afterWidth: Number(after.width) || null,
                 widthChange: (Number(after.width) || 0) - (Number(before.width) || 0),
                 profileChanged: !same(before.profile || null, after.profile || null),
-                tunnelsChanged: !same(before.tunnels || [], after.tunnels || [])
+                tunnelsChanged: !same(before.tunnels || [], after.tunnels || []),
+                gradeSeparationsChanged: !same(before.gradeSeparations || [], after.gradeSeparations || [])
             };
             summary.unchanged = summary.unchanged && !summary.geometry.changed
-                && summary.geometry.widthChange === 0 && !summary.geometry.profileChanged && !summary.geometry.tunnelsChanged;
+                && summary.geometry.widthChange === 0 && !summary.geometry.profileChanged
+                && !summary.geometry.tunnelsChanged && !summary.geometry.gradeSeparationsChanged;
             return summary;
         },
         payloadFromDrawingSeed(seed, sourceDefinition) {
@@ -823,11 +912,21 @@
                 const typology = draft.editorPayload?.typology || key;
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 if (typology === 'single' && typeof global.openSingleBuildingForParcels === 'function') {
-                    global.openSingleBuildingForParcels({ blockName: context.blockName, parcels: selection.layers, initialBuildings: features });
+                    global.openSingleBuildingForParcels({
+                        blockName: context.blockName,
+                        parcels: selection.layers,
+                        initialBuildings: features,
+                        initialGroundTreatment: context.groundSurface?.treatment || null
+                    });
                     return true;
                 }
                 if (typology === 'row' && typeof global.openRowHouseForParcels === 'function') {
-                    global.openRowHouseForParcels({ blockName: context.blockName, parcels: selection.layers, initialParameters: context.parameters || null });
+                    global.openRowHouseForParcels({
+                        blockName: context.blockName,
+                        parcels: selection.layers,
+                        initialParameters: context.parameters || null,
+                        initialFeature: features[0] || null
+                    });
                     return true;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
@@ -851,11 +950,16 @@
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
+                // Only the freeform editor offers a surroundings treatment; every other typology
+                // leaves the ground alone, so a stale surface must never survive a retypology.
+                const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
+                if (groundSurface) output.geometry.groundSurface = groundSurface;
+                else delete output.geometry.groundSurface;
                 output.buildingGeometry = clone(features[0]?.geometry || null);
                 output.buildingProperties = clone(features[0]?.properties || {});
                 output.buildingProposal = {
                     ...(clone(output.buildingProposal || {})),
-                    status: 'unapplied',
+                    applied: false,
                     typologyType: typology,
                     parentParcelIds: clone(draft.fields?.parentParcelIds || []),
                     parameters: clone(context.parameters || {}),
@@ -872,6 +976,13 @@
                 const beforeFeatures = beforeContext.buildings?.length ? beforeContext.buildings : [beforeContext.buildingFeature].filter(Boolean);
                 const afterFeatures = afterContext.buildings?.length ? afterContext.buildings : [afterContext.buildingFeature].filter(Boolean);
                 const height = feature => Number(feature?.properties?.height || feature?.properties?.heightM || feature?.properties?.floors || 0) || null;
+                const groundTreatment = context => context?.groundSurface?.treatment || 'none';
+                summary.groundTreatment = {
+                    before: groundTreatment(beforeContext),
+                    after: groundTreatment(afterContext)
+                };
+                summary.groundTreatment.changed = summary.groundTreatment.before !== summary.groundTreatment.after;
+                summary.unchanged = summary.unchanged && !summary.groundTreatment.changed;
                 summary.geometry = {
                     changed: !same(beforeFeatures, afterFeatures),
                     beforeArea: beforeFeatures.reduce((sum, feature) => sum + (geometryArea(feature) || 0), 0),
@@ -1046,8 +1157,11 @@
     registry.register('as-is', buildGenericAdapter('as-is'));
     registry.register('park', buildStructureAdapter('park'));
     registry.register('square', buildStructureAdapter('square'));
-    registry.register('lake', buildGenericAdapter('lake', { hasDesign: true }));
-    registry.register('decide-later', buildGenericAdapter('decide-later'));
+    registry.register('lake', buildStructureAdapter('lake'));
+    registry.register('station', buildStationAdapter(), { aliases: ['transit-station'] });
+    // Existing stored merge proposals remain readable/applicable, but this removed goal cannot be
+    // used as the source of a new or replacement draft.
+    registry.declareReadOnly('decide-later', 'Merge / Decide Later is no longer a creatable proposal type.');
     registry.register('ownership-transfer', buildGenericAdapter('ownership-transfer'), {
         aliases: ['ownership-transfer-to-me', 'ownership-transfer-from-me']
     });
@@ -1111,6 +1225,7 @@
             reparcellizationAdapter,
             buildGenericAdapter,
             buildStructureAdapter,
+            buildStationAdapter,
             summarizeCommonChanges
         };
     }

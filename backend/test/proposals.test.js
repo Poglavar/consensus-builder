@@ -259,9 +259,9 @@ describe('POST /proposals', () => {
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
+        expect(insertParams[25]).toBeNull();
     });
 
     it('falls back to a generated local proposal id when no id field is supplied', async () => {
@@ -337,6 +337,76 @@ describe('POST /proposals', () => {
         expect(insertParams[19]).toBe(false);
     });
 
+    it('writes canonical lifecycle only and strips browser-local applied state', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                status: undefined,
+                lifecycleStatus: 'active',
+                applied: true,
+                type: 'road',
+                roadProposal: { applied: true, appliedAt: 'now', width: 6 }
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[7]).toBe('Active');
+        expect(insertParams).toHaveLength(39); // +1 for cadastre_parcel_ids
+        expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
+        expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
+        expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');
+    });
+
+    it('derives Active lifecycle for an older client that sends a legacy application status', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ status: 'Applied', lifecycleStatus: undefined, applied: undefined, type: 'road' }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[7]).toBe('Active');
+        expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
+    });
+
+    it('rejects unknown explicit lifecycle states', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ lifecycleStatus: 'pending' }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/lifecycleStatus must be one of/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('persists cadastreParcelIds — the base parcels a proposal covers', async () => {
+        // Stored alongside parentParcelIds, never instead of it. Cadastral ids are the same on every
+        // machine, unlike the derived ids parentParcelIds may hold. See rethink-proposals.md.
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: ['HR-339270-823/1#p-road-2'],
+                cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2']
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1#p-road-2']));
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
+    });
+
+    it('rejects a malformed cadastreParcelIds payload', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ cadastreParcelIds: [{ nope: true }] }));
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
     it('serializes only non-empty collections and nested proposal objects into insert params', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
@@ -362,18 +432,19 @@ describe('POST /proposals', () => {
 
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-child-1']));
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
-        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[31]).toBe(JSON.stringify(['parent-1']));
-        expect(insertParams[32]).toBeNull();
-        expect(insertParams[33]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[34]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[35]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[22]).toBeNull(); // cadastre_parcel_ids — absent from this payload
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-child-1']));
+        expect(insertParams[24]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[25]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[27]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[29]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[32]).toBe(JSON.stringify(['parent-1']));
+        expect(insertParams[33]).toBeNull();
+        expect(insertParams[34]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[35]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[36]).toBe(JSON.stringify({ txHash: '0x1' }));
     });
 
     it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
@@ -527,7 +598,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[35]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[36]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 
@@ -723,7 +794,7 @@ describe('GET /proposals/:id', () => {
                     description: 'JSON description',
                     author: 'json-author',
                     type: 'road',
-                    status: 'draft',
+                    lifecycleStatus: 'draft',
                     offer: 12,
                     offerCurrency: 'USD',
                     budget: 34,
@@ -759,7 +830,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            status: 'draft',
+            lifecycleStatus: 'draft',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -912,17 +983,17 @@ describe('GET /proposals/count', () => {
         pool.setResult({ rows: [{ count: '42' }] });
 
         const res = await request(app)
-            .get('/proposals/count?city=zg&status=applied');
+            .get('/proposals/count?city=zg&lifecycle=Active');
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(42);
         expect(res.body.city).toBe('zagreb');
-        expect(res.body.status).toBe('applied');
+        expect(res.body.lifecycle).toBe('Active');
 
         const call = pool.getCalls()[0];
         expect(call.sql).toContain('COUNT(*)');
         expect(call.params).toContain('zagreb');
-        expect(call.params).toContain('applied');
+        expect(call.params).toContain('Active');
     });
 
     it('returns count with no filters', async () => {
@@ -944,7 +1015,7 @@ describe('GET /proposals/count', () => {
         expect(res.body).toEqual({
             count: 0,
             city: 'custom-city',
-            status: null,
+            lifecycle: null,
             type: 'road',
             author: 'bob'
         });
@@ -1061,7 +1132,7 @@ describe('GET /proposals/summary', () => {
         const res = await request(app).get('/proposals/summary');
 
         expect(res.status).toBe(200);
-        expect(res.body.proposals.map(p => p.status)).toEqual(['Expired', 'Active']);
+        expect(res.body.proposals.map(p => p.lifecycleStatus)).toEqual(['Expired', 'Active']);
         // The SELECT must derive it server-side.
         expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
         expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
@@ -1102,12 +1173,12 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
     });
 
-    it('filters by EFFECTIVE status (expired-but-stale rows excluded from ?status=Active)', async () => {
+    it('filters by EFFECTIVE lifecycle (expired-but-stale rows excluded from ?lifecycle=Active)', async () => {
         pool.setResult({ rows: [] });
-        await request(app).get('/proposals/summary?status=Active');
+        await request(app).get('/proposals/summary?lifecycle=Active');
         const call = pool.getCalls()[0];
-        // The WHERE clause derives the status, not a raw column compare.
-        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*= \$1/);
+        // The WHERE clause derives the lifecycle, not a raw column compare.
+        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
         expect(call.params).toContain('Active');
     });
 
@@ -1188,7 +1259,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            status: null,
+            lifecycleStatus: 'Active',
             createdAt: null
         });
     });

@@ -21,14 +21,20 @@
             window.WALRUS_AGGREGATOR_URL = 'https://aggregator.walrus-testnet.walrus.space';
         }
 
-        const getLatestVersionNumber = () => {
+        // The version badge shows the ACTUAL running build, stamped into build-info.js at deploy
+        // (buildId "deploy-N" / buildNumber N). Locally there is no stamp, so it reads "dev".
+        // This is deliberately NOT the hand-maintained changelog head (APP_VERSIONS) — that value
+        // is a release note and goes stale; the badge is meant to identify the code you're running.
+        const getBuildVersionLabel = () => {
             try {
-                const source = Array.isArray(window.APP_VERSIONS) ? window.APP_VERSIONS : [];
-                if (!source.length) return '';
-                const head = source[0] || {};
-                return head.version_number || head.versionNumber || head.version || '';
+                const info = window.__BUILD_INFO || {};
+                const isRealBuild = info.buildId && info.buildId !== 'dev';
+                if (isRealBuild) {
+                    return info.buildNumber ? `build ${info.buildNumber}` : String(info.buildId);
+                }
+                return 'dev';
             } catch (_) {
-                return '';
+                return 'dev';
             }
         };
 
@@ -87,7 +93,7 @@
                     return;
                 }
 
-                const versionNumber = getLatestVersionNumber();
+                const versionLabel = getBuildVersionLabel();
                 if (badge) {
                     // Show dev badge only in real development environment
                     badge.style.display = isDevelopment ? 'inline-flex' : 'none';
@@ -96,8 +102,9 @@
                     debugBadge.style.display = 'inline-flex';
                 }
                 if (versionBadge) {
-                    if (versionNumber) {
-                        versionBadge.textContent = versionNumber;
+                    if (versionLabel) {
+                        versionBadge.textContent = versionLabel;
+                        versionBadge.title = versionLabel;
                         versionBadge.style.display = 'inline-flex';
                     } else {
                         versionBadge.style.display = 'none';

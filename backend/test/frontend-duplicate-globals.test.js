@@ -5,9 +5,17 @@
 // escapeHtml disagreed on what to do with null; the share codec had a whole second copy that was
 // shadowed and never ran).
 //
-// This test fails on any function name declared at the TOP LEVEL of more than one file. Functions
-// nested inside an IIFE or another function are module-private and are not globals, so they are not
-// collected — only `ast.program.body` is walked.
+// Top-level `const`/`let` are caught here too, and their failure mode is WORSE than a function's: the
+// classic scripts share ONE global lexical environment, so a second top-level `const foo` is a hard
+// SyntaxError ("Identifier 'foo' has already been declared") that aborts the entire second file — every
+// global it defines below the collision vanishes. That is exactly how `const appliedOf` in both
+// proposals/sharing.js and proposal-manager.js took ProposalManager down ("ProposalManager is not
+// defined") until the alias in sharing.js was renamed. `var` is included for completeness (it
+// redeclares silently, like a function).
+//
+// This test fails on any function/const/let/var name declared at the TOP LEVEL of more than one file.
+// Declarations nested inside an IIFE, block or another function are module-private and are not
+// globals, so they are not collected — only `ast.program.body` is walked.
 //
 // KNOWN_COLLISIONS below is the pre-existing backlog, not a place to park new ones. Adding a name to
 // it means "two files disagree about who owns this global"; the fix is to keep one definition and
@@ -21,40 +29,8 @@ import { fileURLToPath } from 'node:url';
 
 const FRONTEND_JS = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../../frontend/js');
 
-// Pre-existing duplicates, all centred on proposals/sharing.js re-declaring helpers that other
-// proposals/* files already own. sharing.js loads last, so ITS copy is the one that runs everywhere.
-// Names marked (DIVERGENT) have bodies that actually differ between the copies — those are latent
-// bugs of the same shape as the escapeHtml one, where the version people read is not the version
-// that executes. The rest are byte-identical copies that will drift.
-const KNOWN_COLLISIONS = new Set([
-    'buildBoundsFromSharedPayload',          // (DIVERGENT) sharing.js vs proposals/geometry.js
-    'ensureAncestorProposalsUploaded',       // (DIVERGENT) sharing.js vs proposals/server-sync.js
-    'ensurePolygonIsClosed',                 // (DIVERGENT) government-plan-worker.js vs road-drawing.js
-    'getCurrentUserAgent',                   // (DIVERGENT) agents.js vs user-management.js
-    'getParcelDisplayNumberFromProperties',  // (DIVERGENT) sharing.js vs proposals/parcel-id.js
-    'getParcelIdFromFeature',                // (DIVERGENT) road-drawing.js vs proposals/parcel-id.js
-    'getShareI18nHelper',                    // (DIVERGENT) proposals/core.js vs sharing.js
-    'getSharedInspectorI18nHelper',          // (DIVERGENT) proposals/dialog-share.js vs sharing.js
-    'headProposalExists',                    // (DIVERGENT) sharing.js vs proposals/server-sync.js
-    'normalizeFeature',                      // (DIVERGENT) government-plan-worker.js vs proposals/core.js
-    'buildCityQueryParam',                   // sharing.js vs proposals/server-sync.js
-    'buildLeafletBoundsFromArray',           // sharing.js vs proposals/geometry.js
-    'checkParcelsOriginal',                  // sharing.js vs proposals/storage.js
-    'collectCoordinatesFromGeometry',        // sharing.js vs proposals/geometry.js
-    'collectParcelProposalPairs',            // sharing.js vs proposals/storage.js
-    'computeBoundsFromGeoJSONFeatures',      // sharing.js vs proposals/geometry.js
-    'computeSharedBoundingBoxFromFeatures',  // proposals/core.js vs sharing.js
-    'getParcelDisplayNumberFromFeature',     // sharing.js vs proposals/parcel-id.js
-    'getServerProposalId',                   // sharing.js vs proposals/server-sync.js
-    'isProposalCurrentlyApplied',            // sharing.js vs proposals/execution.js
-    'mapGoalToBackendType',                  // sharing.js vs proposals/server-sync.js
-    'migrateRoadAssetsToNewId',              // sharing.js vs proposals/storage.js
-    'resolveBackendBaseUrl',                 // proposals/core.js vs sharing.js
-    'resolveFrontendBaseUrl',                // proposals/core.js vs sharing.js
-    'sortProposalIdsForShare',               // proposals/core.js vs sharing.js
-    'syncProposalWithServerId',              // sharing.js vs proposals/server-sync.js
-    'uploadProposalToServer'                 // sharing.js vs proposals/server-sync.js
-]);
+// The migration backlog is intentionally empty. New classic-script globals must have one owner.
+const KNOWN_COLLISIONS = new Set();
 
 function listJsFiles(dir) {
     return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -64,13 +40,25 @@ function listJsFiles(dir) {
     });
 }
 
-// Collects only the function declarations that become globals: the ones directly in the program
-// body. Anything inside an IIFE, block or another function is module-private and is skipped.
-function topLevelFunctionNames(source) {
+// Collects the declarations that become globals: the ones directly in the program body. That is
+// top-level `function`, plus `const`/`let`/`var` (each a shared global-lexical or global-var binding
+// in a classic script). Anything inside an IIFE, block or another function is module-private and is
+// skipped. Destructuring patterns are skipped — only plain `Identifier` binding names are collected.
+function topLevelGlobalNames(source) {
     const ast = parse(source, { sourceType: 'script' });
-    return ast.program.body
-        .filter(node => node.type === 'FunctionDeclaration' && node.id)
-        .map(node => ({ name: node.id.name, line: node.loc.start.line }));
+    const out = [];
+    for (const node of ast.program.body) {
+        if (node.type === 'FunctionDeclaration' && node.id) {
+            out.push({ name: node.id.name, line: node.loc.start.line });
+        } else if (node.type === 'VariableDeclaration') {
+            for (const decl of node.declarations) {
+                if (decl.id && decl.id.type === 'Identifier') {
+                    out.push({ name: decl.id.name, line: decl.loc.start.line });
+                }
+            }
+        }
+    }
+    return out;
 }
 
 describe('frontend global namespace', () => {
@@ -80,12 +68,12 @@ describe('frontend global namespace', () => {
         expect(files.length).toBeGreaterThan(100);
     });
 
-    it('declares each top-level (global) function in exactly one file', () => {
+    it('declares each top-level (global) function/const/let/var in exactly one file', () => {
         const byName = new Map();
 
         for (const file of files) {
             const relative = path.relative(FRONTEND_JS, file);
-            for (const { name, line } of topLevelFunctionNames(readFileSync(file, 'utf8'))) {
+            for (const { name, line } of topLevelGlobalNames(readFileSync(file, 'utf8'))) {
                 if (!byName.has(name)) byName.set(name, []);
                 byName.get(name).push(`js/${relative}:${line}`);
             }
@@ -97,9 +85,10 @@ describe('frontend global namespace', () => {
 
         expect(
             collisions,
-            `These top-level functions are declared in more than one classic script, so the last file\n`
-            + `loaded silently wins for every caller. Keep one definition and delete the rest — do not\n`
-            + `add them to KNOWN_COLLISIONS.\n\n${collisions.join('\n')}\n`
+            `These top-level names are declared in more than one classic script. A duplicate function\n`
+            + `lets the last file loaded silently win for every caller; a duplicate const/let is a hard\n`
+            + `SyntaxError that aborts the whole second file. Keep one definition and delete the rest —\n`
+            + `do not add them to KNOWN_COLLISIONS.\n\n${collisions.join('\n')}\n`
         ).toEqual([]);
     });
 
@@ -108,7 +97,7 @@ describe('frontend global namespace', () => {
         const seen = new Map();
 
         for (const file of files) {
-            for (const { name } of topLevelFunctionNames(readFileSync(file, 'utf8'))) {
+            for (const { name } of topLevelGlobalNames(readFileSync(file, 'utf8'))) {
                 if (seen.has(name) && seen.get(name) !== file) duplicated.add(name);
                 seen.set(name, file);
             }

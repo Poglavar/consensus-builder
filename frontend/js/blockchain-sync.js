@@ -149,16 +149,10 @@
      * Parse contract status to string
      */
     function parseContractStatus(statusCode) {
-        const statusMap = {
-            0: 'Pending',
-            1: 'Active',
-            2: 'Accepted',
-            3: 'Executed',
-            4: 'Rejected',
-            5: 'Expired',
-            6: 'Cancelled'
-        };
-        return statusMap[statusCode] || 'Unknown';
+        const codec = global.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
     }
 
     /**
@@ -180,7 +174,7 @@
             author: owner || 'Unknown',
             type: 'Purchase',
             proposalMainType: 'Purchase',
-            status: statusStr,
+            lifecycleStatus: statusStr,
             acquisitionStrategy: isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
@@ -236,9 +230,13 @@
             imageURI: imageURI || proposal.imageUrl || null
         };
 
-        // Update status if changed
-        if (statusStr !== 'Unknown' && proposal.status !== statusStr) {
-            proposal.status = statusStr;
+        // Update the LIFECYCLE status only. statusStr is the on-chain ProposalStatus enum
+        // (Active/Executed/Cancelled/Expired) — a marketplace phase, NOT a map-application state.
+        // It must NEVER touch `applied`, or every chain poll would silently un-apply a road (the
+        // exact bug the status split fixes). The legacy `status` is kept mirrored for un-repointed
+        // readers during the transition.
+        if (statusStr !== 'Unknown' && proposal.lifecycleStatus !== statusStr) {
+            proposal.lifecycleStatus = statusStr;
         }
 
         // Update acquisition strategy

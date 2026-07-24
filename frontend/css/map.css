@@ -22,6 +22,10 @@ body.sidebar-collapsed {
     position: absolute;
     left: var(--map-mode-stack-left);
     z-index: 1000;
+    /* Centre the label so it — and the loading spinner, which centres on the button — coincide. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: white;
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 4px;
@@ -37,6 +41,33 @@ body.sidebar-collapsed {
 
 #mode-2d-toggle.map-mode-toggle { bottom: 48px; }
 #mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+
+/* Loading spinner over a lower-left mode icon while that view composes. three-mode.js sets
+   .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
+   streaming Google tiles). The ring uses currentColor so it reads on both the white 3D/2D buttons
+   and the blue globe button. */
+.map-mode-toggle.mode-btn-loading,
+.map-mode-realistic-btn.mode-btn-loading { pointer-events: none; }
+.map-mode-toggle.mode-btn-loading::after,
+.map-mode-realistic-btn.mode-btn-loading::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    /* border-box so the 2px border is INSIDE the 18px box; with content-box the box would be 22px
+       and the -9px margin (half of 18) would leave the ring 2px off-centre down-right. */
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid rgba(128, 128, 128, 0.4);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: map-mode-spin 0.7s linear infinite;
+    z-index: 2;
+    pointer-events: none;
+}
+@keyframes map-mode-spin { to { transform: rotate(360deg); } }
 
 /* Walk-through button — stacked above the mode buttons (2D / 3D / globe) and only
    visible while in 3D mode. Hidden by default via the [hidden] attribute; three-mode.js
@@ -84,14 +115,22 @@ body.sidebar-collapsed {
     border-color: #f9a825;
 }
 
+/* Abstract 3D uses map-style primary-drag panning; right-drag remains orbit/tilt. */
+#three-container.active:not(.three-mode-walk-pick) canvas {
+    cursor: grab;
+}
+
+#three-container.active:not(.three-mode-walk-pick) canvas:active {
+    cursor: grabbing;
+}
+
 /* While the user is choosing a walk start point, swap the 3D canvas cursor for a walk icon. */
 #three-container.three-mode-walk-pick canvas {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'><path fill='%23222' stroke='white' stroke-width='1' d='M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7'/></svg>") 4 24, crosshair;
 }
 
 /* 3D mode in-view controls */
-#three-container .three-mode-ui-panel,
-#cesium-container .three-mode-ui-panel {
+#three-container .three-mode-ui-panel {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -106,6 +145,47 @@ body.sidebar-collapsed {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
     z-index: 10;
+}
+
+/* Collapse toggle for the 3D controls panel — hidden on desktop, a gear icon on phones that
+   folds the panel to just itself (JS toggles `.collapsed`, and starts collapsed on phones). */
+#three-container .three-mode-ui-collapse {
+    display: none;
+    align-self: flex-end;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    margin: -2px -3px 0 auto;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+}
+@media (max-width: 768px) {
+    #three-container .three-mode-ui-collapse {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #three-container .three-mode-ui-panel.collapsed {
+        /* Shrink to just the gear: release the left edge (the 480px rule pins left+right, which
+           would otherwise leave a full-width blank bar) so it hugs the right as an icon. */
+        left: auto;
+        right: 12px;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        padding: 3px;
+        gap: 0;
+    }
+    #three-container .three-mode-ui-panel.collapsed > *:not(.three-mode-ui-collapse) {
+        display: none;
+    }
+    #three-container .three-mode-ui-panel.collapsed .three-mode-ui-collapse {
+        margin: 0;
+    }
 }
 
 /* Bottom-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
@@ -352,8 +432,7 @@ body.sidebar-collapsed {
     cursor: pointer;
 }
 
-#three-container .three-mode-emphasis-row,
-#cesium-container .three-mode-emphasis-row {
+#three-container .three-mode-emphasis-row {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -370,38 +449,69 @@ body.sidebar-collapsed {
     align-items: center;
 }
 
-#three-container .three-mode-trees-toggle,
-#cesium-container .three-mode-trees-toggle {
+#three-container .three-mode-trees-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
 }
 
-#three-container .three-mode-trees-toggle input[type="checkbox"],
-#cesium-container .three-mode-trees-toggle input[type="checkbox"] {
+#three-container .three-mode-trees-toggle input[type="checkbox"] {
     accent-color: #3a6b35;
     cursor: pointer;
     margin: 0;
 }
 
-#three-container .three-mode-emphasis-label,
-#cesium-container .three-mode-emphasis-label {
+#three-container .three-mode-emphasis-label {
     font-size: 12px;
     font-weight: 600;
     color: #5a6472;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segmented,
-#cesium-container .three-mode-emphasis-row .three-mode-segmented {
+#three-container .three-mode-emphasis-row .three-mode-segmented {
     flex: 1;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment,
-#cesium-container .three-mode-emphasis-row .three-mode-segment {
+#three-container .three-mode-emphasis-row .three-mode-segment {
     flex: 1;
     padding: 4px 8px;
     font-size: 12px;
+}
+
+/* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
+   uneven segmented cells and keep long translated labels fully readable. Photoreal mode retains
+   its equal three-button segments. */
+#three-container .three-mode-display-select {
+    appearance: none;
+    flex: 0 0 168px;
+    width: 168px;
+    min-width: 0;
+    height: 30px;
+    border: 1px solid #c8cdd5;
+    border-radius: 8px;
+    background-color: #f5f7fa;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%235a6472' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    color: #2d3748;
+    padding: 4px 30px 4px 10px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+#three-container .three-mode-display-select:hover {
+    border-color: #8f99a7;
+    background-color: #fff;
+}
+
+#three-container .three-mode-display-select:focus-visible {
+    border-color: #2c6cb0;
+    box-shadow: 0 0 0 3px rgba(44, 108, 176, 0.2);
+    outline: none;
 }
 
 #three-container .three-mode-reset-btn {
@@ -422,16 +532,14 @@ body.sidebar-collapsed {
     background: #24578d;
 }
 
-#three-container .three-mode-segmented,
-#cesium-container .three-mode-segmented {
+#three-container .three-mode-segmented {
     display: flex;
     border: 1px solid #d4d7dd;
     border-radius: 8px;
     overflow: hidden;
 }
 
-#three-container .three-mode-segment,
-#cesium-container .three-mode-segment {
+#three-container .three-mode-segment {
     appearance: none;
     border: none;
     background: #f5f7fa;
@@ -440,44 +548,43 @@ body.sidebar-collapsed {
     font-weight: 600;
     cursor: pointer;
     transition: background 120ms ease, color 120ms ease;
-    /* Four segments on the Built row: labels shrink with a clean ellipsis instead of clipping. */
+    /* Photoreal mode still uses compact equal-width segments. */
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#three-container .three-mode-segment + .three-mode-segment,
-#cesium-container .three-mode-segment + .three-mode-segment {
+#three-container .three-mode-segment + .three-mode-segment {
     border-left: 1px solid #d4d7dd;
 }
 
-#three-container .three-mode-segment:hover,
-#cesium-container .three-mode-segment:hover {
+#three-container .three-mode-segment:hover {
     background: #e9ecf1;
 }
 
-#three-container .three-mode-segment--active,
-#cesium-container .three-mode-segment--active {
+#three-container .three-mode-segment--active {
     background: #2c6cb0;
     color: #fff;
 }
 
-/* Phones: the control panel spans the top edge instead of hugging the right corner (with the
-   four-segment Built row it otherwise eats half the scene or squeezes to nothing), and the
-   segments grow to finger height. */
+/* Phones: the control panel spans the top edge and controls grow to finger height. */
 @media (max-width: 480px) {
-    #three-container .three-mode-ui-panel,
-    #cesium-container .three-mode-ui-panel {
+    #three-container .three-mode-ui-panel {
         left: 12px;
         right: 12px;
         max-width: none;
     }
 
-    #three-container .three-mode-emphasis-row .three-mode-segment,
-    #cesium-container .three-mode-emphasis-row .three-mode-segment {
+    #three-container .three-mode-emphasis-row .three-mode-segment {
         padding: 8px 4px;
         font-size: 11px;
+    }
+
+    #three-container .three-mode-display-select {
+        flex: 1 1 auto;
+        width: auto;
+        height: 38px;
     }
 
     /* The panel now owns the top edge — the loading pill moves to the bottom centre. */
@@ -490,10 +597,13 @@ body.sidebar-collapsed {
 }
 
 @media (pointer: coarse) {
-    #three-container .three-mode-segment,
-    #cesium-container .three-mode-segment {
+    #three-container .three-mode-segment {
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+
+    #three-container .three-mode-display-select {
+        height: 40px;
     }
 }
 
@@ -722,14 +832,12 @@ body.three-mode-active #agent-bubbles-container {
     }
     
     /* When sidebar is open, move map controls */
-/* Display-state rows (Built / Planned): equal-width state buttons, aligned across both rows. */
-#three-container .three-mode-emphasis-label,
-#cesium-container .three-mode-emphasis-label {
-    flex: 0 0 54px;
+/* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
+#three-container .three-mode-emphasis-label {
+    flex: 0 0 70px;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment,
-#cesium-container .three-mode-emphasis-row .three-mode-segment {
+#three-container .three-mode-emphasis-row .three-mode-segment {
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;

@@ -207,14 +207,6 @@ function createUserAgent(name, avatarIndex, options = {}) {
 }
 
 /**
- * Get the current user agent
- */
-function getCurrentUserAgent() {
-    const agents = agentStorage.getAllAgents();
-    return agents.find(agent => agent.userControlled === true);
-}
-
-/**
  * Set agent as user controlled and clear other user controlled agents
  */
 function setUserControlledAgent(agentId, isUserControlled = true) {
@@ -331,16 +323,20 @@ function updateAgentOwnedParcels(agentId) {
  * @param {string} fromAgentId - Current owner agent ID
  * @param {string} toAgentId - New owner agent ID
  */
-function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
+function transferParcelOwnership(parcelId, fromAgentId, toAgentId, options = {}) {
     // Update PersistentStorage
     PersistentStorage.setItem(`parcel_${parcelId}_owner`, toAgentId);
 
-    // Update both agents' owned parcels lists
-    if (fromAgentId) {
-        updateAgentOwnedParcels(fromAgentId);
-    }
-    if (toAgentId) {
-        updateAgentOwnedParcels(toAgentId);
+    // Update both agents' owned parcels lists. skipAgentSync lets a bulk caller (e.g. a reparcellization
+    // applying dozens of children) defer this to one keyspace pass afterwards — each updateAgentOwnedParcels
+    // scans the whole keyspace, so doing it per parcel is O(n²).
+    if (!options.skipAgentSync) {
+        if (fromAgentId) {
+            updateAgentOwnedParcels(fromAgentId);
+        }
+        if (toAgentId) {
+            updateAgentOwnedParcels(toAgentId);
+        }
     }
 
     console.log(`Transferred parcel ${parcelId} from ${fromAgentId || 'nobody'} to ${toAgentId}`);
@@ -708,7 +704,7 @@ function agentDecideAction(agent, turnContext = null) {
             if (typeof proposalStorage !== 'undefined') {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
-                    if (proposal.status !== 'Executed') {
+                    if (getLifecycleStatus(proposal) !== 'Executed') {
                         const parcelIds = Array.isArray(proposal.parentParcelIds)
                             ? proposal.parentParcelIds
                             : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
@@ -820,7 +816,7 @@ function agentDecideAction(agent, turnContext = null) {
             if (typeof proposalStorage !== 'undefined') {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
-                    if (proposal.status !== 'Executed' && proposal.author !== agent.name) {
+                    if (getLifecycleStatus(proposal) !== 'Executed' && proposal.author !== agent.name) {
                         donatableProposals.push(proposal);
                     }
                 }
@@ -2412,7 +2408,7 @@ function getUserPendingProposals(agentId, chainId = null) {
     // Get proposals that affect user's parcels, sorted by creation date (newest first)
     const relevantProposals = allProposals
         .filter(proposal =>
-            proposal.status === 'Active' &&
+            getLifecycleStatus(proposal) === 'Active' &&
             (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [])).some(parcelId => userParcelIds.includes(parcelId)) &&
             (
                 proposal.isMinted !== true ||

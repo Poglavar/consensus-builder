@@ -1014,8 +1014,9 @@
         margin: 1% auto !important;
     }
 
-    .proposal-list-modal-content, 
-    .game-log-modal-content, .agents-stats-modal-content, 
+    /* .proposal-list-modal-content intentionally excluded: the proposals list docks to the lower
+       half on mobile (see proposals.css) instead of going full-screen, keeping the map visible. */
+    .game-log-modal-content, .agents-stats-modal-content,
     .agent-dialog-modal-content, .proposal-info-modal-content {
         position: fixed !important;
         top: 0 !important;

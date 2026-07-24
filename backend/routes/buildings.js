@@ -1,5 +1,6 @@
 // GET /buildings/tables - Check what tables exist
 import { createBuildingProviders } from '../buildings/index.js';
+import { fetchOsmBuildings } from '../buildings/osm-reference.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -165,7 +166,7 @@ export function setupBuildingsRoute(app, pool) {
     // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
     // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
     //
-    // `proposals` (OPTIONAL) is a list of proposal ids whose demolitions should already be applied
+    // `proposals` (OPTIONAL) is an explicit list of proposal definitions whose demolitions to apply
     // to the meshes that come back — see backend/buildings/carve.js. With it:
     //   demolished building → ABSENT from the response entirely (there is nothing left to draw, and
     //                         a flag would just make every consumer re-implement the filter)
@@ -221,7 +222,7 @@ export function setupBuildingsRoute(app, pool) {
         }
     });
 
-    // POST /buildings/carve - What the given applied proposals did to the EXISTING buildings under
+    // POST /buildings/carve - What the explicitly selected proposals do to EXISTING buildings under
     // them, as a verdict per AFFECTED building. Nothing else is returned: a building absent from
     // `carves` is untouched and should render exactly as its source gives it.
     // Body: { proposals: string[] | string, city?: string, geometry?: <GeoJSON>, buffer_meters?: number }
@@ -272,7 +273,7 @@ export function setupBuildingsRoute(app, pool) {
             const proposals = await fetchProposalsForCarve(pool, proposalIds);
             const carveContext = carveRecordsFor(proposals);
 
-            // No records at all (the ids matched nothing, or nothing is applied) means nothing was
+            // No records at all (the ids matched nothing or carry no demolitions) means nothing was
             // carved. Say so — do not fall through into an unbounded building query.
             const area = (body.geometry && body.geometry.type) ? body.geometry : carveRecordsBounds(carveContext);
             if (!area) {
@@ -326,6 +327,27 @@ export function setupBuildingsRoute(app, pool) {
         } catch (err) {
             console.error('Error in POST /buildings/footprints:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // GET /buildings/osm?bbox=minLon,minLat,maxLon,maxLat  (WGS84 / EPSG:4326)
+    //
+    // The OSM buildings REFERENCE layer — the community footprints behind the OSM basemap, so they
+    // line up with the tiles the user sees. Live via Overpass (cached by viewport box), global, and
+    // like DGU it is a pure visual overlay: nothing is ever cut, tunnelled or demolished against it.
+    // Response is a GeoJSON FeatureCollection with a `truncated` flag.
+    app.get('/buildings/osm', async (req, res) => {
+        const bbox = String(req.query.bbox || '').trim().split(',').map(Number);
+        if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
+            return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
+        }
+        try {
+            const fc = await fetchOsmBuildings(bbox);
+            res.json(fc);
+        } catch (err) {
+            const status = err && err.status ? err.status : 502;
+            if (status >= 500) console.error('Error in GET /buildings/osm:', err);
+            res.status(status).json({ error: status === 400 ? err.message : 'Failed to fetch OSM buildings.' });
         }
     });
 }

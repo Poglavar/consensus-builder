@@ -1,0 +1,17 @@
+# Cloudflare Worker that injects per-link og:image / twitter:card for /proposals/* (incl. shared AI
+# renders via ?scene=<slug>). Deploy with `wrangler deploy` from this directory. Runs on the free
+# Workers plan. The route puts the Worker in front of every /proposals/* request on the zone.
+name = "og-proposals"
+main = "src/worker.js"
+compatibility_date = "2026-07-01"
+
+# API_BASE  = where the Worker reads proposal/scene JSON from (server-to-server; not WAF-blocked).
+# SITE_BASE = the public site origin, used to build the /proposals/:id/og-image.png card URL.
+[vars]
+API_BASE = "https://api.urbangametheory.xyz"
+SITE_BASE = "https://urbangametheory.xyz"
+
+# Route: intercept only the proposal links on the production zone.
+routes = [
+  { pattern = "urbangametheory.xyz/proposals/*", zone_name = "urbangametheory.xyz" }
+]

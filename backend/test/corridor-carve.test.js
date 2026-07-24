@@ -92,6 +92,22 @@ describe('demolishedBuildingRecordsFrom', () => {
 
         expect(records).toEqual([]);
     });
+
+    it('keys on the applied boolean, not the legacy status — the 474 fix', () => {
+        // After the split, applied=true carves even though the road sub still reads status:'unapplied'
+        // and the proposal lifecycle is 'Active'. This is exactly proposal 474's shape.
+        const records = demolishedBuildingRecordsFrom([
+            { applied: true, lifecycleStatus: 'Active', roadProposal: { applied: true, status: 'unapplied', definition: { demolishedBuildings: [record] } } }
+        ]);
+        expect(records.map(r => r.id)).toEqual(['b1']);
+    });
+
+    it('applied:false suppresses records even when the legacy status says applied', () => {
+        const records = demolishedBuildingRecordsFrom([
+            { applied: false, roadProposal: { applied: false, status: 'applied', definition: { demolishedBuildings: [record] } } }
+        ]);
+        expect(records).toEqual([]);
+    });
 });
 
 describe('collectCarveRecords', () => {
@@ -116,6 +132,14 @@ describe('collectCarveRecords', () => {
         const { records } = collectCarveRecords([roadWith([fullDemolition(61075)], 'unapplied')]);
 
         expect(records.size).toBe(0);
+    });
+
+    it('can apply an explicit server-side selection without consulting browser visibility', () => {
+        const { records } = collectCarveRecords(
+            [{ applied: false, roadProposal: { definition: { demolishedBuildings: [fullDemolition(61075)] } } }],
+            { selectedByCaller: true }
+        );
+        expect([...records.keys()]).toEqual(['61075']);
     });
 });
 
@@ -192,13 +216,13 @@ describe('carveBuildingByObjectId', () => {
         expect(carveBuildingByObjectId(61075, collectCarveRecords([tunnelled]))).toBeNull();
     });
 
-    it('lets a park/square clear its ground — its records carve exactly like a corridor\'s', () => {
-        const park = {
-            proposalId: 'p-park',
+    it.each(['park', 'square', 'lake'])('lets a %s clear its ground — its records carve exactly like a corridor\'s', kind => {
+        const structure = {
+            proposalId: `p-${kind}`,
             status: 'applied',
-            structureProposal: { status: 'applied', demolishedBuildings: [fullDemolition(61075)] }
+            structureProposal: { kind, status: 'applied', demolishedBuildings: [fullDemolition(61075)] }
         };
-        const carve = carveBuildingByObjectId(61075, collectCarveRecords([park]));
+        const carve = carveBuildingByObjectId(61075, collectCarveRecords([structure]));
 
         expect(carve).toBeTruthy();
         expect(carve.remainder).toBeNull();

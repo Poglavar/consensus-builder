@@ -27,7 +27,11 @@
             sidewalkWidth: definition.sidewalkWidth,
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
             profile: cloneDraftValue(profileOverride || definition.profile) || null,
-            tunnels: cloneDraftValue(definition.tunnels) || []
+            tunnels: cloneDraftValue(definition.tunnels) || [],
+            gradeSeparations: cloneDraftValue(definition.gradeSeparations) || [],
+            // Carry the build-through park/lake/square approvals so continuing the road reuses them
+            // (seedRoadDrawing → seedApprovedStructureCrossings) instead of re-prompting.
+            approvedStructures: cloneDraftValue(definition.approvedStructures) || []
         };
     }
 
@@ -62,6 +66,7 @@
             width: seed?.width,
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: cloneDraftValue(seed?.tunnels || []),
+            gradeSeparations: cloneDraftValue(seed?.gradeSeparations || previousDefinition?.gradeSeparations || []),
             demolishedBuildings: cloneDraftValue(seed?.demolishedBuildings || []),
             segmentProfiles: cloneDraftValue(seed?.segmentProfiles || previousDefinition?.segmentProfiles || {}),
             polygon: cloneDraftValue(seed?.polygon !== undefined ? seed.polygon : previousDefinition?.polygon || null),
@@ -99,6 +104,7 @@
                 width: definition.width,
                 sidewalkWidth: definition.sidewalkWidth,
                 tunnels: cloneDraftValue(definition.tunnels || []),
+                gradeSeparations: cloneDraftValue(definition.gradeSeparations || []),
                 demolishedBuildings: cloneDraftValue(definition.demolishedBuildings || []),
                 segmentProfiles: cloneDraftValue(definition.segmentProfiles || {}),
                 trackSpeed: definition.metadata?.trackSpeed,

@@ -20,6 +20,8 @@ import * as turf from '@turf/turf';
 
 let simplifyRingToVertexTarget;
 let MANUAL_MAX_VERTICES;
+let setFootprintSlidersEnabled;
+let setBlockifyModeForTest;
 
 beforeAll(() => {
     global.turf = turf;
@@ -38,10 +40,10 @@ beforeAll(() => {
     let src = readFileSync(scriptPath, 'utf8');
     // Capture the symbols under test — appended inside the same eval string so they resolve even under
     // ESM strict mode (a bare direct eval would not leak the declarations into this scope).
-    src += '\nglobalThis.__cap = { simplifyRingToVertexTarget, MANUAL_MAX_VERTICES };';
+    src += '\nglobalThis.__cap = { simplifyRingToVertexTarget, MANUAL_MAX_VERTICES, setFootprintSlidersEnabled, setBlockifyModeForTest: value => { blockifyMode = value; } };';
     // eslint-disable-next-line no-eval
     (0, eval)(src);
-    ({ simplifyRingToVertexTarget, MANUAL_MAX_VERTICES } = globalThis.__cap);
+    ({ simplifyRingToVertexTarget, MANUAL_MAX_VERTICES, setFootprintSlidersEnabled, setBlockifyModeForTest } = globalThis.__cap);
 });
 
 // A closed-ish [lng,lat] ring approximating a circle with `n` points around a centre.
@@ -97,5 +99,32 @@ describe('simplifyRingToVertexTarget', () => {
         const out = simplifyRingToVertexTarget(circleRing(2000), 60);
         const f = out[0], l = out[out.length - 1];
         expect(f[0] === l[0] && f[1] === l[1]).toBe(false);
+    });
+});
+
+describe('manual footprint controls', () => {
+    it('keeps width enabled while locking shape-producing sliders', () => {
+        const originalGetElementById = global.document.getElementById;
+        const controls = new Map();
+        global.document.getElementById = id => {
+            if (!controls.has(id)) controls.set(id, { disabled: false });
+            return controls.get(id);
+        };
+
+        try {
+            setBlockifyModeForTest('manual');
+            setFootprintSlidersEnabled(false);
+            expect(controls.get('width-slider').disabled).toBe(false);
+            expect(controls.get('setback-slider').disabled).toBe(true);
+            expect(controls.get('chamfer-slider').disabled).toBe(true);
+
+            setBlockifyModeForTest('parametric');
+            setFootprintSlidersEnabled(true);
+            expect(controls.get('setback-slider').disabled).toBe(false);
+            expect(controls.get('width-slider').disabled).toBe(false);
+        } finally {
+            setBlockifyModeForTest('parametric');
+            global.document.getElementById = originalGetElementById;
+        }
     });
 });

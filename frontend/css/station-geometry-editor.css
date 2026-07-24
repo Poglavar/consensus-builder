@@ -1,0 +1,144 @@
+/* Fixed-centre editor for transit-station orientation and type-specific parameters. */
+.station-geometry-editor {
+    position: fixed;
+    z-index: 2075;
+    right: max(18px, env(safe-area-inset-right));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    display: none;
+    width: min(520px, calc(100vw - 36px));
+    color: #172033;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.24);
+    backdrop-filter: blur(12px);
+}
+
+.station-geometry-editor.is-open {
+    display: block;
+}
+
+.station-geometry-editor header,
+.station-geometry-editor footer {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+}
+
+.station-geometry-editor header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.station-geometry-editor header > div {
+    display: grid;
+    gap: 2px;
+}
+
+.station-geometry-editor header small,
+.station-geometry-editor footer > span,
+.station-editor-body p {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.station-geometry-editor header > button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 21px;
+}
+
+.station-editor-body {
+    display: grid;
+    gap: 14px;
+    padding: 14px;
+}
+
+.station-editor-body p {
+    margin: 0;
+}
+
+.station-editor-field {
+    display: grid;
+    grid-template-columns: minmax(118px, auto) minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.station-editor-bearing {
+    grid-template-columns: minmax(72px, auto) minmax(120px, 1fr) 88px;
+}
+
+.station-editor-field input[type='range'] {
+    width: 100%;
+}
+
+.station-editor-field input[type='number'] {
+    width: 70px;
+    padding: 7px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.station-editor-input-with-unit {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.station-geometry-editor button {
+    padding: 8px 11px;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.station-geometry-editor button:hover {
+    color: #fff;
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.station-geometry-editor footer {
+    border-top: 1px solid #e2e8f0;
+}
+
+.station-geometry-editor footer > div {
+    display: flex;
+    gap: 8px;
+}
+
+.station-geometry-editor footer .is-primary {
+    color: #fff;
+    background: #16a34a;
+    border-color: #16a34a;
+    font-weight: 750;
+}
+
+@media (max-width: 640px) {
+    .station-geometry-editor {
+        right: 8px;
+        bottom: 8px;
+        width: calc(100vw - 16px);
+    }
+
+    .station-editor-bearing,
+    .station-editor-field {
+        grid-template-columns: 1fr;
+    }
+
+    .station-geometry-editor footer > span {
+        display: none;
+    }
+}

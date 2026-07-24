@@ -1,6 +1,5 @@
-// Single Building modal and placement
-// Creates a draggable rectangle within the currently selected block (union polygon),
-// with sliders for length, width, height, chamfer, and rotation.
+// Freeform-building placement modal. Starts from a square footprint, then lets the user move the
+// whole polygon, reshape its vertices, add vertices from edges, and rotate it in fixed steps.
 
 (function () {
     let singleModal = null;
@@ -9,18 +8,45 @@
     let singleParcelBorderLayer = null;
     let singleRectGroup = null;
     let singleRectLayer = null;
+    let singleActivePolygonLayer = null;
+    let singlePolygonEditor = null;
+    let singlePendingVertexActionIndex = null;
     let singleDragMarker = null; // legacy marker; not rendered anymore
     let singleBlockFeature = null;
-    let lastValidCenter = null; // LatLng of last valid rectangle center
+    let lastValidCenter = null; // LatLng of the last valid active-footprint centre
     let singleRectFeature = null;
     let rectDragActive = false;
     let rectDragStartPointerPt = null;
     let rectDragStartCenterPt = null;
-    let singleMapClickHandlerBound = false;
+    let rectDragStartFeature = null;
+    let rectDragLastValidFeature = null;
     let singleMapDragStarterBound = false;
+    let singleGroundPreviewLayer = null;
 
     // Rotation state
     let currentRotationDeg = 0; // current rotation in degrees
+
+    // Surroundings: one treatment per proposal for the whole merged parcel area around the
+    // buildings — left as it is, paved like a square, or grassed like a park. See building-ground.js.
+    let currentGroundTreatment = 'none';
+    let singleBuildingSeedGroundTreatment = null;
+
+    function buildingGroundApi() {
+        return (typeof window !== 'undefined' && window.BuildingGround) ? window.BuildingGround : null;
+    }
+
+    function normalizeGroundTreatment(value) {
+        const api = buildingGroundApi();
+        return api ? api.normalizeTreatment(value) : 'none';
+    }
+
+    // The polygon the proposal will pave or green: the block minus every building footprint on it.
+    function currentGroundSurface() {
+        const api = buildingGroundApi();
+        if (!api) return null;
+        const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
+        return api.buildSurface(currentGroundTreatment, singleBlockFeature, buildings);
+    }
 
     const single3D = {
         handle: null,
@@ -37,7 +63,6 @@
         resizeHandler: null,
         projector: null
     };
-    let singleThreeLoadPromise = null;
 
     function resolveParcelId(feature) {
         if (!feature || typeof feature !== 'object') return null;
@@ -58,28 +83,10 @@
     }
 
     async function ensureThreeForSingle() {
-        const loadScript = (src) => new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-
-        if (typeof THREE === 'undefined') {
-            if (!singleThreeLoadPromise) {
-                singleThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
-            }
-            await singleThreeLoadPromise;
-        }
-
-        if (typeof THREE === 'undefined') return false;
-
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
-        }
-
+        if (typeof THREE !== 'undefined') return true;
+        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
+        // second copy here, an old UMD build would clobber the r184 global for the whole app.
+        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
         return typeof THREE !== 'undefined';
     }
 
@@ -104,15 +111,12 @@
         };
     }
 
-    // Dimensions in meters
+    // Initial square dimensions in metres. Once placed, its GeoJSON polygon is canonical; there are
+    // deliberately no width, length, or chamfer parameters in the freeform editor.
     const DEFAULT_LENGTH_M = 6; // along Y
     const DEFAULT_WIDTH_M = 3;  // along X
     const DEFAULT_HEIGHT_M = 10; // meters
-    const DEFAULT_CHAMFER_M = 0; // meters
-    let currentLengthM = DEFAULT_LENGTH_M;
-    let currentWidthM = DEFAULT_WIDTH_M;
     let currentHeightM = DEFAULT_HEIGHT_M;
-    let currentChamferM = DEFAULT_CHAMFER_M;
     let pendingSingleBuildingMeta = null;
     let singleBuildingOverrideContext = null;
     let buildingEntries = [];
@@ -162,6 +166,15 @@
         return message;
     };
 
+    const showSingleBuildingEditorAlert = (key, fallback) => {
+        const message = translateSingleBuildingText(`modal.singleBuilding.${key}`, fallback);
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+            ? window.showStyledAlert
+            : window.alert;
+        if (typeof alertFn === 'function') alertFn(message);
+        return message;
+    };
+
     const setSingleBuildingStatus = (key, fallback, params = {}) => {
         if (typeof updateStatus === 'function') {
             updateStatus(translateSingleBuildingText(`status.messages.${key}`, fallback, params));
@@ -180,13 +193,11 @@
     function setActiveBuilding(buildingId, { refreshUI = true, skip3D = false } = {}) {
         const target = buildingEntries.find(b => b.id === buildingId) || buildingEntries[0];
         if (!target) return;
+        singlePendingVertexActionIndex = null;
         activeBuildingId = target.id;
         singleRectFeature = target.feature || null;
         lastValidCenter = target.lastValidCenter || null;
-        currentWidthM = target.width;
-        currentLengthM = target.length;
         currentHeightM = target.height;
-        currentChamferM = target.chamfer;
         currentRotationDeg = target.rotation || 0;
         if (refreshUI) {
             syncSlidersFromActive();
@@ -196,31 +207,28 @@
     }
 
     function syncSlidersFromActive() {
-        const wEl = document.getElementById('single-width-slider');
-        const lEl = document.getElementById('single-length-slider');
         const hEl = document.getElementById('single-height-slider');
-        const cEl = document.getElementById('single-chamfer-slider');
-        const rEl = document.getElementById('single-rotation-slider');
-        if (wEl) { wEl.value = currentWidthM; const v = document.getElementById('single-width-value'); if (v) v.textContent = Number(currentWidthM).toFixed(1); }
-        if (lEl) { lEl.value = currentLengthM; const v = document.getElementById('single-length-value'); if (v) v.textContent = Number(currentLengthM).toFixed(1); }
         if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = Number(currentHeightM).toFixed(0); }
-        if (cEl) { cEl.value = currentChamferM; const v = document.getElementById('single-chamfer-value'); if (v) v.textContent = Number(currentChamferM).toFixed(1); }
-        if (rEl) { rEl.value = currentRotationDeg; const v = document.getElementById('single-rotation-value'); if (v) v.textContent = Number(currentRotationDeg).toFixed(0); }
         const select = document.getElementById('single-building-selector');
         if (select) select.value = String(activeBuildingId);
     }
 
-    function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
-        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg) || null;
-        if (fitted && fitted.properties) {
-            fitted.properties.height = heightM;
-            fitted.properties.width = widthM;
-            fitted.properties.length = lengthM;
-            fitted.properties.chamfer = chamferM;
-            fitted.properties.rotation = rotationDeg;
-            fitted.properties.type = 'proposedBuildingSingle';
-        }
-        return fitted;
+    function markAsEditablePolygon(feature, heightM, rotationDeg = 0) {
+        if (!feature || !feature.geometry) return feature;
+        feature.properties = { ...(feature.properties || {}) };
+        delete feature.properties.width;
+        delete feature.properties.length;
+        delete feature.properties.chamfer;
+        feature.properties.height = Math.max(3, Number(heightM) || DEFAULT_HEIGHT_M);
+        feature.properties.rotation = Number(rotationDeg) || 0;
+        feature.properties.footprintMode = 'polygon';
+        feature.properties.type = 'proposedBuildingSingle';
+        return feature;
+    }
+
+    function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
+        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, heightM, rotationDeg) || null;
+        return markAsEditablePolygon(fitted, heightM, rotationDeg);
     }
 
     function addNewBuildingEntry(centerLatLng, options = {}) {
@@ -229,9 +237,14 @@
         const width = Number(options.width) || placement.width || DEFAULT_WIDTH_M;
         const length = Number(options.length) || placement.length || DEFAULT_LENGTH_M;
         const height = Number(options.height) || width;
-        const chamfer = Number(options.chamfer) || DEFAULT_CHAMFER_M;
         const rotation = Number(options.rotation) || 0;
-        const feature = buildInitialBuildingFeature(center, width, length, chamfer, height, rotation);
+        let feature = null;
+        if (options.feature && options.feature.geometry) {
+            try { feature = JSON.parse(JSON.stringify(options.feature)); } catch (_) { feature = null; }
+            markAsEditablePolygon(feature, height, rotation);
+        } else {
+            feature = buildInitialBuildingFeature(center, width, length, height, rotation);
+        }
         if (!feature) return null;
         const id = nextBuildingId++;
         const entry = {
@@ -239,15 +252,56 @@
             name: translateSingleBuildingText('modal.singleBuilding.defaultName', 'Building {{n}}', { n: id }),
             color: pickBuildingColor(buildingEntries.length),
             feature,
-            width,
-            length,
             height,
-            chamfer,
             rotation,
-            lastValidCenter: centerLatLng
+            lastValidCenter: featureCenterLatLng(feature) || center
         };
         buildingEntries.push(entry);
         activeBuildingId = id;
+        return entry;
+    }
+
+    function duplicateActiveBuilding() {
+        const source = getActiveBuilding();
+        const projector = getSingleProjector();
+        if (!source?.feature?.geometry || !projector) return null;
+
+        const targets = [];
+        const sourceCenter = featureCenterLatLng(source.feature);
+        if (sourceCenter && singleMap) {
+            const point = singleMap.latLngToLayerPoint(sourceCenter);
+            [[28, 0], [-28, 0], [0, 28], [0, -28], [28, 28], [-28, 28], [28, -28], [-28, -28]]
+                .forEach(([dx, dy]) => targets.push(singleMap.layerPointToLatLng(point.add(L.point(dx, dy)))));
+        }
+        const placement = computeInitialPlacement(singleBlockFeature);
+        if (placement.center) targets.push(placement.center);
+        for (let i = 0; i < 20; i++) {
+            const randomTarget = randomPointInsideBlock(singleBlockFeature);
+            if (randomTarget) targets.push(randomTarget);
+        }
+
+        let copiedFeature = null;
+        for (const target of targets) {
+            const geometry = window.SingleBuildingGeometry.moveGeometryCenter(projector, source.feature.geometry, target);
+            const candidate = featureWithGeometry(source.feature, geometry);
+            if (candidate && editableFootprintValid(candidate)) {
+                copiedFeature = candidate;
+                break;
+            }
+        }
+        // A cramped parcel may have no second non-overlapping-looking position. Keeping the exact
+        // copy is still preferable to silently changing its shape; the new active handles reveal it.
+        if (!copiedFeature) copiedFeature = cloneSingleFeature(source.feature);
+
+        const entry = addNewBuildingEntry(featureCenterLatLng(copiedFeature), {
+            feature: copiedFeature,
+            height: source.height,
+            rotation: source.rotation
+        });
+        if (!entry) return null;
+        entry.feature.properties.name = entry.name;
+        refreshBuildingSelector();
+        setActiveBuilding(entry.id, { refreshUI: true, skip3D: false });
         return entry;
     }
 
@@ -323,6 +377,72 @@
             return [...ring, [a[0], a[1]]];
         }
         return ring;
+    }
+
+    function cloneSingleFeature(feature) {
+        if (!feature) return null;
+        try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
+    }
+
+    function editableOuterRing(feature) {
+        if (!feature?.geometry || feature.geometry.type !== 'Polygon') return null;
+        const ring = feature.geometry.coordinates?.[0];
+        if (!Array.isArray(ring) || ring.length < 4) return null;
+        return ring;
+    }
+
+    function featureWithOuterRing(feature, ring) {
+        const next = cloneSingleFeature(feature);
+        if (!next?.geometry || next.geometry.type !== 'Polygon' || !Array.isArray(ring)) return null;
+        next.geometry.coordinates[0] = ring;
+        return next;
+    }
+
+    function featureWithGeometry(feature, geometry) {
+        const next = cloneSingleFeature(feature);
+        if (!next || !geometry) return null;
+        next.geometry = geometry;
+        return next;
+    }
+
+    function editableFootprintValid(feature) {
+        try {
+            const ring = editableOuterRing(feature);
+            if (!ring || !window.SingleBuildingGeometry?.isSimpleRing(ring)) return false;
+            if (turf.area(feature) < 0.5) return false;
+            if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
+            return footprintFullyInsideBlock(feature, singleBlockFeature);
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function setActiveFeature(feature, { updateCenter = true } = {}) {
+        if (!feature?.geometry) return;
+        const active = getActiveBuilding();
+        markAsEditablePolygon(feature, active?.height ?? currentHeightM, active?.rotation ?? currentRotationDeg);
+        singleRectFeature = feature;
+        if (active) active.feature = feature;
+        if (updateCenter) {
+            const center = featureCenterLatLng(feature);
+            if (center) {
+                lastValidCenter = center;
+                if (active) active.lastValidCenter = center;
+            }
+        }
+    }
+
+    function redrawActiveFootprint(feature) {
+        if (!singleActivePolygonLayer || !feature?.geometry) return;
+        try {
+            if (feature.geometry.type === 'Polygon') {
+                const latLngs = feature.geometry.coordinates.map(ring => ring.map(([lng, lat]) => L.latLng(lat, lng)));
+                singleActivePolygonLayer.setLatLngs(latLngs);
+            } else if (feature.geometry.type === 'MultiPolygon') {
+                const latLngs = feature.geometry.coordinates.map(polygon => polygon.map(ring => ring.map(([lng, lat]) => L.latLng(lat, lng))));
+                singleActivePolygonLayer.setLatLngs(latLngs);
+            }
+        } catch (_) { }
     }
 
     function clearThreeGroup(group) {
@@ -414,12 +534,13 @@
     }
 
     function computeInitialPlacement(blockFeature) {
-        if (!blockFeature) return { center: null, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        const initialSquareSize = Math.max(DEFAULT_WIDTH_M, DEFAULT_LENGTH_M);
+        if (!blockFeature) return { center: null, width: initialSquareSize, length: initialSquareSize };
 
         const attempts = 12;
         const growStep = 3;
         const retreat = 2.5;
-        let best = { center: null, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        let best = { center: null, width: initialSquareSize, length: initialSquareSize };
 
         for (let i = 0; i < attempts; i++) {
             const center = randomPointInsideBlock(blockFeature);
@@ -428,8 +549,8 @@
             let size = 6;
             let lastValid = null;
             for (let j = 0; j < 160; j++) {
-                const candidate = buildRectangleFeature(center, size, size, DEFAULT_CHAMFER_M, DEFAULT_HEIGHT_M);
-                if (rectangleFullyInsideBlock(candidate, blockFeature)) {
+                const candidate = buildRectangleFeature(center, size, size, DEFAULT_HEIGHT_M);
+                if (footprintFullyInsideBlock(candidate, blockFeature)) {
                     lastValid = size;
                     size += growStep;
                 } else {
@@ -441,8 +562,8 @@
 
             let targetSize = Math.max(1, lastValid - retreat * 2);
             for (let k = 0; k < 12; k++) {
-                const candidate = buildRectangleFeature(center, targetSize, targetSize, DEFAULT_CHAMFER_M, DEFAULT_HEIGHT_M);
-                if (rectangleFullyInsideBlock(candidate, blockFeature)) break;
+                const candidate = buildRectangleFeature(center, targetSize, targetSize, DEFAULT_HEIGHT_M);
+                if (footprintFullyInsideBlock(candidate, blockFeature)) break;
                 targetSize = Math.max(1, targetSize - retreat);
             }
 
@@ -453,7 +574,7 @@
 
         if (!best.center) {
             const fallbackCenter = getBlockCentroid(blockFeature);
-            return { center: fallbackCenter, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+            return { center: fallbackCenter, width: initialSquareSize, length: initialSquareSize };
         }
 
         return best;
@@ -708,10 +829,6 @@
         const px = x - origin[0];
         const py = y - origin[1];
 
-        const width = target.width || DEFAULT_WIDTH_M;
-        const length = target.length || DEFAULT_LENGTH_M;
-        const rotation = target.rotation || 0;
-
         const aspect = canvas.width / canvas.height;
         const labelHeight = Math.min(height * 0.6, 3);
         const labelWidth = labelHeight * aspect;
@@ -719,19 +836,17 @@
         const geometry = new THREE.PlaneGeometry(labelWidth, labelHeight);
         const mesh = new THREE.Mesh(geometry, material);
 
-        const angleRad = (rotation * Math.PI) / 180;
-
-        // Position on the "south" face (relative to rotation)
-        // Face is at y = -length/2
-        const offX = 0;
-        const offY = -length / 2 - 0.2;
-
-        const rotOffX = offX * Math.cos(angleRad) - offY * Math.sin(angleRad);
-        const rotOffY = offX * Math.sin(angleRad) + offY * Math.cos(angleRad);
-
-        mesh.position.set(px + rotOffX, py + rotOffY, height / 2);
+        // Arbitrary polygons have no meaningful width/length axes. Put the label on the southern
+        // side of the projected footprint, which remains correct after any vertex edit or rotation.
+        let southY = py;
+        const outer = editableOuterRing(target.feature) || [];
+        outer.forEach(([vertexLng, vertexLat]) => {
+            const [, vertexY] = projector.project(L.latLng(vertexLat, vertexLng));
+            southY = Math.min(southY, vertexY - origin[1]);
+        });
+        mesh.position.set(px, southY - 0.2, height / 2);
         mesh.rotation.x = Math.PI / 2;
-        mesh.rotation.z = angleRad;
+        mesh.rotation.z = 0;
         mesh.renderOrder = 999;
 
         single3D.buildingGroup.add(mesh);
@@ -792,17 +907,13 @@
         }
     }
 
-    function buildRectangleFeature(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
+    function buildRectangleFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
         // Build rectangle in meters using map CRS (WebMercator). Assumes WGS84 inputs.
         const centerLL = L.latLng(centerLatLng.lat, centerLatLng.lng);
         const projector = getSingleProjector();
 
         const halfW = Math.max(0.5, widthM / 2);
         const halfL = Math.max(0.5, lengthM / 2);
-        const maxChamferX = Math.max(0, halfW - 0.1);
-        const maxChamferY = Math.max(0, halfL - 0.1);
-        const dX = Math.min(Math.max(0, chamferM || 0), maxChamferX);
-        const dY = Math.min(Math.max(0, chamferM || 0), maxChamferY);
 
         let ring;
 
@@ -813,7 +924,7 @@
             ring = window.SingleBuildingGeometry.buildRectangleRing(
                 projector,
                 { lat: centerLL.lat, lng: centerLL.lng },
-                { widthM, lengthM, chamferM, rotationDeg }
+                { widthM, lengthM, rotationDeg }
             );
         } else {
             // Rhumb fallback
@@ -822,29 +933,12 @@
             const west = turf.rhumbDestination(centerPt, halfW / 1000, 270).geometry.coordinates[0];
             const north = turf.rhumbDestination(centerPt, halfL / 1000, 0).geometry.coordinates[1];
             const south = turf.rhumbDestination(centerPt, halfL / 1000, 180).geometry.coordinates[1];
-            const chamferXDeg = dX > 0 ? turf.rhumbDestination(centerPt, dX / 1000, 90).geometry.coordinates[0] - centerLL.lng : 0;
-            const chamferYDeg = dY > 0 ? turf.rhumbDestination(centerPt, dY / 1000, 0).geometry.coordinates[1] - centerLL.lat : 0;
-
-            let pts;
-            if (dX > 0 || dY > 0) {
-                pts = [
-                    [west + chamferXDeg, south],
-                    [east - chamferXDeg, south],
-                    [east, south + chamferYDeg],
-                    [east, north - chamferYDeg],
-                    [east - chamferXDeg, north],
-                    [west + chamferXDeg, north],
-                    [west, north - chamferYDeg],
-                    [west, south + chamferYDeg]
-                ];
-            } else {
-                pts = [
-                    [west, south],
-                    [east, south],
-                    [east, north],
-                    [west, north]
-                ];
-            }
+            const pts = [
+                [west, south],
+                [east, south],
+                [east, north],
+                [west, north]
+            ];
             // Apply rotation using turf.transformRotate
             const unrotatedFeature = {
                 type: 'Feature',
@@ -875,7 +969,6 @@
                 width: widthM,
                 length: lengthM,
                 height: heightM || DEFAULT_HEIGHT_M,
-                chamfer: chamferM || 0,
                 rotation: rotationDeg || 0,
                 block: blockLabel
             },
@@ -883,46 +976,37 @@
         };
     }
 
-    function rectangleFullyInsideBlock(rectFeature, blockFeature) {
+    function footprintFullyInsideBlock(footprintFeature, blockFeature) {
         try {
-            if (!rectFeature || !blockFeature) return false;
-            // Require rectangle polygon to be fully within the block polygon
-            return turf.booleanWithin(rectFeature, blockFeature);
+            if (!footprintFeature || !blockFeature) return false;
+            // Difference is more reliable than booleanWithin for polygons: booleanWithin can miss
+            // an edge crossing the notch of a concave parcel because every vertex is still inside.
+            // A tiny tolerance absorbs floating-point residue after clipping.
+            try {
+                const outside = turf.difference(footprintFeature, blockFeature);
+                return !outside || turf.area(outside) <= 0.05;
+            } catch (_) {
+                return turf.booleanWithin(footprintFeature, blockFeature);
+            }
         } catch (_) { return false; }
     }
 
-    function getCurrentCenter() {
-        if (lastValidCenter) return lastValidCenter;
-        const active = getActiveBuilding();
-        const geomFeature = (active && active.feature) || singleRectFeature;
-        if (geomFeature) {
-            try {
-                const c = turf.centroid(geomFeature);
-                const [lng, lat] = c.geometry.coordinates;
-                return L.latLng(lat, lng);
-            } catch (_) { }
-        }
-        return getBlockCentroid(singleBlockFeature);
-    }
-
-    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
+    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
         if (!singleBlockFeature || !centerLatLng) return null;
         let w = widthM;
         let l = lengthM;
         let best = null;
         const maxIters = 14;
         for (let i = 0; i < maxIters; i++) {
-            let candidate = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM, rotationDeg);
+            let candidate = buildRectangleFeature(centerLatLng, w, l, heightM, rotationDeg);
             try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
-            if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
+            if (footprintFullyInsideBlock(candidate, singleBlockFeature)) {
                 best = candidate;
                 if (best && best.properties) {
                     best.properties.width = w;
                     best.properties.length = l;
                     best.properties.rotation = rotationDeg;
                 }
-                currentWidthM = w;
-                currentLengthM = l;
                 break;
             }
             w *= 0.93;
@@ -966,13 +1050,14 @@
             const feature = JSON.parse(JSON.stringify(entry.feature));
             feature.properties = {
                 ...(feature.properties || {}),
-                width: Number(entry.width),
-                length: Number(entry.length),
                 height: Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M),
-                chamfer: Number(entry.chamfer) || 0,
                 rotation: Number(entry.rotation) || 0,
+                footprintMode: 'polygon',
                 type: 'proposedBuildingSingle'
             };
+            delete feature.properties.width;
+            delete feature.properties.length;
+            delete feature.properties.chamfer;
             return feature;
         });
         window.syncActiveProposalDraftFromEditor('building', {
@@ -981,14 +1066,13 @@
             blockName: context.blockName || describeSingleBuildingSelection(parcelIds),
             parameters: {
                 typology: 'single',
-                width: buildings[0]?.properties?.width ?? null,
-                length: buildings[0]?.properties?.length ?? null,
                 height: buildings[0]?.properties?.height ?? null,
-                chamfer: buildings[0]?.properties?.chamfer ?? null,
-                rotation: buildings[0]?.properties?.rotation ?? null
+                rotation: buildings[0]?.properties?.rotation ?? null,
+                footprintMode: 'polygon'
             },
             buildingFeature: buildings[0] || null,
-            buildings
+            buildings,
+            groundSurface: currentGroundSurface()
         }, { coalesceKey: 'single-building-live' });
     }
 
@@ -999,6 +1083,8 @@
         } else {
             singleRectGroup.clearLayers();
         }
+        singleRectLayer = null;
+        singleActivePolygonLayer = null;
 
         buildingEntries.forEach(entry => {
             if (!entry.feature) return;
@@ -1008,13 +1094,29 @@
                     color: entry.color,
                     weight: isActive ? 3 : 2,
                     fillColor: entry.color,
-                    fillOpacity: isActive ? 0.4 : 0.2
+                    fillOpacity: isActive ? 0.4 : 0.2,
+                    className: isActive ? 'single-building-fill single-building-fill--active'
+                        : 'single-building-fill single-building-fill--selectable'
                 },
-                interactive: isActive,
+                // Every footprint is interactive: the active one drags, the rest select on click.
+                interactive: true,
                 bubblingMouseEvents: false
             }).addTo(singleRectGroup);
             if (isActive) {
                 singleRectLayer = layer;
+                layer.eachLayer(polygonLayer => {
+                    if (!singleActivePolygonLayer && typeof polygonLayer.setLatLngs === 'function') {
+                        singleActivePolygonLayer = polygonLayer;
+                    }
+                });
+            } else {
+                // Click any non-active footprint on the map to make it active (same as the dropdown).
+                const selectThisBuilding = (e) => {
+                    if (e && e.originalEvent && L.DomEvent) L.DomEvent.stop(e.originalEvent);
+                    setActiveBuilding(entry.id, { refreshUI: true });
+                };
+                layer.on('click', selectThisBuilding);
+                layer.eachLayer(subLayer => subLayer.on('click', selectThisBuilding));
             }
 
             if (entry.name) {
@@ -1031,8 +1133,157 @@
             try { singleParcelBorderLayer.bringToFront(); } catch (_) { }
         }
         try { singleRectGroup.bringToFront(); } catch (_) { }
+        updateGroundPreview();
         bindRectangleLayerEvents();
+        renderSharedPolygonEditor();
+        syncRotationButtons();
         autosaveSingleBuildingDraft();
+    }
+
+    // Paint the surroundings the proposal would create, under the footprints, so the choice is
+    // visible while placing rather than only after applying.
+    function updateGroundPreview() {
+        if (!singleMap) return;
+        if (singleGroundPreviewLayer) {
+            try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
+            singleGroundPreviewLayer = null;
+        }
+        const surface = currentGroundSurface();
+        const style = surface ? buildingGroundApi()?.SURFACE_STYLE_2D[surface.treatment] : null;
+        if (!surface || !style) return;
+        try {
+            singleGroundPreviewLayer = L.geoJSON({ type: 'Feature', properties: {}, geometry: surface.polygon }, {
+                style: { ...style, weight: 1, opacity: 1 },
+                interactive: false
+            }).addTo(singleMap);
+            singleGroundPreviewLayer.bringToBack();
+        } catch (error) {
+            console.warn('[single-building] ground preview failed', error);
+        }
+    }
+
+    function updateEditedFootprintPreview(feature) {
+        setActiveFeature(feature);
+        redrawActiveFootprint(feature);
+        try { updateSingleBuilding3D(feature, { skipFit: true }); } catch (_) { }
+    }
+
+    function destroySinglePolygonEditor() {
+        if (!singlePolygonEditor) return;
+        try { singlePolygonEditor.destroy(); } catch (_) { }
+        singlePolygonEditor = null;
+    }
+
+    function commitSharedPolygonRing(ring) {
+        const closedRing = window.SingleBuildingGeometry.ensureClosedRing(ring);
+        const candidate = featureWithOuterRing(singleRectFeature, closedRing);
+        if (!candidate || !editableFootprintValid(candidate)) {
+            // The shared handle followed the pointer freely. Only now, on release, restore the last
+            // buildable footprint if the final ring crosses itself or cannot fit inside the parcel.
+            updateRectangleLayers();
+            return false;
+        }
+        setActiveFeature(candidate);
+        updateRectangleLayers();
+        try { updateSingleBuilding3D(candidate, { skipFit: true }); } catch (_) { }
+        return true;
+    }
+
+    function loadSingleBuildingGeoJSON(file) {
+        if (!file || !window.PolygonGeometryEditor) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            let ring = null;
+            try {
+                const data = JSON.parse(reader.result);
+                ring = window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(data, turf);
+            } catch (error) {
+                console.error('Freeform-building GeoJSON parse failed', error);
+            }
+            if (!ring) {
+                showSingleBuildingEditorAlert('uploadNoPolygon', 'No usable polygon found in that file.');
+                return;
+            }
+
+            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, singleBlockFeature, turf) || ring;
+            const closedRing = window.SingleBuildingGeometry.ensureClosedRing(constrained);
+            const candidate = featureWithOuterRing(singleRectFeature, closedRing);
+            if (!candidate || !editableFootprintValid(candidate)) {
+                showSingleBuildingEditorAlert('uploadOutside', 'The uploaded polygon does not overlap this block in a usable way.');
+                return;
+            }
+
+            const active = getActiveBuilding();
+            currentRotationDeg = 0;
+            if (active) active.rotation = 0;
+            candidate.properties = { ...(candidate.properties || {}), rotation: 0 };
+            setActiveFeature(candidate);
+            updateRectangleLayers();
+            try { updateSingleBuilding3D(candidate, { skipFit: true }); } catch (_) { }
+        };
+        reader.onerror = () => showSingleBuildingEditorAlert('uploadError', 'Could not read that file.');
+        reader.readAsText(file);
+    }
+
+    function renderSharedPolygonEditor() {
+        const initialSelectedVertexIndex = singlePendingVertexActionIndex;
+        singlePendingVertexActionIndex = null;
+        destroySinglePolygonEditor();
+        const ring = editableOuterRing(singleRectFeature);
+        if (!singleMap || !ring) return;
+        if (!window.PolygonGeometryEditor || typeof window.PolygonGeometryEditor.create !== 'function') {
+            console.error('Shared polygon geometry editor is unavailable.');
+            return;
+        }
+        singlePolygonEditor = window.PolygonGeometryEditor.create({
+            map: singleMap,
+            leaflet: L,
+            turf,
+            ring,
+            boundary: () => singleBlockFeature,
+            initialSelectedVertexIndex,
+            showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
+            vertexTitle: translateSingleBuildingText('modal.singleBuilding.vertexLabel', 'Drag to reshape'),
+            deleteTitle: translateSingleBuildingText('modal.singleBuilding.deleteVertexLabel', 'Delete selected vertex'),
+            onCommit: ({ ring: committedRing, reason, vertexIndex }) => {
+                singlePendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
+                const committed = commitSharedPolygonRing(committedRing);
+                // A normal commit consumes this synchronously while recreating the editor. If a host
+                // update exits early, do not let a stale selection leak into a later redraw.
+                singlePendingVertexActionIndex = null;
+                return committed;
+            }
+        });
+    }
+
+    function rotatedFootprintCandidate(deltaDeg) {
+        const active = getActiveBuilding();
+        const projector = getSingleProjector();
+        if (!active?.feature?.geometry || !projector) return null;
+        const geometry = window.SingleBuildingGeometry.rotateGeometry(projector, active.feature.geometry, deltaDeg);
+        const candidate = featureWithGeometry(active.feature, geometry);
+        return candidate && editableFootprintValid(candidate) ? candidate : null;
+    }
+
+    function syncRotationButtons() {
+        const counterclockwise = document.getElementById('single-rotate-counterclockwise');
+        const clockwise = document.getElementById('single-rotate-clockwise');
+        if (counterclockwise) counterclockwise.disabled = !rotatedFootprintCandidate(5);
+        if (clockwise) clockwise.disabled = !rotatedFootprintCandidate(-5);
+    }
+
+    function rotateActiveFootprint(deltaDeg) {
+        const active = getActiveBuilding();
+        const candidate = rotatedFootprintCandidate(deltaDeg);
+        if (!active || !candidate) return;
+        singlePendingVertexActionIndex = null;
+        const nextRotation = ((Number(active.rotation || 0) + deltaDeg) % 360 + 360) % 360;
+        active.rotation = nextRotation;
+        currentRotationDeg = nextRotation;
+        candidate.properties = { ...(candidate.properties || {}), rotation: nextRotation };
+        setActiveFeature(candidate);
+        updateRectangleLayers();
+        try { updateSingleBuilding3D(candidate, { skipFit: true }); } catch (_) { }
     }
 
     function pointInsideRect(latlng) {
@@ -1046,9 +1297,13 @@
     }
 
     function handleRectDragEnd() {
+        const wasActive = rectDragActive;
+        const finalFeature = rectDragLastValidFeature || rectDragStartFeature;
         rectDragActive = false;
         rectDragStartPointerPt = null;
         rectDragStartCenterPt = null;
+        rectDragStartFeature = null;
+        rectDragLastValidFeature = null;
 
         if (singleMap) {
             singleMap.off('mousemove', handleRectDragMove);
@@ -1062,6 +1317,11 @@
         document.removeEventListener('mouseup', handleRectDragEnd);
         document.removeEventListener('touchend', handleRectDragEnd);
 
+        if (wasActive && finalFeature) {
+            setActiveFeature(finalFeature);
+            updateRectangleLayers();
+            try { updateSingleBuilding3D(finalFeature, { skipFit: true }); } catch (_) { }
+        }
         bindRectangleLayerEvents();
     }
 
@@ -1073,30 +1333,36 @@
         const delta = currentPt.subtract(rectDragStartPointerPt);
         const newCenterPt = rectDragStartCenterPt.add(delta);
         const newCenter = singleMap.layerPointToLatLng(newCenterPt);
-        let candidate = buildRectangleFeature(newCenter, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-        try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
-        if (!rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
-            return;
-        }
+        const startCenter = singleMap.layerPointToLatLng(rectDragStartCenterPt);
+        const projector = getSingleProjector();
+        if (!projector || !rectDragStartFeature?.geometry) return;
+        const [startX, startY] = projector.project(startCenter);
+        const [nextX, nextY] = projector.project(newCenter);
+        const geometry = window.SingleBuildingGeometry.translateGeometry(
+            projector,
+            rectDragStartFeature.geometry,
+            nextX - startX,
+            nextY - startY
+        );
+        const candidate = featureWithGeometry(rectDragStartFeature, geometry);
+        if (!candidate || !editableFootprintValid(candidate)) return;
 
-        singleRectFeature = candidate;
-        lastValidCenter = newCenter;
-        const active = getActiveBuilding();
-        if (active) {
-            active.feature = candidate;
-            active.lastValidCenter = newCenter;
-        }
-        updateRectangleLayers();
+        rectDragLastValidFeature = candidate;
+        updateEditedFootprintPreview(candidate);
         if (singleDragMarker) {
             try { singleDragMarker.setLatLng(newCenter); } catch (_) { }
         }
-        try { updateSingleBuilding3D(candidate, { skipFit: true }); } catch (_) { }
     }
 
     function handleRectDragStart(e) {
         if (!singleMap || !singleBlockFeature || !e || !e.latlng) return;
+        if (rectDragActive) return;
+        const originalTarget = e.originalEvent && e.originalEvent.target;
+        if (originalTarget && typeof originalTarget.closest === 'function'
+            && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
         // Only start a building drag when the touch is over the active building; otherwise let the map pan.
         if (!pointInsideRect(e.latlng)) return;
+        singlePendingVertexActionIndex = null;
         try {
             if (e.originalEvent) {
                 // Stop Leaflet's map drag from starting on this touch
@@ -1110,7 +1376,10 @@
             || e.latlng;
         rectDragStartCenterPt = singleMap.latLngToLayerPoint(centerLL);
         rectDragStartPointerPt = singleMap.latLngToLayerPoint(e.latlng);
+        rectDragStartFeature = cloneSingleFeature(singleRectFeature);
+        rectDragLastValidFeature = cloneSingleFeature(singleRectFeature);
         rectDragActive = true;
+        destroySinglePolygonEditor();
 
         try { singleMap.dragging.disable(); } catch (_) { }
         try { if (singleMap.boxZoom) singleMap.boxZoom.disable(); } catch (_) { }
@@ -1166,62 +1435,6 @@
         }).addTo(singleMap);
     }
 
-    function placeOrAdjustRectangle(centerLatLng) {
-        if (!singleBlockFeature) return;
-        let feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-        try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
-        // If not fully inside, try to nudge towards centroid until it fits (limited attempts)
-        if (!rectangleFullyInsideBlock(feature, singleBlockFeature)) {
-            const centroid = getBlockCentroid(singleBlockFeature);
-            const [cx, cy] = [centroid.lat, centroid.lng];
-            const maxIters = 12;
-            let current = centerLatLng;
-            for (let i = 0; i < maxIters; i++) {
-                const dx = (cx - current.lat) * 0.5;
-                const dy = (cy - current.lng) * 0.5;
-                current = L.latLng(current.lat + dx, current.lng + dy);
-                let candidate = fitRectangleAtCenter(current, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-                try { if (candidate) candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
-                if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
-                    feature = candidate;
-                    break;
-                }
-            }
-            // If still not inside, progressively shrink until it fits
-            if (!rectangleFullyInsideBlock(feature, singleBlockFeature)) {
-                const shrinkFactor = 0.85;
-                for (let s = 0; s < 10; s++) {
-                    currentWidthM *= shrinkFactor;
-                    currentLengthM *= shrinkFactor;
-                    feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-                    try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
-                    if (rectangleFullyInsideBlock(feature, singleBlockFeature)) break;
-                }
-            }
-        }
-
-        singleRectFeature = feature;
-        const active = getActiveBuilding();
-        if (active) {
-            active.feature = feature;
-            active.width = currentWidthM;
-            active.length = currentLengthM;
-            active.chamfer = currentChamferM;
-            active.height = currentHeightM;
-            active.rotation = currentRotationDeg;
-        }
-        updateRectangleLayers();
-        try { updateSingleBuilding3D(feature); } catch (_) { }
-
-        // Marker intentionally not rendered; footprint is the only handle
-        try {
-            const c = turf.centroid(feature);
-            const [lng, lat] = c.geometry.coordinates;
-            lastValidCenter = L.latLng(lat, lng);
-            if (active) active.lastValidCenter = lastValidCenter;
-        } catch (_) { }
-    }
-
     function clearSingleBuildingPendingState() {
         pendingSingleBuildingMeta = null;
         singleBuildingOverrideContext = null;
@@ -1244,12 +1457,14 @@
         closeSingleBuildingModal();
     }
 
-    // Escape closes the editor exactly like the X does (discard, after confirming).
+    // Escape closes the editor exactly like the X does. The shared polygon editor owns vertex
+    // Delete/Backspace handling so block manual mode and this modal behave identically.
     function handleSingleBuildingKeydown(event) {
-        if (event.key !== 'Escape') return;
         if (!singleModal) return;
-        event.preventDefault();
-        requestCloseSingleBuildingModal();
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            requestCloseSingleBuildingModal();
+        }
     }
 
     // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
@@ -1258,23 +1473,28 @@
         const { preservePending = false } = options;
         document.removeEventListener('keydown', handleSingleBuildingKeydown);
         handleRectDragEnd();
+        singlePendingVertexActionIndex = null;
+        destroySinglePolygonEditor();
         if (singleMap) {
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
             if (singleParcelBorderLayer) try { singleMap.removeLayer(singleParcelBorderLayer); } catch (_) { }
             if (singleRectGroup) try { singleMap.removeLayer(singleRectGroup); } catch (_) { }
+            if (singleGroundPreviewLayer) try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
+            singleGroundPreviewLayer = null;
             singleRectGroup = null;
             singleRectLayer = null;
+            singleActivePolygonLayer = null;
             try { singleMap.remove(); } catch (_) { }
             singleMap = null;
             singleBlockLayer = null;
             singleParcelBorderLayer = null;
             singleDragMarker = null;
         }
-        singleMapClickHandlerBound = false;
         singleMapDragStarterBound = false;
         singleBlockFeature = null;
         singleRectFeature = null;
         currentRotationDeg = 0;
+        currentGroundTreatment = 'none';
         if (!preservePending) {
             clearSingleBuildingPendingState();
         }
@@ -1356,11 +1576,12 @@
             if (!entry || !entry.feature) continue;
             const cloned = JSON.parse(JSON.stringify(entry.feature));
             if (!cloned.properties) cloned.properties = {};
-            cloned.properties.width = Number(entry.width);
-            cloned.properties.length = Number(entry.length);
             cloned.properties.height = Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M);
-            cloned.properties.chamfer = Number(entry.chamfer) || 0;
             cloned.properties.rotation = Number(entry.rotation) || 0;
+            cloned.properties.footprintMode = 'polygon';
+            delete cloned.properties.width;
+            delete cloned.properties.length;
+            delete cloned.properties.chamfer;
             cloned.properties.block = blockLabel || cloned.properties.block || null;
             cloned.properties.type = 'proposedBuildingSingle';
             cloned.properties.color = entry.color;
@@ -1369,10 +1590,7 @@
                 name: entry.name,
                 color: entry.color,
                 feature: cloned,
-                width: cloned.properties.width,
-                length: cloned.properties.length,
                 height: cloned.properties.height,
-                chamfer: cloned.properties.chamfer,
                 rotation: cloned.properties.rotation
             });
         }
@@ -1400,14 +1618,13 @@
             blockName: blockLabel,
             parameters: {
                 typology: 'single',
-                width: clonedBuildings[0]?.width ?? null,
-                length: clonedBuildings[0]?.length ?? null,
                 height: clonedBuildings[0]?.height ?? null,
-                chamfer: clonedBuildings[0]?.chamfer ?? null,
-                rotation: clonedBuildings[0]?.rotation ?? null
+                rotation: clonedBuildings[0]?.rotation ?? null,
+                footprintMode: 'polygon'
             },
             buildingFeature: buildingFeatures[0] || null,
-            buildings: buildingFeatures
+            buildings: buildingFeatures,
+            groundSurface: currentGroundSurface()
         };
         if (typeof setPendingBuildingProposalContext === 'function') {
             setPendingBuildingProposalContext(singleContext);
@@ -1478,10 +1695,8 @@
                 name: b.name,
                 color: b.color,
                 feature,
-                width: Number(b.width),
-                length: Number(b.length),
                 height: Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M),
-                chamfer: Number(b.chamfer) || 0
+                rotation: Number(b.rotation) || 0
             };
         }).filter(Boolean);
 
@@ -1495,10 +1710,8 @@
                             name: 'Building',
                             color: null,
                             feature: clone,
-                            width: Number(clone?.properties?.width) || currentWidthM,
-                            length: Number(clone?.properties?.length) || currentLengthM,
                             height: Math.max(3, Number(clone?.properties?.height) || DEFAULT_HEIGHT_M),
-                            chamfer: Number(clone?.properties?.chamfer) || 0
+                            rotation: Number(clone?.properties?.rotation) || 0
                         });
                     } catch (_) { }
                 }
@@ -1550,19 +1763,17 @@
 
         const primaryBuilding = preparedBuildings[0];
         const proposedHeightMeters = Math.round(Number(primaryBuilding.height || currentHeightM || DEFAULT_HEIGHT_M));
-        const proposedWidthMeters = Number(primaryBuilding.width || currentWidthM);
-        const proposedLengthMeters = Number(primaryBuilding.length || currentLengthM);
-        const proposedChamferMeters = Number(primaryBuilding.chamfer || currentChamferM || 0);
         const proposedRotationDeg = Number(primaryBuilding.rotation || currentRotationDeg || 0);
 
         if (!primaryBuilding.feature.properties) {
             primaryBuilding.feature.properties = {};
         }
         primaryBuilding.feature.properties.height = proposedHeightMeters;
-        primaryBuilding.feature.properties.width = proposedWidthMeters;
-        primaryBuilding.feature.properties.length = proposedLengthMeters;
-        primaryBuilding.feature.properties.chamfer = proposedChamferMeters;
         primaryBuilding.feature.properties.rotation = proposedRotationDeg;
+        primaryBuilding.feature.properties.footprintMode = 'polygon';
+        delete primaryBuilding.feature.properties.width;
+        delete primaryBuilding.feature.properties.length;
+        delete primaryBuilding.feature.properties.chamfer;
         primaryBuilding.feature.properties.block = blockName;
         primaryBuilding.feature.properties.type = 'proposedBuildingSingle';
 
@@ -1571,10 +1782,11 @@
             b.feature.properties.block = blockName;
             b.feature.properties.type = 'proposedBuildingSingle';
             b.feature.properties.height = Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M);
-            b.feature.properties.width = Number(b.width) || currentWidthM;
-            b.feature.properties.length = Number(b.length) || currentLengthM;
-            b.feature.properties.chamfer = Number(b.chamfer) || 0;
             b.feature.properties.rotation = Number(b.rotation) || 0;
+            b.feature.properties.footprintMode = 'polygon';
+            delete b.feature.properties.width;
+            delete b.feature.properties.length;
+            delete b.feature.properties.chamfer;
             b.feature.properties.color = b.color;
             return b.feature;
         });
@@ -1584,15 +1796,13 @@
         const buildingProposalMetadata = {
             parentParcelIds: uniqueParcelIds,
             parentParcelNumbers: parentDetails,
-            status: 'unapplied',
+            applied: false,
             createdFrom: 'single-building',
             blockName: blockName,
             parameters: {
-                width: proposedWidthMeters,
-                length: proposedLengthMeters,
                 height: proposedHeightMeters,
-                chamfer: proposedChamferMeters,
-                rotation: proposedRotationDeg
+                rotation: proposedRotationDeg,
+                footprintMode: 'polygon'
             },
             ancestorKey
         };
@@ -1636,7 +1846,8 @@
             author,
             createdAt: nowIso,
             updatedAt: nowIso,
-            status: 'draft',
+            lifecycleStatus: 'draft',
+            applied: false,
             tags: ['buildings'],
             lens: undefined,
             parentParcelIds: uniqueParcelIds,
@@ -1765,18 +1976,26 @@
             previewLabel: translateSingleBuildingText('modal.singleBuilding.previewLabel', '3D Preview'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
             buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
-            addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Add'),
+            addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Duplicate building'),
             deleteLabel: translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete'),
             renameLabel: translateSingleBuildingText('modal.singleBuilding.renameLabel', 'Rename'),
             parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
-            widthLabel: translateSingleBuildingText('modal.singleBuilding.widthLabel', 'Width (m):'),
-            lengthLabel: translateSingleBuildingText('modal.singleBuilding.lengthLabel', 'Length (m):'),
             heightLabel: translateSingleBuildingText('modal.singleBuilding.heightLabel', 'Height (m):'),
-            chamferLabel: translateSingleBuildingText('modal.singleBuilding.chamferLabel', 'Chamfer (m):'),
-            rotationLabel: translateSingleBuildingText('modal.singleBuilding.rotationLabel', 'Rotation (°):'),
+            rotationLabel: translateSingleBuildingText('modal.singleBuilding.rotationLabel', 'Rotate footprint'),
+            rotateCounterclockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateCounterclockwiseLabel', 'Rotate counterclockwise 5 degrees'),
+            rotateClockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateClockwiseLabel', 'Rotate clockwise 5 degrees'),
+            uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload GeoJSON'),
+            surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
+            surroundingsNone: translateSingleBuildingText('modal.singleBuilding.surroundingsNone', 'Leave as they are'),
+            surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paved'),
+            surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),
+            surroundingsInfo: translateSingleBuildingText(
+                'modal.singleBuilding.surroundingsInfo',
+                'One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.'
+            ),
             infoText: translateSingleBuildingText(
                 'modal.singleBuilding.infoText',
-                'Drag the rectangle to reposition, or drag the handles on the sides to rotate. The building must remain fully within the block.'
+                'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.'
             )
         };
 
@@ -1804,7 +2023,9 @@
                 </div>
                 <div id="single-building-body">
                 <div id="single-building-main">
-                    <div id="single-building-map"></div>
+                    <div id="single-building-map-wrap">
+                        <div id="single-building-map"></div>
+                    </div>
                     <div class="single-building-3d-wrapper">
                         <div class="single-building-3d-label">${modalText.previewLabel}</div>
                         <div id="single-building-3d"></div>
@@ -1824,24 +2045,28 @@
                     </div>
                     <h3>${modalText.parametersTitle}</h3>
                     <div class="parameter-group">
-                        <label>${modalText.widthLabel} <span id="single-width-value">${DEFAULT_WIDTH_M}</span></label>
-                        <input type="range" id="single-width-slider" min="1" max="100" step="0.5" value="${DEFAULT_WIDTH_M}">
-                    </div>
-                    <div class="parameter-group">
-                        <label>${modalText.lengthLabel} <span id="single-length-value">${DEFAULT_LENGTH_M}</span></label>
-                        <input type="range" id="single-length-slider" min="1" max="100" step="0.5" value="${DEFAULT_LENGTH_M}">
-                    </div>
-                    <div class="parameter-group">
                         <label>${modalText.heightLabel} <span id="single-height-value">${DEFAULT_HEIGHT_M}</span></label>
                         <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                     </div>
                     <div class="parameter-group">
-                        <label>${modalText.chamferLabel} <span id="single-chamfer-value">${DEFAULT_CHAMFER_M}</span></label>
-                        <input type="range" id="single-chamfer-slider" min="0" max="10" step="0.5" value="${DEFAULT_CHAMFER_M}">
+                        <label>${modalText.rotationLabel}</label>
+                        <div class="single-building-rotation-buttons">
+                            <button id="single-rotate-counterclockwise" class="btn btn-light" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}">&#8634; 5°</button>
+                            <button id="single-rotate-clockwise" class="btn btn-light" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}">&#8635; 5°</button>
+                        </div>
                     </div>
                     <div class="parameter-group">
-                        <label>${modalText.rotationLabel} <span id="single-rotation-value">0</span></label>
-                        <input type="range" id="single-rotation-slider" min="0" max="355" step="5" value="0">
+                        <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
+                        <select id="single-ground-treatment" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #ccc;">
+                            <option value="none">${modalText.surroundingsNone}</option>
+                            <option value="paved">${modalText.surroundingsPaved}</option>
+                            <option value="green">${modalText.surroundingsGreen}</option>
+                        </select>
+                        <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
+                    </div>
+                    <div class="parameter-group">
+                        <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;">${modalText.uploadGeojsonLabel}</button>
+                        <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
                     <p class="parameter-info-text">${modalText.infoText}</p>
                 </div>
@@ -1856,65 +2081,7 @@
             document.addEventListener('keydown', handleSingleBuildingKeydown);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
-            const wSlider = document.getElementById('single-width-slider');
-            const lSlider = document.getElementById('single-length-slider');
             const hSlider = document.getElementById('single-height-slider');
-            const cSlider = document.getElementById('single-chamfer-slider');
-            const rSlider = document.getElementById('single-rotation-slider');
-            wSlider.addEventListener('input', (e) => {
-                const prevWidth = currentWidthM;
-                const desiredWidth = parseFloat(e.target.value);
-                const center = getCurrentCenter();
-                if (!center) return;
-                const fitted = fitRectangleAtCenter(center, desiredWidth, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-                if (fitted) {
-                    const finalWidth = fitted.properties?.width || desiredWidth;
-                    currentWidthM = finalWidth;
-                    document.getElementById('single-width-value').textContent = currentWidthM.toFixed(1);
-                    singleRectFeature = fitted;
-                    const active = getActiveBuilding();
-                    if (active) {
-                        active.width = currentWidthM;
-                        active.feature = fitted;
-                        active.lastValidCenter = center;
-                    }
-                    wSlider.value = currentWidthM;
-                    updateRectangleLayers();
-                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
-                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
-                } else {
-                    currentWidthM = prevWidth;
-                    wSlider.value = prevWidth;
-                    document.getElementById('single-width-value').textContent = prevWidth.toFixed(1);
-                }
-            });
-            lSlider.addEventListener('input', (e) => {
-                const prevLength = currentLengthM;
-                const desiredLength = parseFloat(e.target.value);
-                const center = getCurrentCenter();
-                if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, desiredLength, currentChamferM, currentHeightM, currentRotationDeg);
-                if (fitted) {
-                    const finalLength = fitted.properties?.length || desiredLength;
-                    currentLengthM = finalLength;
-                    document.getElementById('single-length-value').textContent = currentLengthM.toFixed(1);
-                    singleRectFeature = fitted;
-                    const active = getActiveBuilding();
-                    if (active) {
-                        active.length = currentLengthM;
-                        active.feature = fitted;
-                        active.lastValidCenter = center;
-                    }
-                    lSlider.value = currentLengthM;
-                    updateRectangleLayers();
-                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
-                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
-                } else {
-                    currentLengthM = prevLength;
-                    lSlider.value = prevLength;
-                    document.getElementById('single-length-value').textContent = prevLength.toFixed(1);
-                }
-            });
             hSlider.addEventListener('input', (e) => {
                 currentHeightM = parseFloat(e.target.value);
                 document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0);
@@ -1926,57 +2093,34 @@
                         active.feature = singleRectFeature;
                     }
                     try { updateSingleBuilding3D(singleRectFeature); } catch (_) { }
+                    autosaveSingleBuildingDraft();
                 }
             });
-            cSlider.addEventListener('input', (e) => {
-                const prevChamfer = currentChamferM;
-                currentChamferM = parseFloat(e.target.value);
-                document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1);
-                const center = getCurrentCenter();
-                if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
-                if (fitted) {
-                    singleRectFeature = fitted;
-                    const active = getActiveBuilding();
-                    if (active) {
-                        active.chamfer = currentChamferM;
-                        active.feature = fitted;
-                        active.lastValidCenter = center;
-                    }
-                    updateRectangleLayers();
-                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
-                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
-                } else {
-                    currentChamferM = prevChamfer;
-                    cSlider.value = prevChamfer;
-                    document.getElementById('single-chamfer-value').textContent = prevChamfer.toFixed(1);
-                }
-            });
-            rSlider.addEventListener('input', (e) => {
-                const prevRotation = currentRotationDeg;
-                const desiredRotation = parseFloat(e.target.value);
-                const center = getCurrentCenter();
-                if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM, desiredRotation);
-                if (fitted) {
-                    currentRotationDeg = desiredRotation;
-                    document.getElementById('single-rotation-value').textContent = currentRotationDeg.toFixed(0);
-                    singleRectFeature = fitted;
-                    const active = getActiveBuilding();
-                    if (active) {
-                        active.rotation = currentRotationDeg;
-                        active.feature = fitted;
-                        active.lastValidCenter = center;
-                    }
-                    updateRectangleLayers();
-                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
-                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
-                } else {
-                    currentRotationDeg = prevRotation;
-                    rSlider.value = prevRotation;
-                    document.getElementById('single-rotation-value').textContent = prevRotation.toFixed(0);
-                }
-            });
+
+            document.getElementById('single-rotate-counterclockwise')
+                .addEventListener('click', () => rotateActiveFootprint(5));
+            document.getElementById('single-rotate-clockwise')
+                .addEventListener('click', () => rotateActiveFootprint(-5));
+
+            const groundSelect = document.getElementById('single-ground-treatment');
+            if (groundSelect) {
+                groundSelect.addEventListener('change', (e) => {
+                    currentGroundTreatment = normalizeGroundTreatment(e.target.value);
+                    updateGroundPreview();
+                    autosaveSingleBuildingDraft();
+                });
+            }
+
+            const geojsonButton = document.getElementById('single-building-geojson-upload');
+            const geojsonInput = document.getElementById('single-building-geojson-input');
+            if (geojsonButton && geojsonInput) {
+                geojsonButton.addEventListener('click', () => geojsonInput.click());
+                geojsonInput.addEventListener('change', event => {
+                    const file = event.target?.files?.[0];
+                    if (file) loadSingleBuildingGeoJSON(file);
+                    event.target.value = '';
+                });
+            }
 
             const selector = document.getElementById('single-building-selector');
             const addBtn = document.getElementById('single-building-add');
@@ -2045,26 +2189,7 @@
                 });
             }
             if (addBtn) {
-                addBtn.addEventListener('click', () => {
-                    const placement = computeInitialPlacement(singleBlockFeature);
-                    const active = getActiveBuilding();
-                    const baseWidth = active?.width ?? currentWidthM ?? placement.width ?? DEFAULT_WIDTH_M;
-                    const baseLength = active?.length ?? currentLengthM ?? placement.length ?? DEFAULT_LENGTH_M;
-                    const baseHeight = active?.height ?? currentHeightM ?? baseWidth;
-                    const baseChamfer = active?.chamfer ?? currentChamferM ?? DEFAULT_CHAMFER_M;
-                    const baseRotation = active?.rotation ?? currentRotationDeg ?? 0;
-                    const entry = addNewBuildingEntry(placement.center, {
-                        width: baseWidth,
-                        length: baseLength,
-                        height: baseHeight,
-                        chamfer: baseChamfer,
-                        rotation: baseRotation
-                    });
-                    refreshBuildingSelector();
-                    if (entry) {
-                        setActiveBuilding(entry.id, { refreshUI: true, skip3D: false });
-                    }
-                });
+                addBtn.addEventListener('click', duplicateActiveBuilding);
             }
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', () => {
@@ -2086,16 +2211,6 @@
                 try { singleMap.invalidateSize(); } catch (_) { }
             }, 50);
         }
-        if (singleMap && !singleMapClickHandlerBound) {
-            singleMap.on('click', (e) => {
-                if (!e || !e.latlng) return;
-                const candidate = buildRectangleFeature(e.latlng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
-                if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
-                    placeOrAdjustRectangle(e.latlng);
-                }
-            });
-            singleMapClickHandlerBound = true;
-        }
         if (singleMap && !singleMapDragStarterBound) {
             const tryStartDragFromMap = (e) => {
                 if (!e || !e.latlng) return;
@@ -2111,19 +2226,20 @@
         buildingEntries = [];
         activeBuildingId = null;
         nextBuildingId = 1;
+
+        currentGroundTreatment = normalizeGroundTreatment(singleBuildingSeedGroundTreatment);
+        singleBuildingSeedGroundTreatment = null;
+        const groundSelectEl = document.getElementById('single-ground-treatment');
+        if (groundSelectEl) groundSelectEl.value = currentGroundTreatment;
         try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
         const initialPlacement = computeInitialPlacement(singleBlockFeature);
         const startCenter = initialPlacement.center || getBlockCentroid(singleBlockFeature);
-        currentWidthM = initialPlacement.width;
-        currentLengthM = initialPlacement.length;
         currentHeightM = initialPlacement.width || DEFAULT_HEIGHT_M;
-        currentChamferM = DEFAULT_CHAMFER_M;
         currentRotationDeg = 0;
         singleRectFeature = null;
 
-        // Restore a saved design over the defaults (e.g. a copied proposal). Unlike the other
-        // building tools, `parameters` here only describes building #0 — each building's position
-        // and any extra buildings live in the stored features — so seed from the features.
+        // Restore the exact saved polygons (e.g. while editing or copying a proposal). Geometry is
+        // authoritative; legacy width/length/chamfer properties are intentionally not regenerated.
         const seedBuildings = singleBuildingSeedBuildings;
         singleBuildingSeedBuildings = null;
         let initialEntry = null;
@@ -2132,32 +2248,25 @@
                 if (!feature || !feature.geometry) return;
                 const props = feature.properties || {};
                 const entry = addNewBuildingEntry(featureCenterLatLng(feature) || startCenter, {
-                    width: props.width,
-                    length: props.length,
+                    feature,
                     height: props.height,
-                    chamfer: props.chamfer,
                     rotation: props.rotation
                 });
                 if (!entry) return;
-                // Keep the exact stored outline rather than a re-fitted approximation of it.
-                try { entry.feature = JSON.parse(JSON.stringify(feature)); } catch (_) { }
                 if (!initialEntry) initialEntry = entry;
             });
         }
         if (!initialEntry) {
             initialEntry = addNewBuildingEntry(startCenter, {
-                width: currentWidthM,
-                length: currentLengthM,
+                width: initialPlacement.width,
+                length: initialPlacement.length,
                 height: currentHeightM,
-                chamfer: currentChamferM,
                 rotation: currentRotationDeg
             });
         }
         refreshBuildingSelector();
         if (initialEntry) {
             setActiveBuilding(initialEntry.id, { refreshUI: true });
-        } else {
-            placeOrAdjustRectangle(startCenter);
         }
 
         // Re-run 3D init after layout settles to ensure renderer size is correct
@@ -2177,13 +2286,15 @@
 
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
-    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null }) {
+    // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
+    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null, initialGroundTreatment = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
             return;
         }
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
+        singleBuildingSeedGroundTreatment = initialGroundTreatment;
         const ids = rawParcels.map(layer => {
             try {
                 return resolveParcelId(layer?.feature);
@@ -2250,7 +2361,6 @@
             width: Number(width) || placement.width || DEFAULT_WIDTH_M,
             length: Number(length) || placement.length || DEFAULT_LENGTH_M,
             height: safeHeight,
-            chamfer: 0,
             rotation: 0
         });
         if (!entry || !entry.feature) {

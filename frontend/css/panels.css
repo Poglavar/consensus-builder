@@ -15,6 +15,38 @@
     display: block;
 }
 
+/* ========== Right dock ==========
+   THE single source of truth for every panel that docks to the right edge of the map: the parcel
+   info panel (and the proposal buttons inside it), the proposal details panel, the road/track info
+   panel, and the road-impact dialog. They used to carry four different widths (300 / 400 / fit-content
+   400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-dock-panel`
+   and it inherits the width — never re-declare a width on the panel itself.
+
+   On mobile the same class flips to the bottom-sheet policy: full width, at most half the screen,
+   with whatever scrolls beyond that reachable inside (every one of these panels also has a minimize
+   control, so it can be collapsed to its header strip). */
+:root {
+    --right-dock-width: 400px;
+    --right-dock-gap: 10px;
+}
+
+.right-dock-panel {
+    width: var(--right-dock-width);
+    max-width: calc(100vw - 2 * var(--right-dock-gap));
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --right-dock-width: 100%;
+        --right-dock-gap: 0px;
+    }
+
+    .right-dock-panel {
+        max-height: 50vh;
+    }
+}
+
 .close-button {
     position: absolute;
     top: 10px;
@@ -35,21 +67,34 @@
     gap: 4px;
     font-size: 11px;
     color: #666;
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: copy;
+    transition: background-color 120ms ease, color 120ms ease;
 }
 
 #parcel-info-panel .parcel-title-id-value {
     font-family: monospace;
 }
 
-/* 
-Parcel info panel should be in the bottom right corner of the map, 
-with a width of 300px, and a height of half of the map height minus 5px.
+#parcel-info-panel .parcel-title-id:hover {
+    background: rgba(29, 113, 184, 0.1);
+    color: #1d71b8;
+}
+
+#parcel-info-panel .parcel-title-id:focus-visible {
+    outline: 2px solid #1d71b8;
+    outline-offset: 2px;
+}
+
+/*
+Parcel info panel sits in the bottom right corner of the map, half the map height. Its width comes
+from .right-dock-panel — do not re-declare one here.
 */
 #parcel-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: 300px;
     height: 50vh;
     max-height: 50vh;
     box-sizing: border-box;
@@ -65,20 +110,41 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-direction: column;
 }
 
+/* Collapsed to ONE line: the header, which reads "Parcel <number>". The panel is the SECONDARY
+   surface when a proposal selection opened its own parcel underneath the proposal card.
+   `display: none` is set here rather than left to the [hidden] attribute, because .parcel-tabs
+   and .panel-body both declare a display of their own and would win over the UA rule. */
+#parcel-info-panel.is-minimized {
+    height: auto;
+    max-height: none;
+}
+
+#parcel-info-panel.is-minimized .parcel-tabs,
+#parcel-info-panel.is-minimized .panel-body {
+    display: none;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize {
+    margin-left: auto;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize + .close-button {
+    margin-left: 8px;
+}
+
 /*
-Road info panel sits in the bottom right corner of the map. It sizes to its own content
-(never below 400px, never past a cap that would swallow the map) because label lengths vary
-per language — Croatian/Spanish labels need ~30-40px more than English, and pinning a width
-clipped the right-hand values. The height is capped against the viewport, not a fixed number,
-so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scroll fold.
+Road info panel sits in the bottom right corner of the map. Its width comes from .right-dock-panel,
+shared with every other right-hand panel. It used to size to its own content because pinning a width
+clipped the right-hand values in Croatian/Spanish (labels run ~30-40px longer than English) — that is
+handled properly now by .road-metrics-grid, where the label wraps and the value never shrinks, so a
+fixed width costs a taller row rather than a cut-off number. The height is capped against the
+viewport, not a fixed number, so the last rows (Cost, Total Estimated Acquiring Difficulty) stay
+above the scroll fold.
 */
 #road-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: fit-content;
-    min-width: min(400px, calc(100vw - 20px));
-    max-width: min(560px, calc(100vw - 20px));
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     display: none;
@@ -175,6 +241,47 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
     border-radius: 10px;
 }
 
+.parcel-transport-group,
+.parcel-ownership-group {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 2px 0 0;
+    padding: 3px 4px 4px;
+    border: 1px solid #b6c2d1;
+    border-radius: 10px;
+}
+
+.parcel-transport-group legend,
+.parcel-ownership-group legend {
+    padding: 0 5px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.parcel-transport-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.parcel-ownership-group {
+    background: rgba(253, 246, 221, 0.35);
+}
+
+.parcel-ownership-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.parcel-ownership-grid .parcel-build-btn {
+    grid-column: 2;
+}
+
 .parcel-build-btn {
     display: flex;
     flex-direction: column;
@@ -205,6 +312,31 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 .parcel-build-btn:hover {
     background: #eef2f7;
     border-color: #94a3b8;
+}
+
+.parcel-transport-btn--road i { color: #475569; }
+.parcel-transport-btn--track i { color: #7c3aed; }
+.parcel-transport-btn--bus i { color: #2563eb; }
+.parcel-transport-btn--tram i { color: #0f766e; }
+.parcel-transport-btn--underground i { color: #1d4ed8; }
+.parcel-transport-btn--elevated i { color: #b45309; }
+
+.parcel-transport-btn span {
+    display: flex;
+    min-height: 2.3em;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    text-align: center;
+    text-overflow: clip;
+    white-space: normal;
+}
+
+.parcel-transport-btn[data-station-type].is-active {
+    border-color: #16a34a;
+    background: #dcfce7;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.16);
+    color: #166534;
 }
 
 /* Structure and terms tools get a hint of their nature; form tools stay neutral. */
@@ -1312,14 +1444,12 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
 
 /* Proposal details panel now uses .panel-header and .panel-body structure */
 
-/* Responsive width for info panels.
-   #road-info-panel is deliberately NOT here: it sizes to its content (see its own rule above),
-   because its two-column metrics grid needs more room in longer languages than in English. */
-#proposal-details-panel,
-#parcel-info-panel,
+/* Responsive width for the info panels that are NOT part of the right dock. The dock's panels
+   (#parcel-info-panel, #proposal-details-panel, #road-info-panel, .cb-impact-tour-dock) are
+   deliberately absent: this rule has ID specificity, so listing one here silently overrides
+   .right-dock-panel and the shared --right-dock-width stops meaning anything. */
 #block-info-panel,
 #area-monitor-detail-panel,
-#parcel-info-panel,
 #road-analysis-panel {
     width: min(90vw, 400px);
 }
@@ -1656,14 +1786,9 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
         max-height: 33vh;
     }
     
-    /* Road info panel fits screen width on mobile; panels never take more than half the
-       screen — anything taller scrolls inside (or the user collapses it to the strip). */
+    /* Width and the half-screen cap come from .right-dock-panel; only the scroll behaviour is
+       specific to this panel. */
     #road-info-panel {
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        left: 10px !important;
-        right: 10px !important;
-        max-height: 50vh;
         overflow-y: auto;
     }
 
@@ -1707,4 +1832,184 @@ so the last rows (Cost, Total Estimated Acquiring Difficulty) stay above the scr
     color: #475569;
     font-size: 10px;
     white-space: nowrap;
+}
+
+/* ── Road impact tour ─────────────────────────────────────────────────────────
+   The per-building "cut / demolish / tunnel" walkthrough. Not a dimming modal: the
+   map stays visible and is driven behind it (interaction disabled in JS). Desktop
+   docks to the right; mobile is a bottom sheet leaving the map top half visible. */
+/* Transparent full-screen shield that captures mouse/scroll so nothing reaches the map or sidebar
+   while the tour is open. Sits just below the panel; the map (with the proposed road) shows through. */
+.cb-impact-tour-capture {
+    position: fixed;
+    inset: 0;
+    z-index: 29990;
+    background: transparent;
+    cursor: default;
+    touch-action: none;
+}
+
+.cb-impact-tour {
+    position: fixed;
+    z-index: 30000;
+    background: #ffffff;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.cb-impact-tour-dock {
+    top: 16px;
+    right: 16px;
+    /* Width comes from .right-dock-panel — this dialog docks above the road info panel and has to
+       line up with it. */
+    max-height: calc(100vh - 32px);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.cb-impact-tour-sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50vh;
+    border-radius: 14px 14px 0 0;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+
+.cb-impact-tour-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.cb-impact-tour-message {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #334155;
+    margin-bottom: 12px;
+}
+
+.cb-impact-tour-global {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.cb-impact-tour-global-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.cb-impact-tour-global-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cb-impact-tour-chip {
+    flex: 1;
+    min-width: 84px;
+    padding: 7px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cb-impact-tour-chip.is-active {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.cb-impact-tour-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.cb-impact-tour-navbtn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #1f2937;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.cb-impact-tour-navbtn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.cb-impact-tour-counter {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.cb-impact-tour-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+.cb-impact-tour-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cb-impact-tour-choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.cb-impact-tour-choice:has(input:checked) {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.cb-impact-tour-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex: none;
+}
+
+.cb-impact-tour-tally {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.cb-impact-tour-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex: none;
+}
+
+.cb-impact-tour-actions .btn {
+    flex: 1;
 }

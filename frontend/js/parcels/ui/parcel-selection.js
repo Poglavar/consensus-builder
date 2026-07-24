@@ -37,6 +37,36 @@
             ))
             : null;
 
+        // Proposal browse mode (the proposals list is open): the map is inert to everything EXCEPT
+        // proposals. A click on a parcel carrying an applied proposal selects that proposal (which
+        // opens its details and closes the list — see selectAndHighlightProposal); a click on any
+        // other parcel is a no-op. Pan/zoom stay live because only the click action is suppressed.
+        if (global.proposalListBrowseMode) {
+            let browseProposal = appliedRoadProposal;
+            if (!browseProposal) {
+                try {
+                    const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
+                    browseProposal = parcelProposals.find(p => !p.roadProposal
+                        && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
+                    if (!browseProposal && typeof global.structureProposalsCoveringFeature === 'function') {
+                        const covering = global.structureProposalsCoveringFeature(feature);
+                        if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
+                            browseProposal = global.getProposalByIdOrHash(covering[0]) || null;
+                        }
+                    }
+                } catch (_) { }
+            }
+            if (browseProposal && typeof global.selectAndHighlightProposal === 'function') {
+                const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(browseProposal))
+                    || browseProposal.proposalId
+                    || feature.properties.ancestorProposal
+                    || feature.properties.proposalId;
+                global.selectAndHighlightProposal(proposalKey, parcelId, true, true); // center + details; its tail closes the list
+            }
+            if (e) L.DomEvent.stopPropagation(e);
+            return;
+        }
+
         const proposalDetailsPanel = global.document.getElementById('proposal-details-panel');
         if (proposalDetailsPanel && proposalDetailsPanel.classList.contains('visible')) {
             if (typeof global.hideProposalDetailsPanel === 'function') {

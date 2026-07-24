@@ -82,7 +82,6 @@
     letter-spacing: 0.03em;
 }
 
-.ai-scene-source-img,
 .ai-scene-result-img {
     width: 100%;
     max-width: 100%;
@@ -90,6 +89,53 @@
     border: 1px solid #ddd;
     display: block;
 }
+
+/* Source column: colour screenshot, then a toggle that reveals the grayscale height map below it. */
+.ai-scene-source-img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+/* "Show height map" button — a quiet inline toggle under the scene image. */
+.ai-scene-height-toggle {
+    display: block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #333;
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ai-scene-height-toggle:hover { background: #e8e8e8; }
+.ai-scene-height-toggle[hidden] { display: none; }
+
+.ai-scene-height-img {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: block;
+    background: #000;
+}
+
+.ai-scene-height-img[hidden] { display: none; }
+
+/* Feedback line under the share buttons (link copied / share failed). */
+.ai-scene-share-status {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #2a7;
+    min-height: 16px;
+}
+.ai-scene-share-status.ai-scene-status--error { color: #c0392b; }
 
 .ai-scene-prompt {
     width: 100%;
@@ -101,6 +147,20 @@
     border-radius: 6px;
     resize: vertical;
 }
+
+.ai-scene-model {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.ai-scene-model[hidden] { display: none; }
 
 .ai-scene-actions {
     display: flex;
@@ -115,7 +175,58 @@
 .ai-scene-status { margin-top: 8px; font-size: 13px; color: #444; min-height: 18px; }
 .ai-scene-status--error { color: #c0392b; }
 
-.ai-scene-result-actions { margin-top: 10px; }
+.ai-scene-result-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-scene-result-actions [hidden] { display: none; }
+
+/* Inline AI-render card shown to someone who opened a shared ?scene link, over the 3D world. */
+.ai-scene-follow-card {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 1200;
+    width: 300px;
+    max-width: calc(100vw - 32px);
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    font-family: inherit;
+}
+.ai-scene-follow-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    background: #f6f6f6;
+    border-bottom: 1px solid #eee;
+}
+.ai-scene-follow-close {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+}
+.ai-scene-follow-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: zoom-in;
+}
+.ai-scene-follow-card.expanded {
+    width: 640px;
+}
+.ai-scene-follow-card.expanded .ai-scene-follow-img { cursor: zoom-out; }
+.ai-scene-follow-note {
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #555;
+}
 
 .ai-scene-footer {
     padding: 10px 16px;

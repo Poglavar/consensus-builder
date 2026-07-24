@@ -1,24 +1,34 @@
 /* The corridor cross-section editor: a scale diagram of the street plus one row per lane. */
 
+/* Docked beside a live map, not a blocking modal: the road being edited stays visible in the
+   remaining viewport and every edit previews on it as it is made. The overlay itself is
+   click-transparent — only the panel takes pointer events, so the map underneath keeps panning
+   and zooming. Desktop docks the panel to the right edge, mobile to the bottom (media query). */
 .corridor-editor-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: flex-end;
     z-index: 16000;
-    padding: 12px;
+    pointer-events: none;
 }
 
 .corridor-editor {
+    pointer-events: auto;
     background: #fff;
-    border-radius: 10px;
-    width: min(520px, 100%);
-    max-height: 92vh;
+    width: min(480px, 42vw);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* While the editor is open the map is a viewport, not a control surface: panning and zooming
+   stay live, but no object on it takes a click — roads, parcels, buildings, markers, none.
+   (Wins over Leaflet's own .leaflet-interactive rule by specificity; map-level click handlers
+   guard on isCorridorEditorOpen() themselves.) */
+body.corridor-editor-open .leaflet-interactive {
+    pointer-events: none;
 }
 
 .corridor-editor-header {
@@ -50,7 +60,14 @@
 }
 
 /* The total width is a READOUT, not a control: it is the sum of the lanes. Sized like a headline
-   number because it is the one figure the whole panel is about. */
+   number because it is the one figure the whole panel is about. The ceiling sits right beside it. */
+.corridor-editor-total-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
+}
+
 .corridor-editor-total {
     white-space: nowrap;
     text-align: right;
@@ -58,6 +75,21 @@
     font-weight: 700;
     color: #111;
     font-variant-numeric: tabular-nums;
+}
+
+/* The buildable ceiling shown next to the current width ("14 / 16 m"): the widest a full
+   cross-section fits here without a new demolition. Quieter than the total (it is a limit, not the
+   value being edited); red only when the current width has passed it. Hidden for open-sided roads. */
+.corridor-editor-ceiling {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #777;
+    font-variant-numeric: tabular-nums;
+    cursor: help;
+}
+
+.corridor-editor-ceiling--over {
+    color: #b3261e;
 }
 
 /* Obstacle chips for post-placement widening: buildings block Apply, structures just inform. */
@@ -87,6 +119,32 @@
     border: 1px solid #f5d9a8;
 }
 
+/* Re-cut: the widening eats deeper into a building this road already partially demolished.
+   Amber like the structures chip (informational, never blocks) — matching the amber footprint
+   paint on the map, where red is reserved for the hits that DO block. */
+.corridor-editor-indicator--recut {
+    background: #fef3e2;
+    color: #9a5b13;
+    border: 1px solid #f5d9a8;
+}
+
+/* The way out of a blocked widening: a clickable chip that jumps to the Corridor tab, where the
+   fit computation and the move button live. Blue (an action), unlike the red/amber status chips. */
+.corridor-editor-indicator--fit {
+    appearance: none;
+    background: #e8f0fe;
+    color: #1a56c4;
+    border: 1px solid #a8c3f5;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.corridor-editor-indicator--fit:hover {
+    background: #d7e5fd;
+}
+
 /* Flash the total when an edit is refused — a lane below its minimum, or the 80 m cap. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
@@ -100,6 +158,10 @@
 }
 
 .corridor-editor-body {
+    /* The one flexible region of the full-height panel: header/meta/footer keep their size,
+       the lane list scrolls. min-height 0 lets it actually shrink inside the flex column. */
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     /* The top padding is not decoration: without it the scroll container clips the first group label. */
     padding: 6px 16px 12px;
@@ -121,7 +183,39 @@
     cursor: pointer;
     outline: none;
     min-width: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
+
+/* Parking marker: a big white "P" in a blue square, so a parking band reads apart from a driving
+   lane at a glance. */
+.corridor-section-lane-tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+/* Drag a lane band directly in the diagram to reorder it. While dragging, the dragged band collapses
+   to zero width (as if lifted out) and a gap of exactly its width opens at the drop boundary, so the
+   row rearranges to show where the lane will land. The width/margin transition is scoped to the
+   band-drag only — never global — because a SEAM drag rewrites widths live and must stay instant. */
+.corridor-section-lane[draggable="true"] { cursor: grab; }
+.corridor-section--band-dragging .corridor-section-lane { transition: width 0.14s ease, margin 0.14s ease; }
+.corridor-section-lane--dragging { opacity: 0.4; cursor: grabbing; min-width: 0; }
+.corridor-section-lane--slot-left { box-shadow: inset 3px 0 0 0 #1a73e8; z-index: 3; }
+.corridor-section-lane--slot-right { box-shadow: inset -3px 0 0 0 #1a73e8; z-index: 3; }
 
 /* The selected lane has to be findable at a glance in BOTH places — the diagram and the row list are
    one selection seen twice, so they get the same blue. */
@@ -149,27 +243,13 @@
     box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.35);
 }
 
-/* Grab affordance for the drag-to-reorder handle (the ↑/↓ buttons remain the touch/keyboard path). */
-.corridor-lane-handle {
+/* The ↑/↓ reorder arrows live at the FRONT of each row (side by side), kept clear of the direction
+   arrow (→/←/↔) at the back so the two are never confused. Diagram band-drag is the desktop visual
+   path; these are the touch/keyboard path (HTML5 drag does not exist on a finger). */
+.corridor-lane-move {
     flex: 0 0 auto;
-    width: 14px;
-    text-align: center;
-    color: #9aa0a6;
-    cursor: grab;
-    user-select: none;
-    line-height: 1;
-}
-
-.corridor-lane-handle:active {
-    cursor: grabbing;
-}
-
-.corridor-lane-row--dragging {
-    opacity: 0.45;
-}
-
-.corridor-lane-row--drop {
-    box-shadow: inset 0 -2px 0 0 #1a73e8;
+    display: inline-flex;
+    gap: 3px;
 }
 
 .corridor-lane-swatch {
@@ -200,13 +280,45 @@
     flex: 0 0 62px;
 }
 
-/* The per-lane extras — a green strip's planting, a track's gauge — wrap onto their own line under the
-   row, so a 380 px panel keeps the type/width controls on one line and the extra never squeezes them. */
+/* The per-lane extras — a green strip's planting, a track's gauge, a parking lane's tree spacing — wrap
+   onto their own line under the row, so a 380 px panel keeps the type/width controls on one line and the
+   extra never squeezes them. */
 .corridor-lane-landscape,
-.corridor-lane-gauge {
+.corridor-lane-gauge,
+.corridor-lane-trees {
     flex: 1 0 100%;
     width: 100%;
     margin-bottom: 3px;
+}
+
+/* "Tree every [N] spaces" — the one editable number on a fixed-width parking row. */
+.corridor-lane-trees {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #5f6368;
+}
+
+.corridor-lane-tree-every {
+    width: 56px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* The direction arrow sits with the row actions but reads as a state, not a nudge: a touch of colour
+   so a click-to-flip control is distinct from the ↑/↓ reorder buttons beside it. */
+.corridor-lane-btn.corridor-lane-direction {
+    color: #1a73e8;
+    font-weight: 700;
+}
+
+.corridor-lane-btn.corridor-lane-direction:hover {
+    background: #e8f0fe;
 }
 
 .corridor-lane-unit {
@@ -263,6 +375,20 @@ button.corridor-lane-standard--reset:hover {
     color: #b3261e;
 }
 
+/* The two reorder arrows sit side by side at the front, a touch narrower than a normal square button
+   so the pair does not crowd the row. On mobile the media-query .corridor-lane-btn size wins (defined
+   later), enlarging them for touch — which matters more now that these arrows are the only reorder
+   path on a phone. */
+.corridor-lane-move-btn {
+    width: 24px;
+    height: 30px;
+    padding: 0;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Presets and palette: the two "make the road" controls. The presets stamp a whole standard
    cross-section; the palette adds one lane at its standard width, and the road gets that much wider. */
 .corridor-editor-group-label {
@@ -274,89 +400,85 @@ button.corridor-lane-standard--reset:hover {
     margin-bottom: 5px;
 }
 
-.corridor-editor-presets {
+/* The add-lane and preset dropdowns, one compact row above the diagram: adding a lane must not
+   be something you have to scroll a boulevard's fifteen rows to reach. */
+.corridor-editor-pickers {
+    display: flex;
+    gap: 8px;
     margin-bottom: 12px;
 }
 
-.corridor-editor-preset-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
+.corridor-editor-pickers select,
+.corridor-editor-pickers > .corridor-editor-add-lane {
+    flex: 1 1 0;
+    min-width: 0;
 }
 
-.corridor-preset-btn {
-    flex: 1 1 auto;
+.corridor-editor-pickers select {
     border: 1px solid #cfd8e3;
-    border-radius: 999px;
+    border-radius: 6px;
     background: #f7f9fc;
     color: #1f2937;
-    font-size: 0.76rem;
-    padding: 5px 10px;
+    font-size: 0.8rem;
+    padding: 6px 8px;
     cursor: pointer;
-    white-space: nowrap;
 }
 
-.corridor-preset-btn:hover {
-    background: #e8f0fe;
-    border-color: #1a73e8;
-    color: #1a73e8;
-}
+/* Add-lane is a custom dropdown (native <option> backgrounds are ignored by the platform popup, and
+   the point is to show each lane's surface colour). The toggle mimics the sibling <select>; the menu
+   is a coloured list — each row IS its lane's surface, with contrast-picked text. */
+.cb-lane-dropdown { position: relative; }
 
-/* Sits above the lane rows: adding a lane must not be something you have to scroll a boulevard's
-   fifteen rows to reach. */
-.corridor-editor-palette {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.corridor-editor-palette-buttons {
-    display: grid;
-    /* Two columns at the panel's full width: a lane type's name ("Biciklistička staza") has to be
-       readable, not elided into a tooltip. */
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 5px;
-}
-
-.corridor-palette-btn {
+.cb-lane-dropdown-toggle {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 6px;
-    border: 1px solid #ddd;
+    width: 100%;
+    border: 1px solid #cfd8e3;
     border-radius: 6px;
-    background: #fff;
-    padding: 6px 8px;
+    background: #f7f9fc;
+    color: #1f2937;
     font-size: 0.8rem;
+    padding: 6px 8px;
     cursor: pointer;
+}
+
+.cb-lane-dropdown-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cb-lane-dropdown-caret { color: #6b7280; font-size: 0.7rem; flex: none; }
+
+.cb-lane-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid #cfd8e3;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    padding: 4px;
+}
+
+.cb-lane-option {
+    display: block;
+    width: 100%;
     text-align: left;
-    min-width: 0;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin: 2px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.corridor-palette-btn:hover {
-    border-color: #1a73e8;
-    background: #f5f8ff;
-}
-
-.corridor-palette-swatch {
-    flex: 0 0 auto;
-    width: 12px;
-    height: 18px;
-    border-radius: 2px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-.corridor-palette-label {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.corridor-palette-width {
-    flex: 0 0 auto;
-    color: #9aa0a6;
-    font-size: 0.72rem;
-    font-variant-numeric: tabular-nums;
+.cb-lane-option:hover,
+.cb-lane-option:focus {
+    box-shadow: inset 0 0 0 2px #1a73e8;
+    outline: none;
 }
 
 /* Said out loud rather than silently refused: the one edit the editor can still turn down. */
@@ -384,6 +506,23 @@ button.corridor-lane-standard--reset:hover {
     border-top: 1px solid #eee;
 }
 
+/* Mobile: the editor takes the lower half of the screen and the map keeps the upper half —
+   the same docked-beside-a-live-map arrangement as desktop, rotated 90°. */
+@media (max-width: 768px) {
+    .corridor-editor-overlay {
+        align-items: flex-end;
+    }
+
+    .corridor-editor {
+        width: 100%;
+        height: 50vh;
+        /* Half of the VISIBLE viewport where supported — 50vh overshoots under mobile Safari's
+           dynamic toolbar and would hide the footer buttons. */
+        height: 50dvh;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+    }
+}
+
 /* Mobile: the row wraps of its own accord (flex), so only the spacing needs tightening. */
 @media (max-width: 420px) {
     .corridor-lane-row {
@@ -397,10 +536,6 @@ button.corridor-lane-standard--reset:hover {
     .corridor-lane-btn {
         width: 26px;
         height: 26px;
-    }
-
-    .corridor-editor-palette-buttons {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 
     .corridor-editor-total {
@@ -464,7 +599,8 @@ button.corridor-lane-standard--reset:hover {
        lane width/type fields get the threshold size on touch devices. */
     .corridor-lane-type,
     .corridor-lane-width,
-    .corridor-lane-landscape {
+    .corridor-lane-landscape,
+    .corridor-lane-tree-every {
         font-size: 16px;
         height: 38px;
     }
@@ -474,15 +610,36 @@ button.corridor-lane-standard--reset:hover {
         height: 38px;
     }
 
-    /* Finger-sized targets for the two things that build the road. */
-    .corridor-preset-btn,
-    .corridor-palette-btn {
+    /* Finger-sized targets for the two dropdowns that build the road. */
+    .corridor-editor-pickers select {
+        font-size: 16px;
         min-height: 38px;
     }
 }
 
 .corridor-section-seam:hover::after {
     background: #f59e0b;
+}
+
+/* A seam against a fixed-width parking lane cannot be dragged: no resize cursor, and the handle line
+   reads as a static divider rather than an amber-hover drag target. */
+.corridor-section-seam--locked {
+    cursor: default;
+}
+
+.corridor-section-seam--locked::after {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.corridor-section-seam--locked:hover::after {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+/* A parking lane's depth is a fixed standard: its width field is read-only, styled to say so. */
+.corridor-lane-width--fixed {
+    background: #f1f3f4;
+    color: #5f6368;
+    cursor: not-allowed;
 }
 
 /* Non-blocking "Applying…" indicator shown while an applied corridor edit (node drag, bulldoze,
@@ -528,3 +685,180 @@ button.corridor-lane-standard--reset:hover {
 @keyframes corridor-apply-indicator-appear {
     to { opacity: 1; }
 }
+
+/* --- Corridor tab: clearance stats, width-profile chart, move-to-fit --- */
+
+.corridor-editor-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 0 16px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.corridor-editor-tab {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.corridor-editor-tab--active {
+    color: #111;
+    font-weight: 600;
+    border-bottom-color: #2563eb;
+}
+
+.corridor-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.corridor-stats-constraint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    cursor: pointer;
+}
+
+.corridor-stats-note {
+    font-size: 0.8rem;
+    color: #8a6d1a;
+    background: #fdf6e3;
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+.corridor-stats-headline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.corridor-stats-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111;
+    margin-right: 8px;
+}
+
+.corridor-stats-label {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.corridor-stats-current {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #555;
+}
+
+.corridor-stats-delta--ok {
+    color: #15803d;
+    font-weight: 600;
+}
+
+.corridor-stats-delta--over {
+    color: #b3261e;
+    font-weight: 600;
+}
+
+.corridor-stats-fit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.corridor-stats-fit-ok {
+    color: #15803d;
+}
+
+.corridor-stats-fit-none {
+    color: #b3261e;
+}
+
+.corridor-stats-side-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.corridor-chart-title {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.corridor-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.corridor-chart-grid {
+    stroke: #ececec;
+    stroke-width: 1;
+}
+
+.corridor-chart-tick,
+.corridor-chart-road-label,
+.corridor-chart-min-label {
+    font-size: 9px;
+    fill: #777;
+}
+
+.corridor-chart-min-label {
+    fill: #111;
+    font-weight: 600;
+}
+
+.corridor-chart-area {
+    fill: rgba(37, 99, 235, 0.08);
+    stroke: none;
+}
+
+.corridor-chart-line {
+    fill: none;
+    stroke: #2563eb;
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+
+.corridor-chart-road {
+    stroke: #666;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+.corridor-chart-min {
+    fill: #111827;
+}
+
+.corridor-chart-cursor {
+    stroke: #999;
+    stroke-width: 1;
+    stroke-dasharray: 2 2;
+}
+
+.corridor-chart-readout {
+    font-size: 0.78rem;
+    color: #555;
+    min-height: 1.2em;
+}
+
+.corridor-stats-pinch {
+    font-size: 0.8rem;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+

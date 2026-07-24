@@ -489,11 +489,11 @@ function facetModeLabel(name, value) {
 }
 
 function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
-    proposalFacetState.parcels = mode;
-    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', mode, lock, reason);
-    // Merge requires ≥2 parcels — disable it (greyed pill) for a single-parcel selection.
-    const mergeRadio = document.querySelector('input[name="proposalParcelsMode"][value="merge"]');
-    if (mergeRadio) mergeRadio.disabled = proposalSingleParcelSelection;
+    // The active parcel model has two states: keep boundaries, or run land readjustment.
+    // Legacy callers asking for the removed merge mode safely resolve to no boundary change.
+    const normalized = mode === 'readjust' ? 'readjust' : 'as-is';
+    proposalFacetState.parcels = normalized;
+    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', normalized, lock, reason);
 }
 
 function showProposalPerSliceOption(show) {
@@ -520,7 +520,6 @@ function deriveProposalGoalKey() {
     if (landUse === 'urban-rule') return 'urban-rule';
     if (parcels === 'readjust') return 'reparcellization';
     if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
-    if (parcels === 'merge') return 'decide-later';
     if (ownership && ownership !== 'no-change') return 'ownership-transfer';
     return null; // as-is / as-is / no-change: nothing to propose yet
 }
@@ -866,21 +865,25 @@ function resolveFrontendBaseUrl() {
     return 'https://urbangametheory.xyz';
 }
 
+// Abstract 3D "model" view. Canonical: ?model. Back-compat aliases: ?mode3d / ?3d.
 function is3DModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        // Realistic (photoreal) mode is a sub-mode of 3D, so any realistic request also requests 3D.
-        return isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d') || isRealisticModeRequestedFromUrl(p);
+        // The "photo" view is a sub-mode of "model", so any photo request also requests model.
+        return isTruthyUrlFlag(p, 'model') || isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d')
+            || isRealisticModeRequestedFromUrl(p);
     } catch (_) {
         return false;
     }
 }
 
-// Realistic (Google Photorealistic 3D Tiles) mode. Aliases: ?real / ?rl / ?rw.
+// Photorealistic (Google Photorealistic 3D Tiles) "photo" view. Canonical: ?photo.
+// Back-compat aliases: ?real / ?rl / ?rw.
 function isRealisticModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        return isTruthyUrlFlag(p, 'real') || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
+        return isTruthyUrlFlag(p, 'photo') || isTruthyUrlFlag(p, 'real')
+            || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
     } catch (_) {
         return false;
     }
@@ -901,7 +904,11 @@ function tryEnterRealisticMode(options) {
 // URL-driven view entry: enter 3D (framing the just-loaded proposal), then overlay realistic mode
 // when requested — framing the whole proposal from the top, tilted ~45°, with a gentle auto-rotate.
 function enterUrlDrivenView(focusProposalIds) {
-    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds });
+    // A shared AI render (?scene=<slug>) carries the exact camera pose it was shot from; when the
+    // scene has been fetched, reproduce it instead of auto-framing. If the fetch hasn't resolved
+    // yet, ai-scene-follow re-applies it once it lands, so this only misses on a fast race.
+    const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
+    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds, restoreView: restoreView });
     if (entered && isRealisticModeRequestedFromUrl()) {
         tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
     }

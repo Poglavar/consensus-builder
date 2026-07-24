@@ -195,7 +195,13 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
             try { map.removeLayer(parcelLayer); } catch (_) { }
         }
 
-        map.fitBounds(bounds.pad(0.08), { maxZoom: 19 });
+        // Frame the preview in the VISIBLE map, clear of the open list panel (pad its footprint out).
+        // animate:false — instant, and avoids requestAnimationFrame, which is throttled to a standstill
+        // when the tab isn't actively rendering (an animated fit would then silently no-op).
+        const previewPadding = (typeof getProposalPanelFitPadding === 'function')
+            ? getProposalPanelFitPadding(40)
+            : { paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] };
+        map.fitBounds(bounds, { ...previewPadding, maxZoom: 19, animate: false });
 
         // Re-enable after map movement completes
         const onMoveEnd = () => {
@@ -525,7 +531,12 @@ function showProposalDialog(overrides = null) {
         'status.messages.please_select_at_least_one_parcel_to_create_a_proposal',
         'Please select at least one parcel to create a proposal.'
     );
-    const modalTitle = t('modal.createProposal.title', 'Create Proposal');
+    // Editing a proposal already on the map (opened via its "Details" button) reuses this same
+    // full-property dialog, only reframed: the source id is staged in pendingProposalReplacementSource.
+    const isEditingExisting = !!(typeof window !== 'undefined' && window.pendingProposalReplacementSource && window.pendingProposalReplacementSource.proposalId);
+    const modalTitle = isEditingExisting
+        ? t('modal.createProposal.editTitle', 'Proposal')
+        : t('modal.createProposal.title', 'Create Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
     const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
     const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
@@ -562,7 +573,6 @@ function showProposalDialog(overrides = null) {
         square: t('modal.createProposal.goalOptions.square', 'Square'),
         lake: t('modal.createProposal.goalOptions.lake', 'Lake'),
         roadTrack: t('modal.createProposal.goalOptions.roadTrack', 'Road/Track'),
-        decideLater: t('modal.createProposal.goalOptions.decideLater', 'Decide later'),
         urbanRule: t('modal.createProposal.goalOptions.urbanRule', 'Urban Rule'),
         reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization'),
         ownershipTransfer: t('modal.createProposal.goalOptions.ownershipTransfer', 'Ownership transfer')
@@ -575,7 +585,6 @@ function showProposalDialog(overrides = null) {
     const asIsLandUseLabel = t('modal.createProposal.goalOptions.asIs', 'As is');
     const parcelsOptions = {
         asIs: t('modal.createProposal.parcelsOptions.asIs', 'As is'),
-        merge: t('modal.createProposal.parcelsOptions.merge', 'Merge'),
         readjust: t('modal.createProposal.parcelsOptions.readjust', 'Readjust')
     };
     const ownershipRecipients = {
@@ -634,7 +643,9 @@ function showProposalDialog(overrides = null) {
     const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled proposal');
     const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
-    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
+    const submitLabel = isEditingExisting
+        ? t('modal.createProposal.submitEdit', 'Save')
+        : t('modal.createProposal.submit', 'Create Proposal');
 
     const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
     const overrideAcquisition = proposalDialogOverrides?.acquisitionMode || null;
@@ -689,8 +700,6 @@ function showProposalDialog(overrides = null) {
     const totalOwners = ownershipStats.ownerCount || selectedParcels.length;
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;
-    proposalSingleParcelSelection = isSingleParcelSelection;
-
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelId = getParcelIdFromFeature(parcel?.feature);
@@ -766,7 +775,6 @@ function showProposalDialog(overrides = null) {
                         <span class="proposal-goal-subhead">${goalSectionLabels.parcels}</span>
                         <div class="proposal-radio-group" id="proposalParcelsGroup">
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
-                            <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="merge" onchange="onProposalParcelsChange()"><span>🪡 ${parcelsOptions.merge}</span></label>
                             <label class="proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><span>✂️ ${parcelsOptions.readjust}</span></label>
                         </div>
                         <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
@@ -1222,6 +1230,23 @@ function showProposalDialog(overrides = null) {
         if (acquisitionInput) {
             acquisitionInput.value = overrideAcquisition || acquisitionInput.value || 'full';
         }
+    }
+
+    if (isEditingExisting && !goalLocked && !ownershipOnly) {
+        // Editing a proposal already on the map reuses this dialog, but its land use, parcels mode
+        // and type are what MAKE it that proposal — changing them would not edit it, it would destroy
+        // it into a completely different proposal. So they lock (greyed) to the current preset, which
+        // initProposalFacets() already selected above. Ownership, acquisition and every term stay live.
+        modal.querySelectorAll('[data-goal-section="land-use"] input[type="radio"], [data-goal-section="parcels"] input[type="radio"]').forEach(radio => {
+            radio.disabled = true;
+            radio.setAttribute('aria-disabled', 'true');
+        });
+        modal.querySelectorAll('[data-goal-section="land-use"], [data-goal-section="parcels"]')
+            .forEach(section => section.classList.add('proposal-goal-section--locked'));
+        modal.querySelectorAll('#proposalMainTypeGroup .proposal-type-button').forEach(button => {
+            button.disabled = true;
+            button.classList.add('proposal-selection-static');
+        });
     }
 
     // Check contiguity and disable buttons that require contiguous parcels

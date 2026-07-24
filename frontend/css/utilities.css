@@ -1983,6 +1983,28 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     padding-bottom: 10px;
 }
 
+/* Compact acknowledgement shared by click-to-copy values. */
+.copy-feedback-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    z-index: 100001;
+    transform: translate(-50%, 5px);
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(20, 22, 28, 0.9);
+    color: #fff;
+    font: 600 11px/1.2 system-ui, sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.copy-feedback-toast.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 .takeover-buttons .btn {
     flex: 1;
 }
@@ -2157,13 +2179,14 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     }
 }
 
-/* Proposal Details Panel */
+/* Proposal Details Panel. Width comes from .right-dock-panel (css/panels.css) — it used to carry
+   `width: 400px !important` purely to out-shout the mobile `.info-panel { width: 100% !important }`
+   bottom-sheet rule below. The shared class agrees with that rule instead of fighting it: it resolves
+   to 100% inside the same breakpoint, so neither declaration needs !important any more. */
 #proposal-details-panel {
     position: fixed;
-    top: 10px !important;
     right: 10px;
     bottom: 10px;
-    width: 400px !important;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(3px);
     border: 1px solid #ccc;
@@ -2175,8 +2198,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     overflow-x: hidden;
     overflow-y: auto;
     box-sizing: border-box;
-    height: calc(100dvh - 20px);
-    max-height: calc(100dvh - 20px);
 }
 
 #proposal-details-panel.visible {
@@ -2184,25 +2205,18 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     flex-direction: column;
 }
 
-@media (min-width: 768px) {
-    /* Desktop proposal details size - nearly full screen height */
+/* Desktop: nearly full screen height. Declared ONLY here, so on mobile the panel keeps the shared
+   bottom-sheet policy (half the screen, collapsible) instead of overriding it back to full height.
+   769px rather than 768px: the mobile block below is `max-width: 768px`, and the two used to both
+   match at exactly 768px. */
+@media (min-width: 769px) {
     #proposal-details-panel {
-        bottom: 10px !important;
-        top: 10px !important;
-        height: calc(100dvh - 20px) !important;
-        max-height: calc(100dvh - 20px) !important;
-        min-height: calc(100dvh - 20px) !important;
+        top: 10px;
+        bottom: 10px;
+        height: calc(100dvh - 20px);
+        max-height: calc(100dvh - 20px);
+        min-height: calc(100dvh - 20px);
         overflow-y: auto;
-    }
-    
-    #proposal-details-panel.visible {
-        display: flex;
-        flex-direction: column;
-        bottom: 10px !important;
-        top: 10px !important;
-        height: calc(100dvh - 20px) !important;
-        max-height: calc(100dvh - 20px) !important;
-        min-height: calc(100dvh - 20px) !important;
     }
 }
 
@@ -2342,40 +2356,30 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         right: 0 !important;
         top: auto !important;
         bottom: 0;
-        width: 100% !important;
-        /* Use 100% instead of 100vw to avoid overflow */
-        max-width: 100% !important;
         /* Mobile policy: a panel takes at most half the screen; content beyond that scrolls
-           inside. Panels that genuinely need more (proposal details) override to full height. */
+           inside, or the user collapses the panel to its header strip. */
         max-height: 50vh;
         border-radius: 12px 12px 0 0;
         box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
         box-sizing: border-box;
-        /* Include padding in width calculation */
+    }
+
+    /* Legacy full-bleed width for the info panels that are NOT part of the right dock. The dock's
+       four panels take their width from .right-dock-panel alone — if this rule still matched them,
+       its !important would silently win over --right-dock-width and the shared token would be a lie. */
+    .info-panel:not(.right-dock-panel) {
+        /* 100% instead of 100vw so the padding cannot push the panel into horizontal overflow. */
+        width: 100% !important;
+        max-width: 100% !important;
     }
     
-    /* Proposal details panel should maintain desktop styling on larger mobile screens */
-    #proposal-details-panel {
-        width: 400px !important;
-        max-width: calc(100vw - 20px) !important;
-        right: 10px !important;
-        left: auto !important;
-        top: 10px !important;
-        bottom: 10px !important;
-        max-height: calc(100dvh - 20px) !important;
-    }
+    /* Proposal details follows the same bottom-sheet policy as every other right-dock panel on
+       mobile — full width, half the screen, collapsible — instead of staying a 400px right-docked
+       column. Handled entirely by .info-panel + .right-dock-panel; nothing to override here. */
 
     .info-panel .close-button {
         top: 12px;
         right: 12px;
-    }
-}
-
-/* Ensure proposal details panel maintains correct width on desktop */
-@media (min-width: 769px) {
-    #proposal-details-panel {
-        width: 400px !important;
-        max-width: 400px !important;
     }
 }
 
@@ -2412,19 +2416,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         grid-template-columns: 1fr;
         gap: 8px;
     }
-
-    /* Keep road/track actions on one row inside proposal tab */
-    .parcel-road-actions {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
-
-    .parcel-road-actions .btn {
-        width: auto;
-        flex: 1 1 0;
-    }
-
 
     /* Control groups more compact */
     .control-group {

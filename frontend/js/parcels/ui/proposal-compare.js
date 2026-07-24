@@ -21,7 +21,7 @@
 
             const canCompare = typeof global.isProposalApplied === 'function'
                 ? global.isProposalApplied(proposal)
-                : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
+                : (typeof global.isApplied === 'function' ? global.isApplied(proposal) : false);
             if (!canCompare) {
                 const compareMessage = global.translateParcelText('status.messages.only_the_currently_applied_proposal_can_be_compared', 'Only the currently applied proposal can be compared.');
                 if (typeof global.updateStatus === 'function') {

@@ -98,6 +98,13 @@ function toggleAccordion(checkbox, options = {}) {
         } else if (typeof hideDguBuildingLayer === 'function') {
             hideDguBuildingLayer();
         }
+    } else if (layerName === 'buildingsOsm') {
+        const showOsm = document.getElementById('showBuildingsOsm').checked;
+        if (showOsm) {
+            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+        } else if (typeof hideOsmBuildingLayer === 'function') {
+            hideOsmBuildingLayer();
+        }
     }
     // Proposals section no longer has a checkbox - proposals are always shown
     // Update interactivity of this section controls if it's expanded
@@ -611,8 +618,9 @@ function toggleBlocksVisibility() {
 
 // Toggle layer visibility.
 // `buildings` = the GDI footprints (the model). `buildingsDgu` = the DGU cadastre reference.
-// They are independent — both can be on at once — and NEITHER changes what a corridor cuts:
-// detection reads window.buildingFeaturePool (the data), never a Leaflet layer.
+// `buildingsOsm` = the OSM footprints behind the basemap. They are independent — any can be on at
+// once — and NONE changes what a corridor cuts: detection reads window.buildingFeaturePool (the
+// data), never a Leaflet layer.
 function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
     const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
@@ -638,6 +646,15 @@ function toggleLayer(layerType) {
             if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
         } else if (typeof hideDguBuildingLayer === 'function') {
             hideDguBuildingLayer();
+        }
+    }
+
+    if (layerType === 'buildingsOsm') {
+        const showOsm = document.getElementById('showBuildingsOsm')?.checked;
+        if (showOsm) {
+            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+        } else if (typeof hideOsmBuildingLayer === 'function') {
+            hideOsmBuildingLayer();
         }
     }
 

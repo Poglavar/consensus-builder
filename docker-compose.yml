@@ -42,6 +42,10 @@ services:
   db:
     image: my-postgis:17-3.5-arm64
     restart: always
+    # Default /dev/shm in a container is 64 MB; big parallel queries (e.g. the
+    # zagreb-api veleprojekti warm query) fail with "could not resize shared
+    # memory segment … No space left on device" when they hit that ceiling.
+    shm_size: 1gb
     environment:
       POSTGRES_DB: consensus
       POSTGRES_USER: consensus

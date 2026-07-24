@@ -132,10 +132,24 @@
             curatedRoads: {
                 url: '/road-parcels'
             },
-            // Existing heavy-rail lines rendered as an elevated viaduct in 3D mode (ported
-            // from the tram sim). Static OSM-derived GeoJSON shipped with the frontend.
-            rail3d: {
-                url: 'data/zagreb_rail_tracks.geojson'
+            // Immutable OSM-derived alignments shared by station snapping and 3D rendering.
+            // Editable proposal corridors remain a separate game-data source.
+            transitAlignments: {
+                sources: [{
+                    id: 'zagreb-heavy-rail',
+                    url: 'data/zagreb_rail_tracks.geojson',
+                    mode: 'heavy-rail',
+                    stationTypes: ['elevated'],
+                    elevationM: 7.5,
+                    render3d: 'elevated'
+                }, {
+                    id: 'zagreb-tram',
+                    url: 'data/zagreb_tram_tracks_osm.geojson',
+                    mode: 'tram',
+                    stationTypes: ['tram'],
+                    elevationM: 0,
+                    render3d: 'surface'
+                }]
             }
         },
         split: {
@@ -1352,6 +1366,34 @@
         return null;
     }
 
+    // The Walk/Drive launchers open an external tram-sim deployment whose URL is baked into each
+    // city's `walk.url` (production: zagreb.lol/prijevoz/). When consensus-builder itself is served
+    // from localhost, that hard-coded prod URL is wrong for local testing — you want a locally-served
+    // copy of the sim (which then auto-targets localhost:3000 for proposals, see the isochrone repo's
+    // world/proposals.js). So on a local origin we rewrite the sim base to a local one. Override the
+    // base with `window.__CB_SIM_URL__` or localStorage `cb_sim_url` to serve the sim on any host/port;
+    // the default assumes `python3 -m http.server 8090` in zagreb-isochrone-main/website, whose
+    // transit.html is the sim entry point. Non-local origins keep the city's configured prod URL.
+    function isLocalOrigin() {
+        const h = (typeof window !== 'undefined' && window.location && window.location.hostname || '').toLowerCase();
+        return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h.endsWith('.local');
+    }
+    function localSimUrl() {
+        try {
+            const override = (typeof window !== 'undefined'
+                && (window.__CB_SIM_URL__ || (window.localStorage && window.localStorage.getItem('cb_sim_url')))) || '';
+            if (override) return String(override);
+        } catch (_e) { /* localStorage can throw in locked-down contexts */ }
+        const host = (typeof window !== 'undefined' && window.location && window.location.hostname) || 'localhost';
+        return `http://${host}:8090/transit.html`;
+    }
+    // Returns the walk/drive config with its `url` swapped for the local sim when on a local origin.
+    // Preserves `locParam` and any other fields; leaves null/urlless configs untouched.
+    function withLocalSimUrl(config) {
+        if (!config || !config.url || !isLocalOrigin()) return config;
+        return { ...config, url: localSimUrl() };
+    }
+
     window.CityConfigManager = {
         getCurrentCityId: () => currentCityId,
         setCurrentCityId: setStoredCityId,
@@ -1376,14 +1418,14 @@
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
         getParcelBuilderConfig,
-        getWalkConfig: () => getCurrentCityConfig().walk || null,
+        getWalkConfig: () => withLocalSimUrl(getCurrentCityConfig().walk || null),
         getCuratedRoadsConfig: () => getCurrentCityConfig().curatedRoads || null,
-        getRail3dConfig: () => getCurrentCityConfig().rail3d || null,
+        getTransitAlignmentConfig: () => getCurrentCityConfig().transitAlignments || null,
         // Sim launcher for the "Drive this track" button. Unlike the walk button (gated per
         // city because it depends on city street data), driving a drawn track works at any
         // location — the track, rails and corridor come from the proposal itself — so every
         // city falls back to the shared sim deployment. Cities may still override via `walk`.
-        getDriveConfig: () => getCurrentCityConfig().walk || { url: 'https://zagreb.lol/prijevoz/' },
+        getDriveConfig: () => withLocalSimUrl(getCurrentCityConfig().walk || { url: 'https://zagreb.lol/prijevoz/' }),
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,

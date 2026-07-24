@@ -45,7 +45,7 @@ const proposalStorage = {
     _ancestorIndex: null,
     _ancestorIndexDirty: true,
     // Cached map: parcelId -> Set<proposalId> for ALL applied proposals that claim the parcel as a
-    // parent, INCLUDING overlays (building, park/square/lake) that don't hide it. Used for apply-time
+    // parent, INCLUDING overlays (building, park/square/lake/station) that don't hide it. Used for apply-time
     // conflict detection ("is anything already applied on this parcel?"), which must catch overlays
     // that the ancestor index deliberately excludes.
     _occupancyIndex: null,
@@ -64,7 +64,7 @@ const proposalStorage = {
     /**
      * True if applying this proposal removes its parent parcels from the map. Building
      * and structure overlays draw on top of parents (parcelBased, single-building,
-     * park, square, lake) and must NOT hide them.
+     * park, square, lake, station) and must NOT hide them.
      */
     _proposalRuleReplacesParents(proposal) {
         if (!proposal) return false;
@@ -72,7 +72,7 @@ const proposalStorage = {
         const goalKey = (typeof normalizeProposalGoalKey === 'function')
             ? (normalizeProposalGoalKey(proposal.goal) || '')
             : String(proposal.goal || '');
-        if (['buildings', 'building(s)', 'single-building', 'parcelBased', 'park', 'square', 'lake'].includes(goalKey)) {
+        if (['buildings', 'building(s)', 'single-building', 'parcelBased', 'park', 'square', 'lake', 'station'].includes(goalKey)) {
             return false;
         }
         return true;
@@ -134,7 +134,7 @@ const proposalStorage = {
     },
 
     // Same as _rebuildAncestorIndex but WITHOUT the "replaces parents" filter, so overlays
-    // (building, park/square/lake) are included. This is the occupancy view: every applied
+    // (building, park/square/lake/station) are included. This is the occupancy view: every applied
     // proposal that claims a parcel, whether it consumes or overlays it.
     _rebuildOccupancyIndex() {
         const idx = new Map();
@@ -415,7 +415,7 @@ const proposalStorage = {
             isConditional: !!raw.isConditional,
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
-            status: raw.status || 'Active',
+            lifecycleStatus: raw.lifecycleStatus || raw.status || 'Active',
             ethBalance: raw.ethBalance || '0',
             tokenBalance: raw.tokenBalance || '0',
             acceptanceCount: raw.acceptanceCount || '0',
@@ -669,7 +669,18 @@ const proposalStorage = {
         if (typeof PersistentStorage === 'undefined') return;
         // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
         // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return;
+        // Say so every time: this used to return in complete silence, so a read-only tab looked
+        // like a working one — proposals could be created, applied and rendered, and then simply
+        // were not there after a reload, with nothing in the console to explain it. The guard's
+        // banner is dismissable, so it cannot be the only signal that work is being dropped.
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
+            this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
+            console.error('[proposalStorage] NOT SAVED — this tab is read-only because the app is open in another tab.'
+                + ` Nothing created here survives a reload (dropped writes: ${this._blockedWriteCount}).`
+                + ' Close the other tabs and reload this one to edit.');
+            try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
+            return;
+        }
         try {
             const serialisable = Array.from(this.proposals.values());
             PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));
@@ -868,24 +879,18 @@ const proposalStorage = {
         const normalized = this._normalizeProposal({ ...proposal });
 
         if (!preserveStatus) {
-            normalized.status = normalized.status === 'Executed' ? 'Executed' : 'Active';
-            // Every kind of nested proposal has to be reset, not just roads and buildings.
-            // Downloading a server proposal never applies it to this map, so a nested status left
-            // saying "applied" makes the details panel claim it is on the map while no geometry was
-            // ever drawn — the parcels are untouched and nothing shows in 2D or 3D.
-            ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
-                .forEach(key => {
-                    const nested = normalized[key];
-                    if (!nested || typeof nested !== 'object') return;
-                    nested.status = nested.status === 'executed' ? 'executed' : 'unapplied';
-                    if (nested.appliedAt) delete nested.appliedAt;
-                });
+            const executed = getLifecycleStatus(normalized) === 'Executed';
+            normalized.lifecycleStatus = executed ? 'Executed' : 'Active';
             // childParcelIds arriving on an imported proposal are just the uploader's produced-ids
             // cache; they are NOT reproduced. On apply, children are re-derived from (parents +
             // rule) and get freshly minted ids from the id subsystem. Child-id identity is a local
             // concern of each apply — the consensus layer is parent-keyed — so we do not try to
             // match the uploader's ids.
         }
+
+        // Importing only stores a definition. Even an Executed proposal has not been materialised
+        // in this browser yet; an explicit single-proposal or shared-plan flow applies it afterward.
+        parkProposalForImport(normalized);
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
@@ -940,24 +945,34 @@ const proposalStorage = {
         }
     },
 
+    // Deprecated compatibility entry point. Status tokens now mutate lifecycle only; map
+    // visibility must go through setProposalApplied so a server/chain transition cannot draw or
+    // remove geometry in this browser.
     updateProposalStatus(proposalId, status) {
+        return this.setProposalLifecycleStatus(proposalId, status);
+    },
+
+    // Lifecycle-only mutation. It deliberately does not infer or change local map visibility.
+    setProposalLifecycleStatus(proposalId, lifecycleStatus) {
         const proposal = this.getProposal(proposalId);
-        if (proposal) {
-            proposal.status = status;
-            proposal.updatedAt = new Date().toISOString();
+        if (!proposal) return false;
+        proposal.lifecycleStatus = getLifecycleStatus({ lifecycleStatus });
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        return true;
+    },
 
-            if (proposal.roadProposal) {
-                const nextStatus = status === 'Applied' ? 'applied' : status === 'Executed' ? 'executed' : 'unapplied';
-                proposal.roadProposal.status = nextStatus;
-            }
-
-            if (proposal.buildingProposal) {
-                const nextStatus = status === 'Executed' ? 'executed' : status === 'Applied' ? 'applied' : 'unapplied';
-                proposal.buildingProposal.status = nextStatus;
-            }
-
-            this._indexProposal(proposal);
+    setProposalApplied(proposalId, applied) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        if (typeof window !== 'undefined' && typeof window.setProposalApplied === 'function') {
+            window.setProposalApplied(proposal, applied);
+        } else {
+            proposal.applied = applied === true;
         }
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        return true;
     },
 
     _normalizeProposal(proposal, context = {}) {
@@ -999,7 +1014,9 @@ const proposalStorage = {
         }
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
-        proposal.status = proposal.status || 'Active';
+        // Upgrade legacy rows once. Steady-state visibility lives only on proposal.applied; nested
+        // copies are removed so contradictory flags cannot be created again.
+        normalizeProposalStatusAxes(proposal);
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
         proposal.lens = normalizeLensEntries(
             proposal.lens
@@ -1047,7 +1064,7 @@ const proposalStorage = {
                 proposal.goal = 'reparcellization';
             } else if (proposal.structureProposal && proposal.structureProposal.kind) {
                 const kind = normalizeProposalGoalKey(proposal.structureProposal.kind);
-                proposal.goal = (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square';
+                proposal.goal = (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') ? kind : 'square';
             } else if (proposal.buildingProposal || proposal.buildingGeometry) {
                 proposal.goal = 'buildings';
             } else {
@@ -1076,7 +1093,6 @@ const proposalStorage = {
                     number: entry && entry.number ? String(entry.number) : (normalizeParcelId(entry?.id) || null)
                 })).filter(entry => entry.id);
             }
-            bp.status = bp.status === 'executed' ? 'executed' : (bp.status === 'applied' ? 'applied' : 'unapplied');
             bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
             Object.keys(bp.parameters).forEach(key => {
                 if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
@@ -1109,7 +1125,6 @@ const proposalStorage = {
             proposal.buildingProposal = {
                 parentParcelIds: parentIds,
                 parentParcelNumbers: parentIds.map(id => ({ id, number: id })),
-                status: (proposal.status === 'Applied' || proposal.status === 'Executed') ? 'applied' : 'unapplied',
                 ancestorKey: parentIds.join('|'),
                 parameters: {}
             };
@@ -1119,10 +1134,10 @@ const proposalStorage = {
             }
         }
 
-        // Normalize structure proposals (parks/squares)
+        // Normalize structure proposals (parks/squares/lakes/stations)
         if (proposal.structureProposal) {
             const sp = { ...proposal.structureProposal };
-            sp.kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
+            sp.kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
             sp.parentParcelIds = normalizeParcelIdList(Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0 ? sp.parentParcelIds : proposal.parentParcelIds || []);
             if (sp.geometry) {
                 try { sp.geometry = JSON.parse(JSON.stringify(sp.geometry)); } catch (_) { }
@@ -1177,12 +1192,18 @@ const proposalStorage = {
             parts.push(`buildingGeom:${serialiseGeometry(proposal.buildingGeometry)}`);
         }
 
-        // Structure (park/square/lake)
+        // Structure (park/square/lake/station)
         if (proposal.structureProposal) {
             const sp = proposal.structureProposal;
             parts.push(`structureKind:${sp.kind || ''}`);
             parts.push(`structureParents:${normalizeParcelIdList(sp.parentParcelIds || parentIds).join(',')}`);
             if (sp.geometry) parts.push(`structureGeom:${serialiseGeometry(sp.geometry)}`);
+            if (sp.kind === 'station') {
+                parts.push(`stationType:${sp.stationType || ''}`);
+                parts.push(`stationCenter:${Array.isArray(sp.center) ? sp.center.join(',') : ''}`);
+                parts.push(`stationBearing:${Number.isFinite(Number(sp.bearing)) ? Number(sp.bearing).toFixed(3) : ''}`);
+                parts.push(`stationPlatformHeight:${Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM).toFixed(2) : ''}`);
+            }
         }
 
         // Reparcellization
@@ -2238,6 +2259,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'square': { icon: '⛲️', label: 'Square' },
     'park': { icon: '🌳', label: 'Park' },
     'lake': { icon: '🐟', label: 'Lake' },
+    'station': { icon: '🚉', label: 'Transit station' },
     'single': { icon: '🏠', label: 'Building' },
     'buildings': { icon: '🏠', label: 'Building' },
     'road-track': { icon: '🛣️🛤️', label: 'Road/Track' },
@@ -2266,12 +2288,12 @@ const DEFAULT_CORRIDOR_WIDTHS = {
 
 const proposalFacetState = { landUse: 'as-is', parcels: 'as-is', ownership: 'no-change' };
 
-const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'road-track']);
+const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'station', 'road-track']);
 
 const PROPOSAL_GOAL_TYPE_LABELS = {
-    'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'single': 'Building(s)',
+    'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'station': 'Transit station', 'single': 'Building(s)',
     'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
-    'decide-later': 'Decide later', 'reparcellization': 'Reparcellization'
+    'reparcellization': 'Reparcellization'
 };
 
 const LAKE_GRAPHICS_VERSION = 3;
@@ -2279,9 +2301,10 @@ const LAKE_GRAPHICS_VERSION = 3;
 const LAKE_SHORE_TARGET_RATIO = 0.2;
 
 const proposalListState = {
-    activeTab: 'active',
     source: 'local',
     filterType: 'all',
+    lifecycleFilter: 'all', // 'all' | any getProposalLifecycleKey value (replaced the Active/Executed tabs)
+    appliedFilter: 'all',   // 'all' | 'applied' | 'not-applied'
     authorFilter: '',
     searchText: '',
     sortKey: 'created-desc',
@@ -2339,9 +2362,9 @@ const PROPOSAL_GOAL_FILTERS = [
     { value: 'park', label: 'Park' },
     { value: 'square', label: 'Square' },
     { value: 'lake', label: 'Lake' },
+    { value: 'station', label: 'Transit station' },
     { value: 'urban-rule', label: 'Urban rule' },
     { value: 'reparcellization', label: 'Reparcellization' },
-    { value: 'decide-later', label: 'Decide later' },
     { value: 'row', label: 'Row' },
     { value: 'other', label: 'Other' }
 ];
@@ -2354,9 +2377,9 @@ const PROPOSAL_GOAL_FILTER_I18N_KEYS = {
     park: 'park',
     square: 'square',
     lake: 'lake',
+    station: 'station',
     'urban-rule': 'urbanRule',
     reparcellization: 'reparcellization',
-    'decide-later': 'decideLater',
     row: 'row',
     other: 'other'
 };
@@ -2369,6 +2392,7 @@ const PROPOSAL_GOAL_LABELS = {
     park: 'Park',
     square: 'Square',
     lake: 'Lake',
+    station: 'Transit station',
     'urban-rule': 'Urban rule',
     reparcellization: 'Reparcellization',
     'decide-later': 'Decide later',

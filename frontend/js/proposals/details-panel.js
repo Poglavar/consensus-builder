@@ -543,20 +543,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    // There is no editor dialog. Selection is direct manipulation (corridors: node handles +
-    // cross-section), and the terms/details complexity lives behind one "Propose" action that
-    // opens the create dialog prefilled from the object — submitting absorbs the unminted
-    // source, so re-proposing IS how terms get edited. Once proposed (terms confirmed via the
-    // dialog, or minted) the slot shows "Proposal details" instead; a later geometry edit makes
-    // a fresh unproposed object and Propose returns.
-    const proposalIsProposed = (fullProposal || proposal)?.termsConfirmed === true || isMinted;
-    const editButtonHtml = (proposalKey && !isMinted && !proposalIsProposed)
+    // Geometry is direct manipulation (corridors: node handles + cross-section); everything else —
+    // terms, offer, name, expiry, decay, deposit — is edited through one "Details" action that opens
+    // the full create dialog prefilled from the object. For a non-minted local proposal that dialog
+    // saves IN PLACE (same id, only a re-share under a changed fingerprint mints a fresh URL), so it
+    // is the single editing surface whether or not terms were already confirmed. A MINTED proposal is
+    // immutable, so its slot is the read-only "Proposal details" panel expand instead (editing a
+    // minted proposal forks it, which happens by editing its geometry, not from here).
+    const editButtonHtml = (proposalKey && !isMinted)
         ? `
         <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
-            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.propose', 'Propose')}
+            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.editDetails', 'Details')}
         </button>
     `
-        : (proposalKey && proposalIsProposed
+        : (proposalKey && isMinted
             ? `
         <button class="btn btn-primary btn-proposal-details-expand" onclick="toggleProposalDetailsPanelMinimized(false)">
             <i class="fas fa-file-alt"></i> ${tProposal('panel.proposal.actions.details', 'Proposal details')}
@@ -595,10 +595,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Geometry editing in place: corridors get their cross-section editor (nodes are edited
     // directly on the map), building/reparcellization types reopen their design tool seeded
     // from the object. Minted objects are immutable — neither button appears.
+    // Minted roads are editable too — the cross-section edit forks the road into a local copy
+    // (runLocalCorridorGeometryUpdate detaches its published pointers), leaving the NFT untouched.
     const corridorProfileEditable = !!(proposalKey && appliedState
         && (fullProposal?.roadProposal?.definition || proposal?.roadProposal?.definition)
-        && typeof openCorridorProfileEditor === 'function'
-        && !isMinted);
+        && typeof openCorridorProfileEditor === 'function');
     const geometryEditable = !corridorProfileEditable && !!(proposalKey
         && typeof canEditProposalGeometry === 'function'
         && typeof editProposalGeometry === 'function'
@@ -623,27 +624,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `);
 
-    // SimCity object actions: an object on the map can be edited, parked, or deleted right here.
-    const deleteButtonHtml = (proposalKey && typeof deleteProposal === 'function')
-        ? `
-        <button class="btn btn-outline-danger btn-delete-proposal" onclick="deleteProposal('${proposalKey}')"
-            title="${tProposal('panel.proposal.actions.deleteHint', 'Deletes the object and its idea entirely.')}">
-            <i class="fas fa-trash"></i> ${tProposal('panel.proposal.actions.delete', 'Delete')}
-        </button>
-    `
-        : '';
-
     // Fixed slots so buttons never shuffle between selections: Edit · Propose/Details ·
-    // Apply/Unapply · Share · Delete. Contextual extras (Buy, Drive) append at the end.
+    // Apply/Unapply · Share. Contextual extras (Buy, Drive) append at the end. Deletion lives
+    // in the proposal lists (type-aware there) — the panel only offers the reversible Unapply,
+    // which means the same thing for local, server, and on-chain proposals.
     // Colors are role-coded: blue = propose/details, green = apply, yellow = unapply,
-    // red outline = delete, neutral outline = edit/share.
+    // neutral outline = edit/share.
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${crossSectionButtonHtml}
             ${editButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
-            ${deleteButtonHtml}
             ${buyButtonHtml}
             ${driveButtonHtml}
         </div>
@@ -719,8 +711,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
-    const proposalStatus = (proposal.status || '').toLowerCase();
-    if (proposal.expiresAt && proposalStatus !== 'executed') {
+    if (proposal.expiresAt && getLifecycleStatus(proposal) !== 'Executed') {
         const expiresAt = new Date(proposal.expiresAt).getTime();
         const now = Date.now();
         const isExpired = expiresAt <= now;
@@ -2214,10 +2205,6 @@ function driveTrackProposalIn3DSim(proposalKey) {
         return;
     }
 
-    const isAppliedLike = (status) => {
-        const s = (status || '').toString().toLowerCase();
-        return s === 'applied' || s === 'executed';
-    };
     const appliedSerialIds = [];
     const seenSerialIds = new Set();
     try {
@@ -2225,12 +2212,9 @@ function driveTrackProposalIn3DSim(proposalKey) {
         const all = (storage && typeof storage.getAllProposals === 'function') ? storage.getAllProposals() : [];
         for (const p of all) {
             if (!p) continue;
-            const applied = isAppliedLike(p.status)
-                || (p.roadProposal && isAppliedLike(p.roadProposal.status))
-                || (p.buildingProposal && isAppliedLike(p.buildingProposal.status))
-                || (p.structureProposal && isAppliedLike(p.structureProposal.status))
-                || (p.reparcellization && isAppliedLike(p.reparcellization.status))
-                || (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status));
+            const applied = isApplied(p)
+                || ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                    .some(key => p[key] && isApplied(p, p[key]));
             if (!applied) continue;
             const sid = window.getSerialProposalId(p);
             if (sid && !seenSerialIds.has(sid)) {

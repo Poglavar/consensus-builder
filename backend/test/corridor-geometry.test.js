@@ -10,6 +10,9 @@ const {
     createRectangularRoadSegment,
     planarSegmentIntersection,
     insertCorridorCrossingNodes,
+    splitCorridorSelfJunctions,
+    normalizeCorridorGraph,
+    normalizeCorridorDefinitionTopology,
     healNearMissJunctions,
     weldNearbyVertices,
     corridorConnectedComponents,
@@ -25,6 +28,11 @@ const {
     checkCurvatureConstraint,
     pickSnapTarget
 } = require('../../frontend/js/corridor-geometry.js');
+const {
+    corridorStripRingPlanar,
+    corridorClosedStripPolygonPlanar,
+    ringSelfIntersectsXY
+} = require('../../frontend/js/corridor-profile.js');
 
 // Identity-ish projection: treat (lat,lng) as (x=lng, y=lat) metres and back. Enough to exercise
 // the geometry deterministically without proj4.
@@ -113,6 +121,148 @@ describe('insertCorridorCrossingNodes', () => {
         insertCorridorCrossingNodes(segs, [1, 2], new Set([protectedKey]));
         expect(segs[0].length).toBe(before); // protected edge untouched
         delete global.corridorTunnelEdgeKey;
+    });
+
+    it('nodes a crossing made by two non-adjacent edges of the SAME stroke', () => {
+        const stroke = [P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)];
+        const segs = [stroke];
+        insertCorridorCrossingNodes(segs, ['star']);
+
+        const crossingCopies = segs[0].filter(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9);
+        expect(crossingCopies).toHaveLength(2);
+    });
+});
+
+describe('normalizeCorridorGraph', () => {
+    it('turns one self-crossing stroke into simple stretches sharing a real junction', () => {
+        const segments = [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]];
+        const segmentIds = ['star'];
+        const profiles = { star: { strips: [{ type: 'driving', width: 8 }] } };
+
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+
+        expect(segments.length).toBeGreaterThan(1);
+        expect(segmentIds).toHaveLength(segments.length);
+        expect(segments.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+
+        // Four incident arms meet at (0,0): two tails plus both ends of the simple middle loop.
+        const crossingEndpoints = segments.flatMap(segment => [segment[0], segment[segment.length - 1]])
+            .filter(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9);
+        expect(crossingEndpoints).toHaveLength(4);
+
+        // Every derived stretch keeps the source cross-section instead of reverting to defaults.
+        segmentIds.slice(1).forEach(id => expect(profiles[String(id)]).toEqual(profiles.star));
+    });
+
+    it('nodes and splits a closed five-point star while preserving a simple closed loop', () => {
+        const star = [
+            P(10, 0), P(-8, 6), P(3, -10), P(3, 10), P(-8, -6), P(10, 0)
+        ];
+        const simpleLoop = [P(0, 20), P(0, 30), P(10, 30), P(10, 20), P(0, 20)];
+        const segments = [star, simpleLoop];
+        const segmentIds = ['star', 'loop'];
+
+        normalizeCorridorGraph(segments, segmentIds);
+
+        expect(segments.length).toBeGreaterThan(2);
+        expect(segments.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+        expect(segments.some(segment => segmentIds[segments.indexOf(segment)] === 'loop' && segment.length === 5)).toBe(true);
+    });
+
+    it('hands 3D only simple strip rings after normalizing a closed star', () => {
+        const segments = [[
+            P(100, 0), P(-80, 60), P(30, -100), P(30, 100), P(-80, -60), P(100, 0)
+        ]];
+        const segmentIds = ['star'];
+        normalizeCorridorGraph(segments, segmentIds);
+
+        segments.forEach(segment => {
+            const planar = segment.map(point => [point.lng, point.lat]);
+            const closed = segment.length > 2
+                && Math.hypot(planar[0][0] - planar[planar.length - 1][0], planar[0][1] - planar[planar.length - 1][1]) < 1e-7;
+            if (closed) {
+                const rings = corridorClosedStripPolygonPlanar(planar, 4, -4);
+                expect(rings).not.toBeNull();
+                expect(rings.every(ring => !ringSelfIntersectsXY(ring))).toBe(true);
+            } else {
+                const ring = corridorStripRingPlanar(planar, 4, -4);
+                expect(ring).not.toBeNull();
+                expect(ringSelfIntersectsXY(ring)).toBe(false);
+            }
+        });
+    });
+
+    it('keeps segment and id arrays aligned when a legacy anonymous stroke is split', () => {
+        const segments = [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]];
+        const segmentIds = [null];
+        splitCorridorSelfJunctions(segments, segmentIds);
+        // No crossing vertices have been inserted yet, so there is nothing to split.
+        expect(segments).toHaveLength(1);
+        insertCorridorCrossingNodes(segments, segmentIds);
+        splitCorridorSelfJunctions(segments, segmentIds);
+        expect(segmentIds).toHaveLength(segments.length);
+        expect(segmentIds.slice(1).every(Boolean)).toBe(true);
+    });
+
+    it('splits a through-road at a T-junction so each arm is its own segment', () => {
+        // A straight road A, and a connector B whose endpoint lands on A's mid-span.
+        const A = [P(0, 0), P(0, 10)];
+        const B = [P(0, 5), P(5, 5)];
+        const segments = [A, B];
+        const segmentIds = ['A', 'B'];
+        const profiles = { A: { strips: [{ type: 'driving', width: 8 }] } };
+
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+
+        // A becomes two arms (A, A~…) plus the connector B — three independently-id'd segments.
+        expect(segments).toHaveLength(3);
+        expect(segmentIds).toHaveLength(segments.length);
+        const armIds = segmentIds.filter(id => id === 'A' || String(id).startsWith('A~'));
+        expect(armIds).toHaveLength(2);
+        // Both arms keep A's cross-section (a split arm cannot silently revert to the default).
+        armIds.forEach(id => expect(profiles[String(id)]).toEqual(profiles.A));
+        // The junction (0,5) is an endpoint shared by ≥3 stretches — a real degree-3 graph node.
+        const atJunction = segments.filter(s =>
+            (Math.abs(s[0].lat) < 1e-9 && Math.abs(s[0].lng - 5) < 1e-9)
+            || (Math.abs(s[s.length - 1].lat) < 1e-9 && Math.abs(s[s.length - 1].lng - 5) < 1e-9));
+        expect(atJunction.length).toBeGreaterThanOrEqual(3);
+
+        // Convergent: re-running does not split further.
+        normalizeCorridorGraph(segments, segmentIds, null, profiles);
+        expect(segments).toHaveLength(3);
+    });
+
+    it('splits both roads at an X-crossing into four arms', () => {
+        const segments = [[P(-5, 0), P(5, 0)], [P(0, -5), P(0, 5)]];
+        const segmentIds = ['A', 'B'];
+        normalizeCorridorGraph(segments, segmentIds);
+        expect(segments).toHaveLength(4);
+        expect(segmentIds).toHaveLength(4);
+    });
+
+    it('leaves a lone road with no junction as one segment', () => {
+        const segments = [[P(0, 0), P(0, 5), P(0, 10)]];
+        const segmentIds = ['A'];
+        normalizeCorridorGraph(segments, segmentIds);
+        expect(segments).toHaveLength(1);
+    });
+
+    it('upgrades an already-stored definition without changing its footprint metadata', () => {
+        const polygon = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [0, 0]]] };
+        const definition = {
+            points: [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]],
+            segments: [[P(-5, -5), P(5, 5), P(5, -5), P(-5, 5)]],
+            segmentIds: ['star'],
+            segmentProfiles: { star: { strips: [{ type: 'driving', width: 8 }] } },
+            polygon
+        };
+
+        expect(normalizeCorridorDefinitionTopology(definition)).toBe(true);
+        expect(definition.points).toBe(definition.segments);
+        expect(definition.segmentIds).toHaveLength(definition.points.length);
+        expect(definition.points.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
+        expect(definition.polygon).toBe(polygon);
+        expect(normalizeCorridorDefinitionTopology(definition)).toBe(false); // convergent migration
     });
 });
 
@@ -290,6 +440,19 @@ describe('weldCorridorSegments', () => {
         expect(out.segments).toHaveLength(1);
         expect(out.segmentIds[0]).toBeTruthy(); // an id carrying the override survives, not null
     });
+
+    it('keeps endpoint-connected strokes separate when welding would create a self-crossing path', () => {
+        const segs = [
+            [P(-5, -5), P(5, 5), P(-5, 5)],
+            [P(-5, 5), P(5, -5)]
+        ];
+        const out = weldCorridorSegments(segs, ['a', 'b']);
+
+        expect(out.segments).toHaveLength(2);
+        insertCorridorCrossingNodes(out.segments, out.segmentIds);
+        expect(out.segments[0].some(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9)).toBe(true);
+        expect(out.segments[1].some(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9)).toBe(true);
+    });
 });
 
 describe('convertRoadPolygonToLatLngPairs', () => {
@@ -453,6 +616,14 @@ describe('pickSnapTarget (pixel space)', () => {
         // Snapping BEFORE the edge start clamps to the endpoint (projection t < 0).
         const atEnd = pickSnapTarget(px(198, 200), local(), external, -1, 12);
         expect(atEnd.kind).toBe('external-endpoint');
+    });
+
+    it('snaps to an existing external INTERNAL NODE before its centreline', () => {
+        const external = [{ points: [px(200, 200), px(250, 200), px(300, 200)] }];
+        const snap = pickSnapTarget(px(253, 204), local(), external, -1, 12);
+        expect(snap.kind).toBe('external-node');
+        expect(snap.vertexIndex).toBe(1);
+        expect(snap.pixel).toEqual(px(250, 200));
     });
 
     it('returns null when nothing is within the radius', () => {

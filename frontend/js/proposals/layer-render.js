@@ -425,7 +425,11 @@ function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
         });
         layer.addTo(group);
         if (blinkClass) {
-            requestAnimationFrame(() => applyBlinkToLayerGroup(layer, blinkClass));
+            // Apply now (the SVG path exists synchronously after addTo) AND on the next frame so the
+            // animation restarts reliably. requestAnimationFrame alone is throttled to a standstill
+            // when the tab isn't actively rendering, which left the blink never applied.
+            applyBlinkToLayerGroup(layer, blinkClass);
+            try { requestAnimationFrame(() => applyBlinkToLayerGroup(layer, blinkClass)); } catch (_) { }
         }
         return layer;
     } catch (error) {
@@ -484,7 +488,6 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // parcel-shaped one. There is no track branch: rails come from the rail lanes of its cross-section,
     // drawn by the corridor renderer, not from the kind of proposal this is.
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-    const lifecycleStatus = (proposal?.status || proposal?.roadProposal?.status || '').toLowerCase();
 
     // Applied proposals should always be visible at all zoom levels, even when parcels are not shown
     // This allows users to see applied proposals regardless of zoom level
@@ -501,7 +504,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         className: 'proposal-parcel-outline'
     };
 
-    if (isRoadProposal && (lifecycleStatus === 'applied' || lifecycleStatus === 'executed')) {
+    if (isRoadProposal && isApplied(proposal, proposal?.roadProposal)) {
         // A selected applied corridor gets ONE crisp selection outline around its footprint — the
         // same visual language as a selected parcel. The cross-section strips already show the
         // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
@@ -536,10 +539,17 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             className: 'proposal-primary-outline'
         };
 
-        // Parcel outlines: in-place style override (see note in track branch above).
+        // Parcel outlines: in-place style override (see note in track branch above). Reparcellization
+        // children carry a per-slice colour (per owner) — use it so a subdivision reads as distinct
+        // plots, not one uniform blue blob. Everything else keeps the shared blue.
+        const isReparcellization = !!(proposal && proposal.reparcellization);
         const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
         forEachProposalParcelInViewport(parcelIdSet, (layer) => {
-            proposalHighlightStyleOverride.apply(layer, parcelStyle);
+            const sliceColor = isReparcellization ? (layer && layer.feature && layer.feature.properties && layer.feature.properties.color) : null;
+            const style = sliceColor
+                ? { ...parcelStyle, color: sliceColor, fillColor: sliceColor }
+                : parcelStyle;
+            proposalHighlightStyleOverride.apply(layer, style);
         });
 
         // Always show primary features for applied proposals at all zoom levels
@@ -635,6 +645,33 @@ function reapplyProposalHighlights() {
     }
 }
 
+// A proposal that BECOMES a parcel (a road is one corridor parcel however many it crosses; a merge
+// is one merged parcel) shows that parcel's info alongside the proposal card, collapsed to its
+// header so the proposal stays the primary surface. Proposals that create no parcel of their own
+// (parks, squares, lakes) and those that create many (reparcellization) open nothing here.
+function showOwnParcelInfoForProposal(proposal) {
+    const resolver = window.ProposalOwnParcel;
+    const showPanel = window.Parcels?.uiParcelPanel?.showParcelInfoPanel || window.showParcelInfoPanel;
+    if (!resolver || typeof showPanel !== 'function') return;
+    const byId = (typeof window.getParcelLayerIdMap === 'function')
+        ? window.getParcelLayerIdMap()
+        : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+    if (!byId) return;
+    const lookup = id => byId.get(String(id))?.feature || null;
+    let ownId = null;
+    try { ownId = resolver.ownParcelId(proposal, lookup); } catch (error) {
+        console.error('[selectAndHighlightProposal] own-parcel lookup failed', error);
+        return;
+    }
+    const feature = ownId ? lookup(ownId) : null;
+    if (!feature) return;
+    window.__openParcelInfoCollapsed = true;
+    try { showPanel(feature); } catch (error) {
+        console.error('[selectAndHighlightProposal] could not open the proposal own parcel', ownId, error);
+        window.__openParcelInfoCollapsed = false;
+    }
+}
+
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
     // While a corridor tool is drawing, NOTHING may select a proposal — the session opened with a
     // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
@@ -683,6 +720,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         if (showDetails) {
             window.__openProposalDetailsCollapsed = true;
             showProposalInfo(proposal, parcelId);
+            showOwnParcelInfoForProposal(proposal);
         } else {
             hideProposalDetailsPanel();
         }
@@ -722,6 +760,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         console.debug('[selectAndHighlightProposal] Calling showProposalInfo...');
         window.__openProposalDetailsCollapsed = true;
         showProposalInfo(proposal, parcelId);
+        showOwnParcelInfoForProposal(proposal);
         console.debug('[selectAndHighlightProposal] showProposalInfo called');
     } else {
         console.debug('[selectAndHighlightProposal] showDetails is false, hiding proposal details panel');
@@ -832,41 +871,16 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
             map.on('moveend', onMoveEnd);
 
-            // Calculate bounds and padding, accounting for proposal details panel on desktop
-            const isDesktop = window.innerWidth > 768;
-            let adjustedBounds = bounds;
-            let fitOptions = { padding: [50, 50] }; // Default: [top/bottom, left/right]
-
-            if (isDesktop && showDetails) {
-                // If showing details, expand bounds to account for the proposal details panel on the right
-                // Panel is 400px wide + 10px margin on each side = 420px total
-                const panelWidth = 400;
-                const panelMargin = 20;
-                const totalPanelSpace = panelWidth + panelMargin;
-
-                // Get map container to calculate expansion ratio
-                const mapContainer = map.getContainer();
-                const mapWidth = mapContainer ? mapContainer.clientWidth : window.innerWidth;
-
-                // Calculate expansion needed: visible area is (mapWidth - panelSpace)
-                // We need to expand bounds so they fit in this smaller visible area
-                const visibleWidth = mapWidth - totalPanelSpace;
-                const expansionRatio = mapWidth / visibleWidth;
-
-                // Expand bounds using pad() - pad takes a ratio (0.1 = 10% expansion)
-                // We need to expand by (expansionRatio - 1) to account for panel
-                // Reduced multiplier (0.5 instead of 0.8) to zoom in more
-                const padRatio = Math.max(0.1, (expansionRatio - 1) * 0.5);
-                adjustedBounds = bounds.pad(padRatio);
-
-                // Use standard padding
-                fitOptions = { padding: [50, 50] };
-            }
-
-            // Start the map centering
-            // Add maxZoom to prevent zooming out too far (where parcels shouldn't be visible)
-            fitOptions.maxZoom = 19;
-            map.fitBounds(adjustedBounds, fitOptions);
+            // Frame the proposal in the VISIBLE map, clear of whichever proposal panel is covering it
+            // (the details panel that opens on select, or the list panel when browsing). Asymmetric
+            // padding shifts the fit into the visible area, instead of the old symmetric bounds.pad()
+            // which centered on the FULL map and left the proposal partly behind the right panel.
+            const { paddingTopLeft, paddingBottomRight } = (typeof getProposalPanelFitPadding === 'function')
+                ? getProposalPanelFitPadding(50)
+                : { paddingTopLeft: [50, 50], paddingBottomRight: [50, 50] };
+            // animate:false — instant framing, and it avoids requestAnimationFrame (throttled to a
+            // standstill when the tab isn't actively rendering, which silently no-ops an animated fit).
+            map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19, animate: false });
         } else {
             // No bounds from road definition or parcel layers
             window.isApplyingProposalHighlights = false;
@@ -893,6 +907,16 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
             clearProposalInfoHoverOverlay();
         }
     } catch (_) { }
+
+    // Proposal browse mode: picking a proposal from any of the clickable map surfaces (a parcel that
+    // carries one, a corridor hit target, a building, a station) is the "commit" gesture — its
+    // details are now open, so the list has done its browsing job and closes. Highlights are kept so
+    // the just-selected proposal stays visible on the map.
+    try {
+        if (window.proposalListBrowseMode && showDetails && typeof closeProposalList === 'function') {
+            closeProposalList({ clearHighlights: false });
+        }
+    } catch (_) { }
 }
 
 async function removeProposalFromMap(proposalId, options = {}) {
@@ -906,8 +930,9 @@ async function removeProposalFromMap(proposalId, options = {}) {
         : null;
     if (proposalSnapshot) {
         console.log('[removeProposalFromMap] Current proposal status', {
-            status: proposalSnapshot.status,
-            roadStatus: proposalSnapshot.roadProposal?.status,
+            lifecycleStatus: getLifecycleStatus(proposalSnapshot),
+            applied: isApplied(proposalSnapshot),
+            roadApplied: isApplied(proposalSnapshot, proposalSnapshot.roadProposal),
             childIds: Array.isArray(proposalSnapshot.childParcelIds) ? proposalSnapshot.childParcelIds.slice() : [],
             parentIds: Array.isArray(proposalSnapshot.parentParcelIds) ? proposalSnapshot.parentParcelIds.slice() : []
         });
@@ -1118,6 +1143,17 @@ async function focusMapThenMaybeEnter3D(focusFn) {
 
     const wants3D = is3DModeRequestedFromUrl(params);
     if (!wants3D || url3DModeHandled) {
+        doFocus();
+        return false;
+    }
+
+    // A proposal-link load owns its own 3D entry (passing the link's proposalIds as camera
+    // focus). Entering here — mid-apply, with no focus ids — won the race, marked the URL as
+    // handled, and the route's focused entry was skipped: the camera framed EVERY applied
+    // proposal instead of the link's. Same rule handleStandalone3DModeFromUrl already applies.
+    const hasProposalParams = params && (params.has('proposalShare') || params.has('shared')
+        || window.location.pathname.startsWith('/proposals/'));
+    if (hasProposalParams) {
         doFocus();
         return false;
     }

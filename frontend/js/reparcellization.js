@@ -1,4 +1,13 @@
 (function () {
+    const reparcellizationUiState = window.__reparcellizationUiState;
+    if (!reparcellizationUiState
+        || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
+        || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function') {
+        console.error('[reparcellization] UI state helpers are unavailable.');
+        return;
+    }
+    const { resolveDrawShortcut, resolveOwnerDisplayName } = reparcellizationUiState;
+
     const COLOR_PALETTE = [
         '#2E86AB', '#F18F01', '#C73E1D', '#137547', '#7A1CAC',
         '#CC3363', '#3D5A80', '#EE6C4D', '#5C946E', '#8A508F',
@@ -287,6 +296,7 @@
         const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
+        const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
 
         const algorithmControls = `
@@ -304,9 +314,9 @@
                                 </label>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
-                                <button type="button" class="btn-draw-tool" data-reparcel-undo>&#x21B6; ${t('reparcellization.modal.drawUndo', 'Undo point')}</button>
-                                <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>&#x2713; ${t('reparcellization.modal.drawFinish', 'Finish plot')}</button>
-                                <button type="button" class="btn-draw-tool" data-reparcel-cancel-draw>&#x2715; ${t('reparcellization.modal.drawCancel', 'Cancel')}</button>
+                                <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
+                                <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
+                                <button type="button" class="btn-draw-tool" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
                             </div>
                         </div>
                     </div>`;
@@ -342,6 +352,7 @@
                         </section>
                         ${sidePanel}
                         <div class="reparcel-actions">
+                            <button type="button" class="btn" data-reparcel-all-public data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                             <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
                     </div>
@@ -388,6 +399,10 @@
             });
         });
 
+        Array.from(overlay.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
+            btn.addEventListener('click', assignPublicToAllSlices);
+        });
+
         state.resizeHandler = () => {
             if (state.map) {
                 state.map.invalidateSize();
@@ -412,16 +427,23 @@
                 closeModal();
                 return;
             }
-            // Drawing shortcuts (ignore when typing in a field).
-            if (!state.drawing.active) return;
             const tag = (event.target && event.target.tagName) || '';
-            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                onDrawFinish();
-            } else if (event.key === 'Backspace') {
-                event.preventDefault();
-                undoLastPoint();
+            const action = resolveDrawShortcut({
+                active: state.drawing.active,
+                editable: tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || event.target?.isContentEditable,
+                key: event.key,
+                repeat: event.repeat,
+                ctrlKey: event.ctrlKey,
+                metaKey: event.metaKey,
+                altKey: event.altKey
+            });
+            if (!action) return;
+            event.preventDefault();
+            if (action === 'finish') onDrawFinish();
+            else if (action === 'undo') undoLastPoint();
+            else if (action === 'cancel') {
+                cancelDraw();
+                setStatus('', 'info');
             }
         };
         window.addEventListener('keydown', state.escHandler);
@@ -610,7 +632,10 @@
         let unassignedCount = 0;
         for (const slice of state.slices) {
             const area = computeFeatureArea(sliceToFeature(slice));
-            const hasOwner = Array.isArray(slice.owners) && slice.owners.length > 0;
+            // A REAL owner is required — an owner slot with an empty ownerKey (the "Unassigned"
+            // placeholder) does not count, so a plan with any unowned plot cannot be committed. Public
+            // land counts (its ownerKey is PUBLIC_LAND_KEY). Use "All public" for a quick break-up.
+            const hasOwner = Array.isArray(slice.owners) && slice.owners.some(o => o && o.ownerKey);
             if (hasOwner) {
                 assignedArea += area;
             } else {
@@ -1268,10 +1293,9 @@
         if (state.drawToolbar) state.drawToolbar.hidden = !state.drawing.active;
         if (state.finishBtn) {
             state.finishBtn.disabled = state.drawing.points.length < minPoints;
-            const checkPrefix = '✓ ';
-            state.finishBtn.textContent = checkPrefix + (isLine
+            state.finishBtn.textContent = (isLine
                 ? t('reparcellization.modal.drawFinishLine', 'Finish line')
-                : t('reparcellization.modal.drawFinish', 'Finish plot'));
+                : t('reparcellization.modal.drawFinish', 'Finish plot')) + ' (F)';
         }
         if (state.undoBtn) state.undoBtn.disabled = state.drawing.points.length === 0;
     }
@@ -1614,6 +1638,21 @@
 
         popup.openOn(state.map);
         state.ownerAssignmentPopup = popup;
+    }
+
+    // "All public": assign every plot to public ownership in one click, so a plain break-up → Done
+    // flow is possible without hand-assigning each plot. Public land is a valid owner (it commits to
+    // the City), which satisfies the completeness gate.
+    function assignPublicToAllSlices() {
+        if (!Array.isArray(state.slices) || !state.slices.length) return;
+        const publicOwner = getPublicLandOwner();
+        state.slices.forEach((slice, i) => {
+            slice.owners = [{ ownerKey: publicOwner.ownerKey, displayName: publicOwner.displayName, color: publicOwner.color, share: 1 }];
+            syncSlicePrimaryOwner(i);
+        });
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
     }
 
     function toggleOwnerOnSlice(sliceIndex, owner, add) {
@@ -2227,9 +2266,22 @@
             const normalizedSlots = normalizeOwnerSlots(slots);
             normalizedSlots.forEach(({ slot, fraction }) => {
                 const ownerKey = slot.key || `${parcelId}:${slot.displayName}`;
+                const parcelLabel = feature.properties.BROJ_CESTICE || parcelId;
+                const fallbackOwnerName = t(
+                    'reparcellization.modal.syntheticOwner',
+                    'Owner of {{parcel}}',
+                    { parcel: parcelLabel }
+                );
                 const existing = result.get(ownerKey) || {
                     ownerKey,
-                    displayName: slot.displayName || 'Owner',
+                    // “Unassigned” describes a PLOT with no owner. If an ownership source uses
+                    // that same placeholder for a contributor, give the contributor a stable
+                    // parcel-based name so a complete plan cannot still show an unassigned state.
+                    displayName: resolveOwnerDisplayName(
+                        slot.displayName,
+                        fallbackOwnerName,
+                        [t('reparcellization.modal.unassigned', 'Unassigned')]
+                    ),
                     parcelIds: new Set(),
                     totalArea: 0,
                     totalValue: 0

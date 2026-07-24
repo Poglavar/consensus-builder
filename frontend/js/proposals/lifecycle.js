@@ -2,10 +2,16 @@
 // lifecycle status (key/label/class), and offer-value format/parse. Extracted from proposals.js.
 // Pure/leaf helpers; any cross-module calls resolve as runtime globals (all proposal scripts loaded).
 
+// The canonical lifecycle accessor from proposals/status.js — a global in the browser (status.js
+// loads first), required directly in node tests. `typeof` on an undeclared name is safe.
+const lifecyclePhaseOf = (typeof getLifecycleStatus === 'function')
+    ? getLifecycleStatus
+    : require('./status.js').getLifecycleStatus;
+
 function isProposalOpenSaleOffer(proposal) {
     if (!proposal) return false;
     const otp = proposal.ownershipTransferProposal || {};
-    if (proposal.status === 'Executed' || otp.status === 'sold') return false;
+    if (lifecyclePhaseOf(proposal) === 'Executed' || otp.status === 'sold') return false;
     return ((proposal.facets || {}).ownership === 'third-party' && otp.recipientScope === 'any')
         || otp.direction === 'from-me';
 }
@@ -87,20 +93,21 @@ function parseExpiryTime(timeStr) {
 
 function isProposalExpired(proposal) {
     if (!proposal || !proposal.expiresAt) return false;
-    const status = (proposal.status || '').toLowerCase();
-    if (status === 'executed') return false; // Executed proposals no longer expire
+    if (lifecyclePhaseOf(proposal) === 'Executed') return false; // Executed proposals no longer expire
     return new Date(proposal.expiresAt).getTime() <= Date.now();
 }
 
 function checkAndUpdateProposalExpiry(proposal) {
     if (!proposal) return proposal;
     if (isProposalExpired(proposal)) {
-        const currentStatus = (proposal.status || '').toLowerCase();
-        if (currentStatus !== 'expired' && currentStatus !== 'executed') {
-            proposal.status = 'Expired';
+        const currentPhase = lifecyclePhaseOf(proposal);
+        if (currentPhase !== 'Expired' && currentPhase !== 'Executed') {
+            proposal.lifecycleStatus = 'Expired';
             proposal.updatedAt = new Date().toISOString();
             if (proposal.proposalId && typeof proposalStorage !== 'undefined') {
-                proposalStorage.updateProposalStatus(proposal.proposalId, 'Expired');
+                if (typeof proposalStorage.setProposalLifecycleStatus === 'function') {
+                    proposalStorage.setProposalLifecycleStatus(proposal.proposalId, 'Expired');
+                }
                 proposalStorage.save();
             }
         }
@@ -125,8 +132,7 @@ function initializeExpiryCountdown() {
     // If proposal is executed, do not start countdown
     if (proposalId && typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.getProposal(proposalId);
-        const status = (p && p.status ? p.status : '').toLowerCase();
-        if (status === 'executed') {
+        if (lifecyclePhaseOf(p) === 'Executed') {
             return;
         }
     }
@@ -290,7 +296,7 @@ function getProposalLifecycleKey(proposal) {
     if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
         return 'accepted-not-funded';
     }
-    const lifecycleField = (proposal.lifecycleStatus || proposal.status || '').toLowerCase();
+    const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
     if (lifecycleField === 'executed') return 'executed';
     if (lifecycleField === 'expired') return 'expired';
     if (PROPOSAL_INACTIVE_STATUSES.has(lifecycleField)) return 'inactive';
@@ -363,5 +369,10 @@ function parseProposalOfferValue(value) {
 // Export the pure classification helper for headless unit tests (browser leaves `module` undefined,
 // so this is a no-op there and the functions remain plain globals).
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { isVoteProposal };
+    module.exports = {
+        isVoteProposal,
+        isProposalExpired,
+        checkAndUpdateProposalExpiry,
+        parseExpiryTime
+    };
 }

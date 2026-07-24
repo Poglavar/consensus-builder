@@ -1,4 +1,5 @@
 let statusHighlightTimeout = null;
+let copyFeedbackTimeout = null;
 // Array to store status log entries (max 100)
 let statusLog = [];
 let isStatusExpanded = false;
@@ -165,6 +166,77 @@ function showEphemeralMessage(message, duration = 5000) {
     }, duration);
 }
 
+function showCopyFeedback(message) {
+    let feedback = document.getElementById('copy-feedback-toast');
+    if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.id = 'copy-feedback-toast';
+        feedback.className = 'copy-feedback-toast';
+        feedback.setAttribute('role', 'status');
+        feedback.setAttribute('aria-live', 'polite');
+        feedback.setAttribute('aria-atomic', 'true');
+        document.body.appendChild(feedback);
+    }
+
+    feedback.textContent = message;
+    feedback.classList.remove('visible');
+    requestAnimationFrame(() => feedback.classList.add('visible'));
+
+    if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
+    copyFeedbackTimeout = setTimeout(() => {
+        feedback.classList.remove('visible');
+        copyFeedbackTimeout = null;
+    }, 1100);
+}
+
+function fallbackCopyText(value) {
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, value.length);
+
+    let copied = false;
+    try {
+        copied = document.execCommand('copy');
+    } finally {
+        textarea.remove();
+    }
+    return copied;
+}
+
+async function copyTextWithFeedback(value) {
+    const text = value === null || value === undefined ? '' : String(value);
+    if (!text) return false;
+
+    try {
+        let copied = false;
+        if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+            } catch (_) {
+                // A browser can expose Clipboard API while refusing it outside a secure context.
+            }
+        }
+        if (!copied) copied = fallbackCopyText(text);
+        if (!copied) throw new Error('Clipboard write was rejected');
+
+        const key = 'common.copied';
+        const translated = window.i18n?.t ? window.i18n.t(key) : '';
+        showCopyFeedback(translated && translated !== key ? translated : 'Copied');
+        return true;
+    } catch (error) {
+        console.warn('Copy failed', error);
+        return false;
+    }
+}
+
 // Utility to lock a button while running a potentially long task
 function runWithButtonBusyState(button, busyLabel, task, options) {
     if (typeof task !== 'function') {
@@ -267,6 +339,7 @@ try {
         window.toggleStatusExpanded = toggleStatusExpanded;
         window.collapseStatus = collapseStatus;
         window.showEphemeralMessage = showEphemeralMessage;
+        window.copyTextWithFeedback = copyTextWithFeedback;
         window.runWithButtonBusyState = runWithButtonBusyState;
     }
 } catch (_) { }

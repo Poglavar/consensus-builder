@@ -327,22 +327,44 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    /* No backdrop: the map stays live and undarkened behind the panel. The overlay ignores pointer
+       events so map drags/clicks pass straight through; only the panel itself (below) is interactive. */
+    background-color: transparent;
+    pointer-events: none;
     display: none;
     z-index: 12000; /* Above sidebar (z<=4000) and info panels */
 }
 
+/* Desktop: a full-height panel docked to the right ~third of the screen, so the map keeps the rest. */
 .proposal-list-modal-content {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: min(520px, calc(100% - 20px));
-    max-height: calc(var(--app-viewport-height) - 20px);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(15, 30, 45, 0.3);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: clamp(360px, 33vw, 560px);
+    max-height: none;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 0;
+    box-shadow: -8px 0 28px rgba(15, 30, 45, 0.22);
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
+}
+
+/* Mobile: dock to the lower half of the screen, full width. Its own rule (rather than the shared
+   full-screen modal group in game.css) so the map stays visible in the top half. */
+@media (max-width: 768px) {
+    .proposal-list-modal-content {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 50vh;
+        max-height: 50vh;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 -8px 24px rgba(15, 30, 45, 0.22);
+    }
 }
 
 .proposal-list-modal-header {
@@ -406,6 +428,15 @@
     padding: 16px 20px 12px;
     border-bottom: 1px solid #eee;
     background-color: #fafbfc;
+}
+
+/* Filtered-result count line that replaced the per-tab counts. */
+.proposal-list-count {
+    padding: 6px 20px;
+    font-size: 12px;
+    color: #667085;
+    background-color: #fafbfc;
+    border-bottom: 1px solid #eee;
 }
 
 .proposal-filter-group {
@@ -495,6 +526,34 @@
     margin-bottom: 10px;
     cursor: pointer;
     transition: background-color 0.2s;
+}
+
+/* Local-only (neither minted nor uploaded) proposals carry unsaved work. A warm wash plus the dashed
+   left accent-bar and the "Unsaved" badge flag them at a glance. The extra :not() specificity lets the
+   warm wash win over the applied-green (most unsaved proposals are also applied) while still yielding
+   to selection/preview, so a selected card stays highlighted. */
+.proposal-list-item.is-unsaved:not(.is-selected):not(.is-previewing) {
+    background-color: rgba(245, 158, 11, 0.10);
+}
+
+/* Amber count pill appended to the sidebar "Proposals List" button: how many local-only proposals
+   still carry unsaved work. Mirrors the list's "Unsaved" badge colour. */
+.proposal-unsaved-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #fff7d6;
+    color: #7a6000;
+    border: 1px solid #ffe08a;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .proposal-list-item:hover {
@@ -1746,17 +1805,22 @@ textarea.proposal-description-input {
     }
 }
 
-/* Proposal actions group - buttons share row on desktop */
+/* Proposal actions group - two buttons per row on narrow screens (2x2 with 4 buttons),
+   three per row on desktop (below). */
 .proposal-actions-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin: 12px 0;
 }
 
 .proposal-actions-group button {
-    width: 100%;
+    width: auto;
     min-height: 40px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (min-width: 769px) {

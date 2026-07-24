@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje."
+        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje.",
+        "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
     },
     "proposalDrafts": {
         "title": "Nacrti",
@@ -180,6 +181,8 @@
         "hr": "Hrvatski"
     },
     "common": {
+        "copied": "Kopirano",
+        "copyToClipboard": "Kopiraj u privremenu memoriju",
         "logout": "Odjava",
         "unknown": "Nepoznato",
         "unknownOwner": "Nepoznat vlasnik",
@@ -283,6 +286,7 @@
         "proposals": {
             "title": "Predlozi",
             "listButton": "Lista predloga ({{count}})",
+            "unsavedCount": "{{count}} nesačuvano (još nije otpremljeno)",
             "mintedButton": "Kovani predlozi",
             "shareButton": "Podeli ceo plan (svi predlozi)",
             "shareButtonEmpty": "Nema primenjenih planova. Prvo primeni neki",
@@ -450,7 +454,18 @@
             "showLayer": "Prikaži zgrade",
             "showGdi": "GDI zgrade (3D model)",
             "showDgu": "DGU katastar (pravna evidencija)",
+            "showOsm": "OSM zgrade (poklapa se s mapom)",
             "showProposed": "Prikaži predložene zgrade"
+        },
+        "stations": {
+            "title": "Stanice",
+            "placeTitle": "Postavi stanicu",
+            "bus": "Autobuska stanica",
+            "tram": "Tramvajska stanica",
+            "underground": "Podzemna stanica",
+            "elevated": "Stanica nadzemne železnice",
+            "cancel": "Otkaži postavljanje",
+            "hint": "Železničke stanice se vezuju za pruge. Autobuske stanice se vezuju za izabranu stranu puta."
         },
         "roads": {
             "title": "Ceste",
@@ -648,6 +663,14 @@
                 "square": "Trg",
                 "lake": "Jezero",
                 "offer": "Ponuda",
+                "transport": "Saobraćaj",
+                "ownershipCategory": "Vlasništvo",
+                "road": "Put",
+                "track": "Pruga",
+                "busStation": "Autobuska stanica",
+                "tramStation": "Tramvajska stanica",
+                "undergroundStation": "Metro stanica",
+                "elevatedStation": "Nadzemna stanica",
                 "noParcelSelected": "Nijedna parcela nije izabrana. Prvo izaberi parcelu.",
                 "useMainCreateButton": "Kada je izabrano više parcela, koristi glavno dugme \"Napravi predlog\".",
                 "enableMultiSelect": "Uključi izbor više parcela za ovu radnju.",
@@ -785,7 +808,8 @@
                 "editGeometry": "Uredi geometriju",
                 "editGeometryUnavailable": "Ovaj tip predloga ne može se preoblikovati (ili je mintovan i nepromenljiv).",
                 "details": "Detalji predloga",
-                "propose": "Predloži"
+                "propose": "Predloži",
+                "editDetails": "Detalji"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1049,23 +1073,33 @@
             "failed_to_build": "Neuspešna izrada poređenja."
         },
         "singleBuilding": {
-            "title": "Zgrade",
+            "title": "Slobodna forma",
             "defaultName": "Zgrada {{n}}",
             "buildingsTitle": "Zgrade",
             "buildingsLabel": "Izaberi zgradu",
-            "addLabel": "Dodaj zgradu",
+            "addLabel": "Dupliraj zgradu",
             "deleteLabel": "Obriši zgradu",
             "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori modal jedne zgrade",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
             "parametersTitle": "Parametri",
-            "widthLabel": "Širina (m):",
-            "lengthLabel": "Dužina (m):",
             "heightLabel": "Visina (m):",
-            "chamferLabel": "Faza (m):",
-            "rotationLabel": "Rotacija (°):",
-            "infoText": "Prevuci pravougaonik da promeniš poziciju, ili prevuci kontrole na stranama za rotaciju. Zgrada mora ostati u okviru bloka."
+            "rotationLabel": "Zakreni tlocrt",
+            "rotateCounterclockwiseLabel": "Zakreni 5 stepeni suprotno od kazaljke na satu",
+            "rotateClockwiseLabel": "Zakreni 5 stepeni u smeru kazaljke na satu",
+            "deleteVertexLabel": "Obriši izabrani vrh",
+            "vertexLabel": "Vrh tlocrta",
+            "surroundingsLabel": "Okoliš",
+            "surroundingsNone": "Ostavi kako jest",
+            "surroundingsPaved": "Popločano",
+            "surroundingsGreen": "Zelenilo",
+            "surroundingsInfo": "Jedan izbor za cijelu površinu čestica oko svih zgrada u ovom prijedlogu. Postojeće zgrade na tim česticama uklanjaju se u svakom slučaju.",
+            "uploadGeojsonLabel": "Učitaj GeoJSON",
+            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadOutside": "Učitani poligon se ne preklapa s ovim blokom na upotrebljiv način.",
+            "uploadError": "Datoteku nije moguće pročitati.",
+            "infoText": "Prevuci tlocrt za promenu položaja. Prevuci teme za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante ili tasterom Delete/Backspace. Zgrada mora ostati unutar bloka."
         },
         "buildingUpload": {
             "title": "Učitaj 3D model zgrade",
@@ -1128,7 +1162,8 @@
             "scopeLabel": "Primenjuje se na",
             "scopeSegment": "Ovu deonicu",
             "scopeRoad": "Celu putnu mrežu",
-            "hitsBuildings": "Zahvata zgrade (za tunel kroz zgrade koristite crtanje)",
+            "hitsBuildings": "Preklapa zgrade — u režimu crtanja možete zaobići put oko njih ili proći tunelom",
+            "extendsCut": "Dodatno zaseca već presečenu zgradu (žuto na karti)",
             "cutsStructures": "Preseca postavljene parkove/trgove/jezera",
             "cancel": "Otkaži",
             "save": "Sačuvaj kao novi predlog",
@@ -1138,6 +1173,12 @@
             "presets": "Standardni preseci",
             "standardWidth": "Standardna širina: {{width}} m",
             "resetStandard": "Vrati na standardnu širinu ({{width}} m)",
+            "fixedWidth": "Fiksirano na standardnu dubinu parking mesta",
+            "seamLocked": "Parkiranje zadržava fiksnu širinu",
+            "flipDirection": "Smer kretanja (klik za obrtanje)",
+            "treeEveryLabel": "Drvo na svakih",
+            "treeEverySuffix": "mesta",
+            "treeEveryTitle": "Zasadi drvo na svakom N-tom parking mestu (0 = nijedno)",
             "dragReorder": "Povucite za promenu redosleda traka",
             "dragReorderHint": "Traku povucite za hvatište da promenite redosled; povucite spoj na dijagramu da širinu prebacite iz jedne trake u susednu.",
             "maxWidthReached": "Koridor ne može biti širi od {{max}} m. Prvo uklonite ili suzite neku traku.",
@@ -1151,7 +1192,9 @@
             "laneTypes": {
                 "driving": "Saobraćajna traka",
                 "bus": "Autobuska traka",
-                "parking": "Parkiranje",
+                "parking": "Podužno parkiranje",
+                "parking_perpendicular": "Upravno parkiranje",
+                "parking_angled": "Koso parkiranje",
                 "cycleway": "Biciklistička staza",
                 "sidewalk": "Trotoar",
                 "verge": "Zeleni pojas",
@@ -1165,7 +1208,45 @@
                 "mainStreet": "Glavna ulica ~26 m",
                 "avenue": "Avenija ~40 m",
                 "boulevard": "Bulevar ~80 m"
-            }
+            },
+            "tabSection": "Poprečni presek",
+            "tabCorridor": "Koridor",
+            "constraintParcels": "Ostani unutar putnih parcela",
+            "constraintParcelsTitle": "Svaku parcelu koja nije putno zemljište tretiraj kao zid: koridor sme da koristi samo putne parcele i zemljište koje ovaj put već zauzima.",
+            "noClearance": "Još nema šta da se meri — put ovde nema osu.",
+            "noObstacles": "U blizini puta nema učitanih zgrada, pa koridor ništa ne ograničava.",
+            "corridorMinWidth": "Najširi put koji ovde staje bez rušenja",
+            "currentRoad": "Trenutni put: {{width}} m",
+            "roomToWiden": "Prostora za širenje: +{{delta}} m",
+            "overCorridor": "Preširok za koridor za {{delta}} m",
+            "fitsAsIs": "Put staje na svom trenutnom položaju.",
+            "fitPickSegment": "Pomeranje radi segment po segment — otvorite uređivač sa jednog segmenta ovog puta.",
+            "fitIfMoved": "Put bi stao kad bi se pomerio {{move}}.",
+            "moveToFit": "Pomeri put {{move}}",
+            "noFit": "Ne staje ni pomeranjem — najširi ravan put koji ovde staje je {{max}} m.",
+            "noFitWinds": "Ne staje ni pomeranjem — prostora ima, ali koridor krivuda, pa ga ravan put od {{width}} m ne može pratiti. Pređite na crtanje da zakrivite put kroz prostor.",
+            "widenInto": "Proširi prema: {{side}}",
+            "widenIntoLabel": "Uzmi dodatu širinu ({{delta}} m) sa jedne strane",
+            "fitMinted": "Predlog je mintovan i nepromenljiv — primenite presek na crtež da biste ga pomerili.",
+            "moveFailed": "Put nije bilo moguće pomeriti (mintovan predlog je nepromenljiv).",
+            "movedStatus": "Put pomeren {{move}}.",
+            "narrowest": "Najuži presek: {{width}} m ukupnog prostora (označeno na mapi)",
+            "whatIfDemolished": "Bez zgrade na strani {{side}}: gradnja do {{width}} m",
+            "chartTitle": "Ukupan prostor duž puta (m)",
+            "chartRoad": "put",
+            "chartReadout": "Na {{at}} m: koridor {{width}} m",
+            "chartTooNarrow": "uže od puta",
+            "compass": {
+                "n": "sever",
+                "ne": "severoistok",
+                "e": "istok",
+                "se": "jugoistok",
+                "s": "jug",
+                "sw": "jugozapad",
+                "w": "zapad",
+                "nw": "severozapad"
+            },
+            "fitHint": "Može li da stane pomeranjem? Otvorite karticu Koridor"
         },
         "corridorDraft": {
             "title": "Nesačuvani nacrt trase",
@@ -1180,22 +1261,53 @@
         },
         "buildingLayers": {
             "title": "Koje zgrade prikazati?",
-            "intro": "Dva premera istog grada — ne slažu se, i to vredi videti.",
             "gdi": "GDI zgrade (3D model)",
             "gdiHint": "Fotogrametrija: ono što stvarno postoji. Na tome se zasniva 3D model, i po tome se ruši i preseca.",
             "dgu": "DGU katastar (pravna evidencija)",
-            "dguHint": "Katastar: ono što je zvanično upisano. Samo referenca — po njemu se ništa ne ruši.",
-            "both": "Oboje",
+            "dguHint": "DGU katastar: ono što je zvanično upisano.",
+            "osm": "OSM zgrade (poklapa se s mapom)",
+            "osmHint": "OSM zgrade: zajednička mapa — obrisi ucrtani na podlozi.",
+            "all": "Sve",
             "cancel": "Odustani"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} zgradu/zgrade. Preseći ih, srušiti ili prokopati tunel?",
+            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} novu zgradu/nove zgrade. Preseći ih, srušiti ili prokopati tunel?",
             "road": "put",
             "track": "pruga",
             "unapply": "Ukloni postojeći predlog sa mape",
             "destroy": "Sruši zgrade",
             "cut": "Preseci zgrade",
+            "proposalImpact": "Presecanje ili rušenje ukloniće ove primenjene predloge sa mape (ostaće na listi predloga):",
+            "proposalImpactTunnel": "Tunel ostavlja ove predloge primenjenima.",
+            "cutWithProposals": "Preseci — ukloni {{count}} predlog(a) sa mape",
+            "destroyWithProposals": "Sruši — ukloni {{count}} predlog(a) sa mape",
+            "mergeImpact": "Nastavak će spojiti ove predloge puteva sa ovim putem i ukloniti njihove zasebne zapise predloga:",
+            "merge": "Spoji puteve",
             "confirm": "Tunel kroz zgradu",
+            "cancel": "Izaberi drugu trasu"
+        },
+        "impactTour": {
+            "applyToAll": "Primeni na sve:",
+            "cutAll": "Preseci sve",
+            "demolishAll": "Sruši sve",
+            "tunnelAll": "Tuneliraj sve",
+            "prev": "Prethodna zgrada",
+            "next": "Sledeća zgrada",
+            "counter": "Zgrada {{n}} / {{total}}",
+            "cut": "Preseci",
+            "demolish": "Sruši",
+            "tunnel": "Tunel",
+            "apply": "Primeni",
+            "applyNext": "Primeni i sledeća",
+            "applyActionToAll": "Primeni {{action}} na sve",
+            "cancel": "Otkaži",
+            "existingProposal": "postojeći predlog"
+        },
+        "corridorGrade": {
+            "offer": "Ova pešačka ruta ukršta {{count}} nepešački put/puteve. Kako treba da ih pređe?",
+            "atGrade": "Prelaz u nivou",
+            "underpass": "Pothodnik",
+            "overpass": "Nadvožnjak",
             "cancel": "Izaberi drugu trasu"
         },
         "deleteProposal": {
@@ -1287,6 +1399,12 @@
                     "author": "Autor",
                     "search": "Pretraga",
                     "sort": "Sortiraj po",
+                    "status": "Status",
+                    "statusAll": "Svi statusi",
+                    "applied": "Primenjeno",
+                    "appliedAll": "Sve",
+                    "appliedYes": "Primenjeno",
+                    "appliedNo": "Nije primenjeno",
                     "authorPlaceholder": "Svi autori",
                     "searchPlaceholder": "Traži naslov ili autora",
                     "reset": "Resetuj",
@@ -1303,6 +1421,7 @@
                         "other": "Ostalo"
                     }
                 },
+                "resultCountWord": "prikazano",
                 "sources": {
                     "local": "Lokalni",
                     "server": "Server",
@@ -1379,6 +1498,7 @@
                     "conditional": "Uslovno",
                     "partial": "Delimične isplate",
                     "onServer": "Na serveru",
+                    "unsaved": "Nesačuvano",
                     "inMemory": "U memoriji",
                     "yes": "Da",
                     "no": "Ne"
@@ -1507,6 +1627,7 @@
                 "ancestorUploadButton": "Otpremi",
                 "sharePlanButton": "Podeli ceo plan (svi primenjeni predlozi)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Uključite ove nadređene predloge u plan: {{list}}",
                     "title": "Podeli plan",
                     "fetching": "Preuzimanje predloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",
@@ -1654,6 +1775,7 @@
         },
         "createProposal": {
             "title": "Kreiraj predlog",
+            "editTitle": "Predlog",
             "titlePark": "Kreiraj predlog parka",
             "titleSquare": "Kreiraj predlog trga",
             "closeAria": "Zatvori dijalog predloga",
@@ -1803,6 +1925,7 @@
             "ownerUnknown": "Nepoznato",
             "lensTooltip": "Otvori modal sočiva",
             "submit": "Kreiraj predlog",
+            "submitEdit": "Sačuvaj",
             "creating": "Kreiram...",
             "waiting": "Čekam transakciju...",
             "rejected": "Transakcija odbijena",
@@ -1959,13 +2082,14 @@
             "manual": {
                 "edit": "Ručno uredi oblik",
                 "back": "Nazad na klizače",
-                "hint": "Ručni režim: prevucite temena da promenite obris. Visina se i dalje može podešavati.",
-                "hintSimplified": "Ručni režim: obris je pojednostavljen na {{count}} tačaka koje se prevlače kako biste ga oblikovali. Prevucite bilo koju tačku; visina se i dalje može podešavati.",
+                "hint": "Ručni režim: prevucite teme da promenite obris, kliknite ivicu da dodate teme ili izaberite teme pa ga obrišite dugmetom kante ili tasterom Delete/Backspace. Širina i visina se i dalje mogu podešavati.",
+                "hintSimplified": "Ručni režim: obris je pojednostavljen na {{count}} tačaka koje se prevlače. Prevucite tačku da promenite obris, kliknite ivicu da dodate tačku ili izaberite tačku pa je obrišite dugmetom kante ili tasterom Delete/Backspace. Širina i visina se i dalje mogu podešavati.",
                 "needShape": "Prvo generišite oblik klizačima, pa ga uredite ručno.",
                 "confirmReset": "Odbaciti ručne izmene i vratiti se na klizače?",
                 "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte da vratite teme.",
                 "entryFailed": "Ovaj obris je previše složen za ručno uređivanje — nazad na klizače. Savet: povećajte „Pojednostavi (m)“ da ga izgladite, pa pokušajte ponovo.",
                 "vertex": "Prevucite za oblikovanje",
+                "deleteVertex": "Obriši izabrani vrh",
                 "uploadGeojson": "Učitaj GeoJSON",
                 "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
                 "uploadError": "Nije moguće pročitati datoteku."
@@ -1984,15 +2108,24 @@
                 "width": "Širina (m):",
                 "height": "Visina (m):",
                 "chamfer": "Skošenje (m):",
+                "rotation": "Zakreni tlocrt",
                 "circumference": "Obim (m):",
                 "area": "Površina (m²):",
                 "volume": "Zapremina (m³):"
             },
             "helper": {
-                "adjust": "Podesite parametre klizačima da izmenite oblik niza kuća.",
+                "adjust": "Prevuci tlocrt za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
                 "dimensions": "Dužina je paralelna sa najdužom stranicom parcele. Širina je upravna.",
                 "chamfer": "Skošenje seče uglove pod uglom od 45°."
             },
+            "rotateCounterclockwise": "Zakreni 5 stepeni suprotno od kazaljke na satu",
+            "rotateClockwise": "Zakreni 5 stepeni u smeru kazaljke na satu",
+            "uploadGeojson": "Učitaj GeoJSON",
+            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadOutside": "Učitani poligon se ne preklapa s ovim parcelama na upotrebljiv način.",
+            "uploadError": "Datoteku nije moguće pročitati.",
+            "vertexLabel": "Vrh tlocrta",
+            "deleteVertexLabel": "Obriši izabrani vrh",
             "messages": {
                 "generatedSummary": "Niz kuća generisan (dužina: {{length}}m, širina: {{width}}m, visina: {{height}}m)",
                 "creationFailed": "Kreiranje niza kuća nije uspelo. Pokušaj da podesite parametre.",
@@ -2060,6 +2193,7 @@
             },
             "closeAria": "Zatvori",
             "done": "Gotovo",
+            "allPublic": "Sve javno",
             "ownerLegend": "Legenda vlasnika",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcela",
@@ -2480,6 +2614,7 @@
             "please_provide_author_name_and_a_valid_offer": "Unesi ime autora i validnu ponudu.",
             "please_select_a_parcel_first": "Prvo izaberi parcelu",
             "please_specify_which_owner_acceptance_to_undo": "Navedite koje prihvatanje vlasnika da se poništi.",
+            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi preraspodelu zemljišta.",
             "proposal_not_found": "Predlog nije pronađen.",
             "proposal_storage_is_unavailable": "Skladište predloga nije dostupno.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Nedostaje plan reparcelacije. Ponovo pokreni algoritam.",
@@ -2608,18 +2743,27 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",
+            "togglePanel": "Prikaži/sakrij kontrole",
             "streamingTiles": "Učitavanje 3D podataka…",
-            "rotateHintDesktop": "Držite Ctrl i prevucite mišem za rotaciju pogleda",
-            "rotateHintMobile": "Prevucite sa dva prsta za rotaciju pogleda",
+            "noCoverage": "Ovde nema fotorealistične pokrivenosti — ostajemo u apstraktnom 3D prikazu.",
             "carveUnderProposals": "Sakrij stvarne zgrade ispod predloga",
             "stateSolid": "Puno",
             "stateGhost": "Providno",
             "stateSurviving": "Preostale",
+            "stateRemoved": "Uklonjene",
             "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",
             "planned": "Planirano",
             "radius": "Radijus",
+            "radiusTooltip": "Radijus — koliko širok pojas okolnih stvarnih zgrada se učitava i prikazuje kao kontekst",
+            "builtTooltip": "Izgrađeno — postojeće stvarne zgrade koje danas stoje na terenu",
+            "plannedTooltip": "Planirano — predložene građevine i površine (parkovi, trgovi, voda i njihove dekoracije)",
+            "stateSolidTooltip": "Puno — iscrtano potpuno neprozirno",
+            "stateGhostTooltip": "Providno — iscrtano poluprovidno da se vidi kroz njega",
+            "stateSurvivingTooltip": "Preostale — postojeće zgrade prikazane puno, ali one koje plan ruši su skrivene (stanje nakon plana)",
+            "stateRemovedTooltip": "Uklonjene — prikazuju se samo postojeće zgrade ili delovi zgrada koje plan ruši",
+            "stateOffTooltip": "Isključeno — nije iscrtano",
             "solid": "Puno:",
             "neither": "Nijedno",
             "showAllParcels": "Prikaži sve parcele",
@@ -2631,10 +2775,10 @@
         },
         "toggle": {
             "switchTo2d": "Prebaci na 2D",
-            "switchTo3d": "Prebaci na 3D",
+            "switchTo3d": "Prebaci na model (3D)",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmene",
-            "realistic": "Realističan kontekst (Google fotorealistični 3D)",
+            "realistic": "Foto prikaz (Google fotorealistični 3D)",
             "ai": "AI fotorealistični prikaz"
         },
         "parcelPanel": {
@@ -2671,14 +2815,32 @@
             "error": "Generisanje nije uspelo: {{m}}",
             "need3d": "Prvo uđite u 3D režim za prikaz scene.",
             "captureFailed": "Nije moguće snimiti 3D scenu.",
-            "emptyPrompt": "Uputstvo je prazno."
+            "emptyPrompt": "Uputstvo je prazno.",
+            "heightMapTitle": "Mapa visina (belo = najviše) — šalje se da visine ostanu verne",
+            "showHeightMap": "Prikaži mapu visina",
+            "hideHeightMap": "Sakrij mapu visina",
+            "modelLabel": "Model",
+            "keyNeeded": "treba API ključ",
+            "copyLink": "Kopiraj link",
+            "share": "Podeli",
+            "tweet": "Podeli na X",
+            "tweetText": "Fotorealistični prikaz mog urbanog predloga",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Pripremam link za deljenje…",
+            "linkCopied": "Link kopiran!",
+            "copyFailed": "Kopiranje nije uspelo — dugo pritisnite link da ga kopirate.",
+            "shareFailed": "Nije moguće napraviti link za deljenje: {{m}}"
+        },
+        "aiFollow": {
+            "title": "AI prikaz",
+            "note": "Gledate stvarnu 3D scenu iz koje je napravljena ova AI slika."
         }
     },
     "structureEditor": {
         "ariaLabel": "Uređivač geometrije strukture",
         "titlePark": "Uređivanje parka",
         "titleSquare": "Uređivanje trga",
-        "instructions": "Izaberi element, zatim klikni unutar granice. Tačkaste elemente prevuci da ih pomeriš.",
+        "instructions": "Izaberi element, zatim klikni unutar granice. Prevuci bilo koji element da ga pomeriš.",
         "closeLabel": "Zatvori",
         "tools": {
             "tree": "Drvo",
@@ -2699,5 +2861,18 @@
         "hintSelect": "Izaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",
         "statusSaved": "Dizajn strukture je sačuvan."
+    },
+    "stationEditor": {
+        "ariaLabel": "Uređivač geometrije stanice",
+        "title": "Uredi geometriju stanice",
+        "station": "Stanica",
+        "close": "Zatvori",
+        "fixedPosition": "Centar stanice ostaje fiksan. Rotirajte stanicu oko njega.",
+        "rotation": "Rotacija",
+        "platformHeight": "Visina perona iznad tla",
+        "hint": "Pregled na mapi se ažurira tokom uređivanja.",
+        "cancel": "Otkaži",
+        "save": "Gotovo",
+        "saved": "Geometrija stanice je sačuvana."
     }
 }

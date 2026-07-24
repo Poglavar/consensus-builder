@@ -40,7 +40,10 @@
             dismiss.className = 'cb-multitab-banner__close';
             dismiss.setAttribute('aria-label', 'Dismiss');
             dismiss.textContent = '×';
-            dismiss.addEventListener('click', () => banner.remove());
+            // Dismissing hides the notice, not the read-only state — and the flag stays set, so the
+            // banner used to be a one-time warning after which work silently stopped being saved.
+            // Any later dropped write re-attaches it (see reportSecondaryWriteBlocked).
+            dismiss.addEventListener('click', () => { banner.remove(); positionEphemeralBelowBanner(); });
 
             banner.appendChild(message);
             banner.appendChild(dismiss);
@@ -60,6 +63,7 @@
         if (typeof document === 'undefined') return;
         const el = document.getElementById('cb-multitab-banner');
         if (el) el.remove();
+        positionEphemeralBelowBanner(); // banner gone: hand the toast back to its CSS position
     }
 
     function becomeSecondary() {
@@ -118,6 +122,58 @@
             probe();
         }
     });
+
+    // The banner is fixed to the very top of the viewport and the ephemeral toast sits 20px down
+    // inside #map-container, so the ribbon covers it. Push the toast clear of the banner's real
+    // bottom edge (measured, because the banner wraps to two lines on narrow screens) for as long
+    // as the banner is up; the CSS default applies again once it is gone.
+    function positionEphemeralBelowBanner() {
+        if (typeof document === 'undefined') return;
+        const container = document.getElementById('ephemeral-message-container');
+        const banner = document.getElementById('cb-multitab-banner');
+        if (!container) return;
+        if (!banner) { container.style.removeProperty('top'); return; }
+        const host = container.offsetParent || document.getElementById('map-container');
+        const hostTop = host ? host.getBoundingClientRect().top : 0;
+        const clearance = Math.round(banner.getBoundingClientRect().bottom - hostTop) + 12;
+        container.style.top = Math.max(20, clearance) + 'px';
+    }
+
+    // A create or an edit in a read-only tab is silently thrown away, so say it where the user is
+    // looking — one toast per burst, since a single user action triggers several saves.
+    const WRITE_TOAST_THROTTLE_MS = 4000;
+    // -Infinity, not 0: performance.now() starts near zero, so a 0 sentinel makes the very first
+    // burst — the one right after load, which is exactly when this fires — skip the throttle.
+    let lastWriteToastAt = -Infinity;
+
+    function toastNotSaved() {
+        if (typeof scope.showEphemeralMessage !== 'function') return;
+        const now = (scope.performance && scope.performance.now) ? scope.performance.now() : 0;
+        if ((now - lastWriteToastAt) < WRITE_TOAST_THROTTLE_MS) return;
+        lastWriteToastAt = now;
+        const KEY = 'multitab.notSaved';
+        let text = 'Proposal was NOT saved and will be lost on browser reload.';
+        try {
+            if (scope.i18n && typeof scope.i18n.t === 'function') {
+                // A missing key resolves to the key itself, which must never reach the user — the
+                // translations load async, so an early toast legitimately has nothing to look up.
+                const translated = scope.i18n.t(KEY, {});
+                if (translated && translated !== KEY) text = translated;
+            }
+        } catch (_) { }
+        // The container is created by the first call, so it can only be positioned after it exists.
+        scope.showEphemeralMessage(text, 7000);
+        positionEphemeralBelowBanner();
+    }
+
+    // Called by proposalStorage._persist when it drops a write because this tab is read-only. A
+    // dropped write IS the harm the banner warns about, so it brings the banner back even if it was
+    // dismissed — the warning cannot outlive its own dismissal while work is being lost.
+    scope.__cbReportSecondaryWriteBlocked = function () {
+        if (!secondary) return;
+        attachBanner();
+        toastNotSaved();
+    };
 
     scope.__cbSecondaryTab = false;
     probe();

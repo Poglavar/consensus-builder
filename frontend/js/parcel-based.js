@@ -47,7 +47,6 @@
         resizeHandler: null,
         hasCenteredOnce: false
     };
-    let parcelBasedThreeLoadPromise = null;
 
     // Random colors for buildings
     const BUILDING_COLORS = [
@@ -471,27 +470,9 @@
 
     async function ensureThreeForParcelBased() {
         if (typeof THREE !== 'undefined') return true;
-
-        const loadScript = (src) => new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-
-        if (!parcelBasedThreeLoadPromise) {
-            parcelBasedThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
-        }
-        await parcelBasedThreeLoadPromise;
-
-        if (typeof THREE === 'undefined') return false;
-
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
-        }
-
+        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
+        // second copy here, an old UMD build would clobber the r184 global for the whole app.
+        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
         return typeof THREE !== 'undefined';
     }
 

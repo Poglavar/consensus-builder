@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar."
+        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar.",
+        "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
     },
     "proposalDrafts": {
         "title": "Borradores",
@@ -180,6 +181,8 @@
         "hr": "Croata"
     },
     "common": {
+        "copied": "Copiado",
+        "copyToClipboard": "Copiar al portapapeles",
         "logout": "Cerrar sesión",
         "unknown": "Desconocido",
         "unknownOwner": "Propietario desconocido",
@@ -418,7 +421,18 @@
             "showLayer": "Mostrar edificios",
             "showGdi": "Edificios GDI (modelo 3D)",
             "showDgu": "Catastro DGU (referencia legal)",
+            "showOsm": "Edificios OSM (coincide con el mapa)",
             "showProposed": "Mostrar edificios propuestos"
+        },
+        "stations": {
+            "title": "Estaciones",
+            "placeTitle": "Colocar una estación",
+            "bus": "Estación de autobús",
+            "tram": "Estación de tranvía",
+            "underground": "Estación subterránea",
+            "elevated": "Estación de tren elevado",
+            "cancel": "Cancelar colocación",
+            "hint": "Las estaciones ferroviarias se ajustan a las vías. Las de autobús se ajustan al lado de la carretera elegido."
         },
         "roads": {
             "title": "Carreteras",
@@ -471,6 +485,7 @@
         "proposals": {
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
+            "unsavedCount": "{{count}} sin guardar (aún no subidas)",
             "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir plan completo (todas las propuestas)",
             "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
@@ -671,6 +686,14 @@
                 "square": "Plaza",
                 "lake": "Lago",
                 "offer": "Oferta",
+                "transport": "Transporte",
+                "ownershipCategory": "Propiedad",
+                "road": "Carretera",
+                "track": "Vía férrea",
+                "busStation": "Estación de autobús",
+                "tramStation": "Estación de tranvía",
+                "undergroundStation": "Estación de metro",
+                "elevatedStation": "Estación elevada",
                 "noParcelSelected": "No hay ninguna parcela seleccionada. Selecciona una parcela primero.",
                 "useMainCreateButton": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
                 "enableMultiSelect": "Activa la selección de varias parcelas para usar esta acción.",
@@ -807,7 +830,8 @@
                 "editGeometry": "Editar geometría",
                 "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles de la propuesta",
-                "propose": "Proponer"
+                "propose": "Proponer",
+                "editDetails": "Detalles"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1097,23 +1121,33 @@
             "failed_to_build": "No se pudo generar la comparación."
         },
         "singleBuilding": {
-            "title": "Edificios",
+            "title": "Edificio de forma libre",
             "defaultName": "Edificio {{n}}",
             "buildingsTitle": "Edificios",
             "buildingsLabel": "Selecciona un edificio",
-            "addLabel": "Añadir edificio",
+            "addLabel": "Duplicar edificio",
             "deleteLabel": "Eliminar edificio",
             "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
             "parametersTitle": "Parámetros",
-            "widthLabel": "Ancho (m):",
-            "lengthLabel": "Longitud (m):",
             "heightLabel": "Altura (m):",
-            "chamferLabel": "Chaflán (m):",
-            "rotationLabel": "Rotación (°):",
-            "infoText": "Arrastra el rectángulo para reubicarlo, o arrastra los controles en los lados para rotar. El edificio debe permanecer completamente dentro del bloque."
+            "rotationLabel": "Girar huella",
+            "rotateCounterclockwiseLabel": "Girar 5 grados en sentido antihorario",
+            "rotateClockwiseLabel": "Girar 5 grados en sentido horario",
+            "deleteVertexLabel": "Eliminar el vértice seleccionado",
+            "vertexLabel": "Vértice de la huella",
+            "surroundingsLabel": "Entorno",
+            "surroundingsNone": "Dejar como está",
+            "surroundingsPaved": "Pavimentado",
+            "surroundingsGreen": "Verde",
+            "surroundingsInfo": "Una sola opción para toda la superficie de las parcelas alrededor de cada edificio de esta propuesta. Los edificios existentes en esas parcelas se eliminan en cualquier caso.",
+            "uploadGeojsonLabel": "Subir GeoJSON",
+            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
+            "uploadError": "No se pudo leer ese archivo.",
+            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir un vértice o selecciona uno y usa la papelera o Supr/Retroceso para eliminarlo. El edificio debe permanecer completamente dentro del bloque."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -1176,7 +1210,8 @@
             "scopeLabel": "Se aplica a",
             "scopeSegment": "Este tramo",
             "scopeRoad": "Toda la red vial",
-            "hitsBuildings": "Choca con edificios (para túneles a través de edificios, usa el modo de dibujo)",
+            "hitsBuildings": "Se superpone con edificios — en el modo de dibujo puedes rodearlos con la vía o atravesarlos con un túnel",
+            "extendsCut": "Corta más profundo en un edificio ya recortado (ámbar en el mapa)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",
             "save": "Guardar como nueva propuesta",
@@ -1186,6 +1221,12 @@
             "presets": "Secciones estándar",
             "standardWidth": "Ancho estándar: {{width}} m",
             "resetStandard": "Restablecer el ancho estándar ({{width}} m)",
+            "fixedWidth": "Fijo en la profundidad estándar de la plaza",
+            "seamLocked": "El aparcamiento mantiene su ancho fijo",
+            "flipDirection": "Sentido de circulación (clic para invertir)",
+            "treeEveryLabel": "Árbol cada",
+            "treeEverySuffix": "plazas",
+            "treeEveryTitle": "Plantar un árbol en cada N.ª plaza de aparcamiento (0 = ninguno)",
             "dragReorder": "Arrastra para reordenar los carriles",
             "dragReorderHint": "Arrastra un carril por su asa para reordenarlo; arrastra una junta del diagrama para pasar ancho de un carril al contiguo.",
             "maxWidthReached": "Un corredor no puede superar los {{max}} m. Quita o estrecha un carril primero.",
@@ -1199,7 +1240,9 @@
             "laneTypes": {
                 "driving": "Carril de circulación",
                 "bus": "Carril bus",
-                "parking": "Aparcamiento",
+                "parking": "Aparcamiento en línea",
+                "parking_perpendicular": "Aparcamiento en batería",
+                "parking_angled": "Aparcamiento en espiga",
                 "cycleway": "Carril bici",
                 "sidewalk": "Acera",
                 "verge": "Franja verde",
@@ -1213,7 +1256,45 @@
                 "mainStreet": "Calle principal ~26 m",
                 "avenue": "Avenida ~40 m",
                 "boulevard": "Bulevar ~80 m"
-            }
+            },
+            "tabSection": "Sección transversal",
+            "tabCorridor": "Corredor",
+            "constraintParcels": "Mantenerse dentro de parcelas viales",
+            "constraintParcelsTitle": "Trata cada parcela que no sea suelo vial como un muro: el corredor solo puede usar parcelas viales y el suelo que esta vía ya ocupa.",
+            "noClearance": "Nada que medir todavía — la vía no tiene eje aquí.",
+            "noObstacles": "No hay edificios cargados cerca de esta vía, así que nada limita el corredor todavía.",
+            "corridorMinWidth": "La vía más ancha que cabe aquí sin demoler nada",
+            "currentRoad": "Vía actual: {{width}} m",
+            "roomToWiden": "Margen para ensanchar: +{{delta}} m",
+            "overCorridor": "Demasiado ancha para el corredor por {{delta}} m",
+            "fitsAsIs": "La vía cabe en su posición actual.",
+            "fitPickSegment": "El desplazamiento funciona segmento a segmento — abre el editor desde un solo segmento de esta vía.",
+            "fitIfMoved": "La vía cabría si se desplazara {{move}}.",
+            "moveToFit": "Desplazar la vía {{move}}",
+            "noFit": "No cabe ni desplazándola — la vía recta más ancha que cabe aquí es de {{max}} m.",
+            "noFitWinds": "No cabe ni desplazándola — hay espacio, pero el corredor se curva, así que una vía recta de {{width}} m no puede seguirlo. Cambia al modo de dibujo para curvar la vía por el espacio.",
+            "widenInto": "Ensanchar hacia: {{side}}",
+            "widenIntoLabel": "Tomar el ancho añadido ({{delta}} m) de un solo lado",
+            "fitMinted": "Esta propuesta está minteada y es inmutable — aplica la sección a un dibujo para moverla.",
+            "moveFailed": "No se pudo mover la vía (una propuesta minteada es inmutable).",
+            "movedStatus": "Vía desplazada {{move}}.",
+            "narrowest": "Sección más estrecha: {{width}} m de espacio total (marcado en el mapa)",
+            "whatIfDemolished": "Sin el edificio del lado {{side}}: construir hasta {{width}} m",
+            "chartTitle": "Espacio total a lo largo de la vía (m)",
+            "chartRoad": "vía",
+            "chartReadout": "En {{at}} m: corredor {{width}} m",
+            "chartTooNarrow": "más estrecho que la vía",
+            "compass": {
+                "n": "norte",
+                "ne": "noreste",
+                "e": "este",
+                "se": "sureste",
+                "s": "sur",
+                "sw": "suroeste",
+                "w": "oeste",
+                "nw": "noroeste"
+            },
+            "fitHint": "¿Cabría si se desplazara? Abre la pestaña Corredor"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -1228,22 +1309,53 @@
         },
         "buildingLayers": {
             "title": "¿Qué edificios mostrar?",
-            "intro": "Dos levantamientos de la misma ciudad: no coinciden, y vale la pena verlo.",
             "gdi": "Edificios GDI (modelo 3D)",
             "gdiHint": "Fotogrametría: lo que realmente existe. El modelo 3D usa esto, y también cada corte y demolición.",
             "dgu": "Catastro DGU (referencia legal)",
-            "dguHint": "El catastro: lo que está registrado oficialmente. Solo referencia: nunca se corta sobre él.",
-            "both": "Ambos",
+            "dguHint": "DGU catastro: lo que está registrado oficialmente.",
+            "osm": "Edificios OSM (coincide con el mapa)",
+            "osmHint": "Edificios OSM: el mapa comunitario — los contornos dibujados en el mapa base.",
+            "all": "Todos",
             "cancel": "Cancelar"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} atravesaría {{count}} edificio(s). ¿Cortarlos, demolerlos o hacer un túnel?",
+            "offer": "Este {{kind}} atravesaría {{count}} edificio(s) nuevo(s). ¿Cortarlos, demolerlos o hacer un túnel?",
             "road": "camino",
             "track": "vía férrea",
             "unapply": "Retirar la propuesta existente",
             "destroy": "Demoler los edificios",
             "cut": "Cortar los edificios",
+            "proposalImpact": "Cortar o demoler retirará estas propuestas aplicadas del mapa (seguirán en la lista de propuestas):",
+            "proposalImpactTunnel": "El túnel mantiene aplicadas estas propuestas.",
+            "cutWithProposals": "Cortar — retirar {{count}} propuesta(s)",
+            "destroyWithProposals": "Demoler — retirar {{count}} propuesta(s)",
+            "mergeImpact": "Continuar fusionará estas propuestas de carretera con esta carretera y eliminará sus entradas de propuesta separadas:",
+            "merge": "Fusionar carreteras",
             "confirm": "Atravesar con túnel",
+            "cancel": "Elegir otra ruta"
+        },
+        "impactTour": {
+            "applyToAll": "Aplicar a todos:",
+            "cutAll": "Cortar todos",
+            "demolishAll": "Demoler todos",
+            "tunnelAll": "Tunelar todos",
+            "prev": "Edificio anterior",
+            "next": "Edificio siguiente",
+            "counter": "Edificio {{n}} / {{total}}",
+            "cut": "Cortar",
+            "demolish": "Demoler",
+            "tunnel": "Túnel",
+            "apply": "Aplicar",
+            "applyNext": "Aplicar y siguiente",
+            "applyActionToAll": "Aplicar {{action}} a todos",
+            "cancel": "Cancelar",
+            "existingProposal": "propuesta existente"
+        },
+        "corridorGrade": {
+            "offer": "Esta ruta peatonal cruza {{count}} vía(s) no peatonal(es). ¿Cómo debe cruzarlas?",
+            "atGrade": "Cruce a nivel",
+            "underpass": "Paso inferior",
+            "overpass": "Paso elevado",
             "cancel": "Elegir otra ruta"
         },
         "deleteProposal": {
@@ -1335,6 +1447,12 @@
                     "author": "Autor",
                     "search": "Buscar",
                     "sort": "Ordenar por",
+                    "status": "Estado",
+                    "statusAll": "Todos los estados",
+                    "applied": "Aplicado",
+                    "appliedAll": "Todas",
+                    "appliedYes": "Aplicado",
+                    "appliedNo": "No aplicado",
                     "authorPlaceholder": "Todos los autores",
                     "searchPlaceholder": "Buscar título o autor",
                     "reset": "Restablecer",
@@ -1351,6 +1469,7 @@
                         "other": "Otros"
                     }
                 },
+                "resultCountWord": "mostrados",
                 "sources": {
                     "local": "Locales",
                     "server": "Servidor",
@@ -1423,6 +1542,7 @@
                     "conditional": "Condicional",
                     "partial": "Pagos parciales",
                     "onServer": "En el servidor",
+                    "unsaved": "Sin guardar",
                     "inMemory": "En memoria",
                     "yes": "Sí",
                     "no": "No"
@@ -1554,6 +1674,7 @@
                 "ancestorUploadButton": "Subir",
                 "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
                     "title": "Compartir plan",
                     "fetching": "Obteniendo propuesta #{{id}}…",
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
@@ -1699,6 +1820,7 @@
         },
         "createProposal": {
             "title": "Crear propuesta",
+            "editTitle": "Propuesta",
             "titlePark": "Crear propuesta de parque",
             "titleSquare": "Crear propuesta de plaza",
             "closeAria": "Cerrar diálogo de propuesta",
@@ -1848,6 +1970,7 @@
             "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
             "submit": "Crear propuesta",
+            "submitEdit": "Guardar",
             "creating": "Creando...",
             "waiting": "Esperando la transacción...",
             "rejected": "Transacción rechazada",
@@ -1978,13 +2101,14 @@
             "manual": {
                 "edit": "Editar forma manualmente",
                 "back": "Volver a los controles",
-                "hint": "Modo manual: arrastra los vértices para remodelar el contorno. La altura sigue ajustable.",
-                "hintSimplified": "Modo manual: contorno simplificado a {{count}} puntos arrastrables para que puedas remodelarlo. Arrastra cualquier punto; la altura sigue ajustable.",
+                "hint": "Modo manual: arrastra un vértice para remodelar, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
+                "hintSimplified": "Modo manual: contorno simplificado a {{count}} puntos arrastrables. Arrastra un punto para remodelar, haz clic en un borde para añadir uno o selecciona un punto y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
                 "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
                 "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
                 "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
                 "entryFailed": "Este contorno es demasiado complejo para editarlo a mano — vuelta a los controles. Consejo: sube «Simplificar (m)» para suavizarlo y prueba a editarlo de nuevo.",
                 "vertex": "Arrastra para remodelar",
+                "deleteVertex": "Eliminar el vértice seleccionado",
                 "uploadGeojson": "Subir GeoJSON",
                 "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
                 "uploadError": "No se pudo leer el archivo."
@@ -2003,15 +2127,24 @@
                 "width": "Ancho (m):",
                 "height": "Altura (m):",
                 "chamfer": "Chaflán (m):",
+                "rotation": "Girar huella",
                 "circumference": "Perímetro (m):",
                 "area": "Área (m²):",
                 "volume": "Volumen (m³):"
             },
             "helper": {
-                "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma de las viviendas en hilera.",
+                "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo.",
                 "dimensions": "El largo es paralelo al lado más largo de la parcela. El ancho es perpendicular.",
                 "chamfer": "El chaflán corta las esquinas en ángulos de 45°."
             },
+            "rotateCounterclockwise": "Girar 5 grados en sentido antihorario",
+            "rotateClockwise": "Girar 5 grados en sentido horario",
+            "uploadGeojson": "Subir GeoJSON",
+            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadOutside": "El polígono subido no se superpone con estas parcelas de forma utilizable.",
+            "uploadError": "No se pudo leer ese archivo.",
+            "vertexLabel": "Vértice de la huella",
+            "deleteVertexLabel": "Eliminar el vértice seleccionado",
             "messages": {
                 "generatedSummary": "Viviendas en hilera generadas (largo: {{length}}m, ancho: {{width}}m, altura: {{height}}m)",
                 "creationFailed": "No se pudieron crear las viviendas en hilera. Intenta ajustar los parámetros.",
@@ -2079,6 +2212,7 @@
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
             "done": "Listo",
+            "allPublic": "Todo público",
             "ownerLegend": "Leyenda de propietarios",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcela",
@@ -2499,6 +2633,7 @@
             "please_provide_author_name_and_a_valid_offer": "Indica autor, nombre y una oferta válida.",
             "please_select_a_parcel_first": "Selecciona primero una parcela",
             "please_specify_which_owner_acceptance_to_undo": "Especifica qué aceptación de propietario deseas deshacer.",
+            "proposal_type_no_longer_available": "Fusionar / Decidir más tarde ya no está disponible. Usa el reajuste del suelo.",
             "proposal_not_found": "Propuesta no encontrada.",
             "proposal_storage_is_unavailable": "El almacenamiento de propuestas no está disponible.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Falta el plan de reparcelación. Vuelve a ejecutar el algoritmo.",
@@ -2627,18 +2762,27 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Representación de edificios",
+            "togglePanel": "Mostrar/ocultar controles",
             "streamingTiles": "Cargando datos 3D…",
-            "rotateHintDesktop": "Mantén Ctrl y arrastra para rotar la vista",
-            "rotateHintMobile": "Desliza con dos dedos para rotar la vista",
+            "noCoverage": "No hay cobertura fotorrealista aquí — permanecemos en 3D abstracto.",
             "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",
             "stateSolid": "Sólido",
             "stateGhost": "Transparente",
             "stateSurviving": "Restantes",
+            "stateRemoved": "Demolidos",
             "stateOff": "Apagado",
             "built": "Construido",
             "both": "Ambos",
             "planned": "Planificado",
             "radius": "Radio",
+            "radiusTooltip": "Radio — qué tan ancha es la franja de edificios reales del entorno que se carga y se muestra como contexto",
+            "builtTooltip": "Construido — los edificios reales existentes que hay hoy en el terreno",
+            "plannedTooltip": "Planificado — estructuras y terrenos propuestos (parques, plazas, agua y sus decoraciones)",
+            "stateSolidTooltip": "Sólido — dibujado totalmente opaco",
+            "stateGhostTooltip": "Transparente — dibujado semitransparente para poder ver a través",
+            "stateSurvivingTooltip": "Restantes — los edificios existentes se muestran sólidos, pero los que el plan demuele se ocultan (el estado posterior al plan)",
+            "stateRemovedTooltip": "Demolidos — muestra solo los edificios existentes o las partes que el plan demuele",
+            "stateOffTooltip": "Apagado — no se dibuja",
             "solid": "Sólido:",
             "neither": "Ninguno",
             "showAllParcels": "Mostrar todas las parcelas",
@@ -2650,10 +2794,10 @@
         },
         "toggle": {
             "switchTo2d": "Cambiar a 2D",
-            "switchTo3d": "Cambiar a 3D",
+            "switchTo3d": "Cambiar a modelo (3D)",
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
-            "realistic": "Contexto realista (Google 3D fotorrealista)",
+            "realistic": "Vista foto (Google 3D fotorrealista)",
             "ai": "Renderizado fotorrealista con IA"
         },
         "parcelPanel": {
@@ -2690,14 +2834,32 @@
             "error": "El renderizado falló: {{m}}",
             "need3d": "Entra primero en modo 3D para renderizar la escena.",
             "captureFailed": "No se pudo capturar la escena 3D.",
-            "emptyPrompt": "La instrucción está vacía."
+            "emptyPrompt": "La instrucción está vacía.",
+            "heightMapTitle": "Mapa de alturas (blanco = más alto) — enviado para mantener las alturas fieles",
+            "showHeightMap": "Mostrar mapa de alturas",
+            "hideHeightMap": "Ocultar mapa de alturas",
+            "modelLabel": "Modelo",
+            "keyNeeded": "requiere clave API",
+            "copyLink": "Copiar enlace",
+            "share": "Compartir",
+            "tweet": "Compartir en X",
+            "tweetText": "Vista fotorrealista de mi propuesta urbana",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Preparando el enlace para compartir…",
+            "linkCopied": "¡Enlace copiado!",
+            "copyFailed": "No se pudo copiar — mantén pulsado el enlace para copiarlo.",
+            "shareFailed": "No se pudo crear el enlace para compartir: {{m}}"
+        },
+        "aiFollow": {
+            "title": "Render de IA",
+            "note": "Estás viendo la escena 3D real a partir de la cual se creó esta imagen de IA."
         }
     },
     "structureEditor": {
         "ariaLabel": "Editor de geometría de la estructura",
         "titlePark": "Editor de parque",
         "titleSquare": "Editor de plaza",
-        "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra los elementos puntuales para moverlos.",
+        "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra cualquier elemento para moverlo.",
         "closeLabel": "Cerrar",
         "tools": {
             "tree": "Árbol",
@@ -2718,5 +2880,18 @@
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
         "statusSaved": "Diseño de la estructura guardado."
+    },
+    "stationEditor": {
+        "ariaLabel": "Editor de geometría de estación",
+        "title": "Editar geometría de estación",
+        "station": "Estación",
+        "close": "Cerrar",
+        "fixedPosition": "El centro de la estación permanece fijo. Gira la estación a su alrededor.",
+        "rotation": "Rotación",
+        "platformHeight": "Altura del andén sobre el suelo",
+        "hint": "La vista previa del mapa se actualiza mientras editas.",
+        "cancel": "Cancelar",
+        "save": "Listo",
+        "saved": "Geometría de estación guardada."
     }
 }

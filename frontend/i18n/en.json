@@ -1,6 +1,7 @@
 {
     "multitab": {
-        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit."
+        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
+        "notSaved": "Proposal was NOT saved and will be lost on browser reload."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -180,6 +181,8 @@
         "hr": "Croatian"
     },
     "common": {
+        "copied": "Copied",
+        "copyToClipboard": "Copy to clipboard",
         "logout": "Log Out",
         "unknown": "Unknown",
         "unknownOwner": "Unknown owner",
@@ -308,6 +311,7 @@
         "proposals": {
             "title": "Proposals",
             "listButton": "Proposals List ({{count}})",
+            "unsavedCount": "{{count}} unsaved (not yet uploaded)",
             "mintedButton": "Minted Proposals",
             "shareButton": "Share entire plan (all proposals)",
             "shareButtonEmpty": "No applied plans. Apply some first",
@@ -425,7 +429,18 @@
             "showLayer": "Show buildings",
             "showGdi": "GDI buildings (3D model)",
             "showDgu": "DGU cadastre (legal reference)",
+            "showOsm": "OSM buildings (matches the map)",
             "showProposed": "Show Proposed Buildings"
+        },
+        "stations": {
+            "title": "Stations",
+            "placeTitle": "Place a station",
+            "bus": "Bus station",
+            "tram": "Tram station",
+            "underground": "Underground station",
+            "elevated": "Elevated train station",
+            "cancel": "Cancel placement",
+            "hint": "Rail stations snap to rail tracks. Bus stations snap to the selected roadside."
         },
         "roads": {
             "title": "Roads",
@@ -624,6 +639,14 @@
                 "square": "Square",
                 "lake": "Lake",
                 "offer": "Offer",
+                "transport": "Transport",
+                "ownershipCategory": "Ownership",
+                "road": "Road",
+                "track": "Track",
+                "busStation": "Bus station",
+                "tramStation": "Tram station",
+                "undergroundStation": "Metro station",
+                "elevatedStation": "Elevated station",
                 "noParcelSelected": "No parcel selected. Please select a parcel first.",
                 "useMainCreateButton": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
                 "enableMultiSelect": "Enable multi-parcel selection to use this action.",
@@ -760,7 +783,8 @@
                 "editGeometry": "Edit geometry",
                 "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
                 "details": "Proposal details",
-                "propose": "Propose"
+                "propose": "Propose",
+                "editDetails": "Details"
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -1048,23 +1072,33 @@
             "failed_to_build": "Failed to build comparison."
         },
         "singleBuilding": {
-            "title": "Buildings",
+            "title": "Freeform building",
             "defaultName": "Building {{n}}",
             "buildingsTitle": "Buildings",
             "buildingsLabel": "Select building",
-            "addLabel": "Add building",
+            "addLabel": "Duplicate building",
             "deleteLabel": "Delete building",
             "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
             "previewLabel": "3D Preview",
             "confirm": "Done",
             "parametersTitle": "Parameters",
-            "widthLabel": "Width (m):",
-            "lengthLabel": "Length (m):",
             "heightLabel": "Height (m):",
-            "chamferLabel": "Chamfer (m):",
-            "rotationLabel": "Rotation (°):",
-            "infoText": "Drag the rectangle to reposition, or drag the handles on the sides to rotate. The building must remain fully within the block."
+            "rotationLabel": "Rotate footprint",
+            "rotateCounterclockwiseLabel": "Rotate counterclockwise 5 degrees",
+            "rotateClockwiseLabel": "Rotate clockwise 5 degrees",
+            "deleteVertexLabel": "Delete selected vertex",
+            "vertexLabel": "Footprint vertex",
+            "surroundingsLabel": "Surroundings",
+            "surroundingsNone": "Leave as they are",
+            "surroundingsPaved": "Paved",
+            "surroundingsGreen": "Green",
+            "surroundingsInfo": "One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.",
+            "uploadGeojsonLabel": "Upload GeoJSON",
+            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
+            "uploadError": "Could not read that file.",
+            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -1127,7 +1161,8 @@
             "scopeLabel": "Applies to",
             "scopeSegment": "This segment",
             "scopeRoad": "Entire road network",
-            "hitsBuildings": "Hits buildings (to tunnel through buildings, use drawing mode)",
+            "hitsBuildings": "Overlaps buildings — in drawing mode you can bend the road around them or tunnel through",
+            "extendsCut": "Cuts deeper into an already-cut building (amber on the map)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",
             "save": "Save as new proposal",
@@ -1137,6 +1172,12 @@
             "presets": "Standard cross-sections",
             "standardWidth": "Standard width: {{width}} m",
             "resetStandard": "Reset to the standard width ({{width}} m)",
+            "fixedWidth": "Fixed at the standard bay depth",
+            "seamLocked": "Parking keeps its fixed width",
+            "flipDirection": "Traffic direction (click to reverse)",
+            "treeEveryLabel": "Tree every",
+            "treeEverySuffix": "spaces",
+            "treeEveryTitle": "Plant a tree in every Nth parking space (0 = none)",
             "dragReorder": "Drag to reorder the lanes",
             "dragReorderHint": "Drag a lane by its handle to reorder it; drag a seam in the diagram to move width from one lane to its neighbour.",
             "maxWidthReached": "A corridor cannot be wider than {{max}} m. Remove or narrow a lane first.",
@@ -1150,7 +1191,9 @@
             "laneTypes": {
                 "driving": "Traffic lane",
                 "bus": "Bus lane",
-                "parking": "Parking",
+                "parking": "Parallel parking",
+                "parking_perpendicular": "Perpendicular parking",
+                "parking_angled": "Angled parking",
                 "cycleway": "Cycle path",
                 "sidewalk": "Sidewalk",
                 "verge": "Green verge",
@@ -1164,7 +1207,45 @@
                 "mainStreet": "Main street ~26 m",
                 "avenue": "Avenue ~40 m",
                 "boulevard": "Boulevard ~80 m"
-            }
+            },
+            "tabSection": "Cross-section",
+            "tabCorridor": "Corridor",
+            "constraintParcels": "Also stay within road parcels",
+            "constraintParcelsTitle": "Treat every parcel that is not road land as a wall: the corridor can only use road parcels and land this road already takes.",
+            "noClearance": "Nothing to measure yet — the road has no centerline here.",
+            "noObstacles": "No buildings are loaded near this road, so nothing constrains the corridor yet.",
+            "corridorMinWidth": "The widest road that fits here without demolishing anything",
+            "currentRoad": "Current road: {{width}} m",
+            "roomToWiden": "Room to widen: +{{delta}} m",
+            "overCorridor": "Too wide for the corridor by {{delta}} m",
+            "fitsAsIs": "The road fits in its current position.",
+            "fitPickSegment": "Moving works one segment at a time — reopen the editor from a single segment of this road.",
+            "fitIfMoved": "The road would fit if moved {{move}}.",
+            "moveToFit": "Move road {{move}}",
+            "noFit": "Does not fit even if moved — the widest straight road that fits here is {{max}} m.",
+            "noFitWinds": "Does not fit even if moved — there is room, but the corridor bends, so a straight {{width}} m road can't follow it. Switch to drawing mode to curve the road through the space.",
+            "widenInto": "Widen toward: {{side}}",
+            "widenIntoLabel": "Take the added width ({{delta}} m) from one side",
+            "fitMinted": "This proposal is minted and immutable — apply the cross-section to a drawing to move it.",
+            "moveFailed": "The road could not be moved (a minted proposal is immutable).",
+            "movedStatus": "Road moved {{move}}.",
+            "narrowest": "Narrowest cross-section: {{width}} m of total space (marked on the map)",
+            "whatIfDemolished": "Without the building to the {{side}}: build up to {{width}} m",
+            "chartTitle": "Total space along the road (m)",
+            "chartRoad": "road",
+            "chartReadout": "At {{at}} m: corridor {{width}} m",
+            "chartTooNarrow": "narrower than the road",
+            "compass": {
+                "n": "north",
+                "ne": "north-east",
+                "e": "east",
+                "se": "south-east",
+                "s": "south",
+                "sw": "south-west",
+                "w": "west",
+                "nw": "north-west"
+            },
+            "fitHint": "Can it fit if moved? Open the Corridor tab"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -1179,22 +1260,53 @@
         },
         "buildingLayers": {
             "title": "Which buildings to show?",
-            "intro": "Two surveys of the same city — they disagree, and that is worth seeing.",
             "gdi": "GDI buildings (3D model)",
             "gdiHint": "Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.",
             "dgu": "DGU cadastre (legal reference)",
-            "dguHint": "The cadastre: what is officially registered. Reference only — nothing is ever cut against it.",
-            "both": "Both",
+            "dguHint": "DGU cadastre: what is officially registered.",
+            "osm": "OSM buildings (matches the map)",
+            "osmHint": "OSM buildings: the community map — the outlines drawn on the basemap.",
+            "all": "All",
             "cancel": "Cancel"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} would pass through {{count}} building(s). Cut through them, demolish, or tunnel?",
+            "offer": "This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?",
             "road": "road",
             "track": "track",
             "unapply": "Unapply existing proposal",
             "destroy": "Demolish the buildings",
             "cut": "Cut through the buildings",
+            "proposalImpact": "Cutting or demolishing will unapply these proposals (they remain in the proposal list and can be applied again):",
+            "proposalImpactTunnel": "Tunnelling keeps these proposals applied.",
+            "cutWithProposals": "Cut through — unapply {{count}} proposal(s)",
+            "destroyWithProposals": "Demolish — unapply {{count}} proposal(s)",
+            "mergeImpact": "Continuing will merge these road proposals into this road and remove their separate proposal entries:",
+            "merge": "Merge roads",
             "confirm": "Tunnel through",
+            "cancel": "Choose another route"
+        },
+        "impactTour": {
+            "applyToAll": "Apply to all:",
+            "cutAll": "Cut all",
+            "demolishAll": "Demolish all",
+            "tunnelAll": "Tunnel all",
+            "prev": "Previous building",
+            "next": "Next building",
+            "counter": "Building {{n}} / {{total}}",
+            "cut": "Cut",
+            "demolish": "Demolish",
+            "tunnel": "Tunnel",
+            "apply": "Apply",
+            "applyNext": "Apply & next",
+            "applyActionToAll": "Apply {{action}} to all",
+            "cancel": "Cancel",
+            "existingProposal": "existing proposal"
+        },
+        "corridorGrade": {
+            "offer": "This pedestrian route crosses {{count}} non-pedestrian road(s). How should it cross?",
+            "atGrade": "At-grade crossing",
+            "underpass": "Underpass",
+            "overpass": "Overpass",
             "cancel": "Choose another route"
         },
         "deleteProposal": {
@@ -1315,6 +1427,12 @@
                     "author": "Author",
                     "search": "Search",
                     "sort": "Sort by",
+                    "status": "Status",
+                    "statusAll": "All statuses",
+                    "applied": "Applied",
+                    "appliedAll": "Applied & not",
+                    "appliedYes": "Applied",
+                    "appliedNo": "Not applied",
                     "authorPlaceholder": "All authors",
                     "searchPlaceholder": "Search title or author",
                     "reset": "Reset",
@@ -1331,6 +1449,7 @@
                         "other": "Other"
                     }
                 },
+                "resultCountWord": "shown",
                 "sources": {
                     "local": "Local",
                     "server": "Server",
@@ -1403,6 +1522,7 @@
                     "conditional": "Conditional",
                     "partial": "Partial payouts",
                     "onServer": "On server",
+                    "unsaved": "Unsaved",
                     "inMemory": "In-memory",
                     "yes": "Yes",
                     "no": "No"
@@ -1534,6 +1654,7 @@
                 "ancestorUploadButton": "Upload",
                 "sharePlanButton": "Share the whole plan instead (all applied proposals)…",
                 "plan": {
+                    "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
                     "title": "Share Plan",
                     "fetching": "Fetching proposal #{{id}}…",
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
@@ -1650,6 +1771,7 @@
         },
         "createProposal": {
             "title": "Create Proposal",
+            "editTitle": "Proposal",
             "titlePark": "Create Park Proposal",
             "titleSquare": "Create Square Proposal",
             "closeAria": "Close proposal dialog",
@@ -1799,6 +1921,7 @@
             "ownerUnknown": "Unknown",
             "lensTooltip": "Open lens modal",
             "submit": "Create Proposal",
+            "submitEdit": "Save",
             "creating": "Creating...",
             "waiting": "Waiting for transaction...",
             "rejected": "Transaction rejected",
@@ -1929,13 +2052,14 @@
             "manual": {
                 "edit": "Edit shape manually",
                 "back": "Back to sliders",
-                "hint": "Manual mode: drag the vertices to reshape the outline. Height stays adjustable.",
-                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points so you can reshape it. Drag any point; height stays adjustable.",
+                "hint": "Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
+                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
                 "needShape": "Generate a shape with the sliders first, then edit it manually.",
                 "confirmReset": "Discard manual edits and go back to the sliders?",
                 "error": "Could not build from the manual outline. Try moving the vertex back.",
                 "entryFailed": "This outline is too complex to edit by hand — back to the sliders. Tip: raise \"Simplify (m)\" to smooth it, then try editing again.",
                 "vertex": "Drag to reshape",
+                "deleteVertex": "Delete selected vertex",
                 "uploadGeojson": "Upload GeoJSON",
                 "uploadNoPolygon": "No usable polygon found in that file.",
                 "uploadError": "Could not read that file."
@@ -1954,15 +2078,24 @@
                 "width": "Width (m):",
                 "height": "Height (m):",
                 "chamfer": "Chamfer (m):",
+                "rotation": "Rotate footprint",
                 "circumference": "Circumference (m):",
                 "area": "Area (m²):",
                 "volume": "Volume (m³):"
             },
             "helper": {
-                "adjust": "Adjust parameters using the sliders to modify the row houses shape.",
+                "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.",
                 "dimensions": "Length is parallel to the longest parcel side. Width is perpendicular.",
                 "chamfer": "Chamfer cuts the corners at 45° angles."
             },
+            "rotateCounterclockwise": "Rotate counterclockwise 5 degrees",
+            "rotateClockwise": "Rotate clockwise 5 degrees",
+            "uploadGeojson": "Upload GeoJSON",
+            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadOutside": "The uploaded polygon does not overlap these parcels in a usable way.",
+            "uploadError": "Could not read that file.",
+            "vertexLabel": "Footprint vertex",
+            "deleteVertexLabel": "Delete selected vertex",
             "messages": {
                 "generatedSummary": "Row houses generated (length: {{length}}m, width: {{width}}m, height: {{height}}m)",
                 "creationFailed": "Row houses creation failed. Try adjusting parameters.",
@@ -2031,6 +2164,7 @@
             "algorithmTitle": "Land readjustment type",
             "closeAria": "Close",
             "done": "Done",
+            "allPublic": "All public",
             "ownerLegend": "Owner Legend",
             "legendMeta": {
                 "one": "{{percent}} · {{count}} parcel",
@@ -2450,6 +2584,7 @@
             "please_provide_author_name_and_a_valid_offer": "Please provide author, name, and a valid offer.",
             "please_select_a_parcel_first": "Please select a parcel first",
             "please_specify_which_owner_acceptance_to_undo": "Please specify which owner acceptance to undo.",
+            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
             "proposal_not_found": "Proposal not found.",
             "proposal_storage_is_unavailable": "Proposal storage is unavailable.",
             "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Reparcellization plan is missing. Please rerun the algorithm.",
@@ -2578,18 +2713,27 @@
     "threeMode": {
         "controls": {
             "buildingRenderingAria": "Building rendering",
+            "togglePanel": "Toggle controls",
             "streamingTiles": "Streaming 3D tiles…",
-            "rotateHintDesktop": "Hold Ctrl and drag to rotate the view",
-            "rotateHintMobile": "Swipe with two fingers to rotate the view",
+            "noCoverage": "No photorealistic coverage here — staying in abstract 3D.",
             "carveUnderProposals": "Hide real buildings under proposals",
             "stateSolid": "Solid",
             "stateGhost": "Transparent",
             "stateSurviving": "Surviving",
+            "stateRemoved": "Removed",
             "stateOff": "Off",
             "built": "Built",
             "both": "Both",
             "planned": "Planned",
             "radius": "Radius",
+            "radiusTooltip": "Radius — how wide a band of surrounding real buildings is loaded and shown as context",
+            "builtTooltip": "Built — the existing real buildings standing on the ground today",
+            "plannedTooltip": "Planned — proposed structures and grounds (parks, squares, water and their decorations)",
+            "stateSolidTooltip": "Solid — drawn fully opaque",
+            "stateGhostTooltip": "Transparent — drawn semi-transparent so you can see through it",
+            "stateSurvivingTooltip": "Surviving — existing buildings shown solid, but the ones the plan demolishes are hidden (the after-the-plan state)",
+            "stateRemovedTooltip": "Removed — show only existing buildings or portions of buildings that the plan demolishes",
+            "stateOffTooltip": "Off — not drawn",
             "solid": "Solid:",
             "neither": "Neither",
             "showAllParcels": "Show all parcels",
@@ -2601,10 +2745,10 @@
         },
         "toggle": {
             "switchTo2d": "Switch to 2D",
-            "switchTo3d": "Switch to 3D",
+            "switchTo3d": "Switch to model (3D)",
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
-            "realistic": "Realistic context (Google Photorealistic 3D)",
+            "realistic": "Photo view (Google Photorealistic 3D)",
             "ai": "AI photorealistic render"
         },
         "parcelPanel": {
@@ -2641,14 +2785,32 @@
             "error": "Render failed: {{m}}",
             "need3d": "Enter 3D mode first to render the scene.",
             "captureFailed": "Could not capture the 3D scene.",
-            "emptyPrompt": "Prompt is empty."
+            "emptyPrompt": "Prompt is empty.",
+            "heightMapTitle": "Height map (white = tallest) — sent to keep heights faithful",
+            "showHeightMap": "Show height map",
+            "hideHeightMap": "Hide height map",
+            "modelLabel": "Model",
+            "keyNeeded": "API key needed",
+            "copyLink": "Copy link",
+            "share": "Share",
+            "tweet": "Share on X",
+            "tweetText": "Photorealistic view of my urban proposal",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Preparing share link…",
+            "linkCopied": "Link copied!",
+            "copyFailed": "Copy failed — long-press the link to copy it.",
+            "shareFailed": "Could not create a share link: {{m}}"
+        },
+        "aiFollow": {
+            "title": "AI render",
+            "note": "You are viewing the real 3D scene this AI image was made from."
         }
     },
     "structureEditor": {
         "ariaLabel": "Structure geometry editor",
         "titlePark": "Park editor",
         "titleSquare": "Square editor",
-        "instructions": "Choose an item, then click inside the boundary. Drag point items to move them.",
+        "instructions": "Choose an item, then click inside the boundary. Drag any item to move it.",
         "closeLabel": "Close",
         "tools": {
             "tree": "Tree",
@@ -2669,5 +2831,18 @@
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",
         "statusSaved": "Structure design saved."
+    },
+    "stationEditor": {
+        "ariaLabel": "Station geometry editor",
+        "title": "Edit station geometry",
+        "station": "Station",
+        "close": "Close",
+        "fixedPosition": "The station centre stays fixed. Rotate the station around it.",
+        "rotation": "Rotation",
+        "platformHeight": "Platform height above ground",
+        "hint": "The map preview updates while you edit.",
+        "cancel": "Cancel",
+        "save": "Done",
+        "saved": "Station geometry saved."
     }
 }

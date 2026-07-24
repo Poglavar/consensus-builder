@@ -22,8 +22,10 @@ The current model is deliberately two-dimensional:
 - `proposals/create.js` stores `definition.points`, `segments`, `profile`, `width` and one 2D `polygon`;
 - `proposal-manager.js` subtracts that entire polygon from every affected parent parcel;
 - `corridor-profile.js` offsets the centreline into 2D cross-section strips and finds junctions in plan;
-- `three-mode.js` converts those strip polygons to flat `ShapeGeometry` at one fixed Z value;
-- the realistic Cesium view currently renders proposed buildings, but not corridor cross-sections.
+- abstract `three-mode.js` still converts ordinary strip polygons to flat `ShapeGeometry` at one
+  fixed Z value;
+- realistic/photoreal mode now rebuilds level-0 roads as temporary terrain-following ruled ribbons,
+  but explicit −1/0/+1 relative profiles have not yet been threaded through that path.
 
 Consequently, merely adding `level` to the UI would still cut surface parcels under bridges and above tunnels, create false at-grade junctions, and render the road flat in 3D.
 
@@ -106,7 +108,10 @@ The current flat `ShapeGeometry` cannot represent a ramp. Add a corridor ribbon-
 
 This produces one continuous mesh for every cross-section strip. The first implementation can use linear ramps; a subsequent pass should introduce vertical curves at grade changes so vehicles do not encounter an instantaneous pitch change.
 
-In abstract 3D, Z is directly relative to the flat ground plane. In realistic Cesium mode, sample terrain along the resampled centreline and add the proposal's relative Z before building corridor primitives. This is new work because `photoreal-mode.js` currently adds proposed buildings only.
+In abstract 3D, Z is directly relative to the flat ground plane. In realistic/photoreal mode, the
+implemented level-0 path already samples the visible Google mesh at ≤4 m stations and builds all
+cross-section strips from one shared formation. Future level support should add the proposal's
+relative profile to that formation rather than introducing a second drape or flat corridor path.
 
 For level −1, render terrain/parcel ground semi-transparent or provide a `Prikaži podzemno` toggle; otherwise a correct tunnel mesh will be invisible by design. Bridges should eventually gain piers and tunnel portals, but those are decorations and should follow the core ribbon implementation.
 
@@ -142,7 +147,8 @@ The applied 2D map should show that edge with a purple dashed liner and portal m
 3. **2D applied rendering:** per-edge level overlays and Z-aware junction classification.
 4. **Abstract 3D:** ribbon meshes, elevated decorations and underground visibility toggle.
 5. **Surface impact:** derive and persist both footprints; cut only the surface footprint; add mixed-level apply/unapply tests.
-6. **Realistic 3D:** terrain sampling and Cesium corridor primitives.
+6. **Realistic 3D:** add explicit level offsets, ramps and structures to the existing Google-mesh
+   station formation and Three.js corridor primitives.
 7. **Structural detail:** portals, bridge supports, vertical curves and explicit spatial rights.
 
 ## Required regression cases

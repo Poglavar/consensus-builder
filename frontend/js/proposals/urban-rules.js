@@ -68,12 +68,12 @@ function handleUrbanRuleTypologyClick(typologyKey = 'block', options = {}) {
         }
     });
 
-    if (!targetButton) return;
+    if (!targetButton) return false;
     // Allow 'block', 'row', and 'parcelBased' typologies
     const supportedTypologies = ['block', 'row', 'parcelBased'];
     if (targetButton.disabled || !supportedTypologies.includes(typologyKey)) {
         targetButton.classList.remove('selected');
-        return;
+        return false;
     }
 
     if (!skipLaunch) {
@@ -81,21 +81,21 @@ function handleUrbanRuleTypologyClick(typologyKey = 'block', options = {}) {
     }
 
     if (skipLaunch) {
-        return;
+        return true;
     }
 
     if (typologyKey === 'row') {
         // Row typology uses the row house flow
         currentProposalTool = 'row';
-        launchRowHouseToolForSelection();
+        return launchRowHouseToolForSelection();
     } else if (typologyKey === 'parcelBased') {
         // Parcel-based typology generates individual buildings per parcel
         currentProposalTool = 'parcelBased';
-        launchParcelBasedToolForSelection();
+        return launchParcelBasedToolForSelection();
     } else {
         // Block typology uses the buildings/urban rule flow
         currentProposalTool = 'buildings';
-        launchUrbanRuleToolForSelection();
+        return launchUrbanRuleToolForSelection();
     }
 }
 
@@ -117,7 +117,9 @@ function normalizeProposalGoalKey(rawGoal) {
     if (key === 'road-track') return 'road-track';
     if (key === 'decide-later') return 'decide-later';
     if (key === 'reparcellization') return 'reparcellization';
-    if (key === 'park' || key === 'square' || key === 'lake') return key;
+    if (key === 'park' || key === 'square' || key === 'lake' || key === 'station' || key === 'transit-station') {
+        return key === 'transit-station' ? 'station' : key;
+    }
     if (key === 'buildings') return 'buildings';
     if (key === 'single') return 'single';
     if (key === 'row') return 'row';
@@ -286,12 +288,28 @@ function setProposalLandUseMode(key) {
     document.querySelectorAll('input[name="proposalLandUse"]').forEach(r => { r.checked = (r.value === key); });
 }
 
+async function selectFreshProposalLandUse(key, options = {}) {
+    // Park/square/lake have no separate geometry editor, so their user-triggered land-use choice
+    // is the creation boundary where the shared whole-block offer belongs.
+    if (['park', 'square', 'lake'].includes(key)
+        && typeof shouldStopFreshProposalForWholeBlock === 'function'
+        && await shouldStopFreshProposalForWholeBlock(key)) {
+        return false;
+    }
+    selectLandUse(key, options);
+    return true;
+}
+
 function onProposalLandUseChange() {
     const sel = document.querySelector('input[name="proposalLandUse"]:checked');
-    selectLandUse(sel ? sel.value : 'as-is');
+    return selectFreshProposalLandUse(sel ? sel.value : 'as-is');
 }
 
 function selectLandUse(key, { skipChecks = false } = {}) {
+    if (key === 'decide-later') {
+        console.warn('[proposals] Merge / Decide Later is no longer a creatable goal.');
+        return false;
+    }
     if (!skipChecks && key === 'lake') {
         const selection = getCurrentParcelSelectionContext();
         const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
@@ -307,8 +325,8 @@ function selectLandUse(key, { skipChecks = false } = {}) {
         setProposalParcelsMode('as-is', { lock: true, reason: luLabel });   // a rule doesn't change parcels
         setProposalOwnershipMode('no-change', { lock: true, reason: luLabel }); // or transfer ownership
     } else if (PROPOSAL_PUBLIC_GOOD_USES.has(key)) {
-        // Public goods consolidate the footprint — but a single parcel has nothing to merge.
-        setProposalParcelsMode(proposalSingleParcelSelection ? 'as-is' : 'merge', { lock: true, reason: luLabel });
+        // Public goods can span several selected parcels without changing cadastral boundaries.
+        setProposalParcelsMode('as-is', { lock: true, reason: luLabel });
         setProposalOwnershipMode('to-city');               // default (overridable)
     } else if (key === 'single') {
         // Build on the parcels as they are: like Urban Rule, Building(s) neither merges
@@ -385,8 +403,8 @@ function initProposalFacets(overrideGoal) {
 
     const g = overrideGoal ? (typeof normalizeGoalKey === 'function' ? normalizeGoalKey(overrideGoal) : overrideGoal) : null;
     if (!g || g === 'as-is') { syncProposalFacets(); return; }
+    if (g === 'decide-later') { syncProposalFacets(); return; }
     if (g === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
-    if (g === 'decide-later') { setProposalParcelsMode('merge'); onProposalParcelsChange(); return; }
     if (g === 'ownership-transfer' || g === 'ownership-transfer-to-me' || g === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }
@@ -473,15 +491,17 @@ function setProposalMainType(type, options = {}) {
     }
 }
 
-function launchUrbanRuleToolForSelection() {
+async function launchUrbanRuleToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the urban rule tool.');
-        return;
+        return false;
     }
+    if (typeof shouldStopFreshProposalForWholeBlock === 'function'
+        && await shouldStopFreshProposalForWholeBlock('urban-rule', selection)) return false;
     if (typeof openUrbanRuleForParcels !== 'function' && typeof openBlockifyForParcels !== 'function') {
         updateStatus('Urban rule generator is unavailable.');
-        return;
+        return false;
     }
     const opener = (typeof openUrbanRuleForParcels === 'function') ? openUrbanRuleForParcels : openBlockifyForParcels;
     // Reopen on the existing design (a copied proposal, or your own in-progress edits) rather than
@@ -492,6 +512,7 @@ function launchUrbanRuleToolForSelection() {
         parcels: selection.layers,
         initialState: (seed && typeof buildBlockifySeed === 'function') ? buildBlockifySeed(seed) : null
     });
+    return true;
 }
 
 function handleProposalToolButton(toolKey) {
@@ -500,12 +521,12 @@ function handleProposalToolButton(toolKey) {
     // set the proposal goal programmatically — route every goal through the facet model
     // so the three persistent sections (Land use / Parcels / Ownership) stay in sync.
     const key = (typeof normalizeGoalKey === 'function' ? (normalizeGoalKey(toolKey) || toolKey) : toolKey);
+    if (key === 'decide-later') return false;
     if (key === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
-    if (key === 'decide-later') { setProposalParcelsMode('merge'); onProposalParcelsChange(); return; }
     if (key === 'ownership-transfer' || key === 'ownership-transfer-to-me' || key === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }
-    selectLandUse(key, { skipChecks: true }); // land use (square/park/lake/single/road-track/urban-rule)
+    return selectFreshProposalLandUse(key, { skipChecks: true }); // land use (square/park/lake/single/road-track/urban-rule)
 }
 
 function resolveStructureProposal(proposal, options = {}) {

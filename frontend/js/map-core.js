@@ -40,11 +40,13 @@ let TOTAL_SPENT = 0; // Total amount spent on roads in EUR
 // Global map variables
 // buildingLayer draws the GDI footprints — the WORKING SET (object_id), the same objects the 3D
 // meshes and the carve use. dguBuildingLayer draws the DGU cadastre (zgrada_id) as a pure visual
-// reference. They are independent: both can be on at once, which is how you SEE the two surveys
-// disagree. NEITHER is ever read by detection — that reads buildingFeaturePool (the DATA), so no
-// checkbox can change what a corridor cuts.
+// reference. osmBuildingLayer draws the OSM footprints behind the basemap — a third visual
+// reference that lines up with the tiles the user sees. They are independent: any of them can be on
+// at once, which is how you SEE the surveys disagree. NONE is ever read by detection — that reads
+// buildingFeaturePool (the DATA), so no checkbox can change what a corridor cuts.
 let buildingLayer = null;
 let dguBuildingLayer = null;
+let osmBuildingLayer = null;
 let roadLayer = null;
 let blockLayer = null;
 let currentCenterline = null;
@@ -397,6 +399,10 @@ async function fetchBuildings(boundsOverride = null) {
         if (mergedFeatures.length > BUILDING_POOL_CAP) {
             // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
             mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
+            // Coverage describes what is PRESENT in the pool, not merely what was fetched once.
+            // Evicting features while retaining their old coverage made later corridor scans skip
+            // the refetch and then conclude that the evicted buildings did not exist.
+            buildingFetchCoverage.length = 0;
         }
         // The full pool survives demolition filtering, so unapplying the road brings them back.
         window.buildingFeaturePool = mergedFeatures;
@@ -472,21 +478,73 @@ function hideDguBuildingLayer() {
 }
 window.hideDguBuildingLayer = hideDguBuildingLayer;
 
-// Rebuild the visible 2D GDI building layer from the pooled features, minus every building an
-// APPLIED corridor has demolished. Called after fetches and after corridor apply/unapply/edit.
+// The OSM buildings reference layer — the community footprints behind the basemap, so its outlines
+// coincide with the tiles the user sees (GDI/DGU come from other surveys and drift from them). Live
+// via Overpass through our backend (cached by viewport box), and like DGU it is purely visual: it
+// feeds nothing, is never detected against and is never cut. The bbox is WGS84 straight off the map
+// bounds — no HTRS96 conversion, unlike the GDI/DGU fetches.
+async function fetchOsmBuildings(boundsOverride = null) {
+    if (!boundsOverride) {
+        try {
+            const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+            if (!isFinite(z) || z < 17 || z > 19) return;
+        } catch (_) { /* noop */ }
+    }
+    try {
+        const bounds = boundsOverride || map.getBounds();
+        const sw = bounds.getSouthWest();
+        const ne = bounds.getNorthEast();
+        const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
+        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
+        const data = await response.json();
+
+        if (osmBuildingLayer) {
+            try { map.removeLayer(osmBuildingLayer); } catch (_) { }
+        }
+        osmBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (data?.features || []) }, {
+            // Reference only: it must never intercept clicks meant for the parcels beneath it.
+            interactive: false,
+            style: { fillColor: '#059669', fillOpacity: 0.08, color: '#059669', weight: 1, dashArray: '4 3' }
+        });
+        const checkbox = document.getElementById('showBuildingsOsm');
+        if (!checkbox || checkbox.checked) osmBuildingLayer.addTo(map);
+        try { window.osmBuildingLayer = osmBuildingLayer; } catch (_) { }
+    } catch (error) {
+        console.error('Error fetching OSM building data:', error);
+    }
+}
+window.fetchOsmBuildings = fetchOsmBuildings;
+
+function hideOsmBuildingLayer() {
+    if (osmBuildingLayer) {
+        try { map.removeLayer(osmBuildingLayer); } catch (_) { }
+    }
+}
+window.hideOsmBuildingLayer = hideOsmBuildingLayer;
+
+// Rebuild the visible 2D GDI building layer from the pooled features, recoloured by what every
+// APPLIED corridor did to each building. Called after fetches and after corridor apply/unapply/edit.
 //
 // This is a VIEW of the pool, never the other way round. The pool is the working set and stays
-// complete; only what is DRAWN is filtered here.
+// complete; only how each building is DRAWN is decided here. The persistent outcome colour scheme:
+// destroyed = dashed red outline (kept visible so the road reads through), cut = orange remainder,
+// tunnelled = yellow, untouched = blue (see buildingOutcomeStyle in corridor-tunnel.js).
 function rebuildBuildingLayerFromPool() {
     const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
     // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-    // Records WITHOUT `remainder` hide the building entirely; records WITH it are PARTIAL
-    // demolitions — the building keeps standing with the remainder footprint.
+    // Records WITHOUT `remainder` are a full demolition; records WITH it are PARTIAL demolitions
+    // (the building keeps standing with the remainder footprint).
     const demolishedById = new Map();
     collectDemolishedBuildingRecords().forEach(record => {
         if (record && record.id) demolishedById.set(String(record.id), record);
     });
-    // Identity must be the SAME one demolition records were written with (corridor-tunnel.js):
+    const tunnelledIds = (typeof window.collectTunnelledBuildingIds === 'function')
+        ? window.collectTunnelledBuildingIds() : new Set();
+    // Identity must be the SAME one demolition/tunnel records were written with (corridor-tunnel.js):
     // the GDI object_id.
     const keyOf = (feature) => {
         if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
@@ -494,13 +552,20 @@ function rebuildBuildingLayerFromPool() {
         const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
         return (direct !== undefined && direct !== null) ? String(direct) : '';
     };
-    const visible = demolishedById.size
+    const classify = (typeof window.classifyBuildingOutcome === 'function') ? window.classifyBuildingOutcome : null;
+    // Tag each feature with its persistent outcome (and swap to the remainder footprint for a cut) so
+    // the style function below can colour it. No recolouring needed when nothing was touched.
+    const features = (demolishedById.size || tunnelledIds.size)
         ? pool.map(feature => {
-            const record = demolishedById.get(keyOf(feature));
-            if (!record) return feature;
-            if (!record.remainder) return null; // full demolition
-            return { ...feature, geometry: record.remainder };
-        }).filter(Boolean)
+            const id = keyOf(feature);
+            const record = demolishedById.get(id);
+            const outcome = classify
+                ? classify(id, { demolishedById, tunnelledIds })
+                : (record ? (record.remainder ? 'cut' : 'destroyed') : (tunnelledIds.has(id) ? 'tunnelled' : null));
+            // A cut draws its standing remainder; destroyed/tunnelled keep the full footprint.
+            const geometry = (record && record.remainder) ? record.remainder : feature.geometry;
+            return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
+        })
         : pool;
     // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
@@ -510,16 +575,13 @@ function rebuildBuildingLayerFromPool() {
     if (buildingLayer) {
         map.removeLayer(buildingLayer);
     }
-    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features: visible }, {
+    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
         // Context only: existing buildings must never intercept clicks meant for the parcels
         // beneath them (they are inspectable in 3D, not in 2D).
         interactive: false,
-        style: {
-            fillColor: 'blue',
-            fillOpacity: 0.2,
-            color: 'blue',
-            weight: 1
-        }
+        style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
+            ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
+            : { fillColor: 'blue', fillOpacity: 0.2, color: 'blue', weight: 1 }
     });
     if (shouldShow) buildingLayer.addTo(map);
     try { window.buildingLayer = buildingLayer; } catch (_) { }
@@ -558,6 +620,12 @@ function setupMapEventHandlers() {
             });
         }
 
+        // The OSM reference layer's whole point is to match the tiles in view, so it follows the
+        // map: refetch the new viewport when its checkbox is on (the backend caches by box, and the
+        // fetch is zoom-gated, so a pan is cheap and a repeat view is free).
+        const osmBox = document.getElementById('showBuildingsOsm');
+        if (osmBox && osmBox.checked && typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+
         isMapMoving = false;
     });
 
@@ -584,6 +652,7 @@ function setupMapEventHandlers() {
                 try { map.removeLayer(window.buildingLayer); } catch (_) { }
             }
             hideDguBuildingLayer();
+            hideOsmBuildingLayer();
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
         } else {
             // If user zoomed back in and parcels are enabled, ensure layer is added
@@ -726,4 +795,4 @@ window.blockLayer = blockLayer;
 window.currentCenterline = currentCenterline;
 window.currentWidthLines = currentWidthLines;
 window.TOTAL_SPENT = TOTAL_SPENT;
-window.SQM_AVG_PRICE = SQM_AVG_PRICE; 
+window.SQM_AVG_PRICE = SQM_AVG_PRICE;

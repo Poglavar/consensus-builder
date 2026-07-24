@@ -138,6 +138,14 @@
     border-radius: 50%;
 }
 
+.structure-geometry-draggable {
+    cursor: grab;
+}
+
+.structure-geometry-draggable:active {
+    cursor: grabbing;
+}
+
 .square-tree-emoji,
 .square-bench-icon {
     display: grid;

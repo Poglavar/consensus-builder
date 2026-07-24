@@ -120,6 +120,36 @@ function renderCorridorBuildingTunnels(tunnels, group, pane) {
     });
 }
 
+function renderCorridorGradeSeparations(records, group, pane) {
+    if (!Array.isArray(records) || !group) return;
+    records.forEach(record => {
+        if (!record?.from || !record?.crossing || !record?.to) return;
+        const isOverpass = record.mode === 'overpass';
+        if (!isOverpass && record.mode !== 'underpass') return;
+        const color = isOverpass ? '#d97706' : '#1d4ed8';
+        L.polyline([record.from, record.crossing, record.to], {
+            color,
+            weight: Math.max(6, Number(record.width) || 2),
+            opacity: 0.92,
+            dashArray: isOverpass ? null : '8 7',
+            lineCap: 'round',
+            interactive: false,
+            pane: pane || undefined,
+            className: `corridor-grade-separation corridor-grade-separation--${record.mode}`
+        }).addTo(group);
+        [record.from, record.to].forEach(point => L.circleMarker(point, {
+            radius: 4.5,
+            color,
+            weight: 2,
+            fillColor: '#ffffff',
+            fillOpacity: 1,
+            interactive: false,
+            pane: pane || undefined,
+            className: `corridor-grade-separation-portal corridor-grade-separation-portal--${record.mode}`
+        }).addTo(group));
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Rail lanes
 //
@@ -256,14 +286,59 @@ function renderCorridorRails(centerlines, profile, group, options = {}) {
     });
 }
 
+// Parking bay markings: the edge line where the lane meets the carriageway, and one divider per bay.
+// Many short lines per lane, so they share the rail canvas renderer rather than becoming SVG paths.
+function renderCorridorParkingBays(bays, group, pane) {
+    if (!Array.isArray(bays) || !bays.length || typeof L === 'undefined') return;
+    const renderer = corridorRailRenderer();
+    bays.forEach(bay => {
+        const isEdge = bay.kind === 'edge';
+        L.polyline(bay.line, {
+            pane: pane || undefined,
+            renderer,
+            color: '#f4f4f4',
+            weight: isEdge ? 1.5 : 1,
+            opacity: isEdge ? 0.85 : 0.7,
+            interactive: false,
+            className: `corridor-parking-marking corridor-parking-marking--${bay.kind}`
+        }).addTo(group);
+    });
+}
+
+// Direction arrows: one white filled convex ring per arrow piece (head triangle + stem rectangle),
+// painted down each motor-vehicle lane in its direction of travel.
+function renderCorridorDirectionArrows(arrows, group, pane) {
+    if (!Array.isArray(arrows) || !arrows.length || typeof L === 'undefined') return;
+    arrows.forEach(ring => {
+        L.polygon(ring, {
+            pane: pane || undefined,
+            color: '#f4f4f4',
+            weight: 0,
+            fillColor: '#f4f4f4',
+            fillOpacity: 0.9,
+            interactive: false,
+            className: 'corridor-direction-arrow'
+        }).addTo(group);
+    });
+}
+
 // Turn `[{type, polygons}]` into a LayerGroup. Surface, rails, markings, junction treatment and repeated
 // symbols are layered in that order so junction asphalt suppresses through-lines and crossings stay on top.
 // `centerlines` + `profile` are what the strips were built from; passing them lets the rail lanes among
 // them lay their rails, so no caller can draw a cross-section and forget its track.
+// A CSS-safe per-corridor class so a single corridor's strips can be targeted (e.g. hidden while the
+// building-impact tour outlines just that road). Same sanitiser used on the render and the toggle
+// sides, so they always agree.
+function corridorOwnerClass(id) {
+    if (id === undefined || id === null || id === '') return null;
+    return 'corridor-owner-' + String(id).replace(/[^a-zA-Z0-9_-]/g, '-');
+}
+
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
     const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : 0.85;
+    const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
         const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
@@ -276,7 +351,7 @@ function renderCorridorStrips(strips, options = {}) {
                 fillOpacity,
                 interactive: false,
                 pane: options.pane || undefined,
-                className: `corridor-strip corridor-strip--${strip.type}`
+                className: `corridor-strip corridor-strip--${strip.type}${ownerClass}`
             }).addTo(group);
         });
     });
@@ -287,6 +362,14 @@ function renderCorridorStrips(strips, options = {}) {
             railColor: options.railColor,
             sleeperColor: options.sleeperColor
         });
+        // Parking bays come with the cross-section, like rails: a parking lane in the profile paints its
+        // bays right here, so drawn roads, applied roads and imported OSM streets all get them at once.
+        if (typeof buildCorridorParkingBays === 'function') {
+            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile), group, options.pane);
+        }
+        if (typeof buildCorridorDirectionArrows === 'function') {
+            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile), group, options.pane);
+        }
     }
     renderCorridorLaneMarkings(options.markings, group, options.pane);
     renderCorridorJunctions(options.junctions, group, options.pane);
@@ -421,6 +504,25 @@ function forwardAppliedCorridorClick(proposal, event) {
     }
 }
 
+// Applied road PROPOSALS get a hover outline (parcels do; roads only had click). Module-scoped so a
+// mouseout on one hit target doesn't wipe the highlight of a corridor the cursor just moved onto.
+let _appliedCorridorHoverKey = null;
+
+function showAppliedCorridorHover(proposalKey, footprintFeature) {
+    if (!footprintFeature || typeof highlightFeaturesForHover !== 'function') return;
+    if (window.roadDrawingMode === true) return; // while drawing, a road is a surface, not a hover target
+    if (_appliedCorridorHoverKey === proposalKey) return; // already shown for this corridor
+    _appliedCorridorHoverKey = proposalKey;
+    highlightFeaturesForHover([footprintFeature]);
+}
+
+function clearAppliedCorridorHover(proposalKey) {
+    // A late mouseout must not wipe a corridor the cursor already moved onto.
+    if (proposalKey != null && _appliedCorridorHoverKey !== proposalKey) return;
+    _appliedCorridorHoverKey = null;
+    if (typeof highlightFeaturesForHover === 'function') highlightFeaturesForHover([]);
+}
+
 function renderAppliedCorridorHitTargets(strips, proposal, group, definition, segmentEntries = null) {
     if (!Array.isArray(strips) || !proposal || !group) return;
     ensureCorridorHitPane();
@@ -444,28 +546,44 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
         pane: CORRIDOR_HIT_PANE,
         className: 'corridor-applied-hit-target'
     };
+    // The full corridor footprint, outlined on hover so an applied road reacts to the cursor.
+    const footprint = definition && definition.polygon;
+    let footprintFeature = null;
+    if (footprint) {
+        try {
+            const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };
+            footprintFeature = { type: 'Feature', properties: {}, geometry };
+        } catch (_) { }
+    }
+    const attachHitBehaviour = (layer) => {
+        layer.on('mouseover', () => showAppliedCorridorHover(proposalKey, footprintFeature));
+        layer.on('mouseout', () => clearAppliedCorridorHover(proposalKey));
+    };
     strips.forEach(strip => {
         (strip.polygons || []).forEach(polygon => {
-            L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); }).addTo(group);
+            const hit = L.polygon(polygon, hitOptions)
+                .on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(hit);
+            hit.addTo(group);
         });
     });
     // The strips leave gaps (junction fills, verges, rounding); a hit target over the FULL
     // footprint keeps every click within the corridor on the corridor, instead of falling
     // through to the parcel underneath.
-    const footprint = definition && definition.polygon;
     if (footprint) {
         try {
             const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };
             // interactive/bubbling are LAYER options, not styles — passed at the geoJSON level so
             // the created polygons inherit them (bubbling must stay off or a click would reach
             // the map too and, while drawing, place a second point).
-            L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
+            const fp = L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
                 style: hitOptions,
                 pane: CORRIDOR_HIT_PANE,
                 interactive: true,
                 bubblingMouseEvents: false
-            }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); }).addTo(group);
+            }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(fp);
+            fp.addTo(group);
         } catch (_) { }
     }
     // Per-segment hit polygons go on LAST (topmost in the pane), so a click inside a segment's
@@ -475,9 +593,10 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             if (!entry.segmentId || !Array.isArray(entry.points) || entry.points.length < 2) return;
             const polygon = calculateRoadPolygon(entry.points, entry.width);
             if (!polygon) return;
-            L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); })
-                .addTo(group);
+            const hit = L.polygon(polygon, hitOptions)
+                .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); });
+            attachHitBehaviour(hit);
+            hit.addTo(group);
         });
     }
 }
@@ -487,9 +606,7 @@ function isAppliedCorridorProposal(proposal) {
     const definition = corridorProposalDefinition(proposal);
     if (!definition) return false;
 
-    const status = String(proposal.status || '').toLowerCase();
-    const roadStatus = String((proposal.roadProposal && proposal.roadProposal.status) || '').toLowerCase();
-    return status === 'applied' || status === 'executed' || roadStatus === 'applied' || roadStatus === 'executed';
+    return isApplied(proposal, proposal.roadProposal);
 }
 
 function clearAppliedCorridorStrips() {
@@ -527,6 +644,7 @@ function refreshAppliedCorridorStrips() {
 
         const group = L.layerGroup();
         const allStrips = [];
+        const ownerClass = corridorOwnerClass((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         entries.forEach(entry => {
             const strips = buildCorridorStrips([entry.points], entry.profile);
             const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
@@ -535,7 +653,7 @@ function refreshAppliedCorridorStrips() {
             const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
-                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [],
+                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [], ownerClass,
                 // A placed corridor's rails are black, like the asphalt it is laid in.
                 centerlines: [entry.points], profile: entry.profile,
                 railColor: '#000000', sleeperColor: '#666666'
@@ -554,7 +672,22 @@ function refreshAppliedCorridorStrips() {
         group.addTo(layer);
         renderAppliedCorridorHitTargets(allStrips, proposal, layer, definition, entries);
         const corridorId = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
-        entries.forEach(entry => renderedCorridors.push({ centerline: [entry.points], profile: entry.profile, corridorId }));
+        const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
+            ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
+            : [];
+        entries.forEach(entry => {
+            // A grade-separated span crosses in plan but is deliberately not a network junction.
+            // Remove only those edges from the render-only centerlines fed to the cross-road
+            // junction detector; the complete road remains visible in the strip layer above.
+            const junctionRuns = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
+                ? corridorSurfaceRuns([entry.points], gradeSpans)
+                : [entry.points];
+            if (junctionRuns.length) renderedCorridors.push({
+                centerline: junctionRuns,
+                profile: entry.profile,
+                corridorId
+            });
+        });
         drawn += 1;
         } catch (error) {
             // One corrupt road must not strip the asphalt off EVERY road on the map.
@@ -574,12 +707,13 @@ function refreshAppliedCorridorStrips() {
     // their own over every applied corridor — including ones whose strips failed to build.
     proposals.forEach(proposal => {
         const definition = corridorProposalDefinition(proposal);
-        if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
-        const status = String(proposal.status || '').toLowerCase();
-        const roadStatus = String(proposal.roadProposal?.status || '').toLowerCase();
-        if (!['applied', 'executed'].includes(status) && !['applied', 'executed'].includes(roadStatus)) return;
-        renderCorridorBuildingTunnels(definition.tunnels, layer, CORRIDOR_STRIPS_PANE);
-        drawn += 1;
+        if (!definition) return;
+        if (!isApplied(proposal, proposal.roadProposal)) return;
+        const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels : [];
+        const gradeSeparations = Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : [];
+        if (tunnels.length) renderCorridorBuildingTunnels(tunnels, layer, CORRIDOR_STRIPS_PANE);
+        if (gradeSeparations.length) renderCorridorGradeSeparations(gradeSeparations, layer, CORRIDOR_STRIPS_PANE);
+        if (tunnels.length || gradeSeparations.length) drawn += 1;
     });
 
     // Applied roads cut through parks/squares/lakes at render time — any corridor change
@@ -588,6 +722,8 @@ function refreshAppliedCorridorStrips() {
     try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
     try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
     try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+    // Same for the paved/green surround of a freeform building proposal, which is cut the same way.
+    try { if (typeof window.updateBuildingGroundLayer === 'function') window.updateBuildingGroundLayer(); } catch (_) { }
     renderSelectedCorridorSegmentHighlight();
 
     // Demolitions live on applied corridors: any corridor change can raze or restore buildings.
@@ -620,7 +756,10 @@ function scheduleCorridorStripRefresh() {
 if (typeof window !== 'undefined') {
     window.renderCorridorStrips = renderCorridorStrips;
     window.renderCorridorRails = renderCorridorRails;
+    window.renderCorridorParkingBays = renderCorridorParkingBays;
+    window.renderCorridorDirectionArrows = renderCorridorDirectionArrows;
     window.renderCorridorBuildingTunnels = renderCorridorBuildingTunnels;
+    window.renderCorridorGradeSeparations = renderCorridorGradeSeparations;
     window.isAppliedCorridorProposal = isAppliedCorridorProposal;
     window.setCorridorProfilePreview = setCorridorProfilePreview;
     window.clearCorridorProfilePreview = clearCorridorProfilePreview;
@@ -629,6 +768,7 @@ if (typeof window !== 'undefined') {
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;
     window.CORRIDOR_STRIPS_PANE = CORRIDOR_STRIPS_PANE;
+    window.corridorOwnerClass = corridorOwnerClass;
 
     // Drop the amber selected-segment highlight the moment the selection changes to anything else
     // (another road, a parcel/building, or nothing). renderSelectedCorridorSegmentHighlight already
