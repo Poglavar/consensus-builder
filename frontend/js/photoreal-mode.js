@@ -127,6 +127,11 @@
     let seamCapSegments = 0;
     let terrainRefreshTimer = null;
     let terrainRefreshTracker = null;
+    // One-shot latch: the first frame after grounding where the tile mesh reads as fully loaded
+    // forces a final settle refit, so a road seated on partial terrain gets re-fitted to the settled
+    // ground even if no tile EVENT happens to fire after loadProgress crosses the threshold. Reset on
+    // every (re-)seat so a later session gets its own final pass.
+    let forcedLoadCompleteRefit = false;
     // One snapshot/cache per carve rebuild. Direct road stations otherwise repeat the same
     // unaccelerated tile-tree raycasts for the centre, edge, seam and curtain probes.
     let tileSurfaceMeshes = null;
@@ -1985,32 +1990,42 @@
         terrainRefreshTimer = null;
         terrainRefreshTracker = window.__photorealGround.createTerrainRefreshTracker(
             TERRAIN_REFRESH_MAX_REFITS);
+        forcedLoadCompleteRefit = false;
         publishTerrainRefreshState('idle');
+    }
+
+    // The mesh has not finished streaming — a refit now is fitting to partial ground, so it must not
+    // spend the bounded post-load budget (see photoreal-ground.js). loadProgress is the renderer's
+    // own 0..1 across all pending tiles; treat "essentially 1" as loaded so a stuck 0.999 still ends.
+    const TILES_LOADED_THRESHOLD = 0.995;
+    function tilesStillLoading() {
+        if (!tiles) return false;
+        const progress = Number(tiles.loadProgress);
+        return Number.isFinite(progress) && progress < TILES_LOADED_THRESHOLD;
     }
 
     function scheduleSettledTerrainRefresh(reason) {
         if (!active || !grounded) return;
         if (!terrainRefreshTracker) resetTerrainRefreshTracking();
         window.__photorealGround.noteTerrainSourceChange(terrainRefreshTracker, reason);
-        if (terrainRefreshTracker.refreshes >= terrainRefreshTracker.maxRefreshes) {
-            publishTerrainRefreshState('budget-exhausted');
-            return;
-        }
+        // Whether we can still refit depends on the load phase, decided at CLAIM time below — a
+        // pre-check on the bounded budget alone would wrongly declare exhaustion mid-stream and
+        // strand a half-fit road. Arm the timer and let claimTerrainRefresh be the authority.
         if (terrainRefreshTimer) clearTimeout(terrainRefreshTimer);
         publishTerrainRefreshState('waiting-for-quiet');
         terrainRefreshTimer = setTimeout(function () {
             terrainRefreshTimer = null;
             if (!active || !grounded || !terrainRefreshTracker) return;
-            const claim = window.__photorealGround.claimTerrainRefresh(terrainRefreshTracker);
+            const stillLoading = tilesStillLoading();
+            const claim = window.__photorealGround.claimTerrainRefresh(
+                terrainRefreshTracker, { stillLoading: stillLoading });
             if (!claim) {
-                publishTerrainRefreshState(terrainRefreshTracker.refreshes
-                    >= terrainRefreshTracker.maxRefreshes ? 'budget-exhausted' : 'up-to-date');
+                publishTerrainRefreshState('up-to-date-or-exhausted');
                 return;
             }
             terrainGrid = null;
             rebuildCarveMask();
-            publishTerrainRefreshState(claim.refresh >= claim.maxRefreshes
-                ? 'budget-exhausted' : 'applied', claim);
+            publishTerrainRefreshState(claim.provisional ? 'applied-provisional' : 'applied', claim);
             try {
                 window.dispatchEvent(new CustomEvent('photorealTerrainRefit', { detail: claim }));
             } catch (_) { }
@@ -2172,6 +2187,17 @@
             }
             tryLockGround(dtS);
         } else if (maskScene && internals.controls && internals.controls.target) {
+            // The road may have seated on partial terrain (a slow/bursty stream, or the LOCK_MAX_WAIT
+            // fallback seating below 95%). The settle refit is normally driven by tile events, but if
+            // the stream simply goes quiet at full load without one more event, the last refit stayed
+            // provisional — a road fitted to incomplete ground, i.e. the ski jump. Force ONE final
+            // pass the first grounded frame the mesh reads as fully loaded; tilesStillLoading() will
+            // then be false, so it converges and re-fits to the settled ground.
+            if (!forcedLoadCompleteRefit && !tilesStillLoading()
+                && tiles.group && tiles.group.children.length > 0) {
+                forcedLoadCompleteRefit = true;
+                scheduleSettledTerrainRefresh('load-complete');
+            }
             // Slide the carve window with the orbit target; a slide is one small texture render.
             const t = internals.controls.target;
             const dx = t.x - maskCenterX;
