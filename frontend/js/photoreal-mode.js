@@ -403,6 +403,11 @@
     const MASK_EDGE_OWNERSHIP_SCENE_M = MASK_HALF_DIAGONAL_SCENE_M + MASK_EDGE_GUARD_SCENE_M;
     const MESH_SEAM_RETAINED_OVERLAP_SCENE_M = MASK_EDGE_OWNERSHIP_SCENE_M;
     const MESH_SEAM_GRID_CELL_M = 16;
+    // Who owns a mask texel when classes overlap. Kept in photoreal-protect.js so a node test can
+    // assert the ladder's one load-bearing property — protection draws last — without a browser.
+    const MASK_ORDER_FALLBACK = { keepVeg: 0, full: 1, roadEntry: 2, roadPatch: 3, protect: 4 };
+    const maskOrder = () => (window.__photorealProtect && window.__photorealProtect.MASK_ORDER)
+        || MASK_ORDER_FALLBACK;
     // Padding is computed at runtime because authored widths are true metres while the mask and
     // Google tiles live in locally inflated Web-Mercator scene metres.
     const ROAD_FOUNDATION_TOP_OFFSET_M = 0.04; // 1 cm below the lowest visible road strip
@@ -415,6 +420,7 @@
     let maskShapesGroup = null;
     let maskMaterial = null;
     let maskMaterialRoad = null; // blue + alpha mask = road class + encoded local formation height
+    let maskMaterialProtect = null; // all channels cleared = "a building still stands here, do not cut"
     let apronGroup = null;
     let apronMaterial = null;
     let apronMaterialWater = null;   // lake cap
@@ -695,6 +701,9 @@
             depthWrite: false
         });
         maskMaterialPark = classMaskMaterial(0, 1, 0);  // keep-veg (ground only)
+        // Clearing every channel (NoBlending overwrites RGBA) puts a texel back into "no cut". Drawn
+        // last, this is how a standing building's facade survives a road that runs up to its wall.
+        maskMaterialProtect = classMaskMaterial(0, 0, 0);
         // DOUBLE-SIDED, like the mask: this material paints both the flat cap and the curtain
         // walls, and either can face the camera from either side depending on ring winding — a
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
@@ -829,7 +838,7 @@
             geometry.setAttribute('roadFloor', new THREE.Float32BufferAttribute(floors, 1));
             const mesh = new THREE.Mesh(geometry, maskMaterialRoad);
             mesh.frustumCulled = false;
-            mesh.renderOrder = 3;
+            mesh.renderOrder = maskOrder().roadPatch;
             mesh.userData.proposalId = patch.proposalId;
             mesh.userData.segmentId = patch.segmentId;
             group.add(mesh);
@@ -1570,6 +1579,76 @@
         return built.segmentCount;
     }
 
+    // lng/lat bbox of everything being carved, padded, so building protection only considers the
+    // buildings that could actually meet a cut.
+    function carveBoundsLngLat(entries) {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        (entries || []).forEach(function (entry) {
+            polygonsOf(entry && entry.geometry).forEach(function (rings) {
+                (rings[0] || []).forEach(function (c) {
+                    if (c[0] < minX) minX = c[0]; if (c[0] > maxX) maxX = c[0];
+                    if (c[1] < minY) minY = c[1]; if (c[1] > maxY) maxY = c[1];
+                });
+            });
+        });
+        if (!isFinite(minX)) return null;
+        const pad = 0.0005; // ~50 m, comfortably past any protect collar
+        return [minX - pad, minY - pad, maxX + pad, maxY + pad];
+    }
+
+    // The context the half-space cut is missing: buildings that are still standing. Painted into the
+    // mask last, clearing every channel, so a road that runs up to a wall clears the street without
+    // shearing the facade. See photoreal-protect.js for why the collar and the removal subtraction.
+    function addBuildingProtectMeshes(group, entries) {
+        const THREE = window.THREE;
+        if (!THREE || !group) return 0;
+        if (!window.__photorealProtect || typeof collectLoadedCorridorBuildings !== 'function') {
+            // Not fatal — the carve still works, facades just get sheared as they did before — but a
+            // missing helper is a wiring bug and must not pass silently.
+            console.warn('[photoreal] building protection unavailable'
+                + (window.__photorealProtect ? '' : ' (photoreal-protect.js not loaded)'));
+            return 0;
+        }
+        const bounds = carveBoundsLngLat(entries);
+        if (!bounds) return 0;
+        let features = [];
+        try {
+            // Every survey that happens to be loaded, not just the visible one: an unprotected
+            // facade is a visible defect, and a razed building is removed from this set already.
+            features = collectLoadedCorridorBuildings({ surveys: { gdi: true, dgu: true, osm: true } }) || [];
+        } catch (error) {
+            console.warn('[photoreal] building protection: collecting buildings failed', error);
+            return 0;
+        }
+        const removals = (entries || [])
+            .filter(function (entry) { return entry && entry.mode === 'full'; })
+            .map(function (entry) { return entry.geometry; });
+        let protectedGeometries = [];
+        try {
+            protectedGeometries = window.__photorealProtect.selectProtectedBuildingFootprints(
+                features, { bounds: bounds, removals: removals });
+        } catch (error) {
+            console.warn('[photoreal] building protection: selection failed', error);
+            return 0;
+        }
+        const toXY = internals.latLngToXY;
+        let painted = 0;
+        protectedGeometries.forEach(function (geometry) {
+            try {
+                polygonShapesAndRings(geometry, toXY).forEach(function (sr) {
+                    const mesh = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), maskMaterialProtect);
+                    mesh.frustumCulled = false;
+                    // Nothing needs sealing here — an uncut column is not a hole — so no cap and no
+                    // curtain, only the mask write that takes the texel back out of every cut class.
+                    mesh.renderOrder = maskOrder().protect;
+                    group.add(mesh);
+                    painted += 1;
+                });
+            } catch (_) { /* one building must not cost the rest their protection */ }
+        });
+        return painted;
+    }
+
     // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
     // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
     // around every ring (see the curtain comment above).
@@ -1669,8 +1748,10 @@
                     const mask = new THREE.Mesh(maskGeometry, maskMat);
                     mask.frustumCulled = false;
                     // No depth buffer on the mask RT, so draw order decides overlaps: full discard
-                    // (renderOrder 1) paints over keep-veg (0), so a road through a park still clears.
-                    mask.renderOrder = road ? 2 : (keepVeg ? 0 : 1);
+                    // paints over keep-veg, so a road through a park still clears. Ladder and its
+                    // rationale live in photoreal-protect.js.
+                    mask.renderOrder = road ? maskOrder().roadEntry
+                        : (keepVeg ? maskOrder().keepVeg : maskOrder().full);
                     maskShapesGroup.add(mask);
                     if (!entry.skipCap) {
                         // The cap IS the placed structure surface seen from above: colour it by kind
@@ -1741,6 +1822,7 @@
             });
         }
         addRoadFloorPatchMeshes(maskShapesGroup, roadFloorPatches);
+        const buildingProtectShapes = addBuildingProtectMeshes(maskShapesGroup, entries);
         addRoadFoundationPatchMeshes(apronGroup, roadFoundationPatches);
         const roadVectorCollars = addRoadCollarPatchMeshes(
             apronGroup, roadFloorPatches, roadFoundationPatches);
@@ -1754,6 +1836,7 @@
                 roadFloorPatches: roadFloorPatches.length,
                 roadFoundationPatches: roadFoundationPatches.length,
                 roadVectorCollars: roadVectorCollars,
+                buildingProtectShapes: buildingProtectShapes,
                 roadSeamBoundarySegments: roadSeamBoundarySegments,
                 roadClearanceCurtainSegments: roadClearanceCurtainSegments,
                 exactRoadMasks: exactRoadProposalIds.size,
@@ -1970,6 +2053,7 @@
         maskMaterial = null;
         maskMaterialRoad = null;
         maskMaterialPark = null;
+        maskMaterialProtect = null;
         apronMaterial = null;
         apronMaterialWater = null;
         apronMaterialPark = null;
@@ -2184,6 +2268,7 @@
                     window.registerThreeModeFrameHook(onFrame);
                 }
                 active = true;
+                if (typeof window.scheduleViewAngleHint === 'function') window.scheduleViewAngleHint('photo');
                 console.log('[photoreal] reusing streamed tile session (anchor unchanged)');
                 return;
             }
@@ -2277,6 +2362,7 @@
                 window.registerThreeModeFrameHook(onFrame);
             }
             active = true;
+            if (typeof window.scheduleViewAngleHint === 'function') window.scheduleViewAngleHint('photo');
             console.log('[photoreal] streaming Google 3D Tiles anchored at '
                 + anchor.lat.toFixed(5) + ',' + anchor.lng.toFixed(5) + ' (k=' + mercatorK.toFixed(3) + ')');
         } catch (err) {
