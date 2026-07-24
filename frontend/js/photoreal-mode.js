@@ -555,6 +555,10 @@
                             geometry: region.geojson.geometry,
                             kind: 'road',
                             skipCap: true,
+                            // Our own pavement slab covers this cut, and the cut is shrunk 0.5 m
+                            // inside it — so there is no exposed shell to wall off, and a curtain
+                            // here just stands a green ribbon up out of the footway.
+                            skipCurtain: true,
                             terrainSupport: true,
                             // Shrink before cutting. The fill's outer edge sits ON the building
                             // line, so cutting to it exactly takes the facade with it — the mask is
@@ -1680,14 +1684,20 @@
                         cap.frustumCulled = false;
                         apronGroup.add(cap);
                     }
-                    sr.rings.forEach(function (ring) {
-                        const sampledRing = road && window.__photorealSeam
-                            && typeof window.__photorealSeam.densifyClosedRing === 'function'
-                            ? window.__photorealSeam.densifyClosedRing(
-                                ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
-                            : ring;
-                        addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null);
-                    });
+                    // The curtain drops a wall around the cut edge to seal the hollow Google shell.
+                    // A cut that is already covered — the pavement fill, whose own slab overhangs a
+                    // cut deliberately shrunk 0.5 m inside it — has no void to seal, and the wall
+                    // then stands up out of the pavement in apron green.
+                    if (!entry.skipCurtain) {
+                        sr.rings.forEach(function (ring) {
+                            const sampledRing = road && window.__photorealSeam
+                                && typeof window.__photorealSeam.densifyClosedRing === 'function'
+                                ? window.__photorealSeam.densifyClosedRing(
+                                    ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                                : ring;
+                            addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null);
+                        });
+                    }
                 });
             } catch (_) { /* one carve entry must not cost the rest their seal, nor block the reveal */ }
         });
