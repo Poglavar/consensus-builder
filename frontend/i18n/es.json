@@ -2848,7 +2848,12 @@
             "savingShare": "Preparando el enlace para compartir…",
             "linkCopied": "¡Enlace copiado!",
             "copyFailed": "No se pudo copiar — mantén pulsado el enlace para copiarlo.",
-            "shareFailed": "No se pudo crear el enlace para compartir: {{m}}"
+            "shareFailed": "No se pudo crear el enlace para compartir: {{m}}",
+            "errCooldown": "Espera unos segundos antes de generar otra imagen.",
+            "errQuota": "Has alcanzado tu límite de imágenes por ahora. Inténtalo más tarde.",
+            "errNoFunds": "La generación de imágenes no está disponible temporalmente. Inténtalo más tarde.",
+            "errTimeout": "La imagen tardó demasiado en generarse. Inténtalo de nuevo.",
+            "errNotConfigured": "La generación de imágenes no está disponible en este momento."
         },
         "aiFollow": {
             "title": "Render de IA",

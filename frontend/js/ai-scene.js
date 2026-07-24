@@ -334,6 +334,15 @@
             opt.disabled = !m.configured;
             sel.appendChild(opt);
         }
+        // Prod pins the model server-side: preselect it and disable the picker (the server ignores
+        // whatever the client sends anyway). Dev leaves the dropdown live for testing.
+        if (data.forced) {
+            sel.value = data.forced;
+            sel.disabled = true;
+            updateCostHint();
+            return;
+        }
+        sel.disabled = false;
         let saved = null;
         try { saved = localStorage.getItem(MODEL_STORAGE_KEY); } catch (_) { /* private mode */ }
         const usable = id => id && data.models.some(m => m.id === id && m.configured);
@@ -420,6 +429,25 @@
         populateModelSelect(); // async — fills the dropdown when the list arrives
     }
 
+    // Map a backend error {code} to a friendly, localised message. The server pins the model and
+    // enforces rate limits, so the UI must speak to cooldown / quota / no-funds specifically.
+    function messageForError(data) {
+        switch (data && data.code) {
+            case 'rate_limited_cooldown':
+                return t('threeMode.ai.errCooldown', 'Please wait a few seconds before generating another image.');
+            case 'rate_limited_quota':
+                return t('threeMode.ai.errQuota', 'You have reached your image limit for now. Please try again later.');
+            case 'no_funds':
+                return t('threeMode.ai.errNoFunds', 'Image generation is temporarily unavailable. Please try again later.');
+            case 'timeout':
+                return t('threeMode.ai.errTimeout', 'The image took too long to generate. Please try again.');
+            case 'not_configured':
+                return t('threeMode.ai.errNotConfigured', 'Image generation is not available right now.');
+            default:
+                return t('threeMode.ai.error', 'Render failed: {{m}}', { m: (data && data.error) || 'unknown error' });
+        }
+    }
+
     async function generate() {
         if (!lastCapture) return;
         const prompt = overlayEl.querySelector('.ai-scene-prompt').value.trim();
@@ -440,7 +468,7 @@
                 })
             });
             const data = await resp.json().catch(() => ({}));
-            if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
+            if (!resp.ok) { setStatus(messageForError(data), true); return; }
 
             sessionCostUsd += Number(data.cost_usd) || 0;
             const resultBox = overlayEl.querySelector('.ai-scene-result');

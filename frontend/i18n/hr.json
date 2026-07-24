@@ -2829,7 +2829,12 @@
             "savingShare": "Pripremam link za dijeljenje…",
             "linkCopied": "Link kopiran!",
             "copyFailed": "Kopiranje nije uspjelo — dugo pritisnite link da ga kopirate.",
-            "shareFailed": "Nije moguće stvoriti link za dijeljenje: {{m}}"
+            "shareFailed": "Nije moguće stvoriti link za dijeljenje: {{m}}",
+            "errCooldown": "Pričekajte nekoliko sekundi prije generiranja nove slike.",
+            "errQuota": "Dosegli ste ograničenje broja slika za sada. Pokušajte kasnije.",
+            "errNoFunds": "Generiranje slika trenutno nije dostupno. Pokušajte kasnije.",
+            "errTimeout": "Generiranje slike trajalo je predugo. Pokušajte ponovno.",
+            "errNotConfigured": "Generiranje slika trenutno nije dostupno."
         },
         "aiFollow": {
             "title": "AI prikaz",

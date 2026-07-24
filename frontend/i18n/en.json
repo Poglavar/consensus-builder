@@ -2799,7 +2799,12 @@
             "savingShare": "Preparing share link…",
             "linkCopied": "Link copied!",
             "copyFailed": "Copy failed — long-press the link to copy it.",
-            "shareFailed": "Could not create a share link: {{m}}"
+            "shareFailed": "Could not create a share link: {{m}}",
+            "errCooldown": "Please wait a few seconds before generating another image.",
+            "errQuota": "You have reached your image limit for now. Please try again later.",
+            "errNoFunds": "Image generation is temporarily unavailable. Please try again later.",
+            "errTimeout": "The image took too long to generate. Please try again.",
+            "errNotConfigured": "Image generation is not available right now."
         },
         "aiFollow": {
             "title": "AI render",

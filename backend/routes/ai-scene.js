@@ -6,6 +6,7 @@
 // we forward both (image-in + text-in -> image-out) and return the PNG plus the per-render cost.
 
 import { randomBytes } from 'crypto';
+import rateLimit from 'express-rate-limit';
 import { decodeImageDataUrl, saveImageBuffer } from '../utils/image-store.js';
 
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -110,6 +111,36 @@ const MAX_PROMPT_CHARS = 8000;
 // Gemini answers within ~30s; gpt-image at quality=high routinely exceeds 120s, and fal
 // queue-based endpoints can add cold-start wait — give the slow providers more rope.
 const PROVIDER_TIMEOUT_MS = { gemini: 120_000, openai: 300_000, xai: 300_000, fal: 300_000 };
+
+// In prod the model is pinned server-side: the client's requested model is ignored and this one is
+// used (the UI greys out the picker). Unset in dev, so the dropdown keeps working for testing.
+const FORCED_MODEL = (process.env.AI_SCENE_FORCED_MODEL && MODELS[process.env.AI_SCENE_FORCED_MODEL])
+    ? process.env.AI_SCENE_FORCED_MODEL
+    : null;
+if (process.env.AI_SCENE_FORCED_MODEL && !FORCED_MODEL) {
+    console.warn(`[ai-scene] AI_SCENE_FORCED_MODEL="${process.env.AI_SCENE_FORCED_MODEL}" is not an allowlisted model — ignoring it.`);
+}
+
+// Rate limits on the paid render endpoint (env-overridable for prod tuning). A short cooldown throttles
+// bursts (counts every attempt, so a failing provider can't be hammered); a rolling-window quota caps
+// spend per IP (counts only successful renders — a failure shouldn't burn the user's allowance).
+const RENDER_COOLDOWN_MS = Number(process.env.AI_SCENE_COOLDOWN_MS) || 20_000;
+const RENDER_QUOTA_WINDOW_MS = Number(process.env.AI_SCENE_QUOTA_WINDOW_MS) || 24 * 60 * 60 * 1000;
+const RENDER_QUOTA_MAX = Number(process.env.AI_SCENE_QUOTA_MAX) || 10;
+
+// True client IP behind Cloudflare -> nginx: CF-Connecting-IP is the real visitor; req.ip would be
+// the proxy, bucketing everyone together. Falls back to req.ip in dev where the header is absent.
+function clientIp(req) {
+    return req.headers['cf-connecting-ip'] || req.ip;
+}
+
+// Map a provider failure to a stable code the UI can localise. "No funds" spans several providers'
+// wordings (fal "Exhausted balance", OpenAI "insufficient_quota"/"billing", Gemini "RESOURCE_EXHAUSTED").
+function classifyProviderError(message) {
+    const m = String(message || '').toLowerCase();
+    if (/balance|exhaust|insufficient|quota|billing|credit|payment|locked/.test(m)) return 'no_funds';
+    return 'provider_error';
+}
 
 // Pull the raw base64 + mime out of a data URL or a bare base64 string.
 function parseImageInput(image) {
@@ -388,16 +419,50 @@ export function setupAiSceneRoute(app, pool) {
             estUsd: cfg.estUsd,
             configured: Boolean(process.env[PROVIDER_ENV_KEYS[cfg.provider]])
         }));
-        res.json({ models, default: DEFAULT_MODEL });
+        // `forced` (when set) tells the UI to preselect + disable the picker: the server pins the model.
+        res.json({ models, default: DEFAULT_MODEL, forced: FORCED_MODEL });
     });
 
-    app.post('/ai-scene/render', async (req, res) => {
-        const model = MODELS[req.body?.model] ? req.body.model : DEFAULT_MODEL;
+    // Cooldown: at most one render per IP per RENDER_COOLDOWN_MS. Counts every attempt (default
+    // skipFailedRequests=false) so a failing provider can't be hammered.
+    const renderCooldownLimiter = rateLimit({
+        windowMs: RENDER_COOLDOWN_MS,
+        limit: 1,
+        standardHeaders: true,
+        legacyHeaders: false,
+        keyGenerator: clientIp,
+        handler: (req, res) => res.status(429).json({
+            error: 'Please wait a moment before generating another image.',
+            code: 'rate_limited_cooldown',
+            retryAfterMs: RENDER_COOLDOWN_MS
+        })
+    });
+
+    // Rolling-window quota: at most RENDER_QUOTA_MAX successful renders per IP per window. Skips
+    // failed requests so a no-funds/provider error doesn't consume the visitor's allowance.
+    const renderQuotaLimiter = rateLimit({
+        windowMs: RENDER_QUOTA_WINDOW_MS,
+        limit: RENDER_QUOTA_MAX,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skipFailedRequests: true,
+        keyGenerator: clientIp,
+        handler: (req, res) => res.status(429).json({
+            error: `You have reached the limit of ${RENDER_QUOTA_MAX} images. Please try again later.`,
+            code: 'rate_limited_quota'
+        })
+    });
+
+    app.post('/ai-scene/render', renderCooldownLimiter, renderQuotaLimiter, async (req, res) => {
+        // Model is pinned server-side when FORCED_MODEL is set; otherwise honour the client's pick
+        // (dev), falling back to the default. The client's model is never trusted in prod.
+        const model = FORCED_MODEL || (MODELS[req.body?.model] ? req.body.model : DEFAULT_MODEL);
         const cfg = MODELS[model];
         const apiKey = process.env[PROVIDER_ENV_KEYS[cfg.provider]];
         if (!apiKey) {
             return res.status(501).json({
-                error: `AI scene render via ${cfg.label} is not configured: ${PROVIDER_ENV_KEYS[cfg.provider]} is missing.`
+                error: `AI scene render via ${cfg.label} is not configured: ${PROVIDER_ENV_KEYS[cfg.provider]} is missing.`,
+                code: 'not_configured'
             });
         }
 
@@ -405,13 +470,13 @@ export function setupAiSceneRoute(app, pool) {
 
         const parsed = parseImageInput(image);
         if (!parsed) {
-            return res.status(400).json({ error: 'Missing or invalid "image" (expected a PNG data URL or base64 string).' });
+            return res.status(400).json({ error: 'Missing or invalid "image" (expected a PNG data URL or base64 string).', code: 'bad_request' });
         }
         if (typeof prompt !== 'string' || !prompt.trim()) {
-            return res.status(400).json({ error: 'Missing "prompt".' });
+            return res.status(400).json({ error: 'Missing "prompt".', code: 'bad_request' });
         }
         if (prompt.length > MAX_PROMPT_CHARS) {
-            return res.status(400).json({ error: `Prompt too long (max ${MAX_PROMPT_CHARS} chars).` });
+            return res.status(400).json({ error: `Prompt too long (max ${MAX_PROMPT_CHARS} chars).`, code: 'bad_request' });
         }
 
         // Optional second image: a grayscale height map (black = ground, white = tallest) that pins
@@ -440,8 +505,11 @@ export function setupAiSceneRoute(app, pool) {
         } catch (err) {
             const aborted = err?.name === 'AbortError';
             const msg = aborted ? `timed out after ${timeoutMs / 1000}s` : err.message;
-            console.error(`[${new Date().toISOString()}] ai-scene: ${model} failed — ${msg}`);
-            return res.status(aborted ? 504 : 502).json({ error: `Image generation failed: ${msg}` });
+            const code = aborted ? 'timeout' : classifyProviderError(msg);
+            console.error(`[${new Date().toISOString()}] ai-scene: ${model} failed (${code}) — ${msg}`);
+            // no_funds is our config problem, not the client's — 502 keeps it a server-side failure,
+            // but the code lets the UI show a specific "temporarily unavailable" message.
+            return res.status(aborted ? 504 : 502).json({ error: `Image generation failed: ${msg}`, code });
         } finally {
             clearTimeout(timer);
         }
