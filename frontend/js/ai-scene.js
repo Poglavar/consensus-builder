@@ -34,23 +34,65 @@
 
     let currentShareUrl = null;
 
+    // The serial ids of every applied proposal, in the order storage returns them.
+    function collectAppliedProposals() {
+        const storage = window.proposalStorage;
+        if (!storage || typeof storage.getAllProposals !== 'function') return [];
+        const isApplied = window.isApplied;
+        const getSerial = window.getSerialProposalId;
+        const seen = new Set();
+        const out = [];
+        (storage.getAllProposals() || []).forEach(p => {
+            if (typeof isApplied === 'function' && !isApplied(p)) return;
+            const sid = (typeof getSerial === 'function') ? getSerial(p) : null;
+            if (sid == null) return;
+            const s = String(sid);
+            if (!seen.has(s)) { seen.add(s); out.push({ proposal: p, serialId: s }); }
+        });
+        return out;
+    }
+
+    // Narrow the applied set to the proposals whose footprint was inside the capture camera's view —
+    // the picture rarely shows the whole plan, so the link should not re-apply it. Returns the full
+    // applied id list unchanged whenever the frustum can't be built or the filter finds nothing (an
+    // empty share link would be worse than an over-broad one), so this only ever narrows on a
+    // confident, non-empty result.
     function collectAppliedSerialIds() {
         try {
-            const storage = window.proposalStorage;
-            if (!storage || typeof storage.getAllProposals !== 'function') return [];
-            const isApplied = window.isApplied;
-            const getSerial = window.getSerialProposalId;
-            const seen = new Set();
-            const ids = [];
-            (storage.getAllProposals() || []).forEach(p => {
-                if (typeof isApplied === 'function' && !isApplied(p)) return;
-                const sid = (typeof getSerial === 'function') ? getSerial(p) : null;
-                if (sid == null) return;
-                const s = String(sid);
-                if (!seen.has(s)) { seen.add(s); ids.push(s); }
+            const applied = collectAppliedProposals();
+            const allIds = applied.map(a => a.serialId);
+            const frustum = window.__aiSceneFrustum;
+            const internals = (typeof window.getThreeModeInternals === 'function')
+                ? window.getThreeModeInternals() : null;
+            const camera = internals && internals.camera;
+            const project = internals && internals.latLngToXY;
+            if (!frustum || !camera || typeof project !== 'function'
+                || typeof collectProposalFeatureSets !== 'function' || !window.THREE) {
+                return allIds;
+            }
+            // View-projection matrix of the exact frame the screenshot was taken from. Invert
+            // matrixWorld here rather than trust matrixWorldInverse — the latter is only refreshed
+            // by a render, and updateMatrixWorld can move matrixWorld without touching it.
+            camera.updateMatrixWorld();
+            const view = new window.THREE.Matrix4().copy(camera.matrixWorld).invert();
+            const viewProj = new window.THREE.Matrix4().multiplyMatrices(
+                camera.projectionMatrix, view);
+            const proposalsWithFeatures = applied.map(a => {
+                let features = [];
+                try {
+                    const sets = collectProposalFeatureSets(a.proposal) || {};
+                    features = Array.isArray(sets.primaryFeatures) ? sets.primaryFeatures : [];
+                } catch (_) { features = []; }
+                return { id: a.serialId, features };
             });
-            return ids;
-        } catch (_) { return []; }
+            const inView = frustum.proposalsInView(proposalsWithFeatures, {
+                elements: viewProj.elements,
+                project
+            });
+            return (Array.isArray(inView) && inView.length) ? inView : allIds;
+        } catch (_) {
+            try { return collectAppliedProposals().map(a => a.serialId); } catch (__) { return []; }
+        }
     }
 
     // Mirror of the app's resolveFrontendBaseUrl: live origin for localhost, pinned host in prod.
