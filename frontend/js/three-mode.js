@@ -93,6 +93,7 @@
     // (No parse-time THREE usage in this file: the global arrives from the deferred ESM
     // bootstrap, so THREE may only be touched once the user actually enters a 3D flow.)
     let pendingIntroAutoRotate = false;
+    let pendingRestoreView = null; // a shared render's camera pose to reproduce on entry, or null
     let introAutoRotateCleanup = null;
     let suppressClickAfterRotateStop = false; // the click that stops the intro spin must not select
     let manualAutoRotateActive = false;
@@ -133,6 +134,7 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
+    const aiBtn = document.getElementById('mode-ai-toggle'); // AI photorealistic render — 3D-only
 
     // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
     // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
@@ -4995,7 +4997,15 @@
                 startLoop();
             }
         }
-        frameId = requestAnimationFrame(tiltStep);
+        // A shared render restores its exact camera pose (no intro tilt); everything else tilts in.
+        if (pendingRestoreView && applyGeoCameraView(pendingRestoreView)) {
+            pendingRestoreView = null;
+            renderer.render(scene, camera);
+            startLoop();
+        } else {
+            pendingRestoreView = null;
+            frameId = requestAnimationFrame(tiltStep);
+        }
 
         // Resize handling
         window.addEventListener('resize', handleResize, { passive: true });
@@ -5429,6 +5439,10 @@
         console.log('[3D] enter3D focus ids:', focusProposalIds ? focusProposalIds.size : 0,
             focusProposalIds ? Array.from(focusProposalIds).slice(0, 4) : '(none — framing all applied)');
         pendingIntroAutoRotate = !!(options && options.fromUrl);
+        // A shared render carries the exact camera pose it was shot from: reproduce it instead of
+        // auto-framing, and suppress the intro spin so the follower lands on the same view.
+        pendingRestoreView = (options && options.restoreView) ? options.restoreView : null;
+        if (pendingRestoreView) pendingIntroAutoRotate = false;
         if (pendingIntroAutoRotate) {
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
         }
@@ -5437,6 +5451,8 @@
         updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
+        if (aiBtn) aiBtn.hidden = false; // AI render works from any 3D scene
+
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -5465,6 +5481,7 @@
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
+        if (aiBtn) aiBtn.hidden = true;
         if (threeContainer) threeContainer.classList.remove('active');
         // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
         // and the transition guard would otherwise leak and jam future entries.
@@ -5878,6 +5895,113 @@
             return { targetLng: tgtLL.lng, targetLat: tgtLL.lat, headingDeg: headingDeg, pitchRad: pitchRad, range: range };
         } catch (_) { return null; }
     }
+
+    // Inverse of getGeoCameraView: place the orbit camera to reproduce a shared geographic view.
+    // Reconstructs the camera's ground position with turf.destination + latLngToXY, so it inherits
+    // the exact projection used at capture time rather than any hand-rolled scene-axis math. Only
+    // the vertical needs an explicit metres->scene conversion (the scene shares the horizontal
+    // 1/cos(lat) Mercator stretch on Z). Returns false when it can't, so the caller can fall back
+    // to the normal auto-framing.
+    function applyGeoCameraView(view) {
+        try {
+            if (!view || !camera || !controls || !origin3857) return false;
+            if (typeof turf === 'undefined' || !turf) return false;
+            const { targetLat, targetLng, headingDeg = 0, pitchRad = 0, range } = view;
+            if (![targetLat, targetLng, range].every(v => Number.isFinite(v))) return false;
+
+            const tXY = latLngToXY(targetLat, targetLng);
+            if (!tXY) return false;
+            const cosLat = Math.max(1e-6, Math.cos(targetLat * Math.PI / 180));
+
+            const elevation = -pitchRad;                             // angle above the horizon
+            const horizM = Math.max(0, range * Math.cos(elevation)); // ground distance, true metres
+            const vertM = range * Math.sin(elevation);               // camera height above target, true metres
+
+            // Camera sits opposite the look direction: target->camera bearing = (camera->target) + 180.
+            const camGround = turf.destination([targetLng, targetLat], horizM / 1000, headingDeg + 180, { units: 'kilometers' });
+            const cg = camGround.geometry.coordinates;               // [lng, lat]
+            const cXY = latLngToXY(cg[1], cg[0]);
+            if (!cXY) return false;
+
+            const targetVec = new THREE.Vector3(tXY[0], tXY[1], 0);
+            camera.up.set(0, 0, 1);
+            controls.target.copy(targetVec);
+            camera.position.set(cXY[0], cXY[1], vertM / cosLat);
+            camera.lookAt(targetVec);
+            if (controls.update) controls.update();
+            return true;
+        } catch (_) { return false; }
+    }
+    window.applyThree3DGeoView = applyGeoCameraView;
+
+    // Capture the current 3D scene as a PNG data URL, for the AI photorealistic render.
+    // The renderer is created without preserveDrawingBuffer, so we force a fresh synchronous
+    // render and read the drawing buffer in the same tick (before the browser swaps/clears it).
+    function captureSceneDataURL() {
+        if (!isActive || !renderer || !scene || !camera) return null;
+        try {
+            renderer.render(scene, camera);
+            return renderer.domElement.toDataURL('image/png');
+        } catch (_) { return null; }
+    }
+    window.captureThreeSceneDataURL = captureSceneDataURL;
+
+    // Grayscale HEIGHT MAP of the scene for the AI render: every fragment is shaded by its world Z
+    // (this scene is Z-up, buildings extrude along +Z), so black = ground and white = the tallest
+    // point. This gives the image model an unambiguous height signal the flat grey massing can't —
+    // low buildings read dark, tall ones read bright — so it stops guessing heights. Rendered via a
+    // one-shot scene.overrideMaterial; onBeforeCompile keeps Three's chunks (incl. the renderer's
+    // logarithmicDepthBuffer) so occlusion stays correct. Returns { image, maxHeightM }.
+    function makeHeightMaterial(minZ, maxZ) {
+        const mat = new THREE.MeshBasicMaterial();
+        mat.onBeforeCompile = (shader) => {
+            shader.uniforms.uMinZ = { value: minZ };
+            shader.uniforms.uMaxZ = { value: maxZ };
+            shader.vertexShader = 'varying float vWorldZ;\n' + shader.vertexShader.replace(
+                '#include <begin_vertex>',
+                '#include <begin_vertex>\n    vWorldZ = (modelMatrix * vec4(transformed, 1.0)).z;'
+            );
+            shader.fragmentShader = 'varying float vWorldZ;\nuniform float uMinZ;\nuniform float uMaxZ;\n' +
+                shader.fragmentShader.replace(
+                    '#include <dithering_fragment>',
+                    '#include <dithering_fragment>\n    float _t = clamp((vWorldZ - uMinZ) / max(0.001, uMaxZ - uMinZ), 0.0, 1.0);\n    gl_FragColor = vec4(vec3(_t), 1.0);'
+                );
+        };
+        return mat;
+    }
+
+    function captureHeightMapDataURL() {
+        if (!isActive || !renderer || !scene || !camera) return null;
+        try {
+            const box = new THREE.Box3().setFromObject(scene);
+            if (!isFinite(box.max.z)) return null;
+            const minZ = 0;                                          // ground plane
+            const maxZ = Math.min(400, Math.max(10, box.max.z));     // clamp so a stray far mesh can't wash it out
+            const prevOverride = scene.overrideMaterial;
+            const prevBg = scene.background;
+            scene.overrideMaterial = makeHeightMaterial(minZ, maxZ);
+            scene.background = new THREE.Color(0x000000);            // empty space = 0 m = black
+            renderer.render(scene, camera);
+            const url = renderer.domElement.toDataURL('image/png');
+            scene.overrideMaterial = prevOverride;
+            scene.background = prevBg;
+            renderer.render(scene, camera);                         // restore the normal view in the buffer
+            return { image: url, maxHeightM: Math.round(maxZ) };
+        } catch (_) { return null; }
+    }
+    window.captureThreeHeightMapDataURL = captureHeightMapDataURL;
+
+    // Lightweight scene semantics for building the AI caption. Kept minimal on purpose —
+    // the screenshot already carries the geometry; this only adds what the pixels can't say.
+    window.getThreeSceneSummary = function () {
+        let cityLabel = null;
+        try { cityLabel = window.CityConfigManager?.getCurrentCityConfig?.().label || null; } catch (_) { }
+        return {
+            cityLabel,
+            isolatedProposal: isolatedProposalId !== null,
+            parcelCount: lastParcelCount || 0
+        };
+    };
 
     // Expose globals for debugging/manual control
     // Realistic layer policy: while the photoreal mesh is the built world, the abstract built

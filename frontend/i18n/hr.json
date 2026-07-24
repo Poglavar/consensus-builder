@@ -2788,7 +2788,8 @@
             "switchTo3d": "Prebaci na model (3D)",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmjene",
-            "realistic": "Foto prikaz (Google fotorealistični 3D)"
+            "realistic": "Foto prikaz (Google fotorealistični 3D)",
+            "ai": "AI fotorealistični prikaz"
         },
         "parcelPanel": {
             "title": "Čestica",
@@ -2808,6 +2809,50 @@
             "title": "Podaci o prijedlogu",
             "parcelsLabel": "Čestice",
             "avgPerParcel": "Prosjek / čestici"
+        },
+        "ai": {
+            "title": "AI fotorealistični prikaz",
+            "sourceLabel": "Snimljena scena",
+            "promptLabel": "Uputa (uredivo)",
+            "costHint": "~{{c}} po slici",
+            "resultLabel": "Rezultat",
+            "download": "Preuzmi",
+            "sessionTotal": "Potrošnja u sesiji: {{c}}",
+            "generate": "Generiraj",
+            "generating": "Generiranje…",
+            "working": "Slanje scene modelu…",
+            "done": "Gotovo za {{s}}s — ovaj prikaz koštao je {{c}}",
+            "error": "Generiranje nije uspjelo: {{m}}",
+            "need3d": "Prvo uđite u 3D način za prikaz scene.",
+            "captureFailed": "Nije moguće snimiti 3D scenu.",
+            "emptyPrompt": "Uputa je prazna.",
+            "heightMapTitle": "Mapa visina (bijelo = najviše) — šalje se da visine ostanu vjerne",
+            "showHeightMap": "Pokaži mapu visina",
+            "hideHeightMap": "Sakrij mapu visina",
+            "modelLabel": "Model",
+            "keyNeeded": "treba API ključ",
+            "copyLink": "Kopiraj link",
+            "share": "Podijeli",
+            "tweet": "Podijeli na X",
+            "tweetText": "Fotorealistični prikaz mog urbanog prijedloga",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Pripremam link za dijeljenje…",
+            "linkCopied": "Link kopiran!",
+            "copyFailed": "Kopiranje nije uspjelo — dugo pritisnite link da ga kopirate.",
+            "shareFailed": "Nije moguće stvoriti link za dijeljenje: {{m}}",
+            "errCooldown": "Pričekajte nekoliko sekundi prije generiranja nove slike.",
+            "errQuota": "Dosegli ste ograničenje broja slika za sada. Pokušajte kasnije.",
+            "errNoFunds": "Generiranje slika trenutno nije dostupno. Pokušajte kasnije.",
+            "errTimeout": "Generiranje slike trajalo je predugo. Pokušajte ponovno.",
+            "errNotConfigured": "Generiranje slika trenutno nije dostupno.",
+            "promptLocked": "Prompt je zadan na poslužitelju i ne može se uređivati.",
+            "warnPromptOverridden": "Napomena: korišten je standardni prompt poslužitelja — poslani prompt je zanemaren.",
+            "errBudget": "Proračun za generiranje slika je potrošen. Pokušajte neki drugi put.",
+            "errBudgetCheck": "Generiranje slika je nakratko nedostupno. Pokušajte uskoro."
+        },
+        "aiFollow": {
+            "title": "AI prikaz",
+            "note": "Gledate stvarnu 3D scenu iz koje je napravljena ova AI slika."
         }
     },
     "structureEditor": {

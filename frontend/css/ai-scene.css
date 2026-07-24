@@ -1,0 +1,263 @@
+/* AI photorealistic render (v1): the 3D-only "AI" mode button and the render modal.
+   Button sits at the top of the 2D / 3D / globe / walk stack; modal is mobile-friendly. */
+
+#mode-ai-toggle.map-mode-ai-btn {
+    position: absolute;
+    left: var(--map-mode-stack-left);
+    bottom: 192px;
+    z-index: 1001;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 8px 10px;
+    min-width: 40px;
+    min-height: 36px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #7b2ff7;
+    cursor: pointer;
+}
+
+#mode-ai-toggle.map-mode-ai-btn:hover { background: #f5f5f5; }
+
+#mode-ai-toggle.map-mode-ai-btn[hidden] { display: none; }
+
+/* Modal overlay */
+.ai-scene-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 16px;
+}
+
+.ai-scene-overlay[hidden] { display: none; }
+
+.ai-scene-modal {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-scene-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.ai-scene-header h3 { margin: 0; font-size: 16px; }
+
+.ai-scene-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+}
+
+.ai-scene-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+.ai-scene-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.ai-scene-result-img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+/* Source column: colour screenshot, then a toggle that reveals the grayscale height map below it. */
+.ai-scene-source-img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+/* "Show height map" button — a quiet inline toggle under the scene image. */
+.ai-scene-height-toggle {
+    display: block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #333;
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ai-scene-height-toggle:hover { background: #e8e8e8; }
+.ai-scene-height-toggle[hidden] { display: none; }
+
+.ai-scene-height-img {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: block;
+    background: #000;
+}
+
+.ai-scene-height-img[hidden] { display: none; }
+
+/* Feedback line under the share buttons (link copied / share failed). */
+.ai-scene-share-status {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #2a7;
+    min-height: 16px;
+}
+.ai-scene-share-status.ai-scene-status--error { color: #c0392b; }
+
+.ai-scene-prompt {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+/* Prompt fixed by the server: read-only, visibly inert so nobody tries to edit it. */
+.ai-scene-prompt--locked {
+    background: #f4f4f4;
+    color: #555;
+    cursor: not-allowed;
+}
+
+/* Warning shown with a result, e.g. the submitted prompt was discarded. */
+.ai-scene-warning {
+    margin-top: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #8a6100;
+    background: #fff6e0;
+    border: 1px solid #f0d089;
+    border-radius: 6px;
+}
+.ai-scene-warning[hidden] { display: none; }
+
+.ai-scene-model {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.ai-scene-model[hidden] { display: none; }
+
+.ai-scene-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.ai-scene-cost-hint { font-size: 12px; color: #888; }
+
+.ai-scene-status { margin-top: 8px; font-size: 13px; color: #444; min-height: 18px; }
+.ai-scene-status--error { color: #c0392b; }
+
+.ai-scene-result-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-scene-result-actions [hidden] { display: none; }
+
+/* Inline AI-render card shown to someone who opened a shared ?scene link, over the 3D world. */
+.ai-scene-follow-card {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 1200;
+    width: 300px;
+    max-width: calc(100vw - 32px);
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    font-family: inherit;
+}
+.ai-scene-follow-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    background: #f6f6f6;
+    border-bottom: 1px solid #eee;
+}
+.ai-scene-follow-close {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+}
+.ai-scene-follow-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: zoom-in;
+}
+.ai-scene-follow-card.expanded {
+    width: 640px;
+}
+.ai-scene-follow-card.expanded .ai-scene-follow-img { cursor: zoom-out; }
+.ai-scene-follow-note {
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #555;
+}
+
+.ai-scene-footer {
+    padding: 10px 16px;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #333;
+    text-align: right;
+}
+
+.ai-scene-session-total { font-weight: 600; }
+
+@media (max-width: 480px) {
+    .ai-scene-modal { max-height: 94vh; }
+    .ai-scene-header h3 { font-size: 15px; }
+}

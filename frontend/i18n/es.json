@@ -2807,7 +2807,8 @@
             "switchTo3d": "Cambiar a modelo (3D)",
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
-            "realistic": "Vista foto (Google 3D fotorrealista)"
+            "realistic": "Vista foto (Google 3D fotorrealista)",
+            "ai": "Renderizado fotorrealista con IA"
         },
         "parcelPanel": {
             "title": "Parcela",
@@ -2827,6 +2828,50 @@
             "title": "Información de la propuesta",
             "parcelsLabel": "Parcelas",
             "avgPerParcel": "Media / parcela"
+        },
+        "ai": {
+            "title": "Renderizado fotorrealista con IA",
+            "sourceLabel": "Escena capturada",
+            "promptLabel": "Instrucción (editable)",
+            "costHint": "~{{c}} por imagen",
+            "resultLabel": "Resultado",
+            "download": "Descargar",
+            "sessionTotal": "Gasto de la sesión: {{c}}",
+            "generate": "Generar",
+            "generating": "Generando…",
+            "working": "Enviando la escena al modelo…",
+            "done": "Listo en {{s}}s — este render costó {{c}}",
+            "error": "El renderizado falló: {{m}}",
+            "need3d": "Entra primero en modo 3D para renderizar la escena.",
+            "captureFailed": "No se pudo capturar la escena 3D.",
+            "emptyPrompt": "La instrucción está vacía.",
+            "heightMapTitle": "Mapa de alturas (blanco = más alto) — enviado para mantener las alturas fieles",
+            "showHeightMap": "Mostrar mapa de alturas",
+            "hideHeightMap": "Ocultar mapa de alturas",
+            "modelLabel": "Modelo",
+            "keyNeeded": "requiere clave API",
+            "copyLink": "Copiar enlace",
+            "share": "Compartir",
+            "tweet": "Compartir en X",
+            "tweetText": "Vista fotorrealista de mi propuesta urbana",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Preparando el enlace para compartir…",
+            "linkCopied": "¡Enlace copiado!",
+            "copyFailed": "No se pudo copiar — mantén pulsado el enlace para copiarlo.",
+            "shareFailed": "No se pudo crear el enlace para compartir: {{m}}",
+            "errCooldown": "Espera unos segundos antes de generar otra imagen.",
+            "errQuota": "Has alcanzado tu límite de imágenes por ahora. Inténtalo más tarde.",
+            "errNoFunds": "La generación de imágenes no está disponible temporalmente. Inténtalo más tarde.",
+            "errTimeout": "La imagen tardó demasiado en generarse. Inténtalo de nuevo.",
+            "errNotConfigured": "La generación de imágenes no está disponible en este momento.",
+            "promptLocked": "El prompt lo fija el servidor y no se puede editar.",
+            "warnPromptOverridden": "Nota: se usó el prompt estándar del servidor — el prompt enviado se ignoró.",
+            "errBudget": "El presupuesto de generación de imágenes se ha agotado. Inténtalo en otro momento.",
+            "errBudgetCheck": "La generación de imágenes no está disponible momentáneamente. Inténtalo en breve."
+        },
+        "aiFollow": {
+            "title": "Render de IA",
+            "note": "Estás viendo la escena 3D real a partir de la cual se creó esta imagen de IA."
         }
     },
     "structureEditor": {
