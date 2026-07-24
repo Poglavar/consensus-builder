@@ -5,13 +5,15 @@ name = "og-proposals"
 main = "src/worker.js"
 compatibility_date = "2026-07-01"
 
+# Route: intercept only the proposal links on the production zone. This MUST stay above [vars] —
+# in TOML every key after a table header belongs to that table, so putting it below would silently
+# become vars.routes and the Worker would deploy with no routes at all (never invoked).
+routes = [
+  { pattern = "urbangametheory.xyz/proposals/*", zone_name = "urbangametheory.xyz" }
+]
+
 # API_BASE  = where the Worker reads proposal/scene JSON from (server-to-server; not WAF-blocked).
 # SITE_BASE = the public site origin, used to build the /proposals/:id/og-image.png card URL.
 [vars]
 API_BASE = "https://api.urbangametheory.xyz"
 SITE_BASE = "https://urbangametheory.xyz"
-
-# Route: intercept only the proposal links on the production zone.
-routes = [
-  { pattern = "urbangametheory.xyz/proposals/*", zone_name = "urbangametheory.xyz" }
-]
