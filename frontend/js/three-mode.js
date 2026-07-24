@@ -5584,9 +5584,55 @@
             .forEach(id => { try { const el = document.getElementById(id); if (el) el.style.display = 'none'; } catch (_) { } });
     }
 
+    // How to tilt the camera is the one control nothing on screen advertises: left-drag pans, and
+    // rotating needs Ctrl/Cmd (or the right button) — see three-snapshot-navigation.js, which flips
+    // OrbitControls' LEFT button between PAN and ROTATE while the modifier is held. So it is
+    // offered, once, a little after arriving: long enough not to land in the middle of the entry
+    // animation, and gone again before it becomes furniture.
+    const VIEW_ANGLE_HINT_DELAY_MS = 10000;
+    const VIEW_ANGLE_HINT_VISIBLE_MS = 6000;
+    let viewAngleHintTimer = null;
+    let viewAngleHintHideTimer = null;
+    const viewAngleHintShown = { model: false, photo: false };
+
+    function hideViewAngleHint() {
+        const el = document.querySelector('.three-view-hint');
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+        if (viewAngleHintHideTimer) { clearTimeout(viewAngleHintHideTimer); viewAngleHintHideTimer = null; }
+    }
+
+    function cancelViewAngleHint() {
+        if (viewAngleHintTimer) { clearTimeout(viewAngleHintTimer); viewAngleHintTimer = null; }
+        hideViewAngleHint();
+    }
+
+    // `mode` is 'model' or 'photo' — shown once for each, so arriving in photo view by way of the
+    // model does not say it twice, and a user who only ever uses one still gets told.
+    function scheduleViewAngleHint(mode) {
+        const key = mode === 'photo' ? 'photo' : 'model';
+        if (viewAngleHintShown[key]) return;
+        if (viewAngleHintTimer) clearTimeout(viewAngleHintTimer);
+        viewAngleHintTimer = setTimeout(() => {
+            viewAngleHintTimer = null;
+            const host = document.getElementById('three-container');
+            // Gone from 3D while the timer ran: say nothing.
+            if (!host || !isActive) return;
+            viewAngleHintShown[key] = true;
+            hideViewAngleHint();
+            const el = document.createElement('div');
+            el.className = 'three-view-hint';
+            el.setAttribute('role', 'status');
+            el.textContent = threeI18n('threeMode.hints.viewAngle',
+                'Press Ctrl (or Cmd) and drag to change the view angle');
+            host.appendChild(el);
+            viewAngleHintHideTimer = setTimeout(hideViewAngleHint, VIEW_ANGLE_HINT_VISIBLE_MS);
+        }, VIEW_ANGLE_HINT_DELAY_MS);
+    }
+
     function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        scheduleViewAngleHint('model');
         // 3D takes the full stage: collapse an expanded sidebar so the canvas and its in-view
         // controls get the whole viewport instead of sharing it with the sidebar column.
         try {
@@ -5632,6 +5678,7 @@
 
     function exit3D() {
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
+        cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
         // motionless while 3D is active (so it cannot stream tiles or parcels), then jumps once to
@@ -6310,6 +6357,8 @@
     };
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
+    // Photo view arrives through its own activation, so it asks for the hint itself.
+    window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
 

@@ -130,3 +130,28 @@ body.realistic-mode-active #mode-walk-toggle {
     text-align: center;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
+
+/* The one-off "how do I tilt this" hint, shown a little after arriving in model or photo view and
+   gone again on its own. Bottom centre, clear of .photoreal-status at the top (which carries real
+   loading state) and of the mode buttons at the lower left. */
+#three-container .three-view-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 6;
+    max-width: 80%;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(20, 22, 28, 0.86);
+    color: #fff;
+    font: 500 13px/1.3 system-ui, sans-serif;
+    text-align: center;
+    pointer-events: none;
+    animation: three-view-hint-in 220ms ease-out;
+}
+
+@keyframes three-view-hint-in {
+    from { opacity: 0; transform: translate(-50%, 6px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}

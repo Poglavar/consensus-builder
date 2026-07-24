@@ -2825,6 +2825,9 @@
         "aiFollow": {
             "title": "AI render",
             "note": "You are viewing the real 3D scene this AI image was made from."
+        },
+        "hints": {
+            "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle"
         }
     },
     "structureEditor": {

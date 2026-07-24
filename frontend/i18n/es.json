@@ -2874,6 +2874,9 @@
         "aiFollow": {
             "title": "Render de IA",
             "note": "Estás viendo la escena 3D real a partir de la cual se creó esta imagen de IA."
+        },
+        "hints": {
+            "viewAngle": "Mantén Ctrl (o Cmd) y arrastra para cambiar el ángulo de vista"
         }
     },
     "structureEditor": {

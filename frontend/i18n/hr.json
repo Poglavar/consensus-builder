@@ -2855,6 +2855,9 @@
         "aiFollow": {
             "title": "AI prikaz",
             "note": "Gledate stvarnu 3D scenu iz koje je napravljena ova AI slika."
+        },
+        "hints": {
+            "viewAngle": "Drži Ctrl (ili Cmd) i povuci za promjenu kuta pogleda"
         }
     },
     "structureEditor": {
