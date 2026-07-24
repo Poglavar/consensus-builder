@@ -1,4 +1,8 @@
 {
+    "rewrites": [
+        { "source": "/proposals/**", "destination": "/index.html" },
+        { "source": "/proposal/**", "destination": "/index.html" }
+    ],
     "headers": [
         {
             "source": "**",
