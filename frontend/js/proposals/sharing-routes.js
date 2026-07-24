@@ -405,11 +405,32 @@ function buildSharedProposalsPayload(appliedProposals) {
 // proposals has a materialized building feature. Entering the instant the route decides
 // raced hydration/reapply: the focus subset matched nothing yet, and the camera silently
 // fell back to framing EVERY applied proposal.
+// A proposal that has no BUILDINGS can never satisfy a wait for proposedBuildings. A road or a
+// structure link therefore sat out the whole 8 s deadline before 3D opened — measured at 9 s on
+// prod for /proposals/95 — with nothing on screen to explain it. Waiting is only meaningful for
+// building proposals; anything else is ready as soon as it is applied.
+function urlFocusNeedsBuildings(ids) {
+    try {
+        const all = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
+            ? proposalStorage.getAllProposals() : [];
+        const focused = all.filter(p => {
+            const key = String((typeof getProposalKey === 'function' ? getProposalKey(p) : null)
+                || p.proposalId || p.serverProposalId || '');
+            return ids.includes(key) || ids.includes(String(p.serverProposalId || ''));
+        });
+        // Unknown to storage yet: keep the old behaviour and wait.
+        if (!focused.length) return true;
+        return focused.some(p => p && p.buildingProposal);
+    } catch (_) {
+        return true;
+    }
+}
+
 function enterUrlDrivenViewWhenReady(focusIds) {
     const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
     const deadline = Date.now() + 8000;
     const attempt = () => {
-        let ready = ids.length === 0;
+        let ready = ids.length === 0 || !urlFocusNeedsBuildings(ids);
         try {
             const feats = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
                 ? window.proposedBuildings : [];
