@@ -27,12 +27,17 @@
 /* Model view: the button is there but inert — the AI render is a photograph of the photorealistic
    scene, so there is nothing for it to work from until photo view is up. Deliberately NOT
    `pointer-events: none`: that would suppress the native tooltip, which is the whole point of
-   showing a disabled button rather than hiding it. */
+   showing a disabled button rather than hiding it.
+   The icon is repainted a flat grey rather than only dimmed: a faded PURPLE wand still reads as an
+   action, which is exactly the "it looks clickable" complaint. Neutral grey says inert. */
 #mode-ai-toggle.map-mode-ai-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.55;
     cursor: not-allowed;
-    filter: grayscale(1);
+    color: #b0b4ba;
+    background: #f2f2f3;
 }
+
+#mode-ai-toggle.map-mode-ai-btn:disabled:hover { background: #f2f2f3; }
 
 #mode-ai-toggle.map-mode-ai-btn[hidden] { display: none; }
 

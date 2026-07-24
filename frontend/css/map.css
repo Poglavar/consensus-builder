@@ -69,13 +69,16 @@ body.sidebar-collapsed {
 }
 @keyframes map-mode-spin { to { transform: rotate(360deg); } }
 
-/* Walk-through button — stacked above the mode buttons (2D / 3D / globe) and only
-   visible while in 3D mode. Hidden by default via the [hidden] attribute; three-mode.js
-   toggles visibility on enter/exit. Yellow fill so it stands out from the mode buttons. */
+/* Walk-through button — top of the mode stack, only visible while in 3D (model) mode.
+   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
+   Yellow fill so it stands out from the mode buttons. Sits at 240 (above the AI wand at 192): the
+   two used to share 192 and drew ON TOP of each other, so the purple wand read as yellow. The wand
+   is hidden of the two in model view, walk in photo view — keeping the wand at 192 leaves no gap in
+   photo view, where it is the button that matters. */
 #mode-walk-toggle.map-mode-walk-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    bottom: 192px;
+    bottom: 240px;
     z-index: 1000;
     background: #fdd835;
     border: 1px solid rgba(0, 0, 0, 0.2);
