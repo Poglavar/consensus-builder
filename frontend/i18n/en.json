@@ -1210,8 +1210,6 @@
             },
             "tabSection": "Cross-section",
             "tabCorridor": "Corridor",
-            "constraintParcels": "Also stay within road parcels",
-            "constraintParcelsTitle": "Treat every parcel that is not road land as a wall: the corridor can only use road parcels and land this road already takes.",
             "noClearance": "Nothing to measure yet — the road has no centerline here.",
             "noObstacles": "No buildings are loaded near this road, so nothing constrains the corridor yet.",
             "corridorMinWidth": "The widest road that fits here without demolishing anything",
@@ -1245,7 +1243,19 @@
                 "w": "west",
                 "nw": "north-west"
             },
-            "fitHint": "Can it fit if moved? Open the Corridor tab"
+            "fitHint": "Can it fit if moved? Open the Corridor tab",
+            "limitLabel": "Limited by",
+            "limitParcels": "Road parcels",
+            "limitParcelsTitle": "The road keeps to road land: it stops at the road parcel boundary, and buildings beyond it are not considered.",
+            "limitBuildings": "Buildings",
+            "limitBuildingsTitle": "The road ignores the road parcel and runs to the buildings: each parcel gives up the strip in front of its main building.",
+            "paving": "Footway surface",
+            "pavings": {
+                "asphalt": "Asphalt",
+                "paved": "Paved (stone)"
+            },
+            "measuredAgainst": "Measured against",
+            "measuredFallback": "nothing shown — measuring against GDI"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -1266,8 +1276,8 @@
             "dguHint": "DGU cadastre: what is officially registered.",
             "osm": "OSM buildings (matches the map)",
             "osmHint": "OSM buildings: the community map — the outlines drawn on the basemap.",
-            "all": "All",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "show": "Show"
         },
         "corridorTunnel": {
             "offer": "This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?",

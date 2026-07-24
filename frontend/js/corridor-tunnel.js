@@ -178,13 +178,37 @@
     // cut, so what a corridor demolished depended on what was switched on when it was drawn.
     // The pool is filled by fetchBuildings() regardless of any checkbox (rebuildBuildingLayerFromPool
     // is the only thing that consults visibility), so cutting is now independent of display.
-    function collectLoadedCorridorBuildings() {
+    // A reference layer's features, read back off the Leaflet layer — DGU and OSM exist nowhere
+    // else, having no pool of their own. Only the profiler asks for these, and only to MEASURE
+    // against them; cutting still runs on the GDI pool, whatever is on screen.
+    function corridorReferenceLayerFeatures(layer) {
+        const features = [];
+        if (!layer || typeof layer.eachLayer !== 'function') return features;
+        layer.eachLayer(child => {
+            if (child && child.feature && child.feature.geometry) features.push(child.feature);
+        });
+        return features;
+    }
+
+    // `options.surveys` = { gdi, dgu, osm } asks for the surveys currently on the map instead of
+    // the working set. Proposed buildings are added either way: they are in the scene no matter
+    // which survey the user is looking at.
+    function collectLoadedCorridorBuildings(options = {}) {
         const buildings = [];
         const seenProposalBuildings = new Set();
-        const pool = Array.isArray(global.buildingFeaturePool) ? global.buildingFeaturePool : [];
+        const surveys = options.surveys || null;
+        const pool = (!surveys || surveys.gdi) && Array.isArray(global.buildingFeaturePool)
+            ? global.buildingFeaturePool
+            : [];
         pool.forEach(feature => {
             if (feature && feature.geometry) buildings.push(feature);
         });
+        if (surveys && surveys.dgu) {
+            corridorReferenceLayerFeatures(global.dguBuildingLayer).forEach(feature => buildings.push(feature));
+        }
+        if (surveys && surveys.osm) {
+            corridorReferenceLayerFeatures(global.osmBuildingLayer).forEach(feature => buildings.push(feature));
+        }
         if (Array.isArray(global.proposedBuildings)) {
             global.proposedBuildings.forEach(feature => {
                 if (feature && feature.geometry) buildings.push(feature);
@@ -279,8 +303,11 @@
         try {
             const config = global.CityConfigManager?.getCurrentCityConfig?.();
             if (config?.buildings?.source === 'none') return false;
+            // Bottom-gated only, matching fetchBuildings itself: a ceiling here meant the corridor
+            // preload gave up at exactly the zooms road editing works at (up to 22), so obstacle
+            // prompts and the profiler ran on an empty pool.
             const zoom = global.map?.getZoom?.();
-            if (!Number.isFinite(zoom) || zoom < 17 || zoom > 19) return false;
+            if (!Number.isFinite(zoom) || zoom < 17) return false;
             if (typeof global.fetchBuildings !== 'function') return false;
             await global.fetchBuildings();
             // Footprint DATA is what detection needs, and fetchBuildings always fills the pool.
@@ -1080,7 +1107,10 @@
             case 'tunnelled':
                 return { color: '#ca8a04', weight: 1, opacity: 1, fillColor: '#eab308', fillOpacity: 0.3, dashArray: '2 3' };
             default:
-                return { color: 'blue', weight: 1, fillColor: 'blue', fillOpacity: 0.2 };
+                // Same light purple as the DGU/OSM reference layers: three surveys of one thing,
+                // so they stack rather than compete (see building-layers-dialog.js).
+                return global.BuildingLayersDialog?.style
+                    || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 };
         }
     }
 

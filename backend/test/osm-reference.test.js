@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters } = require('../buildings/osm-reference.js');
+const { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox } = require('../buildings/osm-reference.js');
 
 // A square way (open — first != last) with a building tag, as Overpass returns it with `out geom;`.
 const wayEl = (id, tags = { building: 'yes' }) => ({
@@ -92,5 +92,35 @@ describe('buildOverpassQuery', () => {
         expect(q).toContain('(45.8,15.9,45.81,15.91)');
         expect(q).toContain('way["building"]');
         expect(q).toContain('relation["building"]');
+    });
+});
+
+// The grid is what makes the cache a cache: keying on the raw viewport minted a new key for every
+// few metres of pan, so all but the first request went to Overpass and it answered with 429/504.
+describe('osmCellsForBbox', () => {
+    it('snaps to the grid, so a small pan lands on the SAME cell', () => {
+        const a = osmCellsForBbox([15.9741, 45.8028, 15.9774, 45.8045], 0.005);
+        const b = osmCellsForBbox([15.9743, 45.8030, 15.9776, 45.8047], 0.005);
+        expect(a.map(cell => cell.key)).toEqual(b.map(cell => cell.key));
+    });
+
+    it('covers a viewport that straddles a boundary with every cell it touches', () => {
+        const cells = osmCellsForBbox([15.9990, 45.7990, 16.0010, 45.8010], 0.005);
+        expect(cells.length).toBe(4);
+        cells.forEach(cell => {
+            const [w, s, e, n] = cell.bbox;
+            expect(e - w).toBeCloseTo(0.005, 9);
+            expect(n - s).toBeCloseTo(0.005, 9);
+        });
+        // The cell keys are exact — float noise in a key is a permanent cache miss.
+        expect(new Set(cells.map(cell => cell.key)).size).toBe(4);
+        expect(cells.some(cell => cell.key === '15.995,45.795')).toBe(true);
+    });
+
+    it('always returns at least the cell a degenerate-thin box sits in', () => {
+        const cells = osmCellsForBbox([15.9741, 45.8028, 15.9742, 45.8029], 0.005);
+        expect(cells.length).toBe(1);
+        expect(cells[0].bbox[0]).toBeLessThanOrEqual(15.9741);
+        expect(cells[0].bbox[2]).toBeGreaterThanOrEqual(15.9742);
     });
 });

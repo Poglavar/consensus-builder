@@ -37,6 +37,10 @@ let corridorEditorHaloLayer = null;
 let corridorEditorPinchLayer = null;
 // The yellow probe tick a chart click drops on the map — "this point of the chart is HERE".
 let corridorEditorChartProbeLayer = null;
+// The filled footway preview: what an edge lane BECOMES here once it runs out to the frontage
+// instead of stopping at its drawn width. Repainted by every render, so it tracks the live
+// cross-section on both tabs.
+let corridorEditorEdgeFillLayer = null;
 
 const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 // How far a clearance ray reaches before a side counts as open, and how much of an open side
@@ -74,11 +78,14 @@ function corridorEditorClose() {
     if (typeof clearCorridorProfilePreview === 'function') clearCorridorProfilePreview();
     corridorEditorRenderBuildingHits([]);
     corridorEditorClearClearanceOverlays();
+    corridorEditorClearEdgeFillPreview();
+    if (window.RoadEditingZoom) window.RoadEditingZoom.exit('cross-section');
     corridorEditorRestoreBuildingFootprints();
-    document.body.classList.remove('corridor-editor-open');
+    corridorEditorLockMap(false);
     const overlay = document.getElementById('corridor-editor-overlay');
     if (overlay) overlay.remove();
     document.removeEventListener('keydown', corridorEditorKeydown);
+    document.removeEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
         corridorEditorObstacleTimer = null;
@@ -317,14 +324,28 @@ function corridorEditorFocusMap() {
 // The map beside the editor must show what a width change collides with, so the GDI footprint
 // layer turns on for the session (restored on close if the user had it off) and the pool is
 // fetched to cover the road — the red highlight and the Apply block both read that pool.
-function corridorEditorShowBuildingFootprints() {
+// The profiler measures against the buildings on the map, so entering demands that some survey be
+// on. If one already is, that is the answer. If none is, the user picks — the same B dialog, so
+// there is one place where "which buildings" is answered — and the pick is remembered.
+async function corridorEditorShowBuildingFootprints() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal') return;
-    const checkbox = document.getElementById('showBuildings');
-    if (checkbox && !checkbox.checked) {
-        checkbox.checked = true;
-        state.restoreBuildingsCheckbox = true;
+    const dialog = window.BuildingLayersDialog;
+    // What the map looked like on the way in; the way out puts it back exactly.
+    const before = dialog ? dialog.currentBuildingLayerState() : { gdi: false, dgu: false, osm: false };
+    state.restoreBuildingLayers = before;
+
+    if (dialog && !before.gdi && !before.dgu && !before.osm) {
+        const picked = await dialog.open();
+        if (corridorEditorState !== state) return; // closed while the dialog was up
+        // Cancelled: fall back to the last answer, or to GDI — the working set the cuts run on.
+        const choice = picked || dialog.remembered() || { gdi: true, dgu: false, osm: false };
+        dialog.remember(choice);
+        if (typeof window.setBuildingReferenceLayers === 'function') {
+            window.setBuildingReferenceLayers(!!choice.gdi, !!choice.dgu, !!choice.osm);
+        }
     }
+
     if (typeof window.rebuildBuildingLayerFromPool === 'function') {
         try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
     }
@@ -336,8 +357,10 @@ function corridorEditorShowBuildingFootprints() {
             .then(() => {
                 corridorEditorScheduleObstacleCheck();
                 const current = corridorEditorState;
-                if (current && current.activeTab === 'corridor') {
+                if (current) {
                     current.clearanceCache = null;
+                    current.fillParcelsCache = null;
+                    current.edgeFillCache = null;
                     corridorEditorRender();
                 }
             })
@@ -345,10 +368,14 @@ function corridorEditorShowBuildingFootprints() {
     }
 }
 
+// Put the map back the way it was found: a survey the editor switched on goes off again. The CHOICE
+// survives in the dialog's memory, so the next road does not ask twice.
 function corridorEditorRestoreBuildingFootprints() {
-    if (!corridorEditorState || !corridorEditorState.restoreBuildingsCheckbox) return;
-    const checkbox = document.getElementById('showBuildings');
-    if (checkbox) checkbox.checked = false;
+    const before = corridorEditorState && corridorEditorState.restoreBuildingLayers;
+    if (!before) return;
+    if (typeof window.setBuildingReferenceLayers === 'function') {
+        window.setBuildingReferenceLayers(!!before.gdi, !!before.dgu, !!before.osm);
+    }
     if (typeof window.rebuildBuildingLayerFromPool === 'function') {
         try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
     }
@@ -447,7 +474,7 @@ function corridorEditorGeometryToPlanarRings(geometry) {
 // tunnels through or fully demolished — the same exclusions the width-hit check makes), and in
 // 'parcels' mode also every loaded parcel that is not road land and not already crossed by the
 // road at its current width (land the road already takes is part of the deal, not a wall).
-function corridorEditorClearanceObstacles() {
+function corridorEditorConstraintFeatures() {
     const state = corridorEditorState;
     const obstacles = [];
     if (!state || !state.definition || !corridorEditorClearanceReady()) return obstacles;
@@ -487,13 +514,17 @@ function corridorEditorClearanceObstacles() {
     demolitions.excluded.forEach(id => tunnelled.add(id));
     demolitions.recut.forEach(id => tunnelled.add(id));
 
-    if (typeof collectLoadedCorridorBuildings === 'function' && typeof corridorBuildingKey === 'function') {
-        collectLoadedCorridorBuildings().forEach(feature => {
+    // The two limits are EXCLUSIVE. Going for the buildings means ignoring the road parcel — that
+    // is the whole point of the mode, since the road parcel is the thing that does not match the
+    // street. Respecting the road parcels means the parcel edge is the limit and a building behind
+    // it is somebody else's business.
+    if (state.clearanceMode !== 'parcels'
+        && typeof collectLoadedCorridorBuildings === 'function' && typeof corridorBuildingKey === 'function') {
+        collectLoadedCorridorBuildings({ surveys: corridorEditorBuildingSurveys() }).forEach(feature => {
             if (!feature || !feature.geometry || !nearRoad(feature.geometry)) return;
             const id = String(corridorBuildingKey(feature));
             if (tunnelled.has(id)) return;
-            const rings = corridorEditorGeometryToPlanarRings(feature.geometry);
-            if (rings.length) obstacles.push({ id, kind: 'building', rings });
+            obstacles.push({ id, kind: 'building', feature });
         });
     }
 
@@ -512,11 +543,23 @@ function corridorEditorClearanceObstacles() {
             const isRoad = props.isRoad === true || props.isRoad === 'true'
                 || (parcelId && typeof isRoadParcel === 'function' && isRoadParcel(parcelId));
             if (isRoad || crossed(feature)) return;
-            const rings = corridorEditorGeometryToPlanarRings(feature.geometry);
-            if (rings.length) obstacles.push({ id: `parcel:${parcelId || 'unknown'}`, kind: 'parcel', rings });
+            obstacles.push({ id: `parcel:${parcelId || 'unknown'}`, kind: 'parcel', feature });
         });
     }
     return obstacles;
+}
+
+// The same walls as planar rings, which is the shape the clearance sampler casts against (holes
+// included: a ray stops at whatever boundary it meets first). One definition of "wall", two shapes —
+// the edge fill needs the polygons themselves, since it cuts against them rather than measuring to them.
+function corridorEditorConstraintsToObstacles(constraints) {
+    return (constraints || [])
+        .map(entry => ({
+            id: entry.id,
+            kind: entry.kind,
+            rings: corridorEditorGeometryToPlanarRings(entry.feature.geometry)
+        }))
+        .filter(obstacle => obstacle.rings.length);
 }
 
 // The scoped road's footprint at its PREVIEW width, one turf polygon per centerline edge —
@@ -543,10 +586,12 @@ function corridorEditorCurrentEdgeFeatures() {
 function corridorEditorEnsureClearance() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !corridorEditorClearanceReady()) return null;
-    const key = [state.scope, state.segmentId || '', state.clearanceMode, state.geometryVersion || 0].join('|');
+    const key = [state.scope, state.segmentId || '', state.clearanceMode,
+        corridorEditorBuildingSurveyKey(), state.geometryVersion || 0].join('|');
     if (state.clearanceCache && state.clearanceCache.key === key) return state.clearanceCache;
 
-    const obstacles = corridorEditorClearanceObstacles();
+    const constraints = corridorEditorConstraintFeatures();
+    const obstacles = corridorEditorConstraintsToObstacles(constraints);
     const flat = [];
     let chain = 0;
     const samplesBySegment = corridorEditorScopedSegments().map(segment => {
@@ -559,7 +604,7 @@ function corridorEditorEnsureClearance() {
         chain += corridorEditorPlanarLength(planar);
         return samples;
     });
-    state.clearanceCache = { key, samplesBySegment, flat, obstacles, chainLength: chain };
+    state.clearanceCache = { key, samplesBySegment, flat, obstacles, constraints, chainLength: chain };
     return state.clearanceCache;
 }
 
@@ -702,14 +747,8 @@ function corridorEditorCorridorBodyHtml() {
     const stats = flat.length ? corridorClearanceStats(flat, width, { maxDistance: CORRIDOR_CLEARANCE_MAX }) : null;
     if (stats) stats.widths.forEach((entry, index) => { entry.chain = flat[index].chain; });
 
-    const constraint = `
-        <label class="corridor-stats-constraint" title="${corridorEditorI18n('modal.corridor.constraintParcelsTitle', 'Treat every parcel that is not road land as a wall: the corridor can only use road parcels and land this road already takes.')}">
-            <input type="checkbox" class="corridor-stats-parcels"${state.clearanceMode === 'parcels' ? ' checked' : ''}>
-            <span>${corridorEditorI18n('modal.corridor.constraintParcels', 'Also stay within road parcels')}</span>
-        </label>`;
-
     if (!stats) {
-        return `<div class="corridor-stats">${constraint}
+        return `<div class="corridor-stats">
             <div class="corridor-editor-notice">${corridorEditorI18n('modal.corridor.noClearance', 'Nothing to measure yet — the road has no centerline here.')}</div>
         </div>`;
     }
@@ -791,7 +830,6 @@ function corridorEditorCorridorBodyHtml() {
     });
 
     return `<div class="corridor-stats">
-        ${constraint}
         ${noObstacles}
         <div class="corridor-stats-headline">
             <div class="corridor-stats-metric">
@@ -896,6 +934,210 @@ function corridorEditorRenderClearanceOverlays() {
         }));
     });
     corridorEditorPinchLayer = L.layerGroup(group).addTo(map);
+}
+
+// ---------------------------------------------------------------------------
+// Edge fill preview
+//
+// A road parcel is rarely the shape the road actually is, and a real footway does not stop at a
+// drawn width: it runs from the kerb to whatever bounds the street. So the outermost lane, when it
+// is a footway, keeps its width as a MINIMUM and spreads outward to the limit — the same limit the
+// Corridor tab measures against, buildings alone or buildings and the property lines with them.
+// This draws that shape while the editor is open; nothing is stored yet.
+// ---------------------------------------------------------------------------
+
+function corridorEditorClearEdgeFillPreview() {
+    if (typeof map === 'undefined' || !map || !corridorEditorEdgeFillLayer) return;
+    try { map.removeLayer(corridorEditorEdgeFillLayer); } catch (_) { }
+    corridorEditorEdgeFillLayer = null;
+}
+
+// One filled region per fillable side per scoped segment. Two steps: the sampled envelope says how
+// far the pavement may reach here (clearance pass shared with the Corridor tab — same cache, same
+// constraint mode — tapered back to the nominal width toward a welded end so it does not spike into
+// a junction), then the flood fill takes the free land inside that envelope as it actually is, so
+// the outer edge is the frontage's own outline rather than a line through the sampled points.
+// Every parcel near the road with the biggest building standing on it — the raw material for both
+// fills. Road-ness is recorded rather than filtered: one limit fills the road parcels themselves,
+// the other fills the frontage of all the parcels that are not road land.
+function corridorEditorFillParcels() {
+    const parcels = [];
+    const state = corridorEditorState;
+    if (typeof parcelLayer === 'undefined' || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') return parcels;
+    const turf = window.turf;
+    if (!turf || !state) return parcels;
+    const bounds = corridorEditorRoadBounds();
+    if (!bounds) return parcels;
+    // Both sides of every segment ask for the same list; only the geometry can change it.
+    const cacheKey = `${state.geometryVersion || 0}|${corridorEditorBuildingSurveyKey()}`;
+    if (state.fillParcelsCache && state.fillParcelsCache.key === cacheKey) return state.fillParcelsCache.value;
+    const padded = bounds.pad ? bounds.pad(0.4) : bounds;
+    const withinReach = feature => {
+        try {
+            const box = turf.bbox(feature);
+            return !(box[0] > padded.getEast() || box[2] < padded.getWest()
+                || box[1] > padded.getNorth() || box[3] < padded.getSouth());
+        } catch (_) { return false; }
+    };
+
+    parcelLayer.eachLayer(layer => {
+        const feature = layer && layer.feature;
+        if (!feature || !feature.geometry || !withinReach(feature)) return;
+        const props = feature.properties || {};
+        const parcelId = (props.parcelId !== undefined && props.parcelId !== null) ? String(props.parcelId)
+            : (props.id !== undefined && props.id !== null ? String(props.id) : null);
+        const isRoad = props.isRoad === true || props.isRoad === 'true'
+            || (parcelId && typeof isRoadParcel === 'function' && isRoadParcel(parcelId));
+        parcels.push({ id: parcelId, isRoad, feature, mainBuilding: null, mainArea: 0 });
+    });
+    if (!parcels.length) return parcels;
+
+    // Which building stands on which parcel, by centroid: a building overlapping two parcels
+    // belongs to the one it mostly sits in, which is what a centroid answers cheaply.
+    if (typeof collectLoadedCorridorBuildings === 'function') {
+        collectLoadedCorridorBuildings({ surveys: corridorEditorBuildingSurveys() }).forEach(building => {
+            if (!building || !building.geometry || !withinReach(building)) return;
+            let centroid = null;
+            let area = 0;
+            try { centroid = turf.centroid(building); area = turf.area(building); } catch (_) { return; }
+            if (!centroid || !(area > 0)) return;
+            const host = parcels.find(parcel => {
+                if (parcel.isRoad) return false;
+                try { return turf.booleanPointInPolygon(centroid, parcel.feature); } catch (_) { return false; }
+            });
+            if (!host || area <= host.mainArea) return;
+            host.mainBuilding = building;
+            host.mainArea = area;
+        });
+    }
+    state.fillParcelsCache = { key: cacheKey, value: parcels };
+    return parcels;
+}
+
+// The cuts the fill may take on one side of one segment. Two limits, never both:
+//
+//   road parcels — the cut IS the road parcel, so the pavement takes the road land and stops at
+//                  its edge, whatever stands beyond it;
+//   buildings    — each parcel gives up the slice in front of its biggest building. One line per
+//                  parcel, clipped to that parcel, so the edge steps at every property boundary
+//                  and the pavement never bulges into the gaps between the buildings themselves.
+function corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset) {
+    const state = corridorEditorState;
+    const turf = window.turf;
+    if (!state || !turf) return [];
+    const sign = side === 'right' ? -1 : 1;
+    const parcels = corridorEditorFillParcels();
+
+    if (state.clearanceMode === 'parcels') {
+        return parcels.filter(parcel => parcel.isRoad).map(parcel => parcel.feature);
+    }
+
+    const fronting = parcels
+        .filter(parcel => !parcel.isRoad && parcel.mainBuilding)
+        .map(parcel => ({
+            feature: parcel.feature,
+            rings: corridorEditorGeometryToPlanarRings(parcel.mainBuilding.geometry)
+        }));
+    return corridorEdgeFillParcelCuts(planar, fronting, side, {
+        minOffset: config.minOffset,
+        maxOffset
+    }, lineOffset => corridorFeatureFromLatLngRing(
+        buildCorridorStripPolygon(segment, sign * lineOffset, config.innerOffset)
+    ));
+}
+
+// Gathering every other centerline walks all proposals, so it is cached against the geometry it
+// depends on rather than recomputed per render.
+function corridorEditorHeldEndpointsFor(planar) {
+    const state = corridorEditorState;
+    const key = `${state.scope}|${state.segmentId || ''}|${state.geometryVersion || 0}`;
+    if (!state.otherCenterlinesCache || state.otherCenterlinesCache.key !== key) {
+        state.otherCenterlinesCache = { key, value: corridorEditorOtherCenterlinesPlanar() };
+    }
+    return corridorHeldEndpoints(planar, state.otherCenterlinesCache.value, 1);
+}
+
+// One filled region per fillable side per scoped segment: the band the fill may reach, and the
+// cuts the chosen limit offers it. No ray casting — the clearance pass measures how wide the road
+// COULD be, which is a different question from where its pavement ends.
+function corridorEditorEdgeFillRegions() {
+    const state = corridorEditorState;
+    const regions = [];
+    if (!state || state.mode !== 'proposal') return regions;
+    if (typeof corridorEdgeFillSides !== 'function' || typeof htrs96ToWGS84 !== 'function') return regions;
+    if (typeof corridorEdgeFillRegion !== 'function' || typeof corridorFeatureFromLatLngRing !== 'function') return regions;
+    const sides = corridorEdgeFillSides(state.profile);
+    if (!sides.left && !sides.right) return regions;
+    // Cutting the band against every parcel is real work, and a render can be triggered by things
+    // that do not move the fill at all — a tab switch, an obstacle re-check. Scope, limit and
+    // geometry cover the surroundings; the edge spans cover every cross-section change that can
+    // reach the outermost lanes.
+    const cacheKey = [state.scope, state.segmentId || '', state.clearanceMode,
+        corridorEditorBuildingSurveyKey(), state.geometryVersion || 0, JSON.stringify(sides)].join('|');
+    if (state.edgeFillCache && state.edgeFillCache.key === cacheKey) return state.edgeFillCache.regions;
+    const taper = Math.max(10, corridorProfileWidth(state.profile));
+
+    corridorEditorScopedSegments().forEach(segment => {
+        const planar = segment
+            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+        if (planar.length < 2) return;
+        const held = corridorEditorHeldEndpointsFor(planar);
+        ['left', 'right'].forEach(side => {
+            const config = sides[side];
+            if (!config) return;
+            const maxOffset = config.minOffset + EDGE_FILL_MAX_REACH;
+            const ring = corridorEdgeFillBandRing(planar, config.innerOffset, {
+                side,
+                minOffset: config.minOffset,
+                maxOffset,
+                taperStart: held.start,
+                taperEnd: held.end,
+                taperMeters: taper
+            });
+            if (!ring) return;
+            const band = corridorFeatureFromLatLngRing(ring.map(([xCoord, yCoord]) => {
+                const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+                return { lat, lng };
+            }));
+            // The lane at its drawn width: the part that is never given up, whatever stands on it.
+            const nominalOuter = side === 'right' ? -config.minOffset : config.minOffset;
+            const nominal = corridorFeatureFromLatLngRing(
+                buildCorridorStripPolygon(segment, nominalOuter, config.innerOffset)
+            );
+            const cuts = corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset);
+            const region = corridorEdgeFillRegion(band, nominal, cuts);
+            if (region && region.geometry) regions.push({ type: config.type, geojson: region });
+        });
+    });
+    state.edgeFillCache = { key: cacheKey, regions };
+    return regions;
+}
+
+function corridorEditorRenderEdgeFillPreview() {
+    corridorEditorClearEdgeFillPreview();
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined') return;
+    const regions = corridorEditorEdgeFillRegions();
+    if (!regions.length) return;
+    if (typeof ensureCorridorStripsPane === 'function') ensureCorridorStripsPane();
+    const pane = (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined;
+    // GeoJSON rather than L.polygon: a flood fill can come back as several pieces, and with a hole
+    // in it where something stands in the middle of the pavement.
+    corridorEditorEdgeFillLayer = L.layerGroup(regions.map(entry => {
+        const surface = (CORRIDOR_LANE_TYPES[entry.type] || {}).surface || '#c2beb4';
+        return L.geoJSON(entry.geojson, {
+            pane,
+            interactive: false,
+            style: {
+                color: '#374151',
+                weight: 1,
+                dashArray: '5 4',
+                fillColor: surface,
+                fillOpacity: 0.85,
+                className: `corridor-strip corridor-strip--${entry.type} corridor-edge-fill`
+            }
+        });
+    })).addTo(map);
 }
 
 // Bake a lateral shift into the scoped segment's stored centerline. The shift goes through
@@ -1021,16 +1263,16 @@ function corridorEditorWriteScopedSegmentPoints(definition, latlngs) {
 function corridorEditorRenderCorridorTab(body) {
     body.innerHTML = corridorEditorCorridorBodyHtml();
 
-    const toggle = body.querySelector('.corridor-stats-parcels');
-    if (toggle) {
-        toggle.addEventListener('change', () => {
+    body.querySelectorAll('.corridor-limit-option').forEach(option => {
+        option.addEventListener('click', () => {
             const state = corridorEditorState;
-            if (!state) return;
-            state.clearanceMode = toggle.checked ? 'parcels' : 'buildings';
+            const limit = option.dataset.limit === 'parcels' ? 'parcels' : 'buildings';
+            if (!state || state.clearanceMode === limit) return;
+            state.clearanceMode = limit;
             state.clearanceCache = null;
             corridorEditorRender();
         });
-    }
+    });
 
     body.querySelectorAll('.corridor-fit-move, .corridor-fit-side').forEach(button => {
         button.addEventListener('click', () => {
@@ -1236,6 +1478,14 @@ function corridorEditorRowsHtml(profile) {
                 <option value="grass"${landscape === 'grass' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.grass', 'Grass only')}</option>
                 <option value="trees"${landscape === 'trees' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.trees', 'Tree grove')}</option>
             </select>` : '';
+        // A footway's surface, the same shape a green strip's planting takes: asphalt by default,
+        // stone when the street is meant to read as a promenade. Material only — no width moves.
+        const paving = (typeof corridorPavingOf === 'function') ? corridorPavingOf(lane) : null;
+        const pavingSelect = paving ? `
+            <select class="corridor-lane-paving" data-lane-index="${index}" aria-label="${corridorEditorI18n('modal.corridor.paving', 'Footway surface')}">
+                <option value="asphalt"${paving === 'asphalt' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.pavings.asphalt', 'Asphalt')}</option>
+                <option value="paved"${paving === 'paved' ? ' selected' : ''}>${corridorEditorI18n('modal.corridor.pavings.paved', 'Paved (stone)')}</option>
+            </select>` : '';
         // A track's gauge, the same shape the green strips' planting takes. Picking a gauge re-widths the
         // lane (a gauge IS a width here), so the selector belongs next to the number it moves.
         const gauge = corridorRailGaugeOf(lane);
@@ -1279,7 +1529,7 @@ function corridorEditorRowsHtml(profile) {
                 ${directionBtn}
                 <button type="button" class="corridor-lane-btn corridor-lane-btn--remove" data-remove="${index}" aria-label="Remove lane">✕</button>
             </span>
-            ${landscapeSelect}${gaugeSelect}${treesControl}
+            ${landscapeSelect}${pavingSelect}${gaugeSelect}${treesControl}
         </div>`;
     }).join('');
 }
@@ -1382,6 +1632,10 @@ function corridorEditorRender() {
     const body = document.querySelector('.corridor-editor-body');
     if (!body || !corridorEditorState) return;
     corridorEditorSyncTabs();
+    // Both tabs: the limit governs the buildable width AND the pavement fill, and the fill follows
+    // the cross-section, which is edited on the other tab.
+    corridorEditorRenderLimitRow();
+    corridorEditorRenderEdgeFillPreview();
 
     if (corridorEditorState.activeTab === 'corridor' && corridorEditorState.mode === 'proposal') {
         corridorEditorRenderCorridorTab(body);
@@ -1590,6 +1844,14 @@ function corridorEditorBindBody(body) {
             const index = Number(input.dataset.laneIndex);
             corridorEditorState.selected = index;
             corridorEditorApply(profile => withLaneWidth(profile, index, Number(input.value)));
+        });
+    });
+
+    body.querySelectorAll('.corridor-lane-paving').forEach(select => {
+        select.addEventListener('change', () => {
+            const index = Number(select.dataset.laneIndex);
+            corridorEditorState.selected = index;
+            corridorEditorApply(profile => withLanePaving(profile, index, select.value));
         });
     });
 
@@ -1823,6 +2085,8 @@ async function corridorEditorSave() {
 
 function corridorEditorOpenOverlay() {
     if (!corridorEditorState) return;
+    // Editing a cross-section is close work: let the map zoom past the basemap's own ceiling.
+    if (window.RoadEditingZoom) window.RoadEditingZoom.enter('cross-section');
     const profile = corridorEditorState.profile;
     const drawing = corridorEditorState.mode === 'drawing';
     const totalWidth = corridorProfileWidth(profile);
@@ -1871,7 +2135,8 @@ function corridorEditorOpenOverlay() {
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
                 ${totalControl}
-            </div>${indicatorsHtml}${tabsHtml}
+            </div>
+            <div class="corridor-editor-limit-host"></div>${indicatorsHtml}${tabsHtml}
             <div class="corridor-editor-body"></div>
             <div class="corridor-editor-footer">
                 <button type="button" class="btn btn-outline-secondary corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
@@ -1932,9 +2197,8 @@ function corridorEditorOpenOverlay() {
     // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
     // beside the panel pans the map instead. Escape and the two buttons close the editor.
     document.addEventListener('keydown', corridorEditorKeydown);
-    // Lock the map's objects (CSS kills .leaflet-interactive; map-level handlers check
-    // isCorridorEditorOpen) while keeping pan and zoom live.
-    document.body.classList.add('corridor-editor-open');
+    corridorEditorLockMap(true);
+    document.addEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
 
     corridorEditorRender();
     corridorEditorFocusMap();
@@ -1985,8 +2249,8 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         clearanceMode: 'buildings',
         clearanceCache: null,
         geometryVersion: 0,
-        // Set when the editor itself ticked the "show buildings" box, so closing un-ticks it.
-        restoreBuildingsCheckbox: false,
+        // The building layers as the map had them when the editor opened; closing restores them.
+        restoreBuildingLayers: null,
         selected: 0,
         dragIndex: null,
         notice: null,
@@ -2031,11 +2295,167 @@ function proposalHasEditableCorridor(proposal) {
     return !!corridorProfileOf(definition);
 }
 
+// Which building surveys the profiler answers to: the ones currently drawn on the map. GDI is the
+// working set the cuts themselves run on; DGU and OSM are reference layers, so measuring against
+// them measures against a different survey than the one a demolition would cut. That is a real
+// choice, which is why it is named in the header rather than assumed.
+function corridorEditorBuildingSurveys() {
+    const read = id => !!document.getElementById(id)?.checked;
+    const surveys = { gdi: read('showBuildings'), dgu: read('showBuildingsDgu'), osm: read('showBuildingsOsm') };
+    // Nothing on the map: fall back to the working set rather than measure against nothing.
+    if (!surveys.gdi && !surveys.dgu && !surveys.osm) return { gdi: true, dgu: false, osm: false, fallback: true };
+    return surveys;
+}
+
+function corridorEditorBuildingSurveyKey() {
+    const surveys = corridorEditorBuildingSurveys();
+    return ['gdi', 'dgu', 'osm'].filter(key => surveys[key]).join('+') || 'none';
+}
+
+// Two full-width header rows, both live on both tabs: WHAT limits the road, and WHICH survey of
+// the city that limit is read from. They govern the Corridor tab's buildable width and the pavement
+// fill drawn on the map alike — the same question asked twice — so neither may be buried in a tab.
+//
+// The limit is two icons because it is a choice between two pictures of the street: the plot lines,
+// or the buildings. The survey is three independent toggles because the surveys STACK (see
+// building-layers-dialog.js) — and because a toggle is tappable, which the B key is not on a phone.
+const CORRIDOR_LIMIT_ICONS = {
+    // A plot with the road running through it: the land, as registered.
+    parcels: '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><rect x="1.5" y="3.5" width="17" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M6.5 3.5 L6.5 16.5 M13.5 3.5 L13.5 16.5" stroke="currentColor" stroke-width="1.4" opacity="0.75"/></svg>',
+    // Two buildings shoulder to shoulder: the street as it is actually built.
+    buildings: '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M2 17 L2 8 L8 5 L8 17 Z M11 17 L11 9 L18 6 L18 17 Z" fill="currentColor" opacity="0.85"/><path d="M4 11h2M4 14h2M13 12h2M13 15h2" stroke="#fff" stroke-width="1.1" opacity="0.9"/></svg>'
+};
+
+function corridorEditorLimitRowHtml() {
+    const state = corridorEditorState;
+    if (!state || state.mode !== 'proposal') return '';
+    const parcelLimit = state.clearanceMode === 'parcels';
+    const option = (limit, on, title) => `
+        <button type="button" class="corridor-limit-option${on ? ' corridor-limit-option--on' : ''}"
+                data-limit="${limit}" aria-pressed="${on}" title="${title}" aria-label="${title}">
+            ${CORRIDOR_LIMIT_ICONS[limit]}
+        </button>`;
+
+    const surveys = corridorEditorBuildingSurveys();
+    const names = { gdi: 'GDI', dgu: 'DGU', osm: 'OSM' };
+    const titles = {
+        gdi: corridorEditorI18n('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there.'),
+        dgu: corridorEditorI18n('modal.buildingLayers.dguHint', 'DGU cadastre: what is officially registered.'),
+        osm: corridorEditorI18n('modal.buildingLayers.osmHint', 'OSM buildings: the community map.')
+    };
+    const surveyRow = parcelLimit ? '' : `
+        <div class="corridor-editor-limit-row">
+            <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}</span>
+            <div class="corridor-limit-toggle corridor-survey-toggle" role="group"
+                 aria-label="${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}">
+                ${['gdi', 'dgu', 'osm'].map(key => `
+                    <button type="button" class="corridor-limit-option${surveys[key] && !surveys.fallback ? ' corridor-limit-option--on' : ''}"
+                            data-survey="${key}" aria-pressed="${!!surveys[key] && !surveys.fallback}" title="${titles[key]}">
+                        ${names[key]}
+                    </button>`).join('')}
+            </div>
+            ${surveys.fallback ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredFallback', 'nothing shown — measuring against GDI')}</span>` : ''}
+        </div>`;
+
+    return `
+        <div class="corridor-editor-limit-row">
+            <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.limitLabel', 'Limited by')}</span>
+            <div class="corridor-limit-toggle" role="group" aria-label="${corridorEditorI18n('modal.corridor.limitLabel', 'Limited by')}">
+                ${option('parcels', parcelLimit, corridorEditorI18n('modal.corridor.limitParcelsTitle', 'Road parcels — the road keeps to road land: it stops at the road parcel boundary, and buildings beyond it are not considered.'))}
+                ${option('buildings', !parcelLimit, corridorEditorI18n('modal.corridor.limitBuildingsTitle', 'Buildings — the road ignores the road parcel and runs to the buildings: each parcel gives up the strip in front of its main building.'))}
+            </div>
+            <span class="corridor-limit-current">${parcelLimit
+                ? corridorEditorI18n('modal.corridor.limitParcels', 'Road parcels')
+                : corridorEditorI18n('modal.corridor.limitBuildings', 'Buildings')}</span>
+        </div>${surveyRow}`;
+}
+
+// Repaint the header rows in place and rebind them — a render does not rebuild the header.
+function corridorEditorRenderLimitRow() {
+    const host = document.querySelector('.corridor-editor-limit-host');
+    if (!host) return;
+    host.innerHTML = corridorEditorLimitRowHtml();
+    host.querySelectorAll('[data-limit]').forEach(option => {
+        option.addEventListener('click', () => {
+            const state = corridorEditorState;
+            const limit = option.dataset.limit === 'parcels' ? 'parcels' : 'buildings';
+            if (!state || state.clearanceMode === limit) return;
+            state.clearanceMode = limit;
+            state.clearanceCache = null;
+            corridorEditorRender();
+        });
+    });
+    // Toggling a survey switches the LAYER, not a private editor setting: what the profiler measures
+    // against and what the map shows are the same thing, and B stays the keyboard way to say it.
+    host.querySelectorAll('[data-survey]').forEach(option => {
+        option.addEventListener('click', () => {
+            if (typeof window.setBuildingReferenceLayers !== 'function') return;
+            const surveys = corridorEditorBuildingSurveys();
+            const next = {
+                gdi: !!surveys.gdi && !surveys.fallback,
+                dgu: !!surveys.dgu && !surveys.fallback,
+                osm: !!surveys.osm && !surveys.fallback
+            };
+            next[option.dataset.survey] = !next[option.dataset.survey];
+            if (window.BuildingLayersDialog) window.BuildingLayersDialog.remember(next);
+            window.setBuildingReferenceLayers(next.gdi, next.dgu, next.osm);
+        });
+    });
+}
+
+// The surveys on the map changed under the editor (B is live while it is docked): everything
+// measured against them is stale.
+function corridorEditorOnBuildingLayersChanged() {
+    const state = corridorEditorState;
+    if (!state) return;
+    state.clearanceCache = null;
+    state.fillParcelsCache = null;
+    state.edgeFillCache = null;
+    corridorEditorRender();
+    corridorEditorScheduleObstacleCheck();
+}
+
 // The map stays pannable while the editor is docked, so map-level click handlers (road drawing,
 // measuring) must be able to ask whether a click should be ignored — the CSS lock only covers
 // clicks on objects, not clicks on the map itself.
 function isCorridorEditorOpen() {
     return !!corridorEditorState;
+}
+
+function corridorEditorSwallowMapClick(event) {
+    // Immediate, because a click whose target IS the pane would otherwise still reach the pane's
+    // other listeners; stopping propagation here also keeps it from bubbling to the container,
+    // which is where Leaflet fires its own map-level `click`.
+    event.stopImmediatePropagation();
+}
+
+// Lock (or release) the map while the editor is docked. Three things, because each covers a hole
+// the others leave:
+//
+//   - the body class drives the CSS lock (objects stop taking clicks, and lose their pointer
+//     cursor and tooltips with it);
+//   - the click swallow is the guarantee: it catches clicks on the panes before they reach any
+//     layer, any canvas-rendered layer, or any map-level handler (road drawing, measuring,
+//     deselect). It sits on the map PANE, not the container, so the Leaflet controls beside it
+//     still work, and it takes only click/contextmenu — mousedown, wheel and dblclick pass, so
+//     panning and zooming stay live;
+//   - model and photo view are barred outright. Both replace the map with a 3D scene that has no
+//     cross-section editor in it, which would leave this panel docked over nothing.
+function corridorEditorLockMap(locked) {
+    document.body.classList.toggle('corridor-editor-open', locked);
+
+    const pane = (typeof map !== 'undefined' && map && typeof map.getPane === 'function') ? map.getPane('mapPane') : null;
+    if (pane) {
+        ['click', 'contextmenu'].forEach(type => {
+            pane.removeEventListener(type, corridorEditorSwallowMapClick, true);
+            if (locked) pane.addEventListener(type, corridorEditorSwallowMapClick, true);
+        });
+    }
+
+    ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-walk-toggle'].forEach(id => {
+        const button = document.getElementById(id);
+        if (button) button.disabled = locked;
+    });
 }
 
 if (typeof window !== 'undefined') {

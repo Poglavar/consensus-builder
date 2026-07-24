@@ -1211,8 +1211,6 @@
             },
             "tabSection": "Poprečni presjek",
             "tabCorridor": "Koridor",
-            "constraintParcels": "Ostani unutar cestovnih čestica",
-            "constraintParcelsTitle": "Svaku česticu koja nije cestovno zemljište tretiraj kao zid: koridor smije koristiti samo cestovne čestice i zemljište koje ova cesta već zauzima.",
             "noClearance": "Još nema što mjeriti — cesta ovdje nema os.",
             "noObstacles": "U blizini ceste nema učitanih zgrada, pa koridor ništa ne ograničava.",
             "corridorMinWidth": "Najšira cesta koja ovdje stane bez rušenja",
@@ -1246,7 +1244,19 @@
                 "w": "zapad",
                 "nw": "sjeverozapad"
             },
-            "fitHint": "Može li stati pomicanjem? Otvorite karticu Koridor"
+            "fitHint": "Može li stati pomicanjem? Otvorite karticu Koridor",
+            "limitLabel": "Ograničeno s",
+            "limitParcels": "Cestovne čestice",
+            "limitParcelsTitle": "Cesta ostaje na cestovnom zemljištu: staje na granici cestovne čestice, a zgrade iza nje se ne uzimaju u obzir.",
+            "limitBuildings": "Zgrade",
+            "limitBuildingsTitle": "Cesta zanemaruje cestovnu česticu i ide do zgrada: svaka čestica ustupa pojas ispred svoje glavne zgrade.",
+            "paving": "Površina nogostupa",
+            "pavings": {
+                "asphalt": "Asfalt",
+                "paved": "Popločano (kamen)"
+            },
+            "measuredAgainst": "Mjereno prema",
+            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju"
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",
@@ -1267,8 +1277,8 @@
             "dguHint": "DGU katastar: ono što je službeno upisano.",
             "osm": "OSM zgrade (poklapa se s kartom)",
             "osmHint": "OSM zgrade: zajednička karta — obrisi ucrtani na podlozi.",
-            "all": "Sve",
-            "cancel": "Odustani"
+            "cancel": "Odustani",
+            "show": "Prikaži"
         },
         "corridorTunnel": {
             "offer": "Ova {{kind}} prolazila bi kroz {{count}} novu zgradu/nove zgrade. Prosjeći ih, srušiti ili prokopati tunel?",

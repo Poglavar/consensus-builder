@@ -2176,15 +2176,24 @@
     const corridorSymbolMaterials = {};
     const CORRIDOR_STRIP_Z = 0.05; // clear of the corridor parcel's own slab at z=0
 
-    function corridorLaneMaterial(type) {
-        if (!corridorLaneMaterials[type]) {
+    // One material per (type, paving): a paved footway gets the same running-bond stone texture the
+    // squares are laid with, so the two read as the same material wherever they meet.
+    function corridorLaneMaterial(type, paving) {
+        const key = paving === 'paved' ? `${type}:paved` : type;
+        if (!corridorLaneMaterials[key]) {
             const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[type]) || {};
-            corridorLaneMaterials[type] = new THREE.MeshLambertMaterial({
-                color: new THREE.Color(lane.surface || '#2b2b2b'),
+            const surface = (typeof corridorStripSurface === 'function')
+                ? corridorStripSurface({ type, paving })
+                : (lane.surface || '#2b2b2b');
+            const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
+            corridorLaneMaterials[key] = new THREE.MeshLambertMaterial({
+                // White under a texture, or the map's own colours come out muddied by the tint.
+                color: texture ? 0xffffff : new THREE.Color(surface),
+                map: texture || null,
                 emissive: 0x000000
             });
         }
-        return corridorLaneMaterials[type];
+        return corridorLaneMaterials[key];
     }
 
     // ---------------------------------------------------------------------------
@@ -2203,16 +2212,22 @@
     // Same colour as the ordinary lane material, but double-sided: the per-edge quads have mixed winding,
     // so their normals are forced to +Z (they are flat and horizontal) and both faces must draw.
     const corridorRibbonMaterials = {};
-    function corridorRibbonMaterial(type) {
-        if (!corridorRibbonMaterials[type]) {
+    function corridorRibbonMaterial(type, paving) {
+        const key = paving === 'paved' ? `${type}:paved` : type;
+        if (!corridorRibbonMaterials[key]) {
             const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[type]) || {};
-            corridorRibbonMaterials[type] = new THREE.MeshLambertMaterial({
-                color: new THREE.Color(lane.surface || '#2b2b2b'),
+            const surface = (typeof corridorStripSurface === 'function')
+                ? corridorStripSurface({ type, paving })
+                : (lane.surface || '#2b2b2b');
+            const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
+            corridorRibbonMaterials[key] = new THREE.MeshLambertMaterial({
+                color: texture ? 0xffffff : new THREE.Color(surface),
+                map: texture || null,
                 emissive: 0x000000,
                 side: THREE.DoubleSide
             });
         }
-        return corridorRibbonMaterials[type];
+        return corridorRibbonMaterials[key];
     }
 
     // Does a strip's outline cross itself? Tested in the same XY frame the mesh is built in, so it agrees
@@ -2449,7 +2464,7 @@
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(ruled.positions, 3));
         geometry.computeVertexNormals();
         geometry.computeBoundingSphere();
-        const mesh = new THREE.Mesh(geometry, corridorRibbonMaterial(laneType));
+        const mesh = new THREE.Mesh(geometry, corridorRibbonMaterial(laneType, strip && strip.paving));
         mesh.userData.isCorridorStrip = true;
         mesh.userData.isTerrainCorridorStrip = true;
         mesh.userData.laneType = laneType;
@@ -3156,7 +3171,7 @@
                 (strip.polygons || []).forEach(polygon => {
                     const meshes = corridorStripMeshes3D(
                         corridorStripToFeature(polygon),
-                        corridorLaneMaterial(strip.type),
+                        corridorLaneMaterial(strip.type, strip.paving),
                         CORRIDOR_STRIP_Z,
                         kerb
                     );
@@ -3198,12 +3213,12 @@
                     // earcut — the fill floods the whole enclosed area. Lay the same per-edge band.
                     if (kerb === 0 && meshPolygon === polygon && corridorStripRingSelfIntersects(polygon)) {
                         addFlatStripRibbon3D(targetGroup, points, strip.left, strip.right,
-                            corridorRibbonMaterial(strip.type), strip.type);
+                            corridorRibbonMaterial(strip.type, strip.paving), strip.type);
                         return;
                     }
                     corridorStripMeshes3D(
                         corridorStripToFeature(meshPolygon),
-                        corridorLaneMaterial(strip.type),
+                        corridorLaneMaterial(strip.type, strip.paving),
                         CORRIDOR_STRIP_Z,
                         kerb
                     ).forEach(mesh => {

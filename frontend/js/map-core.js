@@ -339,11 +339,14 @@ window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 // area regardless of zoom — used by corridor tools to cover drawn geometry; without it, the
 // current viewport is fetched (zoom-gated so a city-wide view never requests everything).
 async function fetchBuildings(boundsOverride = null) {
-    // Only fetch on zoom levels 17–19
+    // Zoom-gated at the BOTTOM only: below 17 the viewport is a whole city and the request is
+    // enormous. There is no ceiling — zooming in asks for LESS, and a ceiling of 19 meant that road
+    // editing (which now zooms to 22) silently stopped loading buildings, so ticking the box did
+    // nothing and the profiler measured against whatever had loaded before.
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17 || z > 19) {
+            if (!isFinite(z) || z < 17) {
                 return;
             }
         } catch (_) { /* noop */ }
@@ -437,10 +440,12 @@ async function fetchBuildings(boundsOverride = null) {
 // which are what is actually THERE. Purely visual: it feeds nothing, is never detected against and
 // is never cut. Overlaying it on the GDI layer is how the two surveys' disagreement becomes visible.
 async function fetchDguBuildings(boundsOverride = null) {
+    // Bottom-gated only, like the GDI fetch above: a ceiling would blank the layer exactly where
+    // the work is closest.
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17 || z > 19) return;
+            if (!isFinite(z) || z < 17) return;
         } catch (_) { /* noop */ }
     }
     try {
@@ -460,7 +465,7 @@ async function fetchDguBuildings(boundsOverride = null) {
         dguBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (converted?.features || []) }, {
             // Reference only: it must never intercept clicks meant for the parcels beneath it.
             interactive: false,
-            style: { fillColor: '#d97706', fillOpacity: 0.08, color: '#d97706', weight: 1, dashArray: '4 3' }
+            style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
         });
         const checkbox = document.getElementById('showBuildingsDgu');
         if (!checkbox || checkbox.checked) dguBuildingLayer.addTo(map);
@@ -483,11 +488,19 @@ window.hideDguBuildingLayer = hideDguBuildingLayer;
 // via Overpass through our backend (cached by viewport box), and like DGU it is purely visual: it
 // feeds nothing, is never detected against and is never cut. The bbox is WGS84 straight off the map
 // bounds — no HTRS96 conversion, unlike the GDI/DGU fetches.
+// When the backend says Overpass is throttling us it also says for how long. Asking again inside
+// that window is what turned a slow layer into a dead one, so the fetch simply does not run — and it
+// says so ONCE, not once per pan.
+let osmBuildingsRetryAt = 0;
+
 async function fetchOsmBuildings(boundsOverride = null) {
+    if (Date.now() < osmBuildingsRetryAt) return;
+    // Bottom-gated only, like the GDI fetch above: a ceiling would blank the layer exactly where
+    // the work is closest.
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17 || z > 19) return;
+            if (!isFinite(z) || z < 17) return;
         } catch (_) { /* noop */ }
     }
     try {
@@ -496,9 +509,22 @@ async function fetchOsmBuildings(boundsOverride = null) {
         const ne = bounds.getNorthEast();
         const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
         const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`;
+        // The city decides whether this can be served from the staged Overture rows in shared
+        // geodata (instant) or has to go out to Overpass (rate-limited).
+        const cityId = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId()
+            : '';
+        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`
+            + (cityId ? `&city=${encodeURIComponent(cityId)}` : '');
 
         const response = await fetch(url);
+        if (response.status === 503) {
+            const body = await response.json().catch(() => ({}));
+            const seconds = Number(body.retryAfter) > 0 ? Number(body.retryAfter) : 60;
+            osmBuildingsRetryAt = Date.now() + seconds * 1000;
+            console.warn(`[buildings] OSM reference is rate-limited upstream; not asking again for ${seconds}s`);
+            return;
+        }
         if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
         const data = await response.json();
 
@@ -508,7 +534,7 @@ async function fetchOsmBuildings(boundsOverride = null) {
         osmBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (data?.features || []) }, {
             // Reference only: it must never intercept clicks meant for the parcels beneath it.
             interactive: false,
-            style: { fillColor: '#059669', fillOpacity: 0.08, color: '#059669', weight: 1, dashArray: '4 3' }
+            style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
         });
         const checkbox = document.getElementById('showBuildingsOsm');
         if (!checkbox || checkbox.checked) osmBuildingLayer.addTo(map);
@@ -581,7 +607,7 @@ function rebuildBuildingLayerFromPool() {
         interactive: false,
         style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
             ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
-            : { fillColor: 'blue', fillOpacity: 0.2, color: 'blue', weight: 1 }
+            : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 })
     });
     if (shouldShow) buildingLayer.addTo(map);
     try { window.buildingLayer = buildingLayer; } catch (_) { }
@@ -620,11 +646,20 @@ function setupMapEventHandlers() {
             });
         }
 
-        // The OSM reference layer's whole point is to match the tiles in view, so it follows the
-        // map: refetch the new viewport when its checkbox is on (the backend caches by box, and the
-        // fetch is zoom-gated, so a pan is cheap and a repeat view is free).
-        const osmBox = document.getElementById('showBuildingsOsm');
-        if (osmBox && osmBox.checked && typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+        // Every building survey that is switched ON follows the map. Only OSM did before, so
+        // panning with GDI or DGU ticked showed whatever had been fetched when the box was ticked
+        // and nothing more — a toggle that looked broken because its layer never grew. Each fetch is
+        // zoom-gated and cached (per bbox for GDI/DGU, per grid cell for OSM), so a pan is cheap and
+        // a repeat view is free.
+        const followMap = [
+            ['showBuildings', typeof fetchBuildings === 'function' ? fetchBuildings : null],
+            ['showBuildingsDgu', typeof fetchDguBuildings === 'function' ? fetchDguBuildings : null],
+            ['showBuildingsOsm', typeof fetchOsmBuildings === 'function' ? fetchOsmBuildings : null]
+        ];
+        followMap.forEach(([id, fetcher]) => {
+            const box = document.getElementById(id);
+            if (box && box.checked && fetcher) fetcher();
+        });
 
         isMapMoving = false;
     });

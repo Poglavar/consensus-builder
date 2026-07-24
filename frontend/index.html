@@ -159,6 +159,20 @@
 </head>
 
 <body class="app-loading">
+    <!-- Shared SVG defs. A Leaflet vector lives in its own inline <svg>, but `fill: url(#id)` is
+         resolved against the whole document, so one running-bond paving pattern defined here can be
+         referenced from the map's paths (see .corridor-strip--paved). -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+            <pattern id="corridor-paving-pattern" width="16" height="12" patternUnits="userSpaceOnUse">
+                <rect width="16" height="12" fill="#d8d2c4"></rect>
+                <g stroke="#b3ab99" stroke-width="0.8" fill="none">
+                    <path d="M0 0 H16 M0 6 H16"></path>
+                    <path d="M4 0 V6 M12 0 V6 M0 6 V12 M8 6 V12 M16 6 V12"></path>
+                </g>
+            </pattern>
+        </defs>
+    </svg>
     <!-- Main container with sidebar and map -->
     <div id="sidebar">
         <!-- Sidebar header -->
@@ -1394,6 +1408,8 @@
             'js/proposals/copy.js',
             'js/proposal-editor-adapters.js',
             'js/proposal-editor-shell.js',
+            'js/road-editing-zoom.js',
+            'js/building-layers-dialog.js',
             'js/road-node-edit.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
@@ -1488,6 +1504,7 @@
             'js/corridor-profile.js',
             'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',
+            'js/corridor-edge-fill.js',
             'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',

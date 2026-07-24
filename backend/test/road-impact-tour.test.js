@@ -131,10 +131,12 @@ describe('building outcome classification and style', () => {
         expect(s.dashArray).toBeTruthy();
     });
 
-    it('cut is orange, tunnelled is yellow, untouched is blue', () => {
+    it('cut is orange, tunnelled is yellow, untouched is the shared survey purple', () => {
         expect(buildingOutcomeStyle('cut').fillColor).toBe('#f97316');
         expect(buildingOutcomeStyle('tunnelled').fillColor).toBe('#eab308');
-        expect(buildingOutcomeStyle(null).fillColor).toBe('blue');
-        expect(buildingOutcomeStyle(undefined).color).toBe('blue');
+        // An untouched building draws like the DGU/OSM reference layers, so the three surveys
+        // stack instead of competing — one style, asserted here so the two cannot drift apart.
+        expect(buildingOutcomeStyle(null).fillColor).toBe('#7c3aed');
+        expect(buildingOutcomeStyle(undefined).color).toBe('#7c3aed');
     });
 });

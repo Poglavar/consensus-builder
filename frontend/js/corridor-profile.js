@@ -43,6 +43,14 @@ const CORRIDOR_LANE_TYPES = {
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
+// What a footway is surfaced with. Asphalt is the default (a strip of the same black the road is
+// made of); paved is stone — drawn with the running-bond paving texture in 3D and photo view, and a
+// stone fill in 2D. A property of the lane, exactly like a verge's landscape or a track's gauge.
+const CORRIDOR_PAVINGS = ['asphalt', 'paved'];
+const CORRIDOR_PAVED_TYPES = new Set(['sidewalk']);
+// The stone a paved footway reads as where the texture cannot be drawn (2D, and 3D before the
+// texture loads). Light enough to separate from the asphalt beside it at any zoom.
+const CORRIDOR_PAVED_SURFACE = '#d8d2c4';
 const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
 
 // The orientation a parking lane paints its bays at, or null for a lane that is not parking. The three
@@ -197,6 +205,20 @@ function corridorRailGauge(gauge) {
     return CORRIDOR_RAIL_GAUGES.includes(value) ? value : CORRIDOR_DEFAULT_RAIL_GAUGE;
 }
 
+// The paving of a lane — only a footway has one, exactly as only a green lane has a landscape.
+// Defaults to asphalt, so a profile written before paving existed reads as what it always was.
+function corridorPavingOf(strip) {
+    if (!strip || !CORRIDOR_PAVED_TYPES.has(strip.type)) return null;
+    return CORRIDOR_PAVINGS.includes(strip.paving) ? strip.paving : 'asphalt';
+}
+
+// The colour a strip is drawn in, wherever it is drawn. Paving is the one property that changes it.
+function corridorStripSurface(strip) {
+    const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip && strip.type]) || {};
+    if (corridorPavingOf(strip) === 'paved') return CORRIDOR_PAVED_SURFACE;
+    return lane.surface || '#2b2b2b';
+}
+
 // The gauge of a lane — only a rail lane has one, exactly as only a green lane has a landscape.
 function corridorRailGaugeOf(strip) {
     return strip && strip.type === 'rail' ? corridorRailGauge(strip.gauge) : null;
@@ -226,6 +248,10 @@ function normalizeCorridorProfile(profile) {
         }
         // Every rail lane has a gauge; an unrecognised or missing one becomes the default.
         if (type === 'rail') lane.gauge = corridorRailGauge(strip && strip.gauge);
+        // A footway's paving, likewise: kept only where it means something, and only when known.
+        if (CORRIDOR_PAVED_TYPES.has(type) && CORRIDOR_PAVINGS.includes(strip && strip.paving)) {
+            lane.paving = strip.paving;
+        }
         return lane;
     }).filter(strip => isCorridorLaneType(strip.type) && Number.isFinite(strip.width) && strip.width > 0);
     return strips.length ? { strips } : null;
@@ -380,6 +406,16 @@ function withLaneLandscape(profile, index, landscape) {
     if (!CORRIDOR_LANDSCAPES.includes(landscape)) return null;
     return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
         i === index ? { ...strip, landscape } : { ...strip }
+    )));
+}
+
+// Surface a footway with asphalt or stone. Purely a material: it changes no width and moves no seam.
+function withLanePaving(profile, index, paving) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !CORRIDOR_PAVED_TYPES.has(normalized.strips[index].type)) return null;
+    if (!CORRIDOR_PAVINGS.includes(paving)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, paving } : { ...strip }
     )));
 }
 
@@ -1723,6 +1759,11 @@ if (typeof window !== 'undefined') {
     window.withLaneMoved = withLaneMoved;
     window.corridorCenterlineOf = corridorCenterlineOf;
     window.corridorLandscapeOf = corridorLandscapeOf;
+    window.corridorPavingOf = corridorPavingOf;
+    window.corridorStripSurface = corridorStripSurface;
+    window.withLanePaving = withLanePaving;
+    window.CORRIDOR_PAVINGS = CORRIDOR_PAVINGS;
+    window.CORRIDOR_PAVED_TYPES = CORRIDOR_PAVED_TYPES;
 
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
@@ -1757,6 +1798,12 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorStripSpans,
         corridorCenterlineOf,
         corridorLandscapeOf,
+        corridorPavingOf,
+        corridorStripSurface,
+        withLanePaving,
+        CORRIDOR_PAVINGS,
+        CORRIDOR_PAVED_TYPES,
+        CORRIDOR_PAVED_SURFACE,
         corridorRailGaugeOf,
         withSidewalkWidth,
         withLaneWidth,

@@ -2812,15 +2812,15 @@ function isAnyModalOpen() {
     try {
         const nodes = document.querySelectorAll(modalSelectors.join(','));
         for (const el of nodes) {
+            // The cross-section editor matches [role="dialog"] but is NOT blocking: it docks beside
+            // a live map, and B (which survey am I looking at) is exactly the key you reach for
+            // while profiling a road. Its own dialogs still match and still block.
+            if (el.closest && el.closest('.corridor-editor-overlay')) continue;
             if (isElementVisiblyRendered(el)) return true;
         }
     } catch (_) { /* ignore */ }
     return false;
 }
-
-// The reference layers B last had ON, so pressing B again brings back the SAME choice instead of
-// re-asking. null until the user has picked once.
-let lastBuildingLayerChoice = null;
 
 function setBuildingReferenceLayers(gdi, dgu, osm) {
     const gdiBox = document.getElementById('showBuildings');
@@ -2838,60 +2838,21 @@ function setBuildingReferenceLayers(gdi, dgu, osm) {
         osmBox.checked = osm;
         if (typeof toggleLayer === 'function') toggleLayer('buildingsOsm');
     }
+    // The road profiler measures against whatever survey is on the map, so it has to hear about it.
+    try {
+        document.dispatchEvent(new CustomEvent('building-layers-changed', { detail: { gdi, dgu, osm } }));
+    } catch (_) { }
 }
 
-// B with NOTHING on and no remembered choice: describe the layers once and let the user pick.
-// This is the only path that opens a dialog — see handleRoadDrawHotkey.
-async function promptBuildingLayerChoice() {
-    const message = `${translateRoadText('modal.buildingLayers.title', 'Which buildings to show?')}\n\n`
-        + `${translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)')} — `
-        + `${translateRoadText('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.')}\n\n`
-        + `${translateRoadText('modal.buildingLayers.dguHint', 'DGU cadastre: what is officially registered.')}\n\n`
-        + `${translateRoadText('modal.buildingLayers.osmHint', 'OSM buildings: the community map — the outlines drawn on the basemap.')}`;
-
-    const choices = [
-        { value: 'gdi', label: translateRoadText('modal.buildingLayers.gdi', 'GDI buildings (3D model)') },
-        { value: 'dgu', label: translateRoadText('modal.buildingLayers.dgu', 'DGU cadastre (legal reference)') },
-        { value: 'osm', label: translateRoadText('modal.buildingLayers.osm', 'OSM buildings (matches the map)') },
-        { value: 'all', label: translateRoadText('modal.buildingLayers.all', 'All') },
-        { value: 'cancel', label: translateRoadText('modal.buildingLayers.cancel', 'Cancel') }
-    ];
-
-    const answer = (typeof window.showStyledChoice === 'function')
-        ? await window.showStyledChoice(message, choices)
-        : 'gdi';
-    if (!answer || answer === 'cancel') return;
-
-    const gdi = answer === 'gdi' || answer === 'all';
-    const dgu = answer === 'dgu' || answer === 'all';
-    const osm = answer === 'osm' || answer === 'all';
-    lastBuildingLayerChoice = { gdi, dgu, osm };
-    setBuildingReferenceLayers(gdi, dgu, osm);
-}
-
-// B toggles the building REFERENCE layers — flipped constantly while drawing roads through fabric,
-// so it must stay instant. It never changes what a corridor cuts: detection reads the feature pool,
-// not these layers.
-//
-//   something on  → remember it, turn everything off. INSTANT, no dialog.
-//   nothing on    → restore the remembered choice. INSTANT, no dialog.
-//   nothing on and nothing ever chosen → the one and only dialog: GDI / DGU / OSM / all.
-function toggleBuildingReferenceLayers() {
-    const gdiOn = !!document.getElementById('showBuildings')?.checked;
-    const dguOn = !!document.getElementById('showBuildingsDgu')?.checked;
-    const osmOn = !!document.getElementById('showBuildingsOsm')?.checked;
-
-    if (gdiOn || dguOn || osmOn) {
-        lastBuildingLayerChoice = { gdi: gdiOn, dgu: dguOn, osm: osmOn };
-        setBuildingReferenceLayers(false, false, false);
-        return;
-    }
-    if (lastBuildingLayerChoice) {
-        // `osm` may be absent in a choice remembered before OSM existed — default it off.
-        setBuildingReferenceLayers(lastBuildingLayerChoice.gdi, lastBuildingLayerChoice.dgu, !!lastBuildingLayerChoice.osm);
-        return;
-    }
-    promptBuildingLayerChoice();
+// B opens the building-layers picker — EVERY time, prefilled with what is currently on. The three
+// surveys are independent references (any combination is legal), so it is a set of checkboxes with
+// Show focused: Enter takes the answer, Escape leaves the map alone. It never changes what a
+// corridor cuts — that reads the feature pool — but it does decide what the profiler measures.
+async function toggleBuildingReferenceLayers() {
+    if (!window.BuildingLayersDialog) return;
+    const picked = await window.BuildingLayersDialog.open();
+    if (!picked) return;
+    setBuildingReferenceLayers(picked.gdi, picked.dgu, picked.osm);
 }
 
 function handleRoadDrawHotkey(event) {

@@ -341,8 +341,15 @@ function renderCorridorStrips(strips, options = {}) {
     const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
-        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
-        const surface = lane.surface || '#2b2b2b';
+        // The colour is the lane's, unless the lane carries a paving that overrides it (a stone
+        // footway). corridorStripSurface owns that rule so 2D and 3D cannot disagree about it.
+        const surface = (typeof corridorStripSurface === 'function')
+            ? corridorStripSurface(strip)
+            : (((typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {}).surface || '#2b2b2b');
+        const paving = (typeof corridorPavingOf === 'function') ? corridorPavingOf(strip) : null;
+        // The stone pattern itself is CSS (an SVG pattern fill); at map zooms it is texture, not
+        // information, so the colour above has to carry the difference on its own.
+        const pavingClass = paving === 'paved' ? ' corridor-strip--paved' : '';
         strip.polygons.forEach(polygon => {
             L.polygon(polygon, {
                 color: surface,
@@ -351,7 +358,7 @@ function renderCorridorStrips(strips, options = {}) {
                 fillOpacity,
                 interactive: false,
                 pane: options.pane || undefined,
-                className: `corridor-strip corridor-strip--${strip.type}${ownerClass}`
+                className: `corridor-strip corridor-strip--${strip.type}${pavingClass}${ownerClass}`
             }).addTo(group);
         });
     });

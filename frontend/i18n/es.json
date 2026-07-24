@@ -1259,8 +1259,6 @@
             },
             "tabSection": "Sección transversal",
             "tabCorridor": "Corredor",
-            "constraintParcels": "Mantenerse dentro de parcelas viales",
-            "constraintParcelsTitle": "Trata cada parcela que no sea suelo vial como un muro: el corredor solo puede usar parcelas viales y el suelo que esta vía ya ocupa.",
             "noClearance": "Nada que medir todavía — la vía no tiene eje aquí.",
             "noObstacles": "No hay edificios cargados cerca de esta vía, así que nada limita el corredor todavía.",
             "corridorMinWidth": "La vía más ancha que cabe aquí sin demoler nada",
@@ -1294,7 +1292,19 @@
                 "w": "oeste",
                 "nw": "noroeste"
             },
-            "fitHint": "¿Cabría si se desplazara? Abre la pestaña Corredor"
+            "fitHint": "¿Cabría si se desplazara? Abre la pestaña Corredor",
+            "limitLabel": "Limitado por",
+            "limitParcels": "Parcelas viales",
+            "limitParcelsTitle": "La vía se mantiene en suelo vial: se detiene en el límite de la parcela vial y no considera los edificios que hay más allá.",
+            "limitBuildings": "Edificios",
+            "limitBuildingsTitle": "La vía ignora la parcela vial y llega hasta los edificios: cada parcela cede la franja delante de su edificio principal.",
+            "paving": "Superficie de la acera",
+            "pavings": {
+                "asphalt": "Asfalto",
+                "paved": "Adoquinada (piedra)"
+            },
+            "measuredAgainst": "Medido contra",
+            "measuredFallback": "no se muestra nada — se mide contra GDI"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -1315,8 +1325,8 @@
             "dguHint": "DGU catastro: lo que está registrado oficialmente.",
             "osm": "Edificios OSM (coincide con el mapa)",
             "osmHint": "Edificios OSM: el mapa comunitario — los contornos dibujados en el mapa base.",
-            "all": "Todos",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "show": "Mostrar"
         },
         "corridorTunnel": {
             "offer": "Este {{kind}} atravesaría {{count}} edificio(s) nuevo(s). ¿Cortarlos, demolerlos o hacer un túnel?",
