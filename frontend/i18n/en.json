@@ -1255,7 +1255,8 @@
                 "paved": "Paved (stone)"
             },
             "measuredAgainst": "Measured against",
-            "measuredFallback": "nothing shown — measuring against GDI"
+            "measuredFallback": "nothing shown — measuring against GDI",
+            "lockedControl": "Not available while the cross-section is open — apply or cancel first"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -2759,7 +2760,8 @@
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
             "realistic": "Photo view (Google Photorealistic 3D)",
-            "ai": "AI photorealistic render"
+            "ai": "AI photorealistic render",
+            "aiNeedsPhoto": "Switch to photo view first — the AI render works from the photorealistic scene"
         },
         "parcelPanel": {
             "title": "Parcel",

@@ -529,15 +529,44 @@
                 // floor. Roads get their own height-aware mask channel; its exact surface boundary
                 // is shared by the replacement deck, curtain and streamed-mesh fascia, while alpha
                 // carries the local formation floor copied from the 4 m ruled road quilt.
+                const proposalId = proposal && proposal.proposalId != null
+                    ? String(proposal.proposalId) : null;
                 if (geom && geom.type) out.push({
                     geometry: geom,
                     kind: 'road',
                     mode: 'road',
                     skipCap: true,
                     terrainSupport: true,
-                    proposalId: proposal && proposal.proposalId != null
-                        ? String(proposal.proposalId) : null
+                    proposalId
                 });
+                // The pavement runs WIDER than the corridor footprint wherever the footway fills out
+                // to the frontage, and the carve has to follow it, or Google's parked cars and
+                // kerbside clutter stand through the new pavement — the very thing the fill replaces.
+                //
+                // Deliberately NOT mode:'road'. The road channel is a ruled station quilt built from
+                // the cross-section's fixed offsets, and the mask loop drops road entries outright
+                // (`if (road) return`) because a generic cut along a road can breach the hollow
+                // Google shell. The fill is not a ruled strip — it is an arbitrary polygon we OWN and
+                // cover with our own pavement mesh — so it goes through the generic mask, with
+                // skipCap because our own surface is already drawn on top of it.
+                try {
+                    (window.CorridorEdgeFill?.regionsFor(definition) || []).forEach(function (region) {
+                        if (region && region.geojson && region.geojson.geometry) out.push({
+                            geometry: region.geojson.geometry,
+                            kind: 'road',
+                            skipCap: true,
+                            terrainSupport: true,
+                            // Shrink before cutting. The fill's outer edge sits ON the building
+                            // line, so cutting to it exactly takes the facade with it — the mask is
+                            // a texel grid, not a knife. Half a metre back leaves the wall standing
+                            // and costs a sliver of pavement nobody can see.
+                            buffer: -0.5,
+                            proposalId
+                        });
+                    });
+                } catch (error) {
+                    console.warn('[photoreal] edge fill carve could not be derived', error);
+                }
             }
         });
         // Applied structures clear their whole footprint (full cut): parks, squares, lakes and

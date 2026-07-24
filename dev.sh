@@ -7,6 +7,11 @@
 #   BACKEND_PORT=4001 ./dev.sh     # pin the backend port
 #   FRONTEND_PORT=5001 ./dev.sh    # pin the frontend port
 #
+# frontend/serve.json forces `Cache-Control: no-store` — `npx serve` otherwise sends an ETag and NO
+# Cache-Control, so the browser heuristically caches index.html. You add a <script> line, reload, and
+# the page keeps the OLD script list while the server serves the new file correctly: a stale asset is
+# indistinguishable from a broken change. (JSON cannot hold a comment, hence this note here.)
+#
 # Each worktree derives its own default ports from its folder name, so several worktrees can run
 # at once. The frontend's ?backend= override (frontend/js/data-source.js) is localhost-only, so it
 # never affects production.

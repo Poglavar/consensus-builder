@@ -1256,7 +1256,8 @@
                 "paved": "Popločano (kamen)"
             },
             "measuredAgainst": "Mjereno prema",
-            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju"
+            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju",
+            "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani"
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",
@@ -2789,7 +2790,8 @@
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmjene",
             "realistic": "Foto prikaz (Google fotorealistični 3D)",
-            "ai": "AI fotorealistični prikaz"
+            "ai": "AI fotorealistični prikaz",
+            "aiNeedsPhoto": "Prvo prijeđi na foto prikaz — AI render radi iz fotorealistične scene"
         },
         "parcelPanel": {
             "title": "Čestica",

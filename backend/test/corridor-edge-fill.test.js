@@ -12,6 +12,8 @@ const {
     projectPointOntoPolyline,
     corridorEdgeFillBuildingLineOffset,
     corridorEdgeFillParcelCuts,
+    corridorEdgeFillParcelExtent,
+    corridorEdgeFillSlicePolyline,
     corridorEdgeFillRegion,
     corridorEdgeFillSides
 } = require('../../frontend/js/corridor-edge-fill.js');
@@ -142,35 +144,61 @@ describe('corridorEdgeFillRegion', () => {
     // The acceptance case: this is what the sampled fill got wrong on a real block.
     it('steps at the property line and never bulges into the gap between two buildings', () => {
         // Two parcels side by side, each with one building, 10 m of open ground between them.
+        // Both parcels start 8 m out from the centreline — the road land in front of them is NOT
+        // theirs, and a cut clipped to the parcel would start there and never reach the kerb.
         const parcels = [
-            { feature: rect(0, 50, 0, 30), rings: [ringOf(5, 45, 6, 20)] },
-            { feature: rect(50, 100, 0, 30), rings: [ringOf(55, 95, 4, 18)] }
+            { parcelRings: [ringOf(0, 50, 8, 30)], rings: [ringOf(5, 45, 12, 20)] },
+            { parcelRings: [ringOf(50, 100, 8, 30)], rings: [ringOf(55, 95, 10, 18)] }
         ];
-        // Stands in for the editor's projected strip builder: the frontage out to `offset`, from
-        // the lane's inner seam, along the whole road.
-        const buildStrip = offset => rect(0, 100, 1, offset);
+        // Stands in for the editor's projected strip builder: the pavement from the lane's inner
+        // seam out to `offset`, over the stretch of road between two chainages.
+        const buildStrip = (offset, sMin, sMax) => rect(sMin, sMax, 1, offset);
         const cuts = corridorEdgeFillParcelCuts(CENTERLINE, parcels, 'left', { turf, minOffset: 3, maxOffset: 20 }, buildStrip);
+        expect(cuts.length).toBe(2);
 
         const region = corridorEdgeFillRegion(BAND, NOMINAL, cuts, { turf });
-        // One line per parcel: 50 m at 6 m deep, 50 m at 4 m deep, measured from the 1 m seam.
-        expect(turf.area(region)).toBeCloseTo(50 * 5 + 50 * 3, 0);
-        expect(hasVertex(region, [50, 6])).toBe(true); // the step, exactly at the property line
-        expect(hasVertex(region, [50, 4])).toBe(true);
+        // One line per parcel: 50 m at 12 m deep, 50 m at 10 m deep, measured from the 1 m seam.
+        expect(turf.area(region)).toBeCloseTo(50 * 11 + 50 * 9, 0);
+        expect(hasVertex(region, [50, 12])).toBe(true); // the step, exactly at the property line
+        expect(hasVertex(region, [50, 10])).toBe(true);
         // And nothing reaches past the deeper of the two lines — no bulge into the gap between
         // the buildings, which is where the open ground is and where the old fill ballooned.
-        expect(deepestReach(region)).toBeCloseTo(6, 6);
+        expect(deepestReach(region)).toBeCloseTo(12, 6);
+    });
+
+    it('reaches back to the kerb, across the road land the parcel does not own', () => {
+        // The one that was broken in the field: the parcel starts 8 m out, the pavement starts at
+        // 1 m, and the cut has to span the gap or the kerb-connectivity check discards it.
+        const parcels = [{ parcelRings: [ringOf(0, 100, 8, 30)], rings: [ringOf(5, 95, 12, 20)] }];
+        const cuts = corridorEdgeFillParcelCuts(CENTERLINE, parcels, 'left', { turf, minOffset: 3, maxOffset: 20 },
+            (offset, sMin, sMax) => rect(sMin, sMax, 1, offset));
+        const region = corridorEdgeFillRegion(BAND, NOMINAL, cuts, { turf });
+        expect(turf.area(region)).toBeGreaterThan(turf.area(NOMINAL));
+        expect(deepestReach(region)).toBeCloseTo(12, 6);
+    });
+
+    it('lets the parcel on the street speak for it, not the one behind', () => {
+        const parcels = [
+            { parcelRings: [ringOf(0, 100, 8, 20)], rings: [ringOf(5, 95, 11, 18)] },   // fronting
+            { parcelRings: [ringOf(0, 100, 20, 40)], rings: [ringOf(5, 95, 24, 36)] }   // back lot
+        ];
+        const cuts = corridorEdgeFillParcelCuts(CENTERLINE, parcels, 'left', { turf, minOffset: 3, maxOffset: 20 },
+            (offset, sMin, sMax) => rect(sMin, sMax, 1, offset));
+        expect(cuts.length).toBe(1);
+        const region = corridorEdgeFillRegion(BAND, NOMINAL, cuts, { turf });
+        expect(deepestReach(region)).toBeCloseTo(11, 6); // the near parcel's line, not the far one's
     });
 
     it('passes over a parcel with nothing built on it rather than guessing a line for it', () => {
         const parcels = [
-            { feature: rect(0, 50, 0, 30), rings: [ringOf(5, 45, 6, 20)] },
-            { feature: rect(50, 100, 0, 30), rings: [] } // empty lot
+            { parcelRings: [ringOf(0, 50, 8, 30)], rings: [ringOf(5, 45, 12, 20)] },
+            { parcelRings: [ringOf(50, 100, 8, 30)], rings: [] } // empty lot
         ];
         const cuts = corridorEdgeFillParcelCuts(CENTERLINE, parcels, 'left', { turf, minOffset: 3, maxOffset: 20 },
-            offset => rect(0, 100, 1, offset));
+            (offset, sMin, sMax) => rect(sMin, sMax, 1, offset));
         expect(cuts.length).toBe(1);
         const region = corridorEdgeFillRegion(BAND, NOMINAL, cuts, { turf });
-        expect(turf.area(region)).toBeCloseTo(50 * 5 + 50 * 2, 0); // filled, then back to the drawn width
+        expect(turf.area(region)).toBeCloseTo(50 * 11 + 50 * 2, 0); // filled, then back to the drawn width
     });
 });
 
@@ -192,5 +220,37 @@ describe('corridorEdgeFillSides', () => {
 
     it('has nothing to fill on a profile with no lanes', () => {
         expect(corridorEdgeFillSides(null)).toEqual({ left: null, right: null });
+    });
+});
+
+describe('corridorEdgeFillParcelExtent', () => {
+    it('reports the stretch of road a parcel fronts, and how close it comes', () => {
+        const extent = corridorEdgeFillParcelExtent(CENTERLINE, [ringOf(20, 60, 8, 30)], 'left');
+        expect(extent.sMin).toBeCloseTo(20, 6);
+        expect(extent.sMax).toBeCloseTo(60, 6);
+        expect(extent.nearest).toBeCloseTo(8, 6);
+    });
+
+    it('has no extent on the other side of the road', () => {
+        expect(corridorEdgeFillParcelExtent(CENTERLINE, [ringOf(20, 60, -30, -8)], 'left')).toBeNull();
+    });
+});
+
+describe('corridorEdgeFillSlicePolyline', () => {
+    it('cuts the centreline at exactly the chainages asked for', () => {
+        const slice = corridorEdgeFillSlicePolyline(CENTERLINE, 20, 60);
+        expect(slice[0][0]).toBeCloseTo(20, 6);
+        expect(slice[slice.length - 1][0]).toBeCloseTo(60, 6);
+    });
+
+    it('keeps the bends inside the slice', () => {
+        const bent = [[0, 0], [50, 0], [50, 50]];
+        const slice = corridorEdgeFillSlicePolyline(bent, 25, 75);
+        expect(slice.length).toBe(3);
+        expect(slice[1]).toEqual([50, 0]);
+    });
+
+    it('refuses a slice with no length', () => {
+        expect(corridorEdgeFillSlicePolyline(CENTERLINE, 40, 40)).toBeNull();
     });
 });

@@ -134,7 +134,6 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
-    const aiBtn = document.getElementById('mode-ai-toggle'); // AI photorealistic render — 3D-only
 
     // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
     // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
@@ -154,6 +153,19 @@
             if (btn2d) btn2d.classList.toggle('active', !isActive);
             if (btn3d) { btn3d.classList.toggle('active', isActive && !rw); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
             if (btnRw) { btnRw.classList.toggle('active', rw); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
+            // The AI render is a PHOTO of the scene: it only means anything over the photorealistic
+            // mesh. Absent in 2D (there is no scene to render), present but disabled in model view
+            // so the feature is discoverable and says what it needs, live in photo view.
+            const btnAi = document.getElementById('mode-ai-toggle');
+            if (btnAi) {
+                btnAi.hidden = !isActive;
+                btnAi.disabled = !rw;
+                const label = rw
+                    ? threeI18n('threeMode.toggle.ai', 'AI photorealistic render')
+                    : threeI18n('threeMode.toggle.aiNeedsPhoto', 'Switch to photo view first — the AI render works from the photorealistic scene');
+                btnAi.title = label;
+                btnAi.setAttribute('aria-label', label);
+            }
         } catch (_) { }
     }
     window.updateModeButtonStates = updateModeButtonStates;
@@ -1563,6 +1575,10 @@
 
     let squareSurfaceMats = null;
     function squareSurfaceMaterials() {
+        // Rebuild if the texture never came out. The paving material is shared by squares, the
+        // structure ground and the footways, so a null map cached on the first call would leave
+        // every one of them flat-coloured for the rest of the session.
+        if (squareSurfaceMats && squareSurfaceMats.paving && !squareSurfaceMats.paving.map) squareSurfaceMats = null;
         if (!squareSurfaceMats) {
             const texture = squarePaving.createSquarePavingTexture(THREE, document, renderer);
             squareSurfaceMats = {
@@ -2188,12 +2204,16 @@
                 ? corridorStripSurface({ type, paving })
                 : (lane.surface || '#2b2b2b');
             const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
-            corridorLaneMaterials[key] = new THREE.MeshLambertMaterial({
+            const material = new THREE.MeshLambertMaterial({
                 // White under a texture, or the map's own colours come out muddied by the tint.
                 color: texture ? 0xffffff : new THREE.Color(surface),
                 map: texture || null,
                 emissive: 0x000000
             });
+            // A paved material that came out without its texture must not be cached: that would
+            // leave the pavement flat-coloured for the rest of the session. Retry next time.
+            if (paving === 'paved' && !texture) return material;
+            corridorLaneMaterials[key] = material;
         }
         return corridorLaneMaterials[key];
     }
@@ -2222,12 +2242,15 @@
                 ? corridorStripSurface({ type, paving })
                 : (lane.surface || '#2b2b2b');
             const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
-            corridorRibbonMaterials[key] = new THREE.MeshLambertMaterial({
+            const material = new THREE.MeshLambertMaterial({
                 color: texture ? 0xffffff : new THREE.Color(surface),
                 map: texture || null,
                 emissive: 0x000000,
                 side: THREE.DoubleSide
             });
+            // Built without its texture it must not be cached — retry rather than stay flat.
+            if (paving === 'paved' && !texture) return material;
+            corridorRibbonMaterials[key] = material;
         }
         return corridorRibbonMaterials[key];
     }
@@ -2464,6 +2487,15 @@
         if (!ruled || !ruled.ok || !ruled.positions.length) return false;
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(ruled.positions, 3));
+        // UVs from world XY, matching what ShapeGeometry gives the flat strips. Without them a
+        // textured lane — a PAVED footway — samples a single texel and comes out flat-coloured,
+        // which is why paving showed in model view and not in photo view.
+        const uvs = new Float32Array((ruled.positions.length / 3) * 2);
+        for (let i = 0, u = 0; i < ruled.positions.length; i += 3, u += 2) {
+            uvs[u] = ruled.positions[i];
+            uvs[u + 1] = ruled.positions[i + 1];
+        }
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
         geometry.computeVertexNormals();
         geometry.computeBoundingSphere();
         const mesh = new THREE.Mesh(geometry, corridorRibbonMaterial(laneType, strip && strip.paving));
@@ -3186,6 +3218,132 @@
                 });
             });
             addGradeSeparationEdges3D(targetGroup, record, terrainHeightAt);
+        });
+    }
+
+    // The point on a polyline closest to (x, y), in scene XY. Used to ask the ROAD what height the
+    // pavement beside it should take: the centerline sits inside the road's own terrain support, so
+    // it answers where the pavement's own footprint cannot.
+    function nearestOnPolylineXY(points, x, y) {
+        let best = null;
+        let bestDistance = Infinity;
+        for (let i = 0; i < points.length - 1; i += 1) {
+            const a = points[i];
+            const b = points[i + 1];
+            const dx = b[0] - a[0];
+            const dy = b[1] - a[1];
+            const length2 = dx * dx + dy * dy;
+            if (length2 < 1e-9) continue;
+            const t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / length2));
+            const px = a[0] + dx * t;
+            const py = a[1] + dy * t;
+            const distance = (x - px) * (x - px) + (y - py) * (y - py);
+            if (distance < bestDistance) { bestDistance = distance; best = [px, py]; }
+        }
+        return best;
+    }
+
+    // Insert vertices along a lat/lng ring so no edge is longer than `maxMetres`. Earcut only ever
+    // triangulates the vertices it is GIVEN: a long thin pavement described by its corners becomes
+    // two enormous triangles, and moving their corners tilts a whole 70 m plane — the same trap
+    // addTerrainStrip3D avoids by not using earcut at all.
+    function densifyRingLngLat(ring, maxMetres) {
+        if (!Array.isArray(ring) || ring.length < 2) return ring;
+        const step = Number(maxMetres) > 0 ? Number(maxMetres) : 4;
+        const mPerDegLat = 111320;
+        const mPerDegLng = 111320 * Math.cos((Number(ring[0][1]) || 0) * Math.PI / 180);
+        const out = [ring[0]];
+        for (let i = 1; i < ring.length; i += 1) {
+            const a = ring[i - 1];
+            const b = ring[i];
+            const pieces = Math.max(1, Math.ceil(
+                Math.hypot((b[0] - a[0]) * mPerDegLng, (b[1] - a[1]) * mPerDegLat) / step));
+            for (let k = 1; k < pieces; k += 1) {
+                const t = k / pieces;
+                out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+            }
+            out.push(b);
+        }
+        return out;
+    }
+
+    function densifyPolygonFeature(feature, maxMetres) {
+        const geometry = feature && feature.geometry;
+        if (!geometry) return feature;
+        const rings = list => list.map(ring => densifyRingLngLat(ring, maxMetres));
+        if (geometry.type === 'Polygon') {
+            return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings(geometry.coordinates) } };
+        }
+        if (geometry.type === 'MultiPolygon') {
+            return { type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: geometry.coordinates.map(rings) } };
+        }
+        return feature;
+    }
+
+    // The filled footway of every applied corridor, in 3D and in photo view. The pavement the
+    // cross-section editor previews on the 2D map is the same shape here — one derivation, in
+    // corridor-edge-fill-scene.js — so the road does not change width when you switch view.
+    //
+    // Visual only: it never moves the corridor footprint or the takings, which is why it is derived
+    // on demand rather than stored. A drag or a cross-section change just produces a new answer on
+    // the next build; there is nothing to invalidate.
+    function buildCorridorEdgeFills3D(targetGroup, sampleHeight) {
+        if (!targetGroup || !window.CorridorEdgeFill || typeof isAppliedCorridorProposal !== 'function') return;
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES.sidewalk) || {};
+        const kerb = Number(lane.height) || 0;
+
+        proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            const centreXY = [];
+            try {
+                (corridorCenterlineOf(definition) || []).forEach(segment => {
+                    (segment || []).forEach(point => centreXY.push(latLngToXY(point.lat, point.lng)));
+                });
+            } catch (_) { }
+            let regions = [];
+            try {
+                regions = window.CorridorEdgeFill.regionsFor(definition) || [];
+            } catch (error) {
+                console.warn('[three-mode] edge fill could not be derived', error);
+                return;
+            }
+            const seating = (typeof sampleHeight === 'function' && centreXY.length >= 2);
+            regions.forEach(region => {
+                try {
+                    const material = corridorLaneMaterial(region.type, region.paving);
+                    const source = seating ? densifyPolygonFeature(region.geojson, 4) : region.geojson;
+                    // Sits a hair under the drawn lane so the two coincide without z-fighting where
+                    // they overlap — the fill CONTAINS the drawn width by construction.
+                    polygonFeatureToMeshes(source, material, CORRIDOR_STRIP_Z - 0.002, kerb).forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.isCorridorEdgeFill = true;
+                        mesh.userData.laneType = region.type;
+                        // The pavement takes the height of THE ROAD BESIDE IT, not of the ground
+                        // under itself. A footway is level across its width and follows the road
+                        // only along its length; sampling under the pavement asked the wrong
+                        // question twice over — the road's terrain support does not reach that far
+                        // (most vertices came back empty and the mesh tore into fans), and where it
+                        // did answer, the pavement inherited whatever driveway or verge it sat on.
+                        if (seating) {
+                            try {
+                                const position = mesh.geometry.getAttribute('position');
+                                for (let i = 0; i < position.count; i += 1) {
+                                    const near = nearestOnPolylineXY(centreXY, position.getX(i), position.getY(i));
+                                    const h = near ? sampleHeight(near[0], near[1]) : null;
+                                    if (Number.isFinite(h)) position.setZ(i, position.getZ(i) + h);
+                                }
+                                position.needsUpdate = true;
+                                mesh.geometry.computeVertexNormals();
+                                mesh.geometry.computeBoundingSphere();
+                            } catch (_) { }
+                        }
+                        targetGroup.add(mesh);
+                    });
+                } catch (error) {
+                    console.warn('[three-mode] edge fill mesh failed', error);
+                }
+            });
         });
     }
 
@@ -4599,6 +4757,11 @@
             expectedKeysOut: expectedKeys,
             terrainReferences: terrainReferences
         });
+        // The pavement fill follows the same terrain the strips do, so photo view shows the road at
+        // the width the editor drew it.
+        try { buildCorridorEdgeFills3D(group, sampleHeight); } catch (error) {
+            console.warn('[three-mode] terrain corridor edge fills failed', error);
+        }
         if (!expectedKeys.size) {
             disposeTerrainCorridorGeometry(group);
             disposeTerrainCorridorGroup();
@@ -4929,6 +5092,7 @@
         // Corridors render into their own group (not flatGroup): in realistic mode the parcel
         // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
         try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
+        try { buildCorridorEdgeFills3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor edge fills failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -5451,7 +5615,7 @@
         updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
-        if (aiBtn) aiBtn.hidden = false; // AI render works from any 3D scene
+        // The AI button's visibility and enabled state are owned by updateModeButtonStates().
 
         showRenderingOverlay();
         disableLeafletInteractions();
@@ -5481,7 +5645,7 @@
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
-        if (aiBtn) aiBtn.hidden = true;
+        // (AI button state: updateModeButtonStates.)
         if (threeContainer) threeContainer.classList.remove('active');
         // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
         // and the transition guard would otherwise leak and jam future entries.

@@ -845,3 +845,21 @@ body.three-mode-active #agent-bubbles-container {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* Locked while the cross-section editor is docked: the map is a viewport there, not a control
+   surface, so changing what it shows is off the table (see corridorEditorLockMap). Greyed rather
+   than hidden so the buttons do not jump around, and NOT `pointer-events: none` — that would
+   suppress the tooltip explaining why they are inert.
+   Each selector carries the button's ID *and* its own base class, because the rules it has to beat
+   are ID-scoped and live in files that load LATER (photoreal-mode.css styles a disabled globe as
+   "busy activating": cursor progress). Matching their specificity would lose on order; this outranks
+   them outright. Same trap as the Leaflet `.leaflet-interactive` rule in corridor-editor.css. */
+#mode-2d-toggle.map-mode-toggle.map-mode-btn--locked:disabled,
+#mode-3d-toggle.map-mode-toggle.map-mode-btn--locked:disabled,
+#mode-realistic-toggle.map-mode-realistic-btn.map-mode-btn--locked:disabled,
+#mode-walk-toggle.map-mode-walk-btn.map-mode-btn--locked:disabled,
+#mode-ai-toggle.map-mode-ai-btn.map-mode-btn--locked:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}

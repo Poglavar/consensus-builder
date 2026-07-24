@@ -1304,7 +1304,8 @@
                 "paved": "Adoquinada (piedra)"
             },
             "measuredAgainst": "Medido contra",
-            "measuredFallback": "no se muestra nada — se mide contra GDI"
+            "measuredFallback": "no se muestra nada — se mide contra GDI",
+            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -2808,7 +2809,8 @@
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
             "realistic": "Vista foto (Google 3D fotorrealista)",
-            "ai": "Renderizado fotorrealista con IA"
+            "ai": "Renderizado fotorrealista con IA",
+            "aiNeedsPhoto": "Cambia primero a la vista foto — el render de IA parte de la escena fotorrealista"
         },
         "parcelPanel": {
             "title": "Parcela",

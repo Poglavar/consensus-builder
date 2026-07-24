@@ -623,6 +623,35 @@ function clearAppliedCorridorStrips() {
     appliedCorridorLayer = null;
 }
 
+// The filled footway of one corridor, as Leaflet polygons. Derived by the one shared builder
+// (corridor-edge-fill-scene.js), so the map cannot disagree with the editor's preview or with 3D.
+function renderCorridorEdgeFill(definition, group, ownerClass) {
+    if (!definition || !group || !window.CorridorEdgeFill || typeof L === 'undefined') return;
+    let regions = [];
+    try { regions = window.CorridorEdgeFill.regionsFor(definition) || []; } catch (error) {
+        console.warn('[corridor-render] edge fill could not be derived', error);
+        return;
+    }
+    regions.forEach(region => {
+        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[region.type]) || {};
+        const surface = (typeof corridorStripSurface === 'function')
+            ? corridorStripSurface({ type: region.type, paving: region.paving })
+            : (lane.surface || '#c2beb4');
+        const pavingClass = region.paving === 'paved' ? ' corridor-strip--paved' : '';
+        L.geoJSON(region.geojson, {
+            pane: CORRIDOR_STRIPS_PANE,
+            interactive: false,
+            style: {
+                color: surface,
+                weight: 0.5,
+                fillColor: surface,
+                fillOpacity: 0.85,
+                className: `corridor-strip corridor-strip--${region.type}${pavingClass}${ownerClass ? ' ' + ownerClass : ''}`
+            }
+        }).addTo(group);
+    });
+}
+
 function refreshAppliedCorridorStrips() {
     clearAppliedCorridorStrips();
     if (typeof map === 'undefined' || !map) return;
@@ -671,6 +700,10 @@ function refreshAppliedCorridorStrips() {
             }
         });
         if (!allStrips.length) return;
+        // The pavement where the footway fills out to the frontage. Drawn UNDER the junction patches
+        // and over the strips, in the lane's own surface — so the 2D map shows the same road width
+        // the 3D model and photo view do, rather than the drawn minimum.
+        renderCorridorEdgeFill(definition, group, ownerClass);
         const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
             ? buildCorridorJunctionTreatmentsForEntries(entries)
             : [];

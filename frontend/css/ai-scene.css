@@ -22,7 +22,17 @@
     cursor: pointer;
 }
 
-#mode-ai-toggle.map-mode-ai-btn:hover { background: #f5f5f5; }
+#mode-ai-toggle.map-mode-ai-btn:hover:not(:disabled) { background: #f5f5f5; }
+
+/* Model view: the button is there but inert — the AI render is a photograph of the photorealistic
+   scene, so there is nothing for it to work from until photo view is up. Deliberately NOT
+   `pointer-events: none`: that would suppress the native tooltip, which is the whole point of
+   showing a disabled button rather than hiding it. */
+#mode-ai-toggle.map-mode-ai-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
 
 #mode-ai-toggle.map-mode-ai-btn[hidden] { display: none; }
 

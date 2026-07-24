@@ -980,8 +980,12 @@ function corridorEditorFillParcels() {
         } catch (_) { return false; }
     };
 
+    let layers = 0;
+    let withFeature = 0;
     parcelLayer.eachLayer(layer => {
+        layers += 1;
         const feature = layer && layer.feature;
+        if (feature && feature.geometry) withFeature += 1;
         if (!feature || !feature.geometry || !withinReach(feature)) return;
         const props = feature.properties || {};
         const parcelId = (props.parcelId !== undefined && props.parcelId !== null) ? String(props.parcelId)
@@ -990,19 +994,39 @@ function corridorEditorFillParcels() {
             || (parcelId && typeof isRoadParcel === 'function' && isRoadParcel(parcelId));
         parcels.push({ id: parcelId, isRoad, feature, mainBuilding: null, mainArea: 0 });
     });
+    corridorEditorFillDiagnostic.layers = layers;
+    corridorEditorFillDiagnostic.layersWithFeature = withFeature;
+    corridorEditorFillDiagnostic.inReach = parcels.length;
+
+    // Road land is what the ROAD RUNS THROUGH, asked of the geometry rather than of the curated
+    // road-parcel registry. The registry is incomplete — this very street is not in it — and
+    // trusting it broke both limits at once: road-parcels mode filled with other streets' parcels
+    // and gained nothing, while buildings mode treated the street's own parcel as a frontage parcel,
+    // where it is the nearest one at every station and stamped a single huge strip over the road.
+    const centrelines = corridorEditorScopedSegments()
+        .filter(segment => Array.isArray(segment) && segment.length >= 2)
+        .map(segment => turf.lineString(segment.map(point => [point.lng, point.lat])));
+    parcels.forEach(parcel => {
+        parcel.isRoadLand = parcel.isRoad || centrelines.some(centreline => {
+            try { return turf.booleanIntersects(centreline, parcel.feature); } catch (_) { return false; }
+        });
+    });
+    corridorEditorFillDiagnostic.roadLand = parcels.filter(parcel => parcel.isRoadLand).length;
     if (!parcels.length) return parcels;
 
     // Which building stands on which parcel, by centroid: a building overlapping two parcels
     // belongs to the one it mostly sits in, which is what a centroid answers cheaply.
     if (typeof collectLoadedCorridorBuildings === 'function') {
-        collectLoadedCorridorBuildings({ surveys: corridorEditorBuildingSurveys() }).forEach(building => {
+        const surveyBuildings = collectLoadedCorridorBuildings({ surveys: corridorEditorBuildingSurveys() });
+        corridorEditorFillDiagnostic.buildings = surveyBuildings.length;
+        surveyBuildings.forEach(building => {
             if (!building || !building.geometry || !withinReach(building)) return;
             let centroid = null;
             let area = 0;
             try { centroid = turf.centroid(building); area = turf.area(building); } catch (_) { return; }
             if (!centroid || !(area > 0)) return;
             const host = parcels.find(parcel => {
-                if (parcel.isRoad) return false;
+                if (parcel.isRoadLand) return false;
                 try { return turf.booleanPointInPolygon(centroid, parcel.feature); } catch (_) { return false; }
             });
             if (!host || area <= host.mainArea) return;
@@ -1018,9 +1042,13 @@ function corridorEditorFillParcels() {
 //
 //   road parcels — the cut IS the road parcel, so the pavement takes the road land and stops at
 //                  its edge, whatever stands beyond it;
-//   buildings    — each parcel gives up the slice in front of its biggest building. One line per
-//                  parcel, clipped to that parcel, so the edge steps at every property boundary
-//                  and the pavement never bulges into the gaps between the buildings themselves.
+//   buildings    — the road land FIRST, and then further: each parcel gives up the slice in front
+//                  of its biggest building. One line per parcel, so the edge steps at every
+//                  property boundary rather than bulging into the gaps between the buildings.
+//
+// The road land is the floor of the buildings limit, not an alternative to it. Without it a stretch
+// with no built frontage — an empty lot, a parcel whose building sits elsewhere — collapsed to the
+// DRAWN width and left road land unpaved beside it, which reads as the fill simply not working.
 function corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset) {
     const state = corridorEditorState;
     const turf = window.turf;
@@ -1028,22 +1056,40 @@ function corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset) {
     const sign = side === 'right' ? -1 : 1;
     const parcels = corridorEditorFillParcels();
 
-    if (state.clearanceMode === 'parcels') {
-        return parcels.filter(parcel => parcel.isRoad).map(parcel => parcel.feature);
-    }
+    // The pavement takes whatever of the road parcel the other lanes do not: the cut is the parcel
+    // itself, and the band and the drawn lanes decide the rest. Both limits start here.
+    const roadLand = parcels.filter(parcel => parcel.isRoadLand).map(parcel => parcel.feature);
+    corridorEditorFillDiagnostic.parcels = parcels.length;
+    corridorEditorFillDiagnostic.road = roadLand.length;
+    if (state.clearanceMode === 'parcels') return roadLand;
 
+    corridorEditorFillDiagnostic.withBuilding = parcels.filter(parcel => !parcel.isRoadLand && parcel.mainBuilding).length;
     const fronting = parcels
-        .filter(parcel => !parcel.isRoad && parcel.mainBuilding)
+        .filter(parcel => !parcel.isRoadLand && parcel.mainBuilding)
         .map(parcel => ({
-            feature: parcel.feature,
+            parcelRings: corridorEditorGeometryToPlanarRings(parcel.feature.geometry),
             rings: corridorEditorGeometryToPlanarRings(parcel.mainBuilding.geometry)
         }));
-    return corridorEdgeFillParcelCuts(planar, fronting, side, {
+    // The cut runs from the kerb out to the parcel's building line, over the stretch of road that
+    // parcel fronts. Clipping it to the parcel polygon instead would start it at the property line
+    // and leave the road land between kerb and boundary out — which cuts it off from the pavement.
+    return roadLand.concat(corridorEdgeFillParcelCuts(planar, fronting, side, {
         minOffset: config.minOffset,
         maxOffset
-    }, lineOffset => corridorFeatureFromLatLngRing(
-        buildCorridorStripPolygon(segment, sign * lineOffset, config.innerOffset)
-    ));
+    }, (lineOffset, sMin, sMax) => {
+        const slice = corridorEdgeFillSlicePolyline(planar, sMin, sMax);
+        if (!slice) return null;
+        const ring = corridorEdgeFillBandRing(slice, config.innerOffset, {
+            side,
+            minOffset: lineOffset,
+            maxOffset: lineOffset
+        });
+        if (!ring) return null;
+        return corridorFeatureFromLatLngRing(ring.map(([xCoord, yCoord]) => {
+            const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+            return { lat, lng };
+        }));
+    }));
 }
 
 // Gathering every other centerline walks all proposals, so it is cached against the geometry it
@@ -1060,58 +1106,52 @@ function corridorEditorHeldEndpointsFor(planar) {
 // One filled region per fillable side per scoped segment: the band the fill may reach, and the
 // cuts the chosen limit offers it. No ray casting — the clearance pass measures how wide the road
 // COULD be, which is a different question from where its pavement ends.
+// Why the fill came out empty, when it does. Not verbose logging: a fill that silently collapses to
+// the drawn width is indistinguishable from one that was never asked for, which cost a long hunt.
+const corridorEditorFillDiagnostic = {};
+
 function corridorEditorEdgeFillRegions() {
     const state = corridorEditorState;
     const regions = [];
-    if (!state || state.mode !== 'proposal') return regions;
-    if (typeof corridorEdgeFillSides !== 'function' || typeof htrs96ToWGS84 !== 'function') return regions;
-    if (typeof corridorEdgeFillRegion !== 'function' || typeof corridorFeatureFromLatLngRing !== 'function') return regions;
-    const sides = corridorEdgeFillSides(state.profile);
-    if (!sides.left && !sides.right) return regions;
+    if (!state || state.mode !== 'proposal' || !window.CorridorEdgeFill) return regions;
     // Cutting the band against every parcel is real work, and a render can be triggered by things
-    // that do not move the fill at all — a tab switch, an obstacle re-check. Scope, limit and
-    // geometry cover the surroundings; the edge spans cover every cross-section change that can
-    // reach the outermost lanes.
+    // that do not move the fill at all — a tab switch, an obstacle re-check. Scope, limit, survey
+    // and geometry cover the surroundings; the profile covers every cross-section change.
     const cacheKey = [state.scope, state.segmentId || '', state.clearanceMode,
-        corridorEditorBuildingSurveyKey(), state.geometryVersion || 0, JSON.stringify(sides)].join('|');
+        corridorEditorBuildingSurveyKey(), state.geometryVersion || 0, JSON.stringify(state.profile)].join('|');
     if (state.edgeFillCache && state.edgeFillCache.key === cacheKey) return state.edgeFillCache.regions;
-    const taper = Math.max(10, corridorProfileWidth(state.profile));
 
-    corridorEditorScopedSegments().forEach(segment => {
+    const segments = corridorEditorScopedSegments();
+    const held = segments.map(segment => {
         const planar = segment
             .map(point => wgs84ToHTRS96(point.lat, point.lng))
             .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
-        if (planar.length < 2) return;
-        const held = corridorEditorHeldEndpointsFor(planar);
-        ['left', 'right'].forEach(side => {
-            const config = sides[side];
-            if (!config) return;
-            const maxOffset = config.minOffset + EDGE_FILL_MAX_REACH;
-            const ring = corridorEdgeFillBandRing(planar, config.innerOffset, {
-                side,
-                minOffset: config.minOffset,
-                maxOffset,
-                taperStart: held.start,
-                taperEnd: held.end,
-                taperMeters: taper
-            });
-            if (!ring) return;
-            const band = corridorFeatureFromLatLngRing(ring.map(([xCoord, yCoord]) => {
-                const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
-                return { lat, lng };
-            }));
-            // The lane at its drawn width: the part that is never given up, whatever stands on it.
-            const nominalOuter = side === 'right' ? -config.minOffset : config.minOffset;
-            const nominal = corridorFeatureFromLatLngRing(
-                buildCorridorStripPolygon(segment, nominalOuter, config.innerOffset)
-            );
-            const cuts = corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset);
-            const region = corridorEdgeFillRegion(band, nominal, cuts);
-            if (region && region.geometry) regions.push({ type: config.type, geojson: region });
-        });
+        return planar.length >= 2 ? corridorEditorHeldEndpointsFor(planar) : { start: false, end: false };
     });
+    // The preview and what the map, the 3D model and photo view will draw are ONE derivation
+    // (corridor-edge-fill-scene.js). Two implementations of this drifted once already.
+    const out = window.CorridorEdgeFill.regionsFor(state.definition, {
+        limit: state.clearanceMode,
+        surveys: corridorEditorBuildingSurveys(),
+        segments,
+        heldEndpoints: held,
+        profile: state.profile
+    }) || [];
+    out.forEach(region => regions.push(region));
     state.edgeFillCache = { key: cacheKey, regions };
+    corridorEditorFillReport(regions);
     return regions;
+}
+
+// One line when the pavement gains nothing over its drawn width, once per distinct picture so a
+// repeated render cannot spam. Silence otherwise.
+let corridorEditorFillLastReport = '';
+function corridorEditorFillReport(regions) {
+    if (regions.length && corridorEditorFillDiagnostic.gain > 0) return;
+    const summary = JSON.stringify({ regions: regions.length, ...corridorEditorFillDiagnostic });
+    if (summary === corridorEditorFillLastReport) return;
+    corridorEditorFillLastReport = summary;
+    console.warn('[edge-fill] the pavement gained nothing here:', summary);
 }
 
 function corridorEditorRenderEdgeFillPreview() {
@@ -1123,8 +1163,11 @@ function corridorEditorRenderEdgeFillPreview() {
     const pane = (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined;
     // GeoJSON rather than L.polygon: a flood fill can come back as several pieces, and with a hole
     // in it where something stands in the middle of the pavement.
-    corridorEditorEdgeFillLayer = L.layerGroup(regions.map(entry => {
-        const surface = (CORRIDOR_LANE_TYPES[entry.type] || {}).surface || '#c2beb4';
+    corridorEditorEdgeFillLayer = L.featureGroup(regions.map(entry => {
+        const surface = (typeof corridorStripSurface === 'function')
+            ? corridorStripSurface({ type: entry.type, paving: entry.paving })
+            : ((CORRIDOR_LANE_TYPES[entry.type] || {}).surface || '#c2beb4');
+        const pavingClass = entry.paving === 'paved' ? ' corridor-strip--paved' : '';
         return L.geoJSON(entry.geojson, {
             pane,
             interactive: false,
@@ -1134,7 +1177,7 @@ function corridorEditorRenderEdgeFillPreview() {
                 dashArray: '5 4',
                 fillColor: surface,
                 fillOpacity: 0.85,
-                className: `corridor-strip corridor-strip--${entry.type} corridor-edge-fill`
+                className: `corridor-strip corridor-strip--${entry.type}${pavingClass} corridor-edge-fill`
             }
         });
     })).addTo(map);
@@ -2035,6 +2078,11 @@ async function corridorEditorSave() {
         corridorEditorRunObstacleCheck();
     }
     const { source, profile, scope, segmentId: scopedSegmentId } = corridorEditorState;
+    // The pavement fill is derived, not stored — but WHICH LIMIT it was drawn to is the author's
+    // decision, and every later viewer (the 2D map, the 3D model, photo view) must honour it rather
+    // than fall back to a default. Read before the editor closes; written in the mutator below.
+    const edgeFillLimit = corridorEditorState.clearanceMode === 'parcels' ? 'parcels' : 'buildings';
+    const edgeFillSurvey = corridorEditorBuildingSurveyKey();
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();
@@ -2047,6 +2095,7 @@ async function corridorEditorSave() {
     // cannot run (e.g. the source's parcels are not loaded in this city).
     if (typeof window.updateLocalCorridorGeometry === 'function') {
         const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
+            definition.edgeFill = { limit: edgeFillLimit, survey: edgeFillSurvey };
             if (scope === 'segment' && scopedSegmentId) {
                 // One segment of the network takes the new cross-section; the rest is untouched.
                 definition.segmentProfiles = definition.segmentProfiles || {};
@@ -2439,8 +2488,14 @@ function corridorEditorSwallowMapClick(event) {
 //     deselect). It sits on the map PANE, not the container, so the Leaflet controls beside it
 //     still work, and it takes only click/contextmenu — mousedown, wheel and dblclick pass, so
 //     panning and zooming stay live;
-//   - model and photo view are barred outright. Both replace the map with a 3D scene that has no
-//     cross-section editor in it, which would leave this panel docked over nothing.
+//   - every map-mode button is barred. The map is a viewport while the editor is docked, and
+//     changing what it shows is not one of the two things you may do here (pan/zoom, and choose
+//     the building survey). Model and photo view would replace the map with a 3D scene that has no
+//     cross-section editor in it, leaving this panel docked over nothing.
+const CORRIDOR_EDITOR_LOCKED_BUTTONS = [
+    'mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-walk-toggle', 'mode-ai-toggle'
+];
+
 function corridorEditorLockMap(locked) {
     document.body.classList.toggle('corridor-editor-open', locked);
 
@@ -2452,10 +2507,23 @@ function corridorEditorLockMap(locked) {
         });
     }
 
-    ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-walk-toggle'].forEach(id => {
+    CORRIDOR_EDITOR_LOCKED_BUTTONS.forEach(id => {
         const button = document.getElementById(id);
-        if (button) button.disabled = locked;
+        if (!button) return;
+        button.disabled = locked;
+        button.classList.toggle('map-mode-btn--locked', locked);
+        if (locked) {
+            // Keep the real tooltip so it can be put back; say why the button is inert meanwhile.
+            if (button.dataset.lockedTitle === undefined) button.dataset.lockedTitle = button.title || '';
+            button.title = corridorEditorI18n('modal.corridor.lockedControl',
+                'Not available while the cross-section is open — apply or cancel first');
+        } else if (button.dataset.lockedTitle !== undefined) {
+            button.title = button.dataset.lockedTitle;
+            delete button.dataset.lockedTitle;
+        }
     });
+    // The AI button has its own rule (photo view only); let it reassert once the lock is off.
+    if (!locked && typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
 }
 
 if (typeof window !== 'undefined') {
