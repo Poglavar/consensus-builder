@@ -1101,6 +1101,27 @@ above the scroll fold.
     margin-bottom: 4px;
 }
 
+/* A detected grey road is still only source data. This action materializes the clicked bounded
+   polygon as a local corridor proposal before handing it to the normal cross-section editor. */
+.system-road-adoption {
+    margin: 12px 0 4px;
+    padding: 12px;
+    border: 1px solid #94a3b8;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.system-road-adoption .btn {
+    width: 100%;
+}
+
+.system-road-adoption p {
+    margin: 7px 2px 0;
+    color: #64748b;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
 .parcel-owner-header {
     display: flex;
     justify-content: space-between;

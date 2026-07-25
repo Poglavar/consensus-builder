@@ -737,7 +737,13 @@
                 "measureToleranceText": "{{percent}}% within ±10% of average",
                 "measureStatusSuccess": "Road measurements calculated and added to panel.",
                 "measureStatusError": "Error calculating road measurements.",
-                "measureStatusNoParcel": "No parcel selected for road measurement."
+                "measureStatusNoParcel": "No parcel selected for road measurement.",
+                "formRoadProposal": "Form road proposal and edit profile",
+                "formRoadProposalHint": "Uses this road polygon as one segment and opens its editable cross-section.",
+                "formRoadProposalLoading": "Forming road proposal…",
+                "formRoadProposalUnavailable": "This road segment cannot be formed into a proposal.",
+                "formRoadProposalSuccess": "Road proposal formed. Edit its profile, then apply the changes.",
+                "formRoadProposalError": "Could not form a road proposal from this segment."
             },
             "nft": {
                 "statusUnknown": "NFT status: Not checked yet.",

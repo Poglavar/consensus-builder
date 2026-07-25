@@ -561,6 +561,21 @@
                 ${tParcel('panel.parcel.forSale', {}, 'For sale')}
             </button>
         ` : '';
+        const canAdoptSystemRoad = !!(global.SystemRoadAdoption
+            && typeof global.SystemRoadAdoption.canOffer === 'function'
+            && global.SystemRoadAdoption.canOffer(feature, parcelKey, parcelProposals));
+        const adoptSystemRoadHtml = canAdoptSystemRoad ? `
+            <div class="system-road-adoption">
+                <button type="button" id="adopt-system-road-button" class="btn btn-primary"
+                    onclick="adoptSelectedSystemRoad()"
+                    data-i18n-key="panel.parcel.actions.formRoadProposal">
+                    ${tParcel('panel.parcel.actions.formRoadProposal', {}, 'Form road proposal and edit profile')}
+                </button>
+                <p data-i18n-key="panel.parcel.actions.formRoadProposalHint">
+                    ${tParcel('panel.parcel.actions.formRoadProposalHint', {}, 'Uses this road polygon as one segment and opens its editable cross-section.')}
+                </p>
+            </div>
+        ` : '';
 
         // Determine ownership type for display - will be updated when owners are fetched
         const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
@@ -615,6 +630,7 @@
                 <div class="metric-value">${formattedPrice} ${priceCurrency}</div>
             </div>
         </div>
+        ${adoptSystemRoadHtml}
         ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}
         <div id="roadMeasurements" style="display: none;">
         </div>

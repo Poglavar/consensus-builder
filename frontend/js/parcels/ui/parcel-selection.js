@@ -205,7 +205,12 @@
         global.currentParcel = {
             id: parcelId,
             layer: targetLayer,
-            isRoad: currentIsRoad
+            isRoad: currentIsRoad,
+            // System-road adoption uses the exact clicked part when a source feature is a
+            // MultiPolygon, and the nearest analysed centreline when it contains several.
+            clickedLatLng: e?.latlng
+                ? { lat: Number(e.latlng.lat), lng: Number(e.latlng.lng) }
+                : null
         };
         global.window.currentParcel = global.currentParcel;
 

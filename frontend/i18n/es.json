@@ -784,7 +784,13 @@
                 "measureToleranceText": "{{percent}}% dentro de ±10% del promedio",
                 "measureStatusSuccess": "Mediciones de carretera calculadas y añadidas al panel.",
                 "measureStatusError": "Error al calcular las mediciones de la carretera.",
-                "measureStatusNoParcel": "No hay ninguna parcela seleccionada para medir como carretera."
+                "measureStatusNoParcel": "No hay ninguna parcela seleccionada para medir como carretera.",
+                "formRoadProposal": "Crear propuesta de carretera y editar perfil",
+                "formRoadProposalHint": "Usa este polígono de carretera como un segmento y abre su sección transversal editable.",
+                "formRoadProposalLoading": "Creando propuesta de carretera…",
+                "formRoadProposalUnavailable": "Este segmento de carretera no se puede convertir en una propuesta.",
+                "formRoadProposalSuccess": "Propuesta de carretera creada. Edita su perfil y aplica los cambios.",
+                "formRoadProposalError": "No se pudo crear una propuesta de carretera a partir de este segmento."
             },
             "nft": {
                 "statusUnknown": "Estado NFT: todavía no verificado.",

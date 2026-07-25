@@ -762,7 +762,13 @@
                 "measureToleranceText": "{{percent}}% unutar ±10% od proseka",
                 "measureStatusSuccess": "Merenja puta izračunata i dodata u panel.",
                 "measureStatusError": "Greška pri računaju merenja puta.",
-                "measureStatusNoParcel": "Nije izabrana parcela za merenje puta."
+                "measureStatusNoParcel": "Nije izabrana parcela za merenje puta.",
+                "formRoadProposal": "Formiraj predlog puta i uredi profil",
+                "formRoadProposalHint": "Koristi ovaj poligon puta kao jedan segment i otvara njegov poprečni profil za uređivanje.",
+                "formRoadProposalLoading": "Formiram predlog puta…",
+                "formRoadProposalUnavailable": "Ovaj segment puta nije moguće formirati kao predlog.",
+                "formRoadProposalSuccess": "Predlog puta je formiran. Uredite profil, pa primenite izmene.",
+                "formRoadProposalError": "Nije bilo moguće formirati predlog puta iz ovog segmenta."
             },
             "nft": {
                 "statusUnknown": "NFT status: Još nije provereno.",
