@@ -40,6 +40,20 @@ function publicApiBase(req) {
     return `${req.protocol}://${req.get('host')}`;
 }
 
+// Re-anchor a stored scene image reference to THIS request's public base. Only the PATH is stable;
+// the host is not — a dev backend's port changes between sessions, and the pinned prod base can move
+// too, so a row that baked in the old host serves a dead <img> (a share link made on port 4477 breaks
+// once the session's backend is on 3000). Persisting the path and resolving the origin per request
+// keeps a scene viewable from whatever backend serves it AND heals rows that already hold a stale
+// absolute URL. Same rule as everywhere else: never persist a guessed origin / the client Host.
+export function toPublicImageUrl(req, stored) {
+    if (!stored) return stored;
+    const match = /^[a-z][a-z0-9+.-]*:\/\/[^/]+(\/.*)$/i.exec(String(stored));
+    let path = match ? match[1] : String(stored);
+    if (!path.startsWith('/')) path = '/' + path;
+    return `${publicApiBase(req)}${path}`;
+}
+
 // Only allowlisted models are callable — the client picks a name, so it must not be able to
 // point us at an arbitrary model. Rates are USD per 1M tokens; estUsd is the ~1MP per-image
 // estimate shown in the UI before generating (metered providers return the real cost).
@@ -471,13 +485,14 @@ export function setupAiSceneRoute(app, pool) {
             const slug = makeSlug();
             const extension = (decoded.mimeType.split('/')[1] || 'png');
             const { imagePath } = saveImageBuffer(decoded.buffer, `scene-${slug}`, extension);
-            const imageUrl = `${publicApiBase(req)}${imagePath}`;
 
             await pool.query(
+                // Store the RELATIVE path, never an absolute URL — the origin is resolved per request
+                // on read (toPublicImageUrl), so the link survives a dev port change or a base move.
                 `INSERT INTO ai_scene (slug, image_url, focus_proposal_id, proposal_ids, view, city, lang, model, prompt)
                  VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6, $7, $8, $9)`,
                 [
-                    slug, imageUrl,
+                    slug, imagePath,
                     focusProposalId != null ? String(focusProposalId) : null,
                     JSON.stringify(ids),
                     view != null ? JSON.stringify(view) : null,
@@ -489,7 +504,7 @@ export function setupAiSceneRoute(app, pool) {
             );
 
             console.log(`[${new Date().toISOString()}] ai-scene: saved scene ${slug} (focus=${focusProposalId ?? '-'}, ${ids.length} proposals)`);
-            return res.json({ slug, imageUrl });
+            return res.json({ slug, imageUrl: toPublicImageUrl(req, imagePath) });
         } catch (err) {
             console.error(`[${new Date().toISOString()}] ai-scene: save failed — ${err.message}`);
             return res.status(500).json({ error: 'Failed to save scene.' });
@@ -510,7 +525,7 @@ export function setupAiSceneRoute(app, pool) {
             const r = result.rows[0];
             return res.json({
                 slug: r.slug,
-                imageUrl: r.image_url,
+                imageUrl: toPublicImageUrl(req, r.image_url),
                 focusProposalId: r.focus_proposal_id,
                 proposalIds: r.proposal_ids || [],
                 view: r.view,
