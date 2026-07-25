@@ -1207,18 +1207,25 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 // that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
 // existing behaviour rather than stranding the user on a dialog.
 async function sharedProposalCityBlocksLoad(firstProposalId) {
-    if (!firstProposalId || typeof promptCityMismatchForProposal !== 'function') return false;
+    // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
+    // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
+    // very same proposal a SECOND time. Hand the payload back so the caller can reuse it — one fetch
+    // instead of two. `blocked` is true only when the user chose to stay in the other city.
+    if (!firstProposalId) return { blocked: false, payload: null };
+    let payload = null;
     try {
         const backendBase = resolveBackendBaseUrl();
         const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
-        if (!response.ok) return false;
-        const payload = await response.json();
+        if (!response.ok) return { blocked: false, payload: null };
+        payload = await response.json();
+        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload };
         const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
-        if (!proposalCityId) return false;
-        return await promptCityMismatchForProposal(String(proposalCityId));
+        if (!proposalCityId) return { blocked: false, payload };
+        const blocked = await promptCityMismatchForProposal(String(proposalCityId));
+        return { blocked, payload };
     } catch (error) {
         console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
-        return false;
+        return { blocked: false, payload };
     }
 }
 
@@ -1281,20 +1288,27 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
+        const firstProposalId = idParts.map(normalizeId).filter(Boolean)[0];
 
-        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
-        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
-        // map happens to be on screen.
-        if (await sharedProposalCityBlocksLoad(idParts.map(normalizeId).filter(Boolean)[0])) {
-            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
-            return;
-        }
-
+        // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
+        // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
         showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
             total: totalProposals,
             title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
         });
+
+        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
+        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
+        // map happens to be on screen. The fetched payload is reused below (see prefetchedFirst) so
+        // the apply loop does not fetch this same proposal again.
+        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId);
+        if (cityCheck.blocked) {
+            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
+            hideProposalLoadOverlay();
+            return;
+        }
+        const prefetchedFirst = cityCheck.payload || null;
 
         const backendBase = resolveBackendBaseUrl();
         const applied = [];
@@ -1424,6 +1438,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
+        // Reuse the proposal the city check already fetched — keyed by the same normalized id the
+        // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
+        if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
         const lastUnfetchedBasePrereqIdsById = new Map();
@@ -1449,31 +1466,40 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
         // to a whole-block building proposal). Waiting here makes that detection deterministic.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            // The barrier only matters when an incoming proposal could conflict with a DIFFERENT
-            // already-applied one. When nothing else is applied — the common "re-open my own link"
-            // case — there is nothing to unapply, and waiting up to 10 s for the background reapply
-            // just froze the loader at "0 / 1" for no reason (the incoming proposal's own
-            // materialization still happens downstream, on the visible apply path). Read the
-            // in-memory store synchronously and skip the wait then; keep it when a plan switch is
-            // genuinely in play.
+            // The barrier only matters when we are about to APPLY a proposal that could conflict with
+            // a DIFFERENT already-applied one — it waits for the background reapply to re-materialize
+            // everything so that conflict is detectable. It is pure cost, freezing the loader at
+            // "0 / 1" for up to 10 s, in two cases where nothing new gets applied:
+            //   - nothing else is applied at all, or
+            //   - every incoming proposal is ALREADY applied (re-opening a link). Re-opening applies
+            //     nothing, so there is no conflict to resolve — and with a stack of test proposals on
+            //     the map this was the usual reason for the stall.
+            // The reapply still runs in the background either way (materialization is not skipped),
+            // we just do not block on it. Keep the barrier only for a genuine plan switch: a NEW
+            // proposal arriving while others are applied.
             const incomingIdSet = new Set(queue.map(normalizeId).filter(Boolean));
             let hasOtherApplied = false;
+            let allIncomingAlreadyApplied = false;
             try {
                 if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-                    hasOtherApplied = (proposalStorage.getAllProposals() || []).some(p => {
-                        if (!p || !isProposalCurrentlyApplied(p)) return false;
-                        const ids = [
+                    const appliedIdSet = new Set();
+                    (proposalStorage.getAllProposals() || []).forEach(p => {
+                        if (!p || !isProposalCurrentlyApplied(p)) return;
+                        [
                             p.serverProposalId,
                             p.proposalId,
                             (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null)
-                        ].filter(Boolean).map(String);
-                        return !ids.some(id => incomingIdSet.has(id));
+                        ].filter(Boolean).forEach(id => appliedIdSet.add(String(id)));
                     });
+                    hasOtherApplied = [...appliedIdSet].some(id => !incomingIdSet.has(id));
+                    allIncomingAlreadyApplied = incomingIdSet.size > 0
+                        && [...incomingIdSet].every(id => appliedIdSet.has(id));
                 }
             } catch (_) {
                 hasOtherApplied = true; // unsure → keep the safe barrier
+                allIncomingAlreadyApplied = false;
             }
-            if (hasOtherApplied) {
+            if (hasOtherApplied && !allIncomingAlreadyApplied) {
                 // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
                 // stall the whole route.
                 await Promise.race([
