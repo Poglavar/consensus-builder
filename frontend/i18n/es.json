@@ -1310,7 +1310,8 @@
                 "paved": "Adoquinada (piedra)"
             },
             "measuredAgainst": "Medido contra",
-            "measuredFallback": "no se muestra nada — se mide contra GDI"
+            "measuredFallback": "no se muestra nada — se mide contra GDI",
+            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -2814,7 +2815,8 @@
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
             "realistic": "Vista foto (Google 3D fotorrealista)",
-            "ai": "Renderizado fotorrealista con IA"
+            "ai": "Renderizado fotorrealista con IA",
+            "aiNeedsPhoto": "Cambia primero a la vista foto — el render de IA parte de la escena fotorrealista"
         },
         "parcelPanel": {
             "title": "Parcela",
@@ -2862,7 +2864,7 @@
             "tweetText": "Vista fotorrealista de mi propuesta urbana",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Preparando el enlace para compartir…",
-            "linkCopied": "¡Enlace copiado!",
+            "linkCopied": "Enlace copiado",
             "copyFailed": "No se pudo copiar — mantén pulsado el enlace para copiarlo.",
             "shareFailed": "No se pudo crear el enlace para compartir: {{m}}",
             "errCooldown": "Espera unos segundos antes de generar otra imagen.",
@@ -2878,6 +2880,9 @@
         "aiFollow": {
             "title": "Render de IA",
             "note": "Estás viendo la escena 3D real a partir de la cual se creó esta imagen de IA."
+        },
+        "hints": {
+            "viewAngle": "Mantén Ctrl (o Cmd) y arrastra para cambiar el ángulo de vista"
         }
     },
     "structureEditor": {

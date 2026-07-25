@@ -1262,7 +1262,8 @@
                 "paved": "Popločano (kamen)"
             },
             "measuredAgainst": "Mjereno prema",
-            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju"
+            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju",
+            "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani"
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",
@@ -2795,7 +2796,8 @@
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmjene",
             "realistic": "Foto prikaz (Google fotorealistični 3D)",
-            "ai": "AI fotorealistični prikaz"
+            "ai": "AI fotorealistični prikaz",
+            "aiNeedsPhoto": "Prvo prijeđi na foto prikaz — AI render radi iz fotorealistične scene"
         },
         "parcelPanel": {
             "title": "Čestica",
@@ -2843,7 +2845,7 @@
             "tweetText": "Fotorealistični prikaz mog urbanog prijedloga",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Pripremam link za dijeljenje…",
-            "linkCopied": "Link kopiran!",
+            "linkCopied": "Poveznica kopirana",
             "copyFailed": "Kopiranje nije uspjelo — dugo pritisnite link da ga kopirate.",
             "shareFailed": "Nije moguće stvoriti link za dijeljenje: {{m}}",
             "errCooldown": "Pričekajte nekoliko sekundi prije generiranja nove slike.",
@@ -2859,6 +2861,9 @@
         "aiFollow": {
             "title": "AI prikaz",
             "note": "Gledate stvarnu 3D scenu iz koje je napravljena ova AI slika."
+        },
+        "hints": {
+            "viewAngle": "Drži Ctrl (ili Cmd) i povuci za promjenu kuta pogleda"
         }
     },
     "structureEditor": {

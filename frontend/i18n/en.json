@@ -1261,7 +1261,8 @@
                 "paved": "Paved (stone)"
             },
             "measuredAgainst": "Measured against",
-            "measuredFallback": "nothing shown — measuring against GDI"
+            "measuredFallback": "nothing shown — measuring against GDI",
+            "lockedControl": "Not available while the cross-section is open — apply or cancel first"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -2765,7 +2766,8 @@
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
             "realistic": "Photo view (Google Photorealistic 3D)",
-            "ai": "AI photorealistic render"
+            "ai": "AI photorealistic render",
+            "aiNeedsPhoto": "Switch to photo view first — the AI render works from the photorealistic scene"
         },
         "parcelPanel": {
             "title": "Parcel",
@@ -2813,7 +2815,7 @@
             "tweetText": "Photorealistic view of my urban proposal",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Preparing share link…",
-            "linkCopied": "Link copied!",
+            "linkCopied": "Link copied",
             "copyFailed": "Copy failed — long-press the link to copy it.",
             "shareFailed": "Could not create a share link: {{m}}",
             "errCooldown": "Please wait a few seconds before generating another image.",
@@ -2829,6 +2831,9 @@
         "aiFollow": {
             "title": "AI render",
             "note": "You are viewing the real 3D scene this AI image was made from."
+        },
+        "hints": {
+            "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle"
         }
     },
     "structureEditor": {

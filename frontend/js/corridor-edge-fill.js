@@ -104,6 +104,7 @@
     function projectPointOntoPolyline(pointsXY, point) {
         if (!Array.isArray(pointsXY) || pointsXY.length < 2 || !Array.isArray(point)) return null;
         let best = null;
+        let travelled = 0;
         for (let i = 0; i < pointsXY.length - 1; i += 1) {
             const a = pointsXY[i];
             const b = pointsXY[i + 1];
@@ -111,19 +112,86 @@
             const dy = b[1] - a[1];
             const length2 = dx * dx + dy * dy;
             if (length2 < EDGE_FILL_EPS) continue;
+            const length = Math.sqrt(length2);
             const raw = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / length2;
             const t = Math.max(0, Math.min(1, raw));
             const distance = Math.hypot(point[0] - (a[0] + dx * t), point[1] - (a[1] + dy * t));
-            if (best && distance >= best.distance) continue;
-            const cross = dx * (point[1] - a[1]) - dy * (point[0] - a[0]);
-            best = {
-                distance,
-                // Positive is left of travel, matching the strip spans and the clearance sampler.
-                signed: cross >= 0 ? distance : -distance,
-                abreast: !(i === 0 && t <= 0) && !(i === pointsXY.length - 2 && t >= 1)
-            };
+            if (!best || distance < best.distance) {
+                const cross = dx * (point[1] - a[1]) - dy * (point[0] - a[0]);
+                best = {
+                    distance,
+                    // Positive is left of travel, matching the strip spans and the clearance sampler.
+                    signed: cross >= 0 ? distance : -distance,
+                    // How far along the road it sits — which stretch of pavement it speaks for.
+                    chainage: travelled + t * length,
+                    abreast: !(i === 0 && t <= 0) && !(i === pointsXY.length - 2 && t >= 1)
+                };
+            }
+            travelled += length;
         }
         return best;
+    }
+
+    // How far along the road a parcel fronts, and how close it comes to the centerline.
+    //
+    // The extent is what lets a parcel's building line apply to a STRETCH of pavement rather than to
+    // the parcel's own polygon. That distinction was the bug: the land between the kerb and the
+    // property line is road land, not the parcel's, so a cut clipped to the parcel started several
+    // metres out and never touched the pavement — and the kerb-connectivity test then correctly
+    // threw every one of them away.
+    //
+    // No `abreast` test here, unlike the building line: a parcel running past the end of this
+    // stretch still fronts the part it overlaps, and the projection has already clamped its chainage
+    // to the road. Requiring abreast dropped every parcel with a corner on the road's first or last
+    // vertex, which is most of them.
+    function corridorEdgeFillParcelExtent(pointsXY, rings, side) {
+        const sign = side === 'right' ? -1 : 1;
+        let sMin = Infinity;
+        let sMax = -Infinity;
+        let nearest = Infinity;
+        (rings || []).forEach(ring => {
+            if (!Array.isArray(ring)) return;
+            ring.forEach(vertex => {
+                const projection = projectPointOntoPolyline(pointsXY, vertex);
+                if (!projection) return;
+                const offset = projection.signed * sign;
+                if (offset <= 0) return; // the other side of the road
+                if (projection.chainage < sMin) sMin = projection.chainage;
+                if (projection.chainage > sMax) sMax = projection.chainage;
+                if (offset < nearest) nearest = offset;
+            });
+        });
+        if (!Number.isFinite(sMin) || !Number.isFinite(sMax) || sMax - sMin < EDGE_FILL_EPS) return null;
+        return { sMin, sMax, nearest };
+    }
+
+    // The stretch of centerline between two chainages, as its own polyline. The ends are
+    // interpolated, so the slice starts and stops exactly where the parcel does.
+    function corridorEdgeFillSlicePolyline(pointsXY, sMin, sMax) {
+        if (!Array.isArray(pointsXY) || pointsXY.length < 2) return null;
+        if (!Number.isFinite(sMin) || !Number.isFinite(sMax) || sMax <= sMin) return null;
+        const at = (a, b, ratio) => [a[0] + (b[0] - a[0]) * ratio, a[1] + (b[1] - a[1]) * ratio];
+        const slice = [];
+        let travelled = 0;
+        for (let i = 0; i < pointsXY.length - 1; i += 1) {
+            const a = pointsXY[i];
+            const b = pointsXY[i + 1];
+            const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            if (length < EDGE_FILL_EPS) continue;
+            const start = travelled;
+            const end = travelled + length;
+            if (end >= sMin && start <= sMax) {
+                const from = Math.max(sMin, start);
+                const to = Math.min(sMax, end);
+                const first = at(a, b, (from - start) / length);
+                const last = at(a, b, (to - start) / length);
+                if (!slice.length) slice.push(first);
+                const tail = slice[slice.length - 1];
+                if (Math.hypot(last[0] - tail[0], last[1] - tail[1]) > EDGE_FILL_EPS) slice.push(last);
+            }
+            travelled = end;
+        }
+        return slice.length >= 2 ? slice : null;
     }
 
     // The offset at which a building's face sits, in the road's frame — the closest its outline
@@ -156,28 +224,60 @@
     // The region (GeoJSON in lat/lng — turf.area reads the frame for the m² thresholds)
     // ---------------------------------------------------------------------------
 
-    // One cut per parcel: the strip in front of that parcel's main building, clipped to the parcel.
-    // Clipping is the whole point — it is what makes the pavement edge step at each property line
-    // and stay put across the gaps between buildings, instead of bulging into every one of them.
-    //
-    // `parcels` is [{ feature, rings }] — the parcel polygon in lat/lng and its main building's
-    // outline in the planar road frame. `buildStrip(offset)` returns the frontage strip out to that
-    // offset as a lat/lng feature; the caller owns the projection, and with it the side's sign.
+    // One cut per STRETCH of road: from the kerb out to the frontage line of whichever parcel is on
+    // the street there. `parcels` is [{ parcelRings, rings }] — the parcel outline and its main
+    // building's, both in the planar road frame. `buildStrip(offset, sMin, sMax)` returns the
+    // pavement from the lane's inner seam out to `offset` over that stretch, as a lat/lng feature;
+    // the caller owns the projection, and with it the side's sign.
     function corridorEdgeFillParcelCuts(pointsXY, parcels, side, options = {}, buildStrip) {
-        const turf = options.turf || global.turf;
-        if (!turf || typeof buildStrip !== 'function') return [];
-        const cuts = [];
+        if (typeof buildStrip !== 'function') return [];
+        const step = Number(options.stationStep) > 0 ? Number(options.stationStep) : 1;
+
+        const candidates = [];
         (parcels || []).forEach(parcel => {
-            if (!parcel || !parcel.feature || !parcel.rings) return;
+            if (!parcel || !parcel.parcelRings) return;
+            const extent = corridorEdgeFillParcelExtent(pointsXY, parcel.parcelRings, side);
+            if (!extent) return;
             const lineOffset = corridorEdgeFillBuildingLineOffset(pointsXY, parcel.rings, side, options);
             if (!Number.isFinite(lineOffset)) return;
-            const frontage = buildStrip(lineOffset);
-            if (!frontage) return;
-            try {
-                const cut = turf.intersect(frontage, parcel.feature);
-                if (cut) cuts.push(cut);
-            } catch (_) { }
+            candidates.push({ ...extent, lineOffset });
         });
+        if (!candidates.length) return [];
+
+        let total = 0;
+        for (let i = 1; i < pointsXY.length; i += 1) {
+            total += Math.hypot(pointsXY[i][0] - pointsXY[i - 1][0], pointsXY[i][1] - pointsXY[i - 1][1]);
+        }
+        if (!(total > 0)) return [];
+
+        // Walk the road and ask, at each station, which parcel is the one ON the street here: of
+        // those fronting this spot, the nearest to the centerline. A back lot never wins, and a big
+        // parcel cannot speak for the stretch in front of its neighbours — which is what an
+        // interval-claiming rule let it do, collapsing a whole block to one frontage line.
+        const stations = Math.max(1, Math.ceil(total / step));
+        const picked = new Array(stations).fill(null);
+        for (let i = 0; i < stations; i += 1) {
+            const s = Math.min(total, (i + 0.5) * step);
+            let best = null;
+            candidates.forEach(candidate => {
+                if (s < candidate.sMin || s > candidate.sMax) return;
+                if (!best || candidate.nearest < best.nearest) best = candidate;
+            });
+            picked[i] = best ? best.lineOffset : null;
+        }
+
+        // Consecutive stations sharing a frontage line are one cut: the edge steps only where the
+        // parcel does.
+        const cuts = [];
+        let i = 0;
+        while (i < stations) {
+            if (picked[i] === null) { i += 1; continue; }
+            let j = i;
+            while (j + 1 < stations && picked[j + 1] === picked[i]) j += 1;
+            const strip = buildStrip(picked[i], i * step, Math.min(total, (j + 1) * step));
+            if (strip) cuts.push(strip);
+            i = j + 1;
+        }
         return cuts;
     }
 
@@ -189,21 +289,53 @@
         if (!turf || !band) return nominal || null;
         const minArea = Number.isFinite(options.minArea) ? Number(options.minArea) : 0.5;
 
+        // Why a cut was dropped, when the caller wants to know. Three boolean operations can each
+        // fail quietly on awkward geometry, and a silent drop is indistinguishable from "there was
+        // nothing there" — which is the confusion this counts its way out of.
+        const report = options.report || {};
+        const note = key => { report[key] = (report[key] || 0) + 1; };
+
         let region = nominal || null;
         (cuts || []).forEach(cut => {
-            if (!cut) return;
+            if (!cut) return note('nullCut');
+            let piece = null;
             try {
-                const piece = turf.intersect(cut, band);
-                if (!piece || turf.area(piece) < minArea) return;
-                // Connected to the kerb, or it is not pavement: a parcel across the street, or one
-                // the band reaches but that does not front this road, is reached by geometry and
-                // not by a walker.
-                if (nominal) {
-                    const shared = turf.intersect(piece, nominal);
-                    if (!shared || turf.area(shared) < minArea) return;
+                piece = turf.intersect(cut, band);
+            } catch (error) {
+                report.intersectError = String(error && error.message).slice(0, 80);
+                return note('intersectThrew');
+            }
+            if (!piece) return note('outsideBand');
+            if (turf.area(piece) < minArea) return note('slivers');
+            // Connected to the kerb, or it is not pavement: a parcel across the street, or one the
+            // band reaches but that does not front this road, is reached by geometry, not by a walker.
+            //
+            // TOUCHING counts. Measuring the overlap by AREA looked equivalent and is not: an
+            // applied road splits the parcels it crosses along its own footprint, so the leftover
+            // road land lies exactly BESIDE the pavement, sharing an edge with it. A shared edge has
+            // zero area, so the area test called the pavement's own neighbour unreachable and threw
+            // away the one piece the fill exists to take.
+            if (nominal) {
+                let touches = false;
+                try {
+                    touches = turf.booleanIntersects(piece, nominal);
+                } catch (error) {
+                    report.sharedError = String(error && error.message).slice(0, 80);
+                    return note('sharedThrew');
                 }
-                region = region ? (turf.union(region, piece) || region) : piece;
-            } catch (_) { }
+                if (!touches) return note('notConnected');
+            }
+            if (!region) { region = piece; return note('kept'); }
+            let merged = null;
+            try {
+                merged = turf.union(region, piece);
+            } catch (error) {
+                report.unionError = String(error && error.message).slice(0, 80);
+                return note('unionThrew');
+            }
+            if (!merged) return note('unionNull');
+            region = merged;
+            note('kept');
         });
         return region;
     }
@@ -234,6 +366,8 @@
         corridorEdgeFillBandRing,
         projectPointOntoPolyline,
         corridorEdgeFillBuildingLineOffset,
+        corridorEdgeFillParcelExtent,
+        corridorEdgeFillSlicePolyline,
         corridorEdgeFillParcelCuts,
         corridorEdgeFillRegion,
         corridorEdgeFillSides,

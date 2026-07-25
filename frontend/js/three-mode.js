@@ -134,7 +134,6 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
-    const aiBtn = document.getElementById('mode-ai-toggle'); // AI photorealistic render — 3D-only
 
     // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
     // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
@@ -154,6 +153,19 @@
             if (btn2d) btn2d.classList.toggle('active', !isActive);
             if (btn3d) { btn3d.classList.toggle('active', isActive && !rw); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
             if (btnRw) { btnRw.classList.toggle('active', rw); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
+            // The AI render is a PHOTO of the scene: it only means anything over the photorealistic
+            // mesh. Absent in 2D (there is no scene to render), present but disabled in model view
+            // so the feature is discoverable and says what it needs, live in photo view.
+            const btnAi = document.getElementById('mode-ai-toggle');
+            if (btnAi) {
+                btnAi.hidden = !isActive;
+                btnAi.disabled = !rw;
+                const label = rw
+                    ? threeI18n('threeMode.toggle.ai', 'AI photorealistic render')
+                    : threeI18n('threeMode.toggle.aiNeedsPhoto', 'Switch to photo view first — the AI render works from the photorealistic scene');
+                btnAi.title = label;
+                btnAi.setAttribute('aria-label', label);
+            }
         } catch (_) { }
     }
     window.updateModeButtonStates = updateModeButtonStates;
@@ -1563,6 +1575,10 @@
 
     let squareSurfaceMats = null;
     function squareSurfaceMaterials() {
+        // Rebuild if the texture never came out. The paving material is shared by squares, the
+        // structure ground and the footways, so a null map cached on the first call would leave
+        // every one of them flat-coloured for the rest of the session.
+        if (squareSurfaceMats && squareSurfaceMats.paving && !squareSurfaceMats.paving.map) squareSurfaceMats = null;
         if (!squareSurfaceMats) {
             const texture = squarePaving.createSquarePavingTexture(THREE, document, renderer);
             squareSurfaceMats = {
@@ -2188,12 +2204,16 @@
                 ? corridorStripSurface({ type, paving })
                 : (lane.surface || '#2b2b2b');
             const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
-            corridorLaneMaterials[key] = new THREE.MeshLambertMaterial({
+            const material = new THREE.MeshLambertMaterial({
                 // White under a texture, or the map's own colours come out muddied by the tint.
                 color: texture ? 0xffffff : new THREE.Color(surface),
                 map: texture || null,
                 emissive: 0x000000
             });
+            // A paved material that came out without its texture must not be cached: that would
+            // leave the pavement flat-coloured for the rest of the session. Retry next time.
+            if (paving === 'paved' && !texture) return material;
+            corridorLaneMaterials[key] = material;
         }
         return corridorLaneMaterials[key];
     }
@@ -2222,12 +2242,15 @@
                 ? corridorStripSurface({ type, paving })
                 : (lane.surface || '#2b2b2b');
             const texture = paving === 'paved' ? squareSurfaceMaterials().paving.map : null;
-            corridorRibbonMaterials[key] = new THREE.MeshLambertMaterial({
+            const material = new THREE.MeshLambertMaterial({
                 color: texture ? 0xffffff : new THREE.Color(surface),
                 map: texture || null,
                 emissive: 0x000000,
                 side: THREE.DoubleSide
             });
+            // Built without its texture it must not be cached — retry rather than stay flat.
+            if (paving === 'paved' && !texture) return material;
+            corridorRibbonMaterials[key] = material;
         }
         return corridorRibbonMaterials[key];
     }
@@ -2464,6 +2487,15 @@
         if (!ruled || !ruled.ok || !ruled.positions.length) return false;
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(ruled.positions, 3));
+        // UVs from world XY, matching what ShapeGeometry gives the flat strips. Without them a
+        // textured lane — a PAVED footway — samples a single texel and comes out flat-coloured,
+        // which is why paving showed in model view and not in photo view.
+        const uvs = new Float32Array((ruled.positions.length / 3) * 2);
+        for (let i = 0, u = 0; i < ruled.positions.length; i += 3, u += 2) {
+            uvs[u] = ruled.positions[i];
+            uvs[u + 1] = ruled.positions[i + 1];
+        }
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
         geometry.computeVertexNormals();
         geometry.computeBoundingSphere();
         const mesh = new THREE.Mesh(geometry, corridorRibbonMaterial(laneType, strip && strip.paving));
@@ -3186,6 +3218,132 @@
                 });
             });
             addGradeSeparationEdges3D(targetGroup, record, terrainHeightAt);
+        });
+    }
+
+    // The point on a polyline closest to (x, y), in scene XY. Used to ask the ROAD what height the
+    // pavement beside it should take: the centerline sits inside the road's own terrain support, so
+    // it answers where the pavement's own footprint cannot.
+    function nearestOnPolylineXY(points, x, y) {
+        let best = null;
+        let bestDistance = Infinity;
+        for (let i = 0; i < points.length - 1; i += 1) {
+            const a = points[i];
+            const b = points[i + 1];
+            const dx = b[0] - a[0];
+            const dy = b[1] - a[1];
+            const length2 = dx * dx + dy * dy;
+            if (length2 < 1e-9) continue;
+            const t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / length2));
+            const px = a[0] + dx * t;
+            const py = a[1] + dy * t;
+            const distance = (x - px) * (x - px) + (y - py) * (y - py);
+            if (distance < bestDistance) { bestDistance = distance; best = [px, py]; }
+        }
+        return best;
+    }
+
+    // Insert vertices along a lat/lng ring so no edge is longer than `maxMetres`. Earcut only ever
+    // triangulates the vertices it is GIVEN: a long thin pavement described by its corners becomes
+    // two enormous triangles, and moving their corners tilts a whole 70 m plane — the same trap
+    // addTerrainStrip3D avoids by not using earcut at all.
+    function densifyRingLngLat(ring, maxMetres) {
+        if (!Array.isArray(ring) || ring.length < 2) return ring;
+        const step = Number(maxMetres) > 0 ? Number(maxMetres) : 4;
+        const mPerDegLat = 111320;
+        const mPerDegLng = 111320 * Math.cos((Number(ring[0][1]) || 0) * Math.PI / 180);
+        const out = [ring[0]];
+        for (let i = 1; i < ring.length; i += 1) {
+            const a = ring[i - 1];
+            const b = ring[i];
+            const pieces = Math.max(1, Math.ceil(
+                Math.hypot((b[0] - a[0]) * mPerDegLng, (b[1] - a[1]) * mPerDegLat) / step));
+            for (let k = 1; k < pieces; k += 1) {
+                const t = k / pieces;
+                out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+            }
+            out.push(b);
+        }
+        return out;
+    }
+
+    function densifyPolygonFeature(feature, maxMetres) {
+        const geometry = feature && feature.geometry;
+        if (!geometry) return feature;
+        const rings = list => list.map(ring => densifyRingLngLat(ring, maxMetres));
+        if (geometry.type === 'Polygon') {
+            return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings(geometry.coordinates) } };
+        }
+        if (geometry.type === 'MultiPolygon') {
+            return { type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: geometry.coordinates.map(rings) } };
+        }
+        return feature;
+    }
+
+    // The filled footway of every applied corridor, in 3D and in photo view. The pavement the
+    // cross-section editor previews on the 2D map is the same shape here — one derivation, in
+    // corridor-edge-fill-scene.js — so the road does not change width when you switch view.
+    //
+    // Visual only: it never moves the corridor footprint or the takings, which is why it is derived
+    // on demand rather than stored. A drag or a cross-section change just produces a new answer on
+    // the next build; there is nothing to invalidate.
+    function buildCorridorEdgeFills3D(targetGroup, sampleHeight) {
+        if (!targetGroup || !window.CorridorEdgeFill || typeof isAppliedCorridorProposal !== 'function') return;
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES.sidewalk) || {};
+        const kerb = Number(lane.height) || 0;
+
+        proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            const centreXY = [];
+            try {
+                (corridorCenterlineOf(definition) || []).forEach(segment => {
+                    (segment || []).forEach(point => centreXY.push(latLngToXY(point.lat, point.lng)));
+                });
+            } catch (_) { }
+            let regions = [];
+            try {
+                regions = window.CorridorEdgeFill.regionsFor(definition) || [];
+            } catch (error) {
+                console.warn('[three-mode] edge fill could not be derived', error);
+                return;
+            }
+            const seating = (typeof sampleHeight === 'function' && centreXY.length >= 2);
+            regions.forEach(region => {
+                try {
+                    const material = corridorLaneMaterial(region.type, region.paving);
+                    const source = seating ? densifyPolygonFeature(region.geojson, 4) : region.geojson;
+                    // Sits a hair under the drawn lane so the two coincide without z-fighting where
+                    // they overlap — the fill CONTAINS the drawn width by construction.
+                    polygonFeatureToMeshes(source, material, CORRIDOR_STRIP_Z - 0.002, kerb).forEach(mesh => {
+                        mesh.userData.isCorridorStrip = true;
+                        mesh.userData.isCorridorEdgeFill = true;
+                        mesh.userData.laneType = region.type;
+                        // The pavement takes the height of THE ROAD BESIDE IT, not of the ground
+                        // under itself. A footway is level across its width and follows the road
+                        // only along its length; sampling under the pavement asked the wrong
+                        // question twice over — the road's terrain support does not reach that far
+                        // (most vertices came back empty and the mesh tore into fans), and where it
+                        // did answer, the pavement inherited whatever driveway or verge it sat on.
+                        if (seating) {
+                            try {
+                                const position = mesh.geometry.getAttribute('position');
+                                for (let i = 0; i < position.count; i += 1) {
+                                    const near = nearestOnPolylineXY(centreXY, position.getX(i), position.getY(i));
+                                    const h = near ? sampleHeight(near[0], near[1]) : null;
+                                    if (Number.isFinite(h)) position.setZ(i, position.getZ(i) + h);
+                                }
+                                position.needsUpdate = true;
+                                mesh.geometry.computeVertexNormals();
+                                mesh.geometry.computeBoundingSphere();
+                            } catch (_) { }
+                        }
+                        targetGroup.add(mesh);
+                    });
+                } catch (error) {
+                    console.warn('[three-mode] edge fill mesh failed', error);
+                }
+            });
         });
     }
 
@@ -4599,6 +4757,11 @@
             expectedKeysOut: expectedKeys,
             terrainReferences: terrainReferences
         });
+        // The pavement fill follows the same terrain the strips do, so photo view shows the road at
+        // the width the editor drew it.
+        try { buildCorridorEdgeFills3D(group, sampleHeight); } catch (error) {
+            console.warn('[three-mode] terrain corridor edge fills failed', error);
+        }
         if (!expectedKeys.size) {
             disposeTerrainCorridorGeometry(group);
             disposeTerrainCorridorGroup();
@@ -4929,6 +5092,7 @@
         // Corridors render into their own group (not flatGroup): in realistic mode the parcel
         // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
         try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
+        try { buildCorridorEdgeFills3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor edge fills failed', error); }
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
@@ -5420,9 +5584,55 @@
             .forEach(id => { try { const el = document.getElementById(id); if (el) el.style.display = 'none'; } catch (_) { } });
     }
 
+    // How to tilt the camera is the one control nothing on screen advertises: left-drag pans, and
+    // rotating needs Ctrl/Cmd (or the right button) — see three-snapshot-navigation.js, which flips
+    // OrbitControls' LEFT button between PAN and ROTATE while the modifier is held. So it is
+    // offered, once, a little after arriving: long enough not to land in the middle of the entry
+    // animation, and gone again before it becomes furniture.
+    const VIEW_ANGLE_HINT_DELAY_MS = 10000;
+    const VIEW_ANGLE_HINT_VISIBLE_MS = 6000;
+    let viewAngleHintTimer = null;
+    let viewAngleHintHideTimer = null;
+    const viewAngleHintShown = { model: false, photo: false };
+
+    function hideViewAngleHint() {
+        const el = document.querySelector('.three-view-hint');
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+        if (viewAngleHintHideTimer) { clearTimeout(viewAngleHintHideTimer); viewAngleHintHideTimer = null; }
+    }
+
+    function cancelViewAngleHint() {
+        if (viewAngleHintTimer) { clearTimeout(viewAngleHintTimer); viewAngleHintTimer = null; }
+        hideViewAngleHint();
+    }
+
+    // `mode` is 'model' or 'photo' — shown once for each, so arriving in photo view by way of the
+    // model does not say it twice, and a user who only ever uses one still gets told.
+    function scheduleViewAngleHint(mode) {
+        const key = mode === 'photo' ? 'photo' : 'model';
+        if (viewAngleHintShown[key]) return;
+        if (viewAngleHintTimer) clearTimeout(viewAngleHintTimer);
+        viewAngleHintTimer = setTimeout(() => {
+            viewAngleHintTimer = null;
+            const host = document.getElementById('three-container');
+            // Gone from 3D while the timer ran: say nothing.
+            if (!host || !isActive) return;
+            viewAngleHintShown[key] = true;
+            hideViewAngleHint();
+            const el = document.createElement('div');
+            el.className = 'three-view-hint';
+            el.setAttribute('role', 'status');
+            el.textContent = threeI18n('threeMode.hints.viewAngle',
+                'Press Ctrl (or Cmd) and drag to change the view angle');
+            host.appendChild(el);
+            viewAngleHintHideTimer = setTimeout(hideViewAngleHint, VIEW_ANGLE_HINT_VISIBLE_MS);
+        }, VIEW_ANGLE_HINT_DELAY_MS);
+    }
+
     function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        scheduleViewAngleHint('model');
         // 3D takes the full stage: collapse an expanded sidebar so the canvas and its in-view
         // controls get the whole viewport instead of sharing it with the sidebar column.
         try {
@@ -5451,7 +5661,7 @@
         updateModeButtonStates();
         // Only show the walk launcher for cities that configure a walk overlay (e.g. Zagreb).
         if (walkBtn) walkBtn.hidden = !getWalkUrlBase();
-        if (aiBtn) aiBtn.hidden = false; // AI render works from any 3D scene
+        // The AI button's visibility and enabled state are owned by updateModeButtonStates().
 
         showRenderingOverlay();
         disableLeafletInteractions();
@@ -5468,6 +5678,7 @@
 
     function exit3D() {
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
+        cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
         // motionless while 3D is active (so it cannot stream tiles or parcels), then jumps once to
@@ -5481,7 +5692,7 @@
         stopIntroAutoRotate();
         cancelWalkPick();
         if (walkBtn) walkBtn.hidden = true;
-        if (aiBtn) aiBtn.hidden = true;
+        // (AI button state: updateModeButtonStates.)
         if (threeContainer) threeContainer.classList.remove('active');
         // Defensive: if we exit before startLoop ran (aborted entry), the "Rendering…" overlay
         // and the transition guard would otherwise leak and jam future entries.
@@ -5937,11 +6148,40 @@
     // Capture the current 3D scene as a PNG data URL, for the AI photorealistic render.
     // The renderer is created without preserveDrawingBuffer, so we force a fresh synchronous
     // render and read the drawing buffer in the same tick (before the browser swaps/clears it).
+    // The canvas backing store is viewport x devicePixelRatio (capped at 2), so on any retina
+    // display a capture is ~7.5 MP. As a lossless PNG that is 6-12 MB — megabytes the image models
+    // discard anyway (they resample to roughly 1-1.5k on the long side), and enough to blow the
+    // upload size limit. Downscale before sending: same result from the model, a fraction of the
+    // bytes and the upload time.
+    const AI_CAPTURE_MAX_DIM = 1536;
+    function captureDownscaledDataURL(mimeType, quality) {
+        const src = renderer.domElement;
+        const scale = Math.min(1, AI_CAPTURE_MAX_DIM / Math.max(src.width, src.height));
+        const w = Math.max(1, Math.round(src.width * scale));
+        const h = Math.max(1, Math.round(src.height * scale));
+        const off = document.createElement('canvas');
+        off.width = w;
+        off.height = h;
+        const ctx = off.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        // JPEG has no alpha: paint an opaque base first so any transparent pixel becomes black
+        // rather than an undefined colour.
+        if (mimeType === 'image/jpeg') {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+        }
+        ctx.drawImage(src, 0, 0, w, h);
+        return off.toDataURL(mimeType, quality);
+    }
+
     function captureSceneDataURL() {
         if (!isActive || !renderer || !scene || !camera) return null;
         try {
             renderer.render(scene, camera);
-            return renderer.domElement.toDataURL('image/png');
+            // JPEG for the colour view — it is photographic, so this is ~10x smaller than PNG with
+            // no difference the model can act on.
+            return captureDownscaledDataURL('image/jpeg', 0.92);
         } catch (_) { return null; }
     }
     window.captureThreeSceneDataURL = captureSceneDataURL;
@@ -5982,7 +6222,9 @@
             scene.overrideMaterial = makeHeightMaterial(minZ, maxZ);
             scene.background = new THREE.Color(0x000000);            // empty space = 0 m = black
             renderer.render(scene, camera);
-            const url = renderer.domElement.toDataURL('image/png');
+            // PNG, not JPEG: this image encodes heights as grey levels, so lossy artifacts would
+            // literally change the building heights the model reads off it. Still downscaled.
+            const url = captureDownscaledDataURL('image/png');
             scene.overrideMaterial = prevOverride;
             scene.background = prevBg;
             renderer.render(scene, camera);                         // restore the normal view in the buffer
@@ -6115,6 +6357,8 @@
     };
     window.enterThreeMode = enter3D;
     window.exitThreeMode = exit3D;
+    // Photo view arrives through its own activation, so it asks for the hint itself.
+    window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.getThree3DGeoView = getGeoCameraView;
 
