@@ -1310,8 +1310,9 @@
                 "paved": "Adoquinada (piedra)"
             },
             "measuredAgainst": "Medido contra",
-            "measuredFallback": "no se muestra nada — se mide contra GDI",
-            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero"
+            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero",
+            "measuredOthers": "otros levantamientos muestran {{extras}} aquí",
+            "measuredAgainstGdiTitle": "Fotogrametría: lo que realmente hay. Las demoliciones se vinculan a este levantamiento, así que es el que se usa para medir; DGU y OSM se muestran solo como referencia."
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",

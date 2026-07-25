@@ -532,6 +532,83 @@ function corridorDefaultTrackProfile(gauge = CORRIDOR_DEFAULT_RAIL_GAUGE) {
 // and proposal derived from it — is that width. So a legacy track stays one rail lane stretched to its
 // recorded width, however far that is from a standard track. New tracks are seeded by the drawing tool
 // with corridorDefaultTrackProfile() instead; this function never sees them.
+// The cross-section that FITS an existing corridor of `available` metres — what an adopted street
+// gets. This is the opposite problem from drawing a new road: the width is not chosen, it is given
+// by the two kerb lines, and the question is what fits between them.
+//
+// The order is the Zagreb one: a footway each side first, then kerbside parking, then as many
+// traffic lanes as the rest allows. Without this an adopted 25 m corridor became TWO 12.5 m driving
+// lanes (corridorProfileFromLegacy's no-preset path just halves the width), which is what drove the
+// road through the buildings either side.
+//
+// Whatever is left over after whole lanes goes back to the footways rather than padding the
+// carriageway — a 40 cm wider pavement is invisible, a 40 cm wider lane is not.
+const CORRIDOR_FIT_SIDEWALK = 1;      // m per side, the minimum the brief asks for
+const CORRIDOR_FIT_PARKING = 2;       // m per side of kerbside parking
+const CORRIDOR_FIT_LANE = 3;          // m per traffic lane
+const CORRIDOR_FIT_MAX_LANES = 6;
+
+function corridorProfileForAvailableWidth(available, options = {}) {
+    const total = Number(available);
+    if (!Number.isFinite(total) || total <= 0) return null;
+
+    const laneWidth = Number(options.laneWidth) > 0 ? Number(options.laneWidth) : CORRIDOR_FIT_LANE;
+    const parkingWidth = Number(options.parkingWidth) > 0 ? Number(options.parkingWidth) : CORRIDOR_FIT_PARKING;
+    const maxLanes = Number(options.maxLanes) > 0 ? Number(options.maxLanes) : CORRIDOR_FIT_MAX_LANES;
+    const wantSidewalk = Number.isFinite(options.sidewalkWidth) && options.sidewalkWidth >= 0
+        ? Number(options.sidewalkWidth)
+        : CORRIDOR_FIT_SIDEWALK;
+
+    // Too narrow for a footway on each side and a single lane: it is all carriageway.
+    if (total < 2 * wantSidewalk + laneWidth) {
+        return { strips: [{ type: 'driving', width: roundStripWidth(total), direction: 'forward' }] };
+    }
+
+    let sidewalk = wantSidewalk;
+    let remaining = total - 2 * sidewalk;
+
+    // Parking only once two lanes are already covered, and only in pairs — a parking strip on one
+    // side of a two-way street is a lane the other direction cannot use.
+    let parking = 0;
+    if (remaining >= 2 * parkingWidth + 2 * laneWidth) {
+        parking = parkingWidth;
+        remaining -= 2 * parking;
+    }
+
+    // A street carries both directions if it possibly can, so two narrow lanes beat one wide one:
+    // 7.5 m of corridor is the classic 2.75 + 2.75 side street, not a single 3 m lane with a
+    // metre of spare pavement either side.
+    const minLane = Number(options.minLaneWidth) > 0 ? Number(options.minLaneWidth) : 2.5;
+    let lanes;
+    if (remaining >= 2 * laneWidth) lanes = Math.floor(remaining / laneWidth);
+    else if (remaining >= 2 * minLane) lanes = 2;
+    else lanes = 1;
+    if (lanes > maxLanes) lanes = maxLanes;
+    // Keep the two directions balanced; an odd lane count would need a turning-lane rule this does
+    // not try to guess.
+    if (lanes > 1 && lanes % 2 === 1) lanes -= 1;
+
+    // Lanes stay at the standard width unless two of them have to be squeezed into a narrow street.
+    const lane = Math.min(laneWidth, remaining / lanes);
+    // Hand the remainder to the footways so the section fills the corridor exactly.
+    const slack = remaining - lanes * lane;
+    sidewalk = roundStripWidth(sidewalk + Math.max(0, slack) / 2);
+
+    const strips = [];
+    strips.push({ type: 'sidewalk', width: sidewalk });
+    if (parking) strips.push({ type: 'parking', width: roundStripWidth(parking) });
+    const backward = Math.ceil(lanes / 2);
+    for (let i = 0; i < backward; i += 1) {
+        strips.push({ type: 'driving', width: roundStripWidth(lane), direction: 'backward' });
+    }
+    for (let i = 0; i < lanes - backward; i += 1) {
+        strips.push({ type: 'driving', width: roundStripWidth(lane), direction: 'forward' });
+    }
+    if (parking) strips.push({ type: 'parking', width: roundStripWidth(parking) });
+    strips.push({ type: 'sidewalk', width: sidewalk });
+    return { strips };
+}
+
 function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
     const total = Number(width);
     if (!Number.isFinite(total) || total <= 0) return null;
@@ -1790,6 +1867,7 @@ if (typeof module !== 'undefined' && module.exports) {
         normalizeCorridorProfile,
         corridorProfileWidth,
         corridorProfileFromLegacy,
+        corridorProfileForAvailableWidth,
         corridorDefaultTrackProfile,
         corridorProfileOf,
         corridorProfileHasRail,

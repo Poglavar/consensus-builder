@@ -214,6 +214,17 @@
         };
         global.window.currentParcel = global.currentParcel;
 
+        // A cadastral road parcel can carry a whole street network, so selecting it whole says far
+        // more than the click meant. Resolve the segment under the click and highlight that instead;
+        // it clears itself for every other kind of parcel. Fire-and-forget: it fetches centrelines,
+        // and the selection must not wait on the network.
+        try {
+            global.SystemRoadAdoption?.previewSelectedSystemRoadSegment?.()
+                ?.catch?.(error => console.warn('[parcel-selection] road segment preview failed', error));
+        } catch (error) {
+            console.warn('[parcel-selection] road segment preview failed', error);
+        }
+
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {
             global.multiParcelSelection.updateCreateProposalButton();

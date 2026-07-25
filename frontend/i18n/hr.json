@@ -1262,8 +1262,9 @@
                 "paved": "Popločano (kamen)"
             },
             "measuredAgainst": "Mjereno prema",
-            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju",
-            "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani"
+            "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani",
+            "measuredOthers": "druge izmjere ovdje pokazuju {{extras}}",
+            "measuredAgainstGdiTitle": "Fotogrametrija — ono što stvarno postoji. Rušenja se vežu uz ovu izmjeru pa se prema njoj mjeri sve; DGU i OSM prikazuju se samo informativno."
         },
         "corridorDraft": {
             "title": "Nespremljeni nacrt trase",

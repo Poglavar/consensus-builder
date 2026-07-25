@@ -167,6 +167,9 @@
         var attachParcelEvents = function (feature, layer) {
             var events = {
                 mouseover: typeof global.highlightFeature === 'function' ? global.highlightFeature : function () { },
+                // Road parcels outline the segment under the pointer, which only follows the pointer
+                // if mousemove is wired too — mouseover alone fires once, on entering the parcel.
+                mousemove: typeof global.trackRoadSegmentHover === 'function' ? global.trackRoadSegmentHover : function () { },
                 mouseout: typeof global.resetHighlight === 'function' ? global.resetHighlight : function () { }
             };
 

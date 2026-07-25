@@ -107,13 +107,26 @@
             && global.proposalHighlightStyleOverride.has(layer)) {
             return;
         }
-        // Proposal-aware: only change border, not fill. Road parcels have a dark asphalt fill
-        // (#2b2b2b), so the default grey #666 hover border blends into it and reads as "no hover" —
-        // give roads a bright, high-contrast border instead. Normal (transparent-fill) parcels keep #666.
+        // A road parcel answers the pointer with the SEGMENT under it, never with its own outline.
+        // One of these polygons can carry a whole street network, so outlining it says "all of this"
+        // when the pointer is on one street — which is what made hover unreadable. While its
+        // centrelines are still being fetched the honest answer is nothing for a moment, not
+        // everything; the outline follows a beat later and every hover after that is instant.
         const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
+        if (isRoad) {
+            try {
+                global.SystemRoadAdoption?.hoverSystemRoadSegment?.(parcelId, layer, e.latlng);
+            } catch (error) {
+                console.warn('[parcel-hover] road segment hover failed', error);
+            }
+            lastHoverLayer = null;
+            lastHoverParcelId = parcelId;
+            return;
+        }
+        // Ordinary parcels keep the plain grey border; only the border, never the fill.
         layer.setStyle({
             weight: 5,
-            color: isRoad ? '#00e5ff' : '#666',
+            color: '#666',
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
@@ -234,6 +247,8 @@
             lastHoverLayer = null;
             lastHoverParcelId = null;
         }
+        // The road-segment outline is a separate layer, so leaving the parcel has to drop it too.
+        try { global.SystemRoadAdoption?.clearSystemRoadSegmentHover?.(); } catch (_) { }
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
@@ -257,6 +272,26 @@
         restoreParcelLayerStyle(layer);
     }
 
+    // Follows the pointer along a road parcel, re-picking the segment under it. Cheap by design: the
+    // parcel's segmentation is cached, the pick is pure arithmetic, and the outline is only redrawn
+    // when the picked run actually changes — so this is a no-op for most moves within one segment.
+    function trackRoadSegmentHover(e) {
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        if (global.proposalListBrowseMode) return;
+        const layer = e.target;
+        const parcelId = getParcelIdFromFeature(layer?.feature);
+        if (!parcelId) return;
+        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
+        try {
+            // Moving onto anything that is not an adoptable road drops the outline. Leaving it up
+            // would leave the last road lit while the pointer is over a building plot.
+            if (!isRoad) global.SystemRoadAdoption?.clearSystemRoadSegmentHover?.();
+            else global.SystemRoadAdoption?.hoverSystemRoadSegment?.(parcelId, layer, e.latlng);
+        } catch (error) {
+            console.warn('[parcel-hover] road segment hover failed', error);
+        }
+    }
+
     function clearParcelHover() {
         const previousLayer = lastHoverLayer;
         lastHoverLayer = null;
@@ -275,6 +310,10 @@
     function onEachFeature(feature, layer) {
         const events = {
             mouseover: highlightFeature,
+            // mouseover fires ONCE, on entering the polygon. A cadastral road parcel can be hundreds
+            // of metres of street, so without mousemove the segment outline is whichever one the
+            // pointer happened to enter on and never follows the pointer along the road.
+            mousemove: trackRoadSegmentHover,
             mouseout: resetHighlight
         };
 
@@ -444,6 +483,7 @@
     }
 
     global.highlightFeature = highlightFeature;
+    global.trackRoadSegmentHover = trackRoadSegmentHover;
     global.resetHighlight = resetHighlight;
     global.clearParcelHover = clearParcelHover;
     global.onEachFeature = onEachFeature;

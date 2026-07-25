@@ -2348,17 +2348,36 @@ function proposalHasEditableCorridor(proposal) {
 // working set the cuts themselves run on; DGU and OSM are reference layers, so measuring against
 // them measures against a different survey than the one a demolition would cut. That is a real
 // choice, which is why it is named in the header rather than assumed.
+// GDI is THE survey every binding measurement reads, whatever is switched on for display.
+//
+// This used to follow the layer toggles, which made the same road answer differently depending on
+// what happened to be shown: two roads planned minutes apart were judged against different
+// standards, and the proposal recorded a width without recording what justified it.
+//
+// The reason GDI and not another is not taste. Demolition records are keyed by GDI `object_id`, and
+// DGU is an independent survey with a disjoint key space — a road measured against DGU can collide
+// with a footprint that CANNOT be written into the proposal as demolished. OSM is a community map,
+// not a survey. So DGU and OSM stay on the map as reference and never move a kerb.
 function corridorEditorBuildingSurveys() {
-    const read = id => !!document.getElementById(id)?.checked;
-    const surveys = { gdi: read('showBuildings'), dgu: read('showBuildingsDgu'), osm: read('showBuildingsOsm') };
-    // Nothing on the map: fall back to the working set rather than measure against nothing.
-    if (!surveys.gdi && !surveys.dgu && !surveys.osm) return { gdi: true, dgu: false, osm: false, fallback: true };
-    return surveys;
+    return { gdi: true, dgu: false, osm: false };
 }
 
 function corridorEditorBuildingSurveyKey() {
-    const surveys = corridorEditorBuildingSurveys();
-    return ['gdi', 'dgu', 'osm'].filter(key => surveys[key]).join('+') || 'none';
+    return 'gdi';
+}
+
+// What the other surveys would add here — shown, never obeyed. A difference is a data-quality
+// observation ("DGU has a footprint GDI does not"), not a planning constraint.
+function corridorEditorSurveyFyiCounts() {
+    try {
+        if (typeof collectLoadedCorridorBuildings !== 'function') return null;
+        const base = collectLoadedCorridorBuildings({ surveys: { gdi: true } }).length;
+        const withDgu = collectLoadedCorridorBuildings({ surveys: { gdi: true, dgu: true } }).length;
+        const withOsm = collectLoadedCorridorBuildings({ surveys: { gdi: true, osm: true } }).length;
+        return { dgu: Math.max(0, withDgu - base), osm: Math.max(0, withOsm - base) };
+    } catch (_) {
+        return null;
+    }
 }
 
 // Two full-width header rows, both live on both tabs: WHAT limits the road, and WHICH survey of
@@ -2385,25 +2404,18 @@ function corridorEditorLimitRowHtml() {
             ${CORRIDOR_LIMIT_ICONS[limit]}
         </button>`;
 
-    const surveys = corridorEditorBuildingSurveys();
-    const names = { gdi: 'GDI', dgu: 'DGU', osm: 'OSM' };
-    const titles = {
-        gdi: corridorEditorI18n('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there.'),
-        dgu: corridorEditorI18n('modal.buildingLayers.dguHint', 'DGU cadastre: what is officially registered.'),
-        osm: corridorEditorI18n('modal.buildingLayers.osmHint', 'OSM buildings: the community map.')
-    };
+    // One standard, stated rather than chosen: the measurement cannot follow the layer toggles, or
+    // the same street answers differently depending on what is switched on. The other surveys are
+    // reported beside it as FYI — a difference is a data-quality note, never a constraint.
+    const fyi = corridorEditorSurveyFyiCounts();
+    const extras = [];
+    if (fyi && fyi.dgu > 0) extras.push(`DGU +${fyi.dgu}`);
+    if (fyi && fyi.osm > 0) extras.push(`OSM +${fyi.osm}`);
     const surveyRow = parcelLimit ? '' : `
         <div class="corridor-editor-limit-row">
             <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}</span>
-            <div class="corridor-limit-toggle corridor-survey-toggle" role="group"
-                 aria-label="${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}">
-                ${['gdi', 'dgu', 'osm'].map(key => `
-                    <button type="button" class="corridor-limit-option${surveys[key] && !surveys.fallback ? ' corridor-limit-option--on' : ''}"
-                            data-survey="${key}" aria-pressed="${!!surveys[key] && !surveys.fallback}" title="${titles[key]}">
-                        ${names[key]}
-                    </button>`).join('')}
-            </div>
-            ${surveys.fallback ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredFallback', 'nothing shown — measuring against GDI')}</span>` : ''}
+            <span class="corridor-limit-current" title="${corridorEditorI18n('modal.corridor.measuredAgainstGdiTitle', 'Photogrammetry — what is actually there. Demolitions are keyed to this survey, so it is the one every measurement reads; DGU and OSM are shown for reference only.')}">GDI</span>
+            ${extras.length ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredOthers', 'other surveys show {{extras}} here', { extras: extras.join(', ') })}</span>` : ''}
         </div>`;
 
     return `
@@ -2434,22 +2446,8 @@ function corridorEditorRenderLimitRow() {
             corridorEditorRender();
         });
     });
-    // Toggling a survey switches the LAYER, not a private editor setting: what the profiler measures
-    // against and what the map shows are the same thing, and B stays the keyboard way to say it.
-    host.querySelectorAll('[data-survey]').forEach(option => {
-        option.addEventListener('click', () => {
-            if (typeof window.setBuildingReferenceLayers !== 'function') return;
-            const surveys = corridorEditorBuildingSurveys();
-            const next = {
-                gdi: !!surveys.gdi && !surveys.fallback,
-                dgu: !!surveys.dgu && !surveys.fallback,
-                osm: !!surveys.osm && !surveys.fallback
-            };
-            next[option.dataset.survey] = !next[option.dataset.survey];
-            if (window.BuildingLayersDialog) window.BuildingLayersDialog.remember(next);
-            window.setBuildingReferenceLayers(next.gdi, next.dgu, next.osm);
-        });
-    });
+    // No survey buttons any more: the measurement standard is GDI and is not a per-road choice.
+    // The layer toggles still live in the Buildings panel (and on B) for showing DGU and OSM.
 }
 
 // The surveys on the map changed under the editor (B is live while it is docked): everything

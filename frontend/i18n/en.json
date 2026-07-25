@@ -1261,8 +1261,9 @@
                 "paved": "Paved (stone)"
             },
             "measuredAgainst": "Measured against",
-            "measuredFallback": "nothing shown — measuring against GDI",
-            "lockedControl": "Not available while the cross-section is open — apply or cancel first"
+            "lockedControl": "Not available while the cross-section is open — apply or cancel first",
+            "measuredOthers": "other surveys show {{extras}} here",
+            "measuredAgainstGdiTitle": "Photogrammetry — what is actually there. Demolitions are keyed to this survey, so it is the one every measurement reads; DGU and OSM are shown for reference only."
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",

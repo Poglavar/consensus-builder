@@ -5,12 +5,28 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
+const turf = require('@turf/turf');
+// Loading the segmentation module registers it on globalThis, which is where the adoption module
+// looks for it — the same resolution the browser gets from the script list.
+require('../../frontend/js/road-segmentation.js');
 const adoption = require('../../frontend/js/system-road-adoption.js');
 const panelSource = readFileSync(
     new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url),
     'utf8'
 );
 const indexSource = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+const selectionSource = readFileSync(
+    new URL('../../frontend/js/parcels/ui/parcel-selection.js', import.meta.url),
+    'utf8'
+);
+const hoverSource = readFileSync(
+    new URL('../../frontend/js/parcels/selection.js', import.meta.url),
+    'utf8'
+);
+const ingestSource = readFileSync(
+    new URL('../../frontend/js/parcels/ingest.js', import.meta.url),
+    'utf8'
+);
 
 afterEach(() => {
     [
@@ -40,17 +56,51 @@ function metrics(lines, width = 12) {
 }
 
 describe('system road adoption eligibility', () => {
-    it('offers adoption only for a source road polygon without an existing road proposal', () => {
+    it('offers adoption for a source road polygon', () => {
         expect(adoption.canOffer(roadFeature(), 'road-1', [])).toBe(true);
-        expect(adoption.canOffer(roadFeature(), 'road-1', [{ goal: 'road-track' }])).toBe(false);
-
-        const proposalChild = roadFeature();
-        proposalChild.properties.ancestorProposal = 'proposal-1';
-        expect(adoption.canOffer(proposalChild, 'road-1', [])).toBe(false);
 
         const ordinaryParcel = roadFeature();
         ordinaryParcel.properties.isRoad = false;
         expect(adoption.canOffer(ordinaryParcel, 'parcel-1', [])).toBe(false);
+    });
+
+    it('refuses the corridor a proposal built, but keeps offering the remainder beside it', () => {
+        // Applying an adopted street cuts the parcel in two: the corridor that was taken, marked
+        // isProposed, and the leftover road land, which carries only ancestorProposal. Treating both
+        // as "proposal-derived" is what made every neighbouring street unclickable after the first
+        // adoption — the leftover is the rest of the network and is still there to be adopted.
+        const builtCorridor = roadFeature();
+        builtCorridor.properties.isProposed = true;
+        builtCorridor.properties.ancestorProposal = 'proposal-1';
+        expect(adoption.canOffer(builtCorridor, 'road-1#p-1', [])).toBe(false);
+
+        const remainder = roadFeature();
+        remainder.properties.ancestorProposal = 'proposal-1';
+        remainder.properties.proposalId = 'proposal-1';
+        expect(adoption.canOffer(remainder, 'road-1#p-2', [])).toBe(true);
+    });
+
+    it('keeps offering the parcel once one of its streets is adopted', () => {
+        // One cadastral road polygon carries a whole network. Blocking the parcel because it holds
+        // a road proposal made every OTHER street in it unclickable after the first adoption.
+        const adopted = {
+            goal: 'road-track',
+            definition: { metadata: { segmentKey: '15.90000,45.80000|15.91000,45.80000' } }
+        };
+        expect(adoption.canOffer(roadFeature(), 'road-1', [adopted])).toBe(true);
+    });
+
+    it('refuses only the segment that is already adopted', () => {
+        const key = '15.90000,45.80000|15.91000,45.80000';
+        const adopted = { goal: 'road-track', definition: { metadata: { segmentKey: key } } };
+        expect(adoption.canOffer(roadFeature(), 'road-1', [adopted], { segmentKey: key })).toBe(false);
+        expect(adoption.canOffer(roadFeature(), 'road-1', [adopted], { segmentKey: 'other|segment' })).toBe(true);
+    });
+
+    it('names a segment the same way whichever end it starts from', () => {
+        const a = [{ lat: 45.8, lng: 15.9 }, { lat: 45.8, lng: 15.91 }];
+        expect(adoption.segmentKeyFor(a)).toBe(adoption.segmentKeyFor(a.slice().reverse()));
+        expect(adoption.segmentKeyFor(a)).not.toBe(adoption.segmentKeyFor([{ lat: 45.9, lng: 15.9 }, { lat: 45.9, lng: 15.91 }]));
     });
 
     it('also recognizes roads held only in the road-parcel registry', () => {
@@ -187,10 +237,309 @@ describe('system road proposal materialization', () => {
     });
 });
 
+describe('what a click on an existing road adopts', () => {
+    // A 12 m wide road parcel running east from the origin, and the OSM centrelines over it: a
+    // through street with a side street meeting it at x=50. Planar metres — planSegmentAdoption is
+    // projection-free by design.
+    const parcelRingsXY = [[[0, -6], [0, 6], [100, 6], [100, -6], [0, -6]]];
+    const osmLinesXY = [
+        [[-50, 0], [50, 0], [150, 0]],
+        [[50, 0], [50, 80]]
+    ];
+
+    it('adopts only the segment up to the junction, not the whole street', () => {
+        const plan = adoption.planSegmentAdoption({ parcelRingsXY, osmLinesXY, clickXY: [20, 0] });
+        expect(plan.segmentSource).toBe('osm-segment');
+        const xs = plan.centerlineXY.map(([x]) => x);
+        // Bounded by the parcel at one end (x=0) and by the junction at the other (x=50) — never
+        // the 200 m the OSM way actually runs, and never past the junction into the next segment.
+        expect(Math.min(...xs)).toBeCloseTo(0, 6);
+        expect(Math.max(...xs)).toBeCloseTo(50, 6);
+    });
+
+    it('adopts the other side of the junction when the click is on that side', () => {
+        const plan = adoption.planSegmentAdoption({ parcelRingsXY, osmLinesXY, clickXY: [80, 0] });
+        const xs = plan.centerlineXY.map(([x]) => x);
+        expect(Math.min(...xs)).toBeCloseTo(50, 6);
+        expect(Math.max(...xs)).toBeCloseTo(100, 6);
+    });
+
+    it('derives the width from the room the parcel leaves, not from the profile default', () => {
+        const plan = adoption.planSegmentAdoption({ parcelRingsXY, osmLinesXY, clickXY: [20, 0] });
+        expect(plan.widthSource).toBe('parcel-clearance');
+        expect(plan.width).toBeCloseTo(12, 1);
+    });
+
+    it('keeps a derived width inside the profile editor limits', () => {
+        const sliver = [[[0, -0.2], [0, 0.2], [100, 0.2], [100, -0.2], [0, -0.2]]];
+        const plan = adoption.planSegmentAdoption({
+            parcelRingsXY: sliver,
+            osmLinesXY: [[[0, 0], [100, 0]]],
+            clickXY: [50, 0]
+        });
+        expect(plan.width).toBeGreaterThanOrEqual(2);
+    });
+
+    it('falls back to the parcel axis when no existing centreline covers the click', () => {
+        const plan = adoption.planSegmentAdoption({
+            parcelRingsXY,
+            osmLinesXY: [],
+            clickXY: [20, 0],
+            fallbackCenterlineXY: [[5, 0], [95, 0]]
+        });
+        expect(plan.segmentSource).toBe('parcel-axis');
+        expect(plan.centerlineXY).toEqual([[5, 0], [95, 0]]);
+        // Even on the fallback the width still comes from the parcel — that part never needed OSM.
+        expect(plan.width).toBeCloseTo(12, 1);
+    });
+
+    it('returns no centreline rather than throwing when it has nothing to work with', () => {
+        const plan = adoption.planSegmentAdoption({ parcelRingsXY: [], osmLinesXY: [], clickXY: null });
+        expect(plan.centerlineXY).toBeNull();
+    });
+});
+
+describe('which centrelines define a segment', () => {
+    const kind = (highway_type, tags) => ({ highway_type, tags });
+
+    it('segments on the driveable street network', () => {
+        ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'residential',
+            'unclassified', 'living_street', 'pedestrian', 'secondary_link']
+            .forEach(type => expect(adoption.definesRoadSegments(kind(type))).toBe(true));
+    });
+
+    it('ignores the pedestrian layer, which meets the carriageway every few metres', () => {
+        // Counting these as junctions cut one real road parcel into 153 pieces instead of 43.
+        ['footway', 'path', 'steps', 'cycleway', 'bridleway', 'corridor', 'track', 'construction']
+            .forEach(type => expect(adoption.definesRoadSegments(kind(type))).toBe(false));
+    });
+
+    it('breaks at an alley but not at any other kind of service road', () => {
+        // A tagged alley is a street. Bare `service` is the entrance to a car park or a block's
+        // courtyard, arriving every few dozen metres — counting those cut one obvious connector
+        // along Strojarska cesta into four pieces of 72, 16, 29 and 65 m.
+        expect(adoption.definesRoadSegments(kind('service', { service: 'alley' }))).toBe(true);
+        expect(adoption.definesRoadSegments(kind('service'))).toBe(false);
+        expect(adoption.definesRoadSegments(kind('service', { service: 'driveway' }))).toBe(false);
+        expect(adoption.definesRoadSegments(kind('service', { service: 'parking_aisle' }))).toBe(false);
+    });
+
+    it('ignores a way with no highway type at all', () => {
+        expect(adoption.definesRoadSegments({})).toBe(false);
+        expect(adoption.definesRoadSegments(null)).toBe(false);
+    });
+});
+
+describe('the hover outline never outlives the pointer', () => {
+    // Enough of Leaflet, the map and the projection to drive the real fetch -> index -> pick -> draw
+    // path in node. The projection is a plain scale so 0.001 deg reads as 1 metre.
+    let added;
+    let removed;
+
+    function installStubs() {
+        added = [];
+        removed = [];
+        globalThis.turf = turf;
+        globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 1000, lat * 1000];
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.isRoadParcel = () => true;
+        globalThis.map = {
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            removeLayer: layer => removed.push(layer),
+            hasLayer: () => true
+        };
+        globalThis.L = {
+            geoJSON: (feature) => {
+                const layer = { feature, addTo: () => layer };
+                added.push(layer);
+                return layer;
+            }
+        };
+        globalThis.fetch = async () => ({
+            ok: true,
+            json: async () => ({
+                features: [{
+                    properties: { highway_type: 'residential', name: 'Test Street' },
+                    geometry: { type: 'LineString', coordinates: [[0, 0], [0.2, 0]] }
+                }]
+            })
+        });
+    }
+
+    const roadLayer = () => ({
+        feature: {
+            type: 'Feature',
+            properties: { isRoad: true, roadName: 'Test Street' },
+            geometry: {
+                type: 'Polygon',
+                // 200 m long, 20 m wide about the centreline.
+                coordinates: [[[0, -0.01], [0.2, -0.01], [0.2, 0.01], [0, 0.01], [0, -0.01]]]
+            }
+        }
+    });
+
+    afterEach(() => {
+        adoption.clearSystemRoadSegmentHover();
+        ['turf', 'wgs84ToHTRS96', 'htrs96ToWGS84', 'isRoadParcel', 'map', 'L', 'fetch']
+            .forEach(key => { delete globalThis[key]; });
+    });
+
+    it('draws once the parcel is indexed, without waiting for another pointer move', async () => {
+        installStubs();
+        const layer = roadLayer();
+        // The first hover can only start the build, so it reports nothing drawn yet...
+        expect(adoption.hoverSystemRoadSegment('hover-parcel-1', layer, { lat: 0, lng: 0.1 })).toBe(false);
+        // ...and the outline must then appear on its own, for that same pointer position.
+        await vi.waitFor(() => expect(added.length).toBeGreaterThan(0));
+    });
+
+    it('drops the outline when the pointer moves to a parcel that is not indexed yet', async () => {
+        installStubs();
+        adoption.hoverSystemRoadSegment('hover-parcel-2', roadLayer(), { lat: 0, lng: 0.1 });
+        await vi.waitFor(() => expect(added.length).toBeGreaterThan(0));
+
+        // Moving to a different road parcel: its centrelines are not fetched yet, so nothing can be
+        // drawn — and the PREVIOUS parcel's outline must not be left lit under the new pointer.
+        removed.length = 0;
+        expect(adoption.hoverSystemRoadSegment('hover-parcel-3', roadLayer(), { lat: 0, lng: 0.1 })).toBe(false);
+        expect(removed.length).toBeGreaterThan(0);
+    });
+});
+
+describe('the plan the adopt button actually gets', () => {
+    // This drives resolveAdoptionPlan itself, which nothing else did — every other test called the
+    // pure planner directly. Two undeclared-variable bugs lived in that function for a while, each
+    // swallowed by its own try/catch, and each silently sent the adopted road down the parcel-axis
+    // fallback: a straight bar through the centroid at the skeleton's average width.
+    function installStubs() {
+        globalThis.turf = turf;
+        globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 1000, lat * 1000];
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.fetch = async () => ({
+            ok: true,
+            json: async () => ({
+                features: [{
+                    properties: { highway_type: 'residential', name: 'Bend Street' },
+                    geometry: {
+                        type: 'LineString',
+                        // A curve, so a straight-line fallback is distinguishable from the real thing.
+                        coordinates: [[0, 0], [0.05, 0.001], [0.1, 0.003], [0.15, 0.006], [0.2, 0.01]]
+                    }
+                }]
+            })
+        });
+    }
+    const parcel = {
+        type: 'Polygon',
+        coordinates: [[[0, -0.012], [0.2, -0.002], [0.2, 0.022], [0, 0.012], [0, -0.012]]]
+    };
+
+    afterEach(() => {
+        ['turf', 'wgs84ToHTRS96', 'htrs96ToWGS84', 'fetch'].forEach(k => { delete globalThis[k]; });
+    });
+
+    it('resolves a plan rather than falling through to the parcel axis', async () => {
+        installStubs();
+        const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'plan-parcel-1' });
+        expect(plan).not.toBeNull();
+        expect(plan.segmentSource).toBe('osm-segment');
+    });
+
+    it('keeps the centreline bent, so the road follows the corridor', async () => {
+        installStubs();
+        const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'plan-parcel-2' });
+        // The parcel-axis fallback is a straight two-point bar; a real segment keeps its vertices.
+        expect(plan.centerline.length).toBeGreaterThan(2);
+    });
+
+    it('derives the width by measurement, not from the profile default', async () => {
+        installStubs();
+        const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'plan-parcel-3' });
+        expect(plan.widthSource).toMatch(/clearance/);
+        expect(plan.width).toBeGreaterThan(0);
+    });
+});
+
+describe('the cross-section fitted into an adopted corridor', () => {
+    const fit = require('../../frontend/js/corridor-profile.js').corridorProfileForAvailableWidth;
+    const total = p => Number(p.strips.reduce((a, s) => a + s.width, 0).toFixed(6));
+
+    it('fills the corridor exactly, whatever the width', () => {
+        [3, 5, 6, 7.5, 10, 12, 16, 20, 25, 30, 44].forEach(w => {
+            expect(total(fit(w))).toBeCloseTo(w, 6);
+        });
+    });
+
+    it('puts a footway on each side and fits lanes between them', () => {
+        const p = fit(12);
+        expect(p.strips[0].type).toBe('sidewalk');
+        expect(p.strips[p.strips.length - 1].type).toBe('sidewalk');
+        expect(p.strips.filter(s => s.type === 'driving').length).toBe(2);
+    });
+
+    it('carries both directions on a narrow street rather than one wide lane', () => {
+        // 7.5 m is the classic side street: 1 + 2.75 + 2.75 + 1.
+        const p = fit(7.5);
+        expect(p.strips.filter(s => s.type === 'driving').length).toBe(2);
+        expect(p.strips.filter(s => s.type === 'sidewalk').every(s => s.width >= 1)).toBe(true);
+    });
+
+    it('adds kerbside parking only once two lanes are already covered', () => {
+        expect(fit(10).strips.some(s => s.type === 'parking')).toBe(false);
+        expect(fit(16).strips.filter(s => s.type === 'parking').length).toBe(2);
+    });
+
+    it('adds lanes as the corridor widens, in balanced pairs', () => {
+        const lanes = w => fit(w).strips.filter(s => s.type === 'driving').length;
+        expect(lanes(10)).toBe(2);
+        expect(lanes(20)).toBeGreaterThan(lanes(10));
+        [10, 16, 20, 25, 30].forEach(w => expect(lanes(w) % 2).toBe(0));
+    });
+
+    it('never returns a lane wider than a lane should be', () => {
+        // The old path halved the width: a 25 m corridor became two 12.5 m "lanes".
+        [10, 16, 20, 25, 30, 44].forEach(w => {
+            fit(w).strips.filter(s => s.type === 'driving').forEach(s => expect(s.width).toBeLessThanOrEqual(3.5));
+        });
+    });
+
+    it('gives an alley the whole width as carriageway rather than nothing', () => {
+        const p = fit(3);
+        expect(total(p)).toBeCloseTo(3, 6);
+        expect(p.strips.some(s => s.type === 'driving')).toBe(true);
+    });
+});
+
 describe('system road adoption UI contract', () => {
     it('loads the adoption module and exposes the parcel-panel action', () => {
         expect(indexSource).toContain("'js/system-road-adoption.js'");
         expect(panelSource).toContain('global.SystemRoadAdoption.canOffer(feature, parcelKey, parcelProposals)');
         expect(panelSource).toContain('onclick="adoptSelectedSystemRoad()"');
+    });
+
+    it('loads the segmentation module before the adoption module that reads it', () => {
+        expect(indexSource).toContain("'js/road-segmentation.js'");
+        expect(indexSource.indexOf("'js/road-segmentation.js'"))
+            .toBeLessThan(indexSource.indexOf("'js/system-road-adoption.js'"));
+    });
+
+    it('outlines the hovered segment instead of the whole road parcel', () => {
+        expect(hoverSource).toContain('hoverSystemRoadSegment');
+        expect(hoverSource).toContain('clearSystemRoadSegmentHover');
+    });
+
+    it('tracks the pointer along a road parcel, not just its entry point', () => {
+        // mouseover fires once per polygon; a road parcel is hundreds of metres of street, so
+        // without mousemove the outline sticks to whichever segment the pointer entered on.
+        expect(hoverSource).toContain('mousemove: trackRoadSegmentHover');
+        expect(ingestSource).toContain('mousemove:');
+        expect(ingestSource).toContain('trackRoadSegmentHover');
+    });
+
+    it('previews the clicked segment from the parcel selection', () => {
+        // Without this call the click highlights the whole cadastral road polygon, which on a
+        // parcel carrying a street network reads as "the entire network is selected".
+        expect(selectionSource).toContain('previewSelectedSystemRoadSegment');
     });
 });
