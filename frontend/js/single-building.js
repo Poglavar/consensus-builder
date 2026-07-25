@@ -360,7 +360,7 @@
                 try {
                     let acc = parcelFeatures[0];
                     for (let i = 1; i < parcelFeatures.length; i++) {
-                        try { acc = turf.union(acc, parcelFeatures[i]) || acc; } catch (_) { }
+                        try { acc = turf.union(turf.featureCollection([acc, parcelFeatures[i]])) || acc; } catch (_) { }
                     }
                     unioned = acc;
                 } catch (_) { unioned = parcelFeatures[0]; }
@@ -983,7 +983,7 @@
             // an edge crossing the notch of a concave parcel because every vertex is still inside.
             // A tiny tolerance absorbs floating-point residue after clipping.
             try {
-                const outside = turf.difference(footprintFeature, blockFeature);
+                const outside = turf.difference(turf.featureCollection([footprintFeature, blockFeature]));
                 return !outside || turf.area(outside) <= 0.05;
             } catch (_) {
                 return turf.booleanWithin(footprintFeature, blockFeature);

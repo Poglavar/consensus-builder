@@ -513,8 +513,7 @@
         try {
             const structures = appliedStructureProposals();
             for (let i = 0; i < structures.length && feat; i++) {
-                feat = turf.difference(feat,
-                    { type: 'Feature', properties: {}, geometry: structures[i].structureProposal.geometry });
+                feat = turf.difference(turf.featureCollection([feat, { type: 'Feature', properties: {}, geometry: structures[i].structureProposal.geometry }]));
             }
         } catch (_) { return geometry; }
         return feat ? feat.geometry : null;
@@ -999,14 +998,14 @@
         let merged = features[0];
         const attemptUnion = function (a, b) {
             try {
-                const direct = turf.union(a, b);
+                const direct = turf.union(turf.featureCollection([a, b]));
                 if (direct) return direct;
             } catch (_) { }
             try {
                 if (typeof turf.cleanCoords === 'function') {
                     const cleanedA = turf.cleanCoords(a, { mutate: false }) || a;
                     const cleanedB = turf.cleanCoords(b, { mutate: false }) || b;
-                    const cleaned = turf.union(cleanedA, cleanedB);
+                    const cleaned = turf.union(turf.featureCollection([cleanedA, cleanedB]));
                     if (cleaned) return cleaned;
                 }
             } catch (_) { }
@@ -1014,7 +1013,7 @@
                 if (typeof turf.truncate === 'function') {
                     const snappedA = turf.truncate(a, { precision: 3, coordinates: 2, mutate: false }) || a;
                     const snappedB = turf.truncate(b, { precision: 3, coordinates: 2, mutate: false }) || b;
-                    return turf.union(snappedA, snappedB) || null;
+                    return turf.union(turf.featureCollection([snappedA, snappedB])) || null;
                 }
             } catch (_) { }
             return null;

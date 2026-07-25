@@ -149,7 +149,7 @@
             const feature = normalizeBuildingFeature(candidate);
             if (!feature || !feature.geometry) return;
             let intersection = null;
-            try { intersection = api.intersect(corridorFeature, feature); } catch (_) { return; }
+            try { intersection = api.intersect(api.featureCollection([corridorFeature, feature])); } catch (_) { return; }
             if (!intersection) return;
             let area = minimumArea;
             try {
@@ -795,7 +795,7 @@
         const api = turfApi || global.turf;
         if (!api || !footprintFeature?.geometry || !regionFeature?.geometry) return null;
         let clip = null;
-        try { clip = api.intersect(footprintFeature, regionFeature); } catch (error) {
+        try { clip = api.intersect(api.featureCollection([footprintFeature, regionFeature])); } catch (error) {
             console.error('[corridor-tunnel] demolition clip failed', error);
             return null;
         }
@@ -803,7 +803,7 @@
         const clipArea = Number(api.area(clip)) || 0;
         if (clipArea < 2) return null; // barely touched: nothing to demolish
         let remainder = null;
-        try { remainder = api.difference(footprintFeature, regionFeature); } catch (error) {
+        try { remainder = api.difference(api.featureCollection([footprintFeature, regionFeature])); } catch (error) {
             console.error('[corridor-tunnel] demolition remainder failed — demolishing whole', error);
         }
         const footprintArea = Number(api.area(footprintFeature)) || 0;
@@ -831,7 +831,7 @@
             ? { type: 'Feature', properties: {}, geometry: existing.geometry }
             : footprintFeature;
         let part = null;
-        try { part = api.intersect(footprint, regionFeature); } catch (error) {
+        try { part = api.intersect(api.featureCollection([footprint, regionFeature])); } catch (error) {
             console.error('[corridor-tunnel] cut intersection failed', id, error);
             return records;
         }
@@ -840,13 +840,13 @@
         let accumulated = part;
         if (existing && existing.demolishedPart) {
             try {
-                accumulated = api.union(part, { type: 'Feature', properties: {}, geometry: existing.demolishedPart }) || part;
+                accumulated = api.union(api.featureCollection([part, { type: 'Feature', properties: {}, geometry: existing.demolishedPart }])) || part;
             } catch (error) {
                 console.error('[corridor-tunnel] cut accumulation failed — using the new part only', id, error);
             }
         }
         let remainder = null;
-        try { remainder = api.difference(footprint, accumulated); } catch (error) {
+        try { remainder = api.difference(api.featureCollection([footprint, accumulated])); } catch (error) {
             console.error('[corridor-tunnel] cut remainder failed — demolishing whole', id, error);
         }
         const footprintArea = Number(api.area(footprint)) || 0;
@@ -922,8 +922,8 @@
             try { if (typeof api.cleanCoords === 'function') f = api.cleanCoords(f); } catch (_) { }
             return f || feature;
         };
-        const safeDifference = (a, b) => api.difference(cleanForOp(a), cleanForOp(b));
-        const safeUnion = (a, b) => api.union(cleanForOp(a), cleanForOp(b));
+        const safeDifference = (a, b) => api.difference(api.featureCollection([cleanForOp(a), cleanForOp(b)]));
+        const safeUnion = (a, b) => api.union(api.featureCollection([cleanForOp(a), cleanForOp(b)]));
 
         const grouped = new Map();
         source.forEach(record => {

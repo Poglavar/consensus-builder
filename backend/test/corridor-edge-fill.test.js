@@ -102,8 +102,13 @@ describe('corridorEdgeFillBuildingLineOffset', () => {
 // because turf.area (the sliver and connectivity thresholds) reads the real frame.
 // ---------------------------------------------------------------------------
 const ORIGIN = [15.97, 45.8];
-const M_PER_DEG_LAT = 111320;
-const M_PER_DEG_LNG = 111320 * Math.cos(ORIGIN[1] * Math.PI / 180);
+// A degree of latitude ON THE SPHERE TURF MEASURES WITH (pi * 6371008.8 / 180), not the geodetic
+// 111320 m. These fixtures assert exact areas in "square metres", so the fixture's metres-per-degree
+// has to be turf's own or every area reads a fixed fraction off. turf 7 corrected `area` to the mean
+// Earth radius (turf 6 used the equatorial one, making every area 0.2234% too large), which is what
+// put the old 111320 out by more than these assertions' tolerance.
+const M_PER_DEG_LAT = Math.PI * 6371008.8 / 180;
+const M_PER_DEG_LNG = M_PER_DEG_LAT * Math.cos(ORIGIN[1] * Math.PI / 180);
 const toLngLat = ([x, y]) => [ORIGIN[0] + x / M_PER_DEG_LNG, ORIGIN[1] + y / M_PER_DEG_LAT];
 const polygon = points => turf.polygon([[...points, points[0]].map(toLngLat)]);
 const rect = (x1, x2, y1, y2) => polygon(ringOf(x1, x2, y1, y2));

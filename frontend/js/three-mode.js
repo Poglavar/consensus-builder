@@ -1860,7 +1860,7 @@
         const T = turf;
         if (typeof T.lineSplit !== 'function' || typeof T.booleanPointInPolygon !== 'function') return featureCollection;
         let mask = null;
-        try { footprints.forEach(fp => { mask = mask ? (T.union(mask, fp) || mask) : fp; }); } catch (_) { mask = null; }
+        try { footprints.forEach(fp => { mask = mask ? (T.union(T.featureCollection([mask, fp])) || mask) : fp; }); } catch (_) { mask = null; }
         if (!mask) return featureCollection;
         let maskBbox = null;
         try { maskBbox = T.bbox(mask); } catch (_) { maskBbox = null; }
@@ -2068,7 +2068,7 @@
         for (const cut of cutFeatures) {
             try {
                 if (!turf.booleanIntersects(current, cut)) continue;
-                const remainder = turf.difference(current, cut);
+                const remainder = turf.difference(turf.featureCollection([current, cut]));
                 if (!remainder) return null;
                 current = remainder;
             } catch (error) {
@@ -3625,14 +3625,14 @@
             for (const { region, bbox } of regions) {
                 if (!bboxesOverlap(footprintBbox, bbox)) continue;
                 let part = null;
-                try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
+                try { part = turf.intersect(turf.featureCollection([footprint, region])); } catch (_) { part = null; }
                 if (!part || (Number(turf.area(part)) || 0) < 2) continue;
                 if (!demolishedUnion) demolishedUnion = part;
-                else { try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (_) { } }
+                else { try { demolishedUnion = turf.union(turf.featureCollection([demolishedUnion, part])) || demolishedUnion; } catch (_) { } }
             }
             if (!demolishedUnion) return null;
             let remainder = null;
-            try { remainder = turf.difference(footprint, demolishedUnion); } catch (_) { remainder = null; }
+            try { remainder = turf.difference(turf.featureCollection([footprint, demolishedUnion])); } catch (_) { remainder = null; }
             const footprintArea = Number(turf.area(footprint)) || 0;
             const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
             const minArea = window.CARVE_MIN_REMAINDER_AREA_M2 || 10;
@@ -4508,7 +4508,7 @@
         const sliceData = [];
         candidateParcels.forEach((parcelFeature) => {
             let intersection = null;
-            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (_) { }
+            try { intersection = turf.intersect(turf.featureCollection([buildingFeature, parcelFeature])); } catch (_) { }
             if (!intersection) return;
             try { slicedArea += turf.area(intersection); } catch (_) { }
             let cx = 0, cy = 0;

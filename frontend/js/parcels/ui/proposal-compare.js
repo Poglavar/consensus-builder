@@ -209,7 +209,7 @@
         let proposedParcelArea = parcelArea;
         try {
             if (((typeof global.normalizeProposalGoalKey === 'function' ? global.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase()) === 'road-track') && proposal.roadGeometry && proposal.roadGeometry.polygon && parcelFeature) {
-                const remaining = global.turf ? global.turf.difference(parcelFeature, proposal.roadGeometry.polygon) : null;
+                const remaining = global.turf ? global.turf.difference(turf.featureCollection([parcelFeature, proposal.roadGeometry.polygon])) : null;
                 proposedParcelArea = remaining && global.turf ? global.turf.area(remaining) : parcelArea;
             }
         } catch (_) { proposedParcelArea = parcelArea; }
@@ -234,7 +234,7 @@
                             try { if (!parcelBounds.intersects(l.getBounds())) continue; } catch (_) { }
                         }
 
-                        const inter = global.turf ? global.turf.intersect(parcelPoly, feat) : null;
+                        const inter = global.turf ? global.turf.intersect(turf.featureCollection([parcelPoly, feat])) : null;
                         if (inter) {
                             const a = global.turf.area(inter);
                             if (isFinite(a) && a > 0) {
@@ -264,7 +264,7 @@
         })();
         try {
             if (proposedBuildingFeature && proposedBuildingFeature.geometry && parcelFeature) {
-                const inter = global.turf ? global.turf.intersect(parcelFeature, proposedBuildingFeature) : null;
+                const inter = global.turf ? global.turf.intersect(turf.featureCollection([parcelFeature, proposedBuildingFeature])) : null;
                 proposedFootprint = inter && global.turf ? global.turf.area(inter) : 0;
             }
         } catch (_) { proposedFootprint = 0; }

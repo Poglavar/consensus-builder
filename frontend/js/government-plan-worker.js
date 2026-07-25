@@ -1,5 +1,5 @@
 /* global importScripts */
-importScripts('https://unpkg.com/@turf/turf@6/turf.min.js');
+importScripts('https://unpkg.com/@turf/turf@7.3.5/turf.min.js');
 
 const MIN_AREA_THRESHOLD = 0.01;
 
@@ -83,7 +83,7 @@ function processPlanRequest(data) {
 
         let intersection = null;
         try {
-            intersection = turf.intersect(feature, planFeature);
+            intersection = turf.intersect(turf.featureCollection([feature, planFeature]));
         } catch (err) {
             stats.intersectionErrors += 1;
             intersection = null;
@@ -121,7 +121,7 @@ function processPlanRequest(data) {
         let remainderStatus = 'difference-success';
         try {
             stats.differenceAttempts += 1;
-            remainder = turf.difference(feature, intersection);
+            remainder = turf.difference(turf.featureCollection([feature, intersection]));
         } catch (err) {
             stats.differenceFailed += 1;
             stats.differenceErrors += 1;

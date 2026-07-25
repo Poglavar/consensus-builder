@@ -300,7 +300,7 @@
             if (!cut) return note('nullCut');
             let piece = null;
             try {
-                piece = turf.intersect(cut, band);
+                piece = turf.intersect(turf.featureCollection([cut, band]));
             } catch (error) {
                 report.intersectError = String(error && error.message).slice(0, 80);
                 return note('intersectThrew');
@@ -328,7 +328,7 @@
             if (!region) { region = piece; return note('kept'); }
             let merged = null;
             try {
-                merged = turf.union(region, piece);
+                merged = turf.union(turf.featureCollection([region, piece]));
             } catch (error) {
                 report.unionError = String(error && error.message).slice(0, 80);
                 return note('unionThrew');

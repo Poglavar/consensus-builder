@@ -23,9 +23,15 @@ const {
     resolveBuildingObstacles
 } = require('../../frontend/js/corridor-tunnel.js');
 
+// Stands in for turf so the overlap rule can be tested without real geometry. Mirrors turf 7's
+// signature: the operands arrive as one FeatureCollection, [corridor, building].
 function fakeTurf(intersections = new Map()) {
     return {
-        intersect: (_corridor, building) => intersections.get(building.properties.id) || null,
+        featureCollection: features => ({ type: 'FeatureCollection', features }),
+        intersect: collection => {
+            const building = collection?.features?.[1];
+            return intersections.get(building?.properties?.id) || null;
+        },
         area: feature => feature.properties.area
     };
 }
@@ -240,11 +246,11 @@ describe('merged corridor building cuts', () => {
         expect(first[0].remainder).toBeTruthy();
         expect(second[0].remainder).toBeTruthy();
 
-        const mergedRoad = turf.union(vertical, horizontal);
+        const mergedRoad = turf.union(turf.featureCollection([vertical, horizontal]));
         const consolidated = consolidateCorridorDemolitionRecords([...first, ...second], mergedRoad, turf);
         expect(consolidated).toHaveLength(1);
         expect(consolidated[0].id).toBe('gdi-1');
-        const expectedRemainder = turf.difference(footprint, mergedRoad);
+        const expectedRemainder = turf.difference(turf.featureCollection([footprint, mergedRoad]));
         expect(turf.area({ type: 'Feature', properties: {}, geometry: consolidated[0].remainder }))
             .toBeCloseTo(turf.area(expectedRemainder), 4);
     });
@@ -281,8 +287,8 @@ describe('cuts across independent proposals', () => {
         const secondRoad = [];
         upsertCutRecord(secondRoad, hits[0], horizontal, turf);
         const combined = consolidateBuildingDemolitionRecords([...firstRoad, ...secondRoad], turf);
-        const expectedRemoved = turf.union(vertical, horizontal);
-        const expectedRemainder = turf.difference(footprint, expectedRemoved);
+        const expectedRemoved = turf.union(turf.featureCollection([vertical, horizontal]));
+        const expectedRemainder = turf.difference(turf.featureCollection([footprint, expectedRemoved]));
         expect(combined).toHaveLength(1);
         expect(turf.area({ type: 'Feature', properties: {}, geometry: combined[0].remainder }))
             .toBeCloseTo(turf.area(expectedRemainder), 4);
@@ -458,34 +464,38 @@ describe('splitDemolitionFootprint', () => {
             for (let i = 0; i < ring.length - 1; i++) sum += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
             return Math.abs(sum / 2);
         };
+        const intersectPair = (a, b) => {
+            // Axis-aligned rectangle intersection is enough for these fixtures.
+            const bbox = f => {
+                const ring = f.geometry.coordinates[0];
+                const xs = ring.map(c => c[0]);
+                const ys = ring.map(c => c[1]);
+                return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+            };
+            const [ax1, ay1, ax2, ay2] = bbox(a);
+            const [bx1, by1, bx2, by2] = bbox(b);
+            const x1 = Math.max(ax1, bx1), y1 = Math.max(ay1, by1);
+            const x2 = Math.min(ax2, bx2), y2 = Math.min(ay2, by2);
+            if (x2 <= x1 || y2 <= y1) return null;
+            return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } };
+        };
+        const differencePair = (a, b) => {
+            // Fixtures cut a rectangle by a half-plane rectangle: remainder is the leftover box.
+            const inter = intersectPair(a, b);
+            if (!inter) return a;
+            const ringA = a.geometry.coordinates[0];
+            const ringI = inter.geometry.coordinates[0];
+            const [ax1, ay1, ax2, ay2] = [Math.min(...ringA.map(c => c[0])), Math.min(...ringA.map(c => c[1])), Math.max(...ringA.map(c => c[0])), Math.max(...ringA.map(c => c[1]))];
+            const [ix1, , ix2] = [Math.min(...ringI.map(c => c[0])), 0, Math.max(...ringI.map(c => c[0]))];
+            if (ix1 <= ax1 && ix2 >= ax2) return null; // fully consumed
+            const [rx1, rx2] = ix1 > ax1 ? [ax1, ix1] : [ix2, ax2];
+            return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[rx1, ay1], [rx2, ay1], [rx2, ay2], [rx1, ay2], [rx1, ay1]]] } };
+        };
+        // Exposed with turf 7's signature: both operands arrive in one FeatureCollection.
         return {
-            intersect: (a, b) => {
-                // Axis-aligned rectangle intersection is enough for these fixtures.
-                const bbox = f => {
-                    const ring = f.geometry.coordinates[0];
-                    const xs = ring.map(c => c[0]);
-                    const ys = ring.map(c => c[1]);
-                    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
-                };
-                const [ax1, ay1, ax2, ay2] = bbox(a);
-                const [bx1, by1, bx2, by2] = bbox(b);
-                const x1 = Math.max(ax1, bx1), y1 = Math.max(ay1, by1);
-                const x2 = Math.min(ax2, bx2), y2 = Math.min(ay2, by2);
-                if (x2 <= x1 || y2 <= y1) return null;
-                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } };
-            },
-            difference: (a, b) => {
-                // Fixtures cut a rectangle by a half-plane rectangle: remainder is the leftover box.
-                const inter = planarAreaTurf().intersect(a, b);
-                if (!inter) return a;
-                const ringA = a.geometry.coordinates[0];
-                const ringI = inter.geometry.coordinates[0];
-                const [ax1, ay1, ax2, ay2] = [Math.min(...ringA.map(c => c[0])), Math.min(...ringA.map(c => c[1])), Math.max(...ringA.map(c => c[0])), Math.max(...ringA.map(c => c[1]))];
-                const [ix1, , ix2] = [Math.min(...ringI.map(c => c[0])), 0, Math.max(...ringI.map(c => c[0]))];
-                if (ix1 <= ax1 && ix2 >= ax2) return null; // fully consumed
-                const [rx1, rx2] = ix1 > ax1 ? [ax1, ix1] : [ix2, ax2];
-                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[rx1, ay1], [rx2, ay1], [rx2, ay2], [rx1, ay2], [rx1, ay1]]] } };
-            },
+            featureCollection: features => ({ type: 'FeatureCollection', features }),
+            intersect: collection => intersectPair(collection.features[0], collection.features[1]),
+            difference: collection => differencePair(collection.features[0], collection.features[1]),
             area: f => ringArea(f.geometry.coordinates[0])
         };
     }

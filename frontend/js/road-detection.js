@@ -263,7 +263,7 @@ function computeIoU(featureA, featureB) {
         const areaB = turf.area(featureB);
         if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) return 0;
         let inter = null;
-        try { inter = turf.intersect(featureA, featureB); } catch (_) { inter = null; }
+        try { inter = turf.intersect(turf.featureCollection([featureA, featureB])); } catch (_) { inter = null; }
         const areaI = inter ? turf.area(inter) : 0;
         const areaU = areaA + areaB - areaI;
         if (areaU <= 0) return 0;
@@ -336,7 +336,7 @@ async function detectRoadsFromWFS() {
                             continue;
                         }
                         let inter = null;
-                        try { inter = turf.intersect(parcelGeoJSON, usage); } catch (_) { inter = null; }
+                        try { inter = turf.intersect(turf.featureCollection([parcelGeoJSON, usage])); } catch (_) { inter = null; }
                         const areaI = inter ? turf.area(inter) : 0;
                         overlapA = areaI / areaA;
                         overlapB = areaI / areaB;
@@ -1066,7 +1066,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
                 // Calculate intersection with validation
                 let intersection;
                 try {
-                    intersection = turf.intersect(parcelBuffer, bufferedRoad);
+                    intersection = turf.intersect(turf.featureCollection([parcelBuffer, bufferedRoad]));
                 } catch (intersectError) {
                     console.warn(`Error calculating intersection between parcel ${parcelId} and road:`, intersectError);
                     continue; // Skip this road and continue with others
@@ -1203,7 +1203,7 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
 
                 let intersection = null;
                 try {
-                    intersection = turf.intersect(parcelBuffer, bufferedRoad);
+                    intersection = turf.intersect(turf.featureCollection([parcelBuffer, bufferedRoad]));
                 } catch (_) { }
                 if (!intersection) continue;
 

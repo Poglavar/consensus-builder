@@ -1993,7 +1993,7 @@ function simplifyAndClipOutline(feature, simplifyM, parcel) {
             let inside = false;
             try { inside = turf.booleanWithin(outline, parcel); } catch (_) { inside = false; }
             if (!inside) {
-                const clipped = turf.intersect(outline, parcel);
+                const clipped = turf.intersect(turf.featureCollection([outline, parcel]));
                 if (clipped && clipped.geometry && turf.area(clipped) > 0) {
                     outline = toSingleLargestPolygon(clipped) || outline;
                 }
@@ -2181,7 +2181,7 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
         if (!wingPoly || !wingPoly.geometry) continue;
 
         try {
-            const unioned = turf.union(result, wingPoly);
+            const unioned = turf.union(turf.featureCollection([result, wingPoly]));
             if (unioned && unioned.geometry) result = unioned;
         } catch (e) {
             console.warn('Wing union failed for wing', w, e);
@@ -2571,7 +2571,7 @@ function generateBuildingInModal() {
 
                 if (cutterPoly && cutterPoly.geometry) {
                     try {
-                        const diff = turf.difference(resultGeom, cutterPoly);
+                        const diff = turf.difference(turf.featureCollection([resultGeom, cutterPoly]));
                         if (diff && diff.geometry) {
                             resultGeom = diff;
                         }

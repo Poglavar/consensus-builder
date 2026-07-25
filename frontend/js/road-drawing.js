@@ -6223,7 +6223,7 @@ function combineRoadPolygons(polygon1, polygon2) {
         if (!feature1 || !feature2) return null;
 
         let lastError = null;
-        const tryUnion = (a, b) => turf.union(a, b);
+        const tryUnion = (a, b) => turf.union(turf.featureCollection([a, b]));
 
         const combined = (() => {
             const attempts = [

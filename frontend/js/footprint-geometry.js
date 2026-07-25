@@ -27,7 +27,7 @@
                     let dissolved = null;
                     for (const f of unkinked.features) {
                         const fbuf = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                        dissolved = dissolved ? (turf.union(dissolved, fbuf) || dissolved) : fbuf;
+                        dissolved = dissolved ? (turf.union(turf.featureCollection([dissolved, fbuf])) || dissolved) : fbuf;
                     }
                     if (dissolved) {
                         // Remove the cleaning buffer
@@ -80,7 +80,7 @@
             if (!f) continue;
             try {
                 const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                acc = acc ? (turf.union(acc, fb) || acc) : fb;
+                acc = acc ? (turf.union(turf.featureCollection([acc, fb])) || acc) : fb;
             } catch (e) {
                 // As a fallback, skip this piece
                 console.warn('robustUnion: skipping one piece due to error', e);

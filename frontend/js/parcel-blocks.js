@@ -1813,7 +1813,7 @@ function toggleBlockVerticesDisplay(blockName) {
         if (block.parcels.length > 0) {
             unioned = block.parcels[0].feature;
             for (let i = 1; i < block.parcels.length; i++) {
-                const merged = turf.union(unioned, block.parcels[i].feature);
+                const merged = turf.union(turf.featureCollection([unioned, block.parcels[i].feature]));
                 if (merged) unioned = merged;
             }
         }
@@ -2626,7 +2626,7 @@ function getUnionedPolygonForBlock(blockName, block) {
     let unioned = block.parcels[0].feature;
     for (let i = 1; i < block.parcels.length; i++) {
         try {
-            const merged = turf.union(unioned, block.parcels[i].feature);
+            const merged = turf.union(turf.featureCollection([unioned, block.parcels[i].feature]));
             if (merged) unioned = merged;
         } catch (_) { }
     }
@@ -2683,7 +2683,7 @@ function precomputeBlockPolygons() {
             for (let i = 1; i < block.parcels.length; i++) {
                 try {
                     const next = block.parcels[i].feature;
-                    const merged = turf.union(unioned, next);
+                    const merged = turf.union(turf.featureCollection([unioned, next]));
                     if (merged) unioned = merged;
                 } catch (e) {
                     console.warn('Failed to union parcel', i, 'in block', blockName, e);
@@ -2856,7 +2856,7 @@ async function breakSelectedBlockUp() {
             let unioned = block.parcels[0].feature;
             for (let i = 1; i < block.parcels.length; i++) {
                 try {
-                    const merged = turf.union(unioned, block.parcels[i].feature);
+                    const merged = turf.union(turf.featureCollection([unioned, block.parcels[i].feature]));
                     if (merged) unioned = merged;
                 } catch (e) {
                     console.warn('Union failed while preparing block split:', e);

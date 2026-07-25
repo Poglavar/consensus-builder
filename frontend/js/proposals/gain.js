@@ -75,7 +75,7 @@
             const fp = footprintOf ? footprintOf(bld) : null;
             if (!fp) continue;
             let inter = null;
-            try { inter = turf.intersect(fp, parcelFeature); } catch (_) { inter = null; }
+            try { inter = turf.intersect(turf.featureCollection([fp, parcelFeature])); } catch (_) { inter = null; }
             if (!inter) continue;
             let a = 0;
             try { a = turf.area(inter); } catch (_) { a = 0; }
@@ -89,7 +89,7 @@
             const h = heightOf ? heightOf(feat) : 0;
             if (!(h > 0)) continue;
             let inter = null;
-            try { inter = turf.intersect(feat, parcelFeature); } catch (_) { inter = null; }
+            try { inter = turf.intersect(turf.featureCollection([feat, parcelFeature])); } catch (_) { inter = null; }
             if (!inter) continue;
             let a = 0;
             try { a = turf.area(inter); } catch (_) { a = 0; }

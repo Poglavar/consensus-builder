@@ -802,7 +802,7 @@ function buildGeometryFromParcels(parcelLayers = []) {
         try {
             let merged = null;
             parcelFeatures.forEach(feature => {
-                merged = merged ? (turf.union(merged, feature) || merged) : feature;
+                merged = merged ? (turf.union(turf.featureCollection([merged, feature])) || merged) : feature;
             });
             mergedFeature = merged;
         } catch (e) {
@@ -838,7 +838,7 @@ function buildGeometryFromParcels(parcelLayers = []) {
                 for (const parcel of parcelFeatures) {
                     if (!gaps) break;
                     try {
-                        gaps = turf.difference(gaps, parcel);
+                        gaps = turf.difference(turf.featureCollection([gaps, parcel]));
                     } catch (_) { /* ignore */ }
                 }
 
@@ -964,7 +964,7 @@ function computeLakeZonesForGeometry(baseFeature, options = {}) {
             continue;
         }
         let shore = null;
-        try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
+        try { shore = turf.difference(turf.featureCollection([baseFeature, water])); } catch (_) { shore = null; }
         if (!shore) shore = baseFeature;
         const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
         const delta = Math.abs(ratio - targetRatio);
@@ -986,7 +986,7 @@ function computeLakeZonesForGeometry(baseFeature, options = {}) {
         const outerWidth = Math.max(minWidth, chosen.width * 0.55);
         const outer = turf.buffer(baseFeature, -outerWidth, { units: 'meters', steps: 32 });
         if (outer && outer.geometry && chosen.water && chosen.water.geometry) {
-            try { transition = turf.difference(outer, chosen.water); } catch (_) { transition = null; }
+            try { transition = turf.difference(turf.featureCollection([outer, chosen.water])); } catch (_) { transition = null; }
         }
     } catch (_) { transition = null; }
 
@@ -1014,7 +1014,7 @@ function buildLakeGraphicsFromGeometry(geometry, options = {}) {
     let merged = polygons[0];
     for (let i = 1; i < polygons.length; i++) {
         try {
-            const next = turf.union(merged, polygons[i]);
+            const next = turf.union(turf.featureCollection([merged, polygons[i]]));
             if (next && next.geometry) merged = next;
         } catch (_) { /* keep best-so-far */ }
     }

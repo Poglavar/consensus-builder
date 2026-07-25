@@ -169,7 +169,7 @@
             if (!feature?.geometry || feature.geometry.type !== 'Polygon' || turf.area(feature) < 0.5) return false;
             if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
             if (!cachedSuperparcel?.geometry) return true;
-            const outside = turf.difference(feature, cachedSuperparcel);
+            const outside = turf.difference(turf.featureCollection([feature, cachedSuperparcel]));
             return !outside || turf.area(outside) <= 0.05;
         } catch (_) {
             try { return turf.booleanWithin(feature, cachedSuperparcel); } catch (_) { return false; }
@@ -279,7 +279,7 @@
         try {
             let acc = features[0];
             for (let i = 1; i < features.length; i++) {
-                try { acc = turf.union(acc, features[i]) || acc; } catch (_) { }
+                try { acc = turf.union(turf.featureCollection([acc, features[i]])) || acc; } catch (_) { }
             }
             return acc;
         } catch (_) {

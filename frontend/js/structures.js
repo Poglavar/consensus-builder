@@ -169,7 +169,7 @@
         for (const cutter of cutters) {
             try {
                 if (!turf.booleanIntersects(current, cutter)) continue;
-                const diff = turf.difference(current, cutter);
+                const diff = turf.difference(turf.featureCollection([current, cutter]));
                 if (!diff || !diff.geometry) return null;
                 current = diff;
             } catch (_) { }
@@ -964,7 +964,7 @@
                 continue;
             }
             let shore = null;
-            try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
+            try { shore = turf.difference(turf.featureCollection([baseFeature, water])); } catch (_) { shore = null; }
             if (!shore) shore = baseFeature;
             const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
             const delta = Math.abs(ratio - targetRatio);
@@ -986,7 +986,7 @@
             const outerWidth = Math.max(minWidth, chosen.width * 0.55);
             const outer = turf.buffer(baseFeature, -outerWidth, { units: 'meters', steps: 32 });
             if (outer && outer.geometry && chosen.water && chosen.water.geometry) {
-                try { transition = turf.difference(outer, chosen.water); } catch (_) { transition = null; }
+                try { transition = turf.difference(turf.featureCollection([outer, chosen.water])); } catch (_) { transition = null; }
             }
         } catch (_) { transition = null; }
 
@@ -1018,7 +1018,7 @@
             let merged = polygons[0];
             for (let i = 1; i < polygons.length; i++) {
                 try {
-                    const u = turf.union(merged, polygons[i]);
+                    const u = turf.union(turf.featureCollection([merged, polygons[i]]));
                     if (u && u.geometry) merged = u;
                 } catch (_) { /* ignore */ }
             }
@@ -1327,7 +1327,7 @@
                 let seq = features[0] || null;
                 for (let i = 1; i < features.length; i++) {
                     try {
-                        const merged = turf.union(seq, features[i]);
+                        const merged = turf.union(turf.featureCollection([seq, features[i]]));
                         if (merged && merged.geometry) seq = merged; // keep merging as-is
                     } catch (_) { /* fall through to robust */ }
                 }
@@ -1346,7 +1346,7 @@
                         try { f = turf.cleanCoords(f, { mutate: false }); } catch (_) { }
                         try {
                             const fb = turf.buffer(f, epsilon, { units: 'meters', steps: 16 });
-                            acc = acc ? (turf.union(acc, fb) || acc) : fb;
+                            acc = acc ? (turf.union(turf.featureCollection([acc, fb])) || acc) : fb;
                         } catch (_) { /* skip this piece */ }
                     }
                     if (!acc || !acc.geometry) return null;

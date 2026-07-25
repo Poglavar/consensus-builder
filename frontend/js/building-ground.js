@@ -54,7 +54,7 @@
         for (let i = 0; i < buildings.length && surface; i++) {
             const cutter = asFeature(buildings[i]);
             if (!cutter) continue;
-            try { surface = turf.difference(surface, cutter); } catch (_) { /* keep what we have */ }
+            try { surface = turf.difference(turf.featureCollection([surface, cutter])); } catch (_) { /* keep what we have */ }
         }
         if (!surface || !surface.geometry) return null;
         if (geometryArea(surface.geometry) < MIN_SURFACE_AREA_M2) return null;

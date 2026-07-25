@@ -52,7 +52,7 @@
         return collectAppliedStructureFeatures().filter(entry => {
             if (approvedStructureIds.has(entry.id)) return false;
             try {
-                const intersection = api.intersect(corridorFeature, entry.feature);
+                const intersection = api.intersect(api.featureCollection([corridorFeature, entry.feature]));
                 if (!intersection) return false;
                 const area = typeof api.area === 'function' ? Number(api.area(intersection)) : minimumArea;
                 return Number.isFinite(area) && area >= minimumArea;
@@ -167,7 +167,7 @@
             const proposalId = proposal.proposalId || proposal.id;
             if (!proposalId) return;
             try {
-                const intersection = global.turf.intersect(parcelFeature, { type: 'Feature', properties: {}, geometry: polygon });
+                const intersection = global.turf.intersect(turf.featureCollection([parcelFeature, { type: 'Feature', properties: {}, geometry: polygon }]));
                 if (intersection && (Number(global.turf.area(intersection)) || 0) > 2) out.push(proposalId);
             } catch (_) { }
         });

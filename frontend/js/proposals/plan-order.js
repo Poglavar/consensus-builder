@@ -93,7 +93,7 @@
 
         let acc = buffered[0];
         for (let i = 1; i < buffered.length; i++) {
-            try { acc = t.union(acc, buffered[i]) || acc; } catch (_) { /* keep what we have */ }
+            try { acc = t.union(t.featureCollection([acc, buffered[i]])) || acc; } catch (_) { /* keep what we have */ }
         }
         return acc;
     }
@@ -125,7 +125,7 @@
         if (!polys.length) return null;
         let acc = polys[0];
         for (let i = 1; i < polys.length; i++) {
-            try { acc = t.union(acc, polys[i]) || acc; } catch (_) { /* keep what we have */ }
+            try { acc = t.union(t.featureCollection([acc, polys[i]])) || acc; } catch (_) { /* keep what we have */ }
         }
         return acc;
     }
@@ -144,7 +144,7 @@
         const t = T();
         if (!t || !a || !b) return 0;
         try {
-            const hit = t.intersect(a, b);
+            const hit = t.intersect(t.featureCollection([a, b]));
             return hit ? t.area(hit) : 0;
         } catch (_) {
             // A self-intersecting or otherwise degenerate footprint must not take the whole plan
@@ -283,15 +283,15 @@
         parcels.forEach(entry => {
             if (!entry || !entry.feature || !entry.id) return;
             let taken = null;
-            try { taken = t.intersect(footprint, entry.feature); } catch (_) { return; }
+            try { taken = t.intersect(t.featureCollection([footprint, entry.feature])); } catch (_) { return; }
             if (!taken) return;
             const takenM2 = t.area(taken);
             if (takenM2 < MIN_INTERSECTION_M2) return;
 
-            try { claimed = claimed ? (t.union(claimed, taken) || claimed) : taken; } catch (_) { }
+            try { claimed = claimed ? (t.union(t.featureCollection([claimed, taken])) || claimed) : taken; } catch (_) { }
 
             let leftover = null;
-            try { leftover = t.difference(entry.feature, footprint); } catch (_) { leftover = null; }
+            try { leftover = t.difference(t.featureCollection([entry.feature, footprint])); } catch (_) { leftover = null; }
             const leftoverM2 = leftover ? t.area(leftover) : 0;
 
             // Wholly inside (within tolerance) — a clean merge, nothing left behind.
@@ -330,7 +330,7 @@
         // it, so a non-zero value means the target parcel is not achievable from cadastral land alone.
         if (claimed) {
             try {
-                const gap = t.difference(footprint, claimed);
+                const gap = t.difference(t.featureCollection([footprint, claimed]));
                 plan.uncoveredM2 = gap ? Math.round(t.area(gap)) : 0;
             } catch (_) { plan.uncoveredM2 = 0; }
         } else {

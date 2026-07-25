@@ -1055,7 +1055,7 @@ class Proposal {
                 try {
                     parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
                 } catch (_) { parentParcelArea = 0; }
-                const difference = turf.difference(parcelTurf, roadTurf);
+                const difference = turf.difference(turf.featureCollection([parcelTurf, roadTurf]));
                 // Same rule as _buildChildFeaturesFromDefinition: legacy road parcels have no
                 // isRoad property — their status lives in roadParcelsSet.
                 const parentIsRoad = originalFeature?.properties?.isRoad === true
@@ -1907,7 +1907,7 @@ const ProposalManager = {
                         try {
                             parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
                         } catch (_) { parentParcelArea = 0; }
-                        const difference = turf.difference(parcelTurf, roadTurf);
+                        const difference = turf.difference(turf.featureCollection([parcelTurf, roadTurf]));
                         // Legacy (curated/DGU) road parcels carry NO isRoad property — their road
                         // status lives in the roadParcelsSet. Checking only the props flag wrote
                         // isRoad:false onto their remainder slices, stripping the grey the moment

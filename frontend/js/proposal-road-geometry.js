@@ -525,7 +525,7 @@ function _combineRoadPolygons(polygon1, polygon2) {
         // snaps coordinates to a centimetre grid which heals topology-side-location errors.
         // Without this ladder, a single failing union loses the rest of the corridor and
         // most parents never get cut by the road.
-        const tryUnion = (a, b) => turf.union(a, b);
+        const tryUnion = (a, b) => turf.union(turf.featureCollection([a, b]));
         let combined = null;
         const unionAttempts = [
             () => tryUnion(feature1, feature2),
@@ -691,7 +691,7 @@ function _mergeParcelGeometries(features = []) {
 
     for (let i = 1; i < polygons.length; i++) {
         try {
-            merged = turf.union(merged, turf.polygon(polygons[i]));
+            merged = turf.union(turf.featureCollection([merged, turf.polygon(polygons[i])]));
         } catch (err) {
             console.warn('[_mergeParcelGeometries] Failed to union polygons', err);
             return null;

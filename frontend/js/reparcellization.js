@@ -1027,7 +1027,7 @@
     function carvePlotIntoPlan(polygonFeature, ownersForNew, source) {
         if (typeof turf === 'undefined' || !state.superParcel) return false;
         let clipped = null;
-        try { clipped = turf.intersect(state.superParcel, polygonFeature); } catch (_) { clipped = null; }
+        try { clipped = turf.intersect(turf.featureCollection([state.superParcel, polygonFeature])); } catch (_) { clipped = null; }
         if (!clipped || !clipped.geometry) return false;
         const newArea = computeFeatureArea(clipped);
         if (!newArea || newArea < 1) return false; // ignore slivers < 1 m²
@@ -1035,7 +1035,7 @@
         const remaining = [];
         for (const slice of state.slices) {
             let diff = null;
-            try { diff = turf.difference(sliceToFeature(slice), clipped); } catch (_) { diff = sliceToFeature(slice); }
+            try { diff = turf.difference(turf.featureCollection([sliceToFeature(slice), clipped])); } catch (_) { diff = sliceToFeature(slice); }
             if (!diff || !diff.geometry) continue;            // fully consumed by the new plot
             // A subtraction can split a plot into disjoint parts → separate plots.
             pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
@@ -1148,7 +1148,7 @@
         let didSplit = false;
         for (const slice of state.slices) {
             let diff = null;
-            try { diff = turf.difference(sliceToFeature(slice), cut); } catch (_) { diff = sliceToFeature(slice); }
+            try { diff = turf.difference(turf.featureCollection([sliceToFeature(slice), cut])); } catch (_) { diff = sliceToFeature(slice); }
             if (!diff || !diff.geometry) { didSplit = true; continue; } // entire slice inside the cut
             const before = remaining.length;
             pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
@@ -2323,7 +2323,7 @@
 
     function safeIntersect(featureA, featureB) {
         try {
-            return turf.intersect(featureA, featureB);
+            return turf.intersect(turf.featureCollection([featureA, featureB]));
         } catch (error) {
             console.warn('safeIntersect failed during reparcellization', error);
             return null;
@@ -2332,7 +2332,7 @@
 
     function safeDifference(featureA, featureB) {
         try {
-            return turf.difference(featureA, featureB);
+            return turf.difference(turf.featureCollection([featureA, featureB]));
         } catch (error) {
             console.warn('safeDifference failed during reparcellization', error);
             return null;

@@ -310,7 +310,7 @@
         for (let i = 0; i < features.length; i += 1) {
             for (let j = i + 1; j < features.length; j += 1) {
                 try {
-                    const intersection = global.turf.intersect(features[i], features[j]);
+                    const intersection = global.turf.intersect(turf.featureCollection([features[i], features[j]]));
                     if (!intersection) continue;
                     const overlapArea = Number(global.turf.area(intersection)) || 0;
                     const smaller = Math.min(

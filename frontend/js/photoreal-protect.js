@@ -110,7 +110,7 @@
             for (let i = 0; i < removals.length; i++) {
                 if (!boxesOverlap(box, removals[i].box)) continue;
                 try {
-                    const clipped = turf.difference(featureOf(kept), featureOf(removals[i].geometry));
+                    const clipped = turf.difference(turf.featureCollection([featureOf(kept), featureOf(removals[i].geometry)]));
                     kept = (clipped && clipped.geometry) ? clipped.geometry : null;
                 } catch (_) {
                     kept = null; // fail toward cutting, never toward a building that should be gone

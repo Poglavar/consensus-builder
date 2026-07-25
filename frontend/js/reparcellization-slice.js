@@ -118,7 +118,7 @@
             ]]);
 
             try {
-                const sliced = turf.intersect(feature, band);
+                const sliced = turf.intersect(turf.featureCollection([feature, band]));
                 if (sliced && computeFeatureArea(sliced) > 0) {
                     sliceSlots[s] = { feature: sliced, leftX, rightX, index: s };
                 }
@@ -296,7 +296,7 @@
 
                 let sliceFeature = null;
                 try {
-                    sliceFeature = turf.intersect(baseFeature, sliceRect);
+                    sliceFeature = turf.intersect(turf.featureCollection([baseFeature, sliceRect]));
                 } catch (_) { /* ignore */ }
 
                 const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;

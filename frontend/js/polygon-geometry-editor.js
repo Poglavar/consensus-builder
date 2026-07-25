@@ -211,13 +211,13 @@
             let outside = null;
             let outsideMeasured = false;
             try {
-                outside = turfApi.difference(footprint, polygonBoundary);
+                outside = turfApi.difference(turfApi.featureCollection([footprint, polygonBoundary]));
                 outsideMeasured = true;
             } catch (_) {
                 if (turfApi.booleanWithin(footprint, polygonBoundary)) return points;
             }
             if (outsideMeasured && (!outside || turfApi.area(outside) <= 0.05)) return points;
-            const clipped = largestPolygon(turfApi.intersect(footprint, polygonBoundary), turfApi);
+            const clipped = largestPolygon(turfApi.intersect(turfApi.featureCollection([footprint, polygonBoundary])), turfApi);
             const clippedRing = clipped && clipped.geometry && clipped.geometry.coordinates[0];
             const constrained = openRing(clippedRing);
             return constrained.length >= 3 ? constrained : null;

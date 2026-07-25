@@ -183,7 +183,7 @@ function unionGeometries(geometries) {
         let merged = null;
         for (const geom of geometries) {
             const feature = { type: 'Feature', properties: {}, geometry: geom };
-            merged = merged ? (turf.union(merged, feature) || merged) : feature;
+            merged = merged ? (turf.union(turf.featureCollection([merged, feature])) || merged) : feature;
         }
         return merged ? merged.geometry : null;
     } catch (err) {

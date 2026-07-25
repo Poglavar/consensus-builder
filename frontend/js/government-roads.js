@@ -211,7 +211,7 @@
             }
 
             // Subtract from the remaining plan
-            const diff = turf.difference(remainingPlanGeometry, appliedUnion);
+            const diff = turf.difference(turf.featureCollection([remainingPlanGeometry, appliedUnion]));
             if (diff) {
                 remainingPlanGeometry = diff;
             }
@@ -244,7 +244,7 @@
                 return;
             }
             try {
-                const diff = turf.difference(feature, appliedUnion);
+                const diff = turf.difference(turf.featureCollection([feature, appliedUnion]));
                 if (!diff) {
                     return;
                 }
@@ -300,7 +300,7 @@
         }
 
         try {
-            const intersection = turf.intersect(remainingPlanGeometry, mapPolygon);
+            const intersection = turf.intersect(turf.featureCollection([remainingPlanGeometry, mapPolygon]));
             if (!intersection) {
                 return [];
             }
@@ -1310,7 +1310,7 @@
                 return;
             }
             try {
-                const diff = turf.difference(piece, appliedUnion);
+                const diff = turf.difference(turf.featureCollection([piece, appliedUnion]));
                 if (!diff) {
                     return;
                 }
@@ -1638,7 +1638,7 @@
 
             let intersection;
             try {
-                intersection = turf.intersect(parcelGeometry, planPolygon);
+                intersection = turf.intersect(turf.featureCollection([parcelGeometry, planPolygon]));
                 if (intersection && intersection.geometry && extractPolygonsWithHoles(intersection.geometry).length) {
                     intersectionsFoundCount++;
                 } else {
@@ -1716,7 +1716,7 @@
 
             let remainder;
             try {
-                remainder = turf.difference(parcelGeometry, intersection);
+                remainder = turf.difference(turf.featureCollection([parcelGeometry, intersection]));
                 if (statsTarget) statsTarget.differenceAttempts = (statsTarget.differenceAttempts || 0) + 1;
             } catch (err) {
                 console.warn('Failed to compute remainder geometry', err);
@@ -2677,7 +2677,7 @@
 
             let overlapArea = 0;
             try {
-                const intersection = turf.intersect(planFeature, mapPolygon);
+                const intersection = turf.intersect(turf.featureCollection([planFeature, mapPolygon]));
                 overlapArea = intersection ? turf.area(intersection) : 1;
             } catch (err) {
                 overlapArea = 1;
@@ -2913,7 +2913,7 @@
     function safeUnion(base, addition) {
         if (typeof turf === 'undefined') return base;
         try {
-            const result = turf.union(base, addition);
+            const result = turf.union(turf.featureCollection([base, addition]));
             return result || base;
         } catch (err) {
             const errMsg = err?.message || String(err);
@@ -2965,7 +2965,7 @@
             let workingFeature = planFeature;
             if (mapPolygon) {
                 try {
-                    const intersection = turf.intersect(planFeature, mapPolygon);
+                    const intersection = turf.intersect(turf.featureCollection([planFeature, mapPolygon]));
                     if (!intersection) {
                         continue;
                     }
@@ -2984,7 +2984,7 @@
             }
             for (const piece of clippedPieces) {
                 try {
-                    const diff = turf.difference(piece, roadUnion);
+                    const diff = turf.difference(turf.featureCollection([piece, roadUnion]));
                     if (!diff) {
                         continue;
                     }
@@ -3033,7 +3033,7 @@
                 return;
             }
             try {
-                const diff = turf.difference(piece, roadUnion);
+                const diff = turf.difference(turf.featureCollection([piece, roadUnion]));
                 if (!diff) {
                     return;
                 }

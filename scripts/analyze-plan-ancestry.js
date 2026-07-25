@@ -57,7 +57,7 @@ function explode(feature) {
 function unionAll(features) {
     if (!features.length) return null;
     let acc = features[0];
-    for (let i = 1; i < features.length; i++) acc = safe(() => turf.union(acc, features[i]), acc) || acc;
+    for (let i = 1; i < features.length; i++) acc = safe(() => turf.union(turf.featureCollection([acc, features[i]])), acc) || acc;
     return acc;
 }
 
@@ -83,10 +83,10 @@ function applyRoad(fabric, op) {
     const out = [];
     let taken = 0;
     fabric.forEach(p => {
-        const hit = safe(() => turf.intersect(p, op.corridor));
+        const hit = safe(() => turf.intersect(turf.featureCollection([p, op.corridor])));
         if (!hit) { out.push(p); return; }
         taken += turf.area(hit);
-        explode(safe(() => turf.difference(p, op.corridor))).forEach(piece => {
+        explode(safe(() => turf.difference(turf.featureCollection([p, op.corridor])))).forEach(piece => {
             if (turf.area(piece) >= MIN_PIECE) out.push(piece);
         });
     });
@@ -97,8 +97,8 @@ function applyReparcel(fabric, op) {
     const area = unionAll(op.pieces);
     const out = [];
     fabric.forEach(p => {
-        if (!safe(() => turf.intersect(p, area))) { out.push(p); return; }
-        explode(safe(() => turf.difference(p, area))).forEach(piece => {
+        if (!safe(() => turf.intersect(turf.featureCollection([p, area])))) { out.push(p); return; }
+        explode(safe(() => turf.difference(turf.featureCollection([p, area])))).forEach(piece => {
             if (turf.area(piece) >= MIN_PIECE) out.push(piece);
         });
     });
@@ -202,7 +202,7 @@ Read-only. Fetches proposals and cadastral parcels; writes nothing.`);
     withGeom.forEach(p => {
         p.baseParents = [];
         base.forEach(b => {
-            const inter = safe(() => turf.intersect(p.footprint, b.f));
+            const inter = safe(() => turf.intersect(turf.featureCollection([p.footprint, b.f])));
             if (!inter) return;
             const a = turf.area(inter);
             if (a >= MIN_INTERSECT) p.baseParents.push({ id: b.id, area: Math.round(a) });
@@ -242,7 +242,7 @@ Read-only. Fetches proposals and cadastral parcels; writes nothing.`);
     let pairs = 0;
     for (let i = 0; i < withGeom.length; i++) for (let j = i + 1; j < withGeom.length; j++) {
         const a = withGeom[i], b = withGeom[j];
-        const inter = safe(() => turf.intersect(a.footprint, b.footprint));
+        const inter = safe(() => turf.intersect(turf.featureCollection([a.footprint, b.footprint])));
         const area = inter ? Math.round(turf.area(inter)) : 0;
         if (area < MIN_INTERSECT) continue;
         pairs++;
@@ -260,7 +260,7 @@ Read-only. Fetches proposals and cadastral parcels; writes nothing.`);
     if (fabricOps.length > 7) { console.log(`   !! ${fabricOps.length}! permutations is too many — skipping`); return; }
 
     const planArea = unionAll(fabricOps.map(o => o.kind === 'road' ? o.corridor : unionAll(o.pieces)));
-    const touched = base.flatMap(b => explode(b.f)).filter(f => safe(() => turf.intersect(f, planArea)));
+    const touched = base.flatMap(b => explode(b.f)).filter(f => safe(() => turf.intersect(turf.featureCollection([f, planArea]))));
     console.log(`   base parcels touched: ${touched.length} (${Math.round(touched.reduce((s, f) => s + turf.area(f), 0))} m2)`);
 
     const orders = permutations(fabricOps);
