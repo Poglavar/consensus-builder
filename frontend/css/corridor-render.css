@@ -64,3 +64,21 @@
 .leaflet-osmLanePaintPane-pane {
     opacity: 0.8;
 }
+
+/* The lane paint's readout: what it decided about the street under the pointer, and — when it drew
+   nothing there — why. A debugging affordance, so it is small, out of the way, and never takes a
+   click; "some of this street is painted and some is not" is otherwise impossible to argue with. */
+.osm-lane-paint-readout {
+    position: fixed;
+    left: 12px;
+    bottom: 12px;
+    z-index: 1200;
+    max-width: min(520px, 70vw);
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: rgba(17, 17, 17, 0.82);
+    color: #f4f4f4;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    pointer-events: none;
+}

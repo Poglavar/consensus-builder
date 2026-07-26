@@ -146,6 +146,43 @@
         return cross >= 0 ? 1 : -1;
     }
 
+    // Is a planar point inside a ring? Crossing count, the same test road-segmentation uses — kept
+    // local so this module stays free of it.
+    function pointInRing(point, ring) {
+        if (!Array.isArray(point) || !Array.isArray(ring) || ring.length < 3) return false;
+        const [x, y] = point;
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const [xi, yi] = ring[i];
+            const [xj, yj] = ring[j];
+            if (((yi > y) !== (yj > y))
+                && x < ((xj - xi) * (y - yi)) / ((yj - yi) || Number.EPSILON) + xi) inside = !inside;
+        }
+        return inside;
+    }
+
+    // Does any part of this line fall inside the ring?
+    //
+    // Sampled along its length, NOT at its vertices. An OSM way is drawn with a vertex only where it
+    // bends: a 500 m straight has two, and a segment's corridor is a few metres wide and a couple of
+    // hundred long, so testing vertices asks "does this way happen to bend inside the corridor" — to
+    // which the answer for the very way the segment is made of is usually no. That mistake rejected
+    // the carrier of nearly every segment.
+    function lineTouchesRing(line, ring, step = 5) {
+        for (let i = 1; i < line.length; i += 1) {
+            const a = line[i - 1];
+            const b = line[i];
+            if (pointInRing(a, ring)) return true;
+            const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            const steps = Math.max(1, Math.ceil(length / step));
+            for (let n = 1; n <= steps; n += 1) {
+                const t = n / steps;
+                if (pointInRing([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], ring)) return true;
+            }
+        }
+        return false;
+    }
+
     function median(values) {
         if (!values.length) return NaN;
         const sorted = values.slice().sort((a, b) => a - b);
@@ -187,9 +224,22 @@
         // Measure every way against the run first, and only then decide what each one is. Deciding as
         // we go would let a pavement that hugs a narrow street be taken for the street itself and,
         // being a carrier, disappear as evidence for its own side.
+        // WHICH WAYS DESCRIBE THIS SEGMENT.
+        //
+        // Given the segment's own polygon — the corridor between its kerb lines — the answer is every
+        // way that falls inside it, which is the honest question: a segment is formed first, and what
+        // is IN it is what describes it. A fixed reach cannot do that job, because the right reach is
+        // the corridor's own width: 25 m drags in the parallel street beside a narrow lane, and misses
+        // the pavement of a boulevard.
+        //
+        // Without a polygon (the adoption path, which measures before it has one) the fixed reach
+        // remains the fallback.
+        const polygon = Array.isArray(settings.polygonXY) && settings.polygonXY.length >= 3
+            ? settings.polygonXY
+            : null;
         // A road parcel's bbox can pull back hundreds of ways, nearly all of them irrelevant. Rejecting
         // by bounding box first keeps this to the handful that could touch the run.
-        const reach = settings.flankMaxOffset;
+        const reach = polygon ? Math.max(settings.flankMaxOffset, 5) : settings.flankMaxOffset;
         const bounds = runXY.reduce((box, [x, y]) => [
             Math.min(box[0], x), Math.min(box[1], y), Math.max(box[2], x), Math.max(box[3], y)
         ], [Infinity, Infinity, -Infinity, -Infinity]);
@@ -206,6 +256,7 @@
             if (box[0] > bounds[2] + reach || box[2] < bounds[0] - reach
                 || box[1] > bounds[3] + reach || box[3] < bounds[1] - reach) return;
 
+            const insidePolygon = polygon ? lineTouchesRing(line, polygon) : false;
             let onRun = 0;
             let alignment = 0;
             const beside = { left: [], right: [] };
@@ -217,7 +268,15 @@
                     alignment += station.tx * near.tx + station.ty * near.ty;
                     return;
                 }
-                if (near.distance >= settings.flankMinOffset && near.distance <= settings.flankMaxOffset) {
+                // A FLANK has to be inside the segment's own polygon when there is one — that is the
+                // honest question, and one a fixed reach cannot answer, since the right reach is the
+                // corridor's own width. (The CARRIER is never gated this way: a segment is made of its
+                // carrier, and a polygon drawn from a mis-measured corridor would otherwise reject the
+                // very way the section is meant to be read from.)
+                const withinReach = polygon
+                    ? (near.distance >= settings.flankMinOffset && insidePolygon)
+                    : (near.distance >= settings.flankMinOffset && near.distance <= settings.flankMaxOffset);
+                if (withinReach) {
                     beside[sideOfStation(station, near.x, near.y) > 0 ? 'left' : 'right'].push(near.distance);
                 }
             });
@@ -763,6 +822,7 @@
         OSM_PROFILE_DEFAULTS,
         CARRIER_HIGHWAYS,
         matchWaysToRun,
+        lineTouchesRing,
         mergeTagsAlongRun,
         reverseOsmTagSides,
         resolveSegmentTags,

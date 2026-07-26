@@ -77,6 +77,34 @@ describe('matchWaysToRun', () => {
         expect(match.carriers[0].highway).toBe('footway');
     });
 
+    // Which ways describe a segment is a question about the SEGMENT'S OWN AREA, not about a fixed
+    // distance: 25 m drags in the parallel street beside a narrow lane and misses the pavement of a
+    // boulevard. Given the segment's polygon, that is the test for a flank.
+    it('counts as a flank only what lies inside the segment\'s own corridor', () => {
+        const run = straightRun();
+        const pavement = parallelWay(10, 'footway', { footway: 'sidewalk' });
+        const ways = [parallelWay(0.2, 'residential'), pavement];
+        // No polygon: the fixed reach lets in anything within 25 m.
+        expect(matchWaysToRun(run, ways).flanks.length).toBe(1);
+
+        // A narrow corridor, +-3 m: the pavement 10 m out belongs to something else.
+        const narrow = [[-3, -10], [-3, 110], [3, 110], [3, -10], [-3, -10]];
+        expect(matchWaysToRun(run, ways, { polygonXY: narrow }).flanks.length).toBe(0);
+
+        // A wide one takes it back.
+        const wide = [[-14, -10], [-14, 110], [14, 110], [14, -10], [-14, -10]];
+        expect(matchWaysToRun(run, ways, { polygonXY: wide }).flanks.length).toBe(1);
+    });
+
+    // Never the carrier, though: a segment is MADE of its carrier, and a polygon drawn from a
+    // mis-measured corridor would otherwise reject the very way the section comes from.
+    it('never lets the polygon reject the way the segment is made of', () => {
+        const run = straightRun();
+        const ways = [parallelWay(0.2, 'residential')];
+        const silly = [[100, 100], [100, 110], [110, 110], [110, 100], [100, 100]];
+        expect(matchWaysToRun(run, ways, { polygonXY: silly }).carriers.length).toBe(1);
+    });
+
     it('finds both of Gundulićeva\'s separately mapped pavements, one each side', () => {
         const match = matchWaysToRun(street('gundulic').pointsXY, ways('gundulic'));
         expect(match.carriers.map(carrier => carrier.way.osm_id)).toEqual([DONJI_GRAD.gundulic.streetId]);

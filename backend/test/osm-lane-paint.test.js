@@ -146,10 +146,17 @@ describe('painting one road parcel', () => {
         globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
         globalThis.buildCorridorStrips = profiles.buildCorridorStrips;
         globalThis.corridorStripSurface = profiles.corridorStripSurface;
+        // Without this the drawn line never moves off the OSM one, and the asymmetric-corridor
+        // behaviour below cannot be exercised at all.
+        globalThis.offsetPolylinePlanar = profiles.offsetPolylinePlanar;
+        globalThis.corridorStripRingPlanar = profiles.corridorStripRingPlanar;
+        // The road parcels are dissolved with turf; without it the layer keeps every cadastral seam.
+        globalThis.turf = require('@turf/turf');
     });
     afterEach(() => {
         ['RoadSegmentation', 'OsmProfile', 'wgs84ToHTRS96', 'htrs96ToWGS84',
-            'corridorProfileFromOsmTags', 'buildCorridorStrips', 'corridorStripSurface']
+            'corridorProfileFromOsmTags', 'buildCorridorStrips', 'corridorStripSurface',
+            'offsetPolylinePlanar', 'corridorStripRingPlanar', 'turf']
             .forEach(key => { delete globalThis[key]; });
     });
 
@@ -281,6 +288,74 @@ describe('painting one road parcel', () => {
         expect(spanOf(squeezed)).toBeLessThan(32);
         expect(spanOf(unbounded)).toBeLessThan(32);
         expect(spanOf(squeezed)).toBeLessThanOrEqual(spanOf(unbounded) + 0.001);
+    });
+
+    // The tags belong to the line OSM DREW; the drawing goes where the corridor is. Reading the
+    // shifted line loses the very way the section comes from — ways are matched within 4 m of the run
+    // and the shift can be twice that — which is how a well-mapped 285 m stretch of boulevard came
+    // back as "no OSM way describes this segment".
+    it('reads the tags off the OSM line even when the drawing moves off it', () => {
+        // A parcel whose middle is 8 m to one side of the street: enough asymmetry to shift the
+        // drawn line clear of the way it was read from.
+        const offset = street.pointsXY.map(([x, y]) => [x + 8, y]);
+        const lanes = lanesForParcel({ id: 'lopsided', rings: [parcelAround(offset, 12)] }, context());
+        expect(lanes.length).toBeGreaterThan(0);
+        expect(lanes.every(lane => lane.name === 'Gundulićeva ulica')).toBe(true);
+    });
+
+    // A segment crosses as many parcels as the land register happens to have drawn. Measuring it
+    // against them separately makes every internal seam a kerb — a 290 m stretch of Ulica grada
+    // Vukovara came out 5 m wide — so the road parcels are dissolved into one surface first.
+    it('measures across a cadastral seam rather than stopping at it', () => {
+        const { dissolveRoadLand } = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
+        // Two abutting halves of one road parcel, split down the middle of the street.
+        const whole = parcelAround(street.pointsXY, 9);
+        const west = parcelAround(street.pointsXY.map(([x, y]) => [x - 4.5, y]), 4.5);
+        const east = parcelAround(street.pointsXY.map(([x, y]) => [x + 4.5, y]), 4.5);
+
+        const undissolved = lanesForParcel({ id: 'split', rings: [west, east] }, context());
+        const dissolved = lanesForParcel(
+            { id: 'split', rings: dissolveRoadLand([{ rings: [west, east] }]) }, context()
+        );
+        const span = lanes => (lanes.length
+            ? Math.max(...lanes.flatMap(l => l.polygon.map(p => p.lng * 1000)))
+                - Math.min(...lanes.flatMap(l => l.polygon.map(p => p.lng * 1000)))
+            : 0);
+        const undivided = lanesForParcel({ id: 'whole', rings: [whole] }, context());
+        // The seam down the middle must not make the street half as wide as the same land undivided.
+        expect(span(dissolved)).toBeGreaterThan(span(undissolved));
+        expect(Math.abs(span(dissolved) - span(undivided))).toBeLessThan(3);
+    });
+
+    // The far side of the kerb. A street's corridor ends where somebody's plot begins, and that
+    // boundary is in the cadastre whether or not a building was ever surveyed on it — which makes it a
+    // steadier edge than a footprint that may be set back from the line, missing, or not yet loaded.
+    it('is bounded by the parcels that are not road land', () => {
+        // No road-land ring and no buildings: the plots either side are the only thing to measure to.
+        const plot = (from, to) => [[from, -20], [from, 200], [to, 200], [to, -20], [from, -20]];
+        const other = [plot(6, 40), plot(-40, -6)];
+        const withPlots = { ...context(), otherRings: other, otherBoxes: other.map(r => boxOf([r])) };
+
+        const lanes = lanesForParcel({ id: 'kerbless', rings: [parcelAround(street.pointsXY, 40)] }, withPlots);
+        expect(lanes.length).toBeGreaterThan(0);
+        const span = Math.max(...lanes.flatMap(l => l.polygon.map(p => p.lng * 1000)))
+            - Math.min(...lanes.flatMap(l => l.polygon.map(p => p.lng * 1000)));
+        expect(span).toBeLessThan(20);   // the 12 m between the plots, not the 80 m parcel
+    });
+
+    // The bounding-box rejects that keep a viewport paint linear must not throw away anything a ray
+    // could reach. A straight street's box is a sliver, so a pad of a few metres discards every kerb
+    // line beside it — and 212 m of Ulica grada Vukovara came back "measured at only 1 stations",
+    // there being nothing left on one side at all but one of its ~53 stations.
+    it('looks for kerb lines as far as a ray can travel, not just beside the centreline', () => {
+        const plot = (from, to) => [[from, -20], [from, 200], [to, 200], [to, -20], [from, -20]];
+        // 25 m out on each side: well inside the 60 m a ray goes, well outside a few metres of pad.
+        const other = [plot(28, 60), plot(-60, -22)];
+        const far = { ...context(), otherRings: other, otherBoxes: other.map(r => boxOf([r])) };
+
+        // The parcel's own edges are 200 m away, so the plots are the only thing a ray can hit.
+        const lanes = lanesForParcel({ id: 'wide-open', rings: [parcelAround(street.pointsXY, 200)] }, far);
+        expect(lanes.length).toBeGreaterThan(0);
     });
 
     it('paints nothing, rather than throwing, when the collaborators are missing', () => {

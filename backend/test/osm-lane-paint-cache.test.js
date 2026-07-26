@@ -112,7 +112,8 @@ describe('a street is painted once, not on every pan', () => {
         globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
         globalThis.buildCorridorStrips = profiles.buildCorridorStrips;
         globalThis.corridorStripSurface = profiles.corridorStripSurface;
-        globalThis.getBboxFromBounds = () => '0,0,1000,1000';
+        globalThis.__bbox = '0,0,1000,1000';
+        globalThis.getBboxFromBounds = () => globalThis.__bbox;
         globalThis.getBackendBase = () => '';
 
         // Count every reconstruction: this is the expensive step the cache exists to avoid.
@@ -123,18 +124,33 @@ describe('a street is painted once, not on every pan', () => {
             }
         };
 
-        const features = [parcelFeature('road-1'), parcelFeature('road-2', 60)];
+        // One parcel spanning both test areas — the shape that broke: a cadastral road parcel far
+        // larger than any viewport.
+        const huge = {
+            type: 'Feature',
+            properties: { parcelId: 'huge-road', isRoad: true },
+            geometry: {
+                type: 'Polygon',
+                coordinates: [[[-500, -500], [5500, -500], [5500, 5500], [-500, 5500], [-500, -500]]
+                    .map(([x, y]) => toLngLat([x, y]))]
+            }
+        };
+        const features = [parcelFeature('road-1'), parcelFeature('road-2', 60), huge];
         globalThis.parcelLayer = {
             eachLayer(fn) { features.forEach(feature => fn({ feature, getBounds: () => ({}) })); }
         };
+        // The ways follow the viewport, as a bbox-scoped endpoint's would: the streets of area A are
+        // not in area B's answer, so panning there really does bring streets never seen before.
         globalThis.fetch = async () => {
             counters.fetches += 1;
+            const away = globalThis.__bbox.startsWith('4000');
+            const move = ([x, y]) => (away ? [x + 4000, y + 4000] : [x, y]);
             return {
                 ok: true,
                 json: async () => ({
                     features: block.ways.map(way => ({
                         properties: way.properties,
-                        geometry: { type: 'LineString', coordinates: way.pointsXY.map(toLngLat) }
+                        geometry: { type: 'LineString', coordinates: way.pointsXY.map(move).map(toLngLat) }
                     }))
                 })
             };
@@ -148,7 +164,7 @@ describe('a street is painted once, not on every pan', () => {
     afterEach(() => {
         ['L', 'map', 'RoadSegmentation', 'OsmProfile', 'wgs84ToHTRS96', 'htrs96ToWGS84',
             'corridorProfileFromOsmTags', 'buildCorridorStrips', 'corridorStripSurface',
-            'getBboxFromBounds', 'getBackendBase', 'parcelLayer', 'fetch',
+            'getBboxFromBounds', '__bbox', 'getBackendBase', 'parcelLayer', 'fetch',
             'toggleOsmLanePaint', 'refreshOsmLanePaint', 'refreshOsmLanePaintForProposals', 'OsmLanePaint']
             .forEach(key => { delete globalThis[key]; });
     });
@@ -200,6 +216,26 @@ describe('a street is painted once, not on every pan', () => {
         await settle();
 
         expect(counters.profiled).toBeGreaterThan(after.profiled);
+    });
+
+    // A cadastral road parcel can be far larger than the screen — Ulica grada Vukovara's is 3.8 km
+    // across — so "have I painted this parcel?" answered yes for a whole boulevard after one viewport
+    // of it had been drawn, and the rest was never painted at all. The unit of painting is the STREET.
+    it('keeps painting the same huge parcel as the map moves along it', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        const after = { ...counters };
+        expect(after.profiled).toBeGreaterThan(0);
+
+        // Move onto ground this viewport has not covered: the same parcels are in view (the parcel
+        // is enormous), but there is more of them to paint.
+        globalThis.__bbox = '4000,4000,5000,5000';
+        await pan();
+
+        expect(counters.fetches, 'new ground must be fetched').toBeGreaterThan(after.fetches);
+        // The streets there have never been seen, so they must be DRAWN — the parcel being "done"
+        // is exactly the wrong answer.
+        expect(counters.polygons, 'and its streets painted').toBeGreaterThan(after.polygons);
     });
 
     it('does nothing on a proposal change while the layer is switched off', async () => {
