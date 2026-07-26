@@ -697,6 +697,22 @@ function osmParkingOrientation(tags, side) {
     return osmSideValue(tags, 'parking:lane', side);
 }
 
+// The kind of bay a parking lane of this depth must be. A bay's depth is a real-world constant — a
+// car is 2.5 m wide and 5 m long — so the depth IS the orientation, read backwards: 5 m of lane can
+// only be cars nose-in, 2.5 m can only be cars along the kerb.
+//
+// This is how a parking lane whose orientation nobody tagged still gets drawn with the right bays.
+// Without it a 5 m lane tagged only `parking:both=lane` was labelled parallel and marked out with
+// bays 6 m apart, which reads as an oddly wide, oddly empty piece of road.
+function corridorParkingTypeForWidth(width) {
+    const metres = Number(width);
+    if (!Number.isFinite(metres)) return 'parking';
+    // Midpoints between the three standard depths (2.5, 4.5, 5).
+    if (metres >= 4.75) return 'parking_perpendicular';
+    if (metres >= 3.5) return 'parking_angled';
+    return 'parking';
+}
+
 // OSM's orientation value -> our parking lane type. Anything we do not recognise (including a plain
 // `lane` with no orientation) is parallel parking, the ordinary kerbside lane.
 function corridorParkingTypeFromOsm(orientation) {
@@ -765,8 +781,16 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
         const parking = osmSidePresent(osmSideValue(source, 'parking', side))
             || osmSidePresent(osmSideValue(source, 'parking:lane', side));
         if (parking) {
-            const parkingType = corridorParkingTypeFromOsm(osmParkingOrientation(source, side));
-            target.push({ type: parkingType, width: osmSideWidth(source, 'parking', side, corridorStandardWidth(parkingType)) });
+            const orientation = osmParkingOrientation(source, side);
+            const taggedWidth = osmSideWidth(source, 'parking', side, NaN);
+            // A stated orientation wins; otherwise the depth says which kind of bay it must be.
+            const parkingType = orientation !== undefined
+                ? corridorParkingTypeFromOsm(orientation)
+                : corridorParkingTypeForWidth(taggedWidth);
+            const width = Number.isFinite(taggedWidth) && taggedWidth > 0
+                ? taggedWidth
+                : corridorStandardWidth(parkingType);
+            target.push({ type: parkingType, width });
         }
     });
 
@@ -1816,6 +1840,7 @@ if (typeof window !== 'undefined') {
     window.corridorStandardWidth = corridorStandardWidth;
     window.corridorMinLaneWidth = corridorMinLaneWidth;
     window.corridorParkingOrientation = corridorParkingOrientation;
+    window.corridorParkingTypeForWidth = corridorParkingTypeForWidth;
     window.corridorLaneWidthFixed = corridorLaneWidthFixed;
     window.buildCorridorParkingBays = buildCorridorParkingBays;
     window.buildCorridorDirectionArrows = buildCorridorDirectionArrows;
@@ -1898,6 +1923,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorStandardWidth,
         corridorMinLaneWidth,
         corridorParkingOrientation,
+        corridorParkingTypeForWidth,
         corridorLaneWidthFixed,
         buildCorridorParkingBays,
         buildCorridorDirectionArrows,

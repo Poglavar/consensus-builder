@@ -526,6 +526,14 @@
                 const depth = Number.isFinite(sideWidth(tags, 'parking', side))
                     ? sideWidth(tags, 'parking', side)
                     : parkingDepth(orientation, settings.parkingWidth);
+                // Nobody said which way the cars point, but the depth already did: 5 m of lane can
+                // only be nose-in, 2.5 m can only be along the kerb. Stated so the bridge draws the
+                // right bays rather than marking a 5 m lane out at a parallel bay's 6 m spacing.
+                if (orientation === undefined && typeof global.corridorParkingTypeForWidth === 'function') {
+                    const implied = global.corridorParkingTypeForWidth(depth);
+                    if (implied === 'parking_perpendicular') tags[`parking:${side}:orientation`] = 'perpendicular';
+                    else if (implied === 'parking_angled') tags[`parking:${side}:orientation`] = 'diagonal';
+                }
                 tags[`parking:${side}`] = 'lane';
                 tags[`parking:${side}:width`] = String(roundWidth(depth));
                 const kerbShare = PARKING_KERB_SHARE[value] || 0;

@@ -288,6 +288,12 @@ function renderCorridorRails(centerlines, profile, group, options = {}) {
 
 // Parking bay markings: the edge line where the lane meets the carriageway, and one divider per bay.
 // Many short lines per lane, so they share the rail canvas renderer rather than becoming SVG paths.
+// Bay markings are YELLOW, where every other marking on the road is white. Parking is the one lane
+// type that is not carriageway but looks exactly like it from above: a 5 m row of nose-in bays beside
+// two traffic lanes reads as a very wide road until something says otherwise. The bays are what say
+// otherwise, so they are the one marking allowed to differ in colour.
+const CORRIDOR_PARKING_MARKING_COLOR = '#f2c53d';
+
 function renderCorridorParkingBays(bays, group, pane) {
     if (!Array.isArray(bays) || !bays.length || typeof L === 'undefined') return;
     const renderer = corridorRailRenderer();
@@ -296,9 +302,9 @@ function renderCorridorParkingBays(bays, group, pane) {
         L.polyline(bay.line, {
             pane: pane || undefined,
             renderer,
-            color: '#f4f4f4',
-            weight: isEdge ? 1.5 : 1,
-            opacity: isEdge ? 0.85 : 0.7,
+            color: CORRIDOR_PARKING_MARKING_COLOR,
+            weight: isEdge ? 1.6 : 1.2,
+            opacity: isEdge ? 0.95 : 0.85,
             interactive: false,
             className: `corridor-parking-marking corridor-parking-marking--${bay.kind}`
         }).addTo(group);

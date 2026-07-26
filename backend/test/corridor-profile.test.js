@@ -515,6 +515,30 @@ describe('corridorProfileFromOsmTags', () => {
         expect(close(corridorProfileWidth(profile), 12)).toBe(true);
     });
 
+    // A bay's depth is a real-world constant — a car is 2.5 m wide and 5 m long — so the depth IS the
+    // orientation read backwards. Without this a 5 m lane tagged only `parking:both=lane` was called
+    // parallel and marked out at a parallel bay's 6 m spacing, which reads as oddly wide, oddly empty
+    // road rather than as a row of cars nose-in.
+    it('reads the kind of bay off its depth when nobody tagged the orientation', () => {
+        const at = width => corridorProfileFromOsmTags({
+            highway: 'residential', 'parking:both': 'lane', 'parking:both:width': String(width)
+        }).strips.filter(strip => strip.type.startsWith('parking'))[0];
+        expect(at(2.5).type).toBe('parking');
+        expect(at(4.5).type).toBe('parking_angled');
+        expect(at(5).type).toBe('parking_perpendicular');
+        // ...and the depth it was given is the depth it keeps.
+        expect(close(at(5).width, 5)).toBe(true);
+        expect(close(at(4.5).width, 4.5)).toBe(true);
+    });
+
+    it('lets a stated orientation win over the depth', () => {
+        const strips = corridorProfileFromOsmTags({
+            highway: 'residential', 'parking:both': 'lane',
+            'parking:both:width': '5', 'parking:both:orientation': 'parallel'
+        }).strips;
+        expect(strips.filter(strip => strip.type.startsWith('parking'))[0].type).toBe('parking');
+    });
+
     it('accepts the older parking:lane scheme as well as the current parking one', () => {
         const current = corridorProfileFromOsmTags({ highway: 'residential', width: '12', 'parking:both': 'lane' });
         const legacy = corridorProfileFromOsmTags({ highway: 'residential', width: '12', 'parking:lane:both': 'parallel' });
