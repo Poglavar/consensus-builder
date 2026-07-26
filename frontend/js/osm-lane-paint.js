@@ -135,10 +135,12 @@
     }
 
     // Every OSM way over the viewport, with its properties: the driveable ones carry the topology the
-    // segmentation reads, the footways carry the evidence for Zagreb's separately mapped pavements.
+    // segmentation reads, the footways carry the evidence for Zagreb's separately mapped pavements, and
+    // `rail=1` adds the tramways, which have no highway class and would otherwise be missing from every
+    // boulevard that has one.
     async function fetchWays(bboxHTRS) {
         const base = (typeof global.getBackendBase === 'function' && global.getBackendBase()) || '';
-        const url = `${base}/osm-road${bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
+        const url = `${base}/osm-road?rail=1${bboxHTRS ? `&bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
         const data = (typeof global.fetchJsonWithRetry === 'function')
             ? await global.fetchJsonWithRetry(url)
             : await global.fetch(url).then(response => (response.ok ? response.json() : null));
@@ -635,7 +637,10 @@
                     // against the kerb on ITS side; against half the total it comes out the same width
                     // on both sides of a corridor that is 6 m one way and 14 m the other.
                     leftHalf: corridor.left,
-                    rightHalf: corridor.right
+                    rightHalf: corridor.right,
+                    // Where the section will actually be drawn, so a tram track is placed against
+                    // the line it will be drawn on rather than the line it was measured from.
+                    sectionShift: corridor.shift
                 }
             });
             if (!reconstructed?.profile) {
@@ -647,7 +652,15 @@
                         : 'no OSM way describes this segment'
                 });
             }
-            if (reconstructed.width > PAINT_MAX_WIDTH || reconstructed.width < MIN_PAINT_WIDTH) {
+            // The cap is on the ROAD. It exists to throw out a corridor that is not a street at all —
+            // a plaza, a car park, a junction mouth — and a tram reservation is none of those: it was
+            // read off OSM's own geometry rather than guessed from a ray, and it is genuinely part of
+            // the street. So the rails buy their own width, and Savska keeps its lanes instead of
+            // being dropped for being 33 m wide with a tramway down it.
+            const railWidth = reconstructed.profile.strips
+                .filter(strip => strip.type === 'rail')
+                .reduce((total, strip) => total + (Number(strip.width) || 0), 0);
+            if (reconstructed.width > PAINT_MAX_WIDTH + railWidth || reconstructed.width < MIN_PAINT_WIDTH) {
                 return record({ reason: `${reconstructed.width.toFixed(1)} m is not a street's width` });
             }
 

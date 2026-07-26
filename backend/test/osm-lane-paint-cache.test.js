@@ -23,7 +23,7 @@ const project = (lat, lng) => [lng * 1000, lat * 1000];
 const unproject = (x, y) => [y / 1000, x / 1000];
 const toLngLat = ([x, y]) => { const [lat, lng] = unproject(x, y); return [lng, lat]; };
 
-const counters = { fetches: 0, polygons: 0, profiled: 0 };
+const counters = { fetches: 0, polygons: 0, profiled: 0, urls: [] };
 
 // A road parcel around the street, as the parcel layer holds it (lng/lat GeoJSON).
 function parcelFeature(id, shift = 0) {
@@ -103,6 +103,7 @@ describe('a street is painted once, not on every pan', () => {
         counters.fetches = 0;
         counters.polygons = 0;
         counters.profiled = 0;
+        counters.urls = [];
 
         globalThis.L = fakeLeaflet();
         globalThis.map = fakeMap();
@@ -141,8 +142,9 @@ describe('a street is painted once, not on every pan', () => {
         };
         // The ways follow the viewport, as a bbox-scoped endpoint's would: the streets of area A are
         // not in area B's answer, so panning there really does bring streets never seen before.
-        globalThis.fetch = async () => {
+        globalThis.fetch = async (url) => {
             counters.fetches += 1;
+            counters.urls.push(String(url));
             const away = globalThis.__bbox.startsWith('4000');
             const move = ([x, y]) => (away ? [x + 4000, y + 4000] : [x, y]);
             return {
@@ -216,6 +218,34 @@ describe('a street is painted once, not on every pan', () => {
         await settle();
 
         expect(counters.profiled).toBeGreaterThan(after.profiled);
+    });
+
+    // A cadastral road parcel can be far larger than the screen — Ulica grada Vukovara's is 3.8 km
+    // across — so "have I painted this parcel?" answered yes for a whole boulevard after one viewport
+    // of it had been drawn, and the rest was never painted at all. The unit of painting is the STREET.
+    it('keeps painting the same huge parcel as the map moves along it', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        const after = { ...counters };
+        expect(after.profiled).toBeGreaterThan(0);
+
+        // Move onto ground this viewport has not covered: the same parcels are in view (the parcel
+        // is enormous), but there is more of them to paint.
+        globalThis.__bbox = '4000,4000,5000,5000';
+        await pan();
+
+        expect(counters.fetches, 'new ground must be fetched').toBeGreaterThan(after.fetches);
+        // The streets there have never been seen, so they must be DRAWN — the parcel being "done"
+        // is exactly the wrong answer.
+        expect(counters.polygons, 'and its streets painted').toBeGreaterThan(after.polygons);
+    });
+
+    // Zagreb's 463 tramways carry no highway class at all, so they arrive only when asked for.
+    it('asks for the tramways along with the roads', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        expect(counters.urls.length).toBeGreaterThan(0);
+        expect(counters.urls.every(url => url.includes('rail=1'))).toBe(true);
     });
 
     // A cadastral road parcel can be far larger than the screen — Ulica grada Vukovara's is 3.8 km

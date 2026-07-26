@@ -6,9 +6,17 @@
 // for Croatian-TM spatial ops. Both dev and prod carry this schema (dev was realigned to prod on
 // 2026-07-15). We filter with geom_3765 (the incoming bbox is 3765, index-backed) and output geom
 // (already 4326, ready for GeoJSON) — the heavy buffered columns are never returned.
+//
+// `?rail=1` additionally returns the STREET-RUNNING TRAMWAYS, which have no highway_type at all and
+// are therefore invisible to the default query — 463 ways in Zagreb, i.e. every tram median in the
+// city. Opt-in rather than default, because the reference layer and the road snapping both read this
+// endpoint and a tram reservation is not something a new road should snap onto. Heavy rail
+// (`railway_type='rail'`, 1173 ways) is never included: a railway line is not a street.
 import { parseBboxParam, POSTGIS_SRID } from '../utils/helpers.js';
 
 const MAX_FEATURES = 8000;
+// The railway classes that run in a street and so form part of its cross-section.
+const STREET_RAILWAYS = ['tram', 'light_rail'];
 
 export function setupOsmRoadRoute(app, pool) {
     app.get('/osm-road', async (req, res) => {
@@ -20,6 +28,9 @@ export function setupOsmRoadRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
             }
 
+            const withRail = ['1', 'true', 'yes'].includes(String(req.query.rail || '').toLowerCase());
+
+            const params = [];
             let sql = `
                 SELECT
                     ST_AsGeoJSON(r.geom)::json AS geometry,
@@ -34,14 +45,22 @@ export function setupOsmRoadRoute(app, pool) {
                         'source', 'osm_road'
                     ) AS properties
                 FROM osm_road r
-                WHERE r.current AND r.geom_3765 IS NOT NULL AND r.highway_type IS NOT NULL
+                WHERE r.current AND r.geom_3765 IS NOT NULL
             `;
 
-            const params = [];
+            if (withRail) {
+                params.push(STREET_RAILWAYS);
+                sql += ` AND (r.highway_type IS NOT NULL OR r.railway_type = ANY($${params.length}))`;
+            } else {
+                sql += ' AND r.highway_type IS NOT NULL';
+            }
+
             if (hasBbox) {
                 // Index-backed bbox test in the geom's Croatian-TM SRID (matches the incoming bbox).
-                sql += ` AND r.geom_3765 && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID})`;
-                params.push(bboxParts[0], bboxParts[1], bboxParts[2], bboxParts[3]);
+                const [minX, minY, maxX, maxY] = bboxParts;
+                params.push(minX, minY, maxX, maxY);
+                sql += ` AND r.geom_3765 && ST_MakeEnvelope($${params.length - 3},$${params.length - 2},`
+                    + `$${params.length - 1},$${params.length}, ${POSTGIS_SRID})`;
             }
 
             sql += `\n            LIMIT ${MAX_FEATURES}\n        `;

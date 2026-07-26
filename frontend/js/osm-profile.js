@@ -7,7 +7,8 @@
 //
 //   1. MATCH. A run is a chain of pieces of several OSM ways, so the tags that describe it are the tags
 //      of the ways that actually cover THIS run, length-weighted — not the ways of the whole street.
-//      The same sweep finds the ways running BESIDE the run, which is what makes Zagreb legible (below).
+//      The same sweep finds the ways running BESIDE the run, which is what makes Zagreb legible (below),
+//      and the TRAMWAYS along it, which carry no highway tag and are otherwise invisible.
 //   2. RESOLVE. Zagreb's tagging says `sidewalk:both=separate` on 364 of 550 tagged sides in Donji Grad
 //      and parks half the city `on_kerb`/`half_on_kerb`. Read literally by the OSM bridge, `separate`
 //      means "no sidewalk" and a kerb parking bay means "a full lane of carriageway", both wrong. This
@@ -56,6 +57,13 @@
     ]);
     const FOOT_HIGHWAYS = new Set(['footway', 'path', 'steps']);
     const CYCLE_HIGHWAYS = new Set(['cycleway']);
+    // The railway classes that run IN a street rather than through the landscape, and so take part in
+    // its cross-section. Zagreb has 463 of these ways and not one of them carries a highway tag, so
+    // without this every tram median in the city reads as ordinary carriageway. Heavy rail is left
+    // out on purpose: a railway line beside a street is not part of the street.
+    const STREET_RAILWAYS = new Set(['tram', 'light_rail']);
+    // A metre-gauge tram track, the fallback when corridor-profile.js is not to hand (node tests).
+    const DEFAULT_TRACK_WIDTH = 2.75;
 
     // Values that mean "there is nothing here", as opposed to "it is mapped somewhere else".
     const ABSENT_VALUES = new Set(['no', 'none', 'false', '0']);
@@ -198,6 +206,10 @@
         return String(way?.properties?.highway_type || way?.properties?.highway || '').trim().toLowerCase();
     }
 
+    function railwayOf(way) {
+        return String(way?.properties?.railway_type || way?.properties?.tags?.railway || '').trim().toLowerCase();
+    }
+
     function tagsOf(way) {
         const tags = way?.properties?.tags;
         return (tags && typeof tags === 'object') ? tags : {};
@@ -215,7 +227,7 @@
     // the centreline is a measurement of how much room the carriageway has.
     function matchWaysToRun(runXY, ways, options = {}) {
         const settings = { ...OSM_PROFILE_DEFAULTS, ...options };
-        const empty = { carriers: [], flanks: [], reversed: false, stations: 0 };
+        const empty = { carriers: [], flanks: [], rails: [], reversed: false, stations: 0 };
         if (!Array.isArray(runXY) || runXY.length < 2 || !Array.isArray(ways) || !ways.length) return empty;
 
         const stations = stationsAlong(runXY, settings.sampleSpacing);
@@ -249,7 +261,11 @@
             const line = Array.isArray(way?.pointsXY) ? way.pointsXY.filter(isFinitePoint) : [];
             if (line.length < 2) return;
             const highway = highwayOf(way);
-            if (!CARRIER_HIGHWAYS.has(highway)) return;
+            const railway = railwayOf(way);
+            // A tramway has no highway class at all, so it has to be let past this gate on its own
+            // account. It can still never be a CARRIER while a road covers the run (carriers are the
+            // driveable ways) — what it becomes is a rail lane in the section, below.
+            if (!CARRIER_HIGHWAYS.has(highway) && !STREET_RAILWAYS.has(railway)) return;
             const box = line.reduce((b, [x, y]) => [
                 Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)
             ], [Infinity, Infinity, -Infinity, -Infinity]);
@@ -257,12 +273,26 @@
                 || box[1] > bounds[3] + reach || box[3] < bounds[1] - reach) return;
 
             const insidePolygon = polygon ? lineTouchesRing(line, polygon) : false;
+            const isRail = STREET_RAILWAYS.has(railway);
             let onRun = 0;
             let alignment = 0;
             const beside = { left: [], right: [] };
-            stations.forEach(station => {
+            // A track is placed by WHERE IT LIES, so its offsets are kept signed (+ left of travel) and
+            // at every station, including the ones inside `flankMinOffset` — a tram running down the
+            // middle of the street is the case that matters most, and it is the one a flank's
+            // "must be clear of the carriageway" test is built to reject.
+            const railOffsets = [];
+            const railStations = [];
+            stations.forEach((station, index) => {
                 const near = nearestOnPolyline(station.x, station.y, line);
                 if (!near) return;
+                if (isRail) {
+                    const within = polygon ? insidePolygon : (near.distance <= settings.flankMaxOffset);
+                    if (within) {
+                        railOffsets.push(sideOfStation(station, near.x, near.y) * near.distance);
+                        railStations.push(index);
+                    }
+                }
                 if (near.distance <= settings.carrierTolerance) {
                     onRun += 1;
                     alignment += station.tx * near.tx + station.ty * near.ty;
@@ -283,12 +313,15 @@
             measured.push({
                 way,
                 highway,
+                railway,
                 name: way?.properties?.name || undefined,
                 tags: tagsOf(way),
                 coverage: onRun / stations.length,
                 driveable: DRIVEABLE_HIGHWAYS.has(highway),
                 alignment,
-                beside
+                beside,
+                railOffsets,
+                railStations
             });
         });
 
@@ -299,8 +332,29 @@
         const carriers = (driveable.length ? driveable : covering).slice().sort((a, b) => b.coverage - a.coverage);
 
         const flanks = [];
+        const rails = [];
         measured.forEach(entry => {
             if (carriers.includes(entry)) return;
+            // A TRAMWAY along the run: not a neighbour of the street but a LANE OF IT, whether it runs
+            // down the middle (Ilica, Draškovićeva) or on the reservation between two carriageways
+            // (Vukovarska, Savska). Collected apart from the flanks — those are evidence ABOUT the
+            // section, this is part of it — and kept per way, since one track is routinely several
+            // ways along its length. Turning ways into tracks is railTracksForRun's job.
+            if (STREET_RAILWAYS.has(entry.railway)) {
+                if (!entry.railOffsets.length) return;
+                rails.push({
+                    way: entry.way,
+                    railway: entry.railway,
+                    offset: roundWidth(median(entry.railOffsets)),   // signed: + is left of travel
+                    coverage: entry.railOffsets.length / stations.length,
+                    // WHICH stations, not just how many: two ways of one track cover different
+                    // stretches of the run, two junction curves cover the same one.
+                    stations: entry.railStations,
+                    stationCount: stations.length,
+                    gauge: parseNumber(entry.tags.gauge)
+                });
+                return;
+            }
             const kind = CYCLE_HIGHWAYS.has(entry.highway)
                 ? 'cycleway'
                 : (FOOT_HIGHWAYS.has(entry.highway) ? 'sidewalk' : null);
@@ -331,6 +385,7 @@
             // has to be mirrored for such a run, so this one sign is worth measuring properly.
             reversed: carriers.length > 0 && carriers[0].alignment < 0,
             flanks,
+            rails,
             stations: stations.length
         };
     }
@@ -566,10 +621,10 @@
             }
         });
 
-        // A rail lane sharing the carriageway is not a strip of its own; it is a tram running in the
-        // traffic. Recorded so the reason a track is missing is visible, not silently dropped.
+        // A statement of fact, not of what was drawn: whether the rails become lanes of their own
+        // depends on whether a tramway was matched along the run, which is decided further up.
         if (Object.keys(tags).some(key => key.startsWith('embedded_rails'))) {
-            notes.push('tram rails embedded in the carriageway; drawn as traffic lanes');
+            notes.push('the carriageway is tagged as carrying embedded tram rails');
         }
         return { tags, notes };
     }
@@ -643,6 +698,114 @@
         if (indexes.length < 3) return null;
         const drop = new Set([indexes[0], indexes[indexes.length - 1]]);
         return strips.filter((strip, index) => !drop.has(index));
+    }
+
+    // ---------------------------------------------------------------------------
+    // Tram tracks
+    // ---------------------------------------------------------------------------
+
+    // Two matched tramways are the same track when their offsets are this close. Wider than a rail
+    // lane is deep, narrower than the gap between the two tracks of a double line.
+    const TRACK_CLUSTER_TOLERANCE = 2;
+    const MAX_TRACKS = 4;
+
+    // Pure: the matched tramways, resolved into TRACKS. One track is routinely mapped as several ways
+    // along its length — Zagreb splits them at every junction — so counting ways would count the same
+    // rails three times over, and requiring any single way to cover half the run would find none of
+    // them. They are clustered by where they lie instead.
+    //
+    // A cluster's coverage is the UNION of the stretches its members cover, never their sum. The two
+    // look the same for a track split along its length, where the pieces cover different stretches,
+    // and completely different for the fan of connecting curves at a tram junction, where a dozen ways
+    // brush the same 30 m at slightly different offsets. Adding those up manufactured a third track
+    // down the middle of Savska and Draškovićeva; the union rejects them, as it should.
+    function railTracksForRun(rails, options = {}) {
+        const settings = { ...OSM_PROFILE_DEFAULTS, ...options };
+        const clusters = [];
+        (rails || []).slice()
+            .sort((a, b) => b.offset - a.offset)      // left to right
+            .forEach(rail => {
+                const covered = Array.isArray(rail.stations) ? rail.stations : [];
+                const near = clusters.find(cluster => Math.abs(cluster.offset - rail.offset) <= TRACK_CLUSTER_TOLERANCE);
+                if (near) {
+                    // The offset of a cluster is its members', weighted by how much of the run each saw.
+                    const weight = near.weight + rail.coverage;
+                    near.offset = weight > 0
+                        ? roundWidth((near.offset * near.weight + rail.offset * rail.coverage) / weight)
+                        : near.offset;
+                    near.weight = weight;
+                    covered.forEach(index => near.stations.add(index));
+                    if (!Number.isFinite(near.gauge) && Number.isFinite(rail.gauge)) near.gauge = rail.gauge;
+                    return;
+                }
+                clusters.push({
+                    offset: rail.offset,
+                    weight: rail.coverage,
+                    stations: new Set(covered),
+                    stationCount: rail.stationCount,
+                    gauge: rail.gauge
+                });
+            });
+        return clusters
+            .map(cluster => ({
+                offset: cluster.offset,
+                gauge: cluster.gauge,
+                coverage: cluster.stationCount > 0
+                    ? cluster.stations.size / cluster.stationCount
+                    : Math.min(1, cluster.weight)
+            }))
+            .filter(cluster => cluster.coverage >= settings.flankCoverage)
+            .sort((a, b) => b.offset - a.offset)
+            .slice(0, MAX_TRACKS);
+    }
+
+    // How much street one track takes: the standard for its gauge (2.75 m for Zagreb's metre gauge),
+    // straight from corridor-profile.js so a painted tram lane and an edited one are the same width.
+    function trackWidth(gauge) {
+        if (typeof global.corridorStandardWidth === 'function') {
+            const width = Number(global.corridorStandardWidth('rail', gauge));
+            if (Number.isFinite(width) && width > 0) return width;
+        }
+        return DEFAULT_TRACK_WIDTH;
+    }
+
+    // Put the tracks into the section AT THE POSITION THEY LIE IN. The profile runs left to right and
+    // an offset is signed the same way, so each track's place is simply the strip whose middle it
+    // falls left of — which puts a central reservation between the carriageways and a side-running
+    // track between the traffic and the kerb, without either case being special-cased.
+    //
+    // `sectionShift` is where the section will be DRAWN relative to the line the offsets were measured
+    // from. The painter puts a street in the middle of the corridor it measured rather than on the line
+    // OSM drew — routinely metres away — and a track placed without allowing for that lands in the
+    // wrong lane by exactly that distance.
+    //
+    // Every index is worked out against the ORIGINAL section and the splices done right-to-left, so
+    // the tracks do not shift the frame the later ones are being placed in.
+    function insertRailStrips(profile, tracks, options = {}) {
+        const strips = ((profile && profile.strips) || []).map(strip => ({ ...strip }));
+        if (!strips.length || !Array.isArray(tracks) || !tracks.length) return { strips };
+        // A dedicated tram line is already all rails; it has no carriageway to put a track beside.
+        if (strips.every(strip => strip.type === 'rail')) return { strips };
+
+        const shift = Number(options.sectionShift) || 0;
+        const half = stripsWidth(strips) / 2;
+        const placed = tracks.map(track => {
+            const offset = track.offset - shift;
+            let cursor = half;
+            let index = strips.length;
+            for (let i = 0; i < strips.length; i += 1) {
+                const far = cursor - strips[i].width;
+                if (offset > (cursor + far) / 2) { index = i; break; }
+                cursor = far;
+            }
+            return { index, track };
+        });
+        placed.sort((a, b) => b.index - a.index).forEach(({ index, track }) => {
+            const lane = { type: 'rail', width: roundWidth(trackWidth(track.gauge)) };
+            if (Number.isFinite(track.gauge)) lane.gauge = track.gauge;
+            strips.splice(index, 0, lane);
+        });
+        return { strips };
     }
 
     // Make the section sum to EXACTLY `available`, in a fixed order of preference.
@@ -793,8 +956,27 @@
         const framed = match.reversed ? reverseOsmTagSides(merged) : merged;
         const resolved = resolveSegmentTags(framed, match.flanks, availableWidth, options);
 
-        const nominal = toProfile(resolved.tags);
-        if (!nominal || !nominal.strips || !nominal.strips.length) return null;
+        const bare = toProfile(resolved.tags);
+        if (!bare || !bare.strips || !bare.strips.length) return null;
+
+        // The tram, if there is one. It goes in before the fit, because a track is part of the street's
+        // width and not a decoration laid over it: a boulevard with a reservation really is its
+        // carriageways PLUS its rails, and fitting the section without them puts the missing metres
+        // into traffic lanes.
+        const tracks = railTracksForRun(match.rails, options);
+        const nominal = tracks.length ? insertRailStrips(bare, tracks, options) : bare;
+        tracks.forEach(track => {
+            const where = Math.abs(track.offset) < 1
+                ? 'down the middle'
+                : `${roundWidth(Math.abs(track.offset))} m to the ${track.offset > 0 ? 'left' : 'right'}`;
+            resolved.notes.push(`tram: one track ${where} of the centreline`);
+        });
+        // Rails the tags claim and the geometry cannot find. Said out loud, because the alternative is
+        // a street that quietly has a tram in real life and none in its section.
+        if (!tracks.length && Object.keys(resolved.tags).some(key => key.startsWith('embedded_rails'))) {
+            resolved.notes.push('tram: rails are tagged as embedded, but no tramway runs along this'
+                + ' segment in OSM, so they stay part of the traffic lanes');
+        }
 
         // How wide to build it.
         //
@@ -827,6 +1009,7 @@
             name: merged.name || null,
             highway: merged.highway || null,
             reversed: match.reversed,
+            tracks: tracks.length,
             // The ways this section was read off, most of the run first — what a "this is wrong" link
             // has to point at, since the fault is in the tagging rather than in the reading of it.
             osmIds: match.carriers
@@ -842,7 +1025,10 @@
     const api = {
         OSM_PROFILE_DEFAULTS,
         CARRIER_HIGHWAYS,
+        STREET_RAILWAYS,
         matchWaysToRun,
+        railTracksForRun,
+        insertRailStrips,
         lineTouchesRing,
         mergeTagsAlongRun,
         reverseOsmTagSides,

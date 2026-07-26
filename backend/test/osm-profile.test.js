@@ -19,9 +19,13 @@ const {
     resolveSegmentTags,
     fitProfileToWidth,
     orientForRightHandTraffic,
-    osmProfileForSegment
+    osmProfileForSegment,
+    railTracksForRun,
+    insertRailStrips
 } = require(path.join(here, '../../frontend/js/osm-profile.js'));
-const { corridorProfileFromOsmTags, corridorProfileWidth } = require(path.join(here, '../../frontend/js/corridor-profile.js'));
+const {
+    corridorProfileFromOsmTags, corridorProfileWidth, corridorStandardWidth
+} = require(path.join(here, '../../frontend/js/corridor-profile.js'));
 
 const DONJI_GRAD = JSON.parse(readFileSync(path.join(here, 'fixtures/osm-donji-grad.json'), 'utf8'));
 
@@ -433,11 +437,224 @@ describe('osmProfileForSegment on real Donji Grad streets', () => {
 // ITS side; against half the total, both pavements come out the same width whatever the ground says.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// The tram in the street, and the room on each side of it.
+//
+// Zagreb has 463 tramway ways and not one of them carries a highway tag, so until they were let past
+// the highway gate above, every tram median in the city — Vukovarska, Savska, Ilica — came out as
+// ordinary carriageway. Below: a tramway is MATCHED, matched ways are resolved into TRACKS, and a
+// track is PLACED where it actually lies. Then the other thing measured per side: a pavement mapped
+// as its own way, sized against the kerb on ITS side rather than against half the total.
+// ---------------------------------------------------------------------------
+
 // A run heading north, so its left is at negative x and a positive offset is to the west.
 const tramRun = (length = 200) => [[0, 0], [0, length]];
 const road = (offset, tags = {}, length = 200) => ({
     pointsXY: [[offset, 1], [offset, length - 1]],
     properties: { osm_id: `road${offset}`, highway_type: 'secondary', name: 'Test boulevard', tags }
+});
+// A tramway: no highway class at all, which is the whole difficulty.
+const tram = (offset, options = {}) => ({
+    pointsXY: [[offset, options.from ?? 1], [offset, options.to ?? 199]],
+    properties: {
+        osm_id: options.id || `tram${offset}`,
+        highway_type: null,
+        railway_type: 'tram',
+        tags: { railway: 'tram', gauge: String(options.gauge || 1000) }
+    }
+});
+
+describe('matching a tramway to a run', () => {
+    it('matches one, though it has no highway class to be matched by', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(-3), tram(3)]);
+        expect(match.rails.length, 'a tramway with no highway tag was skipped entirely').toBe(2);
+        expect(match.rails.every(rail => rail.gauge === 1000)).toBe(true);
+    });
+
+    it('never lets one be the carrier while a road covers the run', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(-3)]);
+        expect(match.carriers.length).toBe(1);
+        expect(match.carriers[0].highway).toBe('secondary');
+    });
+
+    // The offsets place the track, so they are signed — and taken at every station, including the
+    // ones a flank's "must be clear of the carriageway" rule would throw away. A tram down the middle
+    // of the street is exactly the case that rule rejects.
+    it('measures them signed, and does not lose the one running down the middle', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(1.2), tram(-1.2)]);
+        expect(match.rails.length, 'a central track is inside flankMinOffset and must survive it').toBe(2);
+        const offsets = match.rails.map(rail => rail.offset).sort((a, b) => a - b);
+        expect(offsets[0]).toBeCloseTo(-1.2, 1);
+        expect(offsets[1]).toBeCloseTo(1.2, 1);
+    });
+
+    it('leaves the ordinary flanks alone — a pavement is still a pavement', () => {
+        const match = matchWaysToRun(tramRun(), [
+            road(0),
+            tram(-3),
+            { pointsXY: [[7, 1], [7, 199]], properties: { highway_type: 'footway', tags: { footway: 'sidewalk' } } }
+        ]);
+        expect(match.flanks.map(flank => flank.kind)).toEqual(['sidewalk']);
+        expect(match.rails.length).toBe(1);
+    });
+});
+
+describe('resolving matched ways into tracks', () => {
+    // The case that decides whether this works at all on real data: OSM splits a tramway at every
+    // junction, so one track along a 200 m run is three ways covering a third of it each. Counting
+    // ways would count the track three times; asking any one way to cover half the run would find
+    // no track at all.
+    it('reads one track split into three ways as ONE track', () => {
+        const pieces = [
+            tram(-3, { id: 'a', from: 0, to: 66 }),
+            tram(-3, { id: 'b', from: 66, to: 133 }),
+            tram(-3, { id: 'c', from: 133, to: 199 })
+        ];
+        const match = matchWaysToRun(tramRun(), [road(0), ...pieces]);
+        expect(match.rails.length, 'three ways matched').toBe(3);
+        const tracks = railTracksForRun(match.rails);
+        expect(tracks.length, 'but they are one track').toBe(1);
+        // A run heading north has its left to the west, so a way at x = -3 is 3 m to its LEFT.
+        expect(tracks[0].offset).toBeCloseTo(3, 0);
+    });
+
+    it('reads a double track as two', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(-2), tram(-5)]);
+        const tracks = railTracksForRun(match.rails);
+        expect(tracks.length).toBe(2);
+        // Left to right, so the section can be built by walking them in order.
+        expect(tracks[0].offset).toBeGreaterThan(tracks[1].offset);
+    });
+
+    it('ignores a tramway that merely brushes the run', () => {
+        const crossing = { ...tram(-4, { from: 90, to: 100 }) };
+        const match = matchWaysToRun(tramRun(), [road(0), crossing]);
+        expect(railTracksForRun(match.rails)).toEqual([]);
+    });
+
+    // The fan of connecting curves at a tram junction: a handful of ways at slightly different
+    // offsets, all covering the SAME short stretch of the run. Adding their coverages together made a
+    // third track appear down the middle of Savska cesta and Draškovićeva; the stretch they cover
+    // between them is what counts, and it is the one stretch they all sit on.
+    it('does not build a track out of junction curves that all cover the same stretch', () => {
+        const curves = [
+            tram(-6, { id: 'curve-a', from: 0, to: 60 }),
+            tram(-7.2, { id: 'curve-b', from: 4, to: 64 }),
+            tram(-7.8, { id: 'curve-c', from: 8, to: 68 })
+        ];
+        const match = matchWaysToRun(tramRun(), [road(0), ...curves]);
+        expect(match.rails.length, 'all three were matched').toBe(3);
+        // Each covers about a third; summed that clears the bar, unioned it does not.
+        expect(match.rails.reduce((total, rail) => total + rail.coverage, 0)).toBeGreaterThan(0.5);
+        expect(railTracksForRun(match.rails)).toEqual([]);
+    });
+
+    it('does not invent a track where there is no tram', () => {
+        const match = matchWaysToRun(tramRun(), [road(0)]);
+        expect(match.rails).toEqual([]);
+        expect(railTracksForRun(match.rails)).toEqual([]);
+    });
+});
+
+describe('putting the tracks in the section', () => {
+    const boulevard = () => ({
+        strips: [
+            { type: 'sidewalk', width: 3 },
+            { type: 'driving', width: 3.25 },
+            { type: 'driving', width: 3.25 },
+            { type: 'driving', width: 3.25 },
+            { type: 'sidewalk', width: 3 }
+        ]
+    });
+
+    it('puts a central pair between the carriageways, not at the kerb', () => {
+        const out = insertRailStrips(boulevard(), [{ offset: 2.4, gauge: 1000 }, { offset: -2.4, gauge: 1000 }]);
+        expect(types(out)).toEqual([
+            'sidewalk', 'driving', 'rail', 'driving', 'rail', 'driving', 'sidewalk'
+        ]);
+    });
+
+    it('puts a side-running pair on the side it runs', () => {
+        const out = insertRailStrips(boulevard(), [{ offset: -6.2, gauge: 1000 }, { offset: -8.9, gauge: 1000 }]);
+        const laid = types(out);
+        expect(laid.filter(type => type === 'rail').length).toBe(2);
+        // Right of every traffic lane, which is the side the offsets say.
+        expect(laid.lastIndexOf('driving')).toBeLessThan(laid.indexOf('rail'));
+    });
+
+    // The painter draws a street in the middle of the corridor it measured, not on the line OSM drew.
+    // A track placed without allowing for that is out by the whole shift — a lane and a half.
+    it('places against the line the section will be DRAWN on', () => {
+        const tracks = [{ offset: 2.4, gauge: 1000 }, { offset: -2.4, gauge: 1000 }];
+        const straight = types(insertRailStrips(boulevard(), tracks, { sectionShift: 0 }));
+        const shifted = types(insertRailStrips(boulevard(), tracks, { sectionShift: -5 }));
+        expect(shifted).not.toEqual(straight);
+        // Shifting the section to the right moves the tracks leftwards within it.
+        expect(shifted.indexOf('rail')).toBeLessThan(straight.indexOf('rail'));
+    });
+
+    it('leaves a dedicated tram line alone — it is already all rails', () => {
+        const track = { strips: [{ type: 'rail', width: 2.75 }, { type: 'rail', width: 2.75 }] };
+        expect(insertRailStrips(track, [{ offset: 0, gauge: 1000 }]).strips.length).toBe(2);
+    });
+
+    // A track's width comes from corridor-profile.js when it is loaded and from a constant here when
+    // it is not, so the two have to agree or a painted tram lane and an edited one differ by a lane.
+    it('uses the same width for a metre-gauge track as the cross-section editor does', () => {
+        const out = insertRailStrips(
+            { strips: [{ type: 'driving', width: 3 }, { type: 'driving', width: 3 }] },
+            [{ offset: 0, gauge: 1000 }]
+        );
+        const rail = out.strips.find(strip => strip.type === 'rail');
+        expect(rail.width).toBe(corridorStandardWidth('rail', 1000));
+        expect(rail.gauge).toBe(1000);
+    });
+});
+
+describe('a boulevard with a tram, end to end', () => {
+    const boulevardWays = () => [
+        road(0, { highway: 'secondary', lanes: '3', oneway: 'yes', 'sidewalk:both': 'separate' }),
+        tram(-8, { id: 'tram-a' }),
+        tram(-11, { id: 'tram-b' })
+    ];
+
+    it('gives the street its rails, and the section still sums to exactly the width asked for', () => {
+        const out = osmProfileForSegment({
+            runXY: tramRun(), ways: boulevardWays(), availableWidth: 30,
+            profileFromTags: corridorProfileFromOsmTags
+        });
+        expect(out).toBeTruthy();
+        expect(out.tracks, 'the two tramways are one track each').toBe(2);
+        expect(types(out.profile).filter(type => type === 'rail').length).toBe(2);
+        expect(corridorProfileWidth(out.profile)).toBeCloseTo(out.width, 3);
+        expect(out.notes.some(note => note.startsWith('tram:'))).toBe(true);
+    });
+
+    // The rails are part of the street's width, not a decoration over it: leave them out and the
+    // metres they occupy are handed to the traffic instead.
+    it('counts the rails as part of the street rather than widening the traffic lanes', () => {
+        const withTram = osmProfileForSegment({
+            runXY: tramRun(), ways: boulevardWays(), availableWidth: 30,
+            profileFromTags: corridorProfileFromOsmTags, options: { preferNominal: true }
+        });
+        const without = osmProfileForSegment({
+            runXY: tramRun(), ways: [boulevardWays()[0]], availableWidth: 30,
+            profileFromTags: corridorProfileFromOsmTags, options: { preferNominal: true }
+        });
+        expect(withTram.width).toBeGreaterThan(without.width);
+        expect(withTram.width - without.width).toBeCloseTo(2 * corridorStandardWidth('rail', 1000), 1);
+    });
+
+    it('says so when the tags claim embedded rails no tramway can be found for', () => {
+        const out = osmProfileForSegment({
+            runXY: tramRun(),
+            ways: [road(0, { highway: 'secondary', lanes: '2', 'embedded_rails': 'tram' })],
+            availableWidth: 20,
+            profileFromTags: corridorProfileFromOsmTags
+        });
+        expect(out.tracks).toBe(0);
+        expect(out.notes.some(note => note.includes('no tramway runs along this'))).toBe(true);
+    });
 });
 
 describe('a pavement is measured against the room on its own side', () => {

@@ -417,3 +417,75 @@ describe('a truncated fetch is not the same as OSM having nothing', () => {
         expect(record.reason).toContain('truncated');
     });
 });
+
+// The layer refuses to draw anything wider than a street, because past that the rays found a plaza or
+// a junction mouth rather than two kerbs. A tram reservation is neither: it was read off OSM's own
+// geometry, and it is genuinely part of the street — so it must not be what pushes a boulevard over.
+describe('a boulevard is not disqualified by the tram down it', () => {
+    const run = [[0, 0], [0, 240]];
+    // 40 m of road parcel, wide enough that the section is capped by what OSM says and not by the kerbs.
+    const ring = [[-20, -20], [20, -20], [20, 260], [-20, 260], [-20, -20]];
+    const parcel = { id: 'road-1', rings: [ring] };
+    const way = (properties, offset = 0) => ({
+        pointsXY: [[offset, 0], [offset, 240]],
+        properties
+    });
+    const boulevard = way({
+        osm_id: '1', highway_type: 'primary', name: 'Savska cesta',
+        // 29.5 m of road — under the cap on its own, over it once the two tracks are added.
+        tags: { highway: 'primary', lanes: '5', 'sidewalk:both': 'yes', 'sidewalk:both:width': '6' }
+    });
+    const trams = [
+        way({ osm_id: '2', highway_type: null, railway_type: 'tram', tags: { railway: 'tram', gauge: '1000' } }, 2.5),
+        way({ osm_id: '3', highway_type: null, railway_type: 'tram', tags: { railway: 'tram', gauge: '1000' } }, -2.5)
+    ];
+    const context = (ways) => ({
+        ways, segments: [run],
+        buildings: [], buildingBoxes: [],
+        otherRings: [], otherBoxes: [],
+        roadLandRings: [ring], roadLandBoxes: [paint.boxOf([ring])],
+        corridors: [], adopted: new Set(), truncated: false,
+        unproject: (x, y) => [y / 1000, x / 1000]
+    });
+
+    beforeEach(() => {
+        globalThis.RoadSegmentation = segmentation;
+        globalThis.OsmProfile = translator;
+        globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 1000, lat * 1000];
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
+        globalThis.corridorStripRingPlanar = profiles.corridorStripRingPlanar;
+        globalThis.corridorStandardWidth = profiles.corridorStandardWidth;
+        globalThis.buildCorridorStrips = profiles.buildCorridorStrips;
+        globalThis.corridorStripSurface = profiles.corridorStripSurface;
+        globalThis.offsetPolylinePlanar = profiles.offsetPolylinePlanar;
+    });
+    afterEach(() => {
+        ['RoadSegmentation', 'OsmProfile', 'wgs84ToHTRS96', 'htrs96ToWGS84', 'corridorProfileFromOsmTags',
+            'corridorStripRingPlanar', 'corridorStandardWidth', 'buildCorridorStrips',
+            'corridorStripSurface', 'offsetPolylinePlanar'].forEach(key => { delete globalThis[key]; });
+    });
+
+    const verdict = (ways) => paintSegment(
+        { key: 'k', points: run, box: paint.boxOf([run]), parcels: [parcel], parcel, street: { id: null, name: 'Savska cesta' } },
+        context(ways)
+    );
+
+    it('paints one wider than the cap, because the extra width is rails', () => {
+        const record = verdict([boulevard, ...trams]);
+        expect(record.state, record.reason).toBe('painted');
+        expect(record.width, 'the test is pointless unless it really is over the cap')
+            .toBeGreaterThan(paint.PAINT_MAX_WIDTH);
+        expect(record.lanes.some(lane => lane.type === 'rail')).toBe(true);
+    });
+
+    it('still refuses one that is simply too wide to be a street', () => {
+        const plaza = way({
+            osm_id: '9', highway_type: 'primary', name: 'Not a street',
+            tags: { highway: 'primary', lanes: '10', 'sidewalk:both': 'yes', 'sidewalk:both:width': '6' }
+        });
+        const record = verdict([plaza]);
+        expect(record.state).toBe('skipped');
+        expect(record.reason).toContain("is not a street's width");
+    });
+});
