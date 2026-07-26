@@ -1690,6 +1690,9 @@ function corridorEditorRender() {
     // the cross-section, which is edited on the other tab.
     corridorEditorRenderLimitRow();
     corridorEditorRenderEdgeFillPreview();
+    // The border encloses the edge fill, so it is rebuilt whenever the fill is: widening a pavement
+    // must move the line that says how far this road reaches.
+    corridorEditorShowFocus();
 
     if (corridorEditorState.activeTab === 'corridor' && corridorEditorState.mode === 'proposal') {
         corridorEditorRenderCorridorTab(body);
@@ -2219,6 +2222,9 @@ function corridorEditorOpenOverlay() {
             state.originalProfile = JSON.parse(JSON.stringify(state.profile));
             state.baselineBuildingHitIds = null;
             state.clearanceCache = null; // the scoped extent changed with the scope
+            // The focus glow marks the scoped extent, so it follows a change of scope: switching from
+            // one segment to the whole network must show which road that now is.
+            corridorEditorShowFocus();
             state.dirty = false;
             state.notice = null;
             if (typeof setCorridorProfilePreview === 'function') {
@@ -2564,8 +2570,159 @@ const CORRIDOR_EDITOR_LOCKED_BUTTONS = [
     'mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-walk-toggle', 'mode-ai-toggle'
 ];
 
+// A BORDER around the road being edited. (Distinct from corridorEditorHaloLayer above, which is the
+// clearance halo — this one says WHICH road, that one says how much room it has.)
+//
+// Every existing street is painted now, in the same colours and by the same renderers, so the road
+// under the editor no longer stands out from its neighbours simply by being drawn.
+//
+// It is an OUTLINE, in a pane of its own above the corridor strips. The first attempt was a soft glow
+// in `shadowPane`, which is z-index 500 — beneath the parcel fills, so it was invisible. An outline
+// also leaves the cross-section itself completely unobscured, which a wash over the top would not.
+const CORRIDOR_EDITOR_FOCUS_PANE = 'corridorEditorFocusPane';
+let corridorEditorFocusLayer = null;
+
+function corridorEditorFocusPane() {
+    if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+    let pane = map.getPane(CORRIDOR_EDITOR_FOCUS_PANE);
+    if (!pane && typeof map.createPane === 'function') {
+        pane = map.createPane(CORRIDOR_EDITOR_FOCUS_PANE);
+        // Above the corridor strips (630) and the impact tour (650), below the node handles (660):
+        // it must never cover the handles you drag.
+        pane.style.zIndex = 655;
+        pane.style.pointerEvents = 'none';
+    }
+    return pane;
+}
+
+// Every polygon the edited road is DRAWN as: its corridor footprint, plus the pavement that fills
+// out to the plot line beside it (the edge fill). The border goes round the outside of the lot, or it
+// says "this road" while cutting through the very pavement the panel just widened.
+function corridorEditorFocusPolygons() {
+    const out = [];
+    const state = corridorEditorState;
+    const width = (typeof corridorProfileWidth === 'function' && state) ? corridorProfileWidth(state.profile) : 0;
+    corridorEditorScopedSegments().forEach(segment => {
+        if (!Array.isArray(segment) || segment.length < 2) return;
+        const ring = (typeof calculateRoadPolygon === 'function' && width > 0)
+            ? calculateRoadPolygon(segment, width)
+            : null;
+        if (ring && ring.length >= 3) out.push(ring.map(point => [point.lng, point.lat]));
+    });
+    try {
+        (corridorEditorEdgeFillRegions() || []).forEach(entry => {
+            const geometry = entry?.geojson?.geometry || entry?.geojson;
+            if (geometry?.type === 'Polygon') out.push(geometry.coordinates[0]);
+            else if (geometry?.type === 'MultiPolygon') geometry.coordinates.forEach(part => out.push(part[0]));
+        });
+    } catch (error) {
+        console.warn('[corridorEditor] could not read the edge fill for the border', error);
+    }
+    return out.filter(ring => Array.isArray(ring) && ring.length >= 4);
+}
+
+// Dissolve them, so the border is one line round the outside rather than a seam between every piece.
+function corridorEditorFocusOutline(rings) {
+    if (!rings.length) return [];
+    if (rings.length === 1) return rings;
+    try {
+        const turf = window.turf;
+        if (!turf?.union || !turf?.featureCollection || !turf?.polygon) return rings;
+        const closed = ring => {
+            const out = ring.map(([x, y]) => [x, y]);
+            const [ax, ay] = out[0];
+            const [bx, by] = out[out.length - 1];
+            if (ax !== bx || ay !== by) out.push([ax, ay]);
+            return out;
+        };
+        const polygons = [];
+        rings.forEach(ring => { try { polygons.push(turf.polygon([closed(ring)])); } catch (_) { } });
+        if (polygons.length < 2) return rings;
+        const merged = turf.union(turf.featureCollection(polygons));
+        const geometry = merged?.geometry;
+        if (!geometry) return rings;
+        const parts = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        const dissolved = parts.flatMap(part => part).filter(ring => Array.isArray(ring) && ring.length >= 4);
+        return dissolved.length ? dissolved : rings;
+    } catch (error) {
+        console.warn('[corridorEditor] could not dissolve the border', error);
+        return rings;
+    }
+}
+
+function corridorEditorShowFocus() {
+    corridorEditorHideFocus();
+    try {
+        if (typeof map === 'undefined' || !map || typeof L === 'undefined') return;
+        // Cached on what the border actually depends on. A render fires on every slider tick, and
+        // dissolving the outline is a boolean op — not something to run per frame when the only thing
+        // that changed was which tab is showing.
+        const state = corridorEditorState;
+        const key = state ? [state.scope, state.segmentId || '', state.clearanceMode,
+            state.geometryVersion || 0, JSON.stringify(state.profile)].join('|') : '';
+        let outline;
+        if (state && state.focusCache && state.focusCache.key === key) {
+            outline = state.focusCache.outline;
+        } else {
+            outline = corridorEditorFocusOutline(corridorEditorFocusPolygons());
+            if (state) state.focusCache = { key, outline };
+        }
+        if (!outline.length) return;
+        corridorEditorFocusPane();
+        corridorEditorFocusLayer = L.layerGroup();
+        outline.forEach(ring => L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
+            pane: CORRIDOR_EDITOR_FOCUS_PANE, color: '#1a73e8', weight: 2.5, opacity: 0.95,
+            dashArray: '7 5', fill: false, interactive: false, className: 'corridor-editor-focus'
+        }).addTo(corridorEditorFocusLayer));
+        corridorEditorFocusLayer.addTo(map);
+    } catch (error) {
+        console.warn('[corridorEditor] could not draw the editing border', error);
+        corridorEditorFocusLayer = null;
+    }
+}
+
+function corridorEditorHideFocus() {
+    try {
+        if (corridorEditorFocusLayer && typeof map !== 'undefined' && map?.removeLayer) {
+            map.removeLayer(corridorEditorFocusLayer);
+        }
+    } catch (_) { }
+    corridorEditorFocusLayer = null;
+}
+
+// The sidebar and the cross-section panel dock on opposite edges, but between them they leave very
+// little map — and the road being edited has to be visible for the edits to mean anything. So opening
+// the editor collapses the sidebar, and closing it leaves the sidebar as it found it only if the
+// editor was what closed it (a sidebar the user had already collapsed stays collapsed).
+let corridorEditorReopenSidebar = false;
+
+function corridorEditorCollapseSidebar(collapse) {
+    try {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar || typeof toggleSidebar !== 'function') return;
+        const collapsed = sidebar.classList.contains('collapsed');
+        if (collapse) {
+            corridorEditorReopenSidebar = !collapsed;
+            if (!collapsed) {
+                toggleSidebar();
+                // toggleSidebar resizes the map 300 ms later, once its transition has run, so the
+                // fit done on the way in used the OLD viewport. Fit again on the far side of that,
+                // or the road lands off-centre in the space the sidebar just gave up.
+                setTimeout(() => { if (corridorEditorState) corridorEditorFocusMap(); }, 360);
+            }
+        } else if (corridorEditorReopenSidebar) {
+            corridorEditorReopenSidebar = false;
+            if (collapsed) toggleSidebar();
+        }
+    } catch (error) {
+        console.warn('[corridorEditor] could not collapse the sidebar', error);
+    }
+}
+
 function corridorEditorLockMap(locked) {
     document.body.classList.toggle('corridor-editor-open', locked);
+    corridorEditorCollapseSidebar(locked);
+    if (locked) corridorEditorShowFocus(); else corridorEditorHideFocus();
 
     const pane = (typeof map !== 'undefined' && map && typeof map.getPane === 'function') ? map.getPane('mapPane') : null;
     if (pane) {
@@ -2599,6 +2756,7 @@ if (typeof window !== 'undefined') {
     window.openRoadDrawingCrossSectionEditor = openRoadDrawingCrossSectionEditor;
     window.proposalHasEditableCorridor = proposalHasEditableCorridor;
     window.isCorridorEditorOpen = isCorridorEditorOpen;
+    window.corridorEditorShowFocus = corridorEditorShowFocus;
 }
 
 // Node-side exports for unit tests (backend/test); the browser loads this as a classic script.

@@ -82,3 +82,23 @@
     line-height: 1.35;
     pointer-events: none;
 }
+
+/* While a cross-section is being edited, the streets around it step back a little. The dashed border
+   is what says WHICH road is being edited, so this only has to take the edge off its neighbours —
+   an earlier 0.22 made newly painted streets look as though they had not drawn at all, which is
+   worse than the problem it was solving. The point of keeping the map live is examining overlaps and
+   cuts into buildings, and that needs the surroundings visible. */
+body.corridor-editor-open .leaflet-osmLanePaintPane-pane {
+    opacity: 0.55;
+}
+
+/* The road under the cross-section editor, outlined on its own kerb lines. A dashed border rather
+   than a wash, so it says WHICH road while leaving the cross-section the panel exists to edit
+   completely unobscured. The marching dashes separate it from every other line on the map. */
+.corridor-editor-focus {
+    animation: corridor-editor-focus-march 1.1s linear infinite;
+}
+
+@keyframes corridor-editor-focus-march {
+    to { stroke-dashoffset: -24; }
+}

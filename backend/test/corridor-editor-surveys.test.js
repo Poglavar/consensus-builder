@@ -124,6 +124,61 @@ describe('the way back to OpenStreetMap', () => {
     });
 });
 
+// Every existing street is painted now, in the same colours and by the same renderers, so the road
+// under the editor no longer stands out from its neighbours simply by being drawn.
+describe('showing which road is being edited', () => {
+    const css = readFileSync(new URL('../../frontend/css/corridor-render.css', import.meta.url), 'utf8');
+    const polygonsSource = () => editorSource.slice(
+        editorSource.indexOf('function corridorEditorFocusPolygons'),
+        editorSource.indexOf('function corridorEditorFocusOutline')
+    );
+
+    it('fades the surrounding streets while the panel is docked', () => {
+        expect(css.includes('body.corridor-editor-open .leaflet-osmLanePaintPane-pane')).toBe(true);
+    });
+
+    it('marks the edited road, and follows a change of scope', () => {
+        const focus = editorSource.slice(editorSource.indexOf('function corridorEditorShowFocus'));
+        // Drawn from the SCOPED segments: editing one segment of a network must mark that segment.
+        expect(polygonsSource().includes('corridorEditorScopedSegments()')).toBe(true);
+        // In a pane ABOVE the strips: the first version used shadowPane (z-index 500) and was
+        // invisible under the parcel fills.
+        expect(focus.includes('CORRIDOR_EDITOR_FOCUS_PANE')).toBe(true);
+        expect(editorSource.includes('pane.style.zIndex = 655;')).toBe(true);
+        // An outline, not a wash — the cross-section it is drawn around must stay legible.
+        expect(focus.includes('fill: false')).toBe(true);
+        // Round the WHOLE road as drawn: the corridor and the pavement filled out beside it,
+        // dissolved into one line rather than a seam between every piece.
+        expect(polygonsSource().includes('calculateRoadPolygon')).toBe(true);
+        expect(polygonsSource().includes('corridorEditorEdgeFillRegions()')).toBe(true);
+        expect(editorSource.includes('function corridorEditorFocusOutline')).toBe(true);
+        expect(editorSource.slice(editorSource.indexOf('function corridorEditorFocusOutline'))
+            .includes('turf.union')).toBe(true);
+        // ...and rebuilt whenever the fill is, so widening a pavement moves it: the render draws the
+        // fill and then the border, in that order.
+        const fillCall = editorSource.indexOf('corridorEditorRenderEdgeFillPreview();\n');
+        expect(fillCall).toBeGreaterThan(-1);
+        expect(editorSource.slice(fillCall, fillCall + 400).includes('corridorEditorShowFocus()')).toBe(true);
+    });
+});
+
+// The sidebar and the cross-section panel dock on opposite edges; between them they leave very little
+// map, and the road being edited has to be visible for the edits to mean anything.
+describe('the sidebar while a cross-section is open', () => {
+    it('collapses on the way in and is restored only if the editor collapsed it', () => {
+        const collapse = editorSource.slice(
+            editorSource.indexOf('function corridorEditorCollapseSidebar'),
+            editorSource.indexOf('function corridorEditorLockMap')
+        );
+        expect(collapse.length).toBeGreaterThan(0);
+        // Remembers whether it was open, so a sidebar the user had already collapsed stays collapsed.
+        expect(collapse.includes('corridorEditorReopenSidebar = !collapsed')).toBe(true);
+        expect(collapse.includes('corridorEditorReopenSidebar = false')).toBe(true);
+        // Wired to the same lock that opens and closes the panel.
+        expect(editorSource.includes('corridorEditorCollapseSidebar(locked);')).toBe(true);
+    });
+});
+
 describe('the B key', () => {
     it('still opens the picker on the map', () => {
         expect(drawingSource.includes('toggleBuildingReferenceLayers()')).toBe(true);
