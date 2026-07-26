@@ -730,6 +730,12 @@
                             <span data-i18n-key="sidebar.roads.centerlinesToggle">Existing road centrelines</span>
                         </label>
                     </div>
+                    <div class="checkbox-group">
+                        <label data-i18n-key="sidebar.roads.lanesTooltip" data-i18n-attr="title">
+                            <input type="checkbox" id="showOsmLanePaint" onchange="toggleOsmLanePaint()">
+                            <span data-i18n-key="sidebar.roads.lanesToggle">Existing street lanes</span>
+                        </label>
+                    </div>
                     <!-- Progress container for road detection -->
                     <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
                         <div class="progress-bar">
@@ -1515,6 +1521,9 @@
             'js/road-segmentation.js',
             'js/osm-profile.js',
             'js/system-road-adoption.js',
+            // After the adoption module: the lane paint reads its definesRoadSegments, and after
+            // corridor-profile.js, whose strip builder turns a reconstructed section into polygons.
+            'js/osm-lane-paint.js',
             'js/corridor-editor.js',
             'js/corridor-tunnel.js',
             'js/road-impact-tour.js',

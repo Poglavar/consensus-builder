@@ -56,3 +56,11 @@
     fill: url(#corridor-paving-pattern);
     fill-opacity: 0.95;
 }
+
+/* The existing-streets lane paint. Its lanes and markings are drawn by the renderers above, at the
+   opacities a PROPOSED road uses, so the whole pane is dropped back one step: an existing street is
+   the ground a proposal is drawn on, and must never be the brightest thing on the map. Leaflet names
+   the pane after the string passed to createPane (osm-lane-paint.js). */
+.leaflet-osmLanePaintPane-pane {
+    opacity: 0.8;
+}

@@ -2667,6 +2667,10 @@ const ProposalManager = {
         // has to follow. This is the one place both unapply paths meet — the direct one and the one
         // that runs later, inside the descendants-confirmation modal's callback.
         try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+        // The existing-streets lane paint stops where a proposal starts, so a road applied, edited or
+        // unapplied moves that boundary — an edited cross-section must not stay hidden under the OSM
+        // reconstruction of what the street used to be.
+        try { if (typeof refreshOsmLanePaintForProposals === 'function') refreshOsmLanePaintForProposals(); } catch (_) { }
         try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
