@@ -14,6 +14,10 @@
 // its cross-section had been edited, which is worse than showing nothing. So a run already covered by
 // an applied road proposal is skipped, and the paint is dropped and rebuilt whenever proposals change.
 //
+// THE WAYS OUTLIVE THE PAINT. The paint is thrown away whenever a proposal changes, because where it
+// has to stop has moved — but the OSM ways it was built from cannot have changed, so they are cached
+// per fetched area and survive it. A repaint of ground already fetched costs nothing on the wire.
+//
 // THE ONE INDEX, NOT ONE PER PARCEL. system-road-adoption builds its segment index per clicked
 // parcel, refetching and re-segmenting that parcel's own bbox each time — fine for one click, hopeless
 // for a viewport: over Donji Grad the per-parcel fetches for 60 road parcels came to 5.8 MB where the
@@ -51,6 +55,15 @@
     // this the oldest is forgotten and its ground would be fetched again (the streets themselves stay
     // painted either way, since they are keyed by run).
     const PROCESSED_MEMORY = 40;
+    // How many viewports' worth of OSM ways to keep. Small — this is megabytes, and its job is to make
+    // a REPAINT of ground already fetched (which is what every proposal change causes) free, not to be
+    // a second cache of the city.
+    const WAY_CACHE_LIMIT = 6;
+    // How many segment verdicts to keep. A verdict is a cheap record and it is what the readout reads,
+    // but a SKIPPED segment has no layers of its own, so it is not covered by the layer cache below:
+    // without its own ceiling the register of everything ever looked at grows for as long as the map
+    // is panned.
+    const EXPLAINED_LIMIT = 3000;
 
     // The lanes are reference, not proposals: no outline, and translucent enough that the parcel and
     // basemap stay readable underneath. A proposed road is drawn opaque, which is what keeps the two
@@ -75,12 +88,31 @@
     // What was decided about every street looked at, painted or not — the map's own explanation of
     // itself, read by the hover readout. Runs are cheap records; the drawn layers live in `painted`.
     const explained = new Map();   // run key -> { name, reason, box, points, width, length }
+    // What `explained` holds, as a list — rebuilt only when it changes, because the readout asks for it
+    // on every pointer move and rebuilding it there allocated the whole register per mouse event.
+    let explainedList = null;
     let enabled = false;
     let refreshTimer = null;
-    let fetchedKey = '';           // the viewport whose ways have been pulled
     const processed = [];          // planar boxes whose streets have all been looked at
+    const wayCache = new Map();    // fetched bbox -> { ways, truncated }; outlives the paint
     let run = 0;                   // bumped to abandon a paint in flight
     let seenCounter = 0;
+
+    // The one place `explained` is written, so the list beside it cannot go stale.
+    function remember(key, record) {
+        explained.set(key, record);
+        explainedList = null;
+    }
+
+    function forget(key) {
+        explained.delete(key);
+        explainedList = null;
+    }
+
+    function explainedRecords() {
+        if (!explainedList) explainedList = [...explained.values()];
+        return explainedList;
+    }
 
     function map() { return global.map; }
 
@@ -117,13 +149,14 @@
         });
         painted.clear();
         explained.clear();
+        explainedList = null;
         processed.length = 0;
-        fetchedKey = '';
     }
 
     function clearLayer() {
         const m = map();
         dropCache();
+        wayCache.clear();
         if (root && m && typeof m.hasLayer === 'function' && m.hasLayer(root)) m.removeLayer(root);
         root = null;
     }
@@ -138,7 +171,14 @@
     // segmentation reads, the footways carry the evidence for Zagreb's separately mapped pavements, and
     // `rail=1` adds the tramways, which have no highway class and would otherwise be missing from every
     // boulevard that has one.
+    //
+    // Kept per area, and NOT thrown away with the paint. The paint is dropped whenever a proposal
+    // changes, because where it must stop has moved; the ways it was built from cannot have changed at
+    // all, and refetching a megabyte and a half of them to redraw the same streets is pure waste.
     async function fetchWays(bboxHTRS) {
+        const cached = wayCache.get(bboxHTRS || '');
+        if (cached) return cached;
+
         const base = (typeof global.getBackendBase === 'function' && global.getBackendBase()) || '';
         const url = `${base}/osm-road?rail=1${bboxHTRS ? `&bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
         const data = (typeof global.fetchJsonWithRetry === 'function')
@@ -168,6 +208,12 @@
         if (answer.truncated) {
             console.warn(`[osmLanePaint] /osm-road returned its maximum of ${answer.limit || 'N'} ways;`
                 + ' some streets here will be missing their section');
+        }
+        // A failed request is not an answer, and caching one would make the failure permanent: the
+        // cache outlives the forced refresh that used to be the way to retry.
+        if (data) {
+            wayCache.set(bboxHTRS || '', answer);
+            if (wayCache.size > WAY_CACHE_LIMIT) wayCache.delete(wayCache.keys().next().value);
         }
         return answer;
     }
@@ -763,12 +809,31 @@
     // Least-recently-in-view first; only entries currently off the map are eligible, so nothing that
     // is being looked at is ever dropped.
     function evict() {
-        if (painted.size <= CACHE_LIMIT) return;
-        [...painted.entries()]
-            .filter(([, entry]) => !root.hasLayer(entry.base))
-            .sort((a, b) => a[1].seen - b[1].seen)
-            .slice(0, painted.size - CACHE_LIMIT)
-            .forEach(([key]) => { painted.delete(key); explained.delete(key); });
+        if (painted.size > CACHE_LIMIT) {
+            [...painted.entries()]
+                .filter(([, entry]) => !root || !root.hasLayer(entry.base))
+                .sort((a, b) => a[1].seen - b[1].seen)
+                .slice(0, painted.size - CACHE_LIMIT)
+                .forEach(([key]) => { painted.delete(key); forget(key); });
+        }
+        // The verdicts of segments that were never painted are held by nothing else, so they need
+        // their own ceiling.
+        keysToForget([...explained.keys()], painted, EXPLAINED_LIMIT).forEach(forget);
+    }
+
+    // Pure: which verdicts to drop so a register of this size comes down to `limit` — oldest first
+    // (Map keeps insertion order), and never one whose street still has layers to be dropped with it.
+    // A register that is all still-painted streets is left alone rather than trimmed to a lie.
+    function keysToForget(keys, keep, limit) {
+        const over = keys.length - limit;
+        if (over <= 0) return [];
+        const out = [];
+        for (const key of keys) {
+            if (out.length >= over) break;
+            if (keep && typeof keep.has === 'function' && keep.has(key)) continue;
+            out.push(key);
+        }
+        return out;
     }
 
     // Pure: does `outer` wholly contain `inner`?
@@ -804,10 +869,14 @@
                 // painted as the map moves along it.
                 if (painted.has(segment.key) || explained.has(segment.key)) continue;
                 const result = paintSegment(segment, context);
-                explained.set(segment.key, result);
+                remember(segment.key, result);
                 const groups = buildSegmentGroups(result);
                 if (groups) { painted.set(segment.key, groups); drew = true; }
             }
+            // Always, not only when something was drawn: a slice of segments that all turned out
+            // unpaintable still adds a verdict apiece, and those are the ones with no layer to be
+            // evicted along with.
+            evict();
             if (drew) showInView();
             if (pending.length) schedule(slice);
         };
@@ -831,8 +900,13 @@
                     if (entry.detail) root.removeLayer(entry.detail);
                 });
             }
+            // ...and SAY so. A lane is thinner than a pixel down here, so the layer draws nothing —
+            // which from the outside is indistinguishable from a toggle that does not work.
+            showHint(i18nText('sidebar.roads.lanePaint.zoomIn',
+                'Zoom in to see the lanes of the existing streets'));
             return;
         }
+        clearHint();
         if (force) dropCache();
 
         const token = ++run;
@@ -861,7 +935,6 @@
             const grown = growBbox(key, FETCH_MARGIN);
             const { ways, truncated } = await fetchWays(grown || key);
             if (token !== run || !enabled) return;
-            fetchedKey = key;
             // Remember the ground this fetch covered, so panning back over it costs nothing.
             const grownBox = String(grown || key).split(',').map(Number);
             if (grownBox.length === 4 && grownBox.every(Number.isFinite)) {
@@ -942,7 +1015,10 @@
             m.off('click', onPointerClick);
         }
         if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
-        if (readout) readout.hidden = true;
+        // The readout belongs to the layer, so it goes with it rather than lingering hidden in the
+        // document for the rest of the session.
+        hinting = false;
+        if (readout) { readout.remove(); readout = null; }
         clearLayer();
     }
 
@@ -969,20 +1045,56 @@
         return best;
     }
 
+    // The app's translator, with the English as the fallback — the same shape every other module here
+    // uses, so a string is translated where a translation exists and readable where one does not.
+    function i18nText(key, fallback, params = {}) {
+        try {
+            if (global.i18n && typeof global.i18n.t === 'function') {
+                const translated = global.i18n.t(key, params);
+                if (translated && translated !== key) return translated;
+            }
+        } catch (_) { }
+        return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (
+            Object.prototype.hasOwnProperty.call(params, name) ? params[name] : match
+        ));
+    }
+
     // The one-line answer, ready to show: which street, which of its segments, and what became of it.
-    function describeSegment(record) {
+    //
+    // The FRAME is translated; the reason a segment was not painted is not. A reason names what the
+    // measurement did — "measured at only 3 stations", "no kerb line found on both sides" — and it is
+    // read by whoever is fixing this layer, in the one language this layer is written in. Translating
+    // it would give four wordings of a diagnostic and make a bug report harder to act on, not easier.
+    function describeSegment(record, translate = i18nText) {
         if (!record) return '';
-        const name = record.name || 'unnamed street';
-        const length = Number.isFinite(record.length) ? `${Math.round(record.length)} m segment` : 'segment';
-        if (record.state === 'adopted') return `${name} · ${length} · adopted as a road proposal`;
-        if (record.state === 'painted') {
-            const width = Number.isFinite(record.width) ? `${record.width.toFixed(1)} m wide` : 'painted';
-            return `${name} · ${length} · ${width}`;
+        const name = record.name || translate('sidebar.roads.lanePaint.unnamed', 'unnamed street');
+        const length = Number.isFinite(record.length) ? Math.round(record.length) : null;
+        const params = {
+            name,
+            length: length === null
+                ? translate('sidebar.roads.lanePaint.segment', 'segment')
+                : translate('sidebar.roads.lanePaint.segmentOf', '{{length}} m segment', { length })
+        };
+        if (record.state === 'adopted') {
+            return translate('sidebar.roads.lanePaint.adopted',
+                '{{name}} · {{length}} · adopted as a road proposal', params);
         }
-        return `${name} · ${length} · NOT painted: ${record.reason || 'no reason recorded'}`;
+        if (record.state === 'painted') {
+            return translate('sidebar.roads.lanePaint.painted', '{{name}} · {{length}} · {{width}}', {
+                ...params,
+                width: Number.isFinite(record.width)
+                    ? translate('sidebar.roads.lanePaint.wide', '{{width}} m wide', { width: record.width.toFixed(1) })
+                    : translate('sidebar.roads.lanePaint.paintedPlain', 'painted')
+            });
+        }
+        return translate('sidebar.roads.lanePaint.skipped', '{{name}} · {{length}} · NOT painted: {{reason}}', {
+            ...params,
+            reason: record.reason || 'no reason recorded'
+        });
     }
 
     let readout = null;
+    let hinting = false;
     function ensureReadout() {
         if (typeof document === 'undefined') return null;
         if (!readout) {
@@ -994,21 +1106,62 @@
         return readout;
     }
 
-    function onPointerMove(event) {
-        if (!enabled || !event?.latlng || typeof global.wgs84ToHTRS96 !== 'function') return;
+    // A message that stays put until it is taken down, as opposed to the hover readout, which follows
+    // the pointer. Used to answer the one question the layer could not previously answer: why ticking
+    // the box at a city-wide zoom appears to do nothing at all.
+    function showHint(text) {
         const box = ensureReadout();
         if (!box) return;
-        const xy = global.wgs84ToHTRS96(event.latlng.lat, event.latlng.lng);
-        const found = explainAt(xy, [...explained.values()]);
-        box.hidden = !found;
-        if (found) box.textContent = describeSegment(found);
+        hinting = !!text;
+        box.hidden = !text;
+        if (text) box.textContent = text;
     }
 
-    // Clicking copies the whole record to the console — the fastest way to hand one over.
+    function clearHint() {
+        if (!hinting) return;
+        hinting = false;
+        if (readout) readout.hidden = true;
+    }
+
+    function belowMinZoom() {
+        const zoom = map()?.getZoom?.();
+        return Number.isFinite(zoom) && zoom < MIN_ZOOM;
+    }
+
+    // One readout update per frame. The pointer fires far faster than that, and each update walks
+    // every verdict on the register.
+    let pointerFrame = null;
+    let pointerAt = null;
+    function onPointerMove(event) {
+        if (!enabled || !event?.latlng || typeof global.wgs84ToHTRS96 !== 'function') return;
+        if (hinting || belowMinZoom()) return;   // nothing is drawn, so there is nothing to point at
+        pointerAt = event.latlng;
+        if (pointerFrame !== null) return;
+        const draw = () => {
+            pointerFrame = null;
+            // The layer may have been switched off between the move and this frame, and ensureReadout
+            // would happily build the readout the switch-off had just taken away.
+            if (!enabled) return;
+            const box = ensureReadout();
+            if (!box || !pointerAt || hinting) return;
+            const xy = global.wgs84ToHTRS96(pointerAt.lat, pointerAt.lng);
+            const found = explainAt(xy, explainedRecords());
+            box.hidden = !found;
+            if (found) box.textContent = describeSegment(found);
+        };
+        pointerFrame = (typeof global.requestAnimationFrame === 'function')
+            ? global.requestAnimationFrame(draw)
+            : setTimeout(draw, 16);
+    }
+
+    // SHIFT-clicking copies the whole record to the console — the fastest way to hand one over. Behind
+    // a modifier because an ordinary click on the map is how a parcel is selected, and a layer that
+    // logs a paragraph every time somebody does that makes the console useless for anything else.
     function onPointerClick(event) {
         if (!enabled || !event?.latlng || typeof global.wgs84ToHTRS96 !== 'function') return;
+        if (!event.originalEvent?.shiftKey) return;
         const xy = global.wgs84ToHTRS96(event.latlng.lat, event.latlng.lng);
-        const found = explainAt(xy, [...explained.values()]);
+        const found = explainAt(xy, explainedRecords());
         if (!found) return;
         console.log('[osmLanePaint]', describeSegment(found), {
             street: found.streetId, name: found.name, state: found.state,
@@ -1043,6 +1196,9 @@
         growBbox, ringsNear, boxOf, ringsOf, boxesOverlap, contains, runIsUnderProposal,
         corridorFromSides, segmentsInView, segmentsInParcel, paintSegment, lanesForParcel,
         segmentKey, streetOf, segmentPolygon, dissolveRoadLand, explainAt, describeSegment,
+        keysToForget,
+        // What the layer is holding on to, so a leak shows up as a number rather than as a slow map.
+        sizes: () => ({ painted: painted.size, explained: explained.size, ways: wayCache.size }),
         // What the layer decided about every segment it has looked at, and the same grouped by
         // street — both for the console.
         segments: () => [...explained.values()],
@@ -1060,7 +1216,8 @@
                 skipped: street.segments.filter(s => s.state === 'skipped').length
             }));
         },
-        MIN_ZOOM, MARKING_DETAIL_ZOOM, CACHE_LIMIT, PAINT_MAX_WIDTH, MIN_PAINT_WIDTH
+        MIN_ZOOM, MARKING_DETAIL_ZOOM, CACHE_LIMIT, EXPLAINED_LIMIT, WAY_CACHE_LIMIT,
+        PAINT_MAX_WIDTH, MIN_PAINT_WIDTH
     };
     global.OsmLanePaint = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

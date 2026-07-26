@@ -2,7 +2,7 @@
 // code above it only schedules and the code below it only draws — so it is run here against the real
 // Gundulićeva geometry with stubbed collaborators, and what comes out is checked to be actual lane
 // polygons rather than an empty list nobody would notice.
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -12,7 +12,8 @@ const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const paint = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
 const {
-    growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel, paintSegment
+    growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel,
+    describeSegment, keysToForget, explainAt, paintSegment, EXPLAINED_LIMIT
 } = paint;
 const segmentation = require(path.join(here, '../../frontend/js/road-segmentation.js'));
 const translator = require(path.join(here, '../../frontend/js/osm-profile.js'));
@@ -370,6 +371,62 @@ describe('painting one road parcel', () => {
     });
 });
 
+// ---------------------------------------------------------------------------
+// What the layer SAYS about itself, and what it holds on to while saying it.
+//
+// A layer that quietly declines to draw a street is impossible to argue with, so every segment it
+// looks at leaves a verdict and pointing at one reads it out. Below: that the verdict is honest (a
+// truncated fetch is not the same as OSM having nothing), translated, bounded, and that it does not
+// shout into the console every time somebody clicks a parcel.
+// ---------------------------------------------------------------------------
+
+describe('what a segment\'s verdict says', () => {
+    const segment = { name: 'Gundulićeva ulica', length: 205.4, points: [[0, 0], [0, 205]] };
+
+    it('reads out a painted street with its width', () => {
+        const text = describeSegment({ ...segment, state: 'painted', width: 12.25 });
+        expect(text).toBe('Gundulićeva ulica · 205 m segment · 12.3 m wide');
+    });
+
+    it('says outright when a street was not painted, and why', () => {
+        const text = describeSegment({ ...segment, state: 'skipped', reason: 'measured at only 3 stations' });
+        expect(text).toContain('NOT painted');
+        expect(text).toContain('measured at only 3 stations');
+    });
+
+    it('names a street that OSM does not name', () => {
+        expect(describeSegment({ ...segment, name: null, state: 'painted', width: 9 }))
+            .toContain('unnamed street');
+    });
+
+    // The frame is the app's; the reason is the diagnostic and stays in the one language this layer
+    // is written in, so a bug report reads the same whoever files it.
+    it('goes through the app\'s translator, keeping the reason verbatim', () => {
+        const seen = [];
+        const translate = (key, fallback, params) => {
+            seen.push(key);
+            if (key === 'sidebar.roads.lanePaint.skipped') return `NEMA: ${params.reason}`;
+            return fallback;
+        };
+        const text = describeSegment(
+            { ...segment, state: 'skipped', reason: 'no kerb line found on both sides' },
+            translate
+        );
+        expect(text).toBe('NEMA: no kerb line found on both sides');
+        expect(seen).toContain('sidebar.roads.lanePaint.skipped');
+    });
+
+    it('is translated everywhere the app is', () => {
+        const keys = ['unnamed', 'segment', 'segmentOf', 'adopted', 'painted', 'wide', 'paintedPlain',
+            'skipped', 'zoomIn'];
+        ['en', 'hr', 'sr', 'es'].forEach(lang => {
+            const strings = JSON.parse(readFileSync(path.join(here, `../../frontend/i18n/${lang}.json`), 'utf8'));
+            const lanePaint = strings.sidebar.roads.lanePaint;
+            keys.forEach(key => expect(typeof lanePaint[key], `${lang}.${key}`).toBe('string'));
+        });
+    });
+});
+
 // A way that fell off the end of a truncated answer is indistinguishable from a way OSM does not
 // have — so the layer must not report the first as the second and send somebody to fix tagging that
 // was fine all along.
@@ -487,5 +544,256 @@ describe('a boulevard is not disqualified by the tram down it', () => {
         const record = verdict([plaza]);
         expect(record.state).toBe('skipped');
         expect(record.reason).toContain("is not a street's width");
+    });
+});
+
+describe('the register of verdicts is bounded', () => {
+    it('has a ceiling of its own, because a skipped segment has no layers to be evicted with', () => {
+        expect(EXPLAINED_LIMIT).toBeGreaterThan(0);
+    });
+
+    it('drops the oldest first, and only as many as it must', () => {
+        const keys = ['a', 'b', 'c', 'd', 'e'];
+        expect(keysToForget(keys, new Set(), 3)).toEqual(['a', 'b']);
+        expect(keysToForget(keys, new Set(), 5)).toEqual([]);
+        expect(keysToForget(keys, new Set(), 9)).toEqual([]);
+    });
+
+    it('never drops a street that is still drawn', () => {
+        const keys = ['a', 'b', 'c', 'd', 'e'];
+        expect(keysToForget(keys, new Set(['a', 'b']), 3)).toEqual(['c', 'd']);
+        // Every verdict still has a street on the map: nothing may be dropped, over the limit or not.
+        expect(keysToForget(keys, new Set(keys), 2)).toEqual([]);
+    });
+});
+
+describe('finding the segment under the pointer', () => {
+    const records = [
+        { key: 'near', points: [[0, 0], [0, 100]], box: [0, 0, 0, 100], name: 'Near', state: 'painted', width: 10 },
+        { key: 'far', points: [[500, 0], [500, 100]], box: [500, 0, 500, 100], name: 'Far', state: 'painted', width: 10 }
+    ];
+
+    it('picks the nearest street that was looked at', () => {
+        expect(explainAt([3, 50], records).key).toBe('near');
+        expect(explainAt([497, 50], records).key).toBe('far');
+    });
+
+    it('finds nothing where nothing was looked at', () => {
+        expect(explainAt([250, 50], records)).toBe(null);
+        expect(explainAt([3, 50], records, 1)).toBe(null);
+    });
+});
+
+// Below its minimum zoom a lane is thinner than a pixel, so the layer draws nothing — which from the
+// outside is a toggle that does not work. It has to say which of the two it is.
+describe('being switched on at a zoom it cannot draw at', () => {
+    let readouts;
+
+    const settle = async (rounds = 12) => {
+        for (let i = 0; i < rounds; i += 1) await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    beforeEach(() => {
+        readouts = [];
+        globalThis.document = {
+            createElement() {
+                const node = { className: '', hidden: true, textContent: '', remove() { node.removed = true; } };
+                readouts.push(node);
+                return node;
+            },
+            body: { appendChild() { } },
+            getElementById: () => null      // no sidebar checkbox: the toggle just flips
+        };
+        const listeners = new Map();
+        globalThis.map = {
+            zoom: 12,
+            getZoom() { return this.zoom; },
+            getBounds: () => ({ intersects: () => true }),
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            hasLayer: () => false,
+            addLayer() { return this; },
+            removeLayer() { return this; },
+            on(events, fn) { String(events).split(' ').forEach(e => listeners.set(e, fn)); return this; },
+            off(events) { String(events).split(' ').forEach(e => listeners.delete(e)); return this; },
+            fire(event) { const fn = listeners.get(event); if (fn) fn(); }
+        };
+        globalThis.L = {
+            layerGroup: () => ({
+                addLayer() { return this; }, removeLayer() { return this; },
+                hasLayer() { return false; }, clearLayers() { return this; },
+                addTo(t) { t.addLayer(this); return this; }
+            })
+        };
+        globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 1000, lat * 1000];
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.RoadSegmentation = segmentation;
+        globalThis.getBboxFromBounds = () => '0,0,1000,1000';
+        globalThis.getBackendBase = () => '';
+        globalThis.parcelLayer = { eachLayer() { } };
+        globalThis.fetch = async () => ({ ok: true, json: async () => ({ features: [] }) });
+
+        delete require.cache[require.resolve('../../frontend/js/osm-lane-paint.js')];
+        require('../../frontend/js/osm-lane-paint.js');
+    });
+
+    afterEach(() => {
+        ['document', 'map', 'L', 'wgs84ToHTRS96', 'htrs96ToWGS84', 'RoadSegmentation',
+            'getBboxFromBounds', 'getBackendBase', 'parcelLayer', 'fetch', 'toggleOsmLanePaint',
+            'refreshOsmLanePaint', 'refreshOsmLanePaintForProposals', 'OsmLanePaint']
+            .forEach(key => { delete globalThis[key]; });
+    });
+
+    it('says to zoom in rather than doing nothing visible', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        expect(readouts.length, 'no readout was put on the page at all').toBe(1);
+        expect(readouts[0].hidden).toBe(false);
+        expect(readouts[0].textContent.toLowerCase()).toContain('zoom in');
+    });
+
+    it('takes the message down once it can draw', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        expect(readouts[0].hidden).toBe(false);
+
+        globalThis.map.zoom = 18;
+        globalThis.map.fire('zoomend');
+        await new Promise(resolve => setTimeout(resolve, 520));
+        await settle();
+
+        expect(readouts[0].hidden, 'the hint outlived the zoom that caused it').toBe(true);
+    });
+
+    it('goes away with the layer', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+        globalThis.toggleOsmLanePaint();
+        expect(readouts[0].removed).toBe(true);
+    });
+});
+
+// An ordinary click on the map is how a parcel is selected. A layer that logs a paragraph every time
+// somebody does that makes the console useless for everything else, so the dump is behind SHIFT.
+//
+// Driven against a really painted street, so "nothing was logged" means the gate held rather than
+// that there was nothing to log — which is what the same test over an empty map would have proved.
+describe('the console dump is behind a modifier', () => {
+    let log;
+    let clickHandler;
+    let fetched;
+
+    // A 200 m residential street with a 16 m road parcel around it: enough for one painted segment.
+    const WAY = [[0, 0], [0, 200]];
+    const toLngLat = ([x, y]) => [x / 1000, y / 1000];
+    const parcelRing = [[-8, -20], [8, -20], [8, 220], [-8, 220], [-8, -20]].map(toLngLat);
+
+    const settle = async (rounds = 12) => {
+        for (let i = 0; i < rounds; i += 1) await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    beforeEach(async () => {
+        fetched = [];
+        log = vi.spyOn(console, 'log').mockImplementation(() => { });
+        globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 1000, lat * 1000];
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.RoadSegmentation = segmentation;
+        globalThis.OsmProfile = translator;
+        globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
+        globalThis.corridorStripRingPlanar = profiles.corridorStripRingPlanar;
+        globalThis.buildCorridorStrips = profiles.buildCorridorStrips;
+        globalThis.corridorStripSurface = profiles.corridorStripSurface;
+
+        const group = () => {
+            const members = new Set();
+            return {
+                addLayer(l) { members.add(l); return this; },
+                removeLayer(l) { members.delete(l); return this; },
+                hasLayer(l) { return members.has(l); },
+                clearLayers() { members.clear(); return this; },
+                addTo(t) { t.addLayer(this); return this; }
+            };
+        };
+        globalThis.L = {
+            layerGroup: group,
+            polygon: (...args) => ({ args, addTo(g) { g.addLayer(this); return this; } }),
+            polyline: (...args) => ({ args, addTo(g) { g.addLayer(this); return this; } })
+        };
+        globalThis.map = {
+            getZoom: () => 18,
+            getBounds: () => ({ intersects: () => true }),
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            hasLayer: () => true,
+            addLayer() { return this; },
+            removeLayer() { return this; },
+            on(events, fn) { if (String(events).includes('click')) clickHandler = fn; return this; },
+            off() { return this; }
+        };
+        globalThis.getBboxFromBounds = () => '-100,-100,1100,1100';
+        globalThis.getBackendBase = () => '';
+        globalThis.parcelLayer = {
+            eachLayer(fn) {
+                fn({
+                    feature: {
+                        properties: { parcelId: 'road-1', isRoad: true },
+                        geometry: { type: 'Polygon', coordinates: [parcelRing] }
+                    },
+                    getBounds: () => ({})
+                });
+            }
+        };
+        globalThis.fetch = async (url) => {
+            fetched.push(String(url));
+            return {
+                ok: true,
+                json: async () => ({
+                    features: [{
+                        properties: {
+                            osm_id: '1', highway_type: 'residential', name: 'Testna ulica',
+                            tags: { highway: 'residential', lanes: '2' }
+                        },
+                        geometry: { type: 'LineString', coordinates: WAY.map(toLngLat) }
+                    }]
+                })
+            };
+        };
+
+        delete require.cache[require.resolve('../../frontend/js/osm-lane-paint.js')];
+        require('../../frontend/js/osm-lane-paint.js');
+        globalThis.toggleOsmLanePaint();
+        await settle();
+    });
+
+    afterEach(() => {
+        log.mockRestore();
+        ['wgs84ToHTRS96', 'htrs96ToWGS84', 'RoadSegmentation', 'OsmProfile', 'corridorProfileFromOsmTags',
+            'corridorStripRingPlanar', 'buildCorridorStrips', 'corridorStripSurface', 'L', 'map',
+            'getBboxFromBounds', 'getBackendBase', 'parcelLayer', 'fetch', 'toggleOsmLanePaint',
+            'refreshOsmLanePaint', 'refreshOsmLanePaintForProposals', 'OsmLanePaint']
+            .forEach(key => { delete globalThis[key]; });
+    });
+
+    // If this is empty the two tests below prove nothing, so it is asserted first.
+    it('has actually looked at the street', () => {
+        expect(globalThis.OsmLanePaint.segments().length).toBeGreaterThan(0);
+        expect(typeof clickHandler).toBe('function');
+    });
+
+    it('says nothing on a plain click over a street it knows all about', () => {
+        clickHandler({ latlng: { lat: 0.1, lng: 0 }, originalEvent: { shiftKey: false } });
+        expect(log).not.toHaveBeenCalled();
+    });
+
+    it('dumps the record on a shift-click', () => {
+        clickHandler({ latlng: { lat: 0.1, lng: 0 }, originalEvent: { shiftKey: true } });
+        expect(log).toHaveBeenCalled();
+        expect(String(log.mock.calls[0][0])).toContain('[osmLanePaint]');
+    });
+
+    // The tramways carry no highway class, so they come only when they are asked for by name.
+    it('asks the endpoint for the tramways too', () => {
+        expect(fetched.length).toBeGreaterThan(0);
+        expect(fetched.every(url => url.includes('rail=1'))).toBe(true);
     });
 });

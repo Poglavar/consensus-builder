@@ -516,7 +516,18 @@
             "drawOsm": "Nacrtaj ceste iz OSM-a",
             "drawOsmTooltip": "Nacrtaj OpenStreetMap ceste kao linije",
             "existingTitle": "Postojeće ceste",
-            "showLayer": "Prikaži ceste"
+            "showLayer": "Prikaži ceste",
+            "lanePaint": {
+                "unnamed": "ulica bez imena",
+                "segment": "dionica",
+                "segmentOf": "dionica od {{length}} m",
+                "adopted": "{{name}} · {{length}} · preuzeta kao prijedlog ceste",
+                "painted": "{{name}} · {{length}} · {{width}}",
+                "wide": "širina {{width}} m",
+                "paintedPlain": "iscrtano",
+                "skipped": "{{name}} · {{length}} · NIJE iscrtano: {{reason}}",
+                "zoomIn": "Približite prikaz da vidite trake postojećih ulica"
+            }
         },
         "areaMonitor": {
             "title": "Monitor područja",

@@ -516,7 +516,18 @@
             "drawOsm": "Nacrtaj puteve iz OSM-a",
             "drawOsmTooltip": "Nacrtaj OpenStreetMap puteve kao linije",
             "existingTitle": "Postojeći putevi",
-            "showLayer": "Prikaži puteve"
+            "showLayer": "Prikaži puteve",
+            "lanePaint": {
+                "unnamed": "ulica bez imena",
+                "segment": "deonica",
+                "segmentOf": "deonica od {{length}} m",
+                "adopted": "{{name}} · {{length}} · preuzeta kao predlog puta",
+                "painted": "{{name}} · {{length}} · {{width}}",
+                "wide": "širina {{width}} m",
+                "paintedPlain": "iscrtano",
+                "skipped": "{{name}} · {{length}} · NIJE iscrtano: {{reason}}",
+                "zoomIn": "Približite prikaz da vidite trake postojećih ulica"
+            }
         },
         "areaMonitor": {
             "title": "Monitor područja",

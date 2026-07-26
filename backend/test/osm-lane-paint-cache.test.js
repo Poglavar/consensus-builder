@@ -220,24 +220,21 @@ describe('a street is painted once, not on every pan', () => {
         expect(counters.profiled).toBeGreaterThan(after.profiled);
     });
 
-    // A cadastral road parcel can be far larger than the screen — Ulica grada Vukovara's is 3.8 km
-    // across — so "have I painted this parcel?" answered yes for a whole boulevard after one viewport
-    // of it had been drawn, and the rest was never painted at all. The unit of painting is the STREET.
-    it('keeps painting the same huge parcel as the map moves along it', async () => {
+    // ...but it repaints from the ways it already has. Applying a proposal moves where the paint has
+    // to STOP; it cannot change what OSM says is there, and a viewport of ways is 1.4 MB.
+    it('repaints without asking the backend for the same ways again', async () => {
         globalThis.toggleOsmLanePaint();
         await settle();
         const after = { ...counters };
-        expect(after.profiled).toBeGreaterThan(0);
+        expect(after.fetches).toBe(1);
 
-        // Move onto ground this viewport has not covered: the same parcels are in view (the parcel
-        // is enormous), but there is more of them to paint.
-        globalThis.__bbox = '4000,4000,5000,5000';
-        await pan();
+        globalThis.refreshOsmLanePaintForProposals();
+        await settle();
+        globalThis.refreshOsmLanePaintForProposals();
+        await settle();
 
-        expect(counters.fetches, 'new ground must be fetched').toBeGreaterThan(after.fetches);
-        // The streets there have never been seen, so they must be DRAWN — the parcel being "done"
-        // is exactly the wrong answer.
-        expect(counters.polygons, 'and its streets painted').toBeGreaterThan(after.polygons);
+        expect(counters.profiled, 'the streets are read again').toBeGreaterThan(after.profiled);
+        expect(counters.fetches, 'but not fetched again').toBe(after.fetches);
     });
 
     // Zagreb's 463 tramways carry no highway class at all, so they arrive only when asked for.

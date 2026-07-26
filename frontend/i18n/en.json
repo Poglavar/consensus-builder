@@ -491,7 +491,18 @@
             "analyzeOsmTooltip": "Analyze widths of visible OSM roads",
             "analysisToggleTooltip": "Show or hide the latest road width analysis",
             "analysisToggle": "Show road analysis results",
-            "legendTitle": "Road Legend"
+            "legendTitle": "Road Legend",
+            "lanePaint": {
+                "unnamed": "unnamed street",
+                "segment": "segment",
+                "segmentOf": "{{length}} m segment",
+                "adopted": "{{name}} · {{length}} · adopted as a road proposal",
+                "painted": "{{name}} · {{length}} · {{width}}",
+                "wide": "{{width}} m wide",
+                "paintedPlain": "painted",
+                "skipped": "{{name}} · {{length}} · NOT painted: {{reason}}",
+                "zoomIn": "Zoom in to see the lanes of the existing streets"
+            }
         },
         "areaMonitor": {
             "title": "Area Monitor",

@@ -483,7 +483,18 @@
             "drawOsm": "Dibujar vías desde OSM",
             "drawOsmTooltip": "Dibujar vías de OpenStreetMap como líneas",
             "existingTitle": "Vías existentes",
-            "showLayer": "Mostrar vías"
+            "showLayer": "Mostrar vías",
+            "lanePaint": {
+                "unnamed": "calle sin nombre",
+                "segment": "tramo",
+                "segmentOf": "tramo de {{length}} m",
+                "adopted": "{{name}} · {{length}} · adoptada como propuesta de vía",
+                "painted": "{{name}} · {{length}} · {{width}}",
+                "wide": "{{width}} m de ancho",
+                "paintedPlain": "dibujada",
+                "skipped": "{{name}} · {{length}} · NO dibujada: {{reason}}",
+                "zoomIn": "Acércate para ver los carriles de las calles existentes"
+            }
         },
         "proposals": {
             "title": "Propuestas",
