@@ -1909,6 +1909,11 @@ if (typeof module !== 'undefined' && module.exports) {
         offsetClosedPolylinePlanar,
         corridorStripRingPlanar,
         corridorClosedStripPolygonPlanar,
+        // On window since the beginning, but never in the node exports — so nothing could test what
+        // the strip and marking builders actually produce until the lane paint needed to.
+        buildCorridorStrips,
+        buildCorridorStripPolygon,
+        buildCorridorLaneMarkings,
         ringSelfIntersectsXY,
         corridorLaneSeparators,
         samplePolylinePlanar,

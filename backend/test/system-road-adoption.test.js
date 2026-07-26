@@ -9,6 +9,7 @@ const turf = require('@turf/turf');
 // Loading the segmentation module registers it on globalThis, which is where the adoption module
 // looks for it — the same resolution the browser gets from the script list.
 require('../../frontend/js/road-segmentation.js');
+require('../../frontend/js/osm-profile.js');
 const adoption = require('../../frontend/js/system-road-adoption.js');
 const panelSource = readFileSync(
     new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url),
@@ -458,6 +459,101 @@ describe('the plan the adopt button actually gets', () => {
         const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'plan-parcel-3' });
         expect(plan.widthSource).toMatch(/clearance/);
         expect(plan.width).toBeGreaterThan(0);
+    });
+
+    // The whole translator, over the same fetch -> index -> pick path the click takes: an adopted
+    // street should come out with the section OSM says it has, not merely one that fits the metres.
+    describe('the cross-section read off the OSM ways', () => {
+        // The same bent street, now tagged, with a pavement mapped as its own way 6 m off each side —
+        // which is how Zagreb maps them, and the only reason `sidewalk=separate` can mean anything.
+        // The two profile builders the browser gets from corridor-profile.js's script tag: the OSM
+        // bridge the translator reads tags through, and the geometric fit it falls back to.
+        function installProfileGlobals() {
+            const profiles = require('../../frontend/js/corridor-profile.js');
+            globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
+            globalThis.corridorProfileForAvailableWidth = profiles.corridorProfileForAvailableWidth;
+        }
+
+        function installTaggedStubs(streetTags) {
+            installStubs();
+            installProfileGlobals();
+            const bend = [[0, 0], [0.05, 0.001], [0.1, 0.003], [0.15, 0.006], [0.2, 0.01]];
+            const shifted = offset => bend.map(([lng, lat]) => [lng, lat + offset]);
+            globalThis.fetch = async () => ({
+                ok: true,
+                json: async () => ({
+                    features: [
+                        {
+                            properties: { highway_type: 'residential', name: 'Bend Street', tags: streetTags },
+                            geometry: { type: 'LineString', coordinates: bend }
+                        },
+                        {
+                            properties: { highway_type: 'footway', tags: { footway: 'sidewalk' } },
+                            geometry: { type: 'LineString', coordinates: shifted(0.006) }
+                        },
+                        {
+                            properties: { highway_type: 'footway', tags: { footway: 'sidewalk' } },
+                            geometry: { type: 'LineString', coordinates: shifted(-0.006) }
+                        }
+                    ]
+                })
+            });
+        }
+
+        afterEach(() => {
+            delete globalThis.corridorProfileFromOsmTags;
+            delete globalThis.corridorProfileForAvailableWidth;
+        });
+
+        it('keeps the lane count the street has instead of the one that would fit', async () => {
+            installTaggedStubs({ highway: 'residential', lanes: '2', 'sidewalk:both': 'separate' });
+            const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'osm-profile-1' });
+            expect(plan.profileSource).toBe('osm-tags');
+            expect(plan.streetName).toBe('Bend Street');
+            const lanes = plan.profile.strips.filter(s => s.type === 'driving').length;
+            expect(lanes).toBe(2);
+            // A corridor this wide fits more lanes than the street has, which is exactly the point.
+            const fitted = require('../../frontend/js/corridor-profile.js').corridorProfileForAvailableWidth(plan.width);
+            expect(fitted.strips.filter(s => s.type === 'driving').length).toBeGreaterThan(lanes);
+        });
+
+        it('reads the parking off the tags, on the side the tags put it', async () => {
+            installTaggedStubs({ highway: 'residential', lanes: '2', 'parking:left': 'lane', 'parking:right': 'no' });
+            const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'osm-profile-2' });
+            const parking = plan.profile.strips.filter(s => s.type.startsWith('parking'));
+            expect(parking.length).toBe(1);
+            // parking:right=no, so the fit must not hand the street a second bay for symmetry.
+            const before = plan.profile.strips.findIndex(s => s.type === 'driving');
+            expect(plan.profile.strips.slice(0, before).some(s => s.type.startsWith('parking'))).toBe(true);
+        });
+
+        it('hands that section to the adopted definition, summing to the road\'s width', async () => {
+            installTaggedStubs({ highway: 'residential', lanes: '2', 'sidewalk:both': 'separate' });
+            const plan = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'osm-profile-3' });
+            const definition = adoption.buildDefinition(
+                { type: 'Feature', properties: {}, geometry: parcel },
+                null,
+                { plan, clickLngLat: [0.1, 0.004], parcelId: 'osm-profile-3' }
+            );
+            expect(definition.profile.strips.map(s => s.type)).toEqual(plan.profile.strips.map(s => s.type));
+            const total = definition.profile.strips.reduce((sum, s) => sum + s.width, 0);
+            expect(total).toBeCloseTo(definition.width, 2);
+        });
+
+        // Outside the mapped centre a road parcel has no OSM way to read, and the adoption still has
+        // to produce a road. The section then comes from the geometric fit, as it did before.
+        it('falls back to the geometric fit when the segment has no OSM section to read', async () => {
+            installTaggedStubs({ highway: 'residential', lanes: '2' });
+            const resolved = await adoption.resolveAdoptionPlan(parcel, [0.1, 0.004], null, { parcelId: 'osm-profile-4' });
+            const plan = { ...resolved, profile: null, profileSource: null };
+            const definition = adoption.buildDefinition(
+                { type: 'Feature', properties: {}, geometry: parcel },
+                null,
+                { plan, clickLngLat: [0.1, 0.004], parcelId: 'osm-profile-4' }
+            );
+            const fitted = globalThis.corridorProfileForAvailableWidth(definition.width);
+            expect(definition.profile.strips.map(s => s.type)).toEqual(fitted.strips.map(s => s.type));
+        });
     });
 });
 

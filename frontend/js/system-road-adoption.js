@@ -280,7 +280,15 @@
         const widthRings = (Array.isArray(input.widthRingsXY) && input.widthRingsXY.length)
             ? input.widthRingsXY
             : parcelRingsXY;
-        const measured = segmentation.measureAvailableWidth(plan.centerlineXY, widthRings, options);
+        // The other streets AROUND this one bound it, exactly as the parcel edge and the buildings do
+        // — a carriageway of a dual boulevard must not adopt the whole boulevard, and a run reaching
+        // a junction must not adopt the streets meeting there. Read from the unclipped network, since
+        // the neighbours that matter are mostly in other parcels.
+        const network = (Array.isArray(input.segmentsXY) && input.segmentsXY.length)
+            ? input.segmentsXY
+            : (runs || []);
+        const neighbours = segmentation.neighbourSegments(plan.centerlineXY, network);
+        const measured = segmentation.measureAvailableWidth(plan.centerlineXY, widthRings, { ...options, neighbours });
         // fitWidth is the one that fits along the WHOLE run; the quantile is only a fallback for a
         // run where no station saw both sides. An adopted road must not cut anything, and a road
         // built to a quantile cuts wherever the corridor is tighter than that.
@@ -316,7 +324,14 @@
             || (typeof global.corridorProfileFromLegacy === 'function'
                 ? global.corridorProfileFromLegacy
                 : null);
-        const profile = makeProfile ? makeProfile(width, null, false) : null;
+        // What OSM says the street already has beats what would merely FIT in it — the geometric fit
+        // knows how many metres there are, the reconstruction knows how many lanes, which side the
+        // parking is on and whether there is a cycle lane. It is only used at the planned width, since
+        // a section is only valid for the total it was fitted to.
+        const reconstructed = (planned && plan.profile && Number.isFinite(plan.width) && clampRoadWidth(plan.width) === width)
+            ? plan.profile
+            : null;
+        const profile = reconstructed || (makeProfile ? makeProfile(width, null, false) : null);
         if (!profile) return null;
         const sidewalks = (profile.strips || []).filter(strip => strip.type === 'sidewalk');
         const sidewalkWidth = sidewalks.length
@@ -351,7 +366,12 @@
                 widthSource: (planned && plan.widthSource) ? plan.widthSource : 'measured',
                 // Which street of the parcel this is, so the next adoption in the same parcel is
                 // recognised as a different street rather than a duplicate.
-                segmentKey: segmentKeyFor(centerline)
+                segmentKey: segmentKeyFor(centerline),
+                // The OSM ways the cross-section was read off. Kept so the editor can offer to go and
+                // fix the SOURCE: when a reconstructed section is wrong, the fault is almost always in
+                // the tagging, and this is the only pointer back to it.
+                osmIds: (planned && Array.isArray(plan.osmIds)) ? plan.osmIds.slice(0, 8) : [],
+                osmName: (planned && plan.streetName) ? String(plan.streetName) : null
             }
         };
     }
@@ -436,10 +456,12 @@
         return SEGMENTING_SERVICE.has(service);
     }
 
-    // The OSM centrelines covering the clicked parcel, as raw lng/lat lines. These carry the
-    // junction topology the segmentation reads; the parcel polygon alone cannot say where one
-    // segment ends and the next begins.
-    async function fetchOsmCenterlines(geometry) {
+    // Every OSM way over the clicked parcel, as raw lng/lat lines with the properties they arrived
+    // with. The driveable ones carry the junction topology the segmentation reads — the parcel
+    // polygon alone cannot say where one segment ends and the next begins — and ALL of them, footways
+    // included, carry the cross-section: in Zagreb a street's pavements are usually ways of their own,
+    // so they are the only evidence that the `sidewalk=separate` on the street means anything.
+    async function fetchOsmWays(geometry) {
         const project = global.wgs84ToHTRS96;
         if (typeof project !== 'function' || typeof global.fetch !== 'function') return [];
         const rings = geometryRings(geometry);
@@ -467,14 +489,18 @@
             ? await global.fetchJsonWithRetry(url)
             : await global.fetch(url).then(response => (response.ok ? response.json() : null));
 
-        const lines = [];
+        const ways = [];
         (data?.features || []).forEach(feature => {
-            if (!definesRoadSegments(feature?.properties)) return;
+            const properties = feature?.properties || {};
             const geom = feature?.geometry;
-            if (geom?.type === 'LineString') lines.push(geom.coordinates);
-            else if (geom?.type === 'MultiLineString') (geom.coordinates || []).forEach(part => lines.push(part));
+            const parts = geom?.type === 'LineString'
+                ? [geom.coordinates]
+                : (geom?.type === 'MultiLineString' ? (geom.coordinates || []) : []);
+            parts.forEach(coordinates => {
+                if (Array.isArray(coordinates) && coordinates.length >= 2) ways.push({ coordinates, properties });
+            });
         });
-        return lines.filter(line => Array.isArray(line) && line.length >= 2);
+        return ways;
     }
 
     // What the highlight outlines: the road parcel's own strip along this run, edge to edge. This is
@@ -596,14 +622,16 @@
         const parcelRingsXY = geometryRings(geometry)
             .map(ring => projectRing(ring, project))
             .filter(ring => ring.length >= 3);
-        let osmLinesXY = [];
+        let waysXY = [];
         try {
-            osmLinesXY = (await fetchOsmCenterlines(geometry))
-                .map(line => projectRing(line, project))
-                .filter(line => line.length >= 2);
+            waysXY = (await fetchOsmWays(geometry))
+                .map(way => ({ pointsXY: projectRing(way.coordinates, project), properties: way.properties }))
+                .filter(way => way.pointsXY.length >= 2);
         } catch (error) {
             console.warn('[system-road-adoption] existing-road centrelines unavailable', error);
         }
+        // Only the driveable ways segment; the rest are kept for the cross-section.
+        const osmLinesXY = waysXY.filter(way => definesRoadSegments(way.properties)).map(way => way.pointsXY);
         const segmentation = global.RoadSegmentation;
         const segmentsXY = (segmentation && osmLinesXY.length)
             ? segmentation.segmentRoadNetwork(osmLinesXY)
@@ -631,7 +659,7 @@
         // them and marks them for demolition. Whichever comes first stops the ray.
         await ensureBuildingsLoadedFor(geometry);
         const widthRingsXY = parcelRingsXY.concat(buildingRingsNear(geometry, project));
-        return { parcelRingsXY, widthRingsXY, segmentsXY, runsXY, bandsXY, geometry };
+        return { parcelRingsXY, widthRingsXY, segmentsXY, runsXY, bandsXY, waysXY, geometry };
     }
 
     function ensureSegmentIndex(parcelId, geometry) {
@@ -709,6 +737,21 @@
         }
     }
 
+    // The cross-section the chosen segment already has, read off the OSM ways covering it. Best-effort
+    // by design: with no OSM coverage, no translator loaded or anything unexpected, the caller falls
+    // back to the purely geometric fit, which knows the metres but not what is in them.
+    function reconstructedProfile(runXY, waysXY, width) {
+        try {
+            const translator = global.OsmProfile;
+            if (!translator || !Array.isArray(runXY) || runXY.length < 2 || !Array.isArray(waysXY) || !waysXY.length) return null;
+            if (!Number.isFinite(width) || width <= 0) return null;
+            return translator.osmProfileForSegment({ runXY, ways: waysXY, availableWidth: width });
+        } catch (error) {
+            console.warn('[system-road-adoption] could not read the existing cross-section from OSM', error);
+            return null;
+        }
+    }
+
     // Browser glue around planSegmentAdoption: project the parcel, pull the OSM centrelines over it,
     // and hand back a plan in lat/lng. Never throws — anything unavailable here (no OSM coverage, no
     // network, no projection) only means the adopted road falls back to the parcel's own axis, which
@@ -778,9 +821,18 @@
                 ? plan.width
                 : measuredRoadWidth((typeof metrics === 'function') ? metrics() : metrics, {});
             const width = clampRoadWidth(widthClearOfBuildings(centerline, measuredWidth, geometry));
+            // What the street is already made of. Only now, with the final width known, because the
+            // section has to sum to it exactly — and the width is not settled until the buildings
+            // have had their say.
+            const reconstructed = reconstructedProfile(plan.centerlineXY, index?.waysXY, width);
             return {
                 centerline,
                 width,
+                profile: reconstructed ? reconstructed.profile : null,
+                profileSource: reconstructed ? reconstructed.source : null,
+                profileNotes: reconstructed ? reconstructed.notes : null,
+                streetName: reconstructed ? reconstructed.name : null,
+                osmIds: reconstructed ? reconstructed.osmIds : null,
                 segmentSource: plan.segmentSource,
                 widthSource: plan.widthSource,
                 // What the selection outlines: the road parcel's strip along this run, edge to edge,

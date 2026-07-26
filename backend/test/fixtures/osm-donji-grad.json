@@ -1,0 +1,208 @@
+{
+ "note": "Real osm_road rows from Zagreb Donji Grad, EPSG:3765 metres, each block shifted to its own local origin (origin3765). Exported from the local geodata database.",
+ "gundulic": {
+  "label": "Gundulićeva ulica — one-way, 2 lanes, exclusive cycle lanes both sides, sidewalks mapped separately",
+  "streetId": 45759336,
+  "origin3765": [
+   458967,
+   5074482
+  ],
+  "ways": [
+   {
+    "osm_id": 45759336,
+    "properties": {
+     "highway_type": "tertiary",
+     "name": "Gundulićeva ulica",
+     "tags": {
+      "lit": "yes",
+      "ref": "10072",
+      "name": "Gundulićeva ulica",
+      "lanes": "2",
+      "oneway": "yes",
+      "highway": "tertiary",
+      "surface": "asphalt",
+      "alt_name": "Ulica Ivana Gundulića",
+      "maxspeed": "40",
+      "short_name": "Gundulićeva",
+      "parking:zone": "1",
+      "cycleway:both": "lane",
+      "sidewalk:both": "separate",
+      "oneway:bicycle": "no",
+      "cycleway:both:lane": "exclusive",
+      "name:etymology:wikidata": "Q317588"
+     }
+    },
+    "pointsXY": [
+     [
+      10.89,
+      0.38
+     ],
+     [
+      8.38,
+      120.09
+     ]
+    ]
+   },
+   {
+    "osm_id": 347617866,
+    "properties": {
+     "highway_type": "footway",
+     "name": null,
+     "tags": {
+      "lit": "yes",
+      "footway": "sidewalk",
+      "highway": "footway",
+      "surface": "asphalt"
+     }
+    },
+    "pointsXY": [
+     [
+      17.08,
+      10.86
+     ],
+     [
+      13.37,
+      120.46
+     ],
+     [
+      13.5,
+      169.42
+     ]
+    ]
+   },
+   {
+    "osm_id": 782814625,
+    "properties": {
+     "highway_type": "footway",
+     "name": null,
+     "tags": {
+      "lit": "yes",
+      "footway": "sidewalk",
+      "highway": "footway",
+      "surface": "asphalt"
+     }
+    },
+    "pointsXY": [
+     [
+      0.33,
+      166.21
+     ],
+     [
+      3.53,
+      10.42
+     ]
+    ]
+   }
+  ]
+ },
+ "dezelica": {
+  "label": "Prilaz Gjure Deželića — one-way, 2 lanes, perpendicular parking half-on-kerb left and street-side right",
+  "streetId": 882179718,
+  "origin3765": [
+   458345,
+   5074635
+  ],
+  "ways": [
+   {
+    "osm_id": 882179718,
+    "properties": {
+     "highway_type": "tertiary",
+     "name": "Prilaz Gjure Deželića",
+     "tags": {
+      "lit": "yes",
+      "ref": "10074",
+      "name": "Prilaz Gjure Deželića",
+      "lanes": "2",
+      "oneway": "yes",
+      "highway": "tertiary",
+      "surface": "asphalt",
+      "alt_name": "Deželićev prilaz",
+      "maxspeed": "40",
+      "short_name": "Deželićeva",
+      "smoothness": "good",
+      "turn:lanes": "left;through|through|through",
+      "parking:left": "half_on_kerb",
+      "parking:zone": "1",
+      "cycleway:left": "separate",
+      "parking:right": "street_side",
+      "sidewalk:both": "separate",
+      "cycleway:right": "no",
+      "parking:both:fee": "yes",
+      "parking:both:surface": "asphalt",
+      "name:etymology:wikidata": "Q6470870",
+      "parking:left:orientation": "perpendicular",
+      "parking:right:orientation": "perpendicular"
+     }
+    },
+    "pointsXY": [
+     [
+      -0.16,
+      24.63
+     ],
+     [
+      219.65,
+      5.93
+     ]
+    ]
+   },
+   {
+    "osm_id": 830145679,
+    "properties": {
+     "highway_type": "footway",
+     "name": null,
+     "tags": {
+      "lit": "yes",
+      "footway": "sidewalk",
+      "highway": "footway",
+      "surface": "asphalt"
+     }
+    },
+    "pointsXY": [
+     [
+      4,
+      16.17
+     ],
+     [
+      212.95,
+      -0.31
+     ]
+    ]
+   },
+   {
+    "osm_id": 830145681,
+    "properties": {
+     "highway_type": "path",
+     "name": null,
+     "tags": {
+      "lit": "yes",
+      "foot": "designated",
+      "oneway": "yes",
+      "bicycle": "designated",
+      "footway": "sidewalk",
+      "highway": "path",
+      "surface": "asphalt",
+      "segregated": "yes",
+      "smoothness": "good",
+      "cycleway:width": "1.4",
+      "footway:surface": "asphalt",
+      "cycleway:surface": "asphalt"
+     }
+    },
+    "pointsXY": [
+     [
+      213.43,
+      16.81
+     ],
+     [
+      9.81,
+      34.02
+     ],
+     [
+      5.18,
+      35.21
+     ]
+    ]
+   }
+  ]
+ }
+}

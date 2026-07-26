@@ -431,6 +431,39 @@
     // reusing the corridor-clearance sampler. A low quantile rather than the mean, so the width
     // stays inside the parcel along most of the run instead of averaging over a wide junction mouth
     // — and staying inside the ROAD parcel is what keeps an adopted road off the buildings beside it.
+    // Every centreline near this run that is not the run itself — the neighbours whose presence bounds
+    // how wide it may be (see measureAvailableWidth).
+    //
+    // It must be taken from the WHOLE network, not from the runs of one parcel: a street's neighbours
+    // are usually in other parcels, and at a junction they always are. Bounded only by its own parcel's
+    // streets, a run reaching a junction found nothing to stop it and spread its pavement across
+    // everything meeting there.
+    //
+    // `runsInsideRings` hands back CLIPPED COPIES, so the run's own parent segment is not the same
+    // object and has to be recognised by geometry: if most of the run lies along a segment, that
+    // segment is the run, not a neighbour.
+    function neighbourSegments(runXY, segments, options = {}) {
+        if (!Array.isArray(runXY) || runXY.length < 2 || !Array.isArray(segments)) return [];
+        const reach = Number(options.reach) > 0 ? Number(options.reach) : 60;
+        const sameTolerance = Number(options.sameTolerance) > 0 ? Number(options.sameTolerance) : 3;
+        const share = Number.isFinite(options.share) ? Number(options.share) : 0.5;
+
+        const box = runXY.reduce((b, p) => [
+            Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])
+        ], [Infinity, Infinity, -Infinity, -Infinity]);
+
+        return segments.filter(segment => {
+            if (!Array.isArray(segment) || segment.length < 2) return false;
+            const sb = segment.reduce((b, p) => [
+                Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])
+            ], [Infinity, Infinity, -Infinity, -Infinity]);
+            if (box[0] > sb[2] + reach || box[2] < sb[0] - reach
+                || box[1] > sb[3] + reach || box[3] < sb[1] - reach) return false;
+            const along = runXY.filter(point => distanceToPolyline(point, segment) <= sameTolerance).length;
+            return along / runXY.length < share;
+        });
+    }
+
     function measureAvailableWidth(points, rings, options = {}) {
         const sampler = (typeof global.corridorClearanceSamples === 'function')
             ? global.corridorClearanceSamples
@@ -442,14 +475,38 @@
         const step = Number(options.stationStep) > 0 ? Number(options.stationStep) : 4;
         const q = Number.isFinite(options.quantile) ? Number(options.quantile) : 0.25;
 
-        const samples = sampler(points, [{ id: 'parcel', kind: 'parcel', rings }], { maxDistance, stationStep: step });
+        // NEIGHBOURING STREETS BOUND A RUN TOO, not just the parcel edge and the buildings. One
+        // cadastral road parcel routinely holds a whole boulevard — Ulica grada Vukovara's parcel is
+        // both carriageways, the tram median and both pavements, ~60 m of it — and measured against
+        // the parcel alone EACH carriageway claimed the lot: 50-72 m, which the section then had to
+        // spend, producing 36-40 m "pavements" that covered the other carriageway and the buildings
+        // beyond it. A street's room ends where the next street's begins, so a ray that reaches
+        // another centreline stops HALF WAY: the two split what lies between them, and neither
+        // overlaps the other.
+        //
+        // The barrier is the neighbour's centreline traced out and back — a zero-area ring, so the
+        // ring-walking index above raises no spurious closing chord across the map.
+        const obstacles = [{ id: 'parcel', kind: 'parcel', rings }];
+        const neighbours = (options.neighbours || [])
+            .filter(line => Array.isArray(line) && line.length >= 2)
+            .map(line => [...line, ...line.slice().reverse()]);
+        if (neighbours.length) obstacles.push({ id: 'street', kind: 'street', rings: neighbours });
+
+        const samples = sampler(points, obstacles, { maxDistance, stationStep: step });
         if (!samples.length) return null;
+
+        // How much of one side this run may have: all of it against the parcel or a building, half of
+        // it against another street.
+        const room = side => {
+            if (!side || !Number.isFinite(side.distance)) return null;
+            return side.kind === 'street' ? side.distance / 2 : side.distance;
+        };
 
         // Only stations that found the parcel edge on BOTH sides measure a width; a one-sided
         // station sits at a junction mouth or past the parcel end and would report the ray cap.
         const widths = samples
             .filter(sample => sample.left && sample.right)
-            .map(sample => sample.left.distance + sample.right.distance)
+            .map(sample => room(sample.left) + room(sample.right))
             .filter(width => Number.isFinite(width) && width > 0)
             .sort((a, b) => a - b);
         if (!widths.length) return null;
@@ -469,13 +526,28 @@
         const measuredOver = interior.length >= 3 ? interior : samples;
         const symmetric = measuredOver
             .filter(sample => sample.left && sample.right)
-            .map(sample => 2 * Math.min(sample.left.distance, sample.right.distance))
+            .map(sample => 2 * Math.min(room(sample.left), room(sample.right)))
             .filter(width => Number.isFinite(width) && width > 0)
             .sort((a, b) => a - b);
+
+        // Each side on its own. An OSM centreline is very often NOT centred in its cadastral road
+        // parcel — the parcel is one side of the street, or a leftover strip — and a symmetric width
+        // then collapses to twice the narrow side: along Strojarska cesta, corridors of 21 m + 4 m and
+        // 1 m + 16 m came out as 3.8 m and 1.3 m, drawn as hairlines a viewer reads as "not rendered".
+        // A caller that can place the section off-centre uses these two instead of fitWidth.
+        const sideRoom = pick => measuredOver
+            .filter(sample => sample.left && sample.right)
+            .map(sample => room(pick(sample)))
+            .filter(value => Number.isFinite(value) && value > 0)
+            .sort((a, b) => a - b);
+        const leftRoom = sideRoom(sample => sample.left);
+        const rightRoom = sideRoom(sample => sample.right);
 
         return {
             width: quantile(widths, q),
             fitWidth: symmetric.length ? quantile(symmetric, 0.1) : null,
+            leftWidth: leftRoom.length ? quantile(leftRoom, 0.1) : null,
+            rightWidth: rightRoom.length ? quantile(rightRoom, 0.1) : null,
             min: widths[0],
             median: quantile(widths, 0.5),
             max: widths[widths.length - 1],
@@ -584,6 +656,7 @@
         segmentRoadNetwork,
         nearestSegment,
         runsInsideRings,
+        neighbourSegments,
         pickRunForClick,
         distanceToPolyline,
         pointInRings,
