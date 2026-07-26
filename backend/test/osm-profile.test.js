@@ -424,3 +424,58 @@ describe('osmProfileForSegment on real Donji Grad streets', () => {
         expect(osmProfileForSegment({ runXY: straightRun(), ways: [], availableWidth: 12 })).toBe(null);
     });
 });
+
+// ---------------------------------------------------------------------------
+// The room on each side of the street.
+//
+// A cadastral road parcel is often one side of the street rather than the whole of it, so the caller
+// measures the two sides apart. Anything mapped beside the street has to be sized against the kerb on
+// ITS side; against half the total, both pavements come out the same width whatever the ground says.
+// ---------------------------------------------------------------------------
+
+// A run heading north, so its left is at negative x and a positive offset is to the west.
+const tramRun = (length = 200) => [[0, 0], [0, length]];
+const road = (offset, tags = {}, length = 200) => ({
+    pointsXY: [[offset, 1], [offset, length - 1]],
+    properties: { osm_id: `road${offset}`, highway_type: 'secondary', name: 'Test boulevard', tags }
+});
+
+describe('a pavement is measured against the room on its own side', () => {
+    // A footway 5 m off the centreline, on a corridor that is 6 m wide one side and 14 m the other —
+    // the ordinary shape of a cadastral road parcel that covers one side of the street.
+    const separateTags = { highway: 'residential', lanes: '2', 'sidewalk:both': 'separate' };
+    const footway = (offset) => ({
+        pointsXY: [[offset, 1], [offset, 199]],
+        properties: { highway_type: 'footway', tags: { footway: 'sidewalk' } }
+    });
+
+    // 14 m of corridor, 6 m of it left of the line and 8 m right. Kept under the 6 m a pavement is
+    // capped at, so what is being read here is the measurement and not the clamp.
+    const resolve = (options, total = 14) => {
+        const match = matchWaysToRun(tramRun(), [road(0, separateTags), footway(5), footway(-5)]);
+        return resolveSegmentTags(separateTags, match.flanks, total, options).tags;
+    };
+
+    it('sizes the two pavements differently when the two sides are different', () => {
+        const tags = resolve({ leftHalf: 6, rightHalf: 8 });
+        const left = Number(tags['sidewalk:left:width']);
+        const right = Number(tags['sidewalk:right:width']);
+        expect(left).toBeCloseTo(2 * (6 - 5), 1);      // 1 m of pavement outside the footway
+        expect(right).toBeCloseTo(2 * (8 - 5), 1);
+        expect(left).not.toBeCloseTo(right, 1);
+    });
+
+    it('falls back to half the total when the caller measured only one number', () => {
+        const tags = resolve({});
+        expect(Number(tags['sidewalk:left:width'])).toBeCloseTo(Number(tags['sidewalk:right:width']), 3);
+        expect(Number(tags['sidewalk:left:width'])).toBeCloseTo(2 * (7 - 5), 1);
+    });
+
+    // A footway further out than the kerb on that side cannot be measuring that side's pavement, and
+    // a negative width would be nonsense: it falls back to the default rather than to an absurdity.
+    it('does not read a pavement wider than the side it is on', () => {
+        const tags = resolve({ leftHalf: 3, rightHalf: 8 });
+        expect(Number(tags['sidewalk:left:width'])).toBe(2);    // the default, not 2 x (3 - 5)
+        expect(Number(tags['sidewalk:right:width'])).toBeCloseTo(6, 1);
+    });
+});

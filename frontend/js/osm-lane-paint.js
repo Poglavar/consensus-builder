@@ -423,12 +423,15 @@
             // us there is a lot of open ground on one side, and moving the street that far off the
             // line OSM drew would be a guess dressed as a measurement.
             const shift = Math.max(-MAX_CENTRELINE_SHIFT, Math.min(MAX_CENTRELINE_SHIFT, (left - right) / 2));
-            return { width: left + right, shift };
+            // The two sides are kept as well as their sum: the translator sizes anything mapped beside
+            // the street against the room on THAT side.
+            return { width: left + right, shift, left, right };
         }
         const fit = Number.isFinite(measured?.fitWidth) && measured.fitWidth > 0
             ? measured.fitWidth
             : Number(measured?.width);
-        return { width: Number.isFinite(fit) ? fit : 0, shift: 0 };
+        const width = Number.isFinite(fit) ? fit : 0;
+        return { width, shift: 0, left: width / 2, right: width / 2 };
     }
 
     // The ring between a segment's two kerb lines, from the room measured on each side — the segment
@@ -625,7 +628,15 @@
             const polygonXY = segmentPolygon(segment.points, measured);
             const reconstructed = translator.osmProfileForSegment({
                 runXY: segment.points, ways: context.ways, availableWidth: corridor.width,
-                options: { preferNominal: true, polygonXY }
+                options: {
+                    preferNominal: true,
+                    polygonXY,
+                    // The room on each side, separately. A pavement mapped as its own way is measured
+                    // against the kerb on ITS side; against half the total it comes out the same width
+                    // on both sides of a corridor that is 6 m one way and 14 m the other.
+                    leftHalf: corridor.left,
+                    rightHalf: corridor.right
+                }
             });
             if (!reconstructed?.profile) {
                 // Only ONE of these two is about the street. Reporting the other as "OSM has nothing

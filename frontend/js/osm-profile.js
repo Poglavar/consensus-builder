@@ -443,19 +443,31 @@
     //
     //   * `sidewalk:<side>=separate` — the pavement is a way of its own. If we matched one beside the
     //     run its distance from the centreline MEASURES the pavement: everything outside that way's
-    //     centreline is pavement, so it is 2 x (half the corridor - the offset). With no matched way it
-    //     is still there (a Zagreb street tagged `separate` has a pavement), just at a default width.
+    //     centreline is pavement, so it is 2 x (the room on that side - the offset). With no matched
+    //     way it is still there (a Zagreb street tagged `separate` has a pavement), just at a default.
     //   * `cycleway:<side>=separate` — only believed when a cycleway way was actually matched beside
     //     the run. A separate cycle path can as easily be on the far side of the block.
     //   * `cycleway:<side>=shared_lane` — paint, not a strip. Dropped.
     //   * `parking:<side>=on_kerb|half_on_kerb` — the bay stands on the pavement. The bay is still a
     //     strip of its own (you cannot walk there), so the pavement pays for the part that overlaps it
     //     rather than the carriageway.
+    //
+    // Everything measured off a matched way is measured against THE ROOM ON THAT SIDE, not half the
+    // total. `options.leftHalf`/`rightHalf` are what the caller measured from the centreline to each
+    // kerb, and they are routinely unequal — a cadastral road parcel is often one side of the street
+    // rather than the whole of it, which is the very reason the painter measures the two sides apart
+    // and shifts the drawn line into the middle. Half the total instead gave the two pavements of a
+    // 6 m / 14 m corridor the same width, both sized from a line down neither side's middle. They
+    // default to half the total, so a caller with only one number (the adoption path) is unaffected.
     function resolveSegmentTags(mergedTags, flanks, availableWidth, options = {}) {
         const settings = { ...OSM_PROFILE_DEFAULTS, ...options };
         const tags = { ...(mergedTags || {}) };
         const notes = [];
         const half = Number(availableWidth) > 0 ? Number(availableWidth) / 2 : NaN;
+        const halfOn = (side) => {
+            const measured = Number(side === 'left' ? settings.leftHalf : settings.rightHalf);
+            return (Number.isFinite(measured) && measured > 0) ? measured : half;
+        };
 
         // A tagged width describes the way; the corridor is what the kerbs measure. Keeping it would
         // let the tag overrule the ground.
@@ -474,13 +486,14 @@
             if (!explicitlyAbsent && (String(sidewalk) === 'separate' || matched || sidewalk === undefined)) {
                 let width = sideWidth(tags, 'sidewalk', side);
                 if (!Number.isFinite(width) && matched) {
+                    const room = halfOn(side);
                     if (Number.isFinite(matched.taggedWidth) && matched.taggedWidth > 0) {
                         width = matched.taggedWidth;
-                    } else if (Number.isFinite(half) && half > matched.offset) {
-                        width = 2 * (half - matched.offset);
+                    } else if (Number.isFinite(room) && room > matched.offset) {
+                        width = 2 * (room - matched.offset);
                     }
                     if (Number.isFinite(width)) {
-                        notes.push(`sidewalk ${side}: measured ${roundWidth(width)} m from a footway ${matched.offset} m off the centreline`);
+                        notes.push(`sidewalk ${side}: measured ${roundWidth(width)} m from a footway ${matched.offset} m off the centreline, with ${roundWidth(room)} m of room on that side`);
                     }
                 }
                 if (Number.isFinite(width) && width > 0) {
