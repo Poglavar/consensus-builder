@@ -10,9 +10,10 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
+const paint = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
 const {
-    growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel
-} = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
+    growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel, paintSegment
+} = paint;
 const segmentation = require(path.join(here, '../../frontend/js/road-segmentation.js'));
 const translator = require(path.join(here, '../../frontend/js/osm-profile.js'));
 const profiles = require(path.join(here, '../../frontend/js/corridor-profile.js'));
@@ -366,5 +367,53 @@ describe('painting one road parcel', () => {
     it('paints nothing for a parcel with no street in it', () => {
         const empty = lanesForParcel({ id: 'empty', rings: [[[5000, 5000], [5020, 5000], [5020, 5020], [5000, 5020], [5000, 5000]]] }, context());
         expect(empty).toEqual([]);
+    });
+});
+
+// A way that fell off the end of a truncated answer is indistinguishable from a way OSM does not
+// have — so the layer must not report the first as the second and send somebody to fix tagging that
+// was fine all along.
+describe('a truncated fetch is not the same as OSM having nothing', () => {
+    const run = [[0, 0], [0, 120]];
+    const ring = [[-10, -10], [10, -10], [10, 130], [-10, 130], [-10, -10]];
+    const parcel = { id: 'road-1', rings: [ring] };
+    const context = (truncated) => ({
+        ways: [],                       // nothing came back that covers the run
+        segments: [run],
+        buildings: [], buildingBoxes: [],
+        otherRings: [], otherBoxes: [],
+        corridors: [],
+        adopted: new Set(),
+        truncated,
+        unproject: (x, y) => [y / 1000, x / 1000]
+    });
+
+    beforeEach(() => {
+        globalThis.RoadSegmentation = segmentation;
+        globalThis.OsmProfile = translator;
+        globalThis.htrs96ToWGS84 = (x, y) => [y / 1000, x / 1000];
+        globalThis.corridorProfileFromOsmTags = profiles.corridorProfileFromOsmTags;
+        globalThis.corridorStripRingPlanar = profiles.corridorStripRingPlanar;
+    });
+    afterEach(() => {
+        ['RoadSegmentation', 'OsmProfile', 'htrs96ToWGS84', 'corridorProfileFromOsmTags',
+            'corridorStripRingPlanar'].forEach(key => { delete globalThis[key]; });
+    });
+
+    const verdict = (truncated) => paintSegment(
+        { key: 'k', points: run, box: paint.boxOf([run]), parcels: [parcel], parcel, street: { id: null, name: null } },
+        context(truncated)
+    );
+
+    it('blames OSM when the answer was complete', () => {
+        const record = verdict(false);
+        expect(record.state).toBe('skipped');
+        expect(record.reason).toBe('no OSM way describes this segment');
+    });
+
+    it('blames the limit when the answer was not', () => {
+        const record = verdict(true);
+        expect(record.state).toBe('skipped');
+        expect(record.reason).toContain('truncated');
     });
 });

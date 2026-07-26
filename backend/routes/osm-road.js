@@ -53,7 +53,17 @@ export function setupOsmRoadRoute(app, pool) {
                 geometry: row.geometry
             }));
 
-            res.json({ type: 'FeatureCollection', features, truncated: features.length >= MAX_FEATURES });
+            // A truncated answer is a SILENT one unless somebody says so: the ways that fell off the
+            // end are indistinguishable from ways OSM does not have, and a caller reconstructing a
+            // cross-section from them would report "no OSM way describes this street" for a street
+            // that has one. Flagged in the body AND in the log, since the two have different readers.
+            const truncated = features.length >= MAX_FEATURES;
+            if (truncated) {
+                console.warn(`/osm-road: hit the ${MAX_FEATURES}-way limit for bbox=${req.query.bbox || 'all'}`
+                    + '; the answer is incomplete');
+            }
+
+            res.json({ type: 'FeatureCollection', features, truncated, limit: MAX_FEATURES });
         } catch (err) {
             console.error('Error in /osm-road:', err);
             res.status(500).json({ error: 'Internal server error' });

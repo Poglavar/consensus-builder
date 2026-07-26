@@ -158,7 +158,16 @@
                 if (pointsXY.length >= 2) ways.push({ pointsXY, properties });
             });
         });
-        return ways;
+        // The endpoint answers with at most 8000 ways and says so when it had more. Carried through,
+        // because a way that fell off the end is indistinguishable from a way OSM does not have: the
+        // streets it described would be reported as having no OSM way at all, which is a lie about
+        // the map data rather than about our own limit.
+        const answer = { ways, truncated: !!data?.truncated, limit: Number(data?.limit) || null };
+        if (answer.truncated) {
+            console.warn(`[osmLanePaint] /osm-road returned its maximum of ${answer.limit || 'N'} ways;`
+                + ' some streets here will be missing their section');
+        }
+        return answer;
     }
 
     // Whether a way is one of the driveable classes a segment can belong to — the same question
@@ -618,7 +627,15 @@
                 runXY: segment.points, ways: context.ways, availableWidth: corridor.width,
                 options: { preferNominal: true, polygonXY }
             });
-            if (!reconstructed?.profile) return record({ reason: 'no OSM way describes this segment' });
+            if (!reconstructed?.profile) {
+                // Only ONE of these two is about the street. Reporting the other as "OSM has nothing
+                // here" would send somebody to fix tagging that is perfectly fine.
+                return record({
+                    reason: context.truncated
+                        ? 'no OSM way describes this segment — but the way fetch was truncated here, so one may be missing'
+                        : 'no OSM way describes this segment'
+                });
+            }
             if (reconstructed.width > PAINT_MAX_WIDTH || reconstructed.width < MIN_PAINT_WIDTH) {
                 return record({ reason: `${reconstructed.width.toFixed(1)} m is not a street's width` });
             }
@@ -818,7 +835,7 @@
             // Reach past the viewport so a run is segmented against the junctions just off-screen.
             const key = bboxKey();
             const grown = growBbox(key, FETCH_MARGIN);
-            const ways = await fetchWays(grown || key);
+            const { ways, truncated } = await fetchWays(grown || key);
             if (token !== run || !enabled) return;
             fetchedKey = key;
             // Remember the ground this fetch covered, so panning back over it costs nothing.
@@ -853,6 +870,8 @@
                 // The segments a proposal has already taken, by the SAME key this layer uses — one
                 // name for a segment across painting and editing.
                 adopted: adoptedSegmentKeys(),
+                // Whether the ways above are all of them, or all the endpoint would give.
+                truncated,
                 unproject: global.htrs96ToWGS84
             };
             // STREETS, then SEGMENTS, then painting. The parcels only say where a segment's kerb
