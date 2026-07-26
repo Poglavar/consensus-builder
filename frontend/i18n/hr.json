@@ -1267,6 +1267,13 @@
             "measuredAgainst": "Mjereno prema",
             "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani",
             "measuredOthers": "druge izmjere ovdje pokazuju {{extras}}",
+            "referenceSurveys": "Prikaži i",
+            "referenceSurvey": {
+                "dgu": "Iscrtaj DGU tlocrte na karti radi usporedbe. Samo informativno — cesta se mjeri prema GDI-ju.",
+                "osm": "Iscrtaj OSM tlocrte na karti radi usporedbe. Samo informativno — cesta se mjeri prema GDI-ju."
+            },
+            "osmSource": "Netočno?",
+            "osmSourceTitle": "Ovaj poprečni presjek pročitan je iz OpenStreetMapa ({{where}}way {{ids}}). Ako je pogrešan, ispravlja se u oznakama ondje — otvara OSM u novoj kartici.",
             "measuredAgainstGdiTitle": "Fotogrametrija — ono što stvarno postoji. Rušenja se vežu uz ovu izmjeru pa se prema njoj mjeri sve; DGU i OSM prikazuju se samo informativno."
         },
         "corridorDraft": {

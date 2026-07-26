@@ -840,6 +840,20 @@ button.corridor-lane-standard--reset:hover {
     color: #fff;
 }
 
+/* The two reference surveys, beside the standard rather than instead of it. They light up in the
+   purple the footprints are drawn in, not the blue of the setting that GOVERNS the road, so the eye
+   reads them as "also on the map" and never as "measured against". */
+.corridor-limit-option--survey {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    padding: 4px 9px;
+}
+
+.corridor-limit-option--survey.corridor-limit-option--on,
+.corridor-limit-option--survey.corridor-limit-option--on:hover {
+    background: #7c3aed;
+}
+
 .corridor-stats-note {
     font-size: 0.8rem;
     color: #8a6d1a;
@@ -973,3 +987,17 @@ button.corridor-lane-standard--reset:hover {
     gap: 3px;
 }
 
+
+/* "Incorrect?" — the way back to the OSM way this cross-section was read from. Deliberately quiet
+   and first in the row: it is an escape hatch for when the reconstruction is wrong, not a control. */
+.corridor-limit-osm {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+}
+
+.corridor-limit-osm:hover {
+    color: #2563eb;
+}

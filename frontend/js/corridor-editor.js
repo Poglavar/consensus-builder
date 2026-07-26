@@ -324,9 +324,26 @@ function corridorEditorFocusMap() {
 // The map beside the editor must show what a width change collides with, so the GDI footprint
 // layer turns on for the session (restored on close if the user had it off) and the pool is
 // fetched to cover the road — the red highlight and the Apply block both read that pool.
-// The profiler measures against the buildings on the map, so entering demands that some survey be
-// on. If one already is, that is the answer. If none is, the user picks — the same B dialog, so
-// there is one place where "which buildings" is answered — and the pick is remembered.
+//
+// It does not ask which survey. Every measurement reads GDI (see corridorEditorBuildingSurveys), so
+// there is one right answer and switching it on is the whole of it — a dialog whose outcome cannot
+// change anything is a question not worth asking. DGU and OSM stay exactly as the user left them,
+// and the panel's own reference buttons put them on the map to look at.
+// Pure: what the map's building layers must be while the editor is docked, given what was on before
+// it opened. GDI goes on because every measurement reads it; the other two are the user's business
+// and are left exactly as found.
+function corridorEditorEntryBuildingLayers(before) {
+    return { gdi: true, dgu: !!(before && before.dgu), osm: !!(before && before.osm) };
+}
+
+// Pure: the layers after one of the panel's reference buttons is pressed. GDI cannot be turned off
+// from here — it is the standard, not a view — so only DGU and OSM move.
+function corridorEditorToggledReferenceLayers(showing, key) {
+    const next = { gdi: true, dgu: !!(showing && showing.dgu), osm: !!(showing && showing.osm) };
+    if (key === 'dgu' || key === 'osm') next[key] = !next[key];
+    return next;
+}
+
 async function corridorEditorShowBuildingFootprints() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal') return;
@@ -335,15 +352,9 @@ async function corridorEditorShowBuildingFootprints() {
     const before = dialog ? dialog.currentBuildingLayerState() : { gdi: false, dgu: false, osm: false };
     state.restoreBuildingLayers = before;
 
-    if (dialog && !before.gdi && !before.dgu && !before.osm) {
-        const picked = await dialog.open();
-        if (corridorEditorState !== state) return; // closed while the dialog was up
-        // Cancelled: fall back to the last answer, or to GDI — the working set the cuts run on.
-        const choice = picked || dialog.remembered() || { gdi: true, dgu: false, osm: false };
-        dialog.remember(choice);
-        if (typeof window.setBuildingReferenceLayers === 'function') {
-            window.setBuildingReferenceLayers(!!choice.gdi, !!choice.dgu, !!choice.osm);
-        }
+    const entry = corridorEditorEntryBuildingLayers(before);
+    if (!before.gdi && typeof window.setBuildingReferenceLayers === 'function') {
+        window.setBuildingReferenceLayers(entry.gdi, entry.dgu, entry.osm);
     }
 
     if (typeof window.rebuildBuildingLayerFromPool === 'function') {
@@ -2380,19 +2391,50 @@ function corridorEditorSurveyFyiCounts() {
     }
 }
 
-// Two full-width header rows, both live on both tabs: WHAT limits the road, and WHICH survey of
-// the city that limit is read from. They govern the Corridor tab's buildable width and the pavement
-// fill drawn on the map alike — the same question asked twice — so neither may be buried in a tab.
+// Two full-width header rows, both live on both tabs: WHAT limits the road, and which survey of the
+// city that limit is read from. The first governs the Corridor tab's buildable width and the pavement
+// fill drawn on the map alike, so it may not be buried in a tab.
 //
-// The limit is two icons because it is a choice between two pictures of the street: the plot lines,
-// or the buildings. The survey is three independent toggles because the surveys STACK (see
-// building-layers-dialog.js) — and because a toggle is tappable, which the B key is not on a phone.
+// The limit is two icons because it is a genuine choice between two pictures of the street: the plot
+// lines, or the buildings. The survey is NOT a choice — it is GDI, stated — so it is a label, with
+// the other two surveys beside it as buttons that only put their outlines on the map. Because there
+// is nothing left to answer there, B does nothing while this panel is docked (see road-drawing.js).
 const CORRIDOR_LIMIT_ICONS = {
     // A plot with the road running through it: the land, as registered.
     parcels: '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><rect x="1.5" y="3.5" width="17" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M6.5 3.5 L6.5 16.5 M13.5 3.5 L13.5 16.5" stroke="currentColor" stroke-width="1.4" opacity="0.75"/></svg>',
     // Two buildings shoulder to shoulder: the street as it is actually built.
     buildings: '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M2 17 L2 8 L8 5 L8 17 Z M11 17 L11 9 L18 6 L18 17 Z" fill="currentColor" opacity="0.85"/><path d="M4 11h2M4 14h2M13 12h2M13 15h2" stroke="#fff" stroke-width="1.1" opacity="0.9"/></svg>'
 };
+
+// Pure: where "Incorrect?" points. A section reconstructed from OSM is only ever as good as the way
+// it was read off, so when it is wrong the fix belongs in OSM, not here — and one click should land
+// on the way itself. Several ways can cover one segment; the first covers the most of it, and the
+// rest go in the title so the whole source is visible. Returns null when this road was not adopted
+// from OSM (drawn from scratch, or adopted before the ids were recorded), which is what hides it.
+function corridorEditorOsmSourceLink(metadata) {
+    const ids = (metadata && Array.isArray(metadata.osmIds) ? metadata.osmIds : [])
+        .map(id => String(id).trim())
+        .filter(id => /^\d+$/.test(id));
+    if (!ids.length) return null;
+    return {
+        url: `https://www.openstreetmap.org/way/${ids[0]}`,
+        ids,
+        name: (metadata && metadata.osmName) ? String(metadata.osmName) : null
+    };
+}
+
+function corridorEditorOsmSourceHtml() {
+    const state = corridorEditorState;
+    const definition = state?.source?.roadProposal?.definition || state?.source?.definition || null;
+    const link = corridorEditorOsmSourceLink(definition?.metadata);
+    if (!link) return '';
+    const where = link.name ? `${link.name} — ` : '';
+    const title = corridorEditorI18n('modal.corridor.osmSourceTitle',
+        'This cross-section was read from OpenStreetMap ({{where}}way {{ids}}). If it is wrong, the tagging is where to fix it — opens OSM in a new tab.',
+        { where, ids: link.ids.join(', ') });
+    return `<a class="corridor-limit-osm" href="${link.url}" target="_blank" rel="noopener noreferrer"
+            title="${title}">${corridorEditorI18n('modal.corridor.osmSource', 'Incorrect?')}</a>`;
+}
 
 function corridorEditorLimitRowHtml() {
     const state = corridorEditorState;
@@ -2411,10 +2453,23 @@ function corridorEditorLimitRowHtml() {
     const extras = [];
     if (fyi && fyi.dgu > 0) extras.push(`DGU +${fyi.dgu}`);
     if (fyi && fyi.osm > 0) extras.push(`OSM +${fyi.osm}`);
+    // The other two surveys, as outlines you can put on the map — never as a standard to measure by.
+    // They are buttons rather than a dialog because there is nothing to decide: GDI is the answer,
+    // and these only change what is drawn beside it.
+    const showing = window.BuildingLayersDialog?.currentBuildingLayerState() || {};
+    const reference = ['dgu', 'osm'].map(key => {
+        const on = !!showing[key];
+        const title = corridorEditorI18n(`modal.corridor.referenceSurvey.${key}`,
+            `Draw the ${key.toUpperCase()} footprints on the map for comparison. Reference only — the road is measured against GDI.`);
+        return `<button type="button" class="corridor-limit-option corridor-limit-option--survey${on ? ' corridor-limit-option--on' : ''}"
+                data-survey="${key}" aria-pressed="${on}" title="${title}">${key.toUpperCase()}</button>`;
+    }).join('');
     const surveyRow = parcelLimit ? '' : `
         <div class="corridor-editor-limit-row">
+            ${corridorEditorOsmSourceHtml()}
             <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}</span>
             <span class="corridor-limit-current" title="${corridorEditorI18n('modal.corridor.measuredAgainstGdiTitle', 'Photogrammetry — what is actually there. Demolitions are keyed to this survey, so it is the one every measurement reads; DGU and OSM are shown for reference only.')}">GDI</span>
+            <div class="corridor-limit-toggle" role="group" aria-label="${corridorEditorI18n('modal.corridor.referenceSurveys', 'Also show')}">${reference}</div>
             ${extras.length ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredOthers', 'other surveys show {{extras}} here', { extras: extras.join(', ') })}</span>` : ''}
         </div>`;
 
@@ -2446,8 +2501,23 @@ function corridorEditorRenderLimitRow() {
             corridorEditorRender();
         });
     });
-    // No survey buttons any more: the measurement standard is GDI and is not a per-road choice.
-    // The layer toggles still live in the Buildings panel (and on B) for showing DGU and OSM.
+    // The two reference surveys. These only turn an outline on and off — nothing here can change
+    // what the road is measured against, which is why they are not offered as a standard. They last
+    // as long as the panel does: what the map shows the rest of the time is B's business.
+    host.querySelectorAll('[data-survey]').forEach(button => {
+        button.addEventListener('click', () => {
+            const key = button.dataset.survey === 'dgu' ? 'dgu' : 'osm';
+            const showing = window.BuildingLayersDialog?.currentBuildingLayerState() || {};
+            const next = corridorEditorToggledReferenceLayers(showing, key);
+            // Deliberately NOT recorded in state.restoreBuildingLayers: these are for inspecting this
+            // road, not for setting up the map. Closing puts back whatever was on before, so what the
+            // map shows outside the editor stays the answer given to B and nothing else.
+            if (typeof window.setBuildingReferenceLayers === 'function') {
+                window.setBuildingReferenceLayers(next.gdi, next.dgu, next.osm);
+            }
+            corridorEditorRenderLimitRow();
+        });
+    });
 }
 
 // The surveys on the map changed under the editor (B is live while it is docked): everything
@@ -2536,6 +2606,9 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         corridorEditorFitPadding,
         corridorEditorPartitionDemolitions,
-        corridorEditorWriteScopedSegmentPoints
+        corridorEditorWriteScopedSegmentPoints,
+        corridorEditorEntryBuildingLayers,
+        corridorEditorToggledReferenceLayers,
+        corridorEditorOsmSourceLink
     };
 }

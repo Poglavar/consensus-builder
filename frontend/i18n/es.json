@@ -1315,6 +1315,13 @@
             "measuredAgainst": "Medido contra",
             "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero",
             "measuredOthers": "otros levantamientos muestran {{extras}} aquí",
+            "referenceSurveys": "Mostrar también",
+            "referenceSurvey": {
+                "dgu": "Dibuja las huellas de DGU en el mapa para comparar. Solo referencia: la vía se mide contra GDI.",
+                "osm": "Dibuja las huellas de OSM en el mapa para comparar. Solo referencia: la vía se mide contra GDI."
+            },
+            "osmSource": "¿Incorrecto?",
+            "osmSourceTitle": "Esta sección se leyó de OpenStreetMap ({{where}}way {{ids}}). Si está mal, se corrige en el etiquetado allí: abre OSM en una pestaña nueva.",
             "measuredAgainstGdiTitle": "Fotogrametría: lo que realmente hay. Las demoliciones se vinculan a este levantamiento, así que es el que se usa para medir; DGU y OSM se muestran solo como referencia."
         },
         "corridorDraft": {

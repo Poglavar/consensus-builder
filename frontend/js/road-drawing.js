@@ -2861,6 +2861,10 @@ function handleRoadDrawHotkey(event) {
     if (isEditableTarget(event.target)) return;
     if (isAnyModalOpen()) return;
     if (event.key === 'b' || event.key === 'B') {
+        // Not while the road profile editor is docked. There it measures against GDI and says so,
+        // and the other two surveys are buttons in its own header — so the picker has nothing left
+        // to ask, and answering it could only contradict the panel.
+        if (typeof isCorridorEditorOpen === 'function' && isCorridorEditorOpen()) return;
         event.preventDefault();
         toggleBuildingReferenceLayers();
         return;

@@ -38,9 +38,8 @@
         return state;
     }
 
-    // The last choice the user made. It outlives the layers being switched off — the road profiler
-    // turns them off again on the way out, and the answer to "which survey do you work in" should
-    // not have to be given twice.
+    // The last choice the user made, so a survey switched off by something else (the road profiler
+    // restores the layers on the way out) can be offered back as the prefill rather than forgotten.
     let remembered = null;
     const rememberBuildingLayers = choice => {
         if (choice) remembered = { gdi: !!choice.gdi, dgu: !!choice.dgu, osm: !!choice.osm };

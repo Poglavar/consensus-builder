@@ -1266,6 +1266,13 @@
             "measuredAgainst": "Measured against",
             "lockedControl": "Not available while the cross-section is open — apply or cancel first",
             "measuredOthers": "other surveys show {{extras}} here",
+            "referenceSurveys": "Also show",
+            "referenceSurvey": {
+                "dgu": "Draw the DGU footprints on the map for comparison. Reference only — the road is measured against GDI.",
+                "osm": "Draw the OSM footprints on the map for comparison. Reference only — the road is measured against GDI."
+            },
+            "osmSource": "Incorrect?",
+            "osmSourceTitle": "This cross-section was read from OpenStreetMap ({{where}}way {{ids}}). If it is wrong, the tagging is where to fix it — opens OSM in a new tab.",
             "measuredAgainstGdiTitle": "Photogrammetry — what is actually there. Demolitions are keyed to this survey, so it is the one every measurement reads; DGU and OSM are shown for reference only."
         },
         "corridorDraft": {
