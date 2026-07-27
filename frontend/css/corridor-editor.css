@@ -24,9 +24,13 @@
 }
 
 /* While the editor is open the map is a viewport, not a control surface: panning and zooming
-   stay live, but no object on it takes a click — roads, parcels, buildings, markers, none.
-   (Wins over Leaflet's own .leaflet-interactive rule by specificity; map-level click handlers
-   guard on isCorridorEditorOpen() themselves.) */
+   stay live, but no object on it takes a click — roads, parcels, buildings, markers, none. This
+   also takes away the pointer cursor and the hover tooltips, which is why it is worth having on
+   top of the click swallow in corridorEditorLockMap (that one is the guarantee; this one is the
+   affordance). The first selector exists to outrank Leaflet's own
+   `.leaflet-pane > svg path.leaflet-interactive { pointer-events: auto }` — without it every
+   vector layer stayed clickable, since a bare `.leaflet-interactive` rule loses to that one. */
+body.corridor-editor-open .leaflet-pane > svg path.leaflet-interactive,
 body.corridor-editor-open .leaflet-interactive {
     pointer-events: none;
 }
@@ -721,12 +725,119 @@ button.corridor-lane-standard--reset:hover {
     color: #333;
 }
 
+/* The header's limit rows stay put across both tabs: they govern the Corridor tab's buildable width
+   and the pavement fill drawn on the map alike, so both must be readable AND changeable while either
+   is on screen. Full rows at the panel's normal size — these are controls, not footnotes. */
+.corridor-editor-limit-host {
+    padding: 0 16px 10px;
+}
+
+.corridor-editor-limit-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: #555;
+    min-height: 30px;
+}
+
+.corridor-limit-current {
+    font-weight: 600;
+    color: #333;
+}
+
+.corridor-limit-note {
+    color: #8a6d1a;
+}
+
+/* The building-layers picker (B). Three checkboxes, because the surveys stack. */
+.building-layers-dialog .building-layers-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 12px 0 4px;
+    text-align: left;
+}
+
+.building-layers-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.building-layers-option input {
+    margin-top: 3px;
+    accent-color: #7c3aed;
+}
+
+.building-layers-option strong {
+    display: block;
+    font-weight: 600;
+}
+
+.building-layers-option small {
+    display: block;
+    color: #666;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+/* Which limit the road answers to. A segmented pair rather than a checkbox: the two are exclusive
+   (going to the buildings means ignoring the road parcel, and vice versa), and a checkbox reads as
+   "and also", which is the one thing this setting never means. */
 .corridor-stats-constraint {
     display: flex;
     align-items: center;
     gap: 8px;
     color: #555;
+}
+
+.corridor-limit-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.corridor-limit-toggle {
+    display: inline-flex;
+    border: 1px solid #cfd4dc;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.corridor-limit-option {
+    appearance: none;
+    border: 0;
+    background: #fff;
+    color: #444;
+    font: inherit;
+    font-size: 0.82rem;
+    /* Tall enough to be a comfortable tap target on a phone, where there is no B key to press. */
+    min-height: 30px;
+    padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+}
+
+.corridor-limit-option svg {
+    display: block;
+}
+
+.corridor-limit-option + .corridor-limit-option {
+    border-left: 1px solid #cfd4dc;
+}
+
+.corridor-limit-option:hover {
+    background: #f1f3f7;
+}
+
+.corridor-limit-option--on,
+.corridor-limit-option--on:hover {
+    background: #2563eb;
+    color: #fff;
 }
 
 .corridor-stats-note {

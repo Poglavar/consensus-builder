@@ -340,6 +340,34 @@
         return plan;
     }
 
+    // Re-point a proposal's declared parents at a new parcel-id list. Used when a shared payload
+    // names ghost derived ids (…#p-…) this browser never minted: the land is present — ancestor
+    // proposals re-created the same fabric under different local names — so the parents are
+    // re-resolved from geometry and every list the apply path reads is rewritten to match.
+    // Mutates `proposal`; returns the paths it touched so callers can log and tests can assert.
+    function rewriteParentParcelIds(proposal, parcelIds) {
+        const ids = (Array.isArray(parcelIds) ? parcelIds : [])
+            .map(id => (id === undefined || id === null) ? '' : String(id))
+            .filter(Boolean);
+        if (!proposal || !ids.length) return [];
+
+        const touched = [];
+        const set = (obj, path) => {
+            if (!obj || typeof obj !== 'object') return;
+            obj.parentParcelIds = ids.slice();
+            touched.push(path);
+        };
+        // The top-level list is the generic prerequisite bucket and is always (re)written; the
+        // typology sub-objects only when they exist on this proposal.
+        set(proposal, 'parentParcelIds');
+        set(proposal.roadProposal, 'roadProposal.parentParcelIds');
+        set(proposal.structureProposal, 'structureProposal.parentParcelIds');
+        set(proposal.buildingProposal, 'buildingProposal.parentParcelIds');
+        set(proposal.decideLaterProposal, 'decideLaterProposal.parentParcelIds');
+        set(proposal.reparcellization, 'reparcellization.parentParcelIds');
+        return touched;
+    }
+
     const api = {
         MIN_INTERSECTION_M2,
         compactness,
@@ -353,7 +381,8 @@
         computeCadastreParcelIds,
         computeBaseAncestry,
         buildConstraintGraph,
-        resolveApplyOrder
+        resolveApplyOrder,
+        rewriteParentParcelIds
     };
 
     // Namespaced only — a bare global here could shadow one of the existing top-level functions in

@@ -199,16 +199,30 @@
         };
     }
 
-    // Tile LOD can advance in several distinct bursts. Track source revisions separately from
-    // applied refits so a later fine-mesh burst can supersede an earlier coarse "quiet" period,
-    // while an explicit pass budget prevents camera-driven tile churn from rebuilding forever.
-    function createTerrainRefreshTracker(maxRefreshes) {
+    // A road seated on half-loaded Google tiles is a ski jump: its formation samples terrain that
+    // is not there yet, so it ramps between the few real hits. The cure is to keep re-fitting as the
+    // ground arrives — but the OLD budget was a flat 3 refits, and on a slow/bursty network those
+    // three are spent in early quiet-gaps long before streaming finishes, leaving the ramp forever.
+    //
+    // So the budget is split by PHASE. While the mesh is still streaming in (the initial-convergence
+    // phase), refits are "provisional": they re-fit freely — only a runaway backstop caps them — and
+    // do NOT spend the bounded budget. The first refit taken once the mesh is fully loaded closes
+    // convergence; every refit after that (including camera-driven re-streaming) is bounded, which is
+    // the churn cap the flat budget was really there to provide.
+    const DEFAULT_MAX_REFRESHES = 3;
+    const DEFAULT_MAX_PROVISIONAL_REFRESHES = 40; // runaway backstop for the streaming phase only
+    function createTerrainRefreshTracker(maxRefreshes, maxProvisionalRefreshes) {
         const requested = Number(maxRefreshes);
+        const requestedProvisional = Number(maxProvisionalRefreshes);
         return {
             revision: 0,
             appliedRevision: 0,
-            refreshes: 0,
-            maxRefreshes: Number.isFinite(requested) ? Math.max(1, Math.floor(requested)) : 3,
+            refreshes: 0,               // bounded, post-convergence (camera-churn) refits
+            provisionalRefreshes: 0,    // refits taken while tiles were still streaming
+            initialConverged: false,
+            maxRefreshes: Number.isFinite(requested) ? Math.max(1, Math.floor(requested)) : DEFAULT_MAX_REFRESHES,
+            maxProvisionalRefreshes: Number.isFinite(requestedProvisional)
+                ? Math.max(1, Math.floor(requestedProvisional)) : DEFAULT_MAX_PROVISIONAL_REFRESHES,
             lastReason: null
         };
     }
@@ -220,14 +234,27 @@
         return tracker.revision;
     }
 
-    function claimTerrainRefresh(tracker) {
-        if (!tracker || tracker.refreshes >= tracker.maxRefreshes
-            || tracker.revision <= tracker.appliedRevision) return null;
-        tracker.refreshes += 1;
+    // options.stillLoading: the tile mesh has not finished streaming (loadProgress below threshold).
+    function claimTerrainRefresh(tracker, options) {
+        if (!tracker || tracker.revision <= tracker.appliedRevision) return null;
+        const stillLoading = !!(options && options.stillLoading);
+        const provisional = stillLoading && !tracker.initialConverged;
+        if (provisional) {
+            if (tracker.provisionalRefreshes >= tracker.maxProvisionalRefreshes) return null;
+            tracker.provisionalRefreshes += 1;
+        } else {
+            if (tracker.refreshes >= tracker.maxRefreshes) return null;
+            tracker.refreshes += 1;
+            // A refit taken with the mesh fully loaded ends convergence: from here the bounded budget
+            // governs, so later camera-driven churn cannot rebuild forever.
+            if (!stillLoading) tracker.initialConverged = true;
+        }
         tracker.appliedRevision = tracker.revision;
         return {
             revision: tracker.appliedRevision,
             refresh: tracker.refreshes,
+            provisional: provisional,
+            provisionalRefresh: tracker.provisionalRefreshes,
             maxRefreshes: tracker.maxRefreshes,
             reason: tracker.lastReason
         };

@@ -215,13 +215,15 @@ describe('height-aware road cut encoding', () => {
 });
 
 describe('bounded terrain LOD refresh tracking', () => {
+    // A claim with the mesh fully loaded (default: no stillLoading flag) spends the bounded budget.
     it('accepts a later source revision after an earlier quiet-period refit', () => {
         const tracker = createTerrainRefreshTracker(3);
 
         noteTerrainSourceChange(tracker, 'ground-lock');
-        expect(claimTerrainRefresh(tracker)).toEqual({
+        expect(claimTerrainRefresh(tracker)).toMatchObject({
             revision: 1,
             refresh: 1,
+            provisional: false,
             maxRefreshes: 3,
             reason: 'ground-lock'
         });
@@ -235,7 +237,7 @@ describe('bounded terrain LOD refresh tracking', () => {
         });
     });
 
-    it('coalesces source churn and never exceeds the refit budget', () => {
+    it('coalesces source churn and never exceeds the refit budget once loaded', () => {
         const tracker = createTerrainRefreshTracker(2);
 
         noteTerrainSourceChange(tracker, 'load-1');
@@ -247,6 +249,57 @@ describe('bounded terrain LOD refresh tracking', () => {
         expect(claimTerrainRefresh(tracker)).toBeNull();
         expect(tracker.refreshes).toBe(2);
         expect(tracker.appliedRevision).toBe(3);
+    });
+
+    // The ski-jump fix: while the mesh is still streaming, refits are "provisional" — they re-fit
+    // freely and do NOT spend the bounded budget, so a road seated on half-loaded terrain keeps
+    // re-fitting until the ground has actually arrived.
+    it('refits many times while still loading without spending the bounded budget', () => {
+        const tracker = createTerrainRefreshTracker(3);
+        for (let i = 0; i < 10; i++) {
+            noteTerrainSourceChange(tracker, 'streaming-' + i);
+            const claim = claimTerrainRefresh(tracker, { stillLoading: true });
+            expect(claim).toMatchObject({ provisional: true });
+        }
+        expect(tracker.refreshes).toBe(0);            // bounded budget untouched
+        expect(tracker.provisionalRefreshes).toBe(10);
+        // After all that streaming, the full post-load budget is still available.
+        noteTerrainSourceChange(tracker, 'loaded');
+        expect(claimTerrainRefresh(tracker, { stillLoading: false })).toMatchObject({
+            provisional: false, refresh: 1
+        });
+    });
+
+    it('closes convergence on the first fully-loaded refit, then bounds all later churn', () => {
+        const tracker = createTerrainRefreshTracker(2);
+        // Stream a bit (provisional).
+        noteTerrainSourceChange(tracker, 's1');
+        claimTerrainRefresh(tracker, { stillLoading: true });
+        expect(tracker.initialConverged).toBe(false);
+        // First loaded refit closes convergence and spends 1.
+        noteTerrainSourceChange(tracker, 'loaded');
+        expect(claimTerrainRefresh(tracker, { stillLoading: false })).toMatchObject({ refresh: 1 });
+        expect(tracker.initialConverged).toBe(true);
+        // A later camera move dips loadProgress again, but convergence is done — refits are bounded,
+        // NOT provisional, so churn cannot rebuild forever.
+        noteTerrainSourceChange(tracker, 'camera-restream');
+        expect(claimTerrainRefresh(tracker, { stillLoading: true })).toMatchObject({
+            provisional: false, refresh: 2
+        });
+        noteTerrainSourceChange(tracker, 'more-churn');
+        expect(claimTerrainRefresh(tracker, { stillLoading: true })).toBeNull();
+        expect(tracker.refreshes).toBe(2);
+    });
+
+    it('caps provisional refits with a runaway backstop', () => {
+        const tracker = createTerrainRefreshTracker(3, 4);
+        let last = null;
+        for (let i = 0; i < 6; i++) {
+            noteTerrainSourceChange(tracker, 'r' + i);
+            last = claimTerrainRefresh(tracker, { stillLoading: true });
+        }
+        expect(tracker.provisionalRefreshes).toBe(4);
+        expect(last).toBeNull(); // stopped after the backstop even though tiles never "finished"
     });
 });
 

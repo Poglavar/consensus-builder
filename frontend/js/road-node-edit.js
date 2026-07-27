@@ -30,6 +30,8 @@
         }
         handleGroup = null;
         activeKey = null;
+        // Dragging a node is the finest road work there is; the deep zoom goes with the handles.
+        global.RoadEditingZoom?.exit('nodes');
     }
 
     // A divIcon's element IS its hit area — on touch screens the mouse-sized handles were
@@ -250,6 +252,7 @@
         }
         handleGroup = global.L.layerGroup().addTo(map);
         activeKey = String(key);
+        global.RoadEditingZoom?.enter('nodes');
         const isTrack = global.corridorIsTrack(proposal.roadProposal.definition);
 
         // ONE handle per unique position: a junction's coincident vertices (one per crossing
