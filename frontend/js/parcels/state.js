@@ -47,7 +47,9 @@
     function isParcelDrawingModeActive() {
         return Boolean(
             global.roadDrawingMode ||
-            global.trackDrawingMode ||
+            global.transitStationPlacementMode ||
+            (typeof global.isTransitStationPlacementActive === 'function' && global.isTransitStationPlacementActive()) ||
+            (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) ||
             (typeof global.isAreaMonitorDrawingActive === 'function' && global.isAreaMonitorDrawingActive()) ||
             global.areaMonitorDrawingMode
         );
@@ -190,4 +192,3 @@
 
     global.ParcelsState = api;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -3,7 +3,6 @@ function toggleAccordion(checkbox, options = {}) {
     const skipParcelFetch = options.skipParcelFetch === true;
     // Checkbox is now inside the accordion-content, so we need to find the section differently
     const section = checkbox.closest('.accordion-section');
-    const content = section ? section.querySelector('.accordion-content') : null;
     const header = section ? section.querySelector('.accordion-header') : null;
     const layerName = checkbox.dataset.layer;
 
@@ -90,6 +89,20 @@ function toggleAccordion(checkbox, options = {}) {
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
+        }
+    } else if (layerName === 'buildingsDgu') {
+        const showDgu = document.getElementById('showBuildingsDgu').checked;
+        if (showDgu) {
+            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
+        } else if (typeof hideDguBuildingLayer === 'function') {
+            hideDguBuildingLayer();
+        }
+    } else if (layerName === 'buildingsOsm') {
+        const showOsm = document.getElementById('showBuildingsOsm').checked;
+        if (showOsm) {
+            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+        } else if (typeof hideOsmBuildingLayer === 'function') {
+            hideOsmBuildingLayer();
         }
     }
     // Proposals section no longer has a checkbox - proposals are always shown
@@ -602,15 +615,14 @@ function toggleBlocksVisibility() {
     }
 }
 
-// Toggle layer visibility
+// Toggle layer visibility.
+// `buildings` = the GDI footprints (the model). `buildingsDgu` = the DGU cadastre reference.
+// `buildingsOsm` = the OSM footprints behind the basemap. They are independent — any can be on at
+// once — and NONE changes what a corridor cuts: detection reads window.buildingFeaturePool (the
+// data), never a Leaflet layer.
 function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
     const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
-
-    if (layerType === 'parcels') {
-        // This is now handled by toggleAccordion calling showAllParcels/hideAllParcels
-        // And by handleParcelLayerChange for internal parcel type toggles (if those are re-introduced)
-    }
 
     if (layerType === 'buildings') {
         if (showBuildings) {
@@ -619,6 +631,24 @@ function toggleLayer(layerType) {
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
+        }
+    }
+
+    if (layerType === 'buildingsDgu') {
+        const showDgu = document.getElementById('showBuildingsDgu')?.checked;
+        if (showDgu) {
+            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
+        } else if (typeof hideDguBuildingLayer === 'function') {
+            hideDguBuildingLayer();
+        }
+    }
+
+    if (layerType === 'buildingsOsm') {
+        const showOsm = document.getElementById('showBuildingsOsm')?.checked;
+        if (showOsm) {
+            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
+        } else if (typeof hideOsmBuildingLayer === 'function') {
+            hideOsmBuildingLayer();
         }
     }
 
@@ -645,6 +675,12 @@ function toggleLayer(layerType) {
 // Update block section button states based on checkbox and selection state
 function updateBlockButtonStates() {
     const blockButtons = document.querySelectorAll('.accordion-section[data-section="blocks"] .btn-group button');
+
+    // Predicate used below to exclude road parcels from the block's parcel count. It resolves the
+    // same way toggleAccordion does; previously this was referenced as a bare `isRoadFn`, which only
+    // existed as a local in toggleAccordion, so the guard silently never fired and roads were counted.
+    const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
+    const isRoadFn = uiVisibility.isRoad || (typeof window !== 'undefined' ? window.isRoad : null);
 
     // Get references to specific buttons
     const clearBlocksButton = document.querySelector('button[onclick="clearBlocks()"]');
@@ -932,8 +968,9 @@ function updateParcelsCheckboxByZoom(within) {
 
         // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible
         const showBuildingsCheckbox = document.getElementById('showBuildings');
+        const showBuildingsDguCheckbox = document.getElementById('showBuildingsDgu');
         const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        [showBuildingsCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
+        [showBuildingsCheckbox, showBuildingsDguCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
             if (!cb) return;
             cb.disabled = !within;
         });

@@ -32,6 +32,12 @@ function ensureReparcellizationModuleLoaded() {
 
 async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
     const normalizedKey = algorithmKey || 'sweep-line';
+    const initialSelection = (typeof getCurrentParcelSelectionContext === 'function')
+        ? getCurrentParcelSelectionContext()
+        : { ids: [] };
+    // Build-palette and classic-dialog creation share one goal-aware block-selection policy.
+    if (typeof shouldStopFreshProposalForWholeBlock === 'function'
+        && await shouldStopFreshProposalForWholeBlock('reparcellization', initialSelection)) return false;
     const ownershipModeInput = document.getElementById('proposalBoundaryMode');
     const ownershipMode = ownershipModeInput && ownershipModeInput.value ? ownershipModeInput.value : (currentOwnershipMode || 'multiple');
 

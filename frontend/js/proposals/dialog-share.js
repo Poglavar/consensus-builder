@@ -109,7 +109,8 @@ function renderProposalListModal() {
         },
         sources: {
             local: t('modal.roadWidth.proposalList.sources.local', 'Local'),
-            server: t('modal.roadWidth.proposalList.sources.server', 'Server')
+            server: t('modal.roadWidth.proposalList.sources.server', 'Server'),
+            blockchain: t('modal.roadWidth.proposalList.sources.blockchain', 'Blockchain')
         },
         loadingServer: t('modal.roadWidth.proposalList.loadingServer', 'Loading server proposals...'),
         serverError: t('modal.roadWidth.proposalList.serverError', 'Failed to load server proposals.'),
@@ -120,19 +121,10 @@ function renderProposalListModal() {
     const goalOptions = getLocalizedProposalGoalFilters();
     const sortOptions = getLocalizedProposalSortOptions();
 
-    const scrollPositions = {
-        active: 0,
-        executed: 0
-    };
-
-    const existingActiveTab = modal.querySelector('#active-proposals-tab');
-    if (existingActiveTab) {
-        scrollPositions.active = existingActiveTab.scrollTop;
-    }
-
-    const existingExecutedTab = modal.querySelector('#executed-proposals-tab');
-    if (existingExecutedTab) {
-        scrollPositions.executed = existingExecutedTab.scrollTop;
+    const scrollPositions = { body: 0 };
+    const existingBody = modal.querySelector('.proposal-list-modal-body');
+    if (existingBody) {
+        scrollPositions.body = existingBody.scrollTop;
     }
 
     const source = proposalListState.source || 'local';
@@ -145,20 +137,14 @@ function renderProposalListModal() {
     });
 
     const buildDatasets = (augmentedList) => {
-        const active = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() !== 'executed');
-        const executed = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() === 'executed');
-        const filteredActive = applyProposalListFilters(active);
-        const filteredExecuted = applyProposalListFilters(executed);
-        const sortedActive = sortProposalDataset(filteredActive);
-        const sortedExecuted = sortProposalDataset(filteredExecuted);
+        // Single list — lifecycle status and applied state are dropdown filters inside
+        // applyProposalListFilters now, not Active/Executed tabs. `sorted` is what the list renders.
+        const filtered = applyProposalListFilters(augmentedList);
+        const sorted = sortProposalDataset(filtered);
         return {
             augmented: augmentedList,
-            active,
-            executed,
-            filteredActive,
-            filteredExecuted,
-            sortedActive,
-            sortedExecuted
+            filtered,
+            sorted
         };
     };
 
@@ -189,12 +175,36 @@ function renderProposalListModal() {
     }));
     const serverDatasets = buildDatasets(serverAugmented);
 
-    const chosen = source === 'server' ? serverDatasets : localDatasets;
+    // Blockchain source: the MINTED (on-chain) proposals. Same data the wallet's Minted modal shows,
+    // just surfaced in the list. Read from local storage (own mints + anything chain-sync pulled in);
+    // activating the tab with a wallet triggers a sync to refresh (handled in the source switch).
+    // Canton proposals are EXCLUDED here — they're private to their ledger parties, live in their own
+    // purple-badge/explorer lane, and are called out with a note below rather than silently dropped.
+    const cantonModeApi = (typeof window !== 'undefined') ? window.CantonMode : null;
+    const isCantonProposal = (cantonModeApi && typeof cantonModeApi.isCantonProposal === 'function')
+        ? (p) => cantonModeApi.isCantonProposal(p)
+        : () => false;
+    const blockchainAugmented = allProposals
+        .filter(proposal => {
+            const minted = (typeof isProposalMinted === 'function') ? isProposalMinted(proposal) : !!(proposal && proposal.isMinted);
+            return minted && !isCantonProposal(proposal);
+        })
+        .map(proposal => ({ proposal, metrics: computeProposalMetrics(proposal) }));
+    const blockchainDatasets = buildDatasets(blockchainAugmented);
+    const blockchainCount = blockchainAugmented.length;
+    // When Canton mode is active, tell the user why their private proposals aren't in this list.
+    const cantonActiveNow = cantonModeApi && typeof cantonModeApi.isActive === 'function' && cantonModeApi.isActive();
+    const blockchainCantonNote = (source === 'blockchain' && cantonActiveNow)
+        ? `<p class="proposal-list-note canton-empty">${escapeHtml('On Canton, proposals are private, so they are not listed here.')}</p>`
+        : '';
+
+    const chosen = source === 'server' ? serverDatasets
+        : source === 'blockchain' ? blockchainDatasets
+        : localDatasets;
 
     const selectedId = proposalListState.selectedId;
     if (selectedId) {
-        const isSelectedVisible = chosen.sortedActive.some(entry => getProposalKey(entry.proposal) === selectedId)
-            || chosen.sortedExecuted.some(entry => getProposalKey(entry.proposal) === selectedId);
+        const isSelectedVisible = chosen.sorted.some(entry => getProposalKey(entry.proposal) === selectedId);
         if (!isSelectedVisible) {
             proposalListState.selectedId = null;
         }
@@ -244,7 +254,10 @@ function renderProposalListModal() {
         ? t('modal.roadWidth.proposalList.syncBlockchainNoWallet', 'Connect wallet to sync from blockchain')
         : t('modal.roadWidth.proposalList.syncBlockchain', 'Refresh from blockchain');
 
-    const syncButtonHtml = source === 'local' && syncBlockchainAvailable ? `
+    // Only surface the blockchain-sync control when it can actually do something: a wallet is connected
+    // (or a sync is already running). A permanently-greyed sync button on the Local tab just reads as
+    // broken, so hide it rather than disable it when there's no wallet.
+    const syncButtonHtml = source === 'local' && syncBlockchainAvailable && (isWalletConnected || syncStatus.isSyncing) ? `
         <button
             id="sync-blockchain-proposals-btn"
             class="btn btn-action"
@@ -258,18 +271,41 @@ function renderProposalListModal() {
         </button>
     ` : '';
 
+    // Status (lifecycle) and Applied are two orthogonal dropdown filters that replaced the old
+    // Active/Executed tabs. Every lifecycle status is selectable; labels reuse getProposalLifecycleLabel.
+    const lifecycleFilterOptions = [
+        { value: 'all', label: t('modal.roadWidth.proposalList.filters.statusAll', 'All statuses') },
+        ...['active', 'executed', 'expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded']
+            .map(key => ({ value: key, label: getProposalLifecycleLabel(key) }))
+    ];
+    const appliedFilterOptions = [
+        { value: 'all', label: t('modal.roadWidth.proposalList.filters.appliedAll', 'Applied & not') },
+        { value: 'applied', label: t('modal.roadWidth.proposalList.filters.appliedYes', 'Applied') },
+        { value: 'not-applied', label: t('modal.roadWidth.proposalList.filters.appliedNo', 'Not applied') }
+    ];
+    const statusFilterLabel = t('modal.roadWidth.proposalList.filters.status', 'Status');
+    const appliedFilterLabel = t('modal.roadWidth.proposalList.filters.applied', 'Applied');
+
     const controlsHtml = `
         <div class="proposal-list-controls">
             <div class="proposal-filter-group">
-                <label for="proposal-filter-type" data-i18n-key="modal.roadWidth.proposalList.filters.goal">${escapeHtml(modalStrings.filters.goal)}</label>
-                <select id="proposal-filter-type">
+                <select id="proposal-filter-type" aria-label="${escapeHtml(modalStrings.filters.goal)}">
                     ${goalOptions.map(option => `
                         <option value="${option.value}" ${option.value === proposalListState.filterType ? 'selected' : ''} data-i18n-key="modal.roadWidth.proposalList.filters.goals.${option.value}">${escapeHtml(option.label)}</option>
                     `).join('')}
                 </select>
             </div>
             <div class="proposal-filter-group">
-                <label for="proposal-filter-author" data-i18n-key="modal.roadWidth.proposalList.filters.author">${escapeHtml(modalStrings.filters.author)}</label>
+                <select id="proposal-filter-lifecycle" aria-label="${escapeHtml(statusFilterLabel)}">
+                    ${lifecycleFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.lifecycleFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="proposal-filter-group">
+                <select id="proposal-filter-applied" aria-label="${escapeHtml(appliedFilterLabel)}">
+                    ${appliedFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.appliedFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="proposal-filter-group">
                 <input type="text" id="proposal-filter-author" placeholder="${escapeHtml(modalStrings.filters.authorPlaceholder)}" data-i18n-key="modal.roadWidth.proposalList.filters.authorPlaceholder" data-i18n-attr="placeholder" value="${escapeHtml(proposalListState.authorFilter)}">
             </div>
             <div class="proposal-filter-group">
@@ -296,10 +332,13 @@ function renderProposalListModal() {
             <button class="proposal-source-btn ${source === 'server' ? 'active' : ''}" data-source="server">
                 ${escapeHtml(modalStrings.sources.server)} (${serverCountLabel !== null ? serverCountLabel : '0'})
             </button>
+            <button class="proposal-source-btn ${source === 'blockchain' ? 'active' : ''}" data-source="blockchain">
+                ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
+            </button>
         </div>
     `;
 
-    const showServerLoading = source === 'server' && serverProposalCache.loading && chosen.sortedActive.length === 0 && chosen.sortedExecuted.length === 0;
+    const showServerLoading = source === 'server' && serverProposalCache.loading && chosen.sorted.length === 0;
     const showServerError = source === 'server' && !serverProposalCache.loading && serverProposalCache.error;
 
     const loadingHtml = `<div class="proposal-list-loading">${escapeHtml(modalStrings.loadingServer)}</div>`;
@@ -314,9 +353,19 @@ function renderProposalListModal() {
         });
     };
 
-    const activeCountDisplay = `${chosen.sortedActive.length}`;
+    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
 
-    const executedCountDisplay = `${chosen.sortedExecuted.length}`;
+    // A live-search re-render replaces innerHTML, destroying the focused filter field. Remember which
+    // field held focus and its caret so we can restore both afterwards, so typing never loses the
+    // field. On the open action, showAllProposalsModal sets a one-shot autofocus flag (honored here
+    // rather than there because the render can be deferred until i18n is ready).
+    const autofocusSearch = proposalListState.autofocusSearch === true;
+    const prevActive = document.activeElement;
+    const focusFieldId = (prevActive && modal.contains(prevActive) && prevActive.id)
+        ? prevActive.id
+        : (autofocusSearch ? 'proposal-filter-search' : null);
+    const focusSelStart = (focusFieldId && !autofocusSearch && prevActive) ? prevActive.selectionStart : null;
+    const focusSelEnd = (focusFieldId && !autofocusSearch && prevActive) ? prevActive.selectionEnd : null;
 
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
@@ -325,25 +374,34 @@ function renderProposalListModal() {
                 <button type="button" class="proposal-list-modal-close close-circle-btn close-circle-btn--lg" aria-label="${escapeHtml(modalStrings.closeAria)}" data-i18n-key="modal.roadWidth.proposalList.closeAria" data-i18n-attr="aria-label" onclick="closeProposalList()">&times;</button>
             </div>
             ${sourceToggleHtml}
+            ${blockchainCantonNote}
             ${controlsHtml}
-            <div class="proposal-list-tabs">
-                <button class="proposal-tab-btn ${proposalListState.activeTab === 'active' ? 'active' : ''}" data-tab="active" data-i18n-key="modal.roadWidth.proposalList.tabs.active">
-                    ${escapeHtml(modalStrings.tabs.active)} (${activeCountDisplay})
-                </button>
-                <button class="proposal-tab-btn ${proposalListState.activeTab === 'executed' ? 'active' : ''}" data-tab="executed" data-i18n-key="modal.roadWidth.proposalList.tabs.executed">
-                    ${escapeHtml(modalStrings.tabs.executed)} (${executedCountDisplay})
-                </button>
-            </div>
+            <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
-                <div id="active-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'active' ? 'active' : ''}">
-                    ${buildTabContent(chosen.sortedActive)}
-                </div>
-                <div id="executed-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'executed' ? 'active' : ''}">
-                    ${buildTabContent(chosen.sortedExecuted)}
+                <div id="proposals-list" class="proposal-tab-content active">
+                    ${buildTabContent(chosen.sorted)}
                 </div>
             </div>
         </div>
     `;
+
+    // Restore focus (+ caret) to the filter field that had it before this rebuild — see capture above.
+    if (focusFieldId) {
+        const field = modal.querySelector('#' + focusFieldId);
+        if (field) {
+            field.focus();
+            try {
+                if (autofocusSearch) {
+                    const end = field.value.length;
+                    field.setSelectionRange(end, end);
+                } else if (focusSelStart != null) {
+                    field.setSelectionRange(focusSelStart, focusSelEnd);
+                }
+            } catch (_) { }
+        }
+    }
+    // One-shot: the autofocus request is consumed by the first render after opening.
+    if (autofocusSearch) proposalListState.autofocusSearch = false;
 
     // Run DOM-based translations to mirror agent modal behavior
     try {
@@ -367,6 +425,7 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.sources.local', modalStrings.sources.local);
         fallbackMap.set('modal.roadWidth.proposalList.sources.server', modalStrings.sources.server);
+        fallbackMap.set('modal.roadWidth.proposalList.sources.blockchain', modalStrings.sources.blockchain);
         fallbackMap.set('modal.roadWidth.proposalList.loadingServer', modalStrings.loadingServer);
         fallbackMap.set('modal.roadWidth.proposalList.serverError', modalStrings.serverError);
         fallbackMap.set('modal.roadWidth.proposalList.retry', modalStrings.retry);
@@ -444,6 +503,14 @@ function renderProposalListModal() {
             proposalListState.source = nextSource;
             if (nextSource === 'server') {
                 ensureServerProposals(resolveCurrentCityCode());
+            } else if (nextSource === 'blockchain') {
+                // Refresh on-chain proposals from the wallet (best-effort, wallet-gated). No wallet →
+                // the tab still shows locally-held minted proposals; the Sync button reflects state.
+                try {
+                    if (isWalletConnected && runtimeGlobal.BlockchainSync && typeof runtimeGlobal.BlockchainSync.sync === 'function') {
+                        runtimeGlobal.BlockchainSync.sync().then(() => renderProposalListModal()).catch(() => { });
+                    }
+                } catch (_) { /* ignore */ }
             }
             renderProposalListModal();
         });
@@ -458,15 +525,21 @@ function renderProposalListModal() {
         });
     }
 
-    modal.querySelectorAll('.proposal-tab-btn').forEach(button => {
-        button.addEventListener('click', event => {
-            const tab = event.currentTarget.getAttribute('data-tab');
-            if (tab && proposalListState.activeTab !== tab) {
-                proposalListState.activeTab = tab;
-                renderProposalListModal();
-            }
+    const lifecycleSelect = modal.querySelector('#proposal-filter-lifecycle');
+    if (lifecycleSelect) {
+        lifecycleSelect.addEventListener('change', event => {
+            proposalListState.lifecycleFilter = event.target.value;
+            renderProposalListModal();
         });
-    });
+    }
+
+    const appliedSelect = modal.querySelector('#proposal-filter-applied');
+    if (appliedSelect) {
+        appliedSelect.addEventListener('change', event => {
+            proposalListState.appliedFilter = event.target.value;
+            renderProposalListModal();
+        });
+    }
 
     modal.querySelectorAll('.proposal-list-item').forEach(item => {
         item.addEventListener('click', handleProposalListItemClick);
@@ -476,14 +549,9 @@ function renderProposalListModal() {
         button.addEventListener('click', handleProposalDownloadClick);
     });
 
-    const activeTabEl = modal.querySelector('#active-proposals-tab');
-    if (activeTabEl) {
-        activeTabEl.scrollTop = scrollPositions.active;
-    }
-
-    const executedTabEl = modal.querySelector('#executed-proposals-tab');
-    if (executedTabEl) {
-        executedTabEl.scrollTop = scrollPositions.executed;
+    const bodyEl = modal.querySelector('.proposal-list-modal-body');
+    if (bodyEl) {
+        bodyEl.scrollTop = scrollPositions.body;
     }
 
     if (proposalListState.selectedId) {
@@ -499,6 +567,7 @@ function showAllProposalsModal() {
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
     let modal = document.querySelector('.proposal-list-modal');
+    const wasHidden = !modal || modal.style.display !== 'block';
     if (!modal) {
         modal = document.createElement('div');
         modal.className = 'proposal-list-modal';
@@ -506,7 +575,30 @@ function showAllProposalsModal() {
     }
 
     modal.style.display = 'block';
+
+    // On the open action only (not on every re-render): fold the sidebar away so the map keeps the
+    // rest of the screen, and request search-box autofocus (honored inside the render, which may be
+    // deferred until i18n is ready).
+    if (wasHidden) {
+        proposalListState.autofocusSearch = true;
+        // Enter proposal browse mode: the map stays live (pan/zoom) but only proposals are clickable
+        // (see onParcelClick + the tail of selectAndHighlightProposal).
+        window.proposalListBrowseMode = true;
+        try {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') toggleSidebar();
+        } catch (_) { }
+    }
+
     renderProposalListModal();
+
+    // Frame all applied proposals to start browsing from an overview. Called AFTER the render (so the
+    // panel exists and its footprint can be padded out) and directly rather than via
+    // requestAnimationFrame, which is throttled — and can silently never fire — when the tab isn't
+    // actively rendering.
+    if (wasHidden) {
+        try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
+    }
 }
 
 function getSharedInspectorI18nHelper() {
@@ -649,9 +741,8 @@ function showSharePlanModal() {
         const countLine = document.createElement('div');
         countLine.style.fontSize = '13px';
         countLine.style.color = '#475569';
-        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposal{{suffix}} in the current plan', {
-            count: totalInPlan,
-            suffix: totalInPlan === 1 ? '' : 's'
+        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposals in the current plan', {
+            count: totalInPlan
         });
         container.appendChild(countLine);
 
@@ -1035,10 +1126,14 @@ function showSharePlanModal() {
             uploadedLabel.style.display = 'none';
 
             uploadBtn.addEventListener('click', async () => {
-                const gate = await ensureAncestorProposalsUploaded(proposal);
+                // Everything currently selected is being shared as one plan, so an ancestor inside
+                // the selection needs no upload of its own first — only an ancestor the user has
+                // unchecked (and which is not already on the server) is a real gap. Order-free, so a
+                // cyclic ancestry between two selected proposals can no longer deadlock the plan.
+                const gate = await ensureAncestorProposalsUploaded(proposal, { satisfiedBy: selected });
                 if (!gate.ok) {
                     const missingList = gate.missing.map(entry => entry.id || (entry.hash ? entry.hash.slice(0, 8) : '?')).filter(Boolean);
-                    setStatus(tShare('plan.uploadAncestorsMissing', 'Upload ancestor proposals first: {{list}}', {
+                    setStatus(tShare('plan.uploadAncestorsMissing', 'Include these ancestor proposals in the plan: {{list}}', {
                         list: missingList.join(', ')
                     }));
                     return;
@@ -1173,7 +1268,6 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     const tShare = getShareI18nHelper();
     const proposals = Array.isArray(payload?.proposals) ? payload.proposals : [];
     const proposalCount = proposals.length;
-    const proposalSuffix = proposalCount === 1 ? '' : 's';
     const fragment = document.createDocumentFragment();
 
     if (options && options.nearLimit) {
@@ -1185,10 +1279,10 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     }
 
     const intro = document.createElement('p');
-    const introParams = (options && options.introParams) || { count: proposalCount, suffix: proposalSuffix };
+    const introParams = (options && options.introParams) || { count: proposalCount };
     intro.innerHTML = (options && options.introHtml)
         ? options.introHtml
-        : tShare('defaultIntro', 'Share this link to load {{count}} applied proposal{{suffix}}.', introParams);
+        : tShare('defaultIntro', 'Share this link to load {{count}} applied proposals.', introParams);
     fragment.appendChild(intro);
 
     const textarea = document.createElement('textarea');

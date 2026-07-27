@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- Vodič na hrvatskom za prikaze: 2D karta, 3D model s kontrolama i panelima dobiti,
+     realističan kontekst (Google fotorealistični 3D) i šetnja.
+     Engleski parnjak: how-to-use-views.html. -->
+<html lang="hr">
+
+<head>
+    <title>Prikazi i 3D — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Prikazi i 3D</h1>
+        <div class="sidebar-links">
+            <a href="kako-koristiti.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Sve upute
+            </a>
+            <a href="index.html?lang=hr" class="back-link">
+                <i class="fas fa-map"></i>
+                Natrag na aplikaciju
+            </a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-prikazi.html" class="is-current">HR</a>
+            <a href="how-to-use-views.html">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Četiri pogleda na isti prijedlog</h2>
+                <p>
+                    U 2D-u se radi, u 3D-u se odlučuje. Gumbi za prebacivanje nalaze se na karti, a prijedlog ne moraš
+                    ponovno crtati — isti zahvat samo gledaš na četiri načina.
+                </p>
+            </div>
+
+            <div class="view-list">
+                <article>
+                    <span class="view-number">2D</span>
+                    <div>
+                        <h3>Karta</h3>
+                        <p>Odabir čestica, crtanje, granice, vlasništvo. Sve što se stvara, stvara se ovdje.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number">3D</span>
+                    <div>
+                        <h3>Prostorni model</h3>
+                        <p>Zgrade, ceste i javni prostori kao volumeni — i računica koliko prijedlog vrijedi.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number"><i class="fas fa-globe"></i></span>
+                    <div>
+                        <h3>Realističan kontekst</h3>
+                        <p>Tvoj zahvat usred Googleovog fotorealističnog modela stvarnog grada.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number"><i class="fas fa-person-walking"></i></span>
+                    <div>
+                        <h3>Šetnja</h3>
+                        <p>Iz očiju pješaka. Gumb se pojavljuje samo u gradovima koji to podržavaju.</p>
+                    </div>
+                </article>
+            </div>
+
+            <section id="tri-d" class="guide-section">
+                <h2>3D prikaz</h2>
+                <p>
+                    Pogled zakrećeš držeći <span class="ui-label">Ctrl</span> uz povlačenje mišem (na mobitelu:
+                    povlačenje s dva prsta). Kotačić zumira.
+                </p>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-01-3d.png" alt="Prijedlog parka u 3D prikazu, uz postojeće zgrade"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>Prijedlog u 3D prikazu. Postojeće zgrade su prozirne, predloženo je puno.</figcaption>
+                </figure>
+
+                <h3>Kontrole prikaza</h3>
+                <div class="table-scroll">
+                    <table class="tool-table">
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-building"></i>Prikaz zgrada</td>
+                                <td>Biraš <strong>što</strong> se vidi — <span class="ui-label">Izgrađeno</span>,
+                                    <span class="ui-label">Planirano</span>, <span class="ui-label">Oboje</span> ili
+                                    <span class="ui-label">Nijedno</span> — i <strong>kako</strong>:
+                                    <span class="ui-label">Puno</span>, <span class="ui-label">Prozirno</span>,
+                                    <span class="ui-label">Preostale</span> ili
+                                    <span class="ui-label">Isključeno</span>.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-eye-slash"></i>Sakrij stvarne zgrade ispod prijedloga</td>
+                                <td>Uklanja postojeće zgrade koje ti prijedlog ionako zamjenjuje, da ne stoje jedna u
+                                    drugoj.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-circle-notch"></i>Radijus</td>
+                                <td>Koliko okolnog grada se učitava. Manji radijus = brži prikaz.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-border-all"></i>Prikaži sve čestice</td>
+                                <td>Iscrtava granice čestica i u 3D-u.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-tree"></i>Stabla</td>
+                                <td>Uključuje ili isključuje zelenilo.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout tip">
+                    <i class="fas fa-lightbulb"></i>
+                    Za usporedbu „prije i poslije” postavi <span class="ui-label">Izgrađeno</span> na
+                    <span class="ui-label">Prozirno</span>, a <span class="ui-label">Planirano</span> na
+                    <span class="ui-label">Puno</span>. Odmah se vidi što zahvat dodaje, a što briše.
+                </div>
+            </section>
+
+            <section id="dobit" class="guide-section">
+                <h2>Koliko prijedlog vrijedi</h2>
+                <p>
+                    Klikneš li česticu u 3D-u, otvara se panel s računicom. Uspoređuje
+                    <span class="ui-label">Izgrađeno</span> i <span class="ui-label">Predloženo</span> po
+                    <span class="ui-label">Volumenu</span> i <span class="ui-label">Podnoj površini</span>, a klizačem
+                    <span class="ui-label">Cijena po m²</span> namjestiš pretpostavku o tržištu.
+                </p>
+                <p>
+                    Rezultat je jedan broj: <span class="ui-label">Dobit prijedloga</span> — koliko čestica dobiva ili
+                    gubi. Ako prijedloga nema, panel pokazuje samo
+                    <span class="ui-label">Trenutna vrijednost</span>.
+                </p>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-02-panel.png"
+                            alt="Panel čestice s usporedbom izgrađenog i predloženog te procjenom vrijednosti"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>Panel čestice: izgrađeno naspram predloženog, i što to vrijedi.</figcaption>
+                </figure>
+                <p>
+                    Klikom na <span class="ui-label">prikaži</span> uz naziv prijedloga izoliraš
+                    <strong>cijeli prijedlog</strong>. Panel se tada prebacuje na
+                    <span class="ui-label">Podaci o prijedlogu</span>: broj čestica, zbirna dobit i
+                    <span class="ui-label">Prosjek / čestici</span>.
+                </p>
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    <strong>Prosjek po čestici</strong> je često važniji od ukupne dobiti. Prijedlog s velikom ukupnom
+                    dobiti, ali slabim prosjekom, znači da nekolicina čestica nosi sve — a ostali vlasnici nemaju
+                    razloga pristati.
+                </div>
+            </section>
+
+            <section id="realisticno" class="guide-section">
+                <h2>Realističan kontekst</h2>
+                <p>
+                    Gumb <span class="ui-label"><i class="fas fa-globe"></i></span> stavlja tvoje zgrade u Googleov
+                    fotorealistični 3D model grada. Najbolji je test „bi li ovo ovdje izgledalo suludo?” — susjedne
+                    građevine, visine i krovovi su stvarni. Ako fotorealistični podaci za to područje ne postoje,
+                    prikazuje se satelitska karta i teren.
+                </p>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-03-realisticno.png"
+                            alt="Predloženi blok zgrada u Googleovom fotorealističnom modelu Zagreba"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
+                    </div>
+                    <figcaption>Predloženi blok (plavo) u fotorealističnom modelu stvarnog grada.</figcaption>
+                </figure>
+            </section>
+
+            <section id="setnja" class="guide-section">
+                <h2>Šetnja</h2>
+                <p>
+                    Gumb <span class="ui-label"><i class="fas fa-person-walking"></i></span> spušta te na razinu očiju.
+                    Ono što u tlocrtu izgleda prostrano zna na ulici biti tijesno — i obrnuto. Gumb postoji samo u
+                    gradovima za koje je šetnja podešena.
+                </p>
+            </section>
+
+            <div class="callout tip final-tip">
+                <i class="fas fa-lightbulb"></i>
+                Prijedlog prije dijeljenja provjeri u sva tri: <strong>2D</strong> za granice i vlasništvo,
+                <strong>3D</strong> za volumen i dobit, <strong>realističan kontekst</strong> za to uklapa li se u
+                grad kakav doista jest.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

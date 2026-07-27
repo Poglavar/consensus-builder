@@ -3,58 +3,36 @@ import { waitForMapReady } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
 test.describe('Sidebar @features', () => {
-  test('sidebar element exists in DOM', async ({ mockApi: page }) => {
+  // The sidebar collapses by toggling a `collapsed` class, not by hiding the element — so that class
+  // is what the click must actually flip.
+  //
+  // This replaces four separate tests (element attached / toggle attached / "can be toggled" /
+  // "initializeSidebar exists"). Three of them booted a browser to assert existence, and the toggle
+  // one clicked and then asserted `typeof className === 'string'` — true of every element on the
+  // page whether the toggle works or not. Presence is now implied by clicking the thing.
+  test('clicking the toggle collapses and re-expands the sidebar', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
     const sidebar = page.locator(selectors.sidebar);
+    // There are two toggles (desktop + mobile) and only one is visible at a given viewport, so pick
+    // the visible one rather than the first in DOM order.
+    const visibleToggle = selectors.sidebarToggle
+      .split(',')
+      .map((part) => `${part.trim()}:visible`)
+      .join(', ');
+    const toggle = page.locator(visibleToggle).first();
+
     await expect(sidebar).toBeAttached();
-  });
+    await expect(toggle).toBeVisible();
 
-  test('sidebar toggle button exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+    const isCollapsed = () => sidebar.evaluate((el) => el.classList.contains('collapsed'));
+    const collapsedBefore = await isCollapsed();
 
-    const toggle = page.locator(selectors.sidebarToggle);
-    // At least one matching element should exist
-    const count = await toggle.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-  });
+    await toggle.click();
+    await expect.poll(isCollapsed).toBe(!collapsedBefore);
 
-  test('sidebar can be toggled', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const sidebar = page.locator(selectors.sidebar);
-    const toggle = page.locator(selectors.sidebarToggle).first();
-
-    if (await toggle.isVisible()) {
-      const initiallyVisible = await sidebar.isVisible();
-      await toggle.click();
-      await page.waitForTimeout(500);
-      const afterToggle = await sidebar.isVisible();
-
-      // Visibility should change (or class should change)
-      // Some implementations toggle a class rather than visibility
-      const classChanged = await page.evaluate((sel) => {
-        const el = document.querySelector(sel);
-        return el ? el.className : '';
-      }, selectors.sidebar);
-
-      expect(typeof classChanged).toBe('string');
-    }
-  });
-
-  test('sidebar initialization function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(2000);
-
-    const hasInit = await page.evaluate(() => {
-      const w = window as any;
-      return typeof w.initializeSidebar === 'function';
-    });
-
-    expect(hasInit).toBe(true);
+    await toggle.click();
+    await expect.poll(isCollapsed).toBe(collapsedBefore);
   });
 });

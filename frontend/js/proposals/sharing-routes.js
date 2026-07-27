@@ -1,82 +1,9 @@
-// proposals/sharing-routes.js — proposal share actions, payload encode/decode, and URL route
-// handlers (handleSharedPlanRoute etc.). Extracted from proposals.js. NOTE: 8 low-level helpers
-// (base64/compress/decode) are also defined in the pre-existing sharing.js (loaded after, wins) —
-// pre-existing duplication preserved as-is; dedup is a pass-2 cleanup.
-
-function base64UrlEncodeBytes(bytes) {
-    if (!(bytes instanceof Uint8Array) || bytes.length === 0) {
-        return '';
-    }
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-        binary += String.fromCharCode.apply(null, chunk);
-    }
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function base64UrlDecodeToBytes(input) {
-    let working = input || '';
-    working = working.replace(/-/g, '+').replace(/_/g, '/');
-    while (working.length % 4 !== 0) {
-        working += '=';
-    }
-    const binary = atob(working);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-}
-
-function compressBytes(bytes) {
-    if (!(bytes instanceof Uint8Array)) {
-        return { bytes, compressed: false };
-    }
-    if (typeof pako === 'undefined' || typeof pako.deflate !== 'function') {
-        return { bytes, compressed: false };
-    }
-    try {
-        const compressedBytes = pako.deflate(bytes, { level: 9 });
-        return { bytes: compressedBytes, compressed: true };
-    } catch (error) {
-        console.warn('pako.deflate failed, falling back to raw payload', error);
-        return { bytes, compressed: false };
-    }
-}
-
-function inflateBytes(bytes, { strict = false } = {}) {
-    if (typeof pako === 'undefined' || typeof pako.inflate !== 'function') {
-        if (strict) {
-            throw new Error('Compressed share links require compression support.');
-        }
-        return null;
-    }
-    try {
-        return pako.inflate(bytes);
-    } catch (error) {
-        if (strict) {
-            throw error;
-        }
-        console.warn('pako.inflate failed, falling back to raw payload', error);
-        return null;
-    }
-}
-
-function decodeBytesToJson(bytes) {
-    if (typeof TextDecoder !== 'undefined') {
-        const decoder = new TextDecoder();
-        return decoder.decode(bytes);
-    }
-    let binary = '';
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-        binary += String.fromCharCode.apply(null, chunk);
-    }
-    return decodeURIComponent(escape(binary));
-}
+// proposals/sharing-routes.js — proposal share actions and URL route handlers
+// (handleSharedPlanRoute etc.). Extracted from proposals.js. The share codec it uses
+// (base64UrlEncodeBytes/base64UrlDecodeToBytes/compressBytes/inflateBytes/decodeBytesToJson/
+// decodeSharedPayload) and the SHARE_* constants live in proposals/sharing.js and are used here as
+// globals; this file used to carry a duplicate set of them, which sharing.js (loaded later) shadowed
+// so they never actually ran.
 
 function focusMapOnSharedProposal(proposal, payload) {
     if (!proposal || typeof map === 'undefined' || !map) {
@@ -179,75 +106,6 @@ function focusMapOnSharedProposal(proposal, payload) {
     }
 
     return false;
-}
-
-function collectProposalParentParcelIdsForShare(proposal) {
-    const ids = new Set();
-    const normalize = (value) => {
-        if (value === undefined || value === null) return null;
-        const str = value && value.toString ? value.toString() : String(value);
-        return str.trim() || null;
-    };
-    const addValue = (value) => {
-        const normalized = normalize(value);
-        if (normalized) ids.add(normalized);
-    };
-    const addMany = (list) => {
-        if (!list) return;
-        (Array.isArray(list) ? list : [list]).forEach(addValue);
-    };
-
-    if (!proposal) return [];
-
-    addMany(proposal.parentParcelIds);
-
-    if (proposal.roadProposal) {
-        addMany(proposal.roadProposal.parentParcelIds);
-    }
-
-    if (proposal.buildingProposal) {
-        addMany(proposal.buildingProposal.parentParcelIds);
-    }
-
-    if (proposal.structureProposal) {
-        addMany(proposal.structureProposal.parentParcelIds);
-    }
-
-    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parcelIds)) {
-        addMany(proposal.reparcellization.parcelIds);
-    }
-
-    if (ids.size === 0) {
-        addMany(proposal.parentParcelIds);
-    }
-
-    return Array.from(ids);
-}
-
-function getSerialProposalId(proposal) {
-    if (!proposal) return null;
-    // Prefer serverProposalId if it's numeric (serial ID)
-    if (proposal.serverProposalId) {
-        const id = String(proposal.serverProposalId);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    // Check if proposalId is numeric
-    if (proposal.proposalId) {
-        const id = String(proposal.proposalId);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    // Check if id is numeric
-    if (proposal.id) {
-        const id = String(proposal.id);
-        if (/^\d+$/.test(id)) {
-            return id;
-        }
-    }
-    return null;
 }
 
 function shareAppliedProposals() {
@@ -361,7 +219,6 @@ function buildSharedProposalsPayload(appliedProposals) {
             parcelIds: ensureArrayOfStrings(proposal.parentParcelIds),
             acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
             color: proposal.color || null,
-            status: 'Applied',
             minted: isProposalMinted(proposal),
             onchain: proposal.onchain ? {
                 transactionHash: proposal.onchain.transactionHash || null,
@@ -483,8 +340,7 @@ function buildSharedProposalsPayload(appliedProposals) {
                     ? Number(proposal.reparcellization.totalArea)
                     : null,
                 ownerShares: clonedOwnerShares,
-                polygons: clonedPolygons,
-                status: 'unapplied'
+                polygons: clonedPolygons
             };
 
             clonedPolygons.forEach(slice => {
@@ -545,43 +401,48 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
-function decodeSharedPayload(encoded) {
-    if (!encoded) return null;
-    let working = encoded.trim();
-    let compressionMode = 'legacy';
-    if (working.startsWith(SHARE_ENCODING_PREFIX_COMPRESSED)) {
-        compressionMode = 'compressed';
-        working = working.slice(SHARE_ENCODING_PREFIX_COMPRESSED.length);
-    } else if (working.startsWith(SHARE_ENCODING_PREFIX_RAW)) {
-        compressionMode = 'raw';
-        working = working.slice(SHARE_ENCODING_PREFIX_RAW.length);
-    }
+// Enter URL-driven 3D framed on `focusIds`, waiting (capped) until at least one of those
+// proposals has a materialized building feature. Entering the instant the route decides
+// raced hydration/reapply: the focus subset matched nothing yet, and the camera silently
+// fell back to framing EVERY applied proposal.
+// A proposal that has no BUILDINGS can never satisfy a wait for proposedBuildings. A road or a
+// structure link therefore sat out the whole 8 s deadline before 3D opened — measured at 9 s on
+// prod for /proposals/95 — with nothing on screen to explain it. Waiting is only meaningful for
+// building proposals; anything else is ready as soon as it is applied.
+function urlFocusNeedsBuildings(ids) {
     try {
-        if (SHARE_BASE64_ALLOWED.test(working)) {
-            const bytes = base64UrlDecodeToBytes(working);
-            let decodedBytes = bytes;
-            if (compressionMode === 'compressed') {
-                decodedBytes = inflateBytes(bytes, { strict: true });
-            } else if (compressionMode === 'legacy') {
-                const inflated = inflateBytes(bytes, { strict: false });
-                if (inflated && inflated.length) {
-                    decodedBytes = inflated;
-                }
-            }
-            const json = decodeBytesToJson(decodedBytes);
-            return JSON.parse(json);
-        }
-
-        if (compressionMode === 'compressed') {
-            throw new Error('Compressed shared payload is not base64 encoded.');
-        }
-
-        const json = decodeURIComponent(working);
-        return JSON.parse(json);
-    } catch (error) {
-        console.error('decodeSharedPayload failed', error);
-        throw error;
+        const all = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
+            ? proposalStorage.getAllProposals() : [];
+        const focused = all.filter(p => {
+            const key = String((typeof getProposalKey === 'function' ? getProposalKey(p) : null)
+                || p.proposalId || p.serverProposalId || '');
+            return ids.includes(key) || ids.includes(String(p.serverProposalId || ''));
+        });
+        // Unknown to storage yet: keep the old behaviour and wait.
+        if (!focused.length) return true;
+        return focused.some(p => p && p.buildingProposal);
+    } catch (_) {
+        return true;
     }
+}
+
+function enterUrlDrivenViewWhenReady(focusIds) {
+    const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
+    const deadline = Date.now() + 8000;
+    const attempt = () => {
+        let ready = ids.length === 0 || !urlFocusNeedsBuildings(ids);
+        try {
+            const feats = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
+                ? window.proposedBuildings : [];
+            ready = ready || feats.some(f => f && f.properties && ids.includes(String(f.properties.proposalId)));
+        } catch (_) { ready = true; }
+        if (ready || Date.now() > deadline) {
+            enterUrlDrivenView(ids.length ? ids : undefined);
+            return;
+        }
+        setTimeout(attempt, 200);
+    };
+    attempt();
 }
 
 function isTruthyUrlFlag(params, key) {
@@ -698,7 +559,7 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
             throw new Error('Missing parcel geometry required for this proposal.');
         }
 
-        normalized.status = 'Active';
+        parkProposalForImport(normalized);
         normalized.acceptedParcelIds = [];
 
         const targetHash = normalized.proposalId || sharedProposal.proposalId || `shared_${Date.now()}`;
@@ -1046,20 +907,17 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             bodyLines.push(`<p>${tShare('summary.appliedFrom', 'Applied proposals from {{author}}.', { author: escapeHtml(authorName) })}</p>`);
             if (actuallyApplied.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.appliedCount', '{{count}} applied.', {
-                    count: actuallyApplied.length,
-                    suffix: actuallyApplied.length === 1 ? '' : 's'
+                    count: actuallyApplied.length
                 })}</p>`);
             }
             if (skipped.length > 0) {
-                bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposal{{suffix}} (already present).', {
-                    count: skipped.length,
-                    suffix: skipped.length === 1 ? '' : 's'
+                bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposals (already present).', {
+                    count: skipped.length
                 })}</p>`);
             }
             if (failures.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.failedCount', '{{count}} failed.', {
-                    count: failures.length,
-                    suffix: failures.length === 1 ? '' : 's'
+                    count: failures.length
                 })}</p>`);
             }
             if (blockedAncestors.size > 0) {
@@ -1118,12 +976,12 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             const failureCount = failures.length;
             const total = failureCount + blockedCount;
             showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals_summary', `Unable to apply ${total} shared proposal${total === 1 ? '' : 's'} (missing ancestors or errors).`, {
-                count: total,
-                suffix: total === 1 ? '' : 's'
+                count: total
             }), 6000, 'error');
         }
 
-        // Optional URL-driven 3D mode: after shared apply completes, center on all proposals then enter 3D.
+        // Optional URL-driven 3D mode: after shared apply completes, enter 3D framed on THIS
+        // link's proposals only.
         try {
             if (!url3DModeHandled && is3DModeRequestedFromUrl()) {
                 // Wait for map centering to complete (if we centered on proposals above)
@@ -1131,9 +989,11 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 if (allProposalIds.length > 0) {
                     await createLeafletViewSettlePromise(null, null);
                 }
-                // Enter 3D mode - camera will rotate around the current map center (which is the center of proposals)
-                const entered = enterUrlDrivenView();
-                if (entered) url3DModeHandled = true;
+                // Pass the link's LOCAL proposal ids as the 3D focus — without them the camera
+                // framed the union of every applied proposal (this is the path every fresh
+                // download of a shared link takes; the already-applied fast paths pass ids).
+                url3DModeHandled = true;
+                enterUrlDrivenViewWhenReady(allProposalIds);
             }
         } catch (_) { }
     } catch (error) {
@@ -1172,7 +1032,7 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         }
     }
     if (existing) {
-        const alreadyApplied = isProposalCurrentlyApplied(existing) || existing.status === 'Executed';
+        const alreadyApplied = isProposalCurrentlyApplied(existing);
         if (alreadyApplied) {
             const descendantsMaterialized = (() => {
                 try {
@@ -1209,6 +1069,9 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 
     const skipDependencyFetch = options && options.skipDependencyFetch === true;
     const applyOptions = skipDependencyFetch ? { suppressMissingParentAlerts: true } : {};
+    // Plan replay may explicitly accept intra-plan occupancy (§3.3: proposals that coexisted
+    // applied never geometrically conflict) — proceed with the parents that are present.
+    if (options && options.applyAnyway === true) applyOptions.applyAnyway = true;
 
     // Some flows (notably /proposals/:id1,id2,...) want to apply a queue where missing parcels
     // are expected to appear after other proposals apply. In that case do NOT fetch parcels here;
@@ -1344,18 +1207,25 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 // that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
 // existing behaviour rather than stranding the user on a dialog.
 async function sharedProposalCityBlocksLoad(firstProposalId) {
-    if (!firstProposalId || typeof promptCityMismatchForProposal !== 'function') return false;
+    // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
+    // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
+    // very same proposal a SECOND time. Hand the payload back so the caller can reuse it — one fetch
+    // instead of two. `blocked` is true only when the user chose to stay in the other city.
+    if (!firstProposalId) return { blocked: false, payload: null };
+    let payload = null;
     try {
         const backendBase = resolveBackendBaseUrl();
         const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
-        if (!response.ok) return false;
-        const payload = await response.json();
+        if (!response.ok) return { blocked: false, payload: null };
+        payload = await response.json();
+        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload };
         const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
-        if (!proposalCityId) return false;
-        return await promptCityMismatchForProposal(String(proposalCityId));
+        if (!proposalCityId) return { blocked: false, payload };
+        const blocked = await promptCityMismatchForProposal(String(proposalCityId));
+        return { blocked, payload };
     } catch (error) {
         console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
-        return false;
+        return { blocked: false, payload };
     }
 }
 
@@ -1418,20 +1288,27 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
+        const firstProposalId = idParts.map(normalizeId).filter(Boolean)[0];
 
-        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
-        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
-        // map happens to be on screen.
-        if (await sharedProposalCityBlocksLoad(idParts.map(normalizeId).filter(Boolean)[0])) {
-            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
-            return;
-        }
-
+        // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
+        // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
         showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
             total: totalProposals,
             title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
         });
+
+        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
+        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
+        // map happens to be on screen. The fetched payload is reused below (see prefetchedFirst) so
+        // the apply loop does not fetch this same proposal again.
+        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId);
+        if (cityCheck.blocked) {
+            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
+            hideProposalLoadOverlay();
+            return;
+        }
+        const prefetchedFirst = cityCheck.payload || null;
 
         const backendBase = resolveBackendBaseUrl();
         const applied = [];
@@ -1519,6 +1396,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 if (proposal && Array.isArray(proposal.parentParcelIds)) {
                     ensureArrayOfStrings(proposal.parentParcelIds).forEach(id => ids.push(id));
                 }
+                // The published base-cadastre ancestry (stamped at upload, backfilled for old rows).
+                // Fetching these roots loads the true ground under the footprint even when every
+                // declared parent is a derived id from the creator's browser — which is what lets
+                // geometry re-parenting see the live fabric instead of refusing on low coverage.
+                if (proposal && Array.isArray(proposal.cadastreParcelIds)) {
+                    ensureArrayOfStrings(proposal.cadastreParcelIds).forEach(id => ids.push(id));
+                }
 
                 return Array.from(new Set(ids.map(x => String(x)).filter(Boolean)));
             } catch (_) {
@@ -1549,16 +1433,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // end up framing, exactly as if it had been loaded alone.
         const linkOrder = new Map();
         queue.forEach((id, idx) => linkOrder.set(id, idx));
-        const cleanPlanUrl = () => {
-            try {
-                const newUrl = window.location.pathname.replace(/\/proposals\/[^/?#]+$/, '') + window.location.search + window.location.hash;
-                if (window.history && typeof window.history.replaceState === 'function') {
-                    window.history.replaceState({}, document.title, newUrl);
-                }
-            } catch (_) { }
-        };
+        // The /proposals/... path is the canonical share state and STAYS in the address bar:
+        // a refresh re-enters through the already-applied fast path, so stripping it (the old
+        // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
+        // Reuse the proposal the city check already fetched — keyed by the same normalized id the
+        // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
+        if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
         const lastUnfetchedBasePrereqIdsById = new Map();
@@ -1584,18 +1466,57 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
         // to a whole-block building proposal). Waiting here makes that detection deterministic.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
-            // stall the whole route.
-            await Promise.race([
-                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
-                new Promise(resolve => setTimeout(resolve, 10000))
-            ]);
-            // If a reapply was already in flight, the call above returned immediately without
-            // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
-            let waitedForReapply = 0;
-            while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                waitedForReapply += 100;
+            // The barrier only matters when we are about to APPLY a proposal that could conflict with
+            // a DIFFERENT already-applied one — it waits for the background reapply to re-materialize
+            // everything so that conflict is detectable. It is pure cost, freezing the loader at
+            // "0 / 1" for up to 10 s, in two cases where nothing new gets applied:
+            //   - nothing else is applied at all, or
+            //   - every incoming proposal is ALREADY applied (re-opening a link). Re-opening applies
+            //     nothing, so there is no conflict to resolve — and with a stack of test proposals on
+            //     the map this was the usual reason for the stall.
+            // The reapply still runs in the background either way (materialization is not skipped),
+            // we just do not block on it. Keep the barrier only for a genuine plan switch: a NEW
+            // proposal arriving while others are applied.
+            const incomingIdSet = new Set(queue.map(normalizeId).filter(Boolean));
+            let hasOtherApplied = false;
+            let allIncomingAlreadyApplied = false;
+            try {
+                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
+                    const appliedIdSet = new Set();
+                    (proposalStorage.getAllProposals() || []).forEach(p => {
+                        if (!p || !isProposalCurrentlyApplied(p)) return;
+                        [
+                            p.serverProposalId,
+                            p.proposalId,
+                            (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null)
+                        ].filter(Boolean).forEach(id => appliedIdSet.add(String(id)));
+                    });
+                    hasOtherApplied = [...appliedIdSet].some(id => !incomingIdSet.has(id));
+                    allIncomingAlreadyApplied = incomingIdSet.size > 0
+                        && [...incomingIdSet].every(id => appliedIdSet.has(id));
+                }
+            } catch (_) {
+                hasOtherApplied = true; // unsure → keep the safe barrier
+                allIncomingAlreadyApplied = false;
+            }
+            if (hasOtherApplied && !allIncomingAlreadyApplied) {
+                // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
+                // stall the whole route.
+                await Promise.race([
+                    Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
+                    new Promise(resolve => setTimeout(resolve, 10000))
+                ]);
+                // If a reapply was already in flight, the call above returned immediately without
+                // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
+                let waitedForReapply = 0;
+                while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    waitedForReapply += 100;
+                }
+            } else {
+                // Still let materialization proceed in the background (the in-flight guard makes this
+                // a no-op if the load-time reapply is already running) — we simply do not block on it.
+                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { });
             }
         }
 
@@ -1623,6 +1544,26 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     if (payload.serverProposalId) ids.push(String(payload.serverProposalId));
                 }
             }
+            // A linked proposal that was ALREADY applied locally never enters loadedById — its
+            // features carry the LOCAL proposalId, so resolve the incoming server ids against
+            // the store too. Without this the focus set matches nothing and 3D entry silently
+            // falls back to framing EVERY applied proposal, not just the link's.
+            try {
+                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
+                    (proposalStorage.getAllProposals() || []).forEach(p => {
+                        if (!p || !p.proposalId) return;
+                        const candidates = [
+                            p.serverProposalId != null ? String(p.serverProposalId) : null,
+                            String(p.proposalId),
+                            (typeof getServerProposalId === 'function' && getServerProposalId(p) != null)
+                                ? String(getServerProposalId(p)) : null
+                        ];
+                        if (candidates.some(id => id && incomingIds.has(id))) {
+                            ids.push(String(p.proposalId));
+                        }
+                    });
+                }
+            } catch (_) { }
             return ids;
         };
 
@@ -1724,7 +1665,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
             }
             if (urlRequests3D) {
-                try { enterUrlDrivenView(getFocusProposalIds()); } catch (_) { }
+                try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
             }
         };
 
@@ -1754,7 +1695,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     onClose: () => resolve()
                 });
             });
-            cleanPlanUrl();
             return;
         }
 
@@ -1859,8 +1799,47 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
             await focusOnAppliedProposals(focusId);
-            cleanPlanUrl();
             return;
+        }
+
+        // A6 (rethink-proposals.md §5): order the plan by its constraint graph — footprint
+        // intersection + creation time — instead of trusting link order. Link order is usually
+        // oldest-first already, but hand-assembled URLs are not, and the requeue below should be
+        // a safety net, not the ordering mechanism. Payloads fetched here are cached in
+        // loadedById, so the apply loop reuses them instead of fetching twice.
+        try {
+            if (typeof window !== 'undefined' && window.__planOrder && queue.length > 1) {
+                await Promise.all(queue.map(async (qid) => {
+                    if (loadedById.has(qid)) return;
+                    try {
+                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
+                        await addResponseBytes(resp);
+                        if (resp.ok) loadedById.set(qid, await resp.json());
+                    } catch (_) { /* the apply loop retries and reports this id itself */ }
+                }));
+                const items = queue.map(qid => {
+                    const payload = loadedById.get(qid);
+                    if (!payload) return { id: qid, goal: null, footprint: null, createdAt: null };
+                    let footprint = null;
+                    try { footprint = window.__planOrder.footprintOf(payload); } catch (_) { }
+                    return {
+                        id: qid,
+                        goal: payload.goal,
+                        footprint,
+                        createdAt: payload.createdAt || payload.created_at || null
+                    };
+                });
+                const resolution = window.__planOrder.resolveApplyOrder(items);
+                if (resolution && Array.isArray(resolution.order) && resolution.order.length === queue.length) {
+                    queue = resolution.order.slice();
+                    console.log('[handleSharedPlanRoute] Apply order resolved from constraint graph:', {
+                        order: queue,
+                        constraints: resolution.constraints
+                    });
+                }
+            }
+        } catch (orderError) {
+            console.warn('[handleSharedPlanRoute] Constraint-graph ordering failed; keeping link order', orderError);
         }
 
         const startFetchBaseParcels = async (parcelIds, options = {}) => {
@@ -1904,7 +1883,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         await ensureParentParcelsLoaded(toFetch, { forceRefreshParcels: true });
                     }
                     if (typeof waitForParcelLayersReady === 'function') {
-                        await waitForParcelLayersReady(toFetch, { timeoutMs: 15000, pollIntervalMs: 200 });
+                        // The fetch above has already resolved, so every parcel it returned is in the
+                        // index (or rehydratable from storage) and becomes ready within a poll or two.
+                        // The only ids that reach the timeout are PHANTOMS — a declared base/cadastre
+                        // parent the fetch never returned, which will never become ready no matter how
+                        // long we wait. 15 s of that froze the loader at "1 / 1"; 4 s covers real
+                        // render lag and stops burning time on ids that are not coming.
+                        await waitForParcelLayersReady(toFetch, { timeoutMs: 4000, pollIntervalMs: 150 });
                     }
                 } catch (err) {
                     console.warn('[handleSharedPlanRoute] Failed to bulk fetch base parcels for apply plan', { ids: toFetch, err });
@@ -1941,6 +1926,92 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
             return { attempted: toFetch, missingAfter };
         };
+
+        // Ghost prerequisites: a payload can name derived parents (…#p-…) minted in the CREATOR'S
+        // browser that this one will never mint (§3.1 of rethink-proposals.md: 3/14 references in
+        // one live plan were already dead on the server). No amount of requeueing conjures them.
+        // But when the plan's ancestors HAVE applied here, the land those ids named exists under
+        // different local names — so resolve this proposal's parents from its geometry against the
+        // live fabric, rewrite the parent lists, and retry once. Low footprint coverage means an
+        // ancestor genuinely is missing; that stays a visible failure, never a silent rename.
+        const reparentAttempted = new Set();
+        const tryReparentGhostPrereqs = (queueId, proposal) => {
+            try {
+                const key = normalizeId(queueId);
+                if (!proposal || !key || reparentAttempted.has(key)) return false;
+                const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+                const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
+                if (!ancestry || typeof ancestry.resolveParentsByGeometry !== 'function') return false;
+                if (!planOrderApi || typeof planOrderApi.rewriteParentParcelIds !== 'function') return false;
+
+                const stillMissing = (pid) => {
+                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
+                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
+                    return true;
+                };
+                const missing = getPrerequisiteParcelIdsForProposal(proposal).filter(stillMissing);
+                // Missing BASE parcels are a fetch problem the loop already solves; rewriting
+                // parents would only mask it. Only pure ghost-derived misses qualify.
+                if (!missing.length || !missing.every(isDerivedParcelId)) return false;
+
+                const resolution = ancestry.resolveParentsByGeometry(proposal);
+                if (!resolution || !Array.isArray(resolution.ids) || !resolution.ids.length) return false;
+                if (!(resolution.coverage >= 0.95)) {
+                    console.warn('[handleSharedPlanRoute] Ghost prerequisites, but live fabric covers only '
+                        + `${Math.round((resolution.coverage || 0) * 100)}% of the footprint — not re-parenting`, { id: key, missing });
+                    return false;
+                }
+
+                reparentAttempted.add(key);
+                const touched = planOrderApi.rewriteParentParcelIds(proposal, resolution.ids);
+                // applyProposal reads the STORED copy once the payload has been imported, so the
+                // rewrite must land there too or the retry re-reads the ghosts.
+                try {
+                    const stored = (typeof proposalStorage !== 'undefined' && proposalStorage && proposal.proposalId)
+                        ? proposalStorage.getProposal(proposal.proposalId)
+                        : null;
+                    if (stored) {
+                        planOrderApi.rewriteParentParcelIds(stored, resolution.ids);
+                        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(stored);
+                        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+                    }
+                } catch (_) { /* stored copy may not exist yet — the payload rewrite still counts */ }
+
+                console.log('[handleSharedPlanRoute] Re-parented by geometry', {
+                    id: key,
+                    ghosts: missing,
+                    resolved: resolution.ids,
+                    coverage: Math.round(resolution.coverage * 1000) / 1000,
+                    touched
+                });
+                return true;
+            } catch (err) {
+                console.warn('[handleSharedPlanRoute] Geometry re-parent failed', err);
+                return false;
+            }
+        };
+
+        // Every LOCAL proposal id belonging to this plan. A parcel-conflict whose occupiers all
+        // sit in this set is not a real conflict: these proposals coexisted APPLIED in the
+        // sharer's browser (§3.3 — coexisting fabric never geometrically conflicts), so the
+        // "occupation" is stale id bookkeeping between generations, and the right response is to
+        // retry accepting intra-plan occupancy rather than park the proposal as overlapped.
+        const planMemberLocalIds = () => {
+            const ids = new Set();
+            incomingIds.forEach(sid => ids.add(String(sid)));
+            loadedById.forEach(payload => {
+                if (payload && payload.proposalId) ids.add(String(payload.proposalId));
+                if (payload && payload.serverProposalId) ids.add(String(payload.serverProposalId));
+            });
+            incomingAlreadyApplied.forEach(p => {
+                if (p && p.proposalId) ids.add(String(p.proposalId));
+                if (p && p.serverProposalId) ids.add(String(p.serverProposalId));
+            });
+            return ids;
+        };
+        // Ids whose next apply attempt may proceed over intra-plan occupancy.
+        const applyAnywayIds = new Set();
+        const conflictRetryAttempted = new Set();
 
         while (queue.length > 0) {
             const id = queue.shift();
@@ -2058,7 +2129,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const computeMissingParentsNow = () => {
                     try {
                         const unique = Array.from(new Set(ensureArrayOfStrings(prereqIds)));
-                        return unique.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
+                        return unique.filter(pid => {
+                            if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
+                            // Consumed by an earlier applied proposal — off the map by design, not missing.
+                            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
+                            return true;
+                        });
                     } catch (_) {
                         return [];
                     }
@@ -2133,7 +2209,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 try {
                     // For /proposals/:id1,id2,… we intentionally do NOT fetch/resolve parcels here.
                     // Missing parcels are expected to be created by earlier applies.
-                    result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
+                    result = await importAndApplySharedProposal(proposal, {
+                        skipDependencyFetch: true,
+                        applyAnyway: applyAnywayIds.has(normalizeId(id))
+                    });
                 } catch (err) {
                     // Convert thrown dependency errors into retryable results.
                     if (isDependencyFailure(err)) {
@@ -2187,6 +2266,25 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while applying.');
                 const failureInfo = (result && result.failureInfo) ? result.failureInfo : null;
                 if (failureInfo && String(failureInfo.code || '') === 'parcel-conflict') {
+                    const conflictIds = ensureArrayOfStrings(failureInfo.conflictProposalIds || []);
+                    const members = planMemberLocalIds();
+                    const intraPlan = conflictIds.length > 0 && conflictIds.every(cid => members.has(String(cid)));
+                    console.log('[handleSharedPlanRoute] Parcel conflict while applying plan member', {
+                        id: normalizeId(id),
+                        occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],
+                        conflictIds,
+                        intraPlan
+                    });
+                    if (intraPlan && !conflictRetryAttempted.has(normalizeId(id))) {
+                        // Chaining misread as occupation: rewrite any ghost parents from geometry,
+                        // then retry once accepting the intra-plan occupancy.
+                        conflictRetryAttempted.add(normalizeId(id));
+                        tryReparentGhostPrereqs(id, proposal);
+                        applyAnywayIds.add(normalizeId(id));
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                        continue;
+                    }
                     overlapped.push({
                         id: proposalId,
                         label,
@@ -2238,8 +2336,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         lastMissingPrereqsById.set(String(id), missingNow);
                         if (proposalId) lastMissingPrereqsById.set(String(proposalId), missingNow);
                     } catch (_) { }
-                    queue.push(id);
-                    stepsSinceProgress += 1;
+                    if (tryReparentGhostPrereqs(id, proposal)) {
+                        // Retry immediately with the rewritten parents — this is real progress,
+                        // not another lap of the requeue carousel.
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                    } else {
+                        queue.push(id);
+                        stepsSinceProgress += 1;
+                    }
                 } else {
                     failed.push({
                         id: proposalId,
@@ -2271,7 +2376,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = (error && error.message) ? error.message : 'Unexpected error';
                 try { lastReasonById.set(String(id), String(reason || '')); } catch (_) { }
                 if (isDependencyFailure(error) || isDependencyFailure(reason)) {
-                    queue.push(id);
+                    if (tryReparentGhostPrereqs(id, loadedById.get(id))) {
+                        queue.unshift(id);
+                        stepsSinceProgress = 0;
+                    } else {
+                        queue.push(id);
+                    }
                 } else {
                     const cachedProposal = loadedById.get(id) || null;
                     failed.push({
@@ -2397,7 +2507,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         hideProposalLoadOverlay();
 
-        cleanPlanUrl();
 
         const escape = typeof escapeHtml === 'function' ? escapeHtml : (value => value);
         const renderList = (items, formatter) => {
@@ -2408,17 +2517,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const bodyLines = [];
         if (applied.length > 0) {
             const appliedItems = renderList(applied, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposal{{suffix}}:', {
-                count: applied.length,
-                suffix: applied.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposals:', {
+                count: applied.length
             })}</p>${appliedItems}`);
         }
         if (skipped.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');
             const skippedItems = renderList(skipped, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposal{{suffix}} (already present):', {
-                count: skipped.length,
-                suffix: skipped.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposals (already present):', {
+                count: skipped.length
             })}</p>${skippedItems}`);
         }
         if (overlapped.length > 0) {
@@ -2442,9 +2549,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const reason = item.reason ? ` · ${escape(item.reason)}` : '';
                 return `<li>${label}${type}${reason}</li>`;
             });
-            bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposal{{suffix}}:', {
-                count: failed.length,
-                suffix: failed.length === 1 ? '' : 's'
+            bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposals:', {
+                count: failed.length
             })}</p>${failedItems}`);
         }
 
@@ -2529,8 +2635,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // URL-driven 3D mode: only enter after the user dismisses the results dialog.
                     try {
                         if (wants3DFromUrl && !url3DModeHandled) {
-                            const entered = enterUrlDrivenView(getFocusProposalIds());
-                            if (entered) url3DModeHandled = true;
+                            url3DModeHandled = true;
+                            enterUrlDrivenViewWhenReady(getFocusProposalIds());
                         }
                     } catch (_) { }
                 }
@@ -2540,9 +2646,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const bits = [];
             const appliedOrPresent = applied.length + skipped.length;
             if (appliedOrPresent > 0) {
-                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposal{{suffix}}.', {
-                    count: appliedOrPresent,
-                    suffix: appliedOrPresent === 1 ? '' : 's'
+                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposals.', {
+                    count: appliedOrPresent
                 }));
             }
             if (overlapped.length > 0) {
@@ -2557,8 +2662,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (!planSummaryModal) {
             try {
                 if (wants3DFromUrl && !url3DModeHandled) {
-                    const entered = enterUrlDrivenView(getFocusProposalIds());
-                    if (entered) url3DModeHandled = true;
+                    url3DModeHandled = true;
+                    enterUrlDrivenViewWhenReady(getFocusProposalIds());
                 }
             } catch (_) { }
         }

@@ -1,6 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady, zoomToParcelLevel, waitForParcelsLoaded, clickMapAt } from '../helpers/app';
-import { selectors } from '../helpers/selectors';
+import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
 
 test.describe('Parcel loading and interaction @core', () => {
   test('parcels load when zoomed to level ≥17', async ({ mockApi: page }) => {
@@ -50,32 +49,11 @@ test.describe('Parcel loading and interaction @core', () => {
     expect(hasContent).toBe(true);
   });
 
-  test('clicking on the map at parcel level triggers parcel interaction', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-    await zoomToParcelLevel(page);
-    await page.waitForTimeout(3000);
-
-    // Click in the center of the map where parcels should be
-    await clickMapAt(page, 0, 0);
-    await page.waitForTimeout(1000);
-
-    // After clicking, some parcel interaction should occur
-    // (info panel, highlight, or selection state)
-    const interactionOccurred = await page.evaluate(() => {
-      const w = window as any;
-      // Check if any parcel is selected
-      if (w.selectedParcel || w.selectedParcelId) return true;
-      // Check if info panel is showing
-      const panel = document.querySelector('#parcel-info, [data-testid="parcel-info"]');
-      if (panel && (panel as HTMLElement).style.display !== 'none') return true;
-      // Check for any highlighted parcel
-      if (w.highlightedParcel) return true;
-      return false;
-    });
-
-    // This is a soft check — the exact behavior depends on whether
-    // click lands on a parcel polygon
-    expect(typeof interactionOccurred).toBe('boolean');
-  });
+  // A 'clicking on the map triggers parcel interaction' test used to sit here. It could not fail:
+  // its final assertion was `expect(typeof interactionOccurred).toBe('boolean')` — true whichever
+  // way the check went. It also probed `window.selectedParcel` and `window.highlightedParcel`,
+  // neither of which the app has ever put on `window`, and a `#parcel-info` element that does not
+  // exist (the panel is `#parcel-info-panel`). Clicking a parcel for real is covered by
+  // parcel-selection.spec.ts (which asserts currentParcel is set and nothing threw) and by
+  // parcel-info-panel.spec.ts (which asserts the panel opens and renders the parcel).
 });

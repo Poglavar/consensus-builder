@@ -1,5 +1,9 @@
 // proposals/server-sync.js — extracted from proposals.js (behavior-preserving relocation).
 
+const serverSyncLifecycleOf = (typeof getLifecycleStatus === 'function')
+    ? getLifecycleStatus
+    : (typeof require === 'function' ? require('./status.js').getLifecycleStatus : null);
+
 function resolveCurrentCityCode() {
     try {
         const mgr = typeof window !== 'undefined' ? window.CityConfigManager : null;
@@ -40,9 +44,13 @@ function normalizeServerProposalSummary(raw, cityCode) {
         author: raw.author || '',
         type: raw.type || raw.goal || 'parcel',
         goal: goalKey || 'parcel',
-        status: raw.status || 'Active',
+        lifecycleStatus: serverSyncLifecycleOf(raw),
         createdAt: raw.createdAt || raw.created_at || null,
         updatedAt: raw.updatedAt || raw.updated_at || null,
+        // The summary endpoint serves the server-rendered thumbnail (COALESCE(screenshot_url,
+        // onchain_data->>'imageUrl')). Dropping it here is what made the server tab fall back to
+        // the goal emoji for every row, even though almost all of them have a picture.
+        screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
         parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
         childParcelIds: Array.isArray(raw.childParcelIds) ? raw.childParcelIds : [],
         acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],
@@ -67,6 +75,31 @@ function resetServerProposalCache(cityCode) {
     // The "have we asked the server yet?" sentinel must be cleared with the rest, or the new city
     // would inherit the previous one's answer and never fetch.
     serverProposalCache.lastFetchedAt = 0;
+    serverProposalCache.lastQuery = null;
+}
+
+// The sort keys the SERVER can order by (DB-derivable). The rest (acceptance/parcels/area) are
+// computed client-side, so they keep the server default and are sorted over the fetched window.
+const SERVER_SORT_KEYS = ['created-desc', 'created-asc', 'author-asc', 'author-desc', 'value-desc', 'value-asc'];
+
+// The active list query, as the server understands it: free-text search and a DB-derivable sort.
+// Sending these means search/sort span ALL rows, not just the newest SERVER_PROPOSAL_SUMMARY_LIMIT.
+// (goal is NOT sent — the client filterType vocabulary and the stored goal string can differ, so
+// goal filtering stays client-side.)
+function serverListQuery() {
+    const state = (typeof proposalListState !== 'undefined' && proposalListState) ? proposalListState : {};
+    const q = (state.searchText || '').toString().trim();
+    const sort = SERVER_SORT_KEYS.includes(state.sortKey) ? state.sortKey : '';
+    return { q, sort };
+}
+
+function serverListQuerySignature() {
+    const { q, sort } = serverListQuery();
+    return `${q}\u0000${sort}`;
+}
+
+function isServerListTab() {
+    return (typeof proposalListState !== 'undefined' && proposalListState && proposalListState.source === 'server');
 }
 
 async function fetchServerProposalSummaries(cityCode) {
@@ -74,28 +107,28 @@ async function fetchServerProposalSummaries(cityCode) {
     serverProposalCache.loading = true;
     serverProposalCache.error = null;
     serverProposalCache.lastCity = city;
+    // Record the query this fetch answers, BEFORE the await, so the render→ensure loop below sees a
+    // matching signature and does not refetch in a cycle.
+    serverProposalCache.lastQuery = serverListQuerySignature();
     renderProposalListModal();
 
     const backendBase = resolveBackendBaseUrl();
-    const countUrl = `${backendBase}/proposals/count${city ? `?city=${encodeURIComponent(city)}` : ''}`;
-    const summaryUrl = `${backendBase}/proposals/summary?limit=${SERVER_PROPOSAL_SUMMARY_LIMIT}&offset=0${city ? `&city=${encodeURIComponent(city)}` : ''}`;
+    const { q, sort } = serverListQuery();
+    // The summary already returns the full total via COUNT(*) OVER(), so the separate
+    // /proposals/count round-trip was redundant — one request, not two.
+    const summaryUrl = `${backendBase}/proposals/summary?limit=${SERVER_PROPOSAL_SUMMARY_LIMIT}&offset=0`
+        + (city ? `&city=${encodeURIComponent(city)}` : '')
+        + (q ? `&q=${encodeURIComponent(q)}` : '')
+        + (sort ? `&sort=${encodeURIComponent(sort)}` : '');
 
     try {
-        const [countResp, summaryResp] = await Promise.all([
-            fetch(countUrl),
-            fetch(summaryUrl)
-        ]);
+        const summaryResp = await fetch(summaryUrl);
 
-        if (!countResp.ok) {
-            const text = await countResp.text();
-            throw new Error(text || 'Failed to fetch proposal count');
-        }
         if (!summaryResp.ok) {
             const text = await summaryResp.text();
             throw new Error(text || 'Failed to fetch proposal summaries');
         }
 
-        const countPayload = await countResp.json();
         const summaryPayload = await summaryResp.json();
 
         const summaries = Array.isArray(summaryPayload?.proposals)
@@ -106,9 +139,9 @@ async function fetchServerProposalSummaries(cityCode) {
             .map(item => normalizeServerProposalSummary(item, city))
             .filter(Boolean);
 
-        serverProposalCache.count = Number.isFinite(countPayload?.count)
-            ? Number(countPayload.count)
-            : (Number.isFinite(summaryPayload?.count) ? Number(summaryPayload.count) : serverProposalCache.proposals.length);
+        serverProposalCache.count = Number.isFinite(summaryPayload?.count)
+            ? Number(summaryPayload.count)
+            : serverProposalCache.proposals.length;
     } catch (error) {
         serverProposalCache.error = error?.message || 'Unable to load server proposals';
     } finally {
@@ -135,7 +168,12 @@ function ensureServerProposals(cityCode) {
     // "No proposals" is an answer, not a missing one — testing proposals.length here made a city
     // with an empty server list refetch on every render, forever.
     const alreadyAsked = serverProposalCache.lastFetchedAt > 0;
-    if (!alreadyAsked || cityChanged) {
+    // On the server tab, a changed search/sort re-queries the server so results span all rows, not
+    // just the fetched window. Debounced naturally: the search input schedules a debounced render,
+    // and this runs from that render.
+    const queryChanged = isServerListTab()
+        && serverListQuerySignature() !== (serverProposalCache.lastQuery || '');
+    if (!alreadyAsked || cityChanged || queryChanged) {
         fetchServerProposalSummaries(city);
     }
 }
@@ -342,11 +380,31 @@ async function headProposalExists(proposalId, _city, proposalForSync) {
     return false;
 }
 
-async function ensureAncestorProposalsUploaded(proposal) {
+// Which ancestors of `proposal` are not going to reach the server.
+//
+// This used to gate on upload ORDER — every ancestor had to already be on the server before its
+// descendant could be POSTed. Nothing depends on that order: proposals are POSTed independently, the
+// server stores ancestor ids as an opaque column with no foreign key, and the order a recipient
+// APPLIES a plan in is decided at apply time. Worse, the order was not always satisfiable. Ancestry
+// is derived from live parcel state (findAncestorTree -> _getParcelAncestors -> most recent creator),
+// so two proposals that each re-cut the other's children are each genuinely downstream of the other:
+// a real cycle, and an unbreakable deadlock for an ordering gate. One plan on prod had
+// `Road 2107-2043 <-> Subdivide 2107-2048`, which left five proposals permanently unuploadable.
+//
+// What a recipient actually needs is COMPLETENESS: every ancestor PRESENT in the plan. So callers
+// that know the whole set being shared pass it as `options.satisfiedBy`, and any ancestor in that set
+// is fine no matter what order things upload in — cycles included, since every member of a cycle is
+// in the same plan by construction (the dialog auto-selects ancestors).
+async function ensureAncestorProposalsUploaded(proposal, options = {}) {
     const missing = [];
     if (!proposal || typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function' || typeof proposalStorage === 'undefined') {
         return { ok: true, missing };
     }
+
+    const rawSatisfied = options && options.satisfiedBy;
+    const satisfiedBy = rawSatisfied instanceof Set
+        ? rawSatisfied
+        : (Array.isArray(rawSatisfied) ? new Set(rawSatisfied.map(id => String(id))) : null);
 
     const proposalKey = getProposalKey(proposal) || proposal.proposalId;
     if (!proposalKey) {
@@ -367,6 +425,8 @@ async function ensureAncestorProposalsUploaded(proposal) {
     }
 
     const checks = await Promise.all(ancestorHashes.map(async hash => {
+        // Shipping alongside this proposal — presence is what matters, not who was POSTed first.
+        if (satisfiedBy && satisfiedBy.has(String(hash))) return null;
         const ancestor = proposalStorage.getProposal(hash);
         if (!ancestor) {
             return { hash, reason: 'missing-local', id: null };
@@ -507,7 +567,7 @@ function prepareProposalForImport(sharedProposal) {
             if (sharedProposal.reparcellization) return 'reparcellization';
             if (sharedProposal.structureProposal && sharedProposal.structureProposal.kind) {
                 const kind = normalizeProposalGoalKey(sharedProposal.structureProposal.kind);
-                if (kind === 'park' || kind === 'square' || kind === 'lake') return kind;
+                if (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') return kind;
             }
             if (sharedProposal.buildingProposal || (sharedProposal.geometry && Array.isArray(sharedProposal.geometry.buildings) && sharedProposal.geometry.buildings.length)) {
                 return 'buildings';
@@ -536,7 +596,8 @@ function prepareProposalForImport(sharedProposal) {
         offer: (typeof sharedProposal.offer === 'number') ? sharedProposal.offer : (sharedProposal.offer || null),
         createdAt: sharedProposal.createdAt || new Date().toISOString(),
         updatedAt: sharedProposal.updatedAt || sharedProposal.createdAt || new Date().toISOString(),
-        status: sharedProposal.status || 'Active',
+        lifecycleStatus: getLifecycleStatus(sharedProposal),
+        applied: false,
         color: sharedProposal.color || null,
         parentParcelIds: parentIds
     };
@@ -556,8 +617,7 @@ function prepareProposalForImport(sharedProposal) {
         base.decideLaterProposal = {
             ...deepClone(raw),
             parentParcelIds,
-            childParcelIds,
-            status: raw.status || base.status || 'Active'
+            childParcelIds
         };
         if (base.parentParcelIds.length === 0 && parentParcelIds.length > 0) {
             base.parentParcelIds = parentParcelIds.slice();
@@ -571,7 +631,6 @@ function prepareProposalForImport(sharedProposal) {
             childParcelIds,
             roadGeometry: deepClone(sharedProposal.roadProposal.roadGeometry),
             metadata: deepClone(sharedProposal.roadProposal.metadata),
-            status: 'unapplied',
             parentFeatures: [],
             parentParcelIds: ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
         };
@@ -599,8 +658,7 @@ function prepareProposalForImport(sharedProposal) {
             parameters: deepClone(bp.parameters) || {},
             parentParcelIds: ensureArrayOfStrings(bp.parentParcelIds),
             parentParcelNumbers: deepCloneArray(bp.parentParcelNumbers),
-            ancestorKey: bp.ancestorKey || ensureArrayOfStrings(bp.parentParcelIds).join('|'),
-            status: 'unapplied'
+            ancestorKey: bp.ancestorKey || ensureArrayOfStrings(bp.parentParcelIds).join('|')
         };
         if (base.buildingProposal.parentParcelIds.length === 0) {
             base.buildingProposal.parentParcelIds = base.parentParcelIds.slice();
@@ -611,15 +669,28 @@ function prepareProposalForImport(sharedProposal) {
         }
     }
 
-    // Structure proposals (parks/squares)
+    // Structure proposals (parks/squares/lakes/stations)
     if (sharedProposal.structureProposal && !isDecideLater) {
+        const sharedStructure = sharedProposal.structureProposal;
         base.structureProposal = {
-            kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square' || sharedProposal.structureProposal.kind === 'lake') ? sharedProposal.structureProposal.kind : 'square',
-            geometry: deepClone(sharedProposal.structureProposal.geometry),
-            decorations: deepClone(sharedProposal.structureProposal.decorations || null),
-            blockName: sharedProposal.structureProposal.blockName || null,
-            parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.parentParcelIds)
+            kind: (sharedStructure.kind === 'park' || sharedStructure.kind === 'square' || sharedStructure.kind === 'lake' || sharedStructure.kind === 'station') ? sharedStructure.kind : 'square',
+            geometry: deepClone(sharedStructure.geometry),
+            decorations: deepClone(sharedStructure.decorations || null),
+            blockName: sharedStructure.blockName || null,
+            parentParcelIds: ensureArrayOfStrings(sharedStructure.parentParcelIds && sharedStructure.parentParcelIds.length ? sharedStructure.parentParcelIds : base.parentParcelIds)
         };
+        if (base.structureProposal.kind === 'station') {
+            base.structureProposal.stationType = sharedStructure.stationType || 'tram';
+            base.structureProposal.center = deepClone(sharedStructure.center || null);
+            base.structureProposal.bearing = Number.isFinite(Number(sharedStructure.bearing)) ? Number(sharedStructure.bearing) : 0;
+            if (base.structureProposal.stationType === 'elevated') {
+                base.structureProposal.platformHeightM = Number.isFinite(Number(sharedStructure.platformHeightM))
+                    ? Number(sharedStructure.platformHeightM)
+                    : 10;
+            }
+            base.structureProposal.attachment = deepClone(sharedStructure.attachment || null);
+            base.structureProposal.modelVersion = sharedStructure.modelVersion || 1;
+        }
         base.goal = normalizeProposalGoalKey(base.structureProposal.kind) || base.goal;
     }
 
@@ -641,8 +712,7 @@ function prepareProposalForImport(sharedProposal) {
                 : null,
             ownerShares,
             polygons,
-            childParcelIds,
-            status: 'unapplied'
+            childParcelIds
         };
 
         if (base.parentParcelIds.length === 0 && reparcelParcelIds.length > 0) {
@@ -653,7 +723,7 @@ function prepareProposalForImport(sharedProposal) {
         }
     }
 
-    return base;
+    return parkProposalForImport(base);
 }
 
 async function ensureParentParcelsFetched(sharedProposal, normalized) {
@@ -684,4 +754,13 @@ async function ensureParentParcelsFetched(sharedProposal, normalized) {
     }
 
     return parentIds;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        buildCityQueryParam,
+        normalizeServerProposalSummary,
+        prepareProposalForImport,
+        ensureAncestorProposalsUploaded
+    };
 }

@@ -1,0 +1,109 @@
+// Guards the frontend's global namespace. The frontend loads plain classic <script> files (see the
+// list in frontend/index.html), so a top-level `function foo() {}` creates a GLOBAL binding — and if
+// two files both declare `foo`, the last file loaded silently wins for every unqualified caller in
+// every file. That is invisible at the call site and has already produced real bugs (three copies of
+// escapeHtml disagreed on what to do with null; the share codec had a whole second copy that was
+// shadowed and never ran).
+//
+// Top-level `const`/`let` are caught here too, and their failure mode is WORSE than a function's: the
+// classic scripts share ONE global lexical environment, so a second top-level `const foo` is a hard
+// SyntaxError ("Identifier 'foo' has already been declared") that aborts the entire second file — every
+// global it defines below the collision vanishes. That is exactly how `const appliedOf` in both
+// proposals/sharing.js and proposal-manager.js took ProposalManager down ("ProposalManager is not
+// defined") until the alias in sharing.js was renamed. `var` is included for completeness (it
+// redeclares silently, like a function).
+//
+// This test fails on any function/const/let/var name declared at the TOP LEVEL of more than one file.
+// Declarations nested inside an IIFE, block or another function are module-private and are not
+// globals, so they are not collected — only `ast.program.body` is walked.
+//
+// KNOWN_COLLISIONS below is the pre-existing backlog, not a place to park new ones. Adding a name to
+// it means "two files disagree about who owns this global"; the fix is to keep one definition and
+// delete the rest, not to extend the list.
+
+import { describe, it, expect } from 'vitest';
+import { parse } from '@babel/parser';
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const FRONTEND_JS = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../../frontend/js');
+
+// The migration backlog is intentionally empty. New classic-script globals must have one owner.
+const KNOWN_COLLISIONS = new Set();
+
+function listJsFiles(dir) {
+    return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) return listJsFiles(full);
+        return entry.isFile() && entry.name.endsWith('.js') ? [full] : [];
+    });
+}
+
+// Collects the declarations that become globals: the ones directly in the program body. That is
+// top-level `function`, plus `const`/`let`/`var` (each a shared global-lexical or global-var binding
+// in a classic script). Anything inside an IIFE, block or another function is module-private and is
+// skipped. Destructuring patterns are skipped — only plain `Identifier` binding names are collected.
+function topLevelGlobalNames(source) {
+    const ast = parse(source, { sourceType: 'script' });
+    const out = [];
+    for (const node of ast.program.body) {
+        if (node.type === 'FunctionDeclaration' && node.id) {
+            out.push({ name: node.id.name, line: node.loc.start.line });
+        } else if (node.type === 'VariableDeclaration') {
+            for (const decl of node.declarations) {
+                if (decl.id && decl.id.type === 'Identifier') {
+                    out.push({ name: decl.id.name, line: decl.loc.start.line });
+                }
+            }
+        }
+    }
+    return out;
+}
+
+describe('frontend global namespace', () => {
+    const files = listJsFiles(FRONTEND_JS);
+
+    it('finds the frontend scripts', () => {
+        expect(files.length).toBeGreaterThan(100);
+    });
+
+    it('declares each top-level (global) function/const/let/var in exactly one file', () => {
+        const byName = new Map();
+
+        for (const file of files) {
+            const relative = path.relative(FRONTEND_JS, file);
+            for (const { name, line } of topLevelGlobalNames(readFileSync(file, 'utf8'))) {
+                if (!byName.has(name)) byName.set(name, []);
+                byName.get(name).push(`js/${relative}:${line}`);
+            }
+        }
+
+        const collisions = [...byName.entries()]
+            .filter(([name, locations]) => locations.length > 1 && !KNOWN_COLLISIONS.has(name))
+            .map(([name, locations]) => `  ${name} declared in ${locations.length} files:\n${locations.map(l => `      ${l}`).join('\n')}`);
+
+        expect(
+            collisions,
+            `These top-level names are declared in more than one classic script. A duplicate function\n`
+            + `lets the last file loaded silently win for every caller; a duplicate const/let is a hard\n`
+            + `SyntaxError that aborts the whole second file. Keep one definition and delete the rest —\n`
+            + `do not add them to KNOWN_COLLISIONS.\n\n${collisions.join('\n')}\n`
+        ).toEqual([]);
+    });
+
+    it('KNOWN_COLLISIONS has no stale entries — fixed duplicates must be removed from the list', () => {
+        const duplicated = new Set();
+        const seen = new Map();
+
+        for (const file of files) {
+            for (const { name } of topLevelGlobalNames(readFileSync(file, 'utf8'))) {
+                if (seen.has(name) && seen.get(name) !== file) duplicated.add(name);
+                seen.set(name, file);
+            }
+        }
+
+        const stale = [...KNOWN_COLLISIONS].filter(name => !duplicated.has(name));
+        expect(stale, `No longer duplicated — remove from KNOWN_COLLISIONS: ${stale.join(', ')}`).toEqual([]);
+    });
+});

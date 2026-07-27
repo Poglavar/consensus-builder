@@ -111,19 +111,8 @@ test.describe('Parcel info panel @core', () => {
     expect(isVisible).toBe(false);
   });
 
-  test('showParcelInfoPanel function exists and is callable', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      const fn = w.Parcels?.uiParcelPanel?.showParcelInfoPanel || w.showParcelInfoPanel;
-      return { exists: typeof fn === 'function' };
-    });
-
-    test.skip(!result.exists, 'showParcelInfoPanel not available (module not loaded)');
-    expect(result.exists).toBe(true);
-  });
+  // A `typeof showParcelInfoPanel === 'function'` check used to sit here. It never called the
+  // function; the click tests below do, which is the only thing that proves it works.
 
   test('clicking a parcel opens the info panel', async ({ mockApi: page }) => {
     await page.goto('/');

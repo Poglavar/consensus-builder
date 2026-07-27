@@ -31,6 +31,43 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
+    // Per-parcel counts from the server (GET /proposals/counts) — shared across all users, unlike the
+    // browser-local proposalStorage. Mirrors the CantonCounts pattern: fetch for the visible parcels,
+    // cache, redraw on update. A parcel present in this map has an authoritative server count; absent
+    // means "not fetched" and the badge falls back to the local count (so an unreachable backend or a
+    // parcel-id mismatch degrades to today's behaviour, never worse).
+    const serverProposalCounts = new Map(); // parcelId -> count
+    let serverCountsSignature = '';
+    let serverCountsInFlight = false;
+
+    function ensureServerProposalCounts(parcelIds) {
+        if (typeof fetch !== 'function' || !Array.isArray(parcelIds) || !parcelIds.length) return;
+        const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
+        if (!base) return;
+        const ids = Array.from(new Set(parcelIds.filter(Boolean).map(String)));
+        if (!ids.length) return;
+        const signature = ids.slice().sort().join(',');
+        if (signature === serverCountsSignature || serverCountsInFlight) return;
+
+        serverCountsInFlight = true;
+        const city = (typeof global.getCurrentCityId === 'function') ? (global.getCurrentCityId() || '') : '';
+        const url = `${base.replace(/\/$/, '')}/proposals/counts?parcel_ids=${encodeURIComponent(ids.join(','))}`
+            + (city ? `&city=${encodeURIComponent(city)}` : '');
+        fetch(url)
+            .then(resp => (resp.ok ? resp.json() : null))
+            .then(data => {
+                serverCountsInFlight = false;
+                if (!data || !data.counts) return;
+                serverProposalCounts.clear();
+                // Seed every requested id at 0 so `.has()` means "fetched"; then apply the real counts.
+                ids.forEach(id => serverProposalCounts.set(id, 0));
+                Object.entries(data.counts).forEach(([pid, n]) => serverProposalCounts.set(String(pid), Number(n) || 0));
+                serverCountsSignature = signature;
+                refreshProposalCountLabelsIfVisible();
+            })
+            .catch(() => { serverCountsInFlight = false; });
+    }
+
     /**
      * Get proposal count for a parcel from ALL proposals
      */
@@ -56,6 +93,16 @@
             // would double-count the same proposal.
             const isCanton = global.CantonMode && global.CantonMode.isCantonProposal;
             const evm = isCanton ? proposals.filter((p) => !global.CantonMode.isCantonProposal(p)) : proposals;
+
+            // If the server has authoritative counts for this parcel, use them (everyone agrees) and
+            // add only the browser-local proposals never uploaded (drafts + minted-not-uploaded), so
+            // they aren't double-counted against the server's copy. Otherwise fall back to local.
+            const key = parcelId.toString();
+            if (serverProposalCounts.has(key)) {
+                const serverCount = serverProposalCounts.get(key) || 0;
+                const localOnly = evm.filter(p => p && !p.serverProposalId).length;
+                return serverCount + localOnly;
+            }
             return evm.length;
         } catch (error) {
             console.warn('Failed to get proposal count for parcel', parcelId, error);
@@ -109,9 +156,14 @@
         }
 
         // Process only visible parcels
+        const visibleIds = [];
         for (let i = 0; i < parcelsToProcess.length; i++) {
             processLayerForCount(parcelsToProcess[i], bounds);
+            const pid = resolveParcelId(parcelsToProcess[i].feature);
+            if (pid) visibleIds.push(pid);
         }
+        // Fetch shared server counts for the visible parcels (redraws on update).
+        ensureServerProposalCounts(visibleIds);
     }
 
     function processLayerForCount(layer, bounds) {

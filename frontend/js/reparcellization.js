@@ -1,4 +1,13 @@
 (function () {
+    const reparcellizationUiState = window.__reparcellizationUiState;
+    if (!reparcellizationUiState
+        || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
+        || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function') {
+        console.error('[reparcellization] UI state helpers are unavailable.');
+        return;
+    }
+    const { resolveDrawShortcut, resolveOwnerDisplayName } = reparcellizationUiState;
+
     const COLOR_PALETTE = [
         '#2E86AB', '#F18F01', '#C73E1D', '#137547', '#7A1CAC',
         '#CC3363', '#3D5A80', '#EE6C4D', '#5C946E', '#8A508F',
@@ -134,16 +143,16 @@
 
         const parcelCount = state.subtitleData.parcelCount || 0;
         const algorithmLabel = state.subtitleData.algorithmLabel || '';
+        // The counted nouns are nested translation references so each one picks its own plural form
+        // (Croatian/Serbian need 1 / 2-4 / 5+); the i18n runtime resolves them before interpolating.
         const params = {
             algorithm: algorithmLabel,
-            parcelCount,
-            parcelSuffix: parcelCount === 1 ? '' : 's',
-            ownerCount: ownerCount || 0,
-            ownerSuffix: (ownerCount || 0) === 1 ? '' : 's'
+            parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount },
+            owners: { key: 'reparcellization.modal.ownerCount', count: ownerCount || 0 }
         };
         const subtitleText = t(
             'reparcellization.modal.subtitleWithOwners',
-            '{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}',
+            '{{algorithm}} · {{parcels}} · {{owners}}',
             params
         );
         state.subtitleEl.textContent = subtitleText;
@@ -295,13 +304,13 @@
         const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
         const subtitleParams = {
             algorithm: algorithmLabel,
-            count: parcelCount,
-            suffix: parcelCount === 1 ? '' : 's'
+            parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount }
         };
         const titleText = t('reparcellization.modal.title', 'Reparcellization');
-        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
+        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
+        const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
 
         const algorithmControls = `
@@ -320,9 +329,9 @@
                                 </label>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
-                                <button type="button" class="btn-draw-tool" data-reparcel-undo>&#x21B6; ${t('reparcellization.modal.drawUndo', 'Undo point')}</button>
-                                <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>&#x2713; ${t('reparcellization.modal.drawFinish', 'Finish plot')}</button>
-                                <button type="button" class="btn-draw-tool" data-reparcel-cancel-draw>&#x2715; ${t('reparcellization.modal.drawCancel', 'Cancel')}</button>
+                                <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
+                                <button type="button" class="btn-draw-tool btn-draw-finish" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
+                                <button type="button" class="btn-draw-tool" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
                             </div>
                         </div>
                     </div>`;
@@ -363,6 +372,7 @@
                                 <label><input type="radio" name="reparcel-emission-mode" value="single" checked> ${t('reparcellization.modal.emissionSingle', 'One agreement')}</label>
                                 <label><input type="radio" name="reparcel-emission-mode" value="individual"> ${t('reparcellization.modal.emissionIndividual', 'Owners join individually')}</label>
                             </div>
+                            <button type="button" class="btn" data-reparcel-all-public data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                             <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
                     </div>
@@ -426,6 +436,10 @@
             });
         });
 
+        Array.from(overlay.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
+            btn.addEventListener('click', assignPublicToAllSlices);
+        });
+
         state.resizeHandler = () => {
             if (state.map) {
                 state.map.invalidateSize();
@@ -450,16 +464,23 @@
                 closeModal();
                 return;
             }
-            // Drawing shortcuts (ignore when typing in a field).
-            if (!state.drawing.active) return;
             const tag = (event.target && event.target.tagName) || '';
-            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                onDrawFinish();
-            } else if (event.key === 'Backspace') {
-                event.preventDefault();
-                undoLastPoint();
+            const action = resolveDrawShortcut({
+                active: state.drawing.active,
+                editable: tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || event.target?.isContentEditable,
+                key: event.key,
+                repeat: event.repeat,
+                ctrlKey: event.ctrlKey,
+                metaKey: event.metaKey,
+                altKey: event.altKey
+            });
+            if (!action) return;
+            event.preventDefault();
+            if (action === 'finish') onDrawFinish();
+            else if (action === 'undo') undoLastPoint();
+            else if (action === 'cancel') {
+                cancelDraw();
+                setStatus('', 'info');
             }
         };
         window.addEventListener('keydown', state.escHandler);
@@ -727,7 +748,10 @@
         let unassignedCount = 0;
         for (const slice of state.slices) {
             const area = computeFeatureArea(sliceToFeature(slice));
-            const hasOwner = Array.isArray(slice.owners) && slice.owners.length > 0;
+            // A REAL owner is required — an owner slot with an empty ownerKey (the "Unassigned"
+            // placeholder) does not count, so a plan with any unowned plot cannot be committed. Public
+            // land counts (its ownerKey is PUBLIC_LAND_KEY). Use "All public" for a quick break-up.
+            const hasOwner = Array.isArray(slice.owners) && slice.owners.some(o => o && o.ownerKey);
             if (hasOwner) {
                 assignedArea += area;
             } else {
@@ -1515,10 +1539,9 @@
         if (state.drawToolbar) state.drawToolbar.hidden = !state.drawing.active;
         if (state.finishBtn) {
             state.finishBtn.disabled = state.drawing.points.length < minPoints;
-            const checkPrefix = '✓ ';
-            state.finishBtn.textContent = checkPrefix + (isLine
+            state.finishBtn.textContent = (isLine
                 ? t('reparcellization.modal.drawFinishLine', 'Finish line')
-                : t('reparcellization.modal.drawFinish', 'Finish plot'));
+                : t('reparcellization.modal.drawFinish', 'Finish plot')) + ' (F)';
         }
         if (state.undoBtn) state.undoBtn.disabled = state.drawing.points.length === 0;
     }
@@ -1871,6 +1894,21 @@
 
         popup.openOn(state.map);
         state.ownerAssignmentPopup = popup;
+    }
+
+    // "All public": assign every plot to public ownership in one click, so a plain break-up → Done
+    // flow is possible without hand-assigning each plot. Public land is a valid owner (it commits to
+    // the City), which satisfies the completeness gate.
+    function assignPublicToAllSlices() {
+        if (!Array.isArray(state.slices) || !state.slices.length) return;
+        const publicOwner = getPublicLandOwner();
+        state.slices.forEach((slice, i) => {
+            slice.owners = [{ ownerKey: publicOwner.ownerKey, displayName: publicOwner.displayName, color: publicOwner.color, share: 1 }];
+            syncSlicePrimaryOwner(i);
+        });
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
     }
 
     function toggleOwnerOnSlice(sliceIndex, owner, add) {
@@ -2570,52 +2608,9 @@
         }
     }
 
-    function parseShareValue(rawValue) {
-        if (!rawValue && rawValue !== 0) return NaN;
-        const value = String(rawValue).trim();
-        if (!value) return NaN;
-        const percentMatch = value.match(/^(\d+(?:\.\d+)?)\s*%$/);
-        if (percentMatch) {
-            const pct = parseFloat(percentMatch[1]);
-            return Number.isFinite(pct) ? pct / 100 : NaN;
-        }
-        const fractionMatch = value.match(/^(\d+)\s*\/\s*(\d+)$/);
-        if (fractionMatch) {
-            const numerator = parseFloat(fractionMatch[1]);
-            const denominator = parseFloat(fractionMatch[2]);
-            if (denominator === 0) return NaN;
-            return numerator / denominator;
-        }
-        const asNumber = parseFloat(value);
-        if (Number.isFinite(asNumber)) {
-            if (asNumber > 1) {
-                return asNumber;
-            }
-            if (asNumber >= 0 && asNumber <= 1) {
-                return asNumber;
-            }
-        }
-        return NaN;
-    }
-
-    function normalizeOwnerSlots(slots) {
-        if (!Array.isArray(slots) || !slots.length) return [];
-        const parsed = slots.map(slot => {
-            const fromText = parseShareValue(slot.shareText);
-            const fromDetail = parseShareValue(slot.shareDetail);
-            let value = Number.isFinite(fromDetail) ? fromDetail : fromText;
-            if (!Number.isFinite(value) || value <= 0) {
-                value = 0;
-            }
-            return { slot, value };
-        });
-        let total = parsed.reduce((sum, entry) => sum + entry.value, 0);
-        if (total <= 0) {
-            const equalShare = 1 / parsed.length;
-            return parsed.map(entry => ({ slot: entry.slot, fraction: equalShare }));
-        }
-        return parsed.map(entry => ({ slot: entry.slot, fraction: entry.value / total }));
-    }
+    // Share parsing / normalization lives in frontend/js/reparcellization-shares.js (loaded first)
+    // so it is unit-tested headless. It fixed the bare-"50" bug (see that file).
+    const { parseShareValue, normalizeOwnerSlots } = window.ReparcellizationShares;
 
     // Land value for a parcel: explicit estimatedMarketPrice when present,
     // otherwise area × average €/m². This is the contribution basis for
@@ -2678,14 +2673,31 @@
             const parcelOwners = [];
             normalizedSlots.forEach(({ slot, fraction }) => {
                 const ownerKey = slot.key || `${parcelId}:${slot.displayName}`;
+                const parcelLabel = feature.properties.BROJ_CESTICE || parcelId;
+                const fallbackOwnerName = t(
+                    'reparcellization.modal.syntheticOwner',
+                    'Owner of {{parcel}}',
+                    { parcel: parcelLabel }
+                );
                 parcelOwners.push({
                     ownerKey,
-                    displayName: slot.displayName || 'Owner',
+                    displayName: resolveOwnerDisplayName(
+                        slot.displayName,
+                        fallbackOwnerName,
+                        [t('reparcellization.modal.unassigned', 'Unassigned')]
+                    ),
                     share: fraction
                 });
                 const existing = result.get(ownerKey) || {
                     ownerKey,
-                    displayName: slot.displayName || 'Owner',
+                    // “Unassigned” describes a PLOT with no owner. If an ownership source uses
+                    // that same placeholder for a contributor, give the contributor a stable
+                    // parcel-based name so a complete plan cannot still show an unassigned state.
+                    displayName: resolveOwnerDisplayName(
+                        slot.displayName,
+                        fallbackOwnerName,
+                        [t('reparcellization.modal.unassigned', 'Unassigned')]
+                    ),
                     parcelIds: new Set(),
                     totalArea: 0,
                     totalValue: 0
@@ -2768,21 +2780,6 @@
         return slices;
     }
 
-    function buildSlicePolygon(minLng, maxLng, minLat, maxLat, cutLng) {
-        if (!isFinite(cutLng) || cutLng <= minLng) return null;
-        const epsilon = 1e-6;
-        const constrainedCut = Math.min(Math.max(cutLng, minLng + epsilon), maxLng - epsilon);
-        const latMargin = Math.max((maxLat - minLat) * 0.05, 0.0005);
-        const coords = [
-            [minLng, minLat - latMargin],
-            [constrainedCut, minLat - latMargin],
-            [constrainedCut, maxLat + latMargin],
-            [minLng, maxLat + latMargin],
-            [minLng, minLat - latMargin]
-        ];
-        return turf.polygon([coords]);
-    }
-
     function safeIntersect(featureA, featureB) {
         try {
             return turf.intersect(featureA, featureB);
@@ -2801,321 +2798,13 @@
         }
     }
 
-    /**
-     * Slice a polygon into N adjacent pieces along the X axis using vertical cut lines.
-     * Uses turf.intersect then post-processes to ensure adjacent slices share IDENTICAL
-     * boundary coordinates for floodfill neighbor detection to work.
-     */
-    function slicePolygonByXCoordinates(feature, cutXValues) {
-        if (!feature || !feature.geometry) return [];
-        if (!Array.isArray(cutXValues) || cutXValues.length === 0) {
-            return [feature];
-        }
-
-        const ringCoords = getPolygonCoordinates(feature);
-        if (!ringCoords || ringCoords.length < 4) return [feature];
-
-        const bbox = turf.bbox(feature);
-        const minX = bbox[0];
-        const maxX = bbox[2];
-        const minY = bbox[1];
-        const maxY = bbox[3];
-        const padY = Math.max((maxY - minY) * 0.1, 0.001);
-
-        // Sort and filter cut X values
-        const cuts = cutXValues.filter(x => x > minX && x < maxX).sort((a, b) => a - b);
-        if (cuts.length === 0) return [feature];
-
-        // Pre-compute EXACT intersection points for each cut X on the ORIGINAL polygon
-        const ring = ringCoords.slice(0, -1);
-        const cutPointsMap = new Map(); // cutX -> array of {x, y} sorted by y
-
-        for (const cutX of cuts) {
-            const points = [];
-            for (let i = 0; i < ring.length; i++) {
-                const p1 = ring[i];
-                const p2 = ring[(i + 1) % ring.length];
-                const x1 = p1[0], y1 = p1[1];
-                const x2 = p2[0], y2 = p2[1];
-
-                if ((x1 < cutX && cutX < x2) || (x2 < cutX && cutX < x1)) {
-                    const t = (cutX - x1) / (x2 - x1);
-                    const y = y1 + t * (y2 - y1);
-                    points.push({ x: cutX, y: y });
-                }
-            }
-            points.sort((a, b) => a.y - b.y);
-            cutPointsMap.set(cutX, points);
-        }
-
-        // Boundaries for all slices
-        const boundaries = [minX, ...cuts, maxX];
-
-        // Create slices using turf.intersect with vertical bands
-        const sliceSlots = new Array(boundaries.length - 1).fill(null);
-        for (let s = 0; s < boundaries.length - 1; s++) {
-            const leftX = boundaries[s];
-            const rightX = boundaries[s + 1];
-
-            const band = turf.polygon([[
-                [leftX, minY - padY],
-                [rightX, minY - padY],
-                [rightX, maxY + padY],
-                [leftX, maxY + padY],
-                [leftX, minY - padY]
-            ]]);
-
-            try {
-                const sliced = turf.intersect(feature, band);
-                if (sliced && computeFeatureArea(sliced) > 0) {
-                    sliceSlots[s] = { feature: sliced, leftX, rightX, index: s };
-                }
-            } catch (err) {
-                console.warn('slicePolygonByXCoordinates: intersect failed', err);
-            }
-        }
-
-        // POST-PROCESS: floodfill neighbor detection matches *edges* (pairs of consecutive vertices)
-        // after WGS84->HTRS96 conversion and 1cm quantization.
-        // So we must ensure adjacent slices share the SAME vertex segmentation along the cut line,
-        // not just "close" coordinates.
-
-        const xTolerance = Math.max((maxX - minX) * 1e-4, 1e-7);
-
-        function closeRingInPlace(coords) {
-            if (!Array.isArray(coords) || coords.length < 3) return;
-            const first = coords[0];
-            const last = coords[coords.length - 1];
-            if (!Array.isArray(first) || !Array.isArray(last)) return;
-            if (first[0] === last[0] && first[1] === last[1]) return;
-            coords.push([first[0], first[1]]);
-        }
-
-        function findBestCutRun(ringCoords, cutX) {
-            // Work on the non-closed ring to avoid the duplicated last vertex
-            const n = ringCoords.length - 1;
-            if (n < 3) return null;
-
-            const onCut = (pt) => Array.isArray(pt) && Math.abs(pt[0] - cutX) < xTolerance;
-
-            const runs = [];
-            let start = null;
-            for (let i = 0; i < n; i++) {
-                if (onCut(ringCoords[i])) {
-                    if (start === null) start = i;
-                } else if (start !== null) {
-                    runs.push({ start, end: i - 1 });
-                    start = null;
-                }
-            }
-            if (start !== null) {
-                runs.push({ start, end: n - 1 });
-            }
-
-            if (runs.length === 0) return null;
-
-            // Pick the run with the biggest y-span (tie-break by length)
-            let best = null;
-            for (const r of runs) {
-                let yMin = Infinity;
-                let yMax = -Infinity;
-                for (let i = r.start; i <= r.end; i++) {
-                    const y = ringCoords[i][1];
-                    if (y < yMin) yMin = y;
-                    if (y > yMax) yMax = y;
-                }
-                const span = yMax - yMin;
-                const len = r.end - r.start + 1;
-                const score = span * 1e6 + len; // prioritize span
-                if (!best || score > best.score) {
-                    best = { ...r, yMin, yMax, len, score };
-                }
-            }
-
-            if (!best || best.len < 2) return null; // need at least 2 vertices to form edges
-            const yStart = ringCoords[best.start][1];
-            const yEnd = ringCoords[best.end][1];
-            best.direction = yEnd >= yStart ? 'asc' : 'desc';
-            return best;
-        }
-
-        function replaceRunWithCanonical(ringCoords, run, cutX, canonicalYs, direction) {
-            // Replace vertices in [start..end] with canonical points along x=cutX.
-            const points = canonicalYs.map(y => [cutX, y]);
-            if (direction === 'desc') points.reverse();
-
-            // Ensure endpoints exist (avoid degenerate)
-            if (points.length < 2) return;
-
-            // Splice into the ring (excluding the closing vertex). We'll re-close after.
-            const nonClosedLen = ringCoords.length - 1;
-            const deleteCount = (run.end - run.start + 1);
-            ringCoords.splice(run.start, deleteCount, ...points);
-
-            // Fix closure: drop last if it was old closure and re-add exact closure
-            if (run.start === 0 && ringCoords.length >= 2) {
-                ringCoords.pop();
-            }
-            closeRingInPlace(ringCoords);
-        }
-
-        function dedupeSortedYs(ys) {
-            const out = [];
-            const eps = 1e-12;
-            for (const y of ys) {
-                if (!Number.isFinite(y)) continue;
-                if (out.length === 0 || Math.abs(out[out.length - 1] - y) > eps) out.push(y);
-            }
-            return out;
-        }
-
-        for (let c = 0; c < cuts.length; c++) {
-            const cutX = cuts[c];
-            const leftSlice = sliceSlots[c];
-            const rightSlice = sliceSlots[c + 1];
-            if (!leftSlice || !rightSlice) continue;
-
-            const leftRing = getPolygonCoordinates(leftSlice.feature);
-            const rightRing = getPolygonCoordinates(rightSlice.feature);
-            if (!leftRing || !rightRing) continue;
-
-            // Ensure rings are closed (turf usually does this, but be defensive)
-            closeRingInPlace(leftRing);
-            closeRingInPlace(rightRing);
-
-            const leftRun = findBestCutRun(leftRing, cutX);
-            const rightRun = findBestCutRun(rightRing, cutX);
-            if (!leftRun || !rightRun) continue;
-
-            const yMin = Math.max(leftRun.yMin, rightRun.yMin);
-            const yMax = Math.min(leftRun.yMax, rightRun.yMax);
-            if (!(yMax > yMin)) continue;
-
-            // Canonical segmentation: union of both rings' existing cut-vertices within overlap,
-            // plus the original polygon intersection points for this cut.
-            const ys = [];
-            for (let i = leftRun.start; i <= leftRun.end; i++) {
-                const y = leftRing[i][1];
-                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
-            }
-            for (let i = rightRun.start; i <= rightRun.end; i++) {
-                const y = rightRing[i][1];
-                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
-            }
-            const precomputed = cutPointsMap.get(cutX) || [];
-            for (const pt of precomputed) {
-                if (!pt) continue;
-                const y = pt.y;
-                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
-            }
-            ys.sort((a, b) => a - b);
-            const canonicalYs = dedupeSortedYs(ys);
-            if (canonicalYs.length < 2) continue;
-
-            // Force both sides to have identical vertices along the cut boundary.
-            replaceRunWithCanonical(leftRing, leftRun, cutX, canonicalYs, leftRun.direction);
-            replaceRunWithCanonical(rightRing, rightRun, cutX, canonicalYs, rightRun.direction);
-        }
-
-        return sliceSlots.filter(Boolean).map(s => s.feature);
-    }
-
-    function getPolygonCoordinates(feature) {
-        if (!feature?.geometry?.coordinates) return null;
-        if (feature.geometry.type === 'Polygon') {
-            return feature.geometry.coordinates[0];
-        }
-        if (feature.geometry.type === 'MultiPolygon') {
-            return feature.geometry.coordinates[0][0];
-        }
-        return null;
-    }
-
+    // Sweep-line subdivision lives in frontend/js/reparcellization-slice.js (loaded first) so it is
+    // unit-tested, and its 0%-owner land bug is fixed there. Inject this file's turf + area helper.
     function sliceWithSweepLine(superParcel, owners) {
-        if (typeof turf === 'undefined') {
-            console.warn('turf is required for reparcellization.');
-            return [];
-        }
-        if (!owners.length) return [];
-
-        const baseFeature = JSON.parse(JSON.stringify(superParcel));
-        const totalArea = computeFeatureArea(baseFeature);
-        if (!totalArea) return [];
-
-        const bbox = turf.bbox(baseFeature);
-        const minX = bbox[0];
-        const maxX = bbox[2];
-
-        // First pass: compute all cut X coordinates using binary search
-        const cutXValues = [];
-        let cumulativePercent = 0;
-
-        for (let i = 0; i < owners.length - 1; i++) {
-            const owner = owners[i];
-            if (!owner.percent) continue;
-            cumulativePercent += owner.percent;
-            const targetCumulativeArea = totalArea * cumulativePercent;
-
-            // Binary search for the X coordinate
-            let lower = minX;
-            let upper = maxX;
-            let bestCut = (lower + upper) / 2;
-            let bestDiff = Infinity;
-
-            for (let iter = 0; iter < 30; iter++) {
-                const cut = (lower + upper) / 2;
-                const sliceRect = buildSlicePolygon(minX, maxX, bbox[1], bbox[3], cut);
-                if (!sliceRect) break;
-
-                let sliceFeature = null;
-                try {
-                    sliceFeature = turf.intersect(baseFeature, sliceRect);
-                } catch (_) { /* ignore */ }
-
-                const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
-                const diff = Math.abs(area - targetCumulativeArea);
-
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    bestCut = cut;
-                }
-
-                if (area < targetCumulativeArea) {
-                    lower = cut;
-                } else {
-                    upper = cut;
-                }
-
-                if (Math.abs(diff / targetCumulativeArea) <= 0.005) {
-                    break;
-                }
-            }
-
-            cutXValues.push(bestCut);
-        }
-
-        // Second pass: slice the polygon using exact cut coordinates with shared boundaries
-        const slicedFeatures = slicePolygonByXCoordinates(baseFeature, cutXValues);
-
-        // Map sliced features to owners
-        const slices = [];
-        for (let i = 0; i < owners.length && i < slicedFeatures.length; i++) {
-            const owner = owners[i];
-            const sliceFeature = slicedFeatures[i];
-            if (sliceFeature && sliceFeature.geometry) {
-                slices.push({
-                    ownerKey: owner.ownerKey,
-                    displayName: owner.displayName,
-                    percent: owner.percent,
-                    color: owner.color,
-                    geometry: sliceFeature.geometry,
-                    owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }],
-                    source: 'sweep'
-                });
-            }
-        }
-
-        return slices.filter(slice => slice.geometry);
+        return window.ReparcellizationSlice.sliceWithSweepLine(superParcel, owners, {
+            turf: (typeof turf !== 'undefined' ? turf : undefined),
+            computeFeatureArea
+        });
     }
 
     async function refreshPreview() {

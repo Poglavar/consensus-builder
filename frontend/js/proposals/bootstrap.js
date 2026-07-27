@@ -95,6 +95,8 @@ if (typeof window !== 'undefined') {
     window._startParcelWriteCache = _startParcelWriteCache;
     window._flushParcelWriteCache = _flushParcelWriteCache;
     window._discardParcelWriteCache = _discardParcelWriteCache;
+    window.withParcelWriteBatch = withParcelWriteBatch;
+    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
 }
 
 
@@ -380,59 +382,12 @@ window.toggleProposalDetailsPanelMinimized = toggleProposalDetailsPanelMinimized
 // Note: decide-later and reparcellization are intentionally NOT in this set — they have parent
 // parcels (or per-slice geometry) we can frame.
 
-
-
-
-// Upload a thumbnail data URL to the backend (no IPFS fallback). Used by the mint flow when
-// converting a local thumbnail into a shareable one. NOT used during ordinary proposal creation —
-// thumbnails stay as data URLs in localStorage until the proposal is minted.
-
-
-
-// Save the captured data URL on the local proposal so it can be rendered as a thumbnail
-// without going through the backend. Used during proposal creation and click-to-generate.
-
-// Capture (or accept) a thumbnail data URL for the given proposal and store it locally.
-// By default the data URL is kept in localStorage only — uploads to the backend happen later
-// (currently only on mint). Pass { uploadToServer: true } to force an upload.
-
-if (typeof document !== 'undefined') {
-    document.addEventListener('proposalCreated', (event) => {
-        const detail = event && event.detail ? event.detail : {};
-        const proposalId = detail.proposalId;
-        if (!proposalId) return;
-        // Snapshot any pending modal-preview capture synchronously, before closeProposalDialog clears it.
-        const snapshotDataUrl = proposalModalScreenshotDataUrl;
-        const snapshotPromise = proposalModalScreenshotPromise;
-        captureAndPersistProposalScreenshot(proposalId, {
-            screenshotDataUrl: snapshotDataUrl,
-            modalPromise: snapshotPromise
-        }).catch(err => {
-            console.warn('[proposalCreated] background capture failed', err);
-        });
-    });
-}
-
-// Pull a [lng, lat] coordinate ring out of whatever the proposal stored.
-// Returns { polygon, polygonOrder, fitToPolygonOnly } in the shape captureViaTileStitch expects.
-
-
-
-
-// Rebuild a tile-stitched screenshot from the persisted proposal data only — no live selection required.
-
-// Track which proposals have an in-flight regeneration so repeat clicks no-op.
-
-
 if (typeof window !== 'undefined') {
-    window.captureAndPersistProposalScreenshot = captureAndPersistProposalScreenshot;
     window.shouldSkipProposalScreenshot = shouldSkipProposalScreenshot;
-    window.reconstructProposalScreenshotDataUrl = reconstructProposalScreenshotDataUrl;
-    window.triggerProposalScreenshotRegeneration = triggerProposalScreenshotRegeneration;
 }
 
-// When a proposal's screenshot URL is set or replaced, upgrade any placeholder thumbnails in the DOM
-// without re-rendering the whole list.
+// When a proposal's screenshot URL is set or replaced (the mint flow puts the on-chain image URL on
+// it), upgrade any placeholder thumbnails in the DOM without re-rendering the whole list.
 if (typeof document !== 'undefined') {
     document.addEventListener('proposalScreenshotUpdated', (event) => {
         const detail = event && event.detail ? event.detail : {};
@@ -441,9 +396,8 @@ if (typeof document !== 'undefined') {
         if (!proposalId || !imageSrc) return;
         const sel = `.proposal-thumb[data-proposal-id="${(typeof CSS !== 'undefined' && CSS.escape) ? CSS.escape(String(proposalId)) : String(proposalId)}"]`;
         document.querySelectorAll(sel).forEach(node => {
-            node.classList.remove('proposal-thumb-empty', 'proposal-thumb-loading');
+            node.classList.remove('proposal-thumb-empty');
             node.classList.add('proposal-thumb-has-image');
-            node.removeAttribute('onclick');
             node.removeAttribute('title');
             node.innerHTML = `
                 <img class="proposal-thumb-img" src="${imageSrc}" alt="" loading="lazy">
@@ -464,7 +418,7 @@ if (typeof document !== 'undefined') {
 
 
 if (typeof window !== 'undefined') {
-    window.openConstrainedCorridorModal = openConstrainedCorridorModal;
+    window.openRoadDesignationModal = openRoadDesignationModal;
 }
 
 
@@ -871,7 +825,7 @@ if (typeof window !== 'undefined') {
 
 // Simple HTML escape to safely insert dynamic strings into innerHTML
 
-// PARCEL_NUMBER_PROPERTY_CANDIDATES is defined in proposals/sharing.js
+// Parcel display-number schema and accessors are owned by proposals/parcel-id.js.
 
 
 
@@ -1086,41 +1040,19 @@ window.addEventListener('parcelDataLoaded', async () => {
 
     // 1) Auto-apply executed and applied proposals to ensure parent parcels are removed and child parcels are clickable
     // This is critical: without this, parent parcels remain on the map and block child parcel clicks
-    // applyProposal is idempotent - it checks roadProposal.status === 'applied' and returns early if already applied
+    // applyProposal is idempotent - it checks the roadProposal's applied flag and returns early if already applied
     if (typeof proposalStorage !== 'undefined' && typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
         try {
             const allProposals = proposalStorage.getAllProposals();
             const isAppliedLike = (p) => {
-                const status = (p.status || '').toLowerCase();
-                const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
-                const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
-                const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
-                const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
-                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
-                return status === 'executed' || status === 'applied'
-                    || roadStatus === 'applied' || roadStatus === 'executed'
-                    || structureStatus === 'applied' || structureStatus === 'executed'
-                    || buildingStatus === 'applied' || buildingStatus === 'executed'
-                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
-                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
+                if (!p) return false;
+                if (isApplied(p)) return true;
+                return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                    .some(key => p[key] && isApplied(p, p[key]));
             };
 
-            // Filter for both executed and applied proposals
-            const proposalsToRestore = allProposals.filter(p => {
-                const status = (p.status || '').toLowerCase();
-                const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
-                const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
-                const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
-                const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
-                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
-                // Include executed proposals and applied proposals (for roads, buildings, structures, reparcellizations, etc.)
-                return status === 'executed' || status === 'applied'
-                    || roadStatus === 'applied' || roadStatus === 'executed'
-                    || structureStatus === 'applied' || structureStatus === 'executed'
-                    || buildingStatus === 'applied' || buildingStatus === 'executed'
-                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
-                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
-            });
+            // Filter for both executed and applied proposals (roads, buildings, structures, reparcellizations, etc.)
+            const proposalsToRestore = allProposals.filter(isAppliedLike);
 
             // Drop ancestor proposals when any of their children are already applied/executed in the same restore set
             const proposalsById = new Map();

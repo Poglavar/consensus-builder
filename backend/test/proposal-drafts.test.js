@@ -211,6 +211,21 @@ describe('ProposalDraftStore', () => {
         expect(proposal.proposalId).toBeUndefined();
     });
 
+    it('strips the source proposal\'s serverProposalId — an edit must re-upload, not reuse the share link', () => {
+        // No adapter → the fallback merge copies sourceSnapshot wholesale, which carries the source's
+        // serverProposalId; without the explicit strip the "new" proposal would inherit the old
+        // /proposals/:id and Share would reuse it instead of offering a fresh upload.
+        const { store } = harness({ adapterRegistry: { get: () => null } });
+        const draft = store.createDraftFromProposal({
+            proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
+            title: 'Park', parentParcelIds: ['1'], geometry: { type: 'Polygon' }
+        });
+        const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
+        expect(proposal).toBeTruthy();
+        expect(proposal.serverProposalId).toBeUndefined();
+        expect(proposal.proposalId).toBeUndefined();
+    });
+
     it('wipeAll erases every draft and the unload flush cannot resurrect the storage key', () => {
         const { store, storage } = harness();
         store.createDraft({ cityId: 'zagreb', goal: 'road-track', fields: { name: 'Drawn road' } });
@@ -256,5 +271,25 @@ describe('ProposalDraftStore', () => {
         const receipt = store.consumeAfterPublish(draft.id, 'replacement-9');
         expect(store.getDraft(draft.id)).toBeNull();
         expect(store.consumeAfterPublish(draft.id, 'replacement-9')).toEqual(receipt);
+    });
+
+    // A live autosave carrying a very large/complex geometry can blow the localStorage quota. That
+    // must degrade to "kept in memory only", never throw into the caller — a raw QuotaExceededError
+    // once reached the status bar and aborted the block-building flow mid-edit.
+    it('does not throw when the storage write fails (e.g. quota exceeded)', () => {
+        const quotaStorage = memoryStorage();
+        quotaStorage.setItem = () => {
+            const err = new Error("Setting the value of 'consensus-builder.proposal-drafts.v1' exceeded the quota.");
+            err.name = 'QuotaExceededError';
+            throw err;
+        };
+        const { store } = harness({ storage: quotaStorage });
+
+        let draft;
+        expect(() => { draft = store.createDraft({ cityId: 'zagreb', goal: 'buildings', fields: { name: 'Huge block' } }); }).not.toThrow();
+        // The draft still exists in memory — editing is unaffected, only persistence was lost.
+        expect(store.getDraft(draft.id)).not.toBeNull();
+        expect(() => store.updateDraft(draft.id, { editorPayload: { giant: 'x'.repeat(1000) } })).not.toThrow();
+        expect(store.getDraft(draft.id).editorPayload.giant).toHaveLength(1000);
     });
 });

@@ -3,14 +3,38 @@ function hideRoadInfoPanel() {
     document.getElementById('road-info-panel').classList.remove('visible');
 }
 
-// Road drawing tool variables
+// ---------------------------------------------------------------------------
+// The corridor drawing tool
+//
+// ONE tool draws every corridor. A road and a track are the same object — a centerline plus a
+// cross-section — so there is one drawing mode, one click handler, one set of segments, one finish.
+//
+// The two buttons ("Draw road", "Draw track") are not two tools: they are two SEEDS. They open the
+// same tool with a different starting cross-section — a road profile, or one rail lane at the standard
+// gauge — and everything the road tool can do (snapping, junctions, branching, resuming, absorbing a
+// placed corridor) a track can do, because it IS the road tool. `corridorDrawKind` remembers which
+// button opened the session, and is used only for what the user sees: which button lights up, what the
+// panel is called, and whether the rail speed/curvature limit applies.
+// ---------------------------------------------------------------------------
 let roadDrawingMode = false;
+let corridorDrawKind = 'road';
+
+// The kind of the corridor CURRENTLY on the tool: a rail lane in the cross-section makes it a track,
+// whichever button opened the session (drop a tram lane into a street and the rail limits apply).
+function corridorDrawingIsTrack() {
+    return typeof corridorProfileHasRail === 'function' && corridorProfileHasRail(roadProfile);
+}
+
+function corridorDrawingKind() {
+    return corridorDrawingIsTrack() ? 'track' : 'road';
+}
+
 // Other modules (node-edit mode, draft overlay) react to drawing mode starting/stopping.
 function announceCorridorDrawingModeChange() {
     try {
         if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
             document.dispatchEvent(new CustomEvent('corridor-drawing-mode-changed', {
-                detail: { road: roadDrawingMode, track: typeof trackDrawingMode !== 'undefined' ? trackDrawingMode : false }
+                detail: { road: roadDrawingMode, kind: corridorDrawKind }
             }));
         }
     } catch (_) { }
@@ -23,20 +47,12 @@ function updateGlobalRoadDrawingMode(value) {
     }
     announceCorridorDrawingModeChange();
 }
-// Make trackDrawingMode globally accessible so other modules can check it
-function updateGlobalTrackDrawingMode(value) {
-    trackDrawingMode = value;
-    if (typeof window !== 'undefined') {
-        window.trackDrawingMode = value;
-    }
-    announceCorridorDrawingModeChange();
-}
 
 function shouldRestoreParcelClickInteractivity() {
     if (typeof window !== 'undefined' && typeof window.isParcelDrawingModeActive === 'function') {
         return !window.isParcelDrawingModeActive();
     }
-    return !roadDrawingMode && !trackDrawingMode;
+    return !roadDrawingMode;
 }
 
 function restoreParcelClickInteractivity() {
@@ -99,10 +115,18 @@ let roadCenterlineLayer = null;
 let roadPolygonLayer = null;
 let roadMarkers = [];
 let roadBuildingTunnels = [];
+let roadGradeSeparations = [];
 // Per-segment cross-section overrides for the segments of THIS drawing session that came in
 // with their own profile (absorbed roads, seeded edits). Keyed by segment id; drawing-new
 // segments use the session's active roadProfile. See corridorSegmentProfile().
 let roadSegmentProfiles = {};
+// Finishing is a single user action even though proposal creation crosses several async boundaries.
+// Segment placement has its own lock because its footprint fetch and obstacle decision must complete
+// before either another click or F is allowed to consume the drawing state.
+const roadFinalizationGate = RoadFinalizationState.createSingleFlightGate();
+let roadSegmentPlacementInProgress = false;
+let roadDrawingProfileValidationPending = false;
+let roadLastValidatedWidth = roadWidth;
 
 function roadDrawingSegmentOverride(index) {
     const id = roadSegmentIds[index];
@@ -126,6 +150,7 @@ function roadDrawingWidthForSegmentIndex(index) {
 }
 let roadDemolishedBuildings = []; // {id, geometry} records accepted via the Demolish choice
 let roadBuildingTunnelLayer = null;
+let roadGradeSeparationLayer = null;
 let lastRoadMoveUpdate = 0;
 let throttleDelay = 150; // milliseconds between updates
 let roadPreviewAffectedParcels = []; // Stores parcels affected by the preview segment
@@ -156,15 +181,67 @@ function refreshRoadBuildingTunnelLayer() {
     if (roadBuildingTunnelLayer) roadBuildingTunnelLayer.addTo(map);
 }
 
-function refreshTrackBuildingTunnelLayer() {
-    if (trackBuildingTunnelLayer && map.hasLayer(trackBuildingTunnelLayer)) map.removeLayer(trackBuildingTunnelLayer);
-    trackBuildingTunnelLayer = buildDrawingTunnelLayer(trackBuildingTunnels, '#4c1d95');
-    if (trackBuildingTunnelLayer) trackBuildingTunnelLayer.addTo(map);
+function refreshRoadGradeSeparationLayer() {
+    if (roadGradeSeparationLayer && map.hasLayer(roadGradeSeparationLayer)) map.removeLayer(roadGradeSeparationLayer);
+    if (typeof L === 'undefined' || !Array.isArray(roadGradeSeparations) || !roadGradeSeparations.length) {
+        roadGradeSeparationLayer = null;
+        return;
+    }
+    const pane = (typeof ensureCorridorStripsPane === 'function' && ensureCorridorStripsPane())
+        ? 'corridorStripsPane' : undefined;
+    roadGradeSeparationLayer = L.layerGroup();
+    roadGradeSeparations.forEach(record => {
+        if (!record?.from || !record?.to || !record?.crossing) return;
+        const over = record.mode === 'overpass';
+        L.polyline([record.from, record.crossing, record.to], {
+            color: over ? '#f59e0b' : '#2563eb',
+            weight: Math.max(6, Number(record.width) || 2),
+            opacity: 0.9,
+            dashArray: over ? null : '7 6',
+            pane,
+            interactive: false
+        }).addTo(roadGradeSeparationLayer);
+        [record.from, record.to].forEach(point => L.circleMarker(point, {
+            radius: 4,
+            color: over ? '#b45309' : '#1d4ed8',
+            weight: 2,
+            fillColor: '#ffffff',
+            fillOpacity: 1,
+            pane,
+            interactive: false
+        }).addTo(roadGradeSeparationLayer));
+    });
+    roadGradeSeparationLayer.addTo(map);
 }
 
-// Width/profile edits can make a previously clear edge touch a building. Recheck every committed edge
-// before proposal creation and offer one combined decision for all newly discovered passages.
-async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = [], demolishedRecords = [], segmentProfiles = null) {
+// Load only a narrow chain around one edge. Passing a kilometre-long diagonal's single bounding box
+// to /buildings asks for the entire square around it and can truncate before the road's buildings are
+// returned; bounded sub-edges keep the fetch complete and the obstacle decision deterministic.
+async function ensureBuildingFootprintsForRoadEdge(from, to, width) {
+    if (typeof window === 'undefined' || typeof window.ensureBuildingFootprintsForBounds !== 'function') return;
+    if (typeof corridorEdgeFetchSegments !== 'function') {
+        throw new Error('Corridor edge fetch segmentation is unavailable.');
+    }
+    for (const edge of corridorEdgeFetchSegments(from, to)) {
+        const polygon = calculateRoadPolygon(edge, width);
+        if (polygon) await window.ensureBuildingFootprintsForBounds(polygon);
+    }
+}
+
+// A hit's per-building action from an obstacle resolution: the tour's per-building override if it set
+// one, else the global default. resolveBuildingObstacles carries the map; the fallback keeps the old
+// single-action shape working (every hit gets resolution.action).
+function resolvedActionForHit(resolution, hit) {
+    const id = String(hit && hit.id != null ? hit.id : '');
+    const map = resolution && resolution.effectiveActionById;
+    if (map && typeof map.get === 'function' && map.has(id)) return map.get(id);
+    return (resolution && resolution.action) || 'cancel';
+}
+
+// Width/profile edits can make a previously clear edge touch a building. This check belongs to the
+// edit's Apply action, never to F: segment placement and geometry edits own every impact decision.
+async function ensureBuildingTunnelsForSegments(segments, width, kind, records, segmentIds = [], demolishedRecords = [], segmentProfiles = null, options = {}) {
+    const promptForMissing = options.promptForMissing === true;
     const list = Array.isArray(records) ? records.slice() : [];
     const demolished = Array.isArray(demolishedRecords) ? demolishedRecords.slice() : [];
     const fullyDemolishedIds = new Set(demolished.filter(record => !record.remainder).map(record => String(record.id)));
@@ -181,16 +258,18 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
         console.error('[road-drawing] building obstacle detection unavailable — refusing to finish the corridor');
         return { accepted: false, records: list, demolished };
     }
-    // Cover the WHOLE corridor with loaded footprints before the safety-net scan — the click-time
-    // checks covered each edge, but merges/absorbs can bring in geometry drawn elsewhere.
+    // Cover the WHOLE edited corridor before resolving the changed footprint. Merges/absorbs can
+    // contribute geometry loaded elsewhere, so validating only the last active edge is insufficient.
     if (typeof window !== 'undefined' && typeof window.ensureBuildingFootprintsForBounds === 'function') {
         for (let segmentIndex = 0; segmentIndex < (segments || []).length; segmentIndex++) {
             const segment = segments[segmentIndex];
             if (!Array.isArray(segment) || segment.length < 2) continue;
             for (let pointIndex = 0; pointIndex < segment.length - 1; pointIndex++) {
-                const polygon = calculateRoadPolygon([segment[pointIndex], segment[pointIndex + 1]], widthForSegment(segmentIndex));
-                if (!polygon) continue;
-                try { await window.ensureBuildingFootprintsForBounds(polygon); } catch (error) {
+                try {
+                    await ensureBuildingFootprintsForRoadEdge(
+                        segment[pointIndex], segment[pointIndex + 1], widthForSegment(segmentIndex)
+                    );
+                } catch (error) {
                     console.error('[road-drawing] footprint preload before finish check failed', error);
                 }
             }
@@ -198,13 +277,18 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
     }
     const missing = [];
     const combinedHits = new Map();
+    // A building this road already tunnels ANYWHERE keeps that decision: a wider profile (or any edit)
+    // that newly grazes it must reuse the tunnel, never re-ask. Built once from the road's live tunnel
+    // records — the same whole-road, building-keyed rule the geometry-edit path uses, so a road's
+    // relation to a building is decided once and identically across every edit path.
+    const alreadyTunnelledIds = new Set();
+    list.forEach(record => (record?.buildingIds || []).forEach(id => { if (id) alreadyTunnelledIds.add(String(id)); }));
     (segments || []).forEach((segment, segmentIndex) => {
         for (let pointIndex = 0; pointIndex < segment.length - 1; pointIndex++) {
             const from = segment[pointIndex];
             const to = segment[pointIndex + 1];
             const edgeKey = corridorTunnelEdgeKey(from, to);
             if (!edgeKey) continue;
-            const existing = list.find(record => record?.edgeKey === edgeKey) || null;
             const polygon = calculateRoadPolygon([from, to], widthForSegment(segmentIndex));
             const detected = (polygon ? detectLoadedBuildingTunnelIntersections(polygon) : [])
                 .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
@@ -218,19 +302,11 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
                 }
             }
             const hits = detected.filter(hit => !cutRecordIds.has(String(hit.id)));
-            const existingIds = new Set((existing?.buildingIds || []).map(String));
-            const newHits = hits.filter(hit => !existingIds.has(String(hit.id)));
+            // Reuse across the WHOLE road, not just this edge: a building tunnelled on any edge is
+            // exempt here too, so a wider profile that newly grazes it never re-asks (parity with the
+            // geometry-edit path — a road's decision about a building is made once, everywhere).
+            const newHits = hits.filter(hit => !alreadyTunnelledIds.has(String(hit.id)));
             if (!newHits.length) continue;
-            if (existing) {
-                // The edge is already a tunnel — buildings that only NOW appeared in the loaded
-                // pool are inside that tunnel span; absorb them into the record, don't re-ask.
-                const record = makeBuildingTunnelRecord(from, to, [
-                    ...existing.buildingIds.map(id => ({ id })),
-                    ...hits
-                ], { segmentId: existing.segmentId || segmentIds[segmentIndex] || (kind === 'track' ? 'track' : null) });
-                if (record) addBuildingTunnelRecord(list, record);
-                continue;
-            }
             newHits.forEach(hit => combinedHits.set(hit.id, hit));
             missing.push({
                 from, to, hits, segmentIndex, pointIndex,
@@ -240,51 +316,50 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
         }
     });
     if (!missing.length) return { accepted: true, records: list, demolished };
-    // The finish check is a SAFETY NET — per-segment decisions during drawing should have covered
-    // everything. If it still prompts, this log shows which ids failed to match the session records.
-    console.warn('[f-check] finish-time obstacle prompt firing — these buildings matched no click-time decision', {
-        promptingIds: Array.from(combinedHits.keys()),
-        sessionFullyDemolished: Array.from(fullyDemolishedIds),
-        sessionCut: Array.from(cutRecordIds),
-        tunnelledEdges: list.map(record => record?.edgeKey).filter(Boolean)
-    });
+    if (!promptForMissing) {
+        return {
+            accepted: false,
+            records: list,
+            demolished,
+            unresolvedHits: Array.from(combinedHits.values())
+        };
+    }
     const resolution = typeof resolveBuildingObstacles === 'function'
-        ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind)
+        ? await resolveBuildingObstacles(Array.from(combinedHits.values()), kind, { previewLatLngs: segments, roadWidth: width })
         : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [] };
     if (resolution.action === 'cancel') return { accepted: false, records: list, demolished };
-    if (resolution.action === 'destroy') {
-        (resolution.demolishedBuildings || []).forEach(record => {
-            if (!fullyDemolishedIds.has(String(record.id))) {
-                fullyDemolishedIds.add(String(record.id));
-                demolished.push(record);
-            }
-        });
-        return { accepted: true, records: list, demolished };
-    }
-    if (resolution.action === 'cut') {
-        // Cut each real hit with every edge whose polygon crosses it (upsert accumulates).
-        if (typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
-            const cutIds = new Set((resolution.cutHits || []).map(hit => String(hit.id)));
-            missing.forEach(edge => {
-                const polygon = calculateRoadPolygon([edge.from, edge.to], edge.edgeWidth || width);
-                const edgeRegion = polygon ? corridorFeatureFromLatLngRing(polygon) : null;
-                if (!edgeRegion) return;
-                edge.hits.filter(hit => hit.feature && cutIds.has(String(hit.id)))
-                    .forEach(hit => upsertCutRecord(demolished, hit, edgeRegion));
-            });
+    // Per-building outcomes: destroy, cut and tunnel can all apply within the same set now (the tour
+    // lets the user override individual buildings), so run each independently, not as one blanket branch.
+    (resolution.demolishedBuildings || []).forEach(record => {
+        if (!fullyDemolishedIds.has(String(record.id))) {
+            fullyDemolishedIds.add(String(record.id));
+            demolished.push(record);
         }
-        return { accepted: true, records: list, demolished };
+    });
+    // Cut each real cut-hit with every edge whose polygon crosses it (upsert accumulates).
+    if ((resolution.cutHits || []).length
+        && typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
+        const cutIds = new Set(resolution.cutHits.map(hit => String(hit.id)));
+        missing.forEach(edge => {
+            const polygon = calculateRoadPolygon([edge.from, edge.to], edge.edgeWidth || width);
+            const edgeRegion = polygon ? corridorFeatureFromLatLngRing(polygon) : null;
+            if (!edgeRegion) return;
+            edge.hits.filter(hit => hit.feature && cutIds.has(String(hit.id)))
+                .forEach(hit => upsertCutRecord(demolished, hit, edgeRegion));
+        });
     }
+    // Tunnel only the hits whose per-building action is 'tunnel' and whose proposal (if any) still
+    // stands. Process edges from the END backwards so splicing portal vertices into the live segment
+    // array never shifts the indices of edges still waiting their turn.
     const removedOwners = new Set(resolution.removedProposalIds || []);
-    const hitStillStands = hit => {
+    const hitTunnels = hit => {
+        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
         return !owner || !removedOwners.has(owner);
     };
-    // Process edges of each segment from the END backwards so splicing portal vertices into
-    // the live segment array never shifts the indices of edges still waiting their turn.
     missing.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
     missing.forEach(edge => {
-        const standingHits = edge.hits.filter(hitStillStands);
+        const standingHits = edge.hits.filter(hitTunnels);
         if (!standingHits.length) return;
         const clippableHits = standingHits.filter(hit => hit.feature);
         const plan = (clippableHits.length && typeof clipCorridorEdgeThroughBuildings === 'function')
@@ -307,6 +382,48 @@ async function ensureBuildingTunnelsForSegments(segments, width, kind, records, 
     return { accepted: true, records: list, demolished };
 }
 
+// Commit the cross-section editor's live width preview. A changed footprint is an EDIT, so it owns
+// the cut/demolish/tunnel decision before the editor closes. F only serializes this validated state.
+async function validateRoadDrawingProfileImpacts() {
+    const drawnSegments = getAllRoadSegments(true)
+        .map((segment, index) => ({ segment, id: roadSegmentIds[index] || null }))
+        .filter(entry => Array.isArray(entry.segment) && entry.segment.length >= 2);
+    if (!drawnSegments.length) {
+        roadLastValidatedWidth = roadWidth;
+        roadDrawingProfileValidationPending = false;
+        return true;
+    }
+
+    const segments = drawnSegments.map(entry => entry.segment);
+    const segmentIds = drawnSegments.map(entry => entry.id);
+    const result = await ensureBuildingTunnelsForSegments(
+        segments,
+        roadWidth,
+        corridorDrawingKind(),
+        roadBuildingTunnels,
+        segmentIds,
+        roadDemolishedBuildings,
+        roadSegmentProfiles,
+        { promptForMissing: true }
+    );
+    if (!result.accepted) return false;
+
+    roadBuildingTunnels = result.records;
+    roadDemolishedBuildings = result.demolished;
+    roadLastValidatedWidth = roadWidth;
+    roadDrawingProfileValidationPending = false;
+    refreshRoadBuildingTunnelLayer();
+
+    // A tunnel choice may insert facade portals into the centerline. Rebuild every dependent piece
+    // immediately so the edit the user just accepted is exactly what remains visible and finishable.
+    const polygon = rebuildRoadGeometryFromSegments();
+    redrawRoadVertexMarkers();
+    recomputeLockedParcelsFromPolygon(polygon);
+    updateRoadInfoPanel();
+    updateUndoButtonState();
+    return true;
+}
+
 // Locked parcels tracking - these are parcels confirmed by clicking (not just preview)
 let lockedParcelIds = new Set(); // Set of parcel IDs that are locked (confirmed)
 let lockedStats = {
@@ -317,10 +434,9 @@ let lockedStats = {
     individualOwners: 0  // Count of individual person owners across all locked parcels
 };
 
-// Track segment history for undo functionality
+// Per-segment history for undo functionality
 // Each entry stores the parcels that were locked by that segment
 let roadSegmentHistory = []; // Array of { parcelIds: Set, stats: {...} }
-let trackSegmentHistory = []; // Array of { parcelIds: Set, stats: {...} }
 
 // Helper to get locked individual owners count
 function getLockedIndividualOwnersCount() {
@@ -338,8 +454,8 @@ let committedRoadMetrics = {
 // This avoids expensive full-road union calculations
 let cachedCommittedPolygon = null;
 
-// Global function to check if a parcel is locked for road drawing
-// This allows other modules (like parcels/styles.js) to preserve road highlighting
+// Global function to check if a parcel is locked for corridor drawing — a road's or a track's, which
+// are the same drawing. This allows other modules (like parcels/styles.js) to preserve the highlight.
 function isParcelLockedForRoadDrawing(parcelId) {
     if (!parcelId) return false;
     return lockedParcelIds.has(parcelId.toString());
@@ -347,17 +463,6 @@ function isParcelLockedForRoadDrawing(parcelId) {
 // Expose globally
 if (typeof window !== 'undefined') {
     window.isParcelLockedForRoadDrawing = isParcelLockedForRoadDrawing;
-}
-
-// Global function to check if a parcel is committed for track drawing
-// This allows other modules (like parcels/selection.js) to preserve track highlighting
-function isParcelCommittedForTrackDrawing(parcelId) {
-    if (!parcelId) return false;
-    return lockedTrackParcelIds.has(parcelId.toString());
-}
-// Expose globally
-if (typeof window !== 'undefined') {
-    window.isParcelCommittedForTrackDrawing = isParcelCommittedForTrackDrawing;
 }
 
 // Define style for preview-affected parcels
@@ -445,6 +550,22 @@ function buildRoadUnionPolygonForDefinition(definition) {
     );
 }
 
+function corridorProtectedSpanRecordsForDefinition(definition) {
+    const records = Array.isArray(definition?.tunnels) ? definition.tunnels.filter(Boolean) : [];
+    const gradeRecords = (typeof gradeSeparationSpanRecords === 'function')
+        ? gradeSeparationSpanRecords(definition?.gradeSeparations || [])
+        : [];
+    return records.concat(gradeRecords);
+}
+
+function corridorProtectedEdgeKeySet(tunnels, gradeSeparations) {
+    const keys = (Array.isArray(tunnels) ? tunnels : []).map(record => record?.edgeKey).filter(Boolean);
+    if (typeof gradeSeparationEdgeKeys === 'function') {
+        keys.push(...gradeSeparationEdgeKeys(gradeSeparations || []));
+    }
+    return new Set(keys);
+}
+
 // Surface-only acquisition footprint (tunnelled edges acquire nothing) at per-segment widths,
 // as raw latlng polygon — what parcel cutting consumes.
 function buildCorridorAcquisitionPolygon(definition) {
@@ -455,7 +576,7 @@ function buildCorridorAcquisitionPolygon(definition) {
     let combined = null;
     corridorSegmentEntries(definition).forEach(entry => {
         if (!Array.isArray(entry.points) || entry.points.length < 2) return;
-        corridorSurfaceRuns([entry.points], definition?.tunnels).forEach(run => {
+        corridorSurfaceRuns([entry.points], corridorProtectedSpanRecordsForDefinition(definition)).forEach(run => {
             const poly = calculateRoadPolygon(run, entry.width);
             if (poly) combined = combineRoadPolygons(combined, poly);
         });
@@ -471,10 +592,33 @@ function corridorSurfaceFootprintForDefinition(definition) {
     return (geo && geo.type) ? geo : null;
 }
 
+// Persist the surface footprint on the definition, next to the `polygon` cache it already carries:
+// the corridor's extent MINUS its tunnelled spans, i.e. the ground it actually clears and actually
+// buys. Written only when tunnels exist; with no tunnels the full polygon already is it.
+//
+// Both are DERIVED through the city's metric projection (proj4 via CityConfigManager), which only
+// the browser has — so a consumer that is not the browser cannot re-derive it and has to be handed it.
+//
+// NOTE: the building carve no longer reads this. It used to be load-bearing there — the server had
+// to know which ground a tunnelled corridor did NOT clear, or it would demolish the building the
+// road passes under. Now a tunnel simply writes no demolition record, and no record means no carve,
+// so tunnelled buildings are safe by construction. What still depends on this footprint is PARCEL
+// ACQUISITION: a tunnelled stretch acquires no parcels (see collectParcelsIntersectingFootprint).
+function attachCorridorSurfaceFootprint(definition) {
+    if (!definition) return definition;
+    const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels.filter(Boolean) : [];
+    const gradeSeparations = Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations.filter(Boolean) : [];
+    definition.surfaceFootprint = (tunnels.length || gradeSeparations.length)
+        ? corridorSurfaceFootprintForDefinition(definition)
+        : null;
+    return definition;
+}
+
 if (typeof window !== 'undefined') {
     window.buildRoadUnionPolygonForDefinition = buildRoadUnionPolygonForDefinition;
     window.buildCorridorAcquisitionPolygon = buildCorridorAcquisitionPolygon;
     window.corridorSurfaceFootprintForDefinition = corridorSurfaceFootprintForDefinition;
+    window.attachCorridorSurfaceFootprint = attachCorridorSurfaceFootprint;
 }
 
 // Every geometry change re-derives the parcels the corridor now touches. Runs against the
@@ -492,7 +636,7 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
     }
     const ids = [];
     parcelLayer.eachLayer(layer => {
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
         try {
             if (footprintBounds && !footprintBounds.intersects(layer.getBounds())) return;
@@ -515,119 +659,13 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
 // profile change), rebuild its footprint from the centerline, and re-apply it so the parcel
 // cuts follow. Minted proposals are immutable and are refused here — they go through the
 // draft/replacement flow instead.
-// Straight-line segment intersection in lat/lng space (fine at parcel scale). Returns the
-// crossing point when the two edges genuinely cross, null for parallel/disjoint edges.
-function planarSegmentIntersection(a1, a2, b1, b2) {
-    const d1x = a2.lng - a1.lng;
-    const d1y = a2.lat - a1.lat;
-    const d2x = b2.lng - b1.lng;
-    const d2y = b2.lat - b1.lat;
-    const denom = d1x * d2y - d1y * d2x;
-    if (Math.abs(denom) < 1e-18) return null;
-    const t = ((b1.lng - a1.lng) * d2y - (b1.lat - a1.lat) * d2x) / denom;
-    const u = ((b1.lng - a1.lng) * d1y - (b1.lat - a1.lat) * d1x) / denom;
-    if (t < -1e-9 || t > 1 + 1e-9 || u < -1e-9 || u > 1 + 1e-9) return null;
-    return { lat: a1.lat + t * d1y, lng: a1.lng + t * d1x };
-}
-
-// Wherever two centerline segments cross, both get a vertex at the crossing point. That makes
-// junctions real graph nodes: draggable, bulldozable, and honest for connectivity checks.
-function insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys = null) {
-    const EPS = 1e-7;
-    const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-    // Tunnel records are keyed by their exact edge — inserting a vertex into a tunnelled edge
-    // would orphan the record (the stretch silently reverts to surface). Callers pass those keys.
-    const isProtectedEdge = (p, q) => {
-        if (!protectedEdgeKeys || !protectedEdgeKeys.size || typeof corridorTunnelEdgeKey !== 'function') return false;
-        const key = corridorTunnelEdgeKey(p, q);
-        return !!key && protectedEdgeKeys.has(key);
-    };
-    let changed = true;
-    let guard = 0;
-    while (changed && guard++ < 200) {
-        changed = false;
-        outer:
-        for (let i = 0; i < segments.length; i += 1) {
-            for (let j = i + 1; j < segments.length; j += 1) {
-                const A = segments[i];
-                const B = segments[j];
-                for (let ai = 0; ai < A.length - 1; ai += 1) {
-                    for (let bi = 0; bi < B.length - 1; bi += 1) {
-                        const x = planarSegmentIntersection(A[ai], A[ai + 1], B[bi], B[bi + 1]);
-                        if (!x) continue;
-                        let inserted = false;
-                        // Inserting the crossing vertex does NOT change what the segment IS —
-                        // the id must survive, because per-segment cross-section overrides are
-                        // keyed by it. (Nulling it here orphaned every absorbed road's profile
-                        // at the junction step, repainting merges with the newest profile.)
-                        if (!near(x, A[ai]) && !near(x, A[ai + 1]) && !isProtectedEdge(A[ai], A[ai + 1])) {
-                            A.splice(ai + 1, 0, { lat: x.lat, lng: x.lng });
-                            inserted = true;
-                        }
-                        if (!near(x, B[bi]) && !near(x, B[bi + 1]) && !isProtectedEdge(B[bi], B[bi + 1])) {
-                            B.splice(bi + 1, 0, { lat: x.lat, lng: x.lng });
-                            inserted = true;
-                        }
-                        if (inserted) {
-                            changed = true;
-                            break outer;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Connected components of a segment set: segments sharing any coincident vertex belong to one
-// body. Used to split a road proposal when an edit disconnects it.
-function corridorConnectedComponents(segments, segmentIds) {
-    const EPS = 1e-7;
-    const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-    const parent = segments.map((_, index) => index);
-    const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
-    const union = (i, j) => { parent[find(j)] = find(i); };
-    for (let i = 0; i < segments.length; i += 1) {
-        for (let j = i + 1; j < segments.length; j += 1) {
-            if (find(i) === find(j)) continue;
-            const touches = segments[i].some(p => segments[j].some(q => near(p, q)));
-            if (touches) union(i, j);
-        }
-    }
-    const groups = new Map();
-    segments.forEach((segment, index) => {
-        const root = find(index);
-        if (!groups.has(root)) groups.set(root, { segments: [], segmentIds: [], length: 0 });
-        const group = groups.get(root);
-        group.segments.push(segment);
-        group.segmentIds.push(Array.isArray(segmentIds) ? (segmentIds[index] || null) : null);
-        group.length += (typeof calculateSegmentLengthMeters === 'function') ? calculateSegmentLengthMeters(segment) : segment.length;
-    });
-    return [...groups.values()].sort((a, b) => b.length - a.length);
-}
-
-// Do two centerline sets genuinely connect — sharing a vertex or crossing? Footprint overlap
-// alone (two parallel roads grazing each other's width) is not a connection: merging those
-// would create a disconnected body that immediately splits back apart.
-function centerlinesTouch(segmentsA, segmentsB) {
-    const EPS = 1e-7;
-    const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-    for (const a of segmentsA) {
-        for (const b of segmentsB) {
-            if (a.some(p => b.some(q => near(p, q)))) return true;
-            for (let i = 0; i < a.length - 1; i += 1) {
-                for (let j = 0; j < b.length - 1; j += 1) {
-                    if (planarSegmentIntersection(a[i], a[i + 1], b[j], b[j + 1])) return true;
-                }
-            }
-        }
-    }
-    return false;
-}
+// planarSegmentIntersection, insertCorridorCrossingNodes, corridorConnectedComponents and
+// centerlinesTouch moved to frontend/js/corridor-geometry.js (loaded first) — pure centerline
+// graph geometry, now unit-tested. Callers below use the globals unchanged.
 
 // Applied LOCAL corridors of the given kind whose geometry genuinely connects to the given
 // centerline — the merge candidates. Minted corridors are immutable and never merge.
-function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], centerlineSegments = null) {
+function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], centerlineSegments = null, allowNearMiss = false) {
     if (!footprintGeometry || typeof turf === 'undefined' || typeof turf.booleanIntersects !== 'function') return [];
     if (typeof proposalStorage === 'undefined') return [];
     const excluded = new Set((excludeKeys || []).map(String));
@@ -636,12 +674,12 @@ function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], c
     return (proposalStorage.getAllProposals?.() || []).filter(proposal => {
         const definition = proposal?.roadProposal?.definition;
         if (!definition || !definition.polygon) return false;
-        if ((kind === 'track') !== (definition.metadata?.isTrack === true)) return false;
+        // Like merges with like: a track absorbs a track, a road a road. Track-ness comes from the
+        // cross-section (corridorIsTrack), so a street that has been given a tram lane counts as one.
+        if ((kind === 'track') !== corridorIsTrack(definition)) return false;
         const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
         if (excluded.has(String(key))) return false;
-        const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-            || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-        if (!applied) return false;
+        if (!isApplied(proposal, proposal.roadProposal)) return false;
         if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
         try {
             const target = definition.polygon.type ? definition.polygon : { type: 'Polygon', coordinates: definition.polygon };
@@ -649,7 +687,7 @@ function findTouchingLocalCorridors(kind, footprintGeometry, excludeKeys = [], c
         } catch (_) { return false; }
         if (Array.isArray(centerlineSegments) && centerlineSegments.length) {
             const targetSegments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(definition) : [];
-            return centerlinesTouch(centerlineSegments, targetSegments);
+            return centerlinesTouch(centerlineSegments, targetSegments, allowNearMiss);
         }
         return true;
     });
@@ -714,6 +752,9 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         polygon: (polygon && polygon.type) ? polygon : null,
         latLngPairs
     };
+    // The spread above carried the base corridor's surface footprint in; this piece has no tunnels
+    // of its own, so clear it rather than let a footprint from another geometry linger.
+    attachCorridorSurfaceFootprint(definition);
 
     const clone = JSON.parse(JSON.stringify(baseProposal));
     ['proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
@@ -722,12 +763,12 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         'sourceProposalId', 'replacementOfProposalId', 'proposalDraftId', 'lens'
     ].forEach(key => delete clone[key]);
     const name = (typeof generateDefaultProposalName === 'function')
-        ? generateDefaultProposalName(definition.metadata?.isTrack ? 'Track' : 'Road')
+        ? generateDefaultProposalName(corridorIsTrack(definition) ? 'Track' : 'Road')
         : `Road ${latLngPairs?.length || ''}`;
     clone.title = name;
     clone.name = name;
     clone.proposalName = name;
-    clone.status = 'unapplied';
+    clone.applied = false;
     clone.definition = JSON.parse(JSON.stringify(definition));
     clone.geometry = { ...(clone.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
     if (definition.polygon) clone.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
@@ -737,8 +778,7 @@ async function createRoadProposalFromComponent(baseProposal, component) {
         ...JSON.parse(JSON.stringify(clone.roadProposal || {})),
         definition: JSON.parse(JSON.stringify(definition)),
         parentParcelIds: parents.slice(),
-        childParcelIds: [],
-        status: 'unapplied'
+        childParcelIds: []
     };
 
     const newId = (typeof proposalStorage !== 'undefined') ? proposalStorage.addProposal(clone) : null;
@@ -749,19 +789,112 @@ async function createRoadProposalFromComponent(baseProposal, component) {
     } catch (error) {
         console.warn('[createRoadProposalFromComponent] Apply of split-off road failed', error);
     }
-    try { window.scheduleProposalScreenshotRefresh?.(newId); } catch (_) { }
     return newId;
 }
 
-async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
+// A non-blocking "Applying…" spinner shown while any applied-corridor edit re-applies. Ref-counted so
+// overlapping edits keep it up until the last one settles. It never blocks input (pointer-events:none in
+// CSS) — road-node-edit coalesces edits made mid-apply instead. The CSS animation-delay means a fast
+// edit removes it before it ever becomes visible, so only genuinely slow applies flash the spinner.
+let corridorApplyIndicatorCount = 0;
+let corridorApplyIndicatorEl = null;
+function beginCorridorApplyIndicator() {
+    corridorApplyIndicatorCount += 1;
+    if (corridorApplyIndicatorEl || typeof document === 'undefined') return;
+    const host = (typeof map !== 'undefined' && map && typeof map.getContainer === 'function') ? map.getContainer() : document.body;
+    if (!host) return;
+    const el = document.createElement('div');
+    el.className = 'corridor-apply-indicator';
+    const spinner = document.createElement('div');
+    spinner.className = 'corridor-apply-indicator__spinner';
+    const label = document.createElement('span');
+    label.textContent = (typeof translateRoadText === 'function')
+        ? translateRoadText('panel.road.applyingEdit', 'Applying…')
+        : 'Applying…';
+    el.appendChild(spinner);
+    el.appendChild(label);
+    host.appendChild(el);
+    corridorApplyIndicatorEl = el;
+}
+function endCorridorApplyIndicator() {
+    corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
+    if (corridorApplyIndicatorCount > 0) return;
+    if (corridorApplyIndicatorEl && corridorApplyIndicatorEl.parentNode) {
+        corridorApplyIndicatorEl.parentNode.removeChild(corridorApplyIndicatorEl);
+    }
+    corridorApplyIndicatorEl = null;
+}
+// True while any corridor re-apply is in flight — the exit/deselect paths wait on this.
+function isCorridorApplyInFlight() {
+    return corridorApplyIndicatorCount > 0;
+}
+
+// Wrapper: every corridor geometry edit (node drag, bulldoze, delete, profile change) funnels through
+// here, so the "Applying…" spinner brackets all of them uniformly. The heavy work is in the impl below.
+async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
+    beginCorridorApplyIndicator();
+    try {
+        return await runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, options);
+    } finally {
+        endCorridorApplyIndicator();
+    }
+}
+
+async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, options = {}) {
     const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(proposalIdOrHash) : null;
     if (!proposal || !proposal.roadProposal || !proposal.roadProposal.definition) return false;
-    if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
+    // A minted road is no longer barred from editing: your map holds a local COPY of it, and touching
+    // it makes that copy yours (the published pointers are detached below, so Share/Upload re-mints).
+    // The on-chain NFT is never mutated — this only re-identifies the local record.
 
     const definition = proposal.roadProposal.definition;
-    // Taken BEFORE the mutation: a rejected edit (reroute in the obstacle prompt) restores this.
-    const definitionSnapshot = JSON.parse(JSON.stringify(definition));
+    // The TRUE pre-edit shape. A node DRAG streams its live positions straight into this same
+    // `definition` (road-node-edit's liveMoveNode) before we ever get here, so snapshotting `definition`
+    // now would capture the DRAGGED geometry, not the original — which quietly poisoned the reroute
+    // rollback (reverted to the wrong spot) and the changed-edge detection below (an edge "looked
+    // unchanged" so a new building collision went unprompted). The drag hands us its dragstart snapshot
+    // via options.preEditSnapshot; every other caller mutates inside mutateDefinition, so `definition`
+    // is still pristine here and snapshotting it is correct.
+    const definitionSnapshot = options.preEditSnapshot
+        ? JSON.parse(JSON.stringify(options.preEditSnapshot))
+        : JSON.parse(JSON.stringify(definition));
+    // Every building this road demolished before the edit — partial cuts (records carry a `remainder`)
+    // AND full demolitions (a cut that ate >85% of a building is stored as a whole-building record with
+    // no remainder). On a move ALL of them must be undone and re-carved at the new footprint: the road
+    // is the sole cause of the demolitions it owns, so they follow it. Restricting this to `remainder`
+    // records froze the heavily-cut buildings near a junction (several converging legs tip a building
+    // into the no-remainder branch) — they stayed as ghost slices at the old position. `geometry` is
+    // each record's own original footprint. priorDemolitionIds covers EVERY prior record (even ones
+    // whose footprint capture failed and stored geometry:null) so the drop below restores them all;
+    // only the geometry-bearing ones can be re-carved.
+    const priorDemolitionIds = new Set((definitionSnapshot.demolishedBuildings || [])
+        .filter(record => record && record.id !== undefined && record.id !== null)
+        .map(record => String(record.id)));
+    const priorRoadDemolitions = (definitionSnapshot.demolishedBuildings || [])
+        .filter(record => record && record.geometry)
+        .map(record => ({ id: String(record.id), geometry: record.geometry }));
     if (typeof mutateDefinition === 'function') mutateDefinition(definition);
+
+    // A local edit (profile change, node move, reroute…) forks a PUBLISHED road into your own local
+    // copy: the uploaded row or minted NFT it points at no longer matches its geometry. Detach every
+    // published pointer and record where it came from (sourceProposalId), so the next Share/Upload
+    // makes a FRESH record — a new /proposals/:id, a new mint — instead of reusing the original's
+    // link. The server row / on-chain NFT is left untouched at its origin, and the local proposalId
+    // is kept (a chain-shaped id is not all-digits, so clearing onchain/isMinted un-mints the copy).
+    // An internal re-normalization can pass options.keepServerProposalId to opt out.
+    if (options.keepServerProposalId !== true) {
+        const publishedId = (proposal.serverProposalId != null) ? String(proposal.serverProposalId)
+            : ((proposal.isMinted || proposal.onchain || proposal.nft) && proposal.proposalId != null ? String(proposal.proposalId) : null);
+        if (proposal.serverProposalId != null) proposal.serverProposalId = null;
+        if (proposal.isMinted || proposal.onchain || proposal.nft) {
+            if (publishedId && !proposal.sourceProposalId) proposal.sourceProposalId = publishedId;
+            delete proposal.isMinted;
+            delete proposal.onchain;
+            delete proposal.nft;
+            delete proposal.chainProposalId;
+            delete proposal.tokenId;
+        }
+    }
 
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
     // whether the edit disconnected the body.
@@ -769,6 +902,51 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         .map(segment => segment.map(point => ({ lat: point.lat, lng: point.lng })))
         .filter(segment => segment.length >= 2);
     const normalizedIds = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice(0, normalizedSegments.length) : [];
+    // Tunnel records are edge-addressed. A node move changes those keys, so discard records whose
+    // exact edge no longer exists BEFORE building detection derives its already-tunnelled ids. The
+    // dropped records are re-keyed onto the moved endpoints just below (a pure move preserves the
+    // portal vertices), so the tunnel follows the drag instead of being re-litigated.
+    if (typeof retainLiveCorridorTunnelRecords === 'function') {
+        definition.tunnels = retainLiveCorridorTunnelRecords(normalizedSegments, definition.tunnels || []);
+    }
+    // A node DRAG relocates a tunnel-span endpoint, so retention just dropped that record — but the
+    // portal is still a vertex at the SAME centerline index (moveNodeTargets edits in place). Re-key
+    // each dropped record onto the moved endpoints so the tunnel FOLLOWS the drag: no re-clip, no new
+    // portal vertex, and — because the re-keyed edge lands in tunnelEdgeKeys below — no re-detection or
+    // re-prompt. Records whose endpoints no longer form one adjacent edge (a structural edit, not a
+    // pure move) are left dropped; alreadyTunnelledIds still exempts their buildings from re-asking.
+    if ((definitionSnapshot.tunnels || []).length && typeof makeBuildingTunnelRecord === 'function'
+        && typeof addBuildingTunnelRecord === 'function' && typeof corridorCenterlineOf === 'function') {
+        const snapSegs = corridorCenterlineOf(definitionSnapshot) || [];
+        const EPS = 1e-9;
+        const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
+        const locate = (pt) => {
+            for (let si = 0; si < snapSegs.length; si += 1) {
+                const vi = (snapSegs[si] || []).findIndex(v => near(v, pt));
+                if (vi >= 0) return [si, vi];
+            }
+            return null;
+        };
+        definition.tunnels = definition.tunnels || [];
+        const liveKeys = new Set(definition.tunnels.map(r => r?.edgeKey).filter(Boolean));
+        (definitionSnapshot.tunnels || []).forEach(record => {
+            if (!record || !record.from || !record.to) return;
+            if (record.edgeKey && liveKeys.has(record.edgeKey)) return; // retention kept it — nothing to re-key
+            const a = locate(record.from), b = locate(record.to);
+            if (!a || !b || a[0] !== b[0] || Math.abs(a[1] - b[1]) !== 1) return; // not one live adjacent edge
+            const seg = normalizedSegments[a[0]];
+            const nf = seg && seg[a[1]], nt = seg && seg[b[1]];
+            if (!nf || !nt) return;
+            const rekeyed = makeBuildingTunnelRecord(nf, nt, (record.buildingIds || []).map(id => ({ id })), { segmentId: record.segmentId });
+            if (rekeyed && !liveKeys.has(rekeyed.edgeKey)) {
+                addBuildingTunnelRecord(definition.tunnels, rekeyed);
+                liveKeys.add(rekeyed.edgeKey);
+            }
+        });
+    }
+    if (typeof retainLiveGradeSeparations === 'function') {
+        definition.gradeSeparations = retainLiveGradeSeparations(normalizedSegments, definition.gradeSeparations || []);
+    }
     const key0 = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
 
     // Bulldozed to nothing: the object simply ceases to exist. skipRestoreSource — bulldozing must
@@ -787,7 +965,7 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
 
     // Dragging a road into a building gets the same three-way decision as drawing into one:
     // unapply the occupying proposal / tunnel through / reroute (the edit is reverted).
-    const editKind = definition.metadata?.isTrack === true ? 'track' : 'road';
+    const editKind = corridorIsTrack(definition) ? 'track' : 'road';
     const editWidth = Number(definition.width) || 10;
     const editWidthForSegment = segIndex => {
         const id = normalizedIds[segIndex];
@@ -795,15 +973,77 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
         return overrideWidth > 0 ? overrideWidth : editWidth;
     };
+    // The SAME, per segment, before the edit — so a profile change that WIDENS a segment can be told
+    // apart from a plain node move. A widening keeps every edge (same centerline) but its wider
+    // footprint covers new ground, so its pre-existing edges must be re-checked for buildings; a pure
+    // move introduces new edges and leaves the old ones alone. Building detection below uses this.
+    const snapWidth = Number(definitionSnapshot.width) || 10;
+    const snapWidthForSegment = segIndex => {
+        const id = normalizedIds[segIndex];
+        const override = (definitionSnapshot.segmentProfiles && id !== null && id !== undefined) ? definitionSnapshot.segmentProfiles[String(id)] : null;
+        const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
+        return overrideWidth > 0 ? overrideWidth : snapWidth;
+    };
+    const segmentWidthGrew = segIndex => editWidthForSegment(segIndex) > snapWidthForSegment(segIndex) + 1e-6;
+
+    // Calculate road-to-road absorption in the SAME preflight as building impacts. This used to be
+    // discovered only after the cutting/tunnelling dialog, so an edit could name the buildings and
+    // then silently delete a touching road's separate proposal record during merge-on-connect.
+    const prelimUnion = buildRoadUnionPolygonWithWidths(
+        normalizedSegments,
+        normalizedSegments.map((_, index) => editWidthForSegment(index)),
+        editWidth
+    );
+    const prelimPolygon = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(prelimUnion));
+    // allowNearMiss: this is the drag/edit path, where the user deliberately drops a node onto (or a
+    // hair short of) another road — a willing join, so a near-miss merge is honoured here. The finish
+    // (absorb) path now honours it too: the user drew the stroke onto an existing road, the same
+    // willing join. Only geometry that never came near the drawn/edited footprint is left untouched.
+    // Never re-absorb a road this corridor deliberately grade-separates OVER/UNDER: the finish-path
+    // merge excludes those ids and the edit path must too, or a drag that brings the footprints into
+    // contact would swallow a road you intentionally bridged.
+    const editGradeSeparatedIds = (definition.gradeSeparations || [])
+        .map(record => record?.otherProposalId).filter(Boolean).map(String);
+    const touchingRoads = (prelimPolygon && prelimPolygon.type)
+        ? findTouchingLocalCorridors(editKind, prelimPolygon, [key0, ...editGradeSeparatedIds], normalizedSegments, true)
+        : [];
+    const mergeProposalImpacts = touchingRoads.map(target => {
+        const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(target) : null)
+            || target.proposalId
+            || target.id;
+        let title = '';
+        try {
+            title = typeof getProposalDisplayTitle === 'function' ? getProposalDisplayTitle(target) : '';
+        } catch (_) { }
+        title = String(title || target.title || target.name || target.proposalName || `Proposal ${proposalId}`)
+            .replace(/\s+/g, ' ')
+            .trim();
+        return { proposalId: String(proposalId), title };
+    });
+
     if (typeof detectLoadedBuildingTunnelIntersections === 'function'
         && typeof resolveBuildingObstacles === 'function') {
-        const tunnelledIds = new Set();
+        // A building this road already CUT or DEMOLISHED is exempt by id (below): it is gone from the
+        // detection pool, so an edit never re-asks. Tunnels were the asymmetry — decided per EDGE
+        // (`tunnelEdgeKeys`), so a moved or extended edge re-prompted (and re-spliced portals, growing
+        // the centerline) for a building already tunnelled. `alreadyTunnelledIds` restores parity.
+        // CRUCIAL: read it from the PRE-EDIT snapshot, not the live `definition.tunnels`. Dragging a
+        // node that touches the tunnel span changes that edge's key, so retainLiveCorridorTunnelRecords
+        // has ALREADY dropped the record above — the live list is empty exactly when the building is
+        // still, obviously, tunnelled. The snapshot (frozen before the edit) still names every
+        // tunnelled building, so the reuse holds and the drag no longer re-asks nor re-portals.
+        const fullyDemolishedIds = new Set();
         const tunnelEdgeKeys = new Set();
         (definition.tunnels || []).forEach(record => {
-            (record?.buildingIds || []).forEach(id => tunnelledIds.add(String(id)));
             if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
         });
-        (definition.demolishedBuildings || []).forEach(record => { if (!record.remainder) tunnelledIds.add(String(record.id)); });
+        const alreadyTunnelledIds = new Set();
+        (definitionSnapshot.tunnels || []).forEach(record => {
+            (record?.buildingIds || []).forEach(id => { if (id) alreadyTunnelledIds.add(String(id)); });
+        });
+        (definition.demolishedBuildings || []).forEach(record => {
+            if (!record.remainder) fullyDemolishedIds.add(String(record.id));
+        });
         const dragCutIds = new Set((definition.demolishedBuildings || []).filter(record => record.remainder).map(record => String(record.id)));
         // Only edges the edit INTRODUCED can newly collide with a building. Everything that was
         // already part of the road before this edit was accepted when it was drawn — bulldozing
@@ -826,11 +1066,13 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                 for (let i = 0; i < segment.length - 1; i++) {
                     if (typeof corridorTunnelEdgeKey === 'function') {
                         const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
-                        if (preEditEdgeKeys.has(key) || tunnelEdgeKeys.has(key)) continue;
+                        // Skip tunnel edges (underground) and unchanged pre-existing edges — but a WIDENED
+                        // segment's pre-existing edges are re-checked (its footprint grew over new ground).
+                        if (tunnelEdgeKeys.has(key) || (preEditEdgeKeys.has(key) && !segmentWidthGrew(segIndex))) continue;
                     }
-                    const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], editWidthForSegment(segIndex));
-                    if (!polygon) continue;
-                    try { await window.ensureBuildingFootprintsForBounds(polygon); } catch (error) {
+                    try {
+                        await ensureBuildingFootprintsForRoadEdge(segment[i], segment[i + 1], editWidthForSegment(segIndex));
+                    } catch (error) {
                         console.error('[road-drawing] footprint preload for edited edge failed', error);
                     }
                 }
@@ -841,13 +1083,14 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
             for (let i = 0; i < segment.length - 1; i++) {
                 if (typeof corridorTunnelEdgeKey === 'function') {
                     const key = corridorTunnelEdgeKey(segment[i], segment[i + 1]);
-                    // Pre-existing edges were accepted when drawn; tunnel edges are underground.
-                    if (preEditEdgeKeys.has(key) || tunnelEdgeKeys.has(key)) continue;
+                    // Tunnel edges are underground; pre-existing edges were accepted when drawn — UNLESS
+                    // this segment was widened, whose wider footprint must be re-checked for new buildings.
+                    if (tunnelEdgeKeys.has(key) || (preEditEdgeKeys.has(key) && !segmentWidthGrew(segIndex))) continue;
                 }
                 const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], editWidthForSegment(segIndex));
                 if (!polygon) continue;
                 const detected = detectLoadedBuildingTunnelIntersections(polygon)
-                    .filter(hit => !tunnelledIds.has(String(hit.id)));
+                    .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
                 // Already-cut buildings extend their cut silently under the moved geometry.
                 if (dragCutIds.size && typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
                     const edgeRegion = corridorFeatureFromLatLngRing(polygon);
@@ -856,7 +1099,11 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                             .forEach(hit => upsertCutRecord(definition.demolishedBuildings, hit, edgeRegion));
                     }
                 }
-                const hits = detected.filter(hit => !dragCutIds.has(String(hit.id)));
+                // Only genuinely new buildings reach the dialog: an already-cut (dragCutIds) or
+                // already-tunnelled (alreadyTunnelledIds) building keeps its prior decision silently —
+                // no re-ask, and for a tunnel no re-spliced portals, so a plain drag or extend stops
+                // growing the centerline with fresh vertices.
+                const hits = detected.filter(hit => !dragCutIds.has(String(hit.id)) && !alreadyTunnelledIds.has(String(hit.id)));
                 if (hits.length) {
                     edgeHits.push({
                         from: segment[i],
@@ -869,21 +1116,39 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                 }
             }
         });
-        if (edgeHits.length) {
+        if (edgeHits.length || mergeProposalImpacts.length) {
             const combined = new Map();
             edgeHits.forEach(edge => edge.hits.forEach(hit => combined.set(String(hit.id), hit)));
-            const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind);
+            const resolution = await resolveBuildingObstacles(Array.from(combined.values()), editKind, {
+                mergeProposalImpacts,
+                previewLatLngs: normalizedSegments,
+                roadWidth: editWidth,
+                roadProposalKey: key0
+            });
             if (resolution.action === 'cancel') {
-                // Reroute: put the definition back exactly as it was and drop the edit.
+                // Reroute: put the definition back exactly as it was and drop the edit. A node drag
+                // has already streamed its live positions into `definition` and repainted the strips
+                // there, so reverting the data is not enough — repaint from the restored geometry, or
+                // the road (and its node handles) stay stuck at the abandoned drop position.
                 Object.keys(definition).forEach(field => { delete definition[field]; });
                 Object.assign(definition, definitionSnapshot);
+                try {
+                    proposal.definition = JSON.parse(JSON.stringify(definition));
+                    proposal.geometry = { ...(proposal.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
+                    if (definition.polygon) proposal.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
+                    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                } catch (_) { }
+                try { ProposalManager._refreshUIAfterProposalChange?.(proposal); } catch (_) { }
+                try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+                try { if (typeof refreshRoadNodeHandles === 'function') refreshRoadNodeHandles(); } catch (_) { }
                 return false;
             }
-            if (resolution.action === 'destroy' && (resolution.demolishedBuildings || []).length) {
+            // Per-building outcomes (the tour can mix destroy/cut/tunnel across the affected set).
+            if ((resolution.demolishedBuildings || []).length) {
                 definition.demolishedBuildings = definition.demolishedBuildings || [];
                 definition.demolishedBuildings.push(...resolution.demolishedBuildings);
             }
-            if (resolution.action === 'cut' && (resolution.cutHits || []).length
+            if ((resolution.cutHits || []).length
                 && typeof corridorFeatureFromLatLngRing === 'function' && typeof upsertCutRecord === 'function') {
                 definition.demolishedBuildings = definition.demolishedBuildings || [];
                 const cutIds = new Set(resolution.cutHits.map(hit => String(hit.id)));
@@ -895,17 +1160,18 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                         .forEach(hit => upsertCutRecord(definition.demolishedBuildings, hit, edgeRegion));
                 });
             }
-            if (resolution.action === 'tunnel') {
+            {
                 const removedOwners = new Set(resolution.removedProposalIds || []);
-                definition.tunnels = definition.tunnels || [];
                 // End-backwards per segment so splicing portals never shifts pending edge indices.
                 edgeHits.sort((a, b) => (a.segmentIndex - b.segmentIndex) || (b.pointIndex - a.pointIndex));
                 edgeHits.forEach(edge => {
                     const standing = edge.hits.filter(hit => {
+                        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
                     if (!standing.length) return;
+                    definition.tunnels = definition.tunnels || [];
                     // Tunnel only while inside the buildings: portals become centerline vertices.
                     const plan = (typeof clipCorridorEdgeThroughBuildings === 'function')
                         ? clipCorridorEdgeThroughBuildings(edge.from, edge.to, standing, editWidthForSegment(edge.segmentIndex))
@@ -929,7 +1195,8 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                     });
                 });
             }
-            // 'clear' (every obstacle was unapplied) proceeds with nothing extra to record.
+            // 'merge' (no building hits) and a building choice with road merge impacts both proceed;
+            // the already-disclosed road absorption is executed below.
         }
     }
 
@@ -937,21 +1204,6 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
     // corridors of the same kind, they are absorbed into this road before crossings and
     // connectivity are worked out. The oldest body donates only its NAME — every absorbed
     // segment keeps its own cross-section (a collector stays wide, its side street narrow).
-    const kind = definition.metadata?.isTrack === true ? 'track' : 'road';
-    const prelimUnion = buildRoadUnionPolygonWithWidths(
-        normalizedSegments,
-        normalizedSegments.map((_, index) => {
-            const id = normalizedIds[index];
-            const override = (definition.segmentProfiles && id !== null && id !== undefined) ? definition.segmentProfiles[String(id)] : null;
-            const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
-            return overrideWidth > 0 ? overrideWidth : (Number(definition.width) || 10);
-        }),
-        Number(definition.width) || 10
-    );
-    const prelimPolygon = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(prelimUnion));
-    const touchingRoads = (prelimPolygon && prelimPolygon.type)
-        ? findTouchingLocalCorridors(kind, prelimPolygon, [key0], normalizedSegments)
-        : [];
     let mergedName = null;
     if (touchingRoads.length) {
         const bodies = [proposal, ...touchingRoads];
@@ -986,6 +1238,17 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
                 definition.tunnels = definition.tunnels || [];
                 definition.tunnels.push(JSON.parse(JSON.stringify(tunnel)));
             });
+            // Carry the absorbed road's grade-separation and demolition decisions too, exactly as the
+            // finish-path merge does (absorbConnectedLocalCorridors). A drag-time merge was dropping
+            // them, silently losing the other road's bridged crossings and razed buildings.
+            (targetDefinition.gradeSeparations || []).forEach(record => {
+                definition.gradeSeparations = definition.gradeSeparations || [];
+                definition.gradeSeparations.push(JSON.parse(JSON.stringify(record)));
+            });
+            (targetDefinition.demolishedBuildings || []).forEach(record => {
+                definition.demolishedBuildings = definition.demolishedBuildings || [];
+                definition.demolishedBuildings.push(JSON.parse(JSON.stringify(record)));
+            });
             const targetKey = (typeof getProposalKey === 'function' ? getProposalKey(target) : null) || target.proposalId;
             clearSelectionVisualsForRemovedProposal(target);
             try { await ProposalManager.unapplyProposal(targetKey, { skipConfirm: true, skipRestoreSource: true }); } catch (_) { }
@@ -1007,11 +1270,65 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         }
     }
 
-    insertCorridorCrossingNodes(
+    // A dragged node dropped near another vertex is welded onto it (they become one shared node), and
+    // an endpoint that came to rest just short of another stretch's centerline is snapped onto it — so
+    // a move can FORM a junction (not only preserve existing ones) before crossings are noded and
+    // connectivity is judged. Welding also erases any near-duplicate a drag/weld may have left behind.
+    if (typeof weldNearbyVertices === 'function') weldNearbyVertices(normalizedSegments);
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(normalizedSegments);
+    normalizeCorridorGraph(
         normalizedSegments,
         normalizedIds,
-        new Set((definition.tunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        corridorProtectedEdgeKeySet(definition.tunnels, definition.gradeSeparations),
+        definition.segmentProfiles || null
     );
+
+    // Re-carve this road's own demolitions at the MOVED geometry: drop the stale records (restoring
+    // those buildings) and re-carve whichever the new footprint still crosses. A demolished building
+    // is filtered out of the global detection pool the moment it has a record, so this can't go
+    // through detectLoadedBuildingTunnelIntersections — it re-carves directly from each record's own
+    // stored footprint against the road's WHOLE new footprint in one pass. Doing it whole (not
+    // edge-by-edge) means a building crossed by several converging legs gets one correct combined cut,
+    // and upsertCutRecord derives cut-vs-full-demolition afresh at the new position. Runs on the full
+    // welded network (before the component split) so a cut migrating onto a split-off piece is
+    // redistributed to it by the split below.
+    if (priorDemolitionIds.size && typeof upsertCutRecord === 'function') {
+        const recutWidths = normalizedSegments.map((_, segIndex) => {
+            const id = Array.isArray(normalizedIds) ? normalizedIds[segIndex] : null;
+            const override = (definition.segmentProfiles && id !== null && id !== undefined)
+                ? definition.segmentProfiles[String(id)] : null;
+            const overrideWidth = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
+            return overrideWidth > 0 ? overrideWidth : (Number(definition.width) || 10);
+        });
+        // Tunnelled spans acquire nothing at the surface, so a building under a tunnel must not be
+        // re-carved — cut only against the surface runs when this road tunnels anywhere.
+        const cutSegments = (Array.isArray(definition.tunnels) && definition.tunnels.length && typeof corridorSurfaceRuns === 'function')
+            ? corridorSurfaceRuns(normalizedSegments, definition.tunnels)
+            : normalizedSegments;
+        const cutWidths = cutSegments === normalizedSegments
+            ? recutWidths
+            : cutSegments.map(() => Number(definition.width) || 10);
+        const unionPolygon = buildRoadUnionPolygonWithWidths(cutSegments, cutWidths, Number(definition.width) || 10);
+        const roadGeo = unionPolygon ? convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(unionPolygon)) : null;
+        // Only touch the records if we have a valid new footprint to re-carve against: dropping them
+        // first and then failing to build the region would silently un-cut every building (over-heal).
+        if (roadGeo && roadGeo.type) {
+            definition.demolishedBuildings = (definition.demolishedBuildings || [])
+                .filter(record => !(record && priorDemolitionIds.has(String(record.id))));
+            const regionFeature = { type: 'Feature', properties: {}, geometry: roadGeo };
+            priorRoadDemolitions.forEach(prior => {
+                const footprintFeature = { type: 'Feature', properties: {}, geometry: prior.geometry };
+                try {
+                    if (typeof turf !== 'undefined' && typeof turf.booleanIntersects === 'function'
+                        && !turf.booleanIntersects(footprintFeature, regionFeature)) return;
+                } catch (_) { }
+                upsertCutRecord(definition.demolishedBuildings, { id: prior.id, feature: footprintFeature }, regionFeature);
+            });
+        } else {
+            console.warn('[updateLocalCorridorGeometry] Could not rebuild the road footprint — leaving building cuts at their previous position.');
+        }
+    }
+
     const components = corridorConnectedComponents(normalizedSegments, normalizedIds);
     const splitOff = components.slice(1);
     definition.points = components[0].segments;
@@ -1034,6 +1351,7 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
             definition.polygon = geoPolygon;
             definition.latLngPairs = latLngPairs;
         }
+        attachCorridorSurfaceFootprint(definition);
     }
 
     // Mirror the definition everywhere the proposal stores it.
@@ -1094,8 +1412,6 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition) {
         for (const component of splitOff) {
             await createRoadProposalFromComponent(proposal, component);
         }
-        // The stored thumbnail shows the OLD footprint now — regenerate it quietly.
-        try { window.scheduleProposalScreenshotRefresh?.(key); } catch (_) { }
         if (splitOff.length && typeof updateStatus === 'function') {
             updateStatus(translateRoadText('panel.road.splitStatus', 'The road came apart — now {{count}} separate roads.', {
                 count: splitOff.length + 1
@@ -1154,15 +1470,8 @@ const ROAD_SNAP_PIXELS = (typeof window !== 'undefined' && window.matchMedia?.('
 let roadSnapMarker = null;
 
 // Closest point to `p` on the pixel segment ab, clamped to the segment.
-function projectPointOnPixelSegment(p, a, b) {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const lengthSq = dx * dx + dy * dy;
-    if (lengthSq === 0) return L.point(a.x, a.y);
-    let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSq;
-    t = Math.max(0, Math.min(1, t));
-    return L.point(a.x + t * dx, a.y + t * dy);
-}
+// projectPointOnPixelSegment + the snap priority ladder (pickSnapTarget) moved to
+// frontend/js/corridor-geometry.js (loaded first) — pure pixel-space geometry, now unit-tested.
 
 // Nearest snap candidate to `latlng`, or null. Vertices win over edges: a click near a corner should
 // join that corner rather than plant a second node a few centimetres along one of its edges.
@@ -1175,9 +1484,7 @@ function appliedCorridorSnapSegments() {
         (proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
-            const applied = ['applied', 'executed'].includes(String(proposal.roadProposal.status || '').toLowerCase())
-                || ['applied', 'executed'].includes(String(proposal.status || '').toLowerCase());
-            if (!applied) return;
+            if (!isApplied(proposal, proposal.roadProposal)) return;
             const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
             const minted = typeof isProposalMinted === 'function' && isProposalMinted(proposal);
             (corridorCenterlineOf(definition) || []).forEach(segment => {
@@ -1190,156 +1497,39 @@ function appliedCorridorSnapSegments() {
 
 function findRoadSnapTarget(latlng) {
     if (typeof map === 'undefined' || !map || !latlng) return null;
-    const p = map.latLngToLayerPoint(latlng);
+    const cursor = map.latLngToLayerPoint(latlng);
+    const cursorPx = { x: cursor.x, y: cursor.y };
     const activeIndex = roadHasStarted ? roadSegments.indexOf(roadPoints) : -1;
-    let best = null;
 
-    roadSegments.forEach((segment, segmentIndex) => {
-        if (!Array.isArray(segment) || !segment.length) return;
-        segment.forEach((vertex, vertexIndex) => {
-            // The vertex we are drawing from is not a snap target — it would add a zero-length edge.
-            if (segmentIndex === activeIndex && vertexIndex === segment.length - 1) return;
-            const distance = p.distanceTo(map.latLngToLayerPoint(vertex));
-            if (distance > ROAD_SNAP_PIXELS) return;
-            if (best && distance >= best.distance) return;
-            const isEndpoint = vertexIndex === 0 || vertexIndex === segment.length - 1;
-            best = {
-                distance,
-                latlng: L.latLng(vertex.lat, vertex.lng),
-                segmentIndex,
-                vertexIndex,
-                type: isEndpoint ? 'endpoint' : 'vertex',
-                atStart: vertexIndex === 0
-            };
-        });
-    });
-    if (best) return best;
+    // Project every candidate vertex to screen pixels; the pure ladder decides the winner.
+    const toPx = (v) => { const pt = map.latLngToLayerPoint(v); return { x: pt.x, y: pt.y }; };
+    const localSegments = roadSegments.map(seg => (Array.isArray(seg) ? seg : []).map(toPx));
+    const externalEntries = appliedCorridorSnapSegments();
+    const externalSegments = externalEntries.map(e => ({ points: e.segment.map(toPx) }));
 
-    roadSegments.forEach((segment, segmentIndex) => {
-        if (!Array.isArray(segment) || segment.length < 2) return;
-        // Never insert a node into the segment being drawn: it is about to grow anyway, and a
-        // self-insertion would renumber the vertices under the active pointer.
-        if (segmentIndex === activeIndex) return;
-        for (let i = 0; i < segment.length - 1; i++) {
-            const a = map.latLngToLayerPoint(segment[i]);
-            const b = map.latLngToLayerPoint(segment[i + 1]);
-            const projected = projectPointOnPixelSegment(p, a, b);
-            const distance = p.distanceTo(projected);
-            if (distance > ROAD_SNAP_PIXELS) continue;
-            if (best && distance >= best.distance) continue;
-            best = {
-                distance,
-                latlng: map.layerPointToLatLng(projected),
-                segmentIndex,
-                insertAfter: i,
-                type: 'edge'
-            };
+    const raw = window.CorridorGeometry.pickSnapTarget(
+        cursorPx, localSegments, externalSegments, activeIndex, ROAD_SNAP_PIXELS
+    );
+    if (!raw) return null;
+
+    // Resolve the pixel result back to a latlng and the original return shape. Vertex snaps reuse
+    // the exact original vertex latlng; edge snaps unproject the projected pixel point.
+    const pixelToLatLng = (px) => map.layerPointToLatLng(L.point(px.x, px.y));
+
+    if (raw.source === 'local') {
+        if (raw.kind === 'edge') {
+            return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), segmentIndex: raw.segmentIndex, insertAfter: raw.insertAfter, type: 'edge' };
         }
-    });
-    if (best) return best;
-
-    // Placed roads on the map: snap onto their centerlines so a connector attaches exactly.
-    // External snaps carry the touched proposal — clicking one absorbs a local road into the
-    // drawing session on the spot (minted roads only donate the snap position).
-    appliedCorridorSnapSegments().forEach(({ segment, proposalId, minted }) => {
-        segment.forEach((vertex, vertexIndex) => {
-            const isEndpoint = vertexIndex === 0 || vertexIndex === segment.length - 1;
-            if (!isEndpoint) return;
-            const distance = p.distanceTo(map.latLngToLayerPoint(vertex));
-            if (distance > ROAD_SNAP_PIXELS) return;
-            if (best && distance >= best.distance) return;
-            best = { distance, latlng: L.latLng(vertex.lat, vertex.lng), type: 'external-endpoint', proposalId, minted };
-        });
-        for (let i = 0; i < segment.length - 1; i++) {
-            const a = map.latLngToLayerPoint(segment[i]);
-            const b = map.latLngToLayerPoint(segment[i + 1]);
-            const projected = projectPointOnPixelSegment(p, a, b);
-            const distance = p.distanceTo(projected);
-            if (distance > ROAD_SNAP_PIXELS) continue;
-            if (best && distance >= best.distance) continue;
-            best = { distance, latlng: map.layerPointToLatLng(projected), type: 'external-edge', proposalId, minted };
-        }
-    });
-    return best;
-}
-
-// Clicking a snap on a LOCAL applied road while drawing pulls that road into the drawing
-// session immediately: its segments join the live preview (mitered corners, junction fills
-// render right away instead of at finish), its cross-section and name carry over, and the old
-// record disappears — finishing simply creates the combined road.
-let absorbedRoadIdentity = null;
-
-async function absorbAppliedRoadIntoDrawing(snap) {
-    if (!snap || !snap.proposalId || snap.minted) return false;
-    const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(snap.proposalId) : null;
-    const definition = proposal?.roadProposal?.definition;
-    if (!proposal || !definition) return false;
-    if (definition.metadata?.isTrack === true) return false; // road session absorbs roads only
-
-    if (!absorbedRoadIdentity) {
-        absorbedRoadIdentity = { name: proposal.title || proposal.name || '' };
+        const vertex = roadSegments[raw.segmentIndex][raw.vertexIndex];
+        return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), segmentIndex: raw.segmentIndex, vertexIndex: raw.vertexIndex, type: raw.kind, atStart: raw.atStart };
     }
-    // The tool's active cross-section is NOT adopted from the absorbed road: the user's set
-    // profile keeps driving new segments, while every absorbed segment keeps its own width
-    // through the per-segment overrides captured below.
-    const absorbedEntries = (typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [];
 
-    // The absorbed road's obstacle DECISIONS come along too: without its tunnel records and
-    // demolition list, the finish-time safety check would re-detect every building it already
-    // handled and prompt again at F.
-    (definition.tunnels || []).forEach(record => {
-        if (record && typeof addBuildingTunnelRecord === 'function') {
-            roadBuildingTunnels = addBuildingTunnelRecord(roadBuildingTunnels, JSON.parse(JSON.stringify(record)));
-        }
-    });
-    const sessionDemolished = new Set(roadDemolishedBuildings.map(record => String(record.id)));
-    (definition.demolishedBuildings || []).forEach(record => {
-        if (record && record.id && !sessionDemolished.has(String(record.id))) {
-            sessionDemolished.add(String(record.id));
-            roadDemolishedBuildings.push(JSON.parse(JSON.stringify(record)));
-        }
-    });
-    const segments = (typeof corridorCenterlineOf === 'function' ? corridorCenterlineOf(definition) : [])
-        .map(segment => segment.map(point => L.latLng(point.lat, point.lng)));
-    const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [];
-
-    const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
-    clearSelectionVisualsForRemovedProposal(proposal);
-    try { await ProposalManager.unapplyProposal(key, { skipConfirm: true, skipRestoreSource: true }); } catch (_) { }
-    try { proposalStorage.removeProposal(key); } catch (_) { }
-
-    segments.forEach((segment, index) => {
-        if (segment.length < 2) return;
-        // Segment ids collide across roads (every drawing counts s1, s2, ...): keep the id only
-        // if it is still free, else mint a fresh one — profile overrides follow the FINAL id.
-        const requested = ids[index] || null;
-        const finalId = (requested && !roadSegmentIds.includes(requested)) ? requested : null;
-        pushRoadSegment(segment, finalId);
-        const assignedId = roadSegmentIds[roadSegmentIds.length - 1];
-        const entryProfile = absorbedEntries[index]?.profile;
-        if (assignedId && entryProfile) {
-            roadSegmentProfiles[String(assignedId)] = JSON.parse(JSON.stringify(entryProfile));
-        }
-    });
-    // Bump the id generator past every absorbed id (the seed path does the same): without
-    // this the NEXT drawn segment reuses an absorbed id, inherits its profile override, and
-    // the finish check re-detects obstacles at the wrong width (the redundant F prompt).
-    roadSegmentIds.forEach(id => {
-        const match = /^s(\d+)$/.exec(String(id || ''));
-        if (match) nextRoadSegmentId = Math.max(nextRoadSegmentId, Number(match[1]) + 1);
-    });
-    const rebuilt = rebuildRoadGeometryFromSegments();
-    recomputeLockedParcelsFromPolygon(rebuilt, false);
-    redrawRoadVertexMarkers();
-    refreshRoadBuildingTunnelLayer();
-    updateRoadInfoPanel();
-    if (typeof updateRoadCrossSectionButton === 'function') updateRoadCrossSectionButton();
-    if (typeof updateStatus === 'function') {
-        updateStatus(translateRoadText('panel.road.absorbedStatus', 'Continuing “{{name}}” — finishing keeps it one road.', {
-            name: absorbedRoadIdentity.name || 'road'
-        }));
+    const entry = externalEntries[raw.externalIndex];
+    if (raw.kind === 'external-edge') {
+        return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), type: 'external-edge', proposalId: entry.proposalId, minted: entry.minted };
     }
-    return true;
+    const vertex = entry.segment[raw.vertexIndex];
+    return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), type: raw.kind, proposalId: entry.proposalId, minted: entry.minted };
 }
 
 // When a proposal is removed by an absorb/merge while it is the SELECTED one, its selection
@@ -1383,7 +1573,7 @@ function showRoadSnapMarker(snap) {
     }
     // Snapping onto a PLACED road (connect + merge) reads differently from snapping onto the
     // drawing's own segments: a bigger blue ring says "click to attach to this road".
-    const external = snap.type === 'external-endpoint' || snap.type === 'external-edge';
+    const external = snap.type === 'external-endpoint' || snap.type === 'external-node' || snap.type === 'external-edge';
     const style = external
         ? { radius: 11, color: '#2563eb', weight: 3, fillColor: '#ffffff', fillOpacity: 0.9 }
         : { radius: 8, color: '#006400', weight: 2, fillColor: '#ffffff', fillOpacity: 0.9 };
@@ -1446,14 +1636,22 @@ function redrawRoadStrips() {
     // Per-segment: an absorbed road keeps ITS cross-section while being part of the drawing;
     // only segments without an override use the tool profile.
     const entries = getAllRoadSegments(true)
-        .map((segment, index) => ({ points: segment, profile: roadDrawingSegmentOverride(index) || roadProfile }))
+        .map((segment, index) => ({
+            points: segment,
+            profile: roadDrawingSegmentOverride(index) || roadProfile,
+            corridorId: 'active-drawing'
+        }))
         .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2);
     if (!entries.length) return restoreCorridorFill();
 
     // Same renderer as applied corridors — see js/corridor-render.js.
     const group = L.layerGroup();
     let drewAny = false;
-    entries.forEach(entry => {
+    const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+        ? buildCorridorLaneMarkingsForEntries(entries)
+        : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile));
+    const markings = [];
+    entries.forEach((entry, entryIndex) => {
         const strips = buildCorridorStrips([entry.points], entry.profile);
         if (!strips.length) {
             // A drawn segment with no strips renders as a bare dashed centerline — never
@@ -1461,14 +1659,19 @@ function redrawRoadStrips() {
             console.error('[road-drawing] no strips for a drawn segment', { points: entry.points.length, profile: entry.profile });
             return;
         }
-        const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
         // Trees only — bike/pedestrian lane explainers stay out of the map (cross-section
         // editor is the reference for lane meaning).
         const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
             .filter(decoration => decoration.kind === 'tree');
-        const segmentLayer = renderCorridorStrips(strips, { markings, decorations, junctions: [] });
+        const segmentLayer = renderCorridorStrips(strips, {
+            markings: [], decorations, junctions: [],
+            // Rails come with the cross-section: a rail lane in the profile being drawn lays its track
+            // right there on the map, so a track is drawn as a track from the first click.
+            centerlines: [entry.points], profile: entry.profile
+        });
         if (segmentLayer) {
             segmentLayer.addTo(group);
+            markings.push(...(markingsByEntry[entryIndex] || []));
             drewAny = true;
         }
     });
@@ -1479,11 +1682,15 @@ function redrawRoadStrips() {
     if (junctions.length && typeof renderCorridorJunctions === 'function') {
         renderCorridorJunctions(junctions, group, undefined);
     }
+    if (typeof renderCorridorLaneMarkings === 'function') {
+        renderCorridorLaneMarkings(markings, group, undefined);
+    }
     roadStripLayer = group;
     if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
     roadStripLayer.addTo(map);
 }
 
+// The cross-section of the corridor being drawn — a road's or a track's, which are the same thing.
 function getRoadDrawingProfile() {
     const normalized = normalizeCorridorProfile(roadProfile);
     return normalized ? { strips: normalized.strips.map(strip => ({ ...strip })) } : null;
@@ -1506,43 +1713,36 @@ function draftLatLng(point) {
 
 // Geometry tools own their live mutable state; this is the single snapshot boundary that turns it
 // into a small, reload-safe draft. Preview cursor geometry is deliberately excluded.
-function saveCurrentCorridorDrawingDraft(kind) {
+function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
     if (typeof saveActiveCorridorDraft !== 'function') return null;
-    let seed = null;
-    if (kind === 'track') {
-        const centerline = (trackPoints || []).map(draftLatLng).filter(Boolean);
-        if (centerline.length < 2) return null;
-        seed = {
-            centerline,
-            width: trackWidth,
-            trackSpeed,
-            trackMinRadius: trackMinCurvatureRadius,
-            tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || [])),
-            demolishedBuildings: JSON.parse(JSON.stringify(trackDemolishedBuildings || []))
-        };
-    } else {
-        const entries = getAllRoadSegments(true)
-            .map((segment, index) => ({
-                points: (segment || []).map(draftLatLng).filter(Boolean),
-                id: roadSegmentIds[index] || null
-            }))
-            .filter(entry => entry.points.length >= 2);
-        if (!entries.length) return null;
-        seed = {
-            centerline: entries.map(entry => entry.points),
-            segmentIds: entries.map(entry => entry.id),
-            profile: getRoadDrawingProfile(),
-            width: roadWidth,
-            sidewalkWidth: roadSidewalkWidth,
-            tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
-            demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
-            segmentProfiles: JSON.parse(JSON.stringify(roadSegmentProfiles || {}))
-        };
-    }
+    const entries = getAllRoadSegments(true)
+        .map((segment, index) => ({
+            points: (segment || []).map(draftLatLng).filter(Boolean),
+            id: roadSegmentIds[index] || null
+        }))
+        .filter(entry => entry.points.length >= 2);
+    if (!entries.length) return null;
 
-    const livePolygon = kind === 'track' ? trackPolygon : roadPolygon;
+    const seed = {
+        centerline: entries.map(entry => entry.points),
+        segmentIds: entries.map(entry => entry.id),
+        profile: getRoadDrawingProfile(),
+        width: roadWidth,
+        sidewalkWidth: roadSidewalkWidth,
+        // The rail engineering limits ride along with any corridor that carries a track.
+        trackSpeed,
+        trackMinRadius: trackMinCurvatureRadius,
+        tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
+        gradeSeparations: JSON.parse(JSON.stringify(roadGradeSeparations || [])),
+        demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
+        // Structures (parks/lakes/squares) the user approved building through — persisted so continuing
+        // this road never re-asks about a structure it already runs through (seeded back on continue).
+        approvedStructures: (typeof getApprovedStructureIds === 'function') ? getApprovedStructureIds() : [],
+        segmentProfiles: JSON.parse(JSON.stringify(roadSegmentProfiles || {}))
+    };
+
     try {
-        const latLngPairs = convertRoadPolygonToLatLngPairs(livePolygon);
+        const latLngPairs = convertRoadPolygonToLatLngPairs(roadPolygon);
         const polygon = convertLatLngPairsToGeoJSON(latLngPairs);
         if (polygon?.type && Array.isArray(polygon.coordinates)) {
             seed.polygon = polygon;
@@ -1551,8 +1751,7 @@ function saveCurrentCorridorDrawingDraft(kind) {
     } catch (_) { }
 
     const copySource = window.pendingRoadCopySource || null;
-    const affected = kind === 'track' ? trackAffectedParcels : roadAffectedParcels;
-    const parentParcelIds = (Array.isArray(affected) ? affected : [])
+    const parentParcelIds = (Array.isArray(roadAffectedParcels) ? roadAffectedParcels : [])
         .map(parcel => getParcelIdFromAny(parcel))
         .filter(Boolean)
         .map(String);
@@ -1576,6 +1775,7 @@ function saveCurrentCorridorDrawingDraft(kind) {
 
 // Apply a live editor profile to the drawing. A total-width change rebuilds the footprint and derives
 // affected parcels/stats again; a profile-only change follows the same path but leaves the footprint.
+// One path for every corridor: adding a rail lane to what began as a road is an ordinary lane edit.
 function setRoadDrawingProfile(profile) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return false;
@@ -1586,13 +1786,27 @@ function setRoadDrawingProfile(profile) {
         ? sidewalks.reduce((sum, strip) => sum + strip.width, 0) / sidewalks.length
         : 0;
     window.roadSidewalkWidth = roadSidewalkWidth;
-    // The next R-press starts at this width (there is no width picker any more).
-    try {
-        PersistentStorage.setItem('lastRoadWidth', String(roadWidth));
-        PersistentStorage.setItem('lastSidewalkWidth', String(roadSidewalkWidth));
-    } catch (_) { }
+    // The next R-press starts at this width (there is no width picker any more). Only a ROAD's width is
+    // remembered: a track is seeded from its gauge, so letting a 3.5 m tram line become the next road's
+    // width would be remembering the wrong thing.
+    if (!corridorDrawingIsTrack()) {
+        try {
+            PersistentStorage.setItem('lastRoadWidth', String(roadWidth));
+            PersistentStorage.setItem('lastSidewalkWidth', String(roadSidewalkWidth));
+        } catch (_) { }
+    }
     const polygon = rebuildRoadGeometryFromSegments();
-    recomputeLockedParcelsFromPolygon(polygon, false);
+    recomputeLockedParcelsFromPolygon(polygon);
+    const hasPlacedSegments = getAllRoadSegments(true)
+        .some(segment => Array.isArray(segment) && segment.length >= 2);
+    if (!hasPlacedSegments) {
+        // With no geometry there is nothing to collide with; the first placed edge validates this
+        // width before it is committed.
+        roadLastValidatedWidth = roadWidth;
+        roadDrawingProfileValidationPending = false;
+    } else {
+        roadDrawingProfileValidationPending = Math.abs(roadWidth - roadLastValidatedWidth) > 1e-6;
+    }
     updateRoadInfoPanel();
     updateRoadCrossSectionButton();
     return true;
@@ -1674,9 +1888,10 @@ function normalizeSeedSegments(input) {
         .filter(segment => segment.length >= 2);
 }
 
-// Reopen an existing road for editing: the drawing tool starts from its geometry instead of a blank
-// canvas, so a road can be continued across a reload, an upload/download round-trip, or a copy. The
-// locked parcels and their stats are then derived from the corridor, exactly as they are after an undo.
+// Reopen an existing corridor for editing: the drawing tool starts from its geometry instead of a blank
+// canvas, so it can be continued across a reload, an upload/download round-trip, or a copy. The locked
+// parcels and their stats are then derived from the corridor, exactly as they are after an undo.
+// A track seeds the same way a road does — it is the same tool and the same state.
 function seedRoadDrawing(seed) {
     if (!seed) return false;
     const segments = normalizeSeedSegments(seed.centerline || seed.segments || seed.points);
@@ -1687,9 +1902,14 @@ function seedRoadDrawing(seed) {
         roadSidewalkWidth = Number(seed.sidewalkWidth);
         if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
     }
-    // A road drawn before profiles existed gets one synthesised from its width, so reopening it never
-    // silently changes its footprint: the profile always sums back to the width it was drawn with.
-    roadProfile = normalizeCorridorProfile(seed.profile) || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, false);
+    if (Number.isFinite(Number(seed.trackSpeed))) trackSpeed = Number(seed.trackSpeed);
+    if (Number.isFinite(Number(seed.trackMinRadius))) trackMinCurvatureRadius = Number(seed.trackMinRadius);
+
+    // A corridor drawn before profiles existed gets one synthesised from its width, so reopening it never
+    // silently changes its footprint: the profile always sums back to the width it was drawn with. That
+    // includes an old track — one rail lane as wide as the track was drawn.
+    roadProfile = normalizeCorridorProfile(seed.profile)
+        || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, corridorDrawKind === 'track');
     if (roadProfile) roadWidth = corridorProfileWidth(roadProfile);
 
     roadSegments = [];
@@ -1697,7 +1917,11 @@ function seedRoadDrawing(seed) {
     roadPoints = [];
     roadHasStarted = false;
     roadBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
+    roadGradeSeparations = Array.isArray(seed.gradeSeparations) ? JSON.parse(JSON.stringify(seed.gradeSeparations)) : [];
     roadDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
+    // Re-approve the structures this road already builds through (reset cleared the session set just
+    // before this seed) — so continuing the road never re-prompts about a park/lake/square it crosses.
+    if (typeof seedApprovedStructureCrossings === 'function') seedApprovedStructureCrossings(seed.approvedStructures);
     roadSegmentProfiles = (seed.segmentProfiles && typeof seed.segmentProfiles === 'object')
         ? JSON.parse(JSON.stringify(seed.segmentProfiles))
         : {};
@@ -1715,51 +1939,10 @@ function seedRoadDrawing(seed) {
     const polygon = rebuildRoadGeometryFromSegments();
     redrawRoadVertexMarkers();
     refreshRoadBuildingTunnelLayer();
-    recomputeLockedParcelsFromPolygon(polygon, false);
-    updateRoadInfoPanel();
-    updateUndoButtonState();
-    return true;
-}
-
-// The track counterpart. A track is a single un-branched polyline, so there are no segments to keep
-// apart — seeding restores the one centerline, its rails, and the parcels it covers.
-function seedTrackDrawing(seed) {
-    if (!seed) return false;
-    const segments = normalizeSeedSegments(seed.centerline || seed.points);
-    if (!segments.length) return false;
-    if (segments.length > 1) {
-        console.warn('[seedTrackDrawing] track has multiple centerline segments; continuing the first only', segments.length);
-    }
-
-    if (Number.isFinite(Number(seed.width))) trackWidth = Number(seed.width);
-    if (Number.isFinite(Number(seed.trackSpeed))) trackSpeed = Number(seed.trackSpeed);
-    if (Number.isFinite(Number(seed.trackMinRadius))) trackMinCurvatureRadius = Number(seed.trackMinRadius);
-
-    trackPoints = segments[0].slice();
-    trackHasStarted = true; // lockParcelsFromSegment routes to the track bookkeeping only once this is set
-    trackBuildingTunnels = Array.isArray(seed.tunnels) ? JSON.parse(JSON.stringify(seed.tunnels)) : [];
-    trackDemolishedBuildings = Array.isArray(seed.demolishedBuildings) ? JSON.parse(JSON.stringify(seed.demolishedBuildings)) : [];
-
-    if (trackCenterline) map.removeLayer(trackCenterline);
-    trackCenterline = L.polyline(trackPoints, { color: 'transparent', weight: 0, opacity: 0 }).addTo(map);
-
-    trackMarkers.forEach(marker => { if (marker && map.hasLayer(marker)) map.removeLayer(marker); });
-    trackMarkers = trackPoints.map(point => L.circleMarker(point, {
-        radius: 5, color: '#0066cc', fillColor: '#0066cc', fillOpacity: 1
-    }).addTo(map));
-
-    trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-    if (trackPolygonLayer) map.removeLayer(trackPolygonLayer);
-    trackPolygonLayer = trackPolygon
-        ? L.polygon(trackPolygon, { color: '#0066cc', weight: 1, fillColor: '#e6f2ff', fillOpacity: 0.2 }).addTo(map)
-        : null;
-
-    if (trackRailsLayer) map.removeLayer(trackRailsLayer);
-    trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth });
-    if (trackRailsLayer) trackRailsLayer.addTo(map);
-    refreshTrackBuildingTunnelLayer();
-
-    recomputeLockedParcelsFromPolygon(trackPolygon, true);
+    refreshRoadGradeSeparationLayer();
+    recomputeLockedParcelsFromPolygon(polygon);
+    roadLastValidatedWidth = roadWidth;
+    roadDrawingProfileValidationPending = false;
     updateRoadInfoPanel();
     updateUndoButtonState();
     return true;
@@ -1767,9 +1950,9 @@ function seedTrackDrawing(seed) {
 
 if (typeof window !== 'undefined') {
     window.seedRoadDrawing = seedRoadDrawing;
-    window.seedTrackDrawing = seedTrackDrawing;
     window.getRoadDrawingProfile = getRoadDrawingProfile;
     window.setRoadDrawingProfile = setRoadDrawingProfile;
+    window.validateRoadDrawingProfileImpacts = validateRoadDrawingProfileImpacts;
 }
 
 // Continue an existing segment from one of its two ends. Drawing always appends to the end of the
@@ -1858,14 +2041,14 @@ const ROAD_OWNERSHIP_TYPE_IDS = {
 let roadOwnershipStatsRequestId = 0;
 const roadOwnershipTypeCache = new Map();
 
-function getParcelIdFromFeature(feature) {
+function getRoadDrawingParcelIdFromFeature(feature) {
     return feature ? ensureParcelId(feature) : null;
 }
 
 function getParcelIdFromAny(parcel) {
     if (!parcel) return null;
-    const fromFeature = parcel.feature ? getParcelIdFromFeature(parcel.feature) : null;
-    const fromLayerFeature = parcel.layer?.feature ? getParcelIdFromFeature(parcel.layer.feature) : null;
+    const fromFeature = parcel.feature ? getRoadDrawingParcelIdFromFeature(parcel.feature) : null;
+    const fromLayerFeature = parcel.layer?.feature ? getRoadDrawingParcelIdFromFeature(parcel.layer.feature) : null;
     const fromProps = parcel.properties ? ensureParcelId(parcel.properties) : null;
     const raw = parcel.id ?? parcel.parcelId;
     const candidate = fromFeature || fromLayerFeature || fromProps || getParcelId(raw);
@@ -1976,7 +2159,7 @@ function getMarketPrice(parcelId, currency) {
     if (parcelLayer) {
         let foundLayer = null;
         parcelLayer.eachLayer(layer => {
-            const layerId = getParcelIdFromFeature(layer.feature);
+            const layerId = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (layerId && layerId.toString() === targetId.toString()) {
                 foundLayer = layer;
             }
@@ -2310,37 +2493,42 @@ function disableMultiSelectForDrawing() {
     } catch (_) { /* ignore */ }
 }
 
+// One panel serves both road and track drawing, so switching mode swaps the i18n KEY on each label —
+// not just its text. Writing text alone left the road-mode key in place, so the next applyTranslations()
+// (a language switch) would put the road wording back on a track panel, and any literal written here
+// would survive untranslated in every language.
 function setRoadPanelLabelsForMode(mode = 'road') {
-    const titleEl = document.querySelector('#road-info-panel h3[data-i18n-key="panel.road.title"]');
-    const finishBtn = document.getElementById('finishRoadButton');
-    const lengthLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.lengthLabel"]');
-    const areaLabel = document.querySelector('#road-info-panel .metric-label[data-i18n-key="panel.road.areaLabel"]');
-    const crossSectionButton = document.getElementById('editRoadCrossSectionButton');
     const isTrack = mode === 'track';
+    const modeLabels = [
+        ['road-panel-title', isTrack ? 'panel.road.titleTrack' : 'panel.road.title', isTrack ? 'Draw track' : 'Draw road'],
+        ['finishRoadButton', isTrack ? 'panel.road.finishButtonShortTrack' : 'panel.road.finishButtonShort', isTrack ? 'Finish track (F)' : 'Finish road (F)'],
+        ['road-length-label', isTrack ? 'panel.road.lengthLabelTrack' : 'panel.road.lengthLabel', isTrack ? 'Track length:' : 'Road length:'],
+        ['road-area-label', isTrack ? 'panel.road.areaLabelTrack' : 'panel.road.areaLabel', isTrack ? 'Track area:' : 'Road area:']
+    ];
 
-    if (titleEl) {
-        titleEl.textContent = isTrack
-            ? translateRoadText('panel.road.titleTrack', 'Draw track')
-            : translateRoadText('panel.road.title', 'Draw road');
-    }
-    if (finishBtn) {
-        finishBtn.textContent = isTrack ? 'Finish track (F)' : 'Finish road (F)';
-    }
-    if (lengthLabel) {
-        lengthLabel.textContent = isTrack ? 'Track length:' : 'Road length:';
-    }
-    if (areaLabel) {
-        areaLabel.textContent = isTrack ? 'Track area:' : 'Road area:';
-    }
-    if (crossSectionButton) crossSectionButton.style.display = isTrack ? 'none' : '';
+    modeLabels.forEach(([id, key, fallback]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute('data-i18n-key', key);
+        el.textContent = translateRoadText(key, fallback);
+    });
+
+    // The cross-section editor serves both: a track is a corridor whose lanes happen to include a track.
+    const crossSectionButton = document.getElementById('editRoadCrossSectionButton');
+    if (crossSectionButton) crossSectionButton.style.display = '';
+    updateRoadCrossSectionButton();
 }
 
+// The two buttons enter the SAME tool. `kind` chooses the seed cross-section — a road profile, or one
+// standard-gauge track — and nothing else about the session. Pressing the button that is already active
+// closes the tool (which, in this SimCity lifecycle, means finishing what has been drawn).
 async function requestCorridorDrawingTool(kind) {
-    if (kind === 'road' && roadDrawingMode) return cancelRoadDrawing();
-    if (kind === 'track' && trackDrawingMode) return cancelTrackDrawing();
+    if (roadDrawingMode) {
+        // The other button while drawing: end this corridor, then open the tool on the other seed.
+        const finished = await cancelRoadDrawing();
+        if (kind === corridorDrawKind) return finished;
+    }
 
-    if (roadDrawingMode) exitRoadDrawingMode();
-    if (trackDrawingMode) exitTrackDrawingMode();
     // The draft store is only the finish-time hand-off to instantCreate — clear any stale active
     // draft so finishing this drawing cannot hijack an unrelated one.
     try { window.proposalDraftStore?.clearActiveDraft?.(); } catch (_) { }
@@ -2360,15 +2548,14 @@ async function requestCorridorDrawingTool(kind) {
     if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
         await ensureCorridorBuildingFootprintsLoaded();
     }
-    if (kind === 'track') toggleTrackDrawTool();
-    else toggleRoadDrawTool();
+    corridorDrawKind = kind === 'track' ? 'track' : 'road';
+    toggleRoadDrawTool();
     return true;
 }
 
 async function startSeededCorridorDrawing(kind, seed, copySource) {
     if (!seed) return false;
     if (roadDrawingMode) exitRoadDrawingMode();
-    if (trackDrawingMode) exitTrackDrawingMode();
     if (copySource?.draftId && window.proposalDraftStore?.getDraft(copySource.draftId)) {
         window.beginProposalDraftDesignSession?.(copySource.draftId);
     }
@@ -2376,38 +2563,38 @@ async function startSeededCorridorDrawing(kind, seed, copySource) {
         await ensureCorridorBuildingFootprintsLoaded();
     }
     window.pendingRoadCopySource = copySource || null;
-    if (kind === 'track') {
-        window.pendingTrackDrawingSeed = seed;
-        toggleTrackDrawTool();
-    } else {
-        window.pendingRoadDrawingSeed = seed;
-        toggleRoadDrawTool();
-    }
+    corridorDrawKind = kind === 'track' ? 'track' : 'road';
+    window.pendingRoadDrawingSeed = seed;
+    toggleRoadDrawTool();
     return true;
 }
 
 if (typeof window !== 'undefined') {
     window.requestRoadDrawTool = () => requestCorridorDrawingTool('road');
     window.updateLocalCorridorGeometry = updateLocalCorridorGeometry;
+    window.isCorridorApplyInFlight = isCorridorApplyInFlight;
     window.requestTrackDrawTool = () => requestCorridorDrawingTool('track');
     window.startSeededCorridorDrawing = startSeededCorridorDrawing;
 }
 
-// Toggle road drawing tool. User-facing entry points go through requestRoadDrawTool(), which restores
-// or guards the active draft; this function remains the synchronous low-level activator.
+// The corridor drawing tool's low-level activator. User-facing entry points go through
+// requestCorridorDrawingTool(), which sets `corridorDrawKind` and guards the active draft.
+function corridorDrawButton() {
+    return document.getElementById(corridorDrawKind === 'track' ? 'trackDrawButton' : 'roadDrawButton');
+}
+
 function toggleRoadDrawTool() {
-    // Gate: require personalized profile to draw roads (which create proposals)
+    // Gate: require personalized profile to draw corridors (which create proposals)
 
     updateGlobalRoadDrawingMode(!roadDrawingMode);
-    const roadDrawButton = document.getElementById('roadDrawButton');
-    const finishRoadButton = document.getElementById('finishRoadButton');
+    const roadDrawButton = corridorDrawButton();
 
     if (roadDrawingMode) {
         disableMultiSelectForDrawing();
-        setRoadPanelLabelsForMode('road');
+        setRoadPanelLabelsForMode(corridorDrawKind);
         closeProposalDetailsForDrawing();
 
-        // Activate road drawing mode
+        // Activate corridor drawing mode — the button the user pressed is the one that lights up.
         if (roadDrawButton) {
             roadDrawButton.classList.add('active');
             roadDrawButton.classList.add('active-black-border');
@@ -2435,8 +2622,8 @@ function toggleRoadDrawTool() {
         if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
 
-        // Open the road panel and start listening for clicks. Shared by the fresh-draw path (after the
-        // width picker resolves) and the seeded path (width comes from the road being continued).
+        // Open the panel and start listening for clicks. Shared by the fresh-draw path and the seeded
+        // path (which takes its cross-section from the corridor being continued).
         const activateRoadDrawing = (statusText) => {
             const roadInfoPanel = document.getElementById('road-info-panel');
             if (roadInfoPanel) {
@@ -2455,8 +2642,8 @@ function toggleRoadDrawTool() {
             document.addEventListener('keydown', handleRoadKeydown);
         };
 
-        // Continuing an existing road: its geometry and width are already decided, so skip the picker
-        // and reopen the tool on that road. The seed is consumed once.
+        // Continuing an existing corridor: its geometry and cross-section are already decided, so the
+        // tool reopens on it rather than on a seed. The seed is consumed once.
         const seed = (typeof window !== 'undefined') ? window.pendingRoadDrawingSeed : null;
         if (seed) {
             window.pendingRoadDrawingSeed = null;
@@ -2466,9 +2653,37 @@ function toggleRoadDrawTool() {
             }
         }
 
-        // No width modal: drawing starts immediately at the last-used width (the narrowest
-        // preset, 7.5 m, on first use). The width is edited any time — before or during the
-        // drawing — via the Cross-section button in this panel's header.
+        // Collapse the sidebar so the map has room (the retired width picker used to do this).
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+            try { toggleSidebar(); } catch (_) { }
+        }
+
+        // A NEW TRACK starts as one standard-gauge track (3.5 m) and nothing else. Its width is the sum
+        // of its lanes from here on: the cross-section editor adds a second track, a platform, a verge —
+        // exactly as it adds a bus lane to a road. The rail speed limit picker comes first, because the
+        // minimum curve radius it fixes constrains the very first click.
+        if (corridorDrawKind === 'track') {
+            roadSidewalkWidth = 0;
+            if (typeof window !== 'undefined') window.roadSidewalkWidth = 0;
+            roadProfile = corridorDefaultTrackProfile();
+            roadWidth = corridorProfileWidth(roadProfile);
+            roadLastValidatedWidth = roadWidth;
+            roadDrawingProfileValidationPending = false;
+            showTrackSpeedPicker().then(({ speed, minRadius }) => {
+                trackSpeed = speed;
+                trackMinCurvatureRadius = minRadius;
+                activateRoadDrawing('Click on the map to start drawing a track');
+            }).catch(() => {
+                // Picker cancelled: the tool never opened.
+                if (roadDrawingMode) toggleRoadDrawTool();
+            });
+            return;
+        }
+
+        // No width modal for a road: drawing starts immediately at the last-used width (the narrowest
+        // preset, 7.5 m, on first use). The width is edited any time — before or during the drawing —
+        // via the Cross-section button in this panel's header.
         const storedWidth = parseFloat(PersistentStorage.getItem('lastRoadWidth'));
         roadWidth = (Number.isFinite(storedWidth) && storedWidth >= 5 && storedWidth <= 80) ? storedWidth : 7.5;
         const storedSidewalkWidth = parseFloat(PersistentStorage.getItem('lastSidewalkWidth'));
@@ -2479,19 +2694,14 @@ function toggleRoadDrawTool() {
             window.roadSidewalkWidth = roadSidewalkWidth;
         }
         roadProfile = corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, false);
-        // Collapse the sidebar so the map has room (the retired width picker used to do this).
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-            try { toggleSidebar(); } catch (_) { }
-        }
+        roadLastValidatedWidth = roadWidth;
+        roadDrawingProfileValidationPending = false;
         activateRoadDrawing('Click on the map to start drawing a road');
 
     } else {
-        // Deactivate road drawing mode
-        if (!trackDrawingMode) {
-            setRoadPanelLabelsForMode('road');
-        }
-        console.log("Deactivating road drawing mode");
+        // Deactivate corridor drawing mode
+        setRoadPanelLabelsForMode('road');
+        console.log("Deactivating corridor drawing mode");
         if (roadDrawButton) {
             roadDrawButton.classList.remove('active');
             roadDrawButton.classList.remove('active-black-border');
@@ -2532,9 +2742,11 @@ function handleRoadKeydown(e) {
         return;
     }
 
-    // F finishes the road: the drawing instantly becomes an applied object (SimCity lifecycle).
-    if ((e.key === 'f' || e.key === 'F') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+    // F (or Enter) finishes the road: the drawing instantly becomes an applied object (SimCity
+    // lifecycle). Enter is the natural "I'm done" key, so it mirrors the F shortcut / (F) button.
+    if ((e.key === 'f' || e.key === 'F' || e.key === 'Enter') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
         e.preventDefault();
+        if (e.repeat || roadFinalizationGate.isRunning() || roadSegmentPlacementInProgress) return;
         finishRoadDrawing();
     }
 
@@ -2611,10 +2823,47 @@ function isAnyModalOpen() {
     try {
         const nodes = document.querySelectorAll(modalSelectors.join(','));
         for (const el of nodes) {
+            // The cross-section editor matches [role="dialog"] but is NOT blocking: it docks beside
+            // a live map, and B (which survey am I looking at) is exactly the key you reach for
+            // while profiling a road. Its own dialogs still match and still block.
+            if (el.closest && el.closest('.corridor-editor-overlay')) continue;
             if (isElementVisiblyRendered(el)) return true;
         }
     } catch (_) { /* ignore */ }
     return false;
+}
+
+function setBuildingReferenceLayers(gdi, dgu, osm) {
+    const gdiBox = document.getElementById('showBuildings');
+    const dguBox = document.getElementById('showBuildingsDgu');
+    const osmBox = document.getElementById('showBuildingsOsm');
+    if (gdiBox && gdiBox.checked !== gdi) {
+        gdiBox.checked = gdi;
+        if (typeof toggleLayer === 'function') toggleLayer('buildings');
+    }
+    if (dguBox && dguBox.checked !== dgu) {
+        dguBox.checked = dgu;
+        if (typeof toggleLayer === 'function') toggleLayer('buildingsDgu');
+    }
+    if (osmBox && osmBox.checked !== osm) {
+        osmBox.checked = osm;
+        if (typeof toggleLayer === 'function') toggleLayer('buildingsOsm');
+    }
+    // The road profiler measures against whatever survey is on the map, so it has to hear about it.
+    try {
+        document.dispatchEvent(new CustomEvent('building-layers-changed', { detail: { gdi, dgu, osm } }));
+    } catch (_) { }
+}
+
+// B opens the building-layers picker — EVERY time, prefilled with what is currently on. The three
+// surveys are independent references (any combination is legal), so it is a set of checkboxes with
+// Show focused: Enter takes the answer, Escape leaves the map alone. It never changes what a
+// corridor cuts — that reads the feature pool — but it does decide what the profiler measures.
+async function toggleBuildingReferenceLayers() {
+    if (!window.BuildingLayersDialog) return;
+    const picked = await window.BuildingLayersDialog.open();
+    if (!picked) return;
+    setBuildingReferenceLayers(picked.gdi, picked.dgu, picked.osm);
 }
 
 function handleRoadDrawHotkey(event) {
@@ -2622,13 +2871,9 @@ function handleRoadDrawHotkey(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (isEditableTarget(event.target)) return;
     if (isAnyModalOpen()) return;
-    // B toggles the existing-buildings layer — flipped often while drawing roads through fabric.
     if (event.key === 'b' || event.key === 'B') {
-        const checkbox = document.getElementById('showBuildings');
-        if (!checkbox) return;
         event.preventDefault();
-        checkbox.checked = !checkbox.checked;
-        if (typeof toggleLayer === 'function') toggleLayer('buildings');
+        toggleBuildingReferenceLayers();
         return;
     }
     if (event.key !== 'r' && event.key !== 'R') return;
@@ -2644,6 +2889,11 @@ function attachRoadDrawHotkey() {
     roadDrawHotkeyAttached = true;
 }
 
+if (typeof window !== 'undefined') {
+    window.toggleBuildingReferenceLayers = toggleBuildingReferenceLayers;
+    window.setBuildingReferenceLayers = setBuildingReferenceLayers;
+}
+
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', attachRoadDrawHotkey, { once: true });
@@ -2656,9 +2906,7 @@ if (typeof document !== 'undefined') {
 function updateUndoButtonState() {
     const undoButton = document.getElementById('undoRoadButton');
     if (undoButton) {
-        if (trackDrawingMode && trackHasStarted) {
-            undoButton.disabled = trackPoints.length <= 1;
-        } else if (roadDrawingMode) {
+        if (roadDrawingMode) {
             const currentSegment = roadHasStarted
                 ? roadPoints
                 : (roadSegments[roadSegments.length - 1] || []);
@@ -2673,23 +2921,27 @@ function updateUndoButtonState() {
 // everything placed earlier stays. A stub left with fewer than 2 points is dropped entirely.
 function cancelActiveRoadStroke() {
     if (!roadHasStarted || !Array.isArray(roadPoints)) return false;
-    while (roadPoints.length > Math.max(roadStrokeBaseCount, 0)) {
-        const removedPoint = roadPoints[roadPoints.length - 1];
-        const previousPoint = roadPoints[roadPoints.length - 2];
-        if (previousPoint && typeof removeBuildingTunnelEdge === 'function') {
-            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
-        }
-        roadPoints.pop();
+    // The array surgery (pop to base, drop the stub, keep segmentIds aligned) is the pure reducer in
+    // road-stroke-state.js; here we apply its removed edges to the tunnel records and re-alias
+    // roadPoints. segments/segmentIds are mutated in place, so their identity is preserved.
+    const result = window.RoadStrokeState.applyStrokeCancel({
+        segments: roadSegments,
+        segmentIds: roadSegmentIds,
+        activeIndex: roadSegments.indexOf(roadPoints),
+        hasStarted: roadHasStarted,
+        strokeBaseCount: roadStrokeBaseCount
+    });
+    if (typeof removeBuildingTunnelEdge === 'function') {
+        result.removedEdges.forEach(([from, to]) => {
+            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
+        });
     }
-    if (roadPoints.length < 2) {
-        const stubIndex = roadSegments.indexOf(roadPoints);
-        if (stubIndex !== -1) {
-            roadSegments.splice(stubIndex, 1);
-            roadSegmentIds.splice(stubIndex, 1);
-        }
+    if (typeof retainLiveGradeSeparations === 'function') {
+        roadGradeSeparations = retainLiveGradeSeparations(roadSegments, roadGradeSeparations);
     }
-    roadPoints = [];
-    roadHasStarted = false;
+    roadHasStarted = result.hasStarted;
+    roadStrokeBaseCount = result.strokeBaseCount;
+    roadPoints = result.activeIndex >= 0 ? roadSegments[result.activeIndex] : [];
     if (roadPreviewLine) {
         roadPreviewLine.removeFrom(map);
         roadPreviewLine = null;
@@ -2703,7 +2955,8 @@ function cancelActiveRoadStroke() {
     const updatedPolygon = rebuildRoadGeometryFromSegments();
     redrawRoadVertexMarkers();
     refreshRoadBuildingTunnelLayer();
-    recomputeLockedParcelsFromPolygon(updatedPolygon, false);
+    refreshRoadGradeSeparationLayer();
+    recomputeLockedParcelsFromPolygon(updatedPolygon);
     updateRoadInfoPanel();
     updateUndoButtonState();
     return true;
@@ -2711,41 +2964,30 @@ function cancelActiveRoadStroke() {
 
 // Undo last road segment
 function undoLastRoadSegment() {
-    const existingSegments = getAllRoadSegments(true);
-    if (!roadHasStarted && (!existingSegments.length || (existingSegments[existingSegments.length - 1]?.length || 0) <= 1)) {
+    // The resume/pop/drop-empty logic (and keeping roadSegmentIds aligned) is the pure reducer in
+    // road-stroke-state.js. It mutates segments/segmentIds in place and returns the removed edge(s)
+    // and the new pen state; here we apply the tunnel cleanup and re-alias roadPoints.
+    const result = window.RoadStrokeState.applyRoadUndo({
+        segments: roadSegments,
+        segmentIds: roadSegmentIds,
+        activeIndex: roadHasStarted ? roadSegments.indexOf(roadPoints) : -1,
+        hasStarted: roadHasStarted,
+        strokeBaseCount: roadStrokeBaseCount
+    });
+    if (!result.undone) {
         return; // Nothing to undo
     }
-
-    if (!roadHasStarted && existingSegments.length) {
-        // Resume editing the last committed segment
-        roadPoints = existingSegments[existingSegments.length - 1];
-        roadHasStarted = true;
-        roadStrokeBaseCount = roadPoints.length;
-    }
-
-    if (!roadHasStarted || roadPoints.length <= 1) {
-        return; // Can't undo if there's only one point or none
-    }
-
-    // Remove tunnel metadata paired with this edge before its endpoint disappears.
-    const removedPoint = roadPoints[roadPoints.length - 1];
-    const previousPoint = roadPoints[roadPoints.length - 2];
     if (typeof removeBuildingTunnelEdge === 'function') {
-        roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, previousPoint, removedPoint);
+        result.removedEdges.forEach(([from, to]) => {
+            roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
+        });
     }
-    roadPoints.pop();
-
-    if (roadPoints.length === 0) {
-        // Drop the now-empty segment by index so `roadSegmentIds` stays aligned, and put the pen up:
-        // the next click starts a new segment (or resumes an old one by snapping to its end).
-        const emptyIndex = roadSegments.indexOf(roadPoints);
-        if (emptyIndex !== -1) {
-            roadSegments.splice(emptyIndex, 1);
-            roadSegmentIds.splice(emptyIndex, 1);
-        }
-        roadPoints = [];
-        roadHasStarted = false;
+    if (typeof retainLiveGradeSeparations === 'function') {
+        roadGradeSeparations = retainLiveGradeSeparations(roadSegments, roadGradeSeparations);
     }
+    roadHasStarted = result.hasStarted;
+    roadStrokeBaseCount = result.strokeBaseCount;
+    roadPoints = result.activeIndex >= 0 ? roadSegments[result.activeIndex] : [];
 
     // Markers are rebuilt from the segments below, so nothing to pop here.
 
@@ -2754,7 +2996,8 @@ function undoLastRoadSegment() {
     const updatedPolygon = rebuildRoadGeometryFromSegments();
     redrawRoadVertexMarkers();
     refreshRoadBuildingTunnelLayer();
-    recomputeLockedParcelsFromPolygon(updatedPolygon, false);
+    refreshRoadGradeSeparationLayer();
+    recomputeLockedParcelsFromPolygon(updatedPolygon);
 
     // Update UI
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
@@ -2782,22 +3025,42 @@ function undoLastRoadSegment() {
 }
 
 
-// Handle road drawing clicks
+// Handle corridor drawing clicks — a road's and a track's, which are one and the same.
 async function handleRoadClick(e) {
     // Stop event propagation to prevent parcel selection or other click handlers
     L.DomEvent.stopPropagation(e);
 
-    // Snap to an existing vertex or edge so segments that look connected really do share a node.
-    let snap = findRoadSnapTarget(e.latlng);
-    // A snap on a placed LOCAL road absorbs it into this drawing right now; the re-snap below
-    // then resolves onto the (now own) segment, so the ordinary resume/branch logic continues
-    // it with proper corners. Minted roads stay put — the snap just donates the exact position.
-    if (snap && (snap.type === 'external-endpoint' || snap.type === 'external-edge') && !snap.minted) {
-        const absorbed = await absorbAppliedRoadIntoDrawing(snap);
-        if (absorbed) snap = findRoadSnapTarget(e.latlng);
+    if (roadFinalizationGate.isRunning() || roadSegmentPlacementInProgress) return;
+    if (roadDrawingProfileValidationPending) {
+        updateStatus('Apply or cancel the cross-section change before drawing another segment.');
+        return;
     }
-    const clickPoint = snap ? snap.latlng : e.latlng;
+    // The cross-section editor docks beside a live, pannable map — a click on it must not
+    // place a drawing point behind the editor's back.
+    if (typeof isCorridorEditorOpen === 'function' && isCorridorEditorOpen()) return;
+    roadSegmentPlacementInProgress = true;
+    try {
+
+    // Snap to an existing vertex or edge so segments that look connected really do share a node.
+    // Drawing NEVER mutates or removes a placed road: a snap onto an existing corridor only donates
+    // the exact position for this new segment's vertex, attaching it to that vertex/centerline. All
+    // merging and joining of touching corridors happens ONCE, at finish (F), in
+    // absorbConnectedLocalCorridors — never on a click.
+    let snap = findRoadSnapTarget(e.latlng);
+    let clickPoint = snap ? snap.latlng : e.latlng;
     clearRoadSnapMarker();
+
+    // A rail lane in the cross-section brings the rail curve limit with it: a train cannot take the
+    // corner a car can, so the click is nudged out to the minimum radius its design speed allows.
+    // A SNAPPED click is exempt — landing exactly on an existing node is the whole point of snapping,
+    // and moving it would break the connection the user asked for.
+    if (!snap && roadHasStarted && corridorDrawingIsTrack() && typeof checkCurvatureConstraint === 'function') {
+        const constraint = checkCurvatureConstraint(roadPoints, clickPoint, trackMinCurvatureRadius);
+        if (constraint.adjustedPoint) clickPoint = constraint.adjustedPoint;
+        if (constraint.wasAdjusted) {
+            updateStatus(`Curve eased to the ${trackMinCurvatureRadius} m minimum radius for ${trackSpeed} km/h`);
+        }
+    }
 
     // Clicking an existing segment's end before drawing has started continues that segment instead
     // of beginning a new one — the same segment, extended, not a second one that happens to touch.
@@ -2847,15 +3110,27 @@ async function handleRoadClick(e) {
     } else {
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
         // Detect with the width THIS segment will actually be drawn at (per-segment override
-        // included) — with plain roadWidth a wider override made the finish-time check find
-        // buildings the click-time check missed, re-prompting at F.
+        // included); validating at plain roadWidth can accept a wider rendered edge unchecked.
         const activeSegmentIndex = roadSegments.indexOf(roadPoints);
         const activeSegmentWidth = activeSegmentIndex >= 0 ? roadDrawingWidthForSegmentIndex(activeSegmentIndex) : roadWidth;
         const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth);
+        let pendingGradeSeparations = [];
+        if (typeof resolvePedestrianRoadCrossings === 'function') {
+            const activeProfile = roadDrawingSegmentOverride(activeSegmentIndex) || roadProfile;
+            const crossingResolution = await resolvePedestrianRoadCrossings(
+                segmentPoints[0], segmentPoints[1], activeProfile, activeSegmentWidth
+            );
+            if (crossingResolution.action === 'cancel') return;
+            pendingGradeSeparations = Array.isArray(crossingResolution.records)
+                ? crossingResolution.records
+                : [];
+        }
         // Load footprints along THIS edge — the pool only covers fetched viewports, so an
         // unloaded building would silently pass detection and stay standing under the road.
         if (segmentPolygon && typeof window.ensureBuildingFootprintsForBounds === 'function') {
-            try { await window.ensureBuildingFootprintsForBounds(segmentPolygon); } catch (error) {
+            try {
+                await ensureBuildingFootprintsForRoadEdge(segmentPoints[0], segmentPoints[1], activeSegmentWidth);
+            } catch (error) {
                 console.error('[road-drawing] footprint preload for edge failed', error);
             }
         }
@@ -2866,6 +3141,11 @@ async function handleRoadClick(e) {
         if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
             const fullyDemolishedIds = new Set(roadDemolishedBuildings.filter(record => !record.remainder).map(record => String(record.id)));
             const cutIds = new Set(roadDemolishedBuildings.filter(record => record.remainder).map(record => String(record.id)));
+            // A building this drawing already tunnels keeps that decision. Continuing/extending a
+            // corridor reloads its tunnels into roadBuildingTunnels (seedRoadDrawing), so a new segment
+            // that grazes a building already tunnelled must NOT re-ask — same building-keyed reuse the
+            // two edit paths use, so a road's relation to a building is decided once, everywhere.
+            const alreadyTunnelledIds = new Set((roadBuildingTunnels || []).flatMap(record => (record?.buildingIds || []).map(String)));
             const detected = detectLoadedBuildingTunnelIntersections(segmentPolygon)
                 .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
             // A building already CUT this session extends its cut silently — the decision for
@@ -2874,21 +3154,23 @@ async function handleRoadClick(e) {
                 detected.filter(hit => cutIds.has(String(hit.id)))
                     .forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
             }
-            const hits = detected.filter(hit => !cutIds.has(String(hit.id)));
+            const hits = detected.filter(hit => !cutIds.has(String(hit.id)) && !alreadyTunnelledIds.has(String(hit.id)));
             if (hits.length) {
                 const resolution = typeof resolveBuildingObstacles === 'function'
                     ? await resolveBuildingObstacles(hits, 'road')
                     : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [], cutHits: [] };
                 if (resolution.action === 'cancel') return;
-                if (resolution.action === 'destroy') {
-                    roadDemolishedBuildings.push(...(resolution.demolishedBuildings || []));
+                // Per-building outcomes: destroy, cut and tunnel can all apply within this edge's set.
+                if ((resolution.demolishedBuildings || []).length) {
+                    roadDemolishedBuildings.push(...resolution.demolishedBuildings);
                 }
-                if (resolution.action === 'cut' && edgeRegion && typeof upsertCutRecord === 'function') {
-                    (resolution.cutHits || []).forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
+                if ((resolution.cutHits || []).length && edgeRegion && typeof upsertCutRecord === 'function') {
+                    resolution.cutHits.forEach(hit => upsertCutRecord(roadDemolishedBuildings, hit, edgeRegion));
                 }
-                if (resolution.action === 'tunnel') {
+                {
                     const removedOwners = new Set(resolution.removedProposalIds || []);
                     const standingHits = hits.filter(hit => {
+                        if (resolvedActionForHit(resolution, hit) !== 'tunnel') return false;
                         const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
                         return !owner || !removedOwners.has(owner);
                     });
@@ -2913,15 +3195,22 @@ async function handleRoadClick(e) {
         }
 
         // Add another point to the road (the polygon for the new edge is built below, once).
-        // A tunnelled edge contributes its facade portals as real vertices first, so the tunnel
-        // spans exactly the inside sub-edges and the rest of the edge stays surface road.
+        // Building-tunnel portals and grade-separation ramp ends are all collinear interior points
+        // on this edge. Insert them in geometric order once so neither feature can invalidate the
+        // other's stable protected-edge metadata.
+        const interiorPoints = [];
+        const edgeParameter = point => {
+            const a = segmentPoints[0], b = segmentPoints[1];
+            const dx = b.lng - a.lng, dy = b.lat - a.lat;
+            const lengthSq = dx * dx + dy * dy;
+            return lengthSq > 0 ? (((point.lng - a.lng) * dx + (point.lat - a.lat) * dy) / lengthSq) : 0;
+        };
         if (tunnelSubEdges) {
             const segmentIndex = roadSegments.indexOf(roadPoints);
             const segmentId = roadSegmentIds[segmentIndex] || null;
             tunnelSubEdges.forEach((sub, index) => {
                 if (index < tunnelSubEdges.length - 1) {
-                    roadPoints.push(sub.to);
-                    roadMarkers.push(createRoadVertexMarker(sub.to));
+                    interiorPoints.push(sub.to);
                 }
                 if (sub.inside && typeof makeBuildingTunnelRecord === 'function') {
                     const record = makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId });
@@ -2930,9 +3219,42 @@ async function handleRoadClick(e) {
                     }
                 }
             });
-            refreshRoadBuildingTunnelLayer();
         }
+
+        const segmentId = roadSegmentIds[activeSegmentIndex] || null;
+        pendingGradeSeparations.forEach(record => {
+            record.segmentId = segmentId;
+            interiorPoints.push(record.from, record.to);
+            try {
+                const ring = calculateRoadPolygon([record.from, record.crossing, record.to], activeSegmentWidth);
+                const feature = ring && typeof corridorFeatureFromLatLngRing === 'function'
+                    ? corridorFeatureFromLatLngRing(ring)
+                    : null;
+                record.footprint = feature?.geometry || null;
+            } catch (_) { record.footprint = null; }
+        });
+
+        interiorPoints
+            .filter(point => point && edgeParameter(point) > 1e-9 && edgeParameter(point) < 1 - 1e-9)
+            .sort((a, b) => edgeParameter(a) - edgeParameter(b))
+            .filter((point, index, list) => index === 0
+                || Math.abs(point.lat - list[index - 1].lat) > 1e-9
+                || Math.abs(point.lng - list[index - 1].lng) > 1e-9)
+            .forEach(point => {
+                roadPoints.push(point);
+                roadMarkers.push(createRoadVertexMarker(point));
+            });
         roadPoints.push(clickPoint);
+        pendingGradeSeparations.forEach(record => {
+            if (typeof refreshGradeSeparationEdgeKeys === 'function') {
+                refreshGradeSeparationEdgeKeys(record, roadPoints);
+            }
+            roadGradeSeparations.push(record);
+        });
+        if (tunnelSubEdges) refreshRoadBuildingTunnelLayer();
+        if (pendingGradeSeparations.length) refreshRoadGradeSeparationLayer();
+        // Laying rail sounds like laying rail.
+        if (corridorDrawingIsTrack()) playTrackSegmentSound();
 
         // Add marker for this point
         const pointMarker = createRoadVertexMarker(clickPoint);
@@ -3017,6 +3339,8 @@ async function handleRoadClick(e) {
         } catch (error) {
             console.error('Error processing road segment after click:', error);
         }
+        roadLastValidatedWidth = roadWidth;
+        roadDrawingProfileValidationPending = false;
     }
 
     // Always update the info panel
@@ -3024,6 +3348,9 @@ async function handleRoadClick(e) {
 
     // Update undo button state
     updateUndoButtonState();
+    } finally {
+        roadSegmentPlacementInProgress = false;
+    }
 }
 
 // Handle road mouse movement for preview
@@ -3162,13 +3489,15 @@ function exitRoadDrawingMode() {
     resetRoadDrawing();
     updateGlobalRoadDrawingMode(false);
 
-    const roadDrawButton = document.getElementById('roadDrawButton');
+    // Whichever button opened the session is the one that goes dark.
+    const roadDrawButton = corridorDrawButton();
     if (roadDrawButton) {
         roadDrawButton.classList.remove('active');
         roadDrawButton.classList.remove('active-black-border');
         roadDrawButton.removeAttribute('aria-pressed');
         roadDrawButton.blur();
     }
+    setRoadPanelLabelsForMode('road');
 
     const roadDrawingControls = document.getElementById('road-drawing-controls');
     if (roadDrawingControls) roadDrawingControls.style.display = 'none';
@@ -3349,76 +3678,8 @@ function calculateRoadPolygonFromBuffer(points, width) {
 }
 
 // --- Geometry helpers: detect centerline self-intersections (planar) ---
-function polylineHasSelfIntersection(latLngPoints) {
-    if (!Array.isArray(latLngPoints) || latLngPoints.length < 4) return false;
-
-    // Convert to planar meters to avoid geodesic edge cases.
-    const pts = [];
-    for (const p of latLngPoints) {
-        try {
-            const xy = wgs84ToHTRS96(p.lat, p.lng);
-            if (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) {
-                pts.push({ x: xy[0], y: xy[1] });
-            } else {
-                return false;
-            }
-        } catch (_) {
-            return false;
-        }
-    }
-
-    // Segment i is pts[i] -> pts[i+1]
-    for (let i = 0; i < pts.length - 1; i++) {
-        const a = pts[i];
-        const b = pts[i + 1];
-        if (!a || !b) continue;
-
-        for (let j = i + 2; j < pts.length - 1; j++) {
-            // Skip segments that share a vertex (adjacent in the polyline).
-            // Note: j starts at i+2 so immediate adjacency is already avoided; keep this for clarity/safety.
-            if (j === i + 1) continue;
-
-            const c = pts[j];
-            const d = pts[j + 1];
-            if (!c || !d) continue;
-
-            if (segmentsIntersect(a, b, c, d)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-function segmentsIntersect(p1, q1, p2, q2) {
-    const EPS = 1e-9;
-
-    const orient = (a, b, c) => {
-        const val = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-        if (Math.abs(val) < EPS) return 0;
-        return val > 0 ? 1 : 2;
-    };
-
-    const onSegment = (a, b, c) => {
-        return b.x <= Math.max(a.x, c.x) + EPS && b.x + EPS >= Math.min(a.x, c.x)
-            && b.y <= Math.max(a.y, c.y) + EPS && b.y + EPS >= Math.min(a.y, c.y);
-    };
-
-    const o1 = orient(p1, q1, p2);
-    const o2 = orient(p1, q1, q2);
-    const o3 = orient(p2, q2, p1);
-    const o4 = orient(p2, q2, q1);
-
-    if (o1 !== o2 && o3 !== o4) return true;
-
-    // Colinear cases
-    if (o1 === 0 && onSegment(p1, p2, q1)) return true;
-    if (o2 === 0 && onSegment(p1, q2, q1)) return true;
-    if (o3 === 0 && onSegment(p2, p1, q2)) return true;
-    if (o4 === 0 && onSegment(p2, q1, q2)) return true;
-
-    return false;
-}
+// polylineHasSelfIntersection and segmentsIntersect moved to frontend/js/corridor-geometry.js
+// (loaded first) — planar self-crossing test, now unit-tested. Callers use the globals.
 
 function isLatLngLike(value) {
     return value && typeof value.lat === 'number' && typeof value.lng === 'number';
@@ -3548,144 +3809,8 @@ function polygonHasSelfIntersection(latLngPolygon) {
     return false;
 }
 
-function buildOffsetRoadPolygon(points, width) {
-    try {
-        const halfWidth = width / 2;
-        if (!isFinite(halfWidth) || halfWidth <= 0) {
-            return null;
-        }
-
-        // Convert to metric coordinates and remove consecutive duplicates
-        const rawHTRS = points
-            .map(p => wgs84ToHTRS96(p.lat, p.lng))
-            .filter(isValidPoint);
-
-        if (rawHTRS.length < 2) return null;
-
-        const cleanedHTRS = [];
-        const minDistance = 0.05; // meters
-        for (const pt of rawHTRS) {
-            if (cleanedHTRS.length === 0) {
-                cleanedHTRS.push(pt);
-                continue;
-            }
-            const prev = cleanedHTRS[cleanedHTRS.length - 1];
-            const dx = pt[0] - prev[0];
-            const dy = pt[1] - prev[1];
-            if (Math.hypot(dx, dy) >= minDistance) {
-                cleanedHTRS.push(pt);
-            }
-        }
-
-        if (cleanedHTRS.length < 2) return null;
-
-        const directions = [];
-        for (let i = 0; i < cleanedHTRS.length - 1; i++) {
-            const dx = cleanedHTRS[i + 1][0] - cleanedHTRS[i][0];
-            const dy = cleanedHTRS[i + 1][1] - cleanedHTRS[i][1];
-            const len = Math.hypot(dx, dy);
-            directions.push(len < 1e-6 ? null : [dx / len, dy / len]);
-        }
-
-        const resolvePrevDirection = (idx) => {
-            for (let i = idx - 1; i >= 0; i--) {
-                if (directions[i]) return directions[i];
-            }
-            for (let i = 0; i < directions.length; i++) {
-                if (directions[i]) return directions[i];
-            }
-            return null;
-        };
-
-        const resolveNextDirection = (idx) => {
-            for (let i = idx; i < directions.length; i++) {
-                if (directions[i]) return directions[i];
-            }
-            for (let i = directions.length - 1; i >= 0; i--) {
-                if (directions[i]) return directions[i];
-            }
-            return null;
-        };
-
-        const addVec = (a, b) => [a[0] + b[0], a[1] + b[1]];
-        const scaleVec = (v, scalar) => [v[0] * scalar, v[1] * scalar];
-        const vecLength = (v) => Math.hypot(v[0], v[1]);
-        const leftNormal = (dir) => [-dir[1], dir[0]];
-        const rightNormal = (dir) => [dir[1], -dir[0]];
-
-        const computeOffsetPoint = (point, dirPrev, dirNext, side) => {
-            const normalFromDir = side === 1 ? leftNormal : rightNormal;
-
-            if (!dirPrev && dirNext) {
-                const normal = normalFromDir(dirNext);
-                return addVec(point, scaleVec(normal, halfWidth));
-            }
-            if (dirPrev && !dirNext) {
-                const normal = normalFromDir(dirPrev);
-                return addVec(point, scaleVec(normal, halfWidth));
-            }
-            if (!dirPrev && !dirNext) {
-                return [point[0], point[1]];
-            }
-
-            const normalPrev = normalFromDir(dirPrev);
-            const normalNext = normalFromDir(dirNext);
-            const summed = addVec(normalPrev, normalNext);
-            const sumLen = vecLength(summed);
-
-            if (sumLen < 1e-6) {
-                return addVec(point, scaleVec(normalNext, halfWidth));
-            }
-
-            const miter = [summed[0] / sumLen, summed[1] / sumLen];
-            let dot = miter[0] * normalNext[0] + miter[1] * normalNext[1];
-            if (Math.abs(dot) < 1e-6) {
-                dot = 1e-6 * Math.sign(dot || 1);
-            }
-
-            let scaleFactor = halfWidth / dot;
-            const miterLimit = 6;
-            const maxScale = miterLimit * halfWidth;
-            if (Math.abs(scaleFactor) > maxScale) {
-                const fallbackNormal = dot > 0 ? normalNext : normalPrev;
-                return addVec(point, scaleVec(fallbackNormal, halfWidth));
-            }
-
-            return addVec(point, scaleVec(miter, scaleFactor));
-        };
-
-        const leftPts = [];
-        const rightPts = [];
-        for (let i = 0; i < cleanedHTRS.length; i++) {
-            const dirPrev = i > 0 ? resolvePrevDirection(i) : null;
-            const dirNext = i < cleanedHTRS.length - 1 ? resolveNextDirection(i) : null;
-
-            const leftPt = computeOffsetPoint(cleanedHTRS[i], dirPrev, dirNext, 1);
-            const rightPt = computeOffsetPoint(cleanedHTRS[i], dirPrev, dirNext, -1);
-
-            leftPts.push(leftPt);
-            rightPts.push(rightPt);
-        }
-
-        const polygonHTRS = [...leftPts, ...rightPts.reverse()];
-        if (polygonHTRS.length < 4) return null;
-
-        const first = polygonHTRS[0];
-        const last = polygonHTRS[polygonHTRS.length - 1];
-        if (Math.hypot(first[0] - last[0], first[1] - last[1]) > 0.001) {
-            polygonHTRS.push([...first]);
-        }
-
-        return polygonHTRS.map(([x, y]) => {
-            const [lat, lng] = htrs96ToWGS84(x, y);
-            return L.latLng(lat, lng);
-        });
-    } catch (error) {
-        console.warn('Failed to build offset road polygon', error);
-        return null;
-    }
-}
-
+// buildOffsetRoadPolygon was dead (no callers) and removed. The road footprint is built from
+// createRectangularRoadSegment + union (see corridor-geometry.js).
 // Helper function to check if a point is valid
 function isValidPoint(point) {
     return point &&
@@ -3845,148 +3970,9 @@ function getParcelOuterRingsLngLat(layer) {
     return rings;
 }
 
-function convertRoadPolygonToLatLngPairs(polygon) {
-    if (!Array.isArray(polygon) || !polygon.length) return null;
-
-    const isLatLngObj = (p) => {
-        if (!p) return false;
-        if (typeof p.lat === 'number' && typeof p.lng === 'number') return true;
-        if (typeof L !== 'undefined' && L.LatLng && p instanceof L.LatLng) return true;
-        const lat = typeof p.lat === 'function' ? p.lat() : p.lat;
-        const lng = typeof p.lng === 'function' ? p.lng() : p.lng;
-        return typeof lat === 'number' && typeof lng === 'number' && Number.isFinite(lat) && Number.isFinite(lng);
-    };
-
-    const extractLatLng = (p) => {
-        if (!p) return null;
-        if (typeof L !== 'undefined' && L.LatLng && p instanceof L.LatLng) return [p.lat, p.lng];
-        if (typeof p.lat === 'function' && typeof p.lng === 'function') return [p.lat(), p.lng()];
-        if (typeof p.lat === 'number' && typeof p.lng === 'number') return [p.lat, p.lng];
-        return null;
-    };
-
-    const toRingPairs = (ring) => {
-        if (!Array.isArray(ring) || !ring.length) return null;
-        const pairs = [];
-        for (const entry of ring) {
-            const extracted = extractLatLng(entry);
-            if (extracted) {
-                pairs.push(extracted);
-                continue;
-            }
-            if (Array.isArray(entry) && entry.length >= 2) {
-                const a = Number(entry[0]);
-                const b = Number(entry[1]);
-                if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
-                // Assume [lat, lng] but swap if first looks like lng
-                if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
-                    pairs.push([b, a]);
-                } else {
-                    pairs.push([a, b]);
-                }
-            }
-        }
-        if (pairs.length < 3) return null;
-        const first = pairs[0];
-        const last = pairs[pairs.length - 1];
-        if (first[0] !== last[0] || first[1] !== last[1]) {
-            pairs.push([first[0], first[1]]);
-        }
-        return pairs.length >= 4 ? pairs : null;
-    };
-
-    // Polygon with holes: [ring, hole1, ...]
-    if (Array.isArray(polygon[0]) && polygon[0].length) {
-        const firstRing = polygon[0];
-        if (isLatLngObj(firstRing[0]) || (Array.isArray(firstRing[0]) && firstRing[0].length >= 2)) {
-            const rings = polygon.map(toRingPairs).filter(Boolean);
-            return rings.length ? rings : null;
-        }
-    }
-
-    // Single ring
-    if (isLatLngObj(polygon[0]) || (Array.isArray(polygon[0]) && polygon[0].length >= 2)) {
-        return toRingPairs(polygon);
-    }
-
-    // MultiPolygon: [ [rings...], [rings...] ... ]
-    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && Array.isArray(polygon[0][0][0])) {
-        const polys = polygon
-            .map(poly => Array.isArray(poly) ? poly.map(toRingPairs).filter(Boolean) : [])
-            .filter(rings => rings.length);
-        return polys.length ? polys : null;
-    }
-
-    return null;
-}
-
-function convertLatLngPairsToGeoJSON(pairs) {
-    if (!Array.isArray(pairs) || pairs.length === 0) return null;
-
-    const toLngLatRing = (ring) => {
-        if (!Array.isArray(ring)) return null;
-        const coords = ring
-            .map(entry => {
-                if (!entry || !Array.isArray(entry) || entry.length < 2) return null;
-                const lat = Number(entry[0]);
-                const lng = Number(entry[1]);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-                return [lng, lat];
-            })
-            .filter(Boolean);
-        return coords.length >= 4 ? coords : null;
-    };
-
-    // MultiPolygon
-    if (Array.isArray(pairs[0]) && Array.isArray(pairs[0][0]) && Array.isArray(pairs[0][0][0])) {
-        const polygons = pairs
-            .map(poly => Array.isArray(poly) ? poly.map(toLngLatRing).filter(Boolean) : [])
-            .filter(rings => rings.length);
-        return polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null;
-    }
-
-    // Polygon with holes
-    if (Array.isArray(pairs[0]) && Array.isArray(pairs[0][0]) && typeof pairs[0][0][0] === 'number') {
-        const rings = pairs.map(toLngLatRing).filter(Boolean);
-        return rings.length ? { type: 'Polygon', coordinates: rings } : null;
-    }
-
-    // Ring only
-    if (Array.isArray(pairs[0]) && typeof pairs[0][0] === 'number') {
-        const ring = toLngLatRing(pairs);
-        return ring ? { type: 'Polygon', coordinates: [ring] } : null;
-    }
-
-    return null;
-}
-
-function isValidPolygonLatLngPairs(polygon) {
-    if (!Array.isArray(polygon) || polygon.length === 0) return false;
-
-    // Ring: [ [lat,lng], ... ]
-    if (Array.isArray(polygon[0]) && polygon[0].length >= 2 && Number.isFinite(Number(polygon[0][0])) && Number.isFinite(Number(polygon[0][1]))) {
-        return polygon.length >= 3;
-    }
-
-    // Polygon with holes: [ ring, hole... ]
-    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0])) {
-        const ring = polygon[0];
-        if (Array.isArray(ring[0]) && ring[0].length >= 2 && Number.isFinite(Number(ring[0][0])) && Number.isFinite(Number(ring[0][1]))) {
-            return ring.length >= 3;
-        }
-    }
-
-    // MultiPolygon: [ [rings...], [rings...] ... ]
-    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && Array.isArray(polygon[0][0][0])) {
-        for (const poly of polygon) {
-            if (!Array.isArray(poly) || poly.length === 0) continue;
-            const outer = poly[0];
-            if (Array.isArray(outer) && outer.length >= 3) return true;
-        }
-    }
-
-    return false;
-}
+// convertRoadPolygonToLatLngPairs, convertLatLngPairsToGeoJSON and isValidPolygonLatLngPairs moved
+// to frontend/js/corridor-geometry.js (loaded first) — the footprint-shape funnel, now unit-tested
+// (incl. the MultiPolygon-vs-holes discrimination). Callers below use the globals unchanged.
 
 function buildBoundsFromLatLngPairs(polygon) {
     if (!isValidPolygonLatLngPairs(polygon) || typeof L === 'undefined') return null;
@@ -4065,7 +4051,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
     // Clear previously affected parcels only after we have a valid polygon
     if (previousAffectedParcels && previousAffectedParcels.length > 0) {
         parcelLayer.eachLayer(layer => {
-            const pid = getParcelIdFromFeature(layer.feature);
+            const pid = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (!pid) return;
             // Reset style for previously affected parcels
             if (previousAffectedParcels.some(p => getParcelIdFromAny(p) === pid.toString())) {
@@ -4103,7 +4089,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
             }
         }
 
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
 
         // Skip if in exclusion list
         if (excludeSet && excludeSet.has(parcelId)) {
@@ -4197,7 +4183,7 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
 
     // Check each parcel for intersection with the segment
     parcelLayer.eachLayer(layer => {
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
 
         // Skip if already locked (already in our committed set)
@@ -4291,14 +4277,9 @@ function getOwnershipTypeFromParcel(parcel) {
 // Recomputing them from the corridor polygon keeps them correct no matter what order the vertices were
 // drawn in — which the per-edge undo history could not, once a segment can be resumed, reversed, or
 // seeded from an existing road. One polygon-vs-parcels pass, the same work a single click already does.
-function recomputeLockedParcelsFromPolygon(polygon, isTrack = false) {
-    if (isTrack) {
-        clearTrackAffectedParcels();
-        trackSegmentHistory = [];
-    } else {
-        clearAffectedParcels();
-        roadSegmentHistory = [];
-    }
+function recomputeLockedParcelsFromPolygon(polygon) {
+    clearAffectedParcels();
+    roadSegmentHistory = [];
     lockedParcelIds.clear();
     lockedStats = {
         parcelCount: 0,
@@ -4320,9 +4301,6 @@ function lockParcelsFromSegment(segmentPolygon) {
     // gets a history entry. Undo pops one entry per vertex, so skipping the push here would make undo
     // pop some *earlier* edge's entry and unlock parcels the road still runs through.
 
-    // Determine if we're in track mode
-    const isTrackMode = trackHasStarted && trackDrawingMode;
-
     // Store segment stats for undo
     const segmentParcelIds = new Set();
     const segmentStats = {
@@ -4333,19 +4311,12 @@ function lockParcelsFromSegment(segmentPolygon) {
         individualOwners: 0
     };
 
-    // Add new parcels to the locked set and appropriate affected parcels array
+    // Add new parcels to the locked set and the affected parcels array
     for (const parcel of newParcels) {
         if (!lockedParcelIds.has(parcel.id)) {
             lockedParcelIds.add(parcel.id);
             segmentParcelIds.add(parcel.id);
-
-            if (isTrackMode) {
-                trackAffectedParcels.push(parcel);
-                // Keep a dedicated track set so track highlighting mirrors road behaviour
-                lockedTrackParcelIds.add(parcel.id.toString());
-            } else {
-                roadAffectedParcels.push(parcel);
-            }
+            roadAffectedParcels.push(parcel);
 
             // Update cached stats incrementally
             lockedStats.parcelCount++;
@@ -4396,11 +4367,7 @@ function lockParcelsFromSegment(segmentPolygon) {
     }
 
     // Store segment history for undo
-    if (isTrackMode) {
-        trackSegmentHistory.push({ parcelIds: segmentParcelIds, stats: segmentStats });
-    } else {
-        roadSegmentHistory.push({ parcelIds: segmentParcelIds, stats: segmentStats });
-    }
+    roadSegmentHistory.push({ parcelIds: segmentParcelIds, stats: segmentStats });
 
     // Update UI with locked stats
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
@@ -4422,9 +4389,7 @@ function lockParcelsFromSegment(segmentPolygon) {
         ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
     }
 
-    // Update acquiring difficulty (use appropriate array based on mode)
-    const affectedParcels = isTrackMode ? trackAffectedParcels : roadAffectedParcels;
-    updateRoadAcquiringDifficulty(affectedParcels);
+    updateRoadAcquiringDifficulty(roadAffectedParcels);
 }
 
 // Helper to format currency (reuse existing logic or simple format)
@@ -4481,7 +4446,7 @@ function findAffectedParcels(roadPolygon) {
     }
 }
 
-// Update road info panel with current metrics (works for both roads and tracks)
+// Update the corridor info panel with current metrics.
 // Collapse the drawing panel to a slim strip (title + Cross-section + Undo/Finish) so the map
 // stays visible while drawing — essential on phones, where the full panel covers half the screen.
 function toggleRoadInfoPanelMinimized() {
@@ -4502,14 +4467,10 @@ function toggleRoadInfoPanelMinimized() {
 window.toggleRoadInfoPanelMinimized = toggleRoadInfoPanelMinimized;
 
 function updateRoadInfoPanel() {
-    // Check if road or track has started
     const hasRoadSegments = getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 0);
-    const isRoadMode = !trackDrawingMode && hasRoadSegments;
-    const isTrackMode = trackHasStarted && trackDrawingMode;
+    if (!hasRoadSegments) return;
 
-    if (!isRoadMode && !isTrackMode) return;
-
-    // Make sure the road info panel exists
+    // Make sure the corridor info panel exists
     const roadInfoPanel = document.getElementById('road-info-panel');
     if (!roadInfoPanel) {
         console.error('Road info panel element not found');
@@ -4518,47 +4479,6 @@ function updateRoadInfoPanel() {
     if (!roadInfoPanel.classList.contains('visible')) {
         roadInfoPanel.style.removeProperty('display');
         roadInfoPanel.classList.add('visible');
-    }
-
-    if (isTrackMode) {
-        const points = trackPoints;
-        const width = trackWidth;
-        if (points.length >= 2) {
-            // PERFORMANCE: Use trackPolygon (already calculated in handleTrackClick) instead of recalculating
-            // Only calculate length from points, use existing polygon for area
-            const length = calculateSegmentLengthMeters(points);
-            const area = trackPolygon ? calculatePolygonAreaMeters(trackPolygon) : 0;
-
-            committedTrackMetrics.length = length;
-            committedTrackMetrics.area = area;
-
-            // Update UI elements directly
-            const roadLengthElement = document.getElementById('road-length');
-            const roadAreaElement = document.getElementById('road-area');
-            if (roadLengthElement) {
-                roadLengthElement.textContent = `${length.toFixed(1)} m`;
-            }
-            if (roadAreaElement) {
-                roadAreaElement.textContent = `${area.toFixed(1)} m²`;
-            }
-
-            setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-            setRoadOwnershipCounts(lockedStats.ownershipCounts);
-            const marketEl = document.getElementById('road-market-price');
-            if (marketEl) {
-                marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
-            }
-            const ownerCountEl = document.getElementById('road-individual-owners');
-            if (ownerCountEl) {
-                ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
-            }
-            updateRoadAcquiringDifficulty(trackAffectedParcels);
-        } else {
-            resetRoadMetricPlaceholders();
-            committedTrackMetrics.length = 0;
-            committedTrackMetrics.area = 0;
-        }
-        return;
     }
 
     const roadSegmentsForMetrics = getAllRoadSegments(true);
@@ -4675,19 +4595,7 @@ function updateRoadLengthAndArea(points, polygon) {
     }
 }
 
-// Tracks now use the same lockedStats as roads - this function is no longer needed
-// Kept for backward compatibility but should not be used
-function getTrackLockedStats() {
-    // Return stats from lockedStats (shared with roads)
-    return {
-        parcelCount: lockedStats.parcelCount,
-        totalArea: lockedStats.totalArea,
-        ownershipCounts: { ...lockedStats.ownershipCounts },
-        marketPrice: lockedStats.marketPrice
-    };
-}
-
-// Update road info with preview metrics (works for both roads and tracks)
+// Update the corridor info panel with preview metrics.
 // Returns { length, area } for caching purposes
 function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null) {
     if (!points || points.length < 2) {
@@ -4820,55 +4728,6 @@ function updatePreviewRoadInfo(previewSegmentPoints, previewSegmentPolygon) {
         // Add preview segment metrics to cached committed metrics
         const totalLength = committedRoadMetrics.length + previewLength;
         const totalArea = committedRoadMetrics.area + previewArea;
-
-        // Update UI elements directly (fast path)
-        const roadLengthElement = document.getElementById('road-length');
-        const roadAreaElement = document.getElementById('road-area');
-
-        if (roadLengthElement) {
-            roadLengthElement.textContent = `${totalLength.toFixed(1)} m`;
-        }
-        if (roadAreaElement) {
-            roadAreaElement.textContent = `${totalArea.toFixed(1)} m²`;
-        }
-    } catch (error) {
-        // Silently ignore errors during preview - non-critical
-    }
-}
-
-// PERFORMANCE: Fast update of track info during preview (same as road version but uses track metrics)
-function updatePreviewTrackInfo(previewSegmentPoints, previewSegmentPolygon) {
-    try {
-        // Calculate preview segment length
-        let previewLength = 0;
-        if (previewSegmentPoints && previewSegmentPoints.length >= 2) {
-            const p1 = previewSegmentPoints[0];
-            const p2 = previewSegmentPoints[1];
-            if (p1 && p2 && isFinite(p1.lat) && isFinite(p1.lng) && isFinite(p2.lat) && isFinite(p2.lng)) {
-                const htrs1 = wgs84ToHTRS96(p1.lat, p1.lng);
-                const htrs2 = wgs84ToHTRS96(p2.lat, p2.lng);
-                if (isValidPoint(htrs1) && isValidPoint(htrs2)) {
-                    const dx = htrs2[0] - htrs1[0];
-                    const dy = htrs2[1] - htrs1[1];
-                    previewLength = Math.sqrt(dx * dx + dy * dy);
-                }
-            }
-        }
-
-        // Calculate preview segment area
-        let previewArea = 0;
-        try {
-            const turfPoly = polygonLatLngsToTurfFeature(previewSegmentPolygon);
-            if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
-                previewArea = turf.area(turfPoly) || 0;
-            }
-        } catch (_) {
-            // Ignore area calculation errors during preview
-        }
-
-        // Add preview segment metrics to cached committed track metrics
-        const totalLength = committedTrackMetrics.length + previewLength;
-        const totalArea = committedTrackMetrics.area + previewArea;
 
         // Update UI elements directly (fast path)
         const roadLengthElement = document.getElementById('road-length');
@@ -5075,78 +4934,25 @@ function updateRoadPreview() {
     }
 }
 
-// Unified finish function for road or track drawing. Finishing IS the creation: the drawing
+// The panel's three buttons. One corridor tool, so there is nothing to dispatch on: a track finishes,
+// undoes and closes through the same functions a road does. Finishing IS the creation: the drawing
 // instantly becomes an applied object (SimCity lifecycle).
 function finishRoadOrTrackDrawing() {
-    if (trackDrawingMode) {
-        finishTrackDrawing();
-    } else if (roadDrawingMode) {
-        finishRoadDrawing();
-    }
+    if (roadDrawingMode) finishRoadDrawing();
 }
 
-// Unified undo function for road or track drawing
 function undoLastRoadOrTrackSegment() {
-    if (trackDrawingMode && trackHasStarted) {
-        undoLastTrackSegment();
-    } else if (roadDrawingMode && roadHasStarted) {
-        undoLastRoadSegment();
-    }
+    if (roadDrawingMode) undoLastRoadSegment();
 }
 
-// Unified cancel function for road or track drawing
 async function cancelRoadOrTrackDrawing() {
-    if (trackDrawingMode) {
-        return cancelTrackDrawing();
-    } else if (roadDrawingMode) {
-        return cancelRoadDrawing();
-    }
+    if (roadDrawingMode) return cancelRoadDrawing();
     return false;
 }
 
-// Segments whose endpoints coincide (a stroke drawn from a snap on another segment's end) weld
-// into ONE polyline, so the corner is mitered like any mid-segment vertex instead of two
-// rectangles meeting with a triangular gap. Mid-segment T-joints stay separate segments — the
-// junction renderer fills those.
-function weldCorridorSegments(segments, segmentIds, segmentProfiles = null) {
-    const EPS = 1e-7; // ~1 cm — snap targets copy exact vertex coordinates
-    const same = (a, b) => a && b && Math.abs(a.lat - b.lat) < EPS && Math.abs(a.lng - b.lng) < EPS;
-    // Welding merges two polylines into ONE segment, and a segment has ONE cross-section:
-    // pieces with different profiles stay separate segments sharing a node (a junction).
-    const profileKeyOf = id => {
-        if (!segmentProfiles || id === null || id === undefined) return '';
-        const override = segmentProfiles[String(id)];
-        return override ? JSON.stringify(override) : '';
-    };
-    const segs = segments.map(segment => segment.slice());
-    const ids = segmentIds.slice();
-    let joined = true;
-    while (joined) {
-        joined = false;
-        outer:
-        for (let i = 0; i < segs.length; i += 1) {
-            for (let j = 0; j < segs.length; j += 1) {
-                if (i === j) continue;
-                if (profileKeyOf(ids[i]) !== profileKeyOf(ids[j])) continue;
-                const a = segs[i];
-                const b = segs[j];
-                if (same(a[a.length - 1], b[0])) segs[i] = a.concat(b.slice(1));
-                else if (same(a[a.length - 1], b[b.length - 1])) segs[i] = a.concat(b.slice(0, -1).reverse());
-                else if (same(a[0], b[b.length - 1])) segs[i] = b.concat(a.slice(1));
-                else if (same(a[0], b[0])) segs[i] = b.slice(1).reverse().concat(a);
-                else continue;
-                // The welded polyline keeps whichever id carries the (identical) profile
-                // override, so the override survives the weld; otherwise no id fits it.
-                ids[i] = profileKeyOf(ids[i]) ? ids[i] : (profileKeyOf(ids[j]) ? ids[j] : null);
-                segs.splice(j, 1);
-                ids.splice(j, 1);
-                joined = true;
-                break outer;
-            }
-        }
-    }
-    return { segments: segs, segmentIds: ids };
-}
+// weldCorridorSegments moved to frontend/js/corridor-geometry.js (loaded first) — merges polylines
+// sharing an endpoint into one segment, keeping ids and per-segment profile overrides aligned. Now
+// unit-tested. Callers below use the global unchanged.
 
 // One connected piece = one road: finishing a drawing that touches existing LOCAL (unminted)
 // corridors of the same kind absorbs them — their segments join the new definition, the oldest
@@ -5161,7 +4967,20 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const drawnSegments = (typeof corridorCenterlineOf === 'function')
         ? corridorCenterlineOf(draft.editorPayload?.definition || {})
         : [];
-    const targets = findTouchingLocalCorridors(kind, newGeoPolygon, [], drawnSegments);
+    const draftDefinition = draft.editorPayload?.definition || {};
+    // A grade-separated crossing is deliberately NOT a network connection. Keep the crossed road
+    // as its own proposal instead of letting the ordinary touch/absorb pass merge it back in.
+    const gradeSeparatedProposalIds = (draftDefinition.gradeSeparations || [])
+        .map(record => record?.otherProposalId)
+        .filter(Boolean)
+        .map(String);
+    // allowNearMiss: the finish path is now the deliberate-join path. The user drew this stroke to
+    // START on / END on an existing road (clicking its centerline), so a road the stroke lands on — or
+    // stops a hair short of — is a willing junction. Drawing no longer absorbs a road on click, so this
+    // merge is the ONLY place a drawn connection becomes a real shared node; a strict exact-touch test
+    // silently dropped the road the stroke started from whenever the click landed mid-span (pixel snap
+    // is only pixel-precise, never within the exact-intersection tolerance).
+    const targets = findTouchingLocalCorridors(kind, newGeoPolygon, gradeSeparatedProposalIds, drawnSegments, true);
     if (!targets.length) return null;
     targets.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
     const oldest = targets[0];
@@ -5169,6 +4988,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const mergedSegments = [];
     const mergedSegmentIds = [];
     const mergedTunnels = [];
+    const mergedGradeSeparations = [];
     const mergedDemolished = [];
     const mergedProfiles = {};
     const mergedParents = new Set();
@@ -5187,6 +5007,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
             if (entryProfile) mergedProfiles[String(finalId)] = JSON.parse(JSON.stringify(entryProfile));
         });
         (definition.tunnels || []).forEach(tunnel => mergedTunnels.push(JSON.parse(JSON.stringify(tunnel))));
+        (definition.gradeSeparations || []).forEach(record => mergedGradeSeparations.push(JSON.parse(JSON.stringify(record))));
         (definition.demolishedBuildings || []).forEach(record => mergedDemolished.push(JSON.parse(JSON.stringify(record))));
         (parents || []).forEach(id => { if (id) mergedParents.add(String(id)); });
     };
@@ -5194,20 +5015,29 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         proposal.roadProposal.definition,
         proposal.roadProposal.parentParcelIds || proposal.parentParcelIds
     ));
-    const draftDefinition = draft.editorPayload?.definition || {};
     collectDefinition(draftDefinition, draft.fields?.parentParcelIds);
 
     // Weld end-to-end connections into continuous polylines (proper corners, no gaps), then
-    // make every crossing a shared graph node so junctions stay draggable and bulldozable.
+    // normalize every crossing into a shared graph node so junctions stay draggable and
+    // bulldozable — including crossings made by one self-crossing source stroke.
     const welded = weldCorridorSegments(mergedSegments, mergedSegmentIds, mergedProfiles);
     mergedSegments.length = 0;
     mergedSegments.push(...welded.segments);
     mergedSegmentIds.length = 0;
     mergedSegmentIds.push(...welded.segmentIds);
-    insertCorridorCrossingNodes(
+    // A drawn endpoint that came to rest ON (pixel-snapped, so a hair off) or just short of a target
+    // road's centerline is snapped exactly onto it and given a shared vertex, and a near-duplicate
+    // vertex is welded onto its neighbour — so the connecting stroke FORMS a real junction at BOTH the
+    // road it started from and the road it ended on, not only where it happened to hit an exact vertex.
+    // Runs BEFORE crossing-node insertion so the healed coincidence is what normalization sees. This
+    // mirrors the drag/edit path: a stroke drawn onto a road is the same willing join as a dragged node.
+    if (typeof weldNearbyVertices === 'function') weldNearbyVertices(mergedSegments);
+    if (typeof healNearMissJunctions === 'function') healNearMissJunctions(mergedSegments);
+    normalizeCorridorGraph(
         mergedSegments,
         mergedSegmentIds,
-        new Set((mergedTunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        corridorProtectedEdgeKeySet(mergedTunnels, mergedGradeSeparations),
+        mergedProfiles
     );
 
     // The established road donates only its NAME. Every body's segments keep their own
@@ -5235,6 +5065,29 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const latLngPairs = convertRoadPolygonToLatLngPairs(unionPolygon);
     const mergedPolygon = convertLatLngPairsToGeoJSON(latLngPairs);
 
+    const mergedDefinition = attachCorridorSurfaceFootprint({
+        ...JSON.parse(JSON.stringify(draftDefinition)),
+        points: mergedSegments,
+        segments: mergedSegments,
+        segmentIds: mergedSegmentIds,
+        tunnels: mergedTunnels,
+        gradeSeparations: mergedGradeSeparations,
+        demolishedBuildings: mergedDemolished,
+        profile: mergedDefaults.profile,
+        width: mergedDefaults.width,
+        sidewalkWidth,
+        segmentProfiles: mergedProfiles,
+        polygon: (mergedPolygon && mergedPolygon.type) ? mergedPolygon : draftDefinition.polygon || null,
+        latLngPairs
+    });
+    const mergedSurface = mergedDefinition.surfaceFootprint || mergedDefinition.polygon;
+    if (mergedSurface && typeof consolidateCorridorDemolitionRecords === 'function') {
+        mergedDefinition.demolishedBuildings = consolidateCorridorDemolitionRecords(
+            mergedDemolished,
+            { type: 'Feature', properties: {}, geometry: mergedSurface }
+        );
+    }
+
     // Absorb first: unapplying the targets restores the original parcel fabric, so the merged
     // footprint (rebuilt at the merged width) can be tested against real parcels. The declared
     // parent lists are POISON here — the connector's drawing-time detection saw the absorbed
@@ -5249,16 +5102,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     }
     let mergedParentIds = [...mergedParents];
     if (mergedPolygon && mergedPolygon.type) {
-        const acquisitionPolygon = mergedTunnels.length
-            ? corridorSurfaceFootprintForDefinition({
-                points: mergedSegments,
-                segmentIds: mergedSegmentIds,
-                profile,
-                width,
-                segmentProfiles: mergedProfiles,
-                tunnels: mergedTunnels
-            })
-            : mergedPolygon;
+        const acquisitionPolygon = mergedSurface;
         const touchedIds = acquisitionPolygon ? collectParcelsIntersectingFootprint(acquisitionPolygon) : [];
         if (touchedIds.length) mergedParentIds = touchedIds;
     }
@@ -5270,28 +5114,31 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         },
         editorPayload: {
             kind,
-            definition: {
-                ...JSON.parse(JSON.stringify(draftDefinition)),
-                points: mergedSegments,
-                segments: mergedSegments,
-                segmentIds: mergedSegmentIds,
-                tunnels: mergedTunnels,
-                demolishedBuildings: mergedDemolished,
-                profile: mergedDefaults.profile,
-                width: mergedDefaults.width,
-                sidewalkWidth,
-                segmentProfiles: mergedProfiles,
-                polygon: (mergedPolygon && mergedPolygon.type) ? mergedPolygon : draftDefinition.polygon || null,
-                latLngPairs
-            }
+            // Built above once so parcel acquisition and building carving consume the same merged
+            // surface geometry, including inherited tunnels.
+            definition: mergedDefinition
         }
     }, { recordHistory: false });
 
     return { absorbed: targets.length, name: oldest.title || oldest.name || '' };
 }
 
-// Function to finish road drawing
-async function finishRoadDrawing() {
+// F is an idempotent "pen up" action. The gate is acquired before any asynchronous work begins, so
+// key repeat, a double-click on Finish, Escape and panel close all share one finalization run.
+function finishRoadDrawing() {
+    return roadFinalizationGate.run(finishRoadDrawingOnce);
+}
+
+async function finishRoadDrawingOnce() {
+    if (roadSegmentPlacementInProgress) {
+        updateStatus('Wait for the current segment to finish validating.');
+        return false;
+    }
+    if (roadDrawingProfileValidationPending) {
+        updateStatus('Apply or cancel the cross-section change before finishing the road.');
+        return false;
+    }
+
     // Keep each segment paired with its id while dropping the ones too short to be a line.
     const allSegments = getAllRoadSegments(true);
     const drawnSegments = allSegments
@@ -5301,22 +5148,16 @@ async function finishRoadDrawing() {
     const segmentIds = drawnSegments.map(entry => entry.id);
     if (!segments.length) return;
 
-    const tunnelCheck = await ensureBuildingTunnelsForSegments(
-        segments, roadWidth, 'road', roadBuildingTunnels, segmentIds, roadDemolishedBuildings, roadSegmentProfiles
-    );
-    if (!tunnelCheck.accepted) return;
-    roadBuildingTunnels = tunnelCheck.records;
-    roadDemolishedBuildings = tunnelCheck.demolished;
-    refreshRoadBuildingTunnelLayer();
-
-    // Every crossing INSIDE the session becomes a shared graph node at first placement — not
-    // only after a later drag. Snap-absorbing an existing network pulls its segments into the
-    // session, so a new stroke crossing them mid-span otherwise finished without junction nodes.
-    // Runs after the tunnel check; tunnelled edges are protected (their records key by edge).
-    insertCorridorCrossingNodes(
+    // No collision detection or choice dialog belongs here. Each edge was accepted only after its
+    // placement check, and a later width/geometry edit owns its own check before changing the map.
+    // Every genuine crossing becomes a shared graph node here. This includes two edges of the SAME
+    // stroke: a closed star must be stored as simple stretches meeting at junctions, never as one
+    // self-crossing strip. Near-miss snapping remains edit-only; tunnelled edges stay protected.
+    normalizeCorridorGraph(
         segments,
         segmentIds,
-        new Set((roadBuildingTunnels || []).map(record => record?.edgeKey).filter(Boolean))
+        corridorProtectedEdgeKeySet(roadBuildingTunnels, roadGradeSeparations),
+        roadSegmentProfiles
     );
 
     // Immediately stop interactions and preview while finishing
@@ -5378,41 +5219,21 @@ async function finishRoadDrawing() {
         return;
     }
 
+    // What was drawn is a track iff its cross-section carries rails — a "road" the user gave a tram
+    // lane is a track, and a "track" whose rails were all removed is a road. The lanes decide, not the
+    // button that opened the tool.
+    const isTrack = corridorDrawingIsTrack();
+    const corridorKind = isTrack ? 'track' : 'road';
+
     const defaultAuthor = (typeof getCurrentUsername === 'function' && getCurrentUsername()) || '';
-    const defaultName = generateRandomRoadName();
-    const defaultOffer = generateRandomRoadOffer();
+    const defaultName = isTrack ? generateRandomTrackName() : generateRandomRoadName();
+    const defaultOffer = isTrack ? generateRandomRoadOffer(5000, 200000) : generateRandomRoadOffer();
     const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
 
     const parentParcelIds = affectedParcels
         .map(p => getParcelIdFromAny(p))
         .filter(Boolean)
         .map(id => id.toString());
-
-    // Seed multi-parcel selection with the affected parcels so the generalized modal can open
-    try {
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
-            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
-            }
-            if (typeof multiParcelSelection.clearSelection === 'function') {
-                multiParcelSelection.clearSelection();
-            }
-            parentParcelIds.forEach(id => {
-                if (!id) return;
-                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
-                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
-                multiParcelSelection.selectedParcels.add(id);
-                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
-                    multiParcelSelection.addParcelHighlight(layer);
-                }
-            });
-            if (typeof multiParcelSelection.updateUI === 'function') {
-                multiParcelSelection.updateUI();
-            }
-        }
-    } catch (selectionError) {
-        console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
-    }
 
     // Keep the ids paired with the geometry through the coordinate cleaning, so a road reopened later
     // continues its segments under the same ids rather than as anonymous new ones.
@@ -5482,6 +5303,7 @@ async function finishRoadDrawing() {
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,
         tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
+        gradeSeparations: JSON.parse(JSON.stringify(roadGradeSeparations || [])),
         demolishedBuildings: JSON.parse(JSON.stringify(roadDemolishedBuildings || [])),
         segmentProfiles: (() => {
             const trimmed = {};
@@ -5495,11 +5317,17 @@ async function finishRoadDrawing() {
         stats: ownershipAndAcquisitionStats,
         metadata: {
             mode: 'draw',
-            type: 'road',
-            isTrack: false,
-            isRoad: true,
+            type: corridorKind,
+            // Written, not read: `isTrack` is DERIVED from the profile everywhere the app asks the
+            // question (corridorIsTrack), but proposal creation, parcel styling and the draft store
+            // still key on the stored flag, and corridors saved before rail lanes existed have only
+            // this flag to say what they are. So it is recorded, and it always agrees with the lanes.
+            isTrack,
+            isRoad: !isTrack,
             isCorridor: true,
-            source: 'road-drawing'
+            source: 'road-drawing',
+            // The rail engineering limits the track was designed to; meaningless on a road.
+            ...(isTrack ? { trackSpeed, trackMinRadius: trackMinCurvatureRadius } : {})
         }
     };
 
@@ -5520,29 +5348,60 @@ async function finishRoadDrawing() {
     // SimCity lifecycle: finishing the drawing IS the creation. The draft becomes an applied
     // object immediately (auto-named, overlaps auto-parked); click the object to edit it or add
     // proposal terms later. Drafts are created lazily on autosave — force one now if missing.
-    if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft('road');
+    if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft(corridorKind);
     const designDraftId = window.activeProposalDesignDraftId;
-    if (designDraftId && absorbedRoadIdentity?.name && window.proposalDraftStore?.getDraft?.(designDraftId)) {
-        // Continuing an absorbed road: the finished object keeps the original road's name.
-        window.proposalDraftStore.updateDraft(designDraftId, { fields: { name: absorbedRoadIdentity.name } }, { recordHistory: false });
-    }
+    // A finished road that touches an existing one keeps the established road's name — but that
+    // naming now happens in absorbConnectedLocalCorridors (from the oldest touching road) at finish,
+    // since drawing no longer absorbs a road on click.
     if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
-            kind: 'road'
+            kind: corridorKind
         }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
         exitRoadDrawingMode();
-        const merged = await absorbConnectedLocalCorridors('road', geoPolygon, designDraftId);
+        const merged = await absorbConnectedLocalCorridors(corridorKind, geoPolygon, designDraftId);
         const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
         if (createdId && typeof updateStatus === 'function') {
+            const mergedKey = isTrack ? 'panel.road.mergedStatusTrack' : 'panel.road.mergedStatus';
+            const mergedFallback = isTrack ? 'Connected to “{{name}}” — now one track.' : 'Connected to “{{name}}” — now one road.';
+            const builtKey = isTrack ? 'panel.road.builtStatusTrack' : 'panel.road.builtStatus';
+            const builtFallback = isTrack ? 'Track built — click it to edit or propose.' : 'Road built — click it to edit or propose.';
             updateStatus(merged
-                ? translateRoadText('panel.road.mergedStatus', 'Connected to “{{name}}” — now one road.', { name: merged.name })
-                : translateRoadText('panel.road.builtStatus', 'Road built — click it to edit or propose.'));
+                ? translateRoadText(mergedKey, mergedFallback, { name: merged.name })
+                : translateRoadText(builtKey, builtFallback));
         }
         return;
     }
 
     // Legacy path (drawing started without a design draft): the classic create dialog.
+    // Seed multi-parcel selection with the affected parcels so the generalized modal can open.
+    // ONLY the legacy dialog reads it; the instant-create path above never opened a modal, so
+    // seeding there just left multi-select stuck ON — the next map clicks then entered add-mode.
+    try {
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
+            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
+                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
+            }
+            if (typeof multiParcelSelection.clearSelection === 'function') {
+                multiParcelSelection.clearSelection();
+            }
+            parentParcelIds.forEach(id => {
+                if (!id) return;
+                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
+                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
+                multiParcelSelection.selectedParcels.add(id);
+                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
+                    multiParcelSelection.addParcelHighlight(layer);
+                }
+            });
+            if (typeof multiParcelSelection.updateUI === 'function') {
+                multiParcelSelection.updateUI();
+            }
+        }
+    } catch (selectionError) {
+        console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
+    }
+
     showProposalDialog({
         goal: 'road-track',
         lockGoal: true,
@@ -5590,14 +5449,18 @@ function resetRoadDrawing(hidePanel = true) {
     roadSegmentIds = [];
     roadPoints = [];
     roadBuildingTunnels = [];
+    roadGradeSeparations = [];
     roadDemolishedBuildings = [];
     roadSegmentProfiles = {};
-    absorbedRoadIdentity = null; // the absorbed name already lives on the drawing's draft
     roadWidth = 2;
     roadProfile = null;
+    roadLastValidatedWidth = roadWidth;
+    roadDrawingProfileValidationPending = false;
     roadHasStarted = false;
     clearRoadSnapMarker();
     clearRoadStripLayer();
+    if (roadGradeSeparationLayer && map.hasLayer(roadGradeSeparationLayer)) map.removeLayer(roadGradeSeparationLayer);
+    roadGradeSeparationLayer = null;
     // Clear affected parcels highlighting BEFORE clearing the array
     clearAffectedParcels();
     roadOwnershipTypeCache.clear();
@@ -5667,7 +5530,7 @@ function clearAffectedParcels() {
     if (roadAffectedParcels.length > 0) {
         parcelLayer.eachLayer(layer => {
             // Reset style for previously affected parcels
-            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            const layerParcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
             if (layerParcelId && roadAffectedParcels.some(p => getParcelIdFromAny(p) === layerParcelId)) {
                 const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
@@ -6182,583 +6045,11 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
     });
 }
 
-function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track', defaultOffer = 10000, affectedParcels = [], trackPolygon = null, trackSpeed = 120, trackMinRadius = 1000, trackWidth = 3.0, trackPoints = null, trackMinCurvatureRadius = null } = {}) {
-    return new Promise((resolve, reject) => {
-        // Gate: require personalized profile to create proposals
-        if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
-            resolve(null);
-            return;
-        }
-
-        try {
-            if (typeof closeProposalDialog === 'function') {
-                closeProposalDialog();
-            }
-        } catch (_) { }
-
-        const existingModal = document.querySelector('.create-proposal-modal');
-        if (existingModal) {
-            try { existingModal.remove(); } catch (_) { }
-        }
-
-        const totalArea = affectedParcels.reduce((sum, parcel) => sum + (parcel?.area || 0), 0);
-
-        const modal = document.createElement('div');
-        modal.className = 'create-proposal-modal track-proposal-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-
-        const parcelItems = affectedParcels.map(parcel => {
-            const parcelNumber = parcel?.number || parcel?.id || 'Unknown';
-            const area = parcel?.area || 0;
-            return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
-        }).join('');
-
-        const screenshotPolygon = convertRoadPolygonToLatLngPairs(trackPolygon);
-
-        // Fallback to the Leaflet polygon layer if needed
-        let screenshotBounds = null;
-        if (trackPolygonLayer && typeof trackPolygonLayer.getBounds === 'function') {
-            screenshotBounds = trackPolygonLayer.getBounds();
-        } else if (isValidPolygonLatLngPairs(screenshotPolygon)) {
-            screenshotBounds = buildBoundsFromLatLngPairs(screenshotPolygon);
-        }
-
-        const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
-
-        // Collect ownership and acquisition stats
-        const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
-
-        // Get lens tooltip text
-        const lensTooltip = translateRoadText('modal.createProposal.lensTooltip', 'Open lens modal');
-
-        // Build stats HTML if stats exist
-        let statsHtml = '';
-        if (ownershipAndAcquisitionStats) {
-            const stats = ownershipAndAcquisitionStats;
-            const statsItems = [];
-
-            if (stats.individualOwners !== null) {
-                statsItems.push(`<p><strong>Individual Owners:</strong> ${stats.individualOwners}</p>`);
-            }
-            if (stats.ownershipCounts.individual !== null) {
-                statsItems.push(`<p><strong>Owned by Individuals:</strong> ${stats.ownershipCounts.individual}</p>`);
-            }
-            if (stats.ownershipCounts.company !== null) {
-                statsItems.push(`<p><strong>Owned by Companies:</strong> ${stats.ownershipCounts.company}</p>`);
-            }
-            if (stats.ownershipCounts.government !== null) {
-                statsItems.push(`<p><strong>Owned by Government:</strong> ${stats.ownershipCounts.government}</p>`);
-            }
-            if (stats.ownershipCounts.institution !== null) {
-                statsItems.push(`<p><strong>Owned by Institution:</strong> ${stats.ownershipCounts.institution}</p>`);
-            }
-            if (stats.ownershipCounts.mixed !== null) {
-                statsItems.push(`<p><strong>Ownership Mixed:</strong> ${stats.ownershipCounts.mixed}</p>`);
-            }
-            if (stats.totalMarketPrice !== null) {
-                statsItems.push(`<p><strong>Total Market Price:</strong> ${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</p>`);
-            }
-            if (stats.totalAcquiringDifficulty !== null) {
-                statsItems.push(`<p><strong>Total Acquiring Difficulty:</strong> ${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</p>`);
-            }
-
-            if (statsItems.length > 0) {
-                statsHtml = `
-                    <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
-                    <div class="proposal-stats-section">
-                        <h4 style="margin-bottom: 10px;">Ownership & Acquisition Stats</h4>
-                        <div class="summary-stats">
-                            ${statsItems.join('')}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        modal.innerHTML = `
-            <div class="proposal-modal-content">
-                <div class="proposal-modal-header">
-                    <h2 data-i18n-key="modal.roadWidth.trackProposal.title">Create Track Proposal</h2>
-                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
-                </div>
-                <div class="proposal-modal-body">
-                    ${(isValidPolygonLatLngPairs(screenshotPolygon)) ? '<div class="form-group" id="trackProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
-                    <div class="form-group">
-                        <label for="trackProposalAuthor" data-i18n-key="modal.roadWidth.trackProposal.authorLabel">Author:</label>
-                        <input type="text" id="trackProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.authorPlaceholder" data-i18n-attr="placeholder">
-                    </div>
-                    <div class="form-group">
-                        <label for="trackProposalName" data-i18n-key="modal.roadWidth.trackProposal.nameLabel">Track Name:</label>
-                        <input type="text" id="trackProposalName" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.namePlaceholder" data-i18n-attr="placeholder">
-                    </div>
-                    <div class="form-group">
-                        <label for="trackProposalOffer" data-i18n-key="modal.roadWidth.trackProposal.offerLabel">Offer (EUR):</label>
-                        <input type="number" id="trackProposalOffer" min="0" step="1000" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.offerPlaceholder" data-i18n-attr="placeholder">
-                    </div>
-                    <div class="form-group">
-                        <label for="trackProposalDescription" data-i18n-key="modal.roadWidth.trackProposal.descriptionLabel">Description:</label>
-                        <textarea id="trackProposalDescription" rows="3" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.descriptionPlaceholder" data-i18n-attr="placeholder"></textarea>
-                    </div>
-                    <div class="proposal-summary">
-                        <div class="summary-stats">
-                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.parcels">Parcels Affected:</strong> ${affectedParcels.length}</p>
-                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.area">Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
-                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.speed">Track Speed:</strong> ${trackSpeed} km/h</p>
-                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.width">Track Width:</strong> ${trackWidth.toFixed(1)} m</p>
-                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.curvature">Min. Curvature Radius:</strong> ${trackMinRadius} m</p>
-                        </div>
-                        <div class="parcel-list">
-                            <h4 data-i18n-key="modal.roadWidth.trackProposal.summary.heading">Affected Parcels:</h4>
-                            ${parcelItems || `<div class="proposal-parcel-item" data-i18n-key="modal.roadWidth.trackProposal.summary.empty">No parcels detected.</div>`}
-                        </div>
-                    </div>
-                    ${statsHtml}
-                </div>
-                <div class="proposal-modal-footer">
-                    <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}" aria-label="${lensTooltip}">👓</button>
-                    <button type="button" class="btn btn-proposal" id="trackProposalConfirmBtn" data-i18n-key="modal.roadWidth.trackProposal.submit">Create Proposal</button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-        // Apply translations to the modal
-        if (typeof window.i18n !== 'undefined' && typeof window.i18n.applyTranslations === 'function') {
-            window.i18n.applyTranslations(modal);
-        } else if (typeof applyTranslations === 'function') {
-            applyTranslations(modal);
-        }
-        if (typeof refreshLensPatternPreviews === 'function') {
-            refreshLensPatternPreviews();
-        }
-
-        const authorInput = modal.querySelector('#trackProposalAuthor');
-        const nameInput = modal.querySelector('#trackProposalName');
-        const offerInput = modal.querySelector('#trackProposalOffer');
-        const descriptionInput = modal.querySelector('#trackProposalDescription');
-        const confirmButton = modal.querySelector('#trackProposalConfirmBtn');
-        const closeButton = modal.querySelector('.proposal-modal-close');
-
-        if (authorInput) authorInput.value = defaultAuthor || '';
-        if (nameInput) nameInput.value = defaultName;
-        if (offerInput) offerInput.value = Number.isFinite(defaultOffer) ? defaultOffer : '';
-
-        const cleanup = () => {
-            modal.removeEventListener('keydown', handleKeyDown, true);
-            if (confirmButton) confirmButton.removeEventListener('click', handleSubmit);
-            if (closeButton) closeButton.removeEventListener('click', handleCancel);
-            modal.removeEventListener('click', handleOverlayClick);
-            if (modal.parentNode) {
-                modal.parentNode.removeChild(modal);
-            }
-        };
-
-        const handleCancel = () => {
-            cleanup();
-            reject(new Error('cancelled'));
-        };
-
-        const handleSubmit = async () => {
-            const nameValue = (nameInput?.value || '').trim() || defaultName;
-            const authorValue = (authorInput?.value || '').trim() || defaultAuthor || 'User';
-            const descriptionValue = (descriptionInput?.value || '').trim();
-            const offerValueRaw = offerInput ? parseFloat(offerInput.value) : NaN;
-            const offerValue = Number.isFinite(offerValueRaw) && offerValueRaw > 0 ? offerValueRaw : defaultOffer;
-
-            const walletGate = await ensureRoadWalletReady();
-            if (!walletGate.connected && !walletGate.proceedInMemory) {
-                return; // User cancelled or did not connect
-            }
-
-            // Capture lens entries from the modal
-            let lensEntries = [];
-            if (typeof getLensEntries === 'function') {
-                const rawLens = getLensEntries();
-                if (typeof normalizeLensEntries === 'function') {
-                    lensEntries = normalizeLensEntries(rawLens);
-                } else if (Array.isArray(rawLens)) {
-                    lensEntries = rawLens;
-                }
-            }
-
-            if (offerInput) offerInput.value = offerValue;
-            if (nameInput) nameInput.value = nameValue;
-
-            // Update button to show loading state
-            let originalButtonContent = null;
-            if (confirmButton) {
-                originalButtonContent = confirmButton.innerHTML;
-                const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-                const creatingText = t
-                    ? t('modal.createProposal.creating', 'Creating...')
-                    : 'Creating...';
-                confirmButton.disabled = true;
-                confirmButton.innerHTML = `<span class="metric-spinner" aria-hidden="true"></span> ${creatingText}`;
-                confirmButton.style.opacity = '0.7';
-                confirmButton.style.cursor = 'wait';
-            }
-
-            // Allow UI to update
-            await new Promise(resolve => setTimeout(resolve, 0));
-
-            try {
-                // Create the proposal if we have the necessary context
-                if (trackPoints && trackWidth && affectedParcels.length > 0) {
-                    // Get the full GeoJSON features of parent parcels
-                    const parentFeatures = affectedParcels.map(p => {
-                        // We need a deep copy so the original features in parcelLayer are not mutated
-                        // Use safe cloning to avoid circular reference errors
-                        const feature = p.layer.feature;
-                        if (!feature) {
-                            console.warn(`[DEBUG finishTrackDrawing] Parcel ${p.id} has no feature in layer`);
-                            return null;
-                        }
-
-                        // Clone the feature safely by extracting only GeoJSON properties
-                        try {
-                            const cloned = {
-                                type: feature.type || 'Feature',
-                                properties: feature.properties ? { ...feature.properties } : {},
-                                geometry: feature.geometry ? {
-                                    type: feature.geometry.type,
-                                    coordinates: JSON.parse(JSON.stringify(feature.geometry.coordinates))
-                                } : null
-                            };
-                            if (typeof window !== 'undefined' && typeof window.ensureParcelId === 'function') {
-                                window.ensureParcelId(cloned);
-                            } else if (typeof ensureParcelId === 'function') {
-                                ensureParcelId(cloned);
-                            }
-                            return cloned;
-                        } catch (error) {
-                            console.warn('finishTrackDrawing: failed to clone feature', error, p);
-                            return null;
-                        }
-                    }).filter(f => f !== null);
-
-                    // Create the proposal
-                    const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
-                    const proposalMetadata = {
-                        author: authorValue,
-                        offer: offerValue,
-                        description: descriptionValue,
-                        isTrack: true,
-                        trackSpeed: trackSpeed,
-                        trackMinRadius: trackMinCurvatureRadius || trackMinRadius
-                    };
-                    if (ownershipAndAcquisitionStats) {
-                        proposalMetadata.ownershipAndAcquisitionStats = ownershipAndAcquisitionStats;
-                    }
-                    const proposal = proposalApi.createProposal({
-                        name: nameValue,
-                        type: 'road', // Using road type for now
-                        definition: {
-                            points: trackPoints,
-                            width: trackWidth,
-                            metadata: proposalMetadata
-                        },
-                        parentFeatures: parentFeatures,
-                        author: authorValue,
-                        description: descriptionValue,
-                        offer: offerValue,
-                        budget: offerValue,
-                        lens: lensEntries && lensEntries.length > 0 ? lensEntries : undefined
-                    });
-
-                    // Check if proposal creation failed
-                    if (!proposal) {
-                        console.error('[showTrackProposalModal] createProposal returned null - duplicate proposal or invalid data');
-                        // Restore button on failure
-                        if (confirmButton && originalButtonContent) {
-                            confirmButton.innerHTML = originalButtonContent;
-                            confirmButton.disabled = false;
-                            confirmButton.style.opacity = '';
-                            confirmButton.style.cursor = '';
-                        }
-                        if (typeof showEphemeralMessage === 'function') {
-                            showEphemeralMessage('Failed to create track proposal. An identical proposal may already exist.', 5000, 'error');
-                        }
-                        return;
-                    }
-
-                    // Ensure lens is in the stored proposal (fallback in case it wasn't included initially)
-                    if (lensEntries && lensEntries.length > 0 && proposal.proposalId && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
-                        try {
-                            const stored = proposalStorage.getProposal(proposal.proposalId);
-                            if (stored) {
-                                const normalizedLens = typeof normalizeLensEntries === 'function'
-                                    ? normalizeLensEntries(lensEntries)
-                                    : lensEntries;
-                                // Only update if stored proposal doesn't have lens or has empty lens
-                                if (!stored.lens || (Array.isArray(stored.lens) && stored.lens.length === 0)) {
-                                    if (normalizedLens && Array.isArray(normalizedLens) && normalizedLens.length > 0) {
-                                        stored.lens = normalizedLens;
-                                        // Re-index the proposal to ensure it's updated in the Map
-                                        if (typeof proposalStorage._indexProposal === 'function') {
-                                            proposalStorage._indexProposal(stored);
-                                        }
-                                        // Save to persistent storage
-                                        if (typeof proposalStorage.save === 'function') {
-                                            proposalStorage.save();
-                                        }
-                                        console.log('[showRoadProposalModal] Updated stored proposal with lens:', normalizedLens.length, 'entries');
-                                    }
-                                }
-                            }
-                        } catch (err) {
-                            console.warn('Failed to update stored proposal with lens', err);
-                        }
-                    }
-
-                    // Check if proposal was created successfully
-                    if (!proposal.proposalId) {
-                        console.error('[showTrackProposalModal] Proposal created but proposalId is missing', { proposal });
-                        // Restore button on failure
-                        if (confirmButton && originalButtonContent) {
-                            confirmButton.innerHTML = originalButtonContent;
-                            confirmButton.disabled = false;
-                            confirmButton.style.opacity = '';
-                            confirmButton.style.cursor = '';
-                        }
-                        if (typeof showEphemeralMessage === 'function') {
-                            showEphemeralMessage('Failed to create track proposal. Please try again.', 5000, 'error');
-                        }
-                        return;
-                    }
-
-                    // Ensure proposal is saved to storage
-                    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.save === 'function') {
-                        try {
-                            proposalStorage.save();
-                        } catch (err) {
-                            console.warn('Failed to save track proposal to storage', err);
-                        }
-                    }
-
-                    // Resolve with proposal data
-                    cleanup();
-                    resolve({
-                        trackName: nameValue,
-                        author: authorValue,
-                        description: descriptionValue,
-                        offer: offerValue,
-                        ownershipAndAcquisitionStats: ownershipAndAcquisitionStats,
-                        lens: lensEntries,
-                        form: {
-                            ethAmount: offerValue,
-                            isConditional: true
-                        },
-                        proposal: proposal
-                    });
-                } else {
-                    // Fallback: resolve without creating proposal (for backward compatibility)
-                    cleanup();
-                    resolve({
-                        trackName: nameValue,
-                        author: authorValue,
-                        description: descriptionValue,
-                        offer: offerValue,
-                        ownershipAndAcquisitionStats: ownershipAndAcquisitionStats,
-                        lens: lensEntries,
-                        form: {
-                            ethAmount: offerValue,
-                            isConditional: true
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Error creating track proposal:', error);
-                // Restore button on error
-                if (confirmButton && originalButtonContent) {
-                    confirmButton.innerHTML = originalButtonContent;
-                    confirmButton.disabled = false;
-                    confirmButton.style.opacity = '';
-                    confirmButton.style.cursor = '';
-                }
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Failed to create track proposal. Please try again.', 5000, 'error');
-                }
-            }
-        };
-
-        const handleOverlayClick = (event) => {
-            if (event.target === modal) {
-                handleCancel();
-            }
-        };
-
-        const handleKeyDown = (event) => {
-            if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-                event.preventDefault();
-                handleSubmit();
-            } else if (event.key === 'Escape') {
-                event.preventDefault();
-                handleCancel();
-            }
-        };
-
-        modal.addEventListener('keydown', handleKeyDown, true);
-        modal.addEventListener('click', handleOverlayClick);
-
-        if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
-        if (closeButton) closeButton.addEventListener('click', handleCancel);
-
-        // Capture and display screenshot if bounds are available
-        if (isValidPolygonLatLngPairs(screenshotPolygon) && window.MapScreenshot) {
-            const screenshotContainer = modal.querySelector('#trackProposalScreenshotContainer');
-            if (screenshotContainer) {
-                (async () => {
-                    try {
-                        const previewWrapper = document.createElement('div');
-                        previewWrapper.className = 'map-screenshot-container';
-                        previewWrapper.style.margin = '0 auto';
-                        screenshotContainer.appendChild(previewWrapper);
-
-                        window.MapScreenshot.renderPolygonPreview(previewWrapper, {
-                            polygon: screenshotPolygon,
-                            bounds: screenshotBounds,
-                            padding: 0.05,
-                            parcelPolygons: computedParcelPolygons
-                        });
-                    } catch (error) {
-                        console.warn('Failed to capture map screenshot:', error);
-                        screenshotContainer.innerHTML = '';
-                        const fallbackDiv = document.createElement('div');
-                        fallbackDiv.className = 'map-screenshot-container';
-                        fallbackDiv.style.color = '#999';
-                        fallbackDiv.textContent = 'Preview unavailable';
-                        screenshotContainer.appendChild(fallbackDiv);
-                    }
-                })();
-            }
-        }
-
-        requestAnimationFrame(() => {
-            if (nameInput) {
-                nameInput.focus();
-                nameInput.select();
-            }
-        });
-    });
-}
-
 // Create a rectangular segment between two road points
-function createRectangularRoadSegment(point1, point2, width) {
-    // Validate input
-    if (!point1 || !point2 || !isFinite(width) || width <= 0) {
-        console.warn('Invalid inputs to createRectangularRoadSegment');
-        return null;
-    }
-
-    if (!isFinite(point1.lat) || !isFinite(point1.lng) ||
-        !isFinite(point2.lat) || !isFinite(point2.lng)) {
-        console.warn('Invalid coordinates in createRectangularRoadSegment');
-        return null;
-    }
-
-    // Convert to HTRS96/TM for accurate distance calculations
-    const htrsPoint1 = wgs84ToHTRS96(point1.lat, point1.lng);
-    const htrsPoint2 = wgs84ToHTRS96(point2.lat, point2.lng);
-
-    // Validate converted points
-    if (!isValidPoint(htrsPoint1) || !isValidPoint(htrsPoint2)) {
-        console.warn('Invalid HTRS points in createRectangularRoadSegment');
-        return null;
-    }
-
-    // Calculate segment direction
-    const dx = htrsPoint2[0] - htrsPoint1[0];
-    const dy = htrsPoint2[1] - htrsPoint1[1];
-    const length = Math.sqrt(dx * dx + dy * dy);
-
-    // Skip if segment has near-zero length
-    if (length < 0.001) {
-        // Use a minimum segment length to avoid zero-length segments
-        // Instead of just returning null, create a small circle around the point
-        const minLength = 0.1; // 10cm minimum
-        // Create a point offset in a random direction if points are too close
-        const angle = Math.random() * Math.PI * 2; // Random angle
-        const offsetX = Math.cos(angle) * minLength;
-        const offsetY = Math.sin(angle) * minLength;
-
-        // Create new point2 with the offset
-        const newHtrsPoint2 = [htrsPoint1[0] + offsetX, htrsPoint1[1] + offsetY];
-
-        // Recalculate direction with the new point
-        const newDx = newHtrsPoint2[0] - htrsPoint1[0];
-        const newDy = newHtrsPoint2[1] - htrsPoint1[1];
-        const newLength = Math.sqrt(newDx * newDx + newDy * newDy);
-
-        // Calculate normalized perpendicular vector
-        const perpX = -newDy / newLength;
-        const perpY = newDx / newLength;
-
-        // Rest of the function is the same, just using the new values
-        const halfWidth = width / 2;
-
-        // Calculate the 4 corners of the rectangle
-        const corners = [
-            [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth], // top-left
-            [newHtrsPoint2[0] + perpX * halfWidth, newHtrsPoint2[1] + perpY * halfWidth], // top-right
-            [newHtrsPoint2[0] - perpX * halfWidth, newHtrsPoint2[1] - perpY * halfWidth], // bottom-right
-            [htrsPoint1[0] - perpX * halfWidth, htrsPoint1[1] - perpY * halfWidth], // bottom-left
-            [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth]  // close polygon - back to top-left
-        ];
-
-        // Convert back to WGS84
-        const wgsCorners = [];
-        for (const corner of corners) {
-            const [lat, lng] = htrs96ToWGS84(corner[0], corner[1]);
-            if (isFinite(lat) && isFinite(lng)) {
-                wgsCorners.push(L.latLng(lat, lng));
-            }
-        }
-
-        // Check if we have enough points for a valid polygon
-        if (wgsCorners.length < 4) {
-            console.warn('Not enough valid corners for rectangle');
-            return null;
-        }
-
-        return wgsCorners;
-    }
-
-    // Calculate perpendicular vector (normalized)
-    const perpX = -dy / length;
-    const perpY = dx / length;
-
-    // Calculate half-width
-    const halfWidth = width / 2;
-
-    // Calculate the 4 corners of the rectangle
-    const corners = [
-        [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth], // top-left
-        [htrsPoint2[0] + perpX * halfWidth, htrsPoint2[1] + perpY * halfWidth], // top-right
-        [htrsPoint2[0] - perpX * halfWidth, htrsPoint2[1] - perpY * halfWidth], // bottom-right
-        [htrsPoint1[0] - perpX * halfWidth, htrsPoint1[1] - perpY * halfWidth], // bottom-left
-        [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth]  // close polygon - back to top-left
-    ];
-
-    // Convert back to WGS84
-    const wgsCorners = [];
-    for (const corner of corners) {
-        const [lat, lng] = htrs96ToWGS84(corner[0], corner[1]);
-        if (isFinite(lat) && isFinite(lng)) {
-            wgsCorners.push(L.latLng(lat, lng));
-        } else {
-            console.warn('Invalid conversion result:', lat, lng);
-        }
-    }
-
-    // Check if we have enough points for a valid polygon
-    if (wgsCorners.length < 4) {
-        console.warn('Not enough valid corners for rectangle');
-        return null;
-    }
-
-    return wgsCorners;
-}
+// createRectangularRoadSegment now lives in frontend/js/corridor-geometry.js (loaded first) so it
+// is unit-tested and shared with proposal-manager.js — the two copies had diverged (this one nudged
+// coincident points in a RANDOM direction; proposal-manager's returned null). The shared copy nudges
+// a fixed 10 cm east, so a footprint is reproducible. Callers below use the global unchanged.
 
 // Create a join polygon at a joint to smooth the outer connection between two segment rectangles.
 // We intentionally use a *bevel* join (triangle between the joint and the two outer rectangle corners),
@@ -7144,7 +6435,7 @@ function findPreviewAffectedParcels(previewPolygon) {
             } catch (e) { }
         }
 
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
 
         // Skip if already locked
@@ -7259,233 +6550,21 @@ function findPreviewAffectedParcels(previewPolygon) {
 }
 
 // ============================================================================
-// TRACK DRAWING FUNCTIONALITY
+// RAIL
+//
+// What is left of the old, separate track tool: the things that are true of RAILS and of nothing else.
+// A train cannot take a corner as tight as a car can, so a corridor that carries a rail lane is drawn
+// under a minimum curve radius, fixed by the speed the line is designed for. Everything else about a
+// track — its geometry, its cross-section, its footprint, how it is drawn and rendered — is the same
+// code that draws a road, above.
 // ============================================================================
 
-// Canvas renderer for track visualization - renders to a single canvas element
-// instead of creating hundreds of SVG DOM elements for sleepers
-let trackCanvasRenderer = null;
-function getTrackCanvasRenderer() {
-    if (!trackCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
-        trackCanvasRenderer = L.canvas({ padding: 0.5 });
-    }
-    return trackCanvasRenderer;
-}
-// Initialize on load if map exists
-if (typeof map !== 'undefined' && map) {
-    trackCanvasRenderer = getTrackCanvasRenderer();
-}
-
-// Track drawing tool variables
-let trackDrawingMode = false;
-let trackPoints = [];
-// Standard track width: 1.453m track + embankments = 3m total (default, can be changed via UI)
-let trackWidth = 3.0;
-const TRACK_WIDTH_DEFAULT = 3.0;
-// Track speed in km/h, determines minimum curvature radius
+// Design speed in km/h, which fixes the minimum curvature radius the drawing is held to.
 let trackSpeed = 120; // Default speed
 let trackMinCurvatureRadius = 1000; // Default minimum radius in meters
-let trackCenterline = null;
-let trackPolygon = null;
-let trackPreviewLine = null;
-let trackPreviewPolygon = null;
-let trackAffectedParcels = [];
-let lockedTrackParcelIds = new Set(); // Set of parcel IDs that are locked (confirmed) for track drawing
-let trackMouseMarker = null;
-let trackHasStarted = false;
-let trackPreviewPolygonLayer = null;
-let trackCenterlineLayer = null;
-let trackPolygonLayer = null;
-
-// Cached committed track geometry metrics - updated once per segment commit, not per mousemove
-let committedTrackMetrics = {
-    length: 0,
-    area: 0
-};
-let trackMarkers = [];
-let trackBuildingTunnels = [];
-let trackDemolishedBuildings = [];
-let trackBuildingTunnelLayer = null;
-let trackPreviewAffectedParcels = [];
-let trackRailsLayer = null; // Layer group for track rails and sleepers
-let trackPreviewRailsLayer = null; // Preview rails and sleepers
-let lastTrackMoveUpdate = 0;
-const trackThrottleDelay = 150; // milliseconds between updates (same as road)
 let trackSegmentSound = null; // Loaded lazily on first use
 let trackSegmentSoundStopTimer = null;
 
-// Track speed to minimum curvature radius mapping (in meters)
-// Based on railway engineering standards
-const TRACK_SPEED_TO_MIN_RADIUS = {
-    50: 300,   // Low speed, yards/sidings
-    80: 500,   // Local/regional
-    120: 1000, // Regional/mainline
-    160: 2000, // High-speed regional
-    200: 3500, // High-speed
-    250: 5000  // Very high-speed
-};
-
-// Calculate minimum curvature radius from speed
-function getMinCurvatureRadius(speed) {
-    return TRACK_SPEED_TO_MIN_RADIUS[speed] || 1000;
-}
-
-// Render a single track at a given offset from centerline
-// Helper function for rendering tracks
-function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName = null) {
-    const railOffset = 0.725; // Half of track gauge (1.453m / 2) in meters
-
-    // Pre-compute segment directions
-    const segmentDirs = [];
-    for (let i = 0; i < htrsPoints.length - 1; i++) {
-        const curr = htrsPoints[i];
-        const next = htrsPoints[i + 1];
-        const dx = next[0] - curr[0];
-        const dy = next[1] - curr[1];
-        const len = Math.hypot(dx, dy);
-        if (len > 0.01) {
-            segmentDirs.push([dx / len, dy / len]);
-        } else {
-            segmentDirs.push(null);
-        }
-    }
-
-    // Create left and right rail paths
-    const leftRailPoints = [];
-    const rightRailPoints = [];
-
-    for (let i = 0; i < htrsPoints.length; i++) {
-        const point = htrsPoints[i];
-        let dir = null;
-
-        // Average incoming and outgoing directions for smooth corners
-        const prevDir = i > 0 ? segmentDirs[i - 1] : null;
-        const nextDir = i < segmentDirs.length ? segmentDirs[i] : null;
-
-        if (prevDir && nextDir) {
-            // Average the two directions for a smooth joint
-            const avgDx = prevDir[0] + nextDir[0];
-            const avgDy = prevDir[1] + nextDir[1];
-            const avgLen = Math.hypot(avgDx, avgDy);
-            if (avgLen > 0.01) {
-                dir = [avgDx / avgLen, avgDy / avgLen];
-            } else {
-                // 180-degree turn (shouldn't happen often) - use incoming direction
-                dir = prevDir;
-            }
-        } else if (nextDir) {
-            dir = nextDir;
-        } else if (prevDir) {
-            dir = prevDir;
-        }
-
-        if (dir) {
-            // Perpendicular direction (rotate 90 degrees)
-            const perp = [-dir[1], dir[0]];
-            // Offset track centerline from original centerline
-            const trackCenter = [
-                point[0] + perp[0] * centerlineOffset,
-                point[1] + perp[1] * centerlineOffset
-            ];
-            // Then offset rails from track centerline
-            const leftPt = [trackCenter[0] + perp[0] * railOffset, trackCenter[1] + perp[1] * railOffset];
-            const rightPt = [trackCenter[0] - perp[0] * railOffset, trackCenter[1] - perp[1] * railOffset];
-
-            const [leftLat, leftLng] = htrs96ToWGS84(leftPt[0], leftPt[1]);
-            const [rightLat, rightLng] = htrs96ToWGS84(rightPt[0], rightPt[1]);
-
-            leftRailPoints.push(L.latLng(leftLat, leftLng));
-            rightRailPoints.push(L.latLng(rightLat, rightLng));
-        } else {
-            // Fallback: use point directly if no direction (shouldn't happen often)
-            const [lat, lng] = htrs96ToWGS84(point[0], point[1]);
-            leftRailPoints.push(L.latLng(lat, lng));
-            rightRailPoints.push(L.latLng(lat, lng));
-        }
-    }
-
-    // Draw left rail
-    const leftRail = L.polyline(leftRailPoints, {
-        pane: paneName || undefined,
-        renderer: trackCanvasRenderer,
-        color: railColor,
-        weight: 2,
-        opacity: 0.9
-    });
-    layerGroup.addLayer(leftRail);
-
-    // Draw right rail
-    const rightRail = L.polyline(rightRailPoints, {
-        pane: paneName || undefined,
-        renderer: trackCanvasRenderer,
-        color: railColor,
-        weight: 2,
-        opacity: 0.9
-    });
-    layerGroup.addLayer(rightRail);
-
-    // Collect all sleeper coordinates into a single array for batch rendering
-    const allSleeperCoords = [];
-
-    // Draw sleepers (ties) at regular intervals along the track
-    for (let i = 0; i < htrsPoints.length - 1; i++) {
-        const start = htrsPoints[i];
-        const end = htrsPoints[i + 1];
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
-        const segmentLength = Math.hypot(dx, dy);
-        const segmentDir = segmentLength > 0.01 ? [dx / segmentLength, dy / segmentLength] : [1, 0];
-        const perp = [-segmentDir[1], segmentDir[0]];
-
-        // Calculate number of sleepers for this segment
-        const numSleepers = Math.floor(segmentLength / sleeperSpacing);
-
-        for (let j = 0; j <= numSleepers; j++) {
-            const t = j / Math.max(numSleepers, 1);
-            const sleeperCenterOnCenterline = [
-                start[0] + dx * t,
-                start[1] + dy * t
-            ];
-            // Offset sleeper center to track centerline
-            const sleeperCenter = [
-                sleeperCenterOnCenterline[0] + perp[0] * centerlineOffset,
-                sleeperCenterOnCenterline[1] + perp[1] * centerlineOffset
-            ];
-
-            // Sleeper endpoints (perpendicular to track)
-            const sleeperStart = [
-                sleeperCenter[0] + perp[0] * sleeperLength / 2,
-                sleeperCenter[1] + perp[1] * sleeperLength / 2
-            ];
-            const sleeperEnd = [
-                sleeperCenter[0] - perp[0] * sleeperLength / 2,
-                sleeperCenter[1] - perp[1] * sleeperLength / 2
-            ];
-
-            const [startLat, startLng] = htrs96ToWGS84(sleeperStart[0], sleeperStart[1]);
-            const [endLat, endLng] = htrs96ToWGS84(sleeperEnd[0], sleeperEnd[1]);
-
-            // Add sleeper as a pair of coordinates for MultiPolyline
-            allSleeperCoords.push([
-                L.latLng(startLat, startLng),
-                L.latLng(endLat, endLng)
-            ]);
-        }
-    }
-
-    // Render ALL sleepers as a single MultiPolyline using Canvas renderer
-    // This creates ONE DOM element instead of hundreds
-    if (allSleeperCoords.length > 0) {
-        const sleepersLayer = L.polyline(allSleeperCoords, {
-            pane: paneName || undefined,
-            renderer: trackCanvasRenderer,
-            color: sleeperColor,
-            weight: 1,
-            opacity: 0.7
-        });
-        layerGroup.addLayer(sleepersLayer);
-    }
-}
 
 // Play the track placement sound; initialized lazily on first call
 function playTrackSegmentSound() {
@@ -7520,240 +6599,22 @@ function playTrackSegmentSound() {
     } catch (_) { /* ignore audio errors */ }
 }
 
-// Render track with rails and sleepers
-// Returns a Leaflet layer group containing the track visualization
-// Options: { isPreview, railColor, sleeperColor, trackWidth }
-function renderTrackWithRails(points, isPreview = false, options = {}) {
-    if (!points || points.length < 2) return null;
 
-    // Ensure canvas renderer is initialized (lazy init for when map loads)
-    if (!trackCanvasRenderer) {
-        trackCanvasRenderer = getTrackCanvasRenderer();
-    }
-
-    const layerGroup = L.layerGroup();
-    const paneName = options.pane || null;
-    const sleeperSpacing = 0.6; // Sleepers every 0.6 meters
-    const sleeperLength = 2.5; // Sleeper length in meters
-
-    // Determine colors: use provided colors, or fall back to defaults
-    const railColor = options.railColor !== undefined
-        ? options.railColor
-        : (isPreview ? '#ff6600' : '#333333');
-    const sleeperColor = options.sleeperColor !== undefined
-        ? options.sleeperColor
-        : (isPreview ? '#cc6600' : '#8B4513');
-
-    // Get track width from options, or use module-level trackWidth if available
-    // trackWidth is declared at module level (line 2899)
-    const trackWidthValue = options.trackWidth !== undefined
-        ? parseFloat(options.trackWidth)
-        : trackWidth; // Reference module-level variable
-
-    // Convert points to HTRS96 for calculations
-    const htrsPoints = points.map(p => wgs84ToHTRS96(p.lat, p.lng));
-
-    // Check if we should draw two parallel tracks (when width is 10m or close)
-    const isDoubleTrack = trackWidthValue >= 9.5; // Allow some tolerance for floating point
-
-    if (isDoubleTrack) {
-        // Draw two parallel tracks
-        // Position them symmetrically within the width
-        // Track 1: offset -2.5m from centerline
-        // Track 2: offset +2.5m from centerline
-        const trackOffset = 2.5; // Distance from centerline to each track center
-
-        renderSingleTrack(htrsPoints, -trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
-        renderSingleTrack(htrsPoints, trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
-    } else {
-        // Draw single track at centerline
-        renderSingleTrack(htrsPoints, 0, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
-    }
-    return layerGroup;
-}
-
-// Calculate the radius of a circle through three points
-function calculateCurvatureRadius(p1, p2, p3) {
-    // Convert lat/lng to meters for calculation
-    const toMeters = (latLng) => {
-        const [x, y] = wgs84ToHTRS96(latLng.lat, latLng.lng);
-        return [x, y];
-    };
-
-    const a = toMeters(p1);
-    const b = toMeters(p2);
-    const c = toMeters(p3);
-
-    // Calculate vectors
-    const ab = [b[0] - a[0], b[1] - a[1]];
-    const bc = [c[0] - b[0], c[1] - b[1]];
-    const ac = [c[0] - a[0], c[1] - a[1]];
-
-    // Calculate lengths
-    const abLen = Math.hypot(ab[0], ab[1]);
-    const bcLen = Math.hypot(bc[0], bc[1]);
-    const acLen = Math.hypot(ac[0], ac[1]);
-
-    if (abLen < 0.1 || bcLen < 0.1 || acLen < 0.1) {
-        return Infinity; // Points too close, treat as straight
-    }
-
-    // Calculate area of triangle using cross product
-    const area = Math.abs(ab[0] * bc[1] - ab[1] * bc[0]) / 2;
-
-    if (area < 0.1) {
-        return Infinity; // Points are collinear, treat as straight
-    }
-
-    // Calculate radius using formula: R = (abc) / (4 * area)
-    const radius = (abLen * bcLen * acLen) / (4 * area);
-
-    return radius;
-}
-
-// Check if adding a new point would violate curvature constraints
-// Returns: { valid: boolean, adjustedPoint: LatLng, violatesConstraint: boolean, wasAdjusted: boolean }
-function checkCurvatureConstraint(points, newPoint, minRadius) {
-    if (points.length < 2) {
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
-    }
-
-    const lastPoint = points[points.length - 1];
-    const secondLastPoint = points.length >= 2 ? points[points.length - 2] : null;
-
-    if (!secondLastPoint) {
-        // Only one point, no curvature to check
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
-    }
-
-    // Convert to meters for calculation
-    const [prevX, prevY] = wgs84ToHTRS96(secondLastPoint.lat, secondLastPoint.lng);
-    const [lastX, lastY] = wgs84ToHTRS96(lastPoint.lat, lastPoint.lng);
-    const [newX, newY] = wgs84ToHTRS96(newPoint.lat, newPoint.lng);
-
-    // Calculate vectors
-    const prevDx = lastX - prevX;
-    const prevDy = lastY - prevY;
-    const prevDist = Math.hypot(prevDx, prevDy);
-
-    const dx = newX - lastX;
-    const dy = newY - lastY;
-    const dist = Math.hypot(dx, dy);
-
-    // Check minimum distances
-    if (prevDist < 0.1 || dist < 0.1) {
-        // Points too close, can't check curvature meaningfully
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
-    }
-
-    // Calculate the turn angle
-    const prevAngle = Math.atan2(prevDy, prevDx);
-    const newAngle = Math.atan2(dy, dx);
-
-    // Calculate the angle difference (turn angle)
-    let angleDiff = newAngle - prevAngle;
-    // Normalize to [-π, π]
-    while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
-    while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
-
-    const absAngleDiff = Math.abs(angleDiff);
-
-    // For very small angles (nearly straight), accept immediately
-    if (absAngleDiff < 0.01) {
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
-    }
-
-    // Calculate the actual radius of curvature from three points
-    const radius = calculateCurvatureRadius(secondLastPoint, lastPoint, newPoint);
-
-    // Primary check: if radius meets minimum, accept
-    if (radius >= minRadius) {
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
-    }
-
-    // Radius is too small - calculate what's needed to fix it
-    // For a circular arc: L = 2 * R * sin(θ/2), where L is chord length, R is radius, θ is turn angle
-    // We need R >= minRadius, so: L >= 2 * minRadius * sin(θ/2)
-
-    // The chord length is the straight-line distance from secondLastPoint to newPoint
-    const chordDx = newX - prevX;
-    const chordDy = newY - prevY;
-    const chordLength = Math.hypot(chordDx, chordDy);
-
-    // Calculate minimum required chord length for this turn angle
-    const minRequiredChordLength = 2 * minRadius * Math.sin(absAngleDiff / 2);
-
-    // If chord is already long enough but radius is still too small, 
-    // this might be due to the geometry of the three points (not forming a proper arc)
-    // In this case, we should still reject/adjust
-    if (chordLength < minRequiredChordLength) {
-        // Chord is too short - need to extend the new point to increase chord length
-        // We'll extend along the current direction from lastPoint to newPoint
-
-        // Calculate required distance from lastPoint to achieve minimum chord length
-        // Using law of cosines: chordLength^2 = prevDist^2 + dist^2 - 2*prevDist*dist*cos(angleDiff)
-        // Solving for dist: dist^2 - 2*prevDist*cos(angleDiff)*dist + (prevDist^2 - minRequiredChordLength^2) = 0
-        const cosAngleDiff = Math.cos(absAngleDiff);
-        const a = 1;
-        const b = -2 * prevDist * cosAngleDiff;
-        const c = prevDist * prevDist - minRequiredChordLength * minRequiredChordLength;
-        const discriminant = b * b - 4 * a * c;
-
-        if (discriminant < 0) {
-            // No real solution - turn is too sharp even with infinite extension
-            return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
-        }
-
-        const requiredDist = (-b + Math.sqrt(discriminant)) / (2 * a);
-
-        // Only adjust if it's reasonable (not more than 2x the current distance)
-        if (requiredDist > dist * 2 || requiredDist < dist * 0.5) {
-            return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
-        }
-
-        // Extend the point along the current direction
-        const scale = requiredDist / dist;
-        const adjustedX = lastX + dx * scale;
-        const adjustedY = lastY + dy * scale;
-
-        const [adjustedLat, adjustedLng] = htrs96ToWGS84(adjustedX, adjustedY);
-        const adjustedPoint = L.latLng(adjustedLat, adjustedLng);
-
-        // Verify the adjusted point meets the constraint
-        const adjustedRadius = calculateCurvatureRadius(secondLastPoint, lastPoint, adjustedPoint);
-        if (adjustedRadius >= minRadius * 0.98) { // Allow 2% tolerance
-            return { valid: true, adjustedPoint: adjustedPoint, violatesConstraint: false, wasAdjusted: true };
-        }
-    }
-
-    // If we get here, the constraint is violated and we can't reasonably adjust
-    return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
-}
-
-// Track Speed Picker modal implementation
+// Track Speed Picker modal implementation.
+//
+// Speed only: the track's WIDTH is no longer picked here. A track's width is the sum of its lanes, and a
+// new track starts as one standard-gauge track (3.5 m) that the cross-section editor then shapes — the
+// same move the road tool made when its width picker became a cross-section.
 function showTrackSpeedPicker() {
     return new Promise((resolve, reject) => {
         const modal = document.getElementById('track-speed-modal');
         const grid = document.getElementById('track-speed-grid');
         const btnConfirm = document.getElementById('track-speed-confirm-btn');
         const btnCancel = document.getElementById('track-speed-cancel-btn');
-        const widthSlider = document.getElementById('track-width-slider');
-        const widthValue = document.getElementById('track-width-value');
         if (!modal || !grid || !btnConfirm || !btnCancel) {
             console.warn('Track speed modal elements missing');
-            resolve({ speed: 50, minRadius: 300, width: 3.0 }); // fallback to default values
+            resolve({ speed: 50, minRadius: 300 }); // fallback to default values
             return;
-        }
-
-        // Initialize track width slider
-        let currentWidth = parseFloat(PersistentStorage.getItem('lastTrackWidth')) || 3.0;
-        if (widthSlider && widthValue) {
-            widthSlider.value = currentWidth;
-            widthValue.textContent = currentWidth.toFixed(1);
-            widthSlider.addEventListener('input', (e) => {
-                currentWidth = parseFloat(e.target.value);
-                widthValue.textContent = currentWidth.toFixed(1);
-            });
         }
 
         // Options: speed (km/h) -> min radius (m)
@@ -7778,18 +6639,14 @@ function showTrackSpeedPicker() {
             }
             const speed = parseFloat(selected.dataset.speed);
             const minRadius = parseFloat(selected.dataset.minRadius);
-            const width = widthSlider ? parseFloat(widthSlider.value) : currentWidth;
             PersistentStorage.setItem('lastTrackSpeedId', selected.dataset.id);
-            if (widthSlider) {
-                PersistentStorage.setItem('lastTrackWidth', String(width));
-            }
             modal.style.display = 'none';
             // Collapse sidebar if open
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
                 try { toggleSidebar(); } catch (_) { }
             }
-            resolve({ speed, minRadius, width });
+            resolve({ speed, minRadius });
         };
 
         options.forEach(opt => {
@@ -7842,1330 +6699,6 @@ function showTrackSpeedPicker() {
 
         modal.style.display = 'flex';
         grid.querySelector('.roadwidth-card.selected')?.focus();
-    });
-}
-
-// Toggle track drawing tool
-function toggleTrackDrawTool() {
-    // Gate: require personalized profile to draw tracks (which create proposals)
-
-    trackDrawingMode = !trackDrawingMode;
-    updateGlobalTrackDrawingMode(trackDrawingMode);
-    const trackDrawButton = document.getElementById('trackDrawButton');
-
-    if (trackDrawingMode) {
-        disableMultiSelectForDrawing();
-        setRoadPanelLabelsForMode('track');
-        // Deactivate road drawing if active
-        if (roadDrawingMode) {
-            exitRoadDrawingMode();
-        }
-
-        closeProposalDetailsForDrawing();
-
-        // Close sidebar on mobile when activating track drawing
-        const isMobile = window.innerWidth <= 768;
-        if (isMobile) {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                try { toggleSidebar(); } catch (_) { }
-            }
-        }
-
-        // Activate track drawing mode
-        console.log("Activating track drawing mode");
-        if (trackDrawButton) {
-            trackDrawButton.classList.add('active');
-            trackDrawButton.classList.add('active-black-border');
-        }
-
-        map.getContainer().style.cursor = 'crosshair';
-        map.getContainer().classList.add('crosshairs-cursor');
-
-        // Disable other tools
-        if (typeof measureMode !== 'undefined' && measureMode) toggleMeasureTool();
-
-        // Disable parcel interaction
-        if (parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click');
-            });
-        }
-
-        // Hide other panels
-        const blockInfoPanel = document.getElementById('block-info-panel');
-        const parcelInfoPanel = document.getElementById('parcel-info-panel');
-        if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
-        if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
-
-        // Open the track panel and start listening for clicks. Shared by the fresh-draw path (after the
-        // speed picker resolves) and the seeded path (speed and width come from the track being continued).
-        const activateTrackDrawing = (statusText) => {
-            const roadInfoPanel = document.getElementById('road-info-panel');
-            if (roadInfoPanel) {
-                roadInfoPanel.style.removeProperty('display');
-                roadInfoPanel.classList.add('visible');
-            }
-            setRoadPanelLabelsForMode('track');
-            const statusElement = document.getElementById('status');
-            if (statusElement) updateStatus(statusText);
-            const roadDrawingControls = document.getElementById('road-drawing-controls');
-            if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
-            updateUndoButtonState();
-            map.on('click', handleTrackClick);
-            map.on('mousemove', handleTrackMouseMove);
-            map.on('mouseout', handleTrackMouseOut);
-            document.addEventListener('keydown', handleTrackKeydown);
-            if (typeof window !== 'undefined') {
-                window.trackPreviewAffectedParcelIds = new Set();
-            }
-        };
-
-        // Continuing an existing track: its geometry, width and speed are already decided, so skip the
-        // picker and reopen the tool on that track. The seed is consumed once.
-        const trackSeed = (typeof window !== 'undefined') ? window.pendingTrackDrawingSeed : null;
-        if (trackSeed) {
-            window.pendingTrackDrawingSeed = null;
-            if (seedTrackDrawing(trackSeed)) {
-                activateTrackDrawing('Click to continue the track, or click its first point to draw from the other end');
-                return;
-            }
-        }
-
-        // Initialize track speed via picker modal
-        try {
-            showTrackSpeedPicker().then(({ speed, minRadius, width }) => {
-                trackSpeed = speed;
-                trackMinCurvatureRadius = minRadius;
-                if (width !== undefined) {
-                    trackWidth = width;
-                }
-
-                activateTrackDrawing('Click on the map to start drawing a track');
-            }).catch(() => {
-                // If picker was cancelled, turn off drawing mode
-                trackDrawingMode = false;
-                updateGlobalTrackDrawingMode(false);
-                if (trackDrawButton) {
-                    trackDrawButton.classList.remove('active');
-                    trackDrawButton.classList.remove('active-black-border');
-                }
-                map.getContainer().style.cursor = '';
-                map.getContainer().classList.remove('crosshairs-cursor');
-                map.off('click', handleTrackClick);
-                map.off('mousemove', handleTrackMouseMove);
-                map.off('mouseout', handleTrackMouseOut);
-                document.removeEventListener('keydown', handleTrackKeydown);
-                restoreParcelClickInteractivity();
-                setRoadPanelLabelsForMode('road');
-            });
-        } catch (e) {
-            console.warn('Track speed picker unavailable', e);
-            trackSpeed = 120;
-            trackMinCurvatureRadius = 1000;
-            const roadInfoPanel = document.getElementById('road-info-panel');
-            if (roadInfoPanel) {
-                roadInfoPanel.style.removeProperty('display');
-                roadInfoPanel.classList.add('visible');
-            }
-            setRoadPanelLabelsForMode('track');
-            const statusElement = document.getElementById('status');
-            if (statusElement) updateStatus('Click on the map to start drawing a track');
-        }
-    } else {
-        // Deactivate track drawing mode
-        console.log("Deactivating track drawing mode");
-        setRoadPanelLabelsForMode('road');
-        if (trackDrawButton) {
-            trackDrawButton.classList.remove('active');
-            trackDrawButton.classList.remove('active-black-border');
-        }
-
-        const roadDrawingControls = document.getElementById('road-drawing-controls');
-        if (roadDrawingControls) roadDrawingControls.style.display = 'none';
-        map.getContainer().style.cursor = '';
-        map.getContainer().classList.remove('crosshairs-cursor');
-
-        // Remove track drawing event handlers
-        map.off('click', handleTrackClick);
-        map.off('mousemove', handleTrackMouseMove);
-        map.off('mouseout', handleTrackMouseOut);
-        document.removeEventListener('keydown', handleTrackKeydown);
-
-        // Re-enable parcel interaction
-        restoreParcelClickInteractivity();
-
-        // Reset track drawing variables
-        resetTrackDrawing(false);
-
-        // Hide the road info panel
-        const roadInfoPanel = document.getElementById('road-info-panel');
-        if (roadInfoPanel) roadInfoPanel.classList.remove('visible');
-
-        // Clear status
-        const statusElement = document.getElementById('status');
-        if (statusElement) updateStatus('');
-    }
-}
-
-// Handle keyboard events during track drawing
-function handleTrackKeydown(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        return;
-    }
-
-    // F finishes the track: the drawing instantly becomes an applied object (SimCity lifecycle).
-    if ((e.key === 'f' || e.key === 'F') && trackHasStarted && trackPoints.length >= 2) {
-        e.preventDefault();
-        finishTrackDrawing();
-    }
-
-    // Check for U key (undo last segment)
-    if ((e.key === 'u' || e.key === 'U') && trackHasStarted && trackPoints.length > 1) {
-        e.preventDefault();
-        undoLastTrackSegment();
-    }
-
-    // Escape applies the track if one is drawable (nothing is ever kept as a draft), else closes.
-    if (e.key === 'Escape') {
-        e.preventDefault();
-        if (trackHasStarted && trackPoints.length >= 2) finishTrackDrawing();
-        else exitTrackDrawingMode();
-    }
-}
-
-// Undo last track segment
-function undoLastTrackSegment() {
-    if (!trackHasStarted || trackPoints.length <= 1) {
-        return; // Can't undo if there's only one point or none
-    }
-
-    // Remove tunnel metadata paired with this edge before its endpoint disappears.
-    const removedPoint = trackPoints[trackPoints.length - 1];
-    const previousPoint = trackPoints[trackPoints.length - 2];
-    if (typeof removeBuildingTunnelEdge === 'function') {
-        trackBuildingTunnels = removeBuildingTunnelEdge(trackBuildingTunnels, previousPoint, removedPoint);
-    }
-    trackPoints.pop();
-    refreshTrackBuildingTunnelLayer();
-    const lastMarker = trackMarkers.pop();
-    if (lastMarker && map.hasLayer(lastMarker)) {
-        map.removeLayer(lastMarker);
-    }
-
-    // Rebuild the centerline
-    if (trackCenterline) {
-        map.removeLayer(trackCenterline);
-        trackCenterline = null;
-    }
-    if (trackPoints.length > 0) {
-        trackCenterline = L.polyline(trackPoints, {
-            color: 'transparent',
-            weight: 0,
-            opacity: 0
-        }).addTo(map);
-    } else {
-        trackHasStarted = false;
-    }
-
-    // Rebuild rails and the corridor polygon
-    if (trackRailsLayer) {
-        map.removeLayer(trackRailsLayer);
-        trackRailsLayer = null;
-    }
-    if (trackPolygonLayer) {
-        map.removeLayer(trackPolygonLayer);
-        trackPolygonLayer = null;
-    }
-    if (trackPoints.length >= 2) {
-        trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-        if (trackRailsLayer) trackRailsLayer.addTo(map);
-        trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-        if (trackPolygon) {
-            trackPolygonLayer = L.polygon(trackPolygon, {
-                color: '#0066cc',
-                weight: 2,
-                fillColor: '#0066cc',
-                fillOpacity: 0.3
-            }).addTo(map);
-        }
-    } else {
-        trackPolygon = null;
-    }
-
-    // Re-derive the locked parcels from the corridor rather than reversing a per-edge history entry:
-    // once a track can be seeded or reversed, "the last entry" no longer describes the last vertex.
-    recomputeLockedParcelsFromPolygon(trackPolygon, true);
-
-    setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-    setRoadOwnershipCounts(lockedStats.ownershipCounts);
-
-    const marketEl = document.getElementById('road-market-price');
-    if (marketEl) {
-        marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
-    }
-
-    const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
-    }
-
-    updateRoadAcquiringDifficulty(trackAffectedParcels);
-    updateRoadInfoPanel();
-    updateUndoButtonState();
-}
-
-// Handle track drawing clicks
-// A track is a single un-branched polyline, so it has exactly two ends. Drawing always appends to the
-// last vertex; clicking the *first* vertex flips the polyline so the track grows from its other end
-// instead. This is what lets a seeded track (copied, or reloaded) be continued in either direction.
-function reverseTrackDirection() {
-    trackPoints.reverse();
-    trackMarkers.reverse();
-    if (trackCenterline) trackCenterline.setLatLngs(trackPoints);
-    updateStatus('Continuing the track from its other end');
-}
-
-async function handleTrackClick(e) {
-    L.DomEvent.stopPropagation(e);
-
-    const clickPoint = e.latlng;
-
-    if (trackHasStarted && trackPoints.length > 1) {
-        const start = map.latLngToLayerPoint(trackPoints[0]);
-        if (map.latLngToLayerPoint(clickPoint).distanceTo(start) <= ROAD_SNAP_PIXELS) {
-            reverseTrackDirection();
-            updateUndoButtonState();
-            return;
-        }
-    }
-
-    if (!trackHasStarted) {
-        // First click - start the track
-        trackPoints = [clickPoint];
-        trackHasStarted = true;
-
-        // Add marker for the starting point
-        const startMarker = L.circleMarker(clickPoint, {
-            radius: 5,
-            color: '#0066cc',
-            fillColor: '#0066cc',
-            fillOpacity: 1
-        }).addTo(map);
-        trackMarkers.push(startMarker);
-
-        // Initialize track centerline - will be replaced with rails rendering
-        trackCenterline = L.polyline([clickPoint], {
-            color: 'transparent',
-            weight: 0,
-            opacity: 0
-        }).addTo(map);
-
-        // Create rails layer for committed track
-        trackRailsLayer = L.layerGroup().addTo(map);
-
-        updateStatus('Click to add track points, "Finish" when done');
-    } else {
-        // Check curvature constraint - only adjust if violation is severe and adjustment is reasonable
-        const constraintCheck = checkCurvatureConstraint(trackPoints, clickPoint, trackMinCurvatureRadius);
-
-        // Only use adjusted point if it was actually adjusted AND the adjustment is reasonable
-        // Otherwise use the clicked point to avoid overshoot
-        let pointToAdd = clickPoint;
-
-        // Only show warnings if the constraint is actually violated (consistent with preview)
-        if (constraintCheck.violatesConstraint) {
-            // Constraint is violated - show warning
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage('Warning: Curvature exceeds minimum radius for selected speed.', 3000, 'warning');
-            }
-        } else if (constraintCheck.wasAdjusted) {
-            // Constraint was met by adjusting - check if adjustment is reasonable
-            const [clickX, clickY] = wgs84ToHTRS96(clickPoint.lat, clickPoint.lng);
-            const [adjX, adjY] = wgs84ToHTRS96(constraintCheck.adjustedPoint.lat, constraintCheck.adjustedPoint.lng);
-            const [lastX, lastY] = wgs84ToHTRS96(trackPoints[trackPoints.length - 1].lat, trackPoints[trackPoints.length - 1].lng);
-            const clickDist = Math.hypot(clickX - lastX, clickY - lastY);
-            const adjDist = Math.hypot(adjX - lastX, adjY - lastY);
-            const adjustmentRatio = Math.abs(adjDist - clickDist) / Math.max(clickDist, 0.1);
-
-            // Only use adjusted point if adjustment is less than 20% of the segment length
-            if (adjustmentRatio < 0.2) {
-                pointToAdd = constraintCheck.adjustedPoint;
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Point adjusted to meet minimum curvature radius.', 2000, 'info');
-                }
-            }
-            // If adjustment is too large, just use clicked point (no warning since constraint is met)
-        }
-
-        // Build the segment polygon for this click
-        const segmentPoints = [trackPoints[trackPoints.length - 1], pointToAdd];
-        const segmentPolygon = calculateRoadPolygon(segmentPoints, trackWidth);
-        // Same footprint preload as the road tool: detection only sees loaded buildings.
-        if (segmentPolygon && typeof window.ensureBuildingFootprintsForBounds === 'function') {
-            try { await window.ensureBuildingFootprintsForBounds(segmentPolygon); } catch (error) {
-                console.error('[road-drawing] footprint preload for track edge failed', error);
-            }
-        }
-        const edgeRegion = (segmentPolygon && typeof corridorFeatureFromLatLngRing === 'function')
-            ? corridorFeatureFromLatLngRing(segmentPolygon)
-            : null;
-        let tunnelSubEdges = null;
-        if (segmentPolygon && typeof detectLoadedBuildingTunnelIntersections === 'function') {
-            const fullyDemolishedIds = new Set(trackDemolishedBuildings.filter(record => !record.remainder).map(record => String(record.id)));
-            const cutIds = new Set(trackDemolishedBuildings.filter(record => record.remainder).map(record => String(record.id)));
-            const detected = detectLoadedBuildingTunnelIntersections(segmentPolygon)
-                .filter(hit => !fullyDemolishedIds.has(String(hit.id)));
-            if (edgeRegion && typeof upsertCutRecord === 'function') {
-                detected.filter(hit => cutIds.has(String(hit.id)))
-                    .forEach(hit => upsertCutRecord(trackDemolishedBuildings, hit, edgeRegion));
-            }
-            const hits = detected.filter(hit => !cutIds.has(String(hit.id)));
-            if (hits.length) {
-                const resolution = typeof resolveBuildingObstacles === 'function'
-                    ? await resolveBuildingObstacles(hits, 'track')
-                    : { action: 'cancel', removedProposalIds: [], demolishedBuildings: [], cutHits: [] };
-                if (resolution.action === 'cancel') return;
-                if (resolution.action === 'destroy') {
-                    trackDemolishedBuildings.push(...(resolution.demolishedBuildings || []));
-                }
-                if (resolution.action === 'cut' && edgeRegion && typeof upsertCutRecord === 'function') {
-                    (resolution.cutHits || []).forEach(hit => upsertCutRecord(trackDemolishedBuildings, hit, edgeRegion));
-                }
-                if (resolution.action === 'tunnel') {
-                    const removedOwners = new Set(resolution.removedProposalIds || []);
-                    const standingHits = hits.filter(hit => {
-                        const owner = typeof corridorTunnelHitProposalId === 'function' ? corridorTunnelHitProposalId(hit) : null;
-                        return !owner || !removedOwners.has(owner);
-                    });
-                    if (standingHits.length) {
-                        // Tunnel only while inside the buildings — portals become track vertices.
-                        tunnelSubEdges = (typeof clipCorridorEdgeThroughBuildings === 'function')
-                            ? clipCorridorEdgeThroughBuildings(segmentPoints[0], segmentPoints[1], standingHits, trackWidth)
-                            : null;
-                        if (!tunnelSubEdges) {
-                            tunnelSubEdges = [{ from: segmentPoints[0], to: segmentPoints[1], inside: true, hits: standingHits }];
-                        }
-                    }
-                }
-            }
-            // Parks/squares/lakes in the way get their own decision: unapply / build through / reroute.
-            if (typeof detectStructureCrossings === 'function' && typeof resolveStructureCrossings === 'function') {
-                const structureHits = detectStructureCrossings(segmentPolygon);
-                if (structureHits.length && !(await resolveStructureCrossings(structureHits, 'track'))) return;
-            }
-        }
-
-        // Add point to track. A tunnelled edge first contributes its facade portals as real
-        // vertices, so the tunnel spans exactly the inside sub-edges.
-        if (tunnelSubEdges) {
-            tunnelSubEdges.forEach((sub, index) => {
-                if (index < tunnelSubEdges.length - 1) {
-                    trackPoints.push(sub.to);
-                    trackMarkers.push(L.circleMarker(sub.to, {
-                        radius: 5, color: '#0066cc', fillColor: '#0066cc', fillOpacity: 1
-                    }).addTo(map));
-                    trackCenterline.addLatLng(sub.to);
-                }
-                if (sub.inside && typeof makeBuildingTunnelRecord === 'function') {
-                    const record = makeBuildingTunnelRecord(sub.from, sub.to, sub.hits, { segmentId: 'track' });
-                    if (record && typeof addBuildingTunnelRecord === 'function') {
-                        trackBuildingTunnels = addBuildingTunnelRecord(trackBuildingTunnels, record);
-                    }
-                }
-            });
-            refreshTrackBuildingTunnelLayer();
-        }
-        trackPoints.push(pointToAdd);
-
-        // Play feedback sound for the committed segment
-        playTrackSegmentSound();
-
-        // Add marker for this point
-        const pointMarker = L.circleMarker(pointToAdd, {
-            radius: 5,
-            color: '#0066cc',
-            fillColor: '#0066cc',
-            fillOpacity: 1
-        }).addTo(map);
-        trackMarkers.push(pointMarker);
-
-        // Update the centerline
-        trackCenterline.addLatLng(pointToAdd);
-
-        // Clear preview layers first (rails will be rendered once after polygon calculation)
-        if (trackPreviewPolygonLayer) {
-            trackPreviewPolygonLayer.removeFrom(map);
-            trackPreviewPolygonLayer = null;
-        }
-        if (trackPreviewRailsLayer) {
-            map.removeLayer(trackPreviewRailsLayer);
-            trackPreviewRailsLayer = null;
-        }
-        if (trackPreviewLine) {
-            trackPreviewLine.removeFrom(map);
-            trackPreviewLine = null;
-        }
-
-        // PERFORMANCE: Incrementally union the new segment polygon with existing track polygon
-        // instead of recalculating the entire track polygon from scratch
-        let newCommittedPolygon;
-        if (segmentPolygon) {
-            if (trackPolygon) {
-                // Union new segment with existing track polygon
-                newCommittedPolygon = combineRoadPolygons(trackPolygon, segmentPolygon);
-            } else {
-                // First segment - just use segment polygon
-                newCommittedPolygon = segmentPolygon;
-            }
-        } else {
-            // Segment polygon calculation failed - keep existing
-            newCommittedPolygon = trackPolygon;
-        }
-        trackPolygon = newCommittedPolygon;
-
-        // Remove previous committed polygon layer
-        if (trackPolygonLayer) {
-            map.removeLayer(trackPolygonLayer);
-            trackPolygonLayer = null;
-        }
-
-        if (trackPolygon) {
-            // Draw the committed track polygon with track styling (light background)
-            trackPolygonLayer = L.polygon(trackPolygon, {
-                color: '#0066cc',
-                weight: 1,
-                fillColor: '#e6f2ff',
-                fillOpacity: 0.2
-            }).addTo(map);
-
-            // Render rails for the committed track ONCE (removed duplicate call)
-            if (trackRailsLayer) {
-                map.removeLayer(trackRailsLayer);
-            }
-            trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-            if (trackRailsLayer) {
-                trackRailsLayer.addTo(map);
-            }
-
-            // Lock parcels from the new segment (same as roads - incremental, not reset)
-            // This ensures stats accumulate correctly as segments are added
-            // Use the segment polygon (from last point to new point), not the full track polygon
-            if (segmentPolygon && segmentPolygon.length >= 3) {
-                lockParcelsFromSegment(segmentPolygon);
-            }
-        } else {
-            // If no polygon, still update the info panel to show current state
-            updateRoadInfoPanel();
-        }
-    }
-
-    // For first click (when trackPoints.length < 2), update the info panel to show initial state
-    if (trackPoints.length < 2) {
-        updateRoadInfoPanel();
-    }
-
-    // Enable undo once we have at least one segment
-    updateUndoButtonState();
-}
-
-// Handle track mouse movement for preview
-function handleTrackMouseMove(e) {
-    if (!trackHasStarted || !trackPoints || trackPoints.length === 0) return;
-
-    const mouseLatLng = e.latlng;
-
-    // Check curvature constraint - use actual mouse position for preview, but check constraint for color
-    const constraintCheck = checkCurvatureConstraint(trackPoints, mouseLatLng, trackMinCurvatureRadius);
-    const isConstraintViolated = constraintCheck.violatesConstraint || false;
-
-    // Always use actual mouse position for preview (no overshoot)
-    const previewPoint = mouseLatLng;
-
-    // Remove old preview elements
-    if (trackPreviewLine) {
-        trackPreviewLine.removeFrom(map);
-        trackPreviewLine = null;
-    }
-    if (trackPreviewPolygonLayer) {
-        trackPreviewPolygonLayer.removeFrom(map);
-        trackPreviewPolygonLayer = null;
-    }
-    if (trackPreviewRailsLayer) {
-        map.removeLayer(trackPreviewRailsLayer);
-        trackPreviewRailsLayer = null;
-    }
-
-    // PERFORMANCE: Only calculate polygon for the preview segment (last point to mouse),
-    // NOT the entire track. This keeps preview snappy regardless of total segment count.
-    const lastPoint = trackPoints[trackPoints.length - 1];
-    const previewSegmentPoints = [lastPoint, previewPoint];
-
-    // Pick colors based on curvature constraint
-    const previewColor = isConstraintViolated ? '#ff0000' : '#ff6600';
-
-    try {
-        // Calculate polygon only for the preview segment
-        const previewSegmentPolygon = calculateRoadPolygon(previewSegmentPoints, trackWidth);
-
-        if (previewSegmentPolygon && previewSegmentPolygon.length >= 3) {
-            // PERFORMANCE: Use simple polyline + polygon like roads do (not rails)
-            // Rails are rendered only when track is finalized
-            trackPreviewLine = L.polyline(previewSegmentPoints, {
-                color: previewColor,
-                dashArray: '5, 10',
-                weight: 2
-            }).addTo(map);
-
-            trackPreviewPolygonLayer = L.polygon(previewSegmentPolygon, {
-                color: previewColor,
-                weight: 1,
-                fillColor: previewColor,
-                fillOpacity: 0.2
-            }).addTo(map);
-
-            // Find and highlight parcels affected by preview segment only
-            findTrackPreviewAffectedParcels(previewSegmentPolygon);
-
-            lastTrackMoveUpdate = Date.now();
-
-            // PERFORMANCE: Fast update of track info with cumulative metrics (committed + preview)
-            updatePreviewTrackInfo(previewSegmentPoints, previewSegmentPolygon);
-        } else {
-            clearTrackPreviewAffectedParcels();
-
-            // Still show a simple preview line
-            trackPreviewLine = L.polyline(previewSegmentPoints, {
-                color: previewColor,
-                dashArray: '5, 10',
-                weight: 2
-            }).addTo(map);
-        }
-    } catch (error) {
-        console.error('Error in track preview calculation:', error);
-        clearTrackPreviewAffectedParcels();
-
-        // Still show a simple preview line
-        trackPreviewLine = L.polyline(previewSegmentPoints, {
-            color: previewColor,
-            dashArray: '5, 10',
-            weight: 2
-        }).addTo(map);
-    }
-}
-
-// Handle track mouse movement out
-function handleTrackMouseOut(e) {
-    if (!trackDrawingMode) return;
-
-    if (trackPreviewLine) {
-        trackPreviewLine.removeFrom(map);
-        trackPreviewLine = null;
-    }
-
-    if (trackPreviewRailsLayer) {
-        map.removeLayer(trackPreviewRailsLayer);
-        trackPreviewRailsLayer = null;
-    }
-
-    if (trackPreviewPolygonLayer) {
-        trackPreviewPolygonLayer.removeFrom(map);
-        trackPreviewPolygonLayer = null;
-    }
-
-    clearTrackPreviewAffectedParcels();
-}
-
-// Check if parcels are loaded for a given polygon
-// Returns true if at least one parcel intersects with the polygon, false otherwise
-function areParcelsLoadedForPolygon(polygon) {
-    if (!polygon || !parcelLayer) return false;
-    const turfPolygon = polygonLatLngsToTurfFeature(polygon);
-    if (!turfPolygon) return false;
-
-    // Check if any parcel intersects with the polygon
-    let foundParcel = false;
-
-    // Ensure getParcelOuterRingsLngLat is available
-    if (typeof getParcelOuterRingsLngLat !== 'function') {
-        return false;
-    }
-
-    try {
-        parcelLayer.eachLayer(layer => {
-            if (foundParcel) return; // Early exit if already found
-
-            try {
-                const outerRings = getParcelOuterRingsLngLat(layer);
-                if (!outerRings || outerRings.length === 0) return;
-
-                for (let r = 0; r < outerRings.length; r++) {
-                    const ring = outerRings[r];
-                    const turfParcelPolygon = turf.polygon([ring]);
-                    if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
-                        foundParcel = true;
-                        return; // Break out of eachLayer
-                    }
-                }
-            } catch (error) {
-                // Continue checking other parcels
-            }
-        });
-    } catch (error) {
-        // If parcelLayer.eachLayer fails, assume parcels are not loaded
-        return false;
-    }
-
-    return foundParcel;
-}
-
-// Find parcels affected by track
-function findTrackAffectedParcels(trackPolygon) {
-    if (!trackPolygon || !parcelLayer) return;
-
-    // Define the green highlight style for committed track parcels (same as road)
-    const committedTrackStyle = {
-        fillColor: 'green',
-        fillOpacity: 0.6,
-        color: 'green',
-        weight: 3
-    };
-
-    // Use shared function to find and highlight affected parcels
-    trackAffectedParcels = findAndHighlightAffectedParcels(
-        trackPolygon,
-        trackAffectedParcels,
-        committedTrackStyle,
-        null,
-        { skipBoundsFilter: true }
-    );
-
-    // Rebuild locked state from trackAffectedParcels (same as road)
-    lockedTrackParcelIds.clear();
-    trackAffectedParcels.forEach(p => {
-        const id = getParcelIdFromAny(p);
-        if (id) lockedTrackParcelIds.add(id.toString());
-    });
-
-    // Don't reset stats here - they're already correctly maintained by lockParcelsFromSegment()
-    // Just update the info panel which will use the shared lockedStats
-    updateRoadInfoPanel();
-}
-
-// Find parcels affected by track preview
-// Uses the same approach as road preview: skip committed parcels entirely, only highlight new preview parcels
-function findTrackPreviewAffectedParcels(trackPolygon) {
-    if (!trackPolygon || !parcelLayer) return;
-
-    // Clear previous preview highlights (reverts to locked style or base style)
-    clearTrackPreviewAffectedParcels();
-
-    // Create a turf polygon from the preview polygon
-    const latLngs = trackPolygon.map(p => [p.lng, p.lat]);
-
-    if (latLngs.length < 4) {
-        // Not enough points, just show locked stats
-        return;
-    }
-
-    // Ensure the polygon is closed
-    const closedLatLngs = ensurePolygonIsClosed(latLngs);
-    if (closedLatLngs.length !== latLngs.length) {
-        latLngs.length = 0;
-        latLngs.push(...closedLatLngs);
-    }
-
-    let turfPolygon;
-    try {
-        turfPolygon = turf.polygon([latLngs]);
-    } catch (error) {
-        return;
-    }
-
-    if (!turfPolygon) {
-        return;
-    }
-
-    // Get map bounds for filtering - preview only needs visible parcels for responsiveness
-    let mapBounds = null;
-    try {
-        mapBounds = map.getBounds();
-    } catch (e) {
-        // Continue without bounds filtering if unavailable
-    }
-
-    const newPreviewParcels = [];
-
-    // Find parcels that intersect with the preview polygon but aren't already locked
-    // Use mapBounds filter for performance during preview (same as road preview)
-    parcelLayer.eachLayer(layer => {
-        // Skip parcels outside current view for performance
-        if (mapBounds) {
-            try {
-                const layerBounds = layer.getBounds();
-                if (!mapBounds.intersects(layerBounds)) {
-                    return;
-                }
-            } catch (e) { }
-        }
-
-        const parcelId = getParcelIdFromFeature(layer.feature);
-        if (!parcelId) return;
-
-        // Skip if already locked (same as road preview)
-        if (lockedTrackParcelIds.has(parcelId)) {
-            return;
-        }
-
-        const outerRings = getParcelOuterRingsLngLat(layer);
-        if (!outerRings || outerRings.length === 0) return;
-
-        try {
-            for (let r = 0; r < outerRings.length; r++) {
-                const ring = outerRings[r];
-                const turfParcelPolygon = turf.polygon([ring]);
-                if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
-                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
-
-                    newPreviewParcels.push({
-                        id: parcelId,
-                        number: layer.feature.properties.BROJ_CESTICE,
-                        area: parcelArea,
-                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
-                        layer: layer
-                    });
-
-                    // Apply preview style (orange) - same as road preview
-                    layer.setStyle(previewAffectedStyle);
-
-                    if (typeof layer.bringToFront === 'function') {
-                        layer.bringToFront();
-                    }
-                    break;
-                }
-            }
-        } catch (error) { }
-    });
-
-    trackPreviewAffectedParcels = newPreviewParcels;
-
-    // Update the Set for fast O(1) lookups in resetHighlight
-    if (typeof window !== 'undefined') {
-        window.trackPreviewAffectedParcelIds = new Set(
-            newPreviewParcels
-                .map(p => p.id)
-                .filter(Boolean)
-                .map(id => id.toString())
-        );
-    }
-
-    // Calculate combined stats: locked stats + preview-only parcels (same as road preview)
-    const previewArea = newPreviewParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
-    const combinedCount = trackAffectedParcels.length + newPreviewParcels.length;
-    const combinedArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0) + previewArea;
-
-    // Calculate combined ownership counts and market price for live preview (same as road preview)
-    const combinedOwnershipCounts = {};
-    let combinedMarketPrice = 0;
-    let previewIndividualOwners = 0;
-
-    // Add committed parcel stats
-    for (const parcel of trackAffectedParcels) {
-        combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
-        const ownershipType = getOwnershipTypeFromParcel(parcel);
-        if (combinedOwnershipCounts[ownershipType] !== undefined) {
-            combinedOwnershipCounts[ownershipType]++;
-        } else {
-            combinedOwnershipCounts[ownershipType] = 1;
-        }
-    }
-
-    // Add preview parcel stats
-    for (const parcel of newPreviewParcels) {
-        // Add market price
-        combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
-
-        // Get ownership type and count
-        const ownershipType = getOwnershipTypeFromParcel(parcel);
-        if (combinedOwnershipCounts[ownershipType] !== undefined) {
-            combinedOwnershipCounts[ownershipType]++;
-        } else {
-            combinedOwnershipCounts[ownershipType] = 1;
-        }
-
-        // Count individual owners from parcel properties
-        const featureProps = parcel.layer?.feature?.properties || {};
-        const ownershipList = featureProps.ownershipList || [];
-        if (Array.isArray(ownershipList)) {
-            for (const owner of ownershipList) {
-                const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                if (typeof getOwnershipType === 'function') {
-                    const ownerType = getOwnershipType(ownerLabel);
-                    // getOwnershipType returns 'private individual' for individuals
-                    if (ownerType === 'individual' || ownerType === 'private individual' || ownerType === 'Fizička osoba') {
-                        previewIndividualOwners++;
-                    }
-                } else {
-                    // If getOwnershipType isn't available, count all owners as individuals
-                    previewIndividualOwners++;
-                }
-            }
-        } else if (!ownershipList || ownershipList.length === 0) {
-            // No ownership list - assume 1 individual owner
-            previewIndividualOwners++;
-        }
-    }
-
-    // Update UI with combined stats (same as road preview)
-    if (combinedCount > 0) {
-        setRoadParcelStats(combinedCount, formatParcelArea(combinedArea));
-    } else {
-        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
-    }
-
-    // Update ownership counts
-    setRoadOwnershipCounts(combinedOwnershipCounts);
-
-    // Update market price
-    const marketEl = document.getElementById('road-market-price');
-    if (marketEl) {
-        marketEl.textContent = combinedMarketPrice > 0 ? formatCurrency(combinedMarketPrice) : '—';
-    }
-
-    // Update individual owners count (committed + preview)
-    const lockedIndividualOwners = typeof getLockedIndividualOwnersCount === 'function'
-        ? getLockedIndividualOwnersCount()
-        : (lockedStats?.individualOwners || 0);
-    const totalIndividualOwners = lockedIndividualOwners + previewIndividualOwners;
-    const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
-    }
-
-    // Update acquiring difficulty with combined parcels
-    const combinedParcels = [...trackAffectedParcels, ...newPreviewParcels];
-    updateRoadAcquiringDifficulty(combinedParcels);
-}
-
-// Clear track affected parcels highlighting
-function clearTrackAffectedParcels() {
-    const trackIds = new Set(trackAffectedParcels.map(p => getParcelIdFromAny(p)).filter(Boolean));
-    if (trackAffectedParcels.length > 0) {
-        parcelLayer.eachLayer(layer => {
-            const parcelId = getParcelIdFromFeature(layer.feature);
-            if (parcelId && trackAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId)) {
-                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                layer.setStyle(isRoad ? roadStyle : normalStyle);
-            }
-        });
-    }
-    trackAffectedParcels = [];
-    // Remove track-locked parcels from both track-specific and shared locks
-    trackIds.forEach(id => {
-        lockedParcelIds.delete(id);
-        lockedTrackParcelIds.delete(id);
-    });
-}
-
-// Clear track preview affected parcels highlighting
-function clearTrackPreviewAffectedParcels() {
-    // Only iterate through the preview parcels list, not all parcels (performance) - same as road version
-    if (trackPreviewAffectedParcels.length > 0) {
-        for (const previewParcel of trackPreviewAffectedParcels) {
-            const layer = previewParcel.layer;
-            const parcelId = previewParcel.id;
-            if (!layer) continue;
-
-            // Check if it's also part of the *locked* affected parcels (same as road version)
-            if (lockedTrackParcelIds.has(parcelId) || lockedParcelIds.has(parcelId)) {
-                // It's locked/committed, revert to committed style (green)
-                layer.setStyle({
-                    fillColor: 'green',
-                    fillOpacity: 0.6,
-                    color: 'green',
-                    weight: 3
-                });
-            } else {
-                // Not committed, revert to its base style
-                const isMarkedAsRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
-            }
-        }
-    }
-    trackPreviewAffectedParcels = []; // Clear the preview list
-    // Clear the Set for fast lookups
-    if (typeof window !== 'undefined') {
-        window.trackPreviewAffectedParcelIds = new Set();
-    }
-}
-
-// Finish track drawing
-async function finishTrackDrawing() {
-    if (!trackHasStarted || trackPoints.length < 2) return;
-
-    const tunnelCheck = await ensureBuildingTunnelsForSegments(
-        [trackPoints], trackWidth, 'track', trackBuildingTunnels, ['track'], trackDemolishedBuildings
-    );
-    if (!tunnelCheck.accepted) return;
-    trackBuildingTunnels = tunnelCheck.records;
-    trackDemolishedBuildings = tunnelCheck.demolished;
-    refreshTrackBuildingTunnelLayer();
-
-    // Immediately stop interactions and preview while finishing
-    map.off('click', handleTrackClick);
-    map.off('mousemove', handleTrackMouseMove);
-    map.off('mouseout', handleTrackMouseOut);
-    document.removeEventListener('keydown', handleTrackKeydown);
-
-    if (trackPreviewLine) {
-        map.removeLayer(trackPreviewLine);
-        trackPreviewLine = null;
-    }
-    if (trackPreviewRailsLayer) {
-        map.removeLayer(trackPreviewRailsLayer);
-        trackPreviewRailsLayer = null;
-    }
-    if (trackPreviewPolygonLayer) {
-        trackPreviewPolygonLayer.removeFrom(map);
-        trackPreviewPolygonLayer = null;
-    }
-
-    const trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-    if (!isValidPolygonLatLngs(trackPolygon)) {
-        console.warn('finishTrackDrawing: invalid track polygon', { trackPolygon, trackPoints, trackWidth });
-        showRoadAlert('invalid_track_shape_please_try_drawing_the_track_again', 'Invalid track shape. Please try drawing the track again.');
-        exitTrackDrawingMode();
-        return;
-    }
-
-    // Use the accumulated committed parcels collected during drawing (proposal draft), do not rescan map now
-    const affectedParcels = Array.isArray(trackAffectedParcels) ? trackAffectedParcels.slice() : [];
-    console.log('finishTrackDrawing: affected parcels count', affectedParcels.length);
-    if (affectedParcels.length === 0) {
-        console.warn('finishTrackDrawing: no affected parcels found', { trackPolygon, trackPoints });
-        showRoadAlert('no_parcels_affected_by_this_track_please_try_drawing_the_track_again', 'No parcels affected by this track. Please try drawing the track again.');
-        exitTrackDrawingMode();
-        return;
-    }
-
-    const defaultAuthor = (typeof getCurrentUsername === 'function' && getCurrentUsername()) || '';
-    const defaultName = generateRandomTrackName();
-    const defaultOffer = generateRandomRoadOffer(5000, 200000); // Tracks might have different price range
-
-    // Seed multi-parcel selection with the affected parcels so the generalized modal can open
-    const parentParcelIds = affectedParcels
-        .map(p => getParcelIdFromAny(p))
-        .filter(Boolean)
-        .map(id => id.toString());
-
-    try {
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
-            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
-            }
-            if (typeof multiParcelSelection.clearSelection === 'function') {
-                multiParcelSelection.clearSelection();
-            }
-            parentParcelIds.forEach(id => {
-                if (!id) return;
-                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
-                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
-                multiParcelSelection.selectedParcels.add(id);
-                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
-                    multiParcelSelection.addParcelHighlight(layer);
-                }
-            });
-            if (typeof multiParcelSelection.updateUI === 'function') {
-                multiParcelSelection.updateUI();
-            }
-        }
-    } catch (selectionError) {
-        console.warn('Failed to seed multi-parcel selection for track proposal', selectionError);
-    }
-
-    const centerlineSegments = Array.isArray(trackPoints)
-        ? trackPoints
-            .map(pt => {
-                const lat = Number(pt?.lat ?? (Array.isArray(pt) ? pt[1] : null));
-                const lng = Number(pt?.lng ?? (Array.isArray(pt) ? pt[0] : null));
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-                return { lat, lng };
-            })
-            .filter(Boolean)
-        : [];
-
-    // Tunnelled stretches acquire nothing: parcels only under tunnel edges must not be parents.
-    if (Array.isArray(trackBuildingTunnels) && trackBuildingTunnels.length) {
-        const surfaceFootprint = corridorSurfaceFootprintGeoJSON([centerlineSegments], trackWidth, trackBuildingTunnels);
-        // A FULLY tunnelled corridor has no surface footprint: keep the declared parents (it
-        // then applies and splits like a normal corridor, matching calculateChildFeatures'
-        // fallback). Emptying the list failed validation and stranded the drawing as a draft.
-        if (surfaceFootprint) {
-            const surfaceIds = new Set(collectParcelsIntersectingFootprint(surfaceFootprint));
-            for (let i = parentParcelIds.length - 1; i >= 0; i--) {
-                if (!surfaceIds.has(parentParcelIds[i])) parentParcelIds.splice(i, 1);
-            }
-        }
-    }
-
-    const latLngPairs = convertRoadPolygonToLatLngPairs(trackPolygon);
-    const geoPolygon = convertLatLngPairsToGeoJSON(latLngPairs);
-
-    if (!geoPolygon || !geoPolygon.type || !Array.isArray(geoPolygon.coordinates)) {
-        console.error('[finishTrackDrawing] Failed to create GeoJSON polygon from track geometry:', {
-            hasTrackPolygon: !!trackPolygon,
-            trackPolygonLength: Array.isArray(trackPolygon) ? trackPolygon.length : 'not array',
-            hasLatLngPairs: !!latLngPairs,
-            latLngPairsLength: Array.isArray(latLngPairs) ? latLngPairs.length : 'not array',
-            geoPolygon
-        });
-    }
-
-    const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
-
-    const trackDrawingContext = {
-        parentParcelIds: parentParcelIds.slice(),
-        centerline: [centerlineSegments],
-        polygon: geoPolygon,
-        latLngPairs,
-        width: trackWidth,
-        sidewalkWidth: null,
-        tunnels: JSON.parse(JSON.stringify(trackBuildingTunnels || [])),
-        demolishedBuildings: JSON.parse(JSON.stringify(trackDemolishedBuildings || [])),
-        stats: ownershipAndAcquisitionStats,
-        metadata: {
-            mode: 'draw',
-            type: 'track',
-            isTrack: true,
-            isRoad: false, // tracks are NOT roads
-            isCorridor: true,
-            source: 'road-drawing',
-            trackSpeed: trackSpeed,
-            trackMinRadius: trackMinCurvatureRadius
-        }
-    };
-
-    if (typeof pendingRoadDrawingProposal !== 'undefined') {
-        pendingRoadDrawingProposal = trackDrawingContext;
-    }
-    if (typeof window !== 'undefined') {
-        window.pendingRoadDrawingProposal = trackDrawingContext;
-    }
-
-    if (typeof showProposalDialog !== 'function') {
-        console.error('[finishTrackDrawing] showProposalDialog is not defined');
-        exitTrackDrawingMode();
-        return;
-    }
-
-    // Same lineage hand-off as roads: a track that began life as a copy carries its source to the dialog.
-    const copySource = (typeof window !== 'undefined') ? window.pendingRoadCopySource : null;
-    if (typeof window !== 'undefined') window.pendingRoadCopySource = null;
-    const copyPrefill = (copySource && copySource.prefill) ? copySource.prefill : {};
-
-    // SimCity lifecycle: finishing the drawing IS the creation (see finishRoadDrawing).
-    // Drafts are created lazily on autosave — force one now if missing.
-    if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft('track');
-    const designDraftId = window.activeProposalDesignDraftId;
-    if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
-        window.syncActiveProposalDraftFromEditor?.('corridor', {
-            ...trackDrawingContext,
-            kind: 'track'
-        }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
-        exitTrackDrawingMode();
-        const merged = await absorbConnectedLocalCorridors('track', geoPolygon, designDraftId);
-        const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
-        if (createdId && typeof updateStatus === 'function') {
-            updateStatus(merged
-                ? translateRoadText('panel.road.mergedStatusTrack', 'Connected to “{{name}}” — now one track.', { name: merged.name })
-                : translateRoadText('panel.road.builtStatusTrack', 'Track built — click it to edit or propose.'));
-        }
-        return;
-    }
-
-    // Legacy path (drawing started without a design draft): the classic create dialog.
-    showProposalDialog({
-        goal: 'road-track',
-        lockGoal: true,
-        acquisitionMode: 'partial-preferred',
-        lockAcquisition: true,
-        geometryPreset: {
-            statusText: copySource
-                ? `Geometry copied from "${copySource.name}" and edited by drawing`
-                : 'Geometry created by drawing',
-            submitted: true,
-            selectedAction: 'upload',
-            disableButtons: true
-        },
-        prefill: {
-            ...copyPrefill,
-            author: defaultAuthor,
-            name: copyPrefill.name || defaultName,
-            description: copyPrefill.description || defaultName,
-            offer: Number.isFinite(copyPrefill.offer) ? copyPrefill.offer : defaultOffer
-        },
-        summaryStats: ownershipAndAcquisitionStats,
-        copySource: copySource ? { proposalId: copySource.proposalId, name: copySource.name } : null
-    });
-    exitTrackDrawingMode();
-    if (typeof updateStatus === 'function') {
-        updateStatus('Track geometry captured.');
-    }
-}
-
-// Cancel track drawing
-async function cancelTrackDrawing() {
-    if (trackHasStarted && trackPoints.length >= 2) {
-        await finishTrackDrawing();
-        return true;
-    }
-    exitTrackDrawingMode();
-    return true;
-}
-
-// Exit track drawing mode
-function exitTrackDrawingMode() {
-    map.off('click', handleTrackClick);
-    map.off('mousemove', handleTrackMouseMove);
-    map.off('mouseout', handleTrackMouseOut);
-    document.removeEventListener('keydown', handleTrackKeydown);
-
-    if (trackPreviewLine) {
-        map.removeLayer(trackPreviewLine);
-        trackPreviewLine = null;
-    }
-    if (trackPreviewRailsLayer) {
-        map.removeLayer(trackPreviewRailsLayer);
-        trackPreviewRailsLayer = null;
-    }
-    if (trackPreviewPolygonLayer) {
-        trackPreviewPolygonLayer.removeFrom(map);
-        trackPreviewPolygonLayer = null;
-    }
-
-    resetTrackDrawing();
-    trackDrawingMode = false;
-    updateGlobalTrackDrawingMode(false);
-
-    const trackDrawButton = document.getElementById('trackDrawButton');
-    if (trackDrawButton) {
-        trackDrawButton.classList.remove('active');
-        trackDrawButton.classList.remove('active-black-border');
-    }
-
-    const roadDrawingControls = document.getElementById('road-drawing-controls');
-    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
-
-    const roadInfoPanel = document.getElementById('road-info-panel');
-    if (roadInfoPanel) {
-        roadInfoPanel.classList.remove('visible');
-    }
-    setRoadPanelLabelsForMode('road');
-
-    map.getContainer().style.cursor = '';
-    map.getContainer().classList.remove('crosshairs-cursor');
-
-    restoreParcelClickInteractivity();
-
-    const statusElement = document.getElementById('status');
-    if (statusElement) updateStatus('');
-    window.finishProposalDraftDesignSession?.();
-}
-
-// Reset track drawing variables
-function resetTrackDrawing(hidePanel = true) {
-    // Capture the current committed track parcel IDs before clearing highlights
-    const trackIds = new Set(trackAffectedParcels.map(p => getParcelIdFromAny(p)).filter(Boolean));
-
-    // Clear affected parcels highlighting BEFORE clearing the arrays
-    clearTrackAffectedParcels();
-    clearTrackPreviewAffectedParcels();
-
-    trackPoints = [];
-    trackBuildingTunnels = [];
-    trackDemolishedBuildings = [];
-    trackHasStarted = false;
-    trackAffectedParcels = [];
-    trackIds.forEach(id => {
-        lockedParcelIds.delete(id);
-        lockedTrackParcelIds.delete(id);
-    });
-
-    // Clear segment history for undo
-    trackSegmentHistory = [];
-
-    // Reset cached committed track metrics
-    committedTrackMetrics.length = 0;
-    committedTrackMetrics.area = 0;
-
-    // Reset shared lockedStats when exiting track mode (same as roads)
-    lockedStats.parcelCount = 0;
-    lockedStats.totalArea = 0;
-    lockedStats.ownershipCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
-    lockedStats.marketPrice = 0;
-    lockedStats.individualOwners = 0;
-
-    if (trackCenterline) {
-        map.removeLayer(trackCenterline);
-        trackCenterline = null;
-    }
-
-    if (trackRailsLayer) {
-        map.removeLayer(trackRailsLayer);
-        trackRailsLayer = null;
-    }
-
-    if (trackPolygonLayer && map.hasLayer(trackPolygonLayer)) {
-        map.removeLayer(trackPolygonLayer);
-        trackPolygonLayer = null;
-    }
-    trackPolygon = null;
-
-    if (trackPreviewLine) {
-        map.removeLayer(trackPreviewLine);
-        trackPreviewLine = null;
-    }
-
-    if (trackPreviewRailsLayer) {
-        map.removeLayer(trackPreviewRailsLayer);
-        trackPreviewRailsLayer = null;
-    }
-
-    if (trackPreviewPolygonLayer) {
-        trackPreviewPolygonLayer.removeFrom(map);
-        trackPreviewPolygonLayer = null;
-    }
-
-    for (const marker of trackMarkers) {
-        if (marker && map.hasLayer(marker)) {
-            map.removeLayer(marker);
-        }
-    }
-    trackMarkers = [];
-    if (trackBuildingTunnelLayer && map.hasLayer(trackBuildingTunnelLayer)) {
-        map.removeLayer(trackBuildingTunnelLayer);
-    }
-    trackBuildingTunnelLayer = null;
-
-    if (hidePanel) {
-        const roadInfoPanel = document.getElementById('road-info-panel');
-        if (roadInfoPanel) {
-            roadInfoPanel.classList.remove('visible');
-        }
-    }
-
-    // Initialize Set for fast lookups
-    if (typeof window !== 'undefined') {
-        window.trackPreviewAffectedParcelIds = new Set();
-    }
-}
-
-// Expose renderTrackWithRails globally for use in other modules
-if (typeof window !== 'undefined') {
-    window.renderTrackWithRails = renderTrackWithRails;
-    // Expose trackPreviewAffectedParcels so other modules can check if a parcel is in track preview
-    Object.defineProperty(window, 'trackPreviewAffectedParcels', {
-        get: function () { return trackPreviewAffectedParcels; }
     });
 }
 

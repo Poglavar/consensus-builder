@@ -1,7 +1,7 @@
 // GET /objects?geometry=<geometry>
 // Get 3D building geometry using local PostGIS spatial query
-// No external ArcGIS dependency - uses building_footprint for spatial lookup
-// and building_3d for the actual 3D geometry
+// No external ArcGIS dependency - uses gdi_building_footprint for spatial lookup
+// and gdi_building_3d for the actual 3D geometry (both keyed by the same object_id)
 function isFinitePosition(position) {
     return Array.isArray(position)
         && position.length >= 2
@@ -87,14 +87,14 @@ export function setupObjectRoute(app, pool) {
             }
 
             // Use local PostGIS spatial query instead of external ArcGIS API
-            // Join building_footprint (for spatial lookup) with building_3d (for 3D geometry)
+            // Join gdi_building_footprint (spatial lookup) with gdi_building_3d (3D geometry)
             const sql = `
                 SELECT DISTINCT
                     b3d.object_id,
                     ST_AsGeoJSON(b3d.shape)::jsonb AS geometry,
                     bf.metadata::jsonb AS properties
-                FROM building_footprint bf
-                JOIN building_3d b3d ON bf.object_id = b3d.object_id
+                FROM gdi_building_footprint bf
+                JOIN gdi_building_3d b3d ON bf.object_id = b3d.object_id
                 WHERE ST_Intersects(
                     bf.geom,
                     ST_Transform(

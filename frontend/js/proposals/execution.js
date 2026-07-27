@@ -1,155 +1,8 @@
 // proposals/execution.js — extracted from proposals.js (behavior-preserving relocation).
 
-function normalizeOwnerAcceptances(ownerAcceptances = {}) {
-    const normalized = {};
-    if (!ownerAcceptances || typeof ownerAcceptances !== 'object') {
-        return normalized;
-    }
-    Object.entries(ownerAcceptances).forEach(([parcelId, entry]) => {
-        if (parcelId === undefined || parcelId === null) {
-            return;
-        }
-        const normalizedParcelId = parcelId.toString();
-        const owners = entry && typeof entry.owners === 'object' ? entry.owners : {};
-        const ownerOrder = Array.isArray(entry && entry.ownerOrder)
-            ? entry.ownerOrder.filter(key => typeof key === 'string' && key.length > 0)
-            : Object.keys(owners);
-        const acceptedOwnerKeys = Array.isArray(entry && entry.acceptedOwnerKeys)
-            ? Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)))
-            : [];
-        const acceptedBy = entry && typeof entry.acceptedBy === 'object' ? entry.acceptedBy : {};
-
-        // Ensure ownerOrder also contains any accepted keys
-        acceptedOwnerKeys.forEach(key => {
-            if (!ownerOrder.includes(key)) {
-                ownerOrder.push(key);
-            }
-        });
-
-        normalized[normalizedParcelId] = {
-            owners,
-            ownerOrder,
-            acceptedOwnerKeys,
-            acceptedBy
-        };
-    });
-    return normalized;
-}
-
-function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options = {}) {
-    if (!proposal) {
-        return null;
-    }
-    if (!proposal.ownerAcceptances || typeof proposal.ownerAcceptances !== 'object') {
-        proposal.ownerAcceptances = {};
-    }
-
-    const normalizedParcelId = parcelId ? parcelId.toString() : null;
-    if (!normalizedParcelId) {
-        return null;
-    }
-
-    if (!proposal.ownerAcceptances[normalizedParcelId]) {
-        proposal.ownerAcceptances[normalizedParcelId] = {
-            owners: {},
-            ownerOrder: [],
-            acceptedOwnerKeys: [],
-            acceptedBy: {}
-        };
-    }
-
-    const entry = proposal.ownerAcceptances[normalizedParcelId];
-    const ownerOrderSet = new Set(entry.ownerOrder || []);
-
-    const ownerSlotsArray = Array.isArray(ownerSlots) ? ownerSlots : [];
-    ownerSlotsArray.forEach(slot => {
-        if (!slot || !slot.key) {
-            return;
-        }
-        const normalizedOwner = {
-            key: slot.key,
-            displayName: slot.displayName || slot.name || `Owner ${ownerOrderSet.size + 1}`,
-            shareText: slot.shareText || '',
-            shareDetail: slot.shareDetail || '',
-            type: slot.type || 'unknown',
-            agentId: slot.agentId || null,
-            placeholder: !!slot.placeholder
-        };
-        entry.owners[slot.key] = {
-            ...(entry.owners[slot.key] || {}),
-            ...normalizedOwner
-        };
-        if (!ownerOrderSet.has(slot.key)) {
-            entry.ownerOrder.push(slot.key);
-            ownerOrderSet.add(slot.key);
-        }
-    });
-
-    const hasNonPlaceholderSlots = ownerSlotsArray.some(slot => slot && !slot.placeholder);
-    if (hasNonPlaceholderSlots) {
-        const placeholderKeys = Object.keys(entry.owners || {}).filter(key => {
-            const owner = entry.owners[key];
-            if (!owner) return false;
-            if (owner.placeholder) return true;
-            const display = (owner.displayName || '').toLowerCase();
-            const share = (owner.shareText || '').trim();
-            const looksLegacyPlaceholder = owner.type === 'unknown'
-                && !owner.agentId
-                && (!display || display.includes('parcel owner') || display.includes('unknown owner'))
-                && (!share || share === '100%' || share === '1');
-            return looksLegacyPlaceholder;
-        });
-        if (placeholderKeys.length > 0) {
-            placeholderKeys.forEach(key => {
-                delete entry.owners[key];
-                if (entry.acceptedBy && entry.acceptedBy[key]) {
-                    delete entry.acceptedBy[key];
-                }
-            });
-            entry.ownerOrder = (entry.ownerOrder || []).filter(key => !placeholderKeys.includes(key));
-            entry.acceptedOwnerKeys = (entry.acceptedOwnerKeys || []).filter(key => !placeholderKeys.includes(key));
-            placeholderKeys.forEach(key => ownerOrderSet.delete(key));
-        }
-    }
-
-    if (!Array.isArray(entry.acceptedOwnerKeys)) {
-        entry.acceptedOwnerKeys = [];
-    }
-    entry.acceptedOwnerKeys = Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)));
-    entry.acceptedOwnerKeys.forEach(key => {
-        if (!ownerOrderSet.has(key)) {
-            entry.ownerOrder.push(key);
-            ownerOrderSet.add(key);
-        }
-    });
-
-    if (!entry.acceptedBy || typeof entry.acceptedBy !== 'object') {
-        entry.acceptedBy = {};
-    }
-
-    const shouldSync = options.syncWithParcelAcceptance !== false;
-    const parcelAccepted = shouldSync
-        ? Array.isArray(proposal.acceptedParcelIds) && proposal.acceptedParcelIds.includes(normalizedParcelId)
-        : false;
-
-    if (parcelAccepted && entry.acceptedOwnerKeys.length === 0 && entry.ownerOrder.length > 0) {
-        entry.ownerOrder.forEach(key => {
-            if (!entry.acceptedOwnerKeys.includes(key)) {
-                entry.acceptedOwnerKeys.push(key);
-                if (!entry.acceptedBy[key]) {
-                    entry.acceptedBy[key] = {
-                        agentId: null,
-                        username: null,
-                        acceptedAt: proposal.executedAt || proposal.updatedAt || new Date().toISOString()
-                    };
-                }
-            }
-        });
-    }
-
-    proposal.ownerAcceptances[normalizedParcelId] = entry;
-    return entry;
-}
+// normalizeOwnerAcceptances and ensureOwnerAcceptanceEntry moved to
+// frontend/js/proposals/owner-acceptance.js (loaded first) so they are unit-tested. The globals
+// they define are used here and in proposals/core.js and data.js.
 
 function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     if (!proposal) {
@@ -181,8 +34,7 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         if (isAccepted && currentUser && acceptanceMeta.agentId === currentUser.id) {
             canUndo = true;
             // If proposal is executed, only allow undo if there are no descendants
-            const proposalStatus = (proposal.status || '').toLowerCase();
-            if (proposalStatus === 'executed') {
+            if (getLifecycleStatus(proposal) === 'Executed') {
                 if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
                     const descendants = ProposalManager._getProposalDescendants(proposal.proposalId);
                     if (descendants && descendants.length > 0) {
@@ -232,6 +84,11 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     // Check if proposal is expired - disable buttons if so
     const proposalExpired = isProposalExpired(proposal);
 
+    // Vote proposals relabel the owner-row actions: Accept -> Vote yes, Undo -> Rescind.
+    // The onclick handlers are unchanged (handleUserAcceptProposal / handleUserRejectProposal
+    // detect the vote proposal and route to castVote / rescindVote on-chain).
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
     // Compute parcel and owner payout shares
     const offerAmount = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : 0;
     const offerCurrency = proposal.offerCurrency || proposal.currency || '';
@@ -264,33 +121,48 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const tProposalUI = getProposalI18nHelper();
         if (proposalExpired) {
             // Show disabled buttons for expired proposals
+            const expiredTitle = isVote
+                ? tProposalUI('panel.proposal.voting.concluded', 'Vote concluded')
+                : tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired');
             if (entry.accepted) {
+                const undoLabel = isVote
+                    ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
+                    : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired')}">
-                        ${tProposalUI('panel.proposal.acceptance.undo', 'Undo')}
+                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                        ${undoLabel}
                     </button>`;
             }
             else {
+                const acceptLabel = isVote
+                    ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
+                    : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
                 buttonsHtml = `
-                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired')}">
-                        ${tProposalUI('panel.proposal.acceptance.accept', 'Accept')}
+                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="${expiredTitle}">
+                        ${acceptLabel}
                     </button>`;
             }
         } else if (entry.accepted && entry.canUndo) {
             const rejectCall = skipParcelPanelFocus
                 ? `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
+            const undoLabel = isVote
+                ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
+                : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
             buttonsHtml = `
                 <button class="btn btn-sm btn-outline-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
-                    Undo
+                    ${undoLabel}
                 </button>`;
         } else if (!entry.accepted && entry.canAccept) {
             const acceptCall = skipParcelPanelFocus
                 ? `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
+            const acceptLabel = isVote
+                ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
+                : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
             buttonsHtml = `
-                <button class="btn btn-sm btn-success" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
-                    ${tProposalUI('panel.proposal.acceptance.accept', 'Accept')}
+                <button class="btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                    ${acceptLabel}
                 </button>`;
         }
 
@@ -347,7 +219,12 @@ function buildParcelAcceptanceStatusHtml(proposal) {
         total
     );
 
-    const labelText = `${tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:')} (${acceptedCount}/${total})`;
+    // For vote proposals this same bar reads as support: parcels where every owner voted yes.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+    const titleText = isVote
+        ? tProposalUI('panel.proposal.voting.parcelTitle', 'Parcel Support:')
+        : tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
+    const labelText = `${titleText} (${acceptedCount}/${total})`;
 
     // If more than 65 parcels, show progress bar instead of circles
     if (total > 65) {
@@ -604,7 +481,8 @@ function claimSaleOffer(proposalId, buyerAgentId) {
         recipientAddress: buyer, buyer, status: 'sold'
     };
     proposal.funded = true;
-    proposal.status = 'Executed';
+    // Executing advances the shared lifecycle only. Map materialisation is a separate local action.
+    proposal.lifecycleStatus = 'Executed';
     proposal.executedAt = new Date().toISOString();
 
     const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
@@ -1148,45 +1026,14 @@ function isProposalApplied(proposal) {
         || proposal.decideLaterProposal
     );
 
-    const globalStatus = (proposal.status || '').toLowerCase();
-    if (hasSpatialComponent && (globalStatus === 'applied' || globalStatus === 'executed')) {
-        return true;
-    }
+    if (!hasSpatialComponent) return false;
 
-    const roadStatus = (proposal.roadProposal && proposal.roadProposal.status) ? proposal.roadProposal.status.toLowerCase() : '';
-    if (roadStatus === 'applied' || roadStatus === 'executed') {
-        return true;
-    }
-
-    const buildingStatus = (proposal.buildingProposal && proposal.buildingProposal.status)
-        ? proposal.buildingProposal.status.toLowerCase()
-        : '';
-    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
-        return true;
-    }
-
-    const structureStatus = structureData && structureData.status
-        ? structureData.status.toLowerCase()
-        : '';
-    if (structureStatus === 'applied' || structureStatus === 'executed') {
-        return true;
-    }
-
-    const reparcelStatus = (proposal.reparcellization && proposal.reparcellization.status)
-        ? proposal.reparcellization.status.toLowerCase()
-        : '';
-    if (reparcelStatus === 'applied' || reparcelStatus === 'executed') {
-        return true;
-    }
-
-    const decideLaterStatus = (proposal.decideLaterProposal && proposal.decideLaterProposal.status)
-        ? proposal.decideLaterProposal.status.toLowerCase()
-        : '';
-    if (decideLaterStatus === 'applied' || decideLaterStatus === 'executed') {
-        return true;
-    }
-
-    return false;
+    // Canonical map-application axis (proposals/status.js). Prefers the explicit `applied` boolean on
+    // the proposal or any of its sub-proposals; falls back to the legacy applied/executed status for
+    // rows the split has not upgraded. isApplied is a global defined by status.js, loaded first.
+    if (isApplied(proposal)) return true;
+    return [proposal.roadProposal, proposal.buildingProposal, structureData, proposal.reparcellization, proposal.decideLaterProposal]
+        .some(sub => sub && isApplied(proposal, sub));
 }
 
 function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
@@ -1267,19 +1114,10 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
-    const isAppliedLike = (value) => {
-        const normalized = (value || '').toString().toLowerCase();
-        return normalized === 'applied' || normalized === 'executed';
-    };
-
-    // Executed proposals are considered immutable and should be skipped for re-apply.
-    if (isAppliedLike(proposal.status)) return true;
-    if (proposal.roadProposal && isAppliedLike(proposal.roadProposal.status)) return true;
-    if (proposal.buildingProposal && isAppliedLike(proposal.buildingProposal.status)) return true;
-    if (proposal.structureProposal && isAppliedLike(proposal.structureProposal.status)) return true;
-    if (proposal.reparcellization && isAppliedLike(proposal.reparcellization.status)) return true;
-    if (proposal.decideLaterProposal && isAppliedLike(proposal.decideLaterProposal.status)) return true;
-    return false;
+    // Canonical map-application axis: the boolean on the proposal or any sub-proposal.
+    if (isApplied(proposal)) return true;
+    return [proposal.roadProposal, proposal.buildingProposal, proposal.structureProposal, proposal.reparcellization, proposal.decideLaterProposal]
+        .some(sub => sub && isApplied(proposal, sub));
 }
 
 function isProposalAppliedAndMaterialized(proposal) {
@@ -1452,10 +1290,14 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const parcelNumber = parcelLayer?.feature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
         let proposalExecuted = false;
-        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed
-        const canExecute = proposal.funded !== false && proposalRecipientConsentSatisfied(proposal);
+        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed.
+        // Vote proposals never execute or transfer — they only accumulate yes-votes in this same
+        // structure (so the tally UI is shared), staying "Open for voting" until they conclude.
+        const canExecute = proposal.funded !== false
+            && !isVoteProposal(proposal)
+            && proposalRecipientConsentSatisfied(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
-            proposal.status = 'Executed';
+            proposal.lifecycleStatus = 'Executed';
             proposal.executedAt = new Date().toISOString();
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(proposal);
@@ -1500,17 +1342,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                     }
                 }
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
-                if (proposal.buildingProposal) {
-                    proposal.buildingProposal.status = 'executed';
-                }
                 if (typeof markProposedBuildingState === 'function') {
                     markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true, save: true });
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
-                }
-            } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square' || proposal.structureProposal.kind === 'lake')) {
-                if (proposal.structureProposal) {
-                    proposal.structureProposal.status = 'executed';
                 }
             }
 
@@ -1547,8 +1382,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // Check if proposal is executed and has descendants
-    const proposalStatus = (proposal.status || '').toLowerCase();
-    if (proposalStatus === 'executed') {
+    if (getLifecycleStatus(proposal) === 'Executed') {
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
             const descendants = ProposalManager._getProposalDescendants(proposalId);
             if (descendants && descendants.length > 0) {
@@ -1579,37 +1413,45 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
-    // Check if this proposal is minted on-chain — if so, withdraw on-chain first
+    // A vote proposal rescinds its yes-vote (rescindVote) instead of withdrawing an acceptance;
+    // rescission is always allowed while voting is open, so the conditional/executed guards don't apply.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
+    // Check if this proposal is minted on-chain — if so, withdraw/rescind on-chain first
     const rejectNftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const isOnChain = rejectNftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.withdrawAcceptance === 'function';
+    const rejectBridge = window.ProposalChainBridge;
+    const rejectMethod = isVote ? 'rescindVote' : 'withdrawAcceptance';
+    const isOnChain = rejectNftInfo && rejectBridge && typeof rejectBridge[rejectMethod] === 'function';
     const normalizedParcelIdForChain = normalizeParcelId(parcelId);
 
     if (isOnChain) {
-        // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
-        if (proposalStatus === 'executed' || proposalStatus === 'applied') {
-            showProposalAlertMessage('cannot_withdraw_executed_proposal',
-                'This acceptance cannot be withdrawn because the proposal has been executed.');
-            return;
-        }
-        if (!proposal.isConditional) {
-            showProposalAlertMessage('cannot_withdraw_non_conditional',
-                'This acceptance cannot be withdrawn because the proposal is not conditional.');
-            return;
+        if (!isVote) {
+            // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
+            if (getLifecycleStatus(proposal) === 'Executed' || isApplied(proposal)) {
+                showProposalAlertMessage('cannot_withdraw_executed_proposal',
+                    'This acceptance cannot be withdrawn because the proposal has been executed.');
+                return;
+            }
+            if (!proposal.isConditional) {
+                showProposalAlertMessage('cannot_withdraw_non_conditional',
+                    'This acceptance cannot be withdrawn because the proposal is not conditional.');
+                return;
+            }
         }
         try {
             if (typeof updateStatus === 'function') {
-                updateStatus('Withdrawing acceptance on chain...');
+                updateStatus(isVote ? 'Rescinding vote on chain...' : 'Withdrawing acceptance on chain...');
             }
-            await window.ProposalChainBridge.withdrawAcceptance({
+            await rejectBridge[rejectMethod]({
                 proposalId: rejectNftInfo.tokenId,
                 parcelId: normalizedParcelIdForChain,
                 chainId: rejectNftInfo.chain,
                 contractAddress: rejectNftInfo.contract
             });
         } catch (onchainErr) {
-            console.warn('On-chain withdrawal failed:', onchainErr);
+            console.warn(isVote ? 'On-chain vote rescind failed:' : 'On-chain withdrawal failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage('on_chain_withdrawal_failed', friendlyMessage);
+            showProposalAlertMessage(isVote ? 'on_chain_vote_rescind_failed' : 'on_chain_withdrawal_failed', friendlyMessage);
             return;
         }
     }
@@ -1621,7 +1463,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus('Acceptance withdrawn on chain.');
+        updateStatus(isVote ? 'Vote rescinded on chain.' : 'Acceptance withdrawn on chain.');
     }
 
     const ownerLabel = targetEntry.shareText
@@ -1629,11 +1471,16 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         : targetEntry.displayName;
 
     if (typeof addUserActionToGameLog === 'function') {
-        addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`);
+        const logMsg = isVote
+            ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> rescinded the yes-vote as ${ownerLabel} on proposal ${proposalId}.`
+            : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`;
+        addUserActionToGameLog(logMsg);
     }
 
     if (typeof updateStatus === 'function') {
-        updateStatus(`Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
+        updateStatus(isVote
+            ? `Rescinded vote for ${ownerLabel}.`
+            : `Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
     }
 
     // Preserve exact scroll/anchor position before update
@@ -1718,13 +1565,13 @@ function rejectProposal(proposalId, parcelId, ownerKey = null) {
             proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
         }
 
-        // If proposal was executed and now has no descendants, change status back to Active
-        const proposalStatus = (proposal.status || '').toLowerCase();
-        if (proposalStatus === 'executed') {
+        // If proposal was executed and now has no descendants, revert the LIFECYCLE to Active.
+        // Pure lifecycle change — leave `applied` (the map-application axis) untouched.
+        if (getLifecycleStatus(proposal) === 'Executed') {
             if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
                 const descendants = ProposalManager._getProposalDescendants(proposalId);
                 if (!descendants || descendants.length === 0) {
-                    proposal.status = 'Active';
+                    proposal.lifecycleStatus = 'Active';
                     delete proposal.executedAt;
                 }
             }

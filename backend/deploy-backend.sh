@@ -38,9 +38,13 @@ npm ci
 
 echo "Restarting PM2 process..."
 mkdir -p logs
-# Idempotent: register the app on first deploy, restart on subsequent ones.
-pm2 describe "${PM2_APP}" >/dev/null 2>&1 || pm2 start ecosystem.config.cjs --only "${PM2_APP}"
-pm2 restart "${PM2_APP}" --update-env
+# Restart FROM THE ECOSYSTEM FILE, not by process name. `pm2 restart <name>` reuses the config PM2
+# saved when the app was first started, so a change to `env:` in ecosystem.config.cjs is silently
+# ignored — the deploy reports success and the process keeps the old environment. (That is exactly
+# how PUBLIC_API_BASE_URL stayed unset after being added: deploy "succeeded", env unchanged.)
+# Passing the file makes PM2 re-read it, and --update-env applies the result.
+# Idempotent: `pm2 restart <file>` starts the app if it is not running yet.
+pm2 restart ecosystem.config.cjs --only "${PM2_APP}" --update-env
 pm2 save
 pm2 status
 

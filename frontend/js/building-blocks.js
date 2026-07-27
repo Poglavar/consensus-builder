@@ -40,13 +40,15 @@ let wingPositions = [];
 let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
 let lastSuperparcel = null;      // the exact parcel outline, to clip the building so nothing pokes out
 let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
-let blockifyLiveLayer = null;    // transient dashed outline shown while dragging a manual vertex
+let blockifyPolygonEditor = null; // shared manual-outline editor (also used by freeform buildings)
+let blockifyPendingVertexActionIndex = null; // survives the synchronous rebuild after drag release
 // Manual (freeform) footprint mode: a one-way branch from the parametric sliders. In manual mode the
-// outer ring's vertices are draggable, the footprint sliders are inert, and the courtyard is still
-// re-inset by the (frozen) building width. Height stays live. "Back to sliders" regenerates
+// outer ring's vertices are draggable, the shape-producing sliders are inert, and the courtyard is
+// re-inset by the live building-width slider. Height also stays live. "Back to sliders" regenerates
 // parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
 let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
+let manualBuildSucceeded = false; // has any manual build produced a shape? gates the trapped-state recovery
 // Design to restore when the modal next opens, instead of starting from the defaults. Set by
 // openUrbanRuleForParcels({ initialState }) — used by "Copy into new proposal" so a fork reopens
 // the editor showing the original design, with every control live. Consumed once, then cleared.
@@ -145,7 +147,6 @@ function describeParcelSelection(ids) {
 }
 
 // --- 3D preview state ---
-let blockifyThreeLoadPromise = null;
 let blockify3D = {
     renderer: null,
     scene: null,
@@ -201,18 +202,10 @@ function setBlockify3DAnchor(lng, lat) {
     blockify3D.anchorLngLat = { lng: safeLng, lat: safeLat };
 }
 
+// The ground-metres frame lives in frontend/js/local-frame.js (loaded first). Same formula as
+// before — this is a de-dup, not a behaviour change.
 function projectToLocalMeters(lng, lat, anchor) {
-    const aLng = anchor?.lng ?? 0;
-    const aLat = anchor?.lat ?? 0;
-    const ln = Number(lng);
-    const lt = Number(lat);
-    if (!Number.isFinite(ln) || !Number.isFinite(lt)) return null;
-    const scaleX = 111320 * Math.cos(aLat * Math.PI / 180);
-    const scaleY = 110540;
-    return [
-        (ln - aLng) * scaleX,
-        (lt - aLat) * scaleY
-    ];
+    return window.LocalFrame.projectToLocalMeters(lng, lat, anchor);
 }
 
 const BLOCKIFY_ALGORITHMS = {
@@ -277,340 +270,10 @@ function setBlockifyInfo(key, fallback, params = {}) {
 }
 
 // --- Geometry utilities to improve robustness ---
-const GEOM_BUFFER_STEPS = 16;
-const GEOM_EPSILON_M = 0.1; // small clean-up buffer in meters
-
-// Ensure polygon/multipolygon is simple, closed, proper winding and without duplicate points
-function sanitizePolygonFeature(inputFeature) {
-    if (!inputFeature) return null;
-    try {
-        let feature = inputFeature;
-        // Standardize ring winding: outer CCW, inner CW
-        try { feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
-        // Remove consecutive duplicate coordinates
-        try { feature = turf.cleanCoords(feature, { mutate: false }); } catch (_) { }
-        // Split self-intersections into simple pieces
-        try {
-            const unkinked = turf.unkinkPolygon(feature);
-            if (unkinked && unkinked.features && unkinked.features.length > 0) {
-                // Merge pieces via tiny buffer dissolve
-                let dissolved = null;
-                for (const f of unkinked.features) {
-                    const fbuf = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                    dissolved = dissolved ? (turf.union(dissolved, fbuf) || dissolved) : fbuf;
-                }
-                if (dissolved) {
-                    // Remove the cleaning buffer
-                    const unbuf = turf.buffer(dissolved, -GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                    if (unbuf) feature = unbuf;
-                }
-            }
-        } catch (_) { }
-        return feature;
-    } catch (e) {
-        console.warn('sanitizePolygonFeature failed:', e);
-        return inputFeature;
-    }
-}
-
-// Robust negative buffer (inset). Performs incremental buffering in small steps to avoid topology collapses
-function robustNegativeBuffer(feature, targetInsetMeters) {
-    const step = Math.max(0.5, Math.min(2, targetInsetMeters / 5)); // 0.5–2m steps
-    let remaining = targetInsetMeters;
-    let current = feature;
-    while (remaining > 1e-6) {
-        const d = Math.min(step, remaining);
-        try {
-            const next = turf.buffer(current, -d, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-            if (!next || !next.geometry) return null;
-            current = next;
-            remaining -= d;
-        } catch (e) {
-            // Try tiny clean-up and retry once
-            try {
-                const cleaned = turf.buffer(current, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                const retried = turf.buffer(cleaned, -(d + GEOM_EPSILON_M), { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                if (!retried || !retried.geometry) return null;
-                current = retried;
-                remaining -= d;
-            } catch (_) {
-                return null;
-            }
-        }
-    }
-    return current;
-}
-
-// Union many polygons robustly with clean-up buffers
-function robustUnion(features) {
-    if (!features || features.length === 0) return null;
-    let acc = null;
-    for (const raw of features) {
-        const f = sanitizePolygonFeature(raw);
-        if (!f) continue;
-        try {
-            const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-            acc = acc ? (turf.union(acc, fb) || acc) : fb;
-        } catch (e) {
-            // As a fallback, skip this piece
-            console.warn('robustUnion: skipping one piece due to error', e);
-        }
-    }
-    if (!acc) return null;
-    // Remove the dissolve buffer
-    try {
-        const unbuf = turf.buffer(acc, -GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-        if (unbuf) acc = unbuf;
-    } catch (_) { }
-    return acc;
-}
-
-// Select the largest-area Polygon from a Polygon or MultiPolygon feature
-function toSingleLargestPolygon(feature) {
-    try {
-        if (!feature || !feature.geometry) return null;
-        if (feature.geometry.type === 'Polygon') return feature;
-        if (feature.geometry.type !== 'MultiPolygon') return feature;
-        const polys = feature.geometry.coordinates;
-        let best = null;
-        let bestArea = -Infinity;
-        for (const rings of polys) {
-            try {
-                const polyFeat = turf.polygon(rings);
-                const area = turf.area(polyFeat);
-                if (area > bestArea) {
-                    bestArea = area;
-                    best = rings;
-                }
-            } catch (_) { }
-        }
-        if (!best) return null;
-        return {
-            type: 'Feature',
-            properties: feature.properties || {},
-            geometry: { type: 'Polygon', coordinates: best }
-        };
-    } catch (e) {
-        console.warn('toSingleLargestPolygon failed:', e);
-        return feature;
-    }
-}
-
-// Chamfer (row-house style) applied selectively to sharp-ish vertices.
-// We chamfer vertices whose *internal* angle is <= maxInternalAngleDeg.
-function applySelectiveChamferToPolygonGeometry(geometry, chamferLengthMeters, maxInternalAngleDeg = 100) {
-    if (!geometry || chamferLengthMeters <= 0) return geometry;
-
-    const isValidRing = (ring) => Array.isArray(ring) && ring.length >= 4;
-    const ensureRingClosed = (ring) => {
-        if (!Array.isArray(ring) || ring.length === 0) return ring;
-        const first = ring[0];
-        const last = ring[ring.length - 1];
-        if (!last || first[0] !== last[0] || first[1] !== last[1]) {
-            return ring.concat([[first[0], first[1]]]);
-        }
-        return ring;
-    };
-
-    const signedArea = (coords) => {
-        if (!Array.isArray(coords) || coords.length < 3) return 0;
-        let sum = 0;
-        for (let i = 0; i < coords.length; i++) {
-            const a = coords[i];
-            const b = coords[(i + 1) % coords.length];
-            sum += (a[0] * b[1]) - (b[0] * a[1]);
-        }
-        return sum / 2;
-    };
-
-    const chamferRing = (ring, centroidLngLat) => {
-        if (!isValidRing(ring)) return ring;
-
-        const [cLng, cLat] = centroidLngLat;
-        const metersPerDegLng = 111320 * Math.cos(cLat * Math.PI / 180);
-        const metersPerDegLat = 110540;
-
-        const toMeters = ([lng, lat]) => [
-            (lng - cLng) * metersPerDegLng,
-            (lat - cLat) * metersPerDegLat
-        ];
-        const toDegrees = ([x, y]) => [
-            x / metersPerDegLng + cLng,
-            y / metersPerDegLat + cLat
-        ];
-
-        const openRing = ring.slice(0, -1);
-        const meterRing = openRing.map(toMeters);
-        const n = meterRing.length;
-        if (n < 3) return ring;
-
-        const areaSign = signedArea(meterRing) >= 0 ? 1 : -1; // +1 CCW, -1 CW
-        const chamferedRing = [];
-
-        for (let i = 0; i < n; i++) {
-            const prev = meterRing[(i - 1 + n) % n];
-            const curr = meterRing[i];
-            const next = meterRing[(i + 1) % n];
-
-            const toPrev = [prev[0] - curr[0], prev[1] - curr[1]];
-            const toNext = [next[0] - curr[0], next[1] - curr[1]];
-            const lenToPrev = Math.sqrt(toPrev[0] * toPrev[0] + toPrev[1] * toPrev[1]);
-            const lenToNext = Math.sqrt(toNext[0] * toNext[0] + toNext[1] * toNext[1]);
-
-            if (lenToPrev < 0.001 || lenToNext < 0.001) {
-                chamferedRing.push(curr);
-                continue;
-            }
-
-            const incoming = [curr[0] - prev[0], curr[1] - prev[1]];
-            const outgoing = [next[0] - curr[0], next[1] - curr[1]];
-            const dot = incoming[0] * outgoing[0] + incoming[1] * outgoing[1];
-            const cross = incoming[0] * outgoing[1] - incoming[1] * outgoing[0];
-            const turn = Math.atan2(cross, dot);
-            const internal = Math.PI - areaSign * turn;
-            const internalDeg = internal * 180 / Math.PI;
-
-            // Same cap as row-house chamfer to avoid destroying small edges
-            const effectiveChamfer = Math.min(chamferLengthMeters, lenToPrev * 0.4, lenToNext * 0.4);
-
-            if (!(internalDeg <= maxInternalAngleDeg) || effectiveChamfer < 0.001) {
-                chamferedRing.push(curr);
-                continue;
-            }
-
-            const normPrev = [toPrev[0] / lenToPrev, toPrev[1] / lenToPrev];
-            const normNext = [toNext[0] / lenToNext, toNext[1] / lenToNext];
-
-            const p1 = [
-                curr[0] + normPrev[0] * effectiveChamfer,
-                curr[1] + normPrev[1] * effectiveChamfer
-            ];
-
-            const p2 = [
-                curr[0] + normNext[0] * effectiveChamfer,
-                curr[1] + normNext[1] * effectiveChamfer
-            ];
-
-            chamferedRing.push(p1);
-            chamferedRing.push(p2);
-        }
-
-        const degreesRing = chamferedRing.map(toDegrees);
-        return ensureRingClosed(degreesRing);
-    };
-
-    const chamferPolygon = (rings) => {
-        if (!Array.isArray(rings) || rings.length === 0) return rings;
-        let centroidLngLat = null;
-        try {
-            const poly = turf.polygon(rings);
-            const c = turf.centroid(poly);
-            centroidLngLat = c && c.geometry && Array.isArray(c.geometry.coordinates) ? c.geometry.coordinates : null;
-        } catch (_) { }
-        if (!centroidLngLat) {
-            try {
-                const p = rings[0] && rings[0][0] ? rings[0][0] : null;
-                centroidLngLat = p ? [p[0], p[1]] : [0, 0];
-            } catch (_) { centroidLngLat = [0, 0]; }
-        }
-        return rings.map(ring => chamferRing(ensureRingClosed(ring), centroidLngLat));
-    };
-
-    if (geometry.type === 'Polygon') {
-        return {
-            type: 'Polygon',
-            coordinates: chamferPolygon(geometry.coordinates)
-        };
-    }
-
-    if (geometry.type === 'MultiPolygon') {
-        return {
-            type: 'MultiPolygon',
-            coordinates: geometry.coordinates.map(polyRings => chamferPolygon(polyRings))
-        };
-    }
-
-    return geometry;
-}
-
-function applySelectiveChamferToFeature(feature, chamferLengthMeters, maxInternalAngleDeg = 100) {
-    if (!feature || !feature.geometry || chamferLengthMeters <= 0) return feature;
-    const nextGeom = applySelectiveChamferToPolygonGeometry(feature.geometry, chamferLengthMeters, maxInternalAngleDeg);
-    if (!nextGeom) return feature;
-    const nextFeature = {
-        type: 'Feature',
-        properties: feature.properties ? { ...feature.properties } : {},
-        geometry: nextGeom
-    };
-    try { return turf.rewind(nextFeature, { reverse: false }); } catch (_) { return nextFeature; }
-}
-
-// Compute minimum edge length (meters) for a polygon outer ring
-function computeMinEdgeLengthMeters(coords) {
-    let minLen = Infinity;
-    let minPair = null;
-    if (!coords || coords.length < 2) return { minLen, minPair };
-    for (let i = 0; i < coords.length - 1; i++) {
-        const p1 = coords[i];
-        const p2 = coords[i + 1];
-        try {
-            const d = turf.distance(turf.point(p1), turf.point(p2), { units: 'meters' });
-            if (d < minLen) {
-                minLen = d;
-                minPair = [p1, p2];
-            }
-        } catch (_) { }
-    }
-    return { minLen, minPair };
-}
-
-// Incrementally inset a polygon by applying multiple small negative buffers
-function incrementalInsetPolygon(startFeature, targetInsetMeters, minEdgeMeters) {
-    const result = {
-        feature: null,
-        achievedInset: 0,
-        reason: 'ok', // ok | min_edge | invalid
-        minEdgePair: null,
-        minEdgeValue: null
-    };
-    if (!startFeature || targetInsetMeters <= 0) {
-        result.feature = startFeature;
-        return result;
-    }
-
-    const step = Math.max(0.25, Math.min(1.0, targetInsetMeters / 10));
-    let remaining = targetInsetMeters;
-    let current = toSingleLargestPolygon(startFeature) || startFeature;
-    let lastValid = current;
-
-    while (remaining > 1e-6) {
-        const d = Math.min(step, remaining);
-        let candidate = robustNegativeBuffer(current, d);
-        candidate = toSingleLargestPolygon(candidate) || candidate;
-        if (!candidate || !candidate.geometry || candidate.geometry.type !== 'Polygon') {
-            result.reason = 'invalid';
-            break;
-        }
-        const outer = candidate.geometry.coordinates[0];
-        if (minEdgeMeters > 0) {
-            const { minLen, minPair } = computeMinEdgeLengthMeters(outer);
-            if (isFinite(minLen) && minLen < minEdgeMeters) {
-                result.reason = 'min_edge';
-                result.minEdgePair = minPair;
-                result.minEdgeValue = minLen;
-                break;
-            }
-        }
-        // Accept this step
-        lastValid = candidate;
-        current = candidate;
-        result.achievedInset += d;
-        remaining -= d;
-    }
-
-    result.feature = lastValid;
-    return result;
-}
+// Robust footprint geometry (sanitizePolygonFeature, robustNegativeBuffer, robustUnion,
+// toSingleLargestPolygon, the selective chamfer + incrementalInsetPolygon, and the GEOM_* consts)
+// moved to frontend/js/footprint-geometry.js (loaded first) and is now unit-tested. Callers here
+// and in row-house/single-building/parcel-based/proposals-geometry use the globals unchanged.
 
 function updateBlockifyButton() {
     // Use the updateBlockButtonStates function in index.html to handle all button states
@@ -639,7 +302,9 @@ function showErrorPopup(message) {
     modal.style.display = 'flex';
     modal.style.justifyContent = 'center';
     modal.style.alignItems = 'center';
-    modal.style.zIndex = '2000';
+    // Must sit ABOVE the blockify/urban-rule modal (z-index 12050) — at the old 2000 this "too
+    // complex" dialog rendered behind the editor, so the user only saw it after closing the editor.
+    modal.style.zIndex = '30050';
 
     // Create modal content
     const modalContent = document.createElement('div');
@@ -955,19 +620,9 @@ let blockifyDebugLayer = null;
 
 async function ensureThreeForBlockify() {
     if (typeof THREE !== 'undefined') return true;
-    if (blockifyThreeLoadPromise) {
-        await blockifyThreeLoadPromise;
-        return typeof THREE !== 'undefined';
-    }
-    blockifyThreeLoadPromise = new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js';
-        script.async = true;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-    });
-    await blockifyThreeLoadPromise;
+    // THREE comes from index.html's ESM bootstrap — never load a second copy here, an old
+    // UMD build would clobber the r184 global for the whole app.
+    if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
     return typeof THREE !== 'undefined';
 }
 
@@ -1179,8 +834,9 @@ function initBlockify3DSimple() {
         controls.enablePan = true;
     }
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.9);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
+    // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+    const amb = new THREE.AmbientLight(0xffffff, 0.9 * Math.PI);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.7 * Math.PI);
     dir.position.set(300, 300, 500);
     scene.add(amb);
     scene.add(dir);
@@ -1433,9 +1089,7 @@ function hydrateProposedBuildingsFromProposals() {
     proposals.forEach(p => {
         if (!p || !p.buildingProposal) return;
 
-        const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-        const isActive = status === 'applied' || status === 'executed';
-        if (!isActive) return;
+        if (!isApplied(p, p.buildingProposal)) return;
 
         if (cityId && isInCityFn) {
             const cityIds = (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
@@ -1452,6 +1106,14 @@ function hydrateProposedBuildingsFromProposals() {
         const features = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings : [];
 
         if (!features.length) return;
+
+        // Same lifecycle rule as the apply path (proposals/apply/buildings.js). This used to read a
+        // bare `status`, which in a browser silently resolves to window.status (the legacy
+        // status-bar string, '') — so an EXECUTED proposal's buildings came back stamped '' and were
+        // relabelled 'applied' downstream, and outside a browser it was a hard ReferenceError.
+        const status = (typeof getLifecycleStatus === 'function' && getLifecycleStatus(p) === 'Executed')
+            ? 'executed'
+            : 'applied';
 
         // Base props should act as defaults only. Per-building properties (parcelId, buildingIndex, etc.)
         // must NOT be overridden by proposal-level buildingProperties; otherwise we can collapse multiple
@@ -1519,9 +1181,7 @@ function loadExecutedBuildingsFromStorage() {
                 const activeBuildingCounts = new Map(); // proposalId -> count (0 means unknown)
                 proposals.forEach(p => {
                     if (!p || !p.buildingProposal) return;
-                    const status = (p.buildingProposal.status || p.status || '').toLowerCase();
-                    const isActive = status === 'applied' || status === 'executed';
-                    if (!isActive) return;
+                    if (!isApplied(p, p.buildingProposal)) return;
                     const pid = p.proposalId || p.id;
                     if (!pid) return;
                     const count = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings.length : 0;
@@ -1567,9 +1227,20 @@ function loadExecutedBuildingsFromStorage() {
 
         if (typeof window !== 'undefined') { window.proposedBuildings = list; }
 
-        // If there are buildings and checkbox is checked, update the layer
-        const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+        // The paved/green surround of a freeform proposal belongs to the proposal, not to the
+        // buildings layer, so it is painted on load regardless of the buildings checkbox below.
+        if (typeof window !== 'undefined') {
+            try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface hydration failed', error); }
+        }
+
+        // Applied buildings are part of the map, so a reload must show them — exactly as applying
+        // one does (every creation path ticks this box). #showProposedBuildings is a session toggle
+        // with no persisted OFF state: it starts unchecked on every load, so gating the first render
+        // on it meant an applied building proposal silently vanished on refresh while roads, which
+        // have no such gate, came back. The proposal itself was in storage all along.
+        if (list.length > 0) {
+            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+            if (showProposedBuildingsCheckbox) showProposedBuildingsCheckbox.checked = true;
             // Use setTimeout to ensure map is ready
             setTimeout(() => {
                 updateProposedBuildingsLayer();
@@ -1608,12 +1279,14 @@ function updateProposedBuildingsLayer() {
     }
 
     const list = ensureProposedBuildingsState();
+    // Announce every refresh, including one that empties the layer: unapplying the last proposed
+    // building has to reach 3D and the photoreal carve too, or their meshes go stale.
+    if (typeof window !== 'undefined') {
+        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+        // The paved/green surround of a freeform proposal follows its buildings on and off the map.
+        try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
+    }
     if (list.length > 0) {
-        // Sync global so 3D mode can rebuild immediately
-        if (typeof window !== 'undefined') {
-            window.proposedBuildings = list;
-            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
-        }
         proposedBuildingLayer = L.featureGroup().addTo(map);
 
         list.forEach((building, index) => {
@@ -1838,7 +1511,8 @@ function showBlockifyModal() {
         document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
         // Add event listeners
-        document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
+        document.getElementById('blockify-close').addEventListener('click', requestCloseBlockifyModal);
+        document.addEventListener('keydown', handleBlockifyKeydown);
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) {
             doneButton.addEventListener('click', saveBlockifyDesignForProposal);
@@ -1891,6 +1565,10 @@ function showBlockifyModal() {
                         generatedBuildingFeature.properties.height = currentBuildingHeight;
                     }
                     updateBlockify3DScene(generatedBuildingFeature);
+                    // The draft carries its own copy of the feature and it is what gets published
+                    // (serializeProposal reads editorPayload.context.buildings). Nothing regenerates
+                    // the footprint here, so without this autosave a height-only edit was dropped.
+                    autosaveBlockifyDraft();
                 }
             });
         }
@@ -2002,12 +1680,8 @@ function showBlockifyModal() {
             });
         }
 
-        // Close modal when clicking outside the container
-        modalDiv.addEventListener('click', (e) => {
-            if (e.target === modalDiv) {
-                closeBlockifyModal();
-            }
-        });
+        // No outside-click close: a stray click on the backdrop would throw the design away.
+        // The editor is left only via the X (discard, after confirming) or Done (save).
         // Prevent the 3D canvas from being occluded by map interactions
         const threeDiv = document.getElementById('blockify-3d');
         if (threeDiv) {
@@ -2043,6 +1717,7 @@ function showBlockifyModal() {
     gapPositions = [];
     wingPositions = [];
     blockifyMode = 'parametric';
+    blockifyPendingVertexActionIndex = null;
     manualOuterRing = [];
     existingRule = 'exact';
     currentProposedHeightFloors = DEFAULT_PROPOSED_HEIGHT_FLOORS;
@@ -2147,17 +1822,38 @@ function syncBlockifyControlsFromState() {
     if (typeof updateExistingValueLabels === 'function') updateExistingValueLabels();
 }
 
-// Function to close the blockify modal
+// Is there a generated design in the editor right now?
+function blockifyHasGeneratedDesign() {
+    return !!generatedBuildingFeature
+        || (Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length > 0);
+}
+
+// The X / Esc path. Closing NEVER saves — only "Done" (saveBlockifyDesignForProposal) does. When
+// the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette creation)
+// the design would be lost, so ask first; declining keeps the editor open.
+async function requestCloseBlockifyModal() {
+    if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+        const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: blockifyHasGeneratedDesign() });
+        if (!proceed) return;
+    }
+    closeBlockifyModal();
+}
+
+// Escape closes the editor exactly like the X does (discard, after confirming).
+function handleBlockifyKeydown(event) {
+    if (event.key !== 'Escape') return;
+    if (!document.getElementById('blockify-modal')) return;
+    event.preventDefault();
+    requestCloseBlockifyModal();
+}
+
+// Tear the blockify modal down. This is pure teardown: the design is committed (or not) by the
+// caller — "Done" saves first, X/Esc discards the design session first.
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
-    const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
-    const hasDraftGeometry = !!generatedBuildingFeature
-        || (Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length > 0);
-    if (!preservePending && hasDraftGeometry && activeDraft
-        && ['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)) {
-        saveBlockifyDesignForProposal();
-        return;
-    }
+    document.removeEventListener('keydown', handleBlockifyKeydown);
+    blockifyPendingVertexActionIndex = null;
+    clearGapWingHandles();
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -2206,12 +1902,10 @@ function closeBlockifyModal(options = {}) {
         const setbackSlider = document.getElementById('setback-slider');
         const widthSlider = document.getElementById('width-slider');
 
-        if (closeBtn) closeBtn.removeEventListener('click', closeBlockifyModal);
+        if (closeBtn) closeBtn.removeEventListener('click', requestCloseBlockifyModal);
         if (doneBtn) doneBtn.removeEventListener('click', saveBlockifyDesignForProposal);
         if (setbackSlider) setbackSlider.removeEventListener('input', null);
         if (widthSlider) widthSlider.removeEventListener('input', null);
-
-        modal.removeEventListener('click', closeBlockifyModal);
 
         // Remove the modal
         modal.remove();
@@ -2234,7 +1928,12 @@ function closeBlockifyModal(options = {}) {
             window.pendingBuildingFromBlockify = null;
         }
     }
-    if (typeof window !== 'undefined') window.finishProposalDraftDesignSession?.();
+    if (typeof window !== 'undefined') {
+        // Only "Done" commits — it tears down with preservePending after saving. Every other
+        // close abandons the design session, leaving the edited object exactly as it was.
+        if (!preservePending) window.discardProposalDraftDesignSession?.();
+        window.finishProposalDraftDesignSession?.();
+    }
 }
 
 // Display the block on the blockify map
@@ -2304,6 +2003,53 @@ function simplifyAndClipOutline(feature, simplifyM, parcel) {
         }
     }
     return outline;
+}
+
+// The most vertices a manually-editable outline may carry. Manual mode drops a draggable handle on
+// every vertex, so the raw parametric outline (a negative buffer rounds every corner into
+// GEOM_BUFFER_STEPS segments — a big block's ring runs to tens of thousands of points) is unusable:
+// the browser would try to create that many Leaflet markers and freeze. This is the editable budget.
+const MANUAL_MAX_VERTICES = 60;
+
+// Reduce a [lng,lat] ring to at most `target` vertices by raising the Douglas–Peucker tolerance until
+// it fits (binary search on tolerance in metres). Rings already within budget are returned untouched
+// so a small parcel keeps its exact corners. Returns a ring (open — no closing dup); on any failure
+// returns the input unchanged so manual mode still gets *something* to edit.
+function simplifyRingToVertexTarget(ring, target = MANUAL_MAX_VERTICES) {
+    if (!Array.isArray(ring) || ring.length <= target) return ring;
+    try {
+        const closed = ring.slice();
+        const f = closed[0], l = closed[closed.length - 1];
+        if (!l || f[0] !== l[0] || f[1] !== l[1]) closed.push([f[0], f[1]]);
+        const feature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [closed] } };
+
+        let best = null;
+        let lo = 0.25, hi = 50; // metres
+        for (let i = 0; i < 18; i++) {
+            const mid = (lo + hi) / 2;
+            let simplified;
+            try {
+                simplified = turf.simplify(feature, { tolerance: mid / 111320, highQuality: false, mutate: false });
+            } catch (_) { break; }
+            const coords = simplified && simplified.geometry && simplified.geometry.coordinates[0];
+            const n = Array.isArray(coords) ? coords.length : Infinity;
+            if (n > target) {
+                lo = mid; // still too many → simplify harder
+            } else {
+                best = coords;
+                hi = mid; // fits → try to keep more detail
+            }
+        }
+        if (Array.isArray(best) && best.length >= 4) {
+            const out = best.map(c => [c[0], c[1]]);
+            const of = out[0], ol = out[out.length - 1];
+            if (ol && of[0] === ol[0] && of[1] === ol[1]) out.pop(); // drop closing dup
+            return out;
+        }
+    } catch (err) {
+        console.warn('Ring simplification to vertex target failed', err);
+    }
+    return ring;
 }
 
 // Resize a positions array (fractions 0..1 along the ring) to `count`, preserving existing entries:
@@ -3049,11 +2795,14 @@ function displayBuildingInModal(buildingFeature) {
 // Draw a draggable handle on the modal map at each gap/wing position. Dragging one snaps it back onto
 // the outer ring, updates its fraction (0..1 along the ring), and regenerates the block.
 function clearGapWingHandles() {
+    if (blockifyPolygonEditor) {
+        try { blockifyPolygonEditor.destroy(); } catch (_) { }
+        blockifyPolygonEditor = null;
+    }
     if (blockifyHandleLayer && blockifyMap) {
         try { blockifyMap.removeLayer(blockifyHandleLayer); } catch (_) { }
     }
     blockifyHandleLayer = null;
-    clearManualLiveOutline();
 }
 
 function renderGapWingHandles() {
@@ -3113,7 +2862,11 @@ const FOOTPRINT_SLIDER_IDS = ['setback-slider', 'chamfer-slider', 'simplify-slid
 function setFootprintSlidersEnabled(enabled) {
     FOOTPRINT_SLIDER_IDS.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.disabled = !enabled;
+        if (!el) return;
+        // Manual mode owns the outer outline, but width remains a useful independent parameter: it
+        // changes only the inward offset/courtyard and leaves every hand-edited vertex untouched.
+        const manualWidth = blockifyMode === 'manual' && id === 'width-slider';
+        el.disabled = !(enabled || manualWidth);
     });
 }
 
@@ -3135,16 +2888,29 @@ function enterManualMode() {
         return;
     }
     blockifyMode = 'manual';
+    blockifyPendingVertexActionIndex = null;
     // Seed the editable ring from the last clean outer ring (drop the closing duplicate vertex).
     const ring = lastOuterRing.slice();
     if (ring.length >= 2) {
         const f = ring[0], l = ring[ring.length - 1];
         if (l && f[0] === l[0] && f[1] === l[1]) ring.pop();
     }
-    manualOuterRing = ring.map(c => [c[0], c[1]]);
+    // Cap the handle count: a large block's outline carries tens of thousands of vertices, which would
+    // make manual mode drop that many draggable markers (a tab-freezing amount) and leaves nothing a
+    // person could actually drag. Simplify to an editable budget first; the subsequent build re-clips
+    // it inside the parcel so the simplification can't push an edge out.
+    const rawVertices = ring.length;
+    manualOuterRing = simplifyRingToVertexTarget(ring.map(c => [c[0], c[1]]));
+    manualBuildSucceeded = false;
     setFootprintSlidersEnabled(false);
     updateManualToggleLabel();
-    setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+    if (rawVertices > manualOuterRing.length) {
+        setBlockifyInfo('blockify.modal.manual.hintSimplified',
+            'Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.',
+            { count: manualOuterRing.length });
+    } else {
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.');
+    }
     generateManualBuilding();
 }
 
@@ -3154,6 +2920,7 @@ function exitToParametricMode() {
         : true;
     if (!proceed) return;
     blockifyMode = 'parametric';
+    blockifyPendingVertexActionIndex = null;
     manualOuterRing = [];
     setFootprintSlidersEnabled(true);
     updateManualToggleLabel();
@@ -3418,7 +3185,7 @@ function displayBuildingsInModal(features) {
     autosaveBlockifyDraft(features);
 }
 
-// Build the block from the user-edited outer ring: re-inset by the (frozen) building width so it
+// Build the block from the user-edited outer ring: re-inset by the current building width so it
 // stays a ring-with-hole (or a solid building if the courtyard collapses).
 function generateManualBuilding() {
     if (blockifyMode !== 'manual') return;
@@ -3458,82 +3225,77 @@ function generateManualBuilding() {
         }
 
         generatedBuildingFeature = buildingFeature;
+        manualBuildSucceeded = true;
         displayBuildingInModal(buildingFeature);
-        renderManualVertexHandles();
+        renderManualPolygonEditor();
 
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) doneButton.disabled = false;
     } catch (err) {
         console.error('Manual building generation failed:', err);
+        // If the outline was never buildable in the first place (the failure happened on entry, before
+        // any successful manual build), don't strand the user in a manual mode with dead sliders and an
+        // unactionable "move the vertex back" — there's no good vertex to move back to. Drop straight
+        // back to the parametric sliders, which produced a working shape, and say why.
+        if (!manualBuildSucceeded) {
+            blockifyMode = 'parametric';
+            manualOuterRing = [];
+            setFootprintSlidersEnabled(true);
+            updateManualToggleLabel();
+            clearGapWingHandles();
+            setBlockifyInfo('blockify.modal.manual.entryFailed',
+                'This outline is too complex to edit by hand — back to the sliders. Tip: raise "Simplify (m)" to smooth it, then try editing again.');
+            try { generateBuildingInModal(); } catch (_) { }
+            return;
+        }
+        // Mid-edit failure (a bad drag off a previously-good shape): the vertex-back hint is right, and
+        // the last good shape is still on screen.
         setBlockifyInfo('blockify.modal.manual.error', 'Could not build from the manual outline. Try moving the vertex back.');
     }
 }
 
-// Draggable handle at each outer-ring vertex; drag reshapes the manual outline.
-function renderManualVertexHandles() {
+// The block editor and freeform-building editor intentionally share this controller. It preserves
+// manual mode's proven drag cadence (cheap live outline, full rebuild on release) and adds the same
+// edge-click insertion and selected-vertex deletion behavior to both tools.
+function renderManualPolygonEditor() {
+    const initialSelectedVertexIndex = blockifyPendingVertexActionIndex;
+    blockifyPendingVertexActionIndex = null;
     clearGapWingHandles();
     if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
-    blockifyHandleLayer = L.layerGroup().addTo(blockifyMap);
-    manualOuterRing.forEach((coord, idx) => {
-        const marker = L.marker([coord[1], coord[0]], {
-            draggable: true,
-            title: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
-            icon: L.divIcon({
-                className: 'blockify-handle blockify-handle--vertex',
-                html: '<span></span>',
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            })
-        });
-        // Live: the outline follows the vertex as it moves (a cheap dashed polygon, no re-inset).
-        marker.on('drag', () => {
-            const ll = marker.getLatLng();
-            manualOuterRing[idx] = [ll.lng, ll.lat];
-            drawManualLiveOutline();
-        });
-        // Release: constrain the vertex to the parcel, then do the full rebuild (inset + clip).
-        marker.on('dragend', () => {
-            const ll = marker.getLatLng();
-            let pt = [ll.lng, ll.lat];
-            if (lastSuperparcel && lastSuperparcel.geometry) {
-                try {
-                    if (!turf.booleanPointInPolygon(turf.point(pt), lastSuperparcel)) {
-                        const line = turf.polygonToLine(lastSuperparcel);
-                        const snapped = turf.nearestPointOnLine(line, turf.point(pt));
-                        if (snapped && snapped.geometry) pt = snapped.geometry.coordinates;
-                    }
-                } catch (_) { }
-            }
-            manualOuterRing[idx] = pt;
-            marker.setLatLng([pt[1], pt[0]]);
-            clearManualLiveOutline();
-            generateManualBuilding();
-        });
-        marker.addTo(blockifyHandleLayer);
-    });
-}
-
-// Lightweight dashed outline of the manual ring, redrawn while a vertex is being dragged so the shape
-// visibly follows the cursor without paying for the full inset/clip rebuild on every mouse move.
-function clearManualLiveOutline() {
-    if (blockifyLiveLayer && blockifyMap) {
-        try { blockifyMap.removeLayer(blockifyLiveLayer); } catch (_) { }
+    if (!window.PolygonGeometryEditor || typeof window.PolygonGeometryEditor.create !== 'function') {
+        console.error('Shared polygon geometry editor is unavailable.');
+        return;
     }
-    blockifyLiveLayer = null;
-}
-
-function drawManualLiveOutline() {
-    clearManualLiveOutline();
-    if (!blockifyMap || !Array.isArray(manualOuterRing) || manualOuterRing.length < 3) return;
-    const latlngs = manualOuterRing.map(c => [c[1], c[0]]);
-    blockifyLiveLayer = L.polygon(latlngs, {
-        color: '#fb8c00', weight: 2, dashArray: '5,5', fill: false, interactive: false
-    }).addTo(blockifyMap);
+    blockifyPolygonEditor = window.PolygonGeometryEditor.create({
+        map: blockifyMap,
+        leaflet: L,
+        turf,
+        ring: manualOuterRing,
+        boundary: () => lastSuperparcel,
+        initialSelectedVertexIndex,
+        showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
+        vertexTitle: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
+        deleteTitle: translateBuildingText('blockify.modal.manual.deleteVertex', 'Delete selected vertex'),
+        onLiveChange: ({ ring }) => {
+            manualOuterRing = ring;
+        },
+        onCommit: ({ ring, reason, vertexIndex }) => {
+            blockifyPendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
+            manualOuterRing = ring;
+            generateManualBuilding();
+            // Successful regeneration consumes this while recreating the controller; a failed
+            // regeneration leaves the current controller alive to show its own release action.
+            blockifyPendingVertexActionIndex = null;
+        }
+    });
 }
 
 // Pull the largest Polygon out of an uploaded GeoJSON (Feature / FeatureCollection / geometry) and
 // return its outer ring as [lng,lat] vertices (closing duplicate stripped), or null if none.
 function extractOuterRingFromGeojson(data) {
+    if (window.PolygonGeometryEditor?.extractOuterRingFromGeoJSON) {
+        return window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(data, turf);
+    }
     const geoms = [];
     const collect = (g) => {
         if (!g || typeof g !== 'object') return;
@@ -3574,7 +3336,7 @@ function loadGeojsonFootprint(file) {
         manualOuterRing = ring;
         setFootprintSlidersEnabled(false);
         updateManualToggleLabel();
-        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag the vertices to reshape the outline. Height stays adjustable.');
+        setBlockifyInfo('blockify.modal.manual.hint', 'Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex to remove it. Width and height stay adjustable.');
         generateManualBuilding();
     };
     reader.onerror = () => showBuildingAlert('blockify.modal.manual.uploadError', 'Could not read that file.');
@@ -3676,7 +3438,38 @@ window.openUrbanRuleForParcels = openUrbanRuleForParcels;
 window.openBlockifyForParcels = openBlockifyForParcels;
 
 // Function to capture current blockify configuration for later proposal creation
-function saveBlockifyDesignForProposal() {
+// Measure the block footprint and, if it's larger than the recommended size, ask the user to confirm.
+// Returns true to proceed (not oversized, user accepted, or the measurement/confirm was unavailable),
+// false only when the user actively backs out. Never throws — a warning must not block a valid save.
+async function confirmBlockSizeIfOversized(block) {
+    try {
+        if (typeof ProposalWarnings === 'undefined' || typeof turf === 'undefined') return true;
+        let outline = (lastSuperparcel && lastSuperparcel.geometry) ? lastSuperparcel : null;
+        if (!outline && block && Array.isArray(block.parcels)) {
+            outline = robustUnion(block.parcels.map(p => p && p.feature).filter(Boolean));
+        }
+        if (!outline || !outline.geometry) return true;
+        const perimeterM = turf.length(outline, { units: 'kilometers' }) * 1000;
+        const assessment = ProposalWarnings.assessBlockSize(perimeterM);
+        if (!assessment.oversized) return true;
+        const confirmFn = (typeof window !== 'undefined') ? window.showStyledConfirm : null;
+        if (typeof confirmFn !== 'function') return true; // no styled confirm → don't stand in the way
+        const message = translateBuildingText(
+            'blockify.modal.warnings.oversizedBlock',
+            'This block is large — walking around it would take about {{minutes}} minutes. Recommended blocks are between 50×50 m and 200×200 m, so they can be walked around in about 2½ to 10 minutes. Do you want to proceed?',
+            { minutes: assessment.roundedMinutes }
+        );
+        return await confirmFn(message, {
+            okText: translateBuildingText('blockify.modal.warnings.proceed', 'Proceed anyway'),
+            cancelText: translateBuildingText('blockify.modal.warnings.cancel', 'Go back')
+        });
+    } catch (err) {
+        console.warn('[blockify] oversized-block check failed', err);
+        return true;
+    }
+}
+
+async function saveBlockifyDesignForProposal() {
     const existingModeFeatures = (blockifyMode === 'existing' && Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length)
         ? generatedBuildingFeatures
         : null;
@@ -3692,6 +3485,10 @@ function saveBlockifyDesignForProposal() {
         if (info) setBlockifyInfo('blockify.modal.messages.blockHasNoParcels', 'Block has no parcels.');
         return;
     }
+
+    // Gentle nudge before committing an oversized block: quote how long it would take to walk around
+    // and let the user proceed anyway. Best-effort — a measurement hiccup must never block the save.
+    if (!(await confirmBlockSizeIfOversized(block))) return;
 
     const parentDetails = [];
     const normalizedParcelIds = [];

@@ -4,13 +4,9 @@
 // the proposal itself stores the standard footprint box that flows through the building pipeline.
 
 (function () {
-    const THREE_VERSION = '0.147.0';
-    const CDN = (path) => `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/${path}`;
-
     let modalEl = null;
     let onConfirmCb = null;
     let currentContext = null;
-    let threeLoadPromise = null;
 
     // Preview scene state
     const preview = {
@@ -38,31 +34,15 @@
             Object.prototype.hasOwnProperty.call(params, k) ? params[k] : m);
     }
 
-    function loadScript(src) {
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-    }
-
-    // Ensure THREE core, OrbitControls and GLTFLoader are present (matches the rest of the app's CDN pattern).
+    // THREE (incl. OrbitControls + GLTFLoader) comes from index.html's ESM bootstrap — never
+    // script-load a second copy here, an old UMD build would clobber the r184 global.
     async function ensureThree() {
-        if (typeof THREE === 'undefined') {
-            if (!threeLoadPromise) threeLoadPromise = loadScript(CDN('build/three.min.js'));
-            await threeLoadPromise;
+        if (typeof window.THREE === 'undefined' && typeof window.whenThreeReady === 'function') {
+            await window.whenThreeReady();
         }
-        if (typeof THREE === 'undefined') return false;
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript(CDN('examples/js/controls/OrbitControls.js'));
-        }
-        if (typeof THREE.GLTFLoader === 'undefined') {
-            await loadScript(CDN('examples/js/loaders/GLTFLoader.js'));
-        }
-        return typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined';
+        const ok = typeof window.THREE !== 'undefined' && typeof window.THREE.GLTFLoader !== 'undefined';
+        if (!ok) console.warn('[building-upload] THREE bootstrap missing — 3D preview unavailable');
+        return ok;
     }
 
     function setStatus(text, isError = false) {
@@ -146,8 +126,9 @@
         renderer.setSize(w, h);
         preview.container.appendChild(renderer.domElement);
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7 * Math.PI));
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(40, 60, 25);
         scene.add(dir);
         scene.add(new THREE.GridHelper(120, 24, 0xbac4d0, 0xd5dce5));

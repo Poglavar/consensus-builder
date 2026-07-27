@@ -4,9 +4,11 @@
 // left-to-right across the corridor. The total width is the sum of the lanes, so `definition.width`
 // becomes a derived cache rather than the truth, and every existing consumer of `width` keeps working.
 //
-// This separation is what lets a road's *content* be reshuffled (swap parking for trees, widen the
-// sidewalk) without moving its footprint: as long as the lanes still sum to the same total, the
-// corridor polygon — and therefore the parcel split and every descendant proposal — is untouched.
+// This separation is what lets a road's *content* be reshuffled (swap parking for trees, drag the seam
+// between two lanes): as long as the lanes still sum to the same total, the corridor polygon — and
+// therefore the parcel split and every descendant proposal — is untouched. When the lanes DO sum to
+// something else (a lane is added, removed or resized) the total moves with them and the footprint
+// follows, which is how a road is widened or narrowed. See the Editing section below.
 //
 // OSM COMPATIBILITY
 // The lane list is the same object OSM's own cross-section tagging describes, and the same one the
@@ -22,54 +24,97 @@
 const CORRIDOR_LANE_TYPES = {
     driving: { label: 'Traffic lane', surface: '#2b2b2b', height: 0, osm: { key: 'lanes' }, directional: true },
     bus: { label: 'Bus lane', surface: '#4a3b33', height: 0, osm: { key: 'busway', value: 'lane' }, directional: true },
-    parking: { label: 'Parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' } },
+    // Three ways to park a car against a kerb, one lane type each — they differ in how deep the lane is
+    // and how the bays are painted, so a single `parking` type could never draw them right. `orientation`
+    // is what the bay-marking renderer and the OSM bridge switch on; `fixedWidth` locks the lane to its
+    // standard depth (a bay's depth is a real-world constant, not a slider). `parking` is the legacy key,
+    // kept so stored/imported parking lanes stay valid — it IS parallel parking (a 2.5 m kerbside lane).
+    parking: { label: 'Parallel parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
+    parking_perpendicular: { label: 'Perpendicular parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
+    parking_angled: { label: 'Angled parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
     cycleway: { label: 'Cycle path', surface: '#7d3b34', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
     verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
-    rail: { label: 'Rail bed', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
+    // One TRACK — a single pair of rails and the ballast under it. A rail lane carries a `gauge`, the way
+    // a verge carries a `landscape`: it is a property of the lane, and it sets the lane's width.
+    rail: { label: 'Track', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
+// What a footway is surfaced with. Asphalt is the default (a strip of the same black the road is
+// made of); paved is stone — drawn with the running-bond paving texture in 3D and photo view, and a
+// stone fill in 2D. A property of the lane, exactly like a verge's landscape or a track's gauge.
+const CORRIDOR_PAVINGS = ['asphalt', 'paved'];
+const CORRIDOR_PAVED_TYPES = new Set(['sidewalk']);
+// The stone a paved footway reads as where the texture cannot be drawn (2D, and 3D before the
+// texture loads). Light enough to separate from the asphalt beside it at any zoom.
+const CORRIDOR_PAVED_SURFACE = '#d8d2c4';
 const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
+
+// The orientation a parking lane paints its bays at, or null for a lane that is not parking. The three
+// parking types are the only ones that carry it; everything that draws or exports bays asks this rather
+// than testing the type strings, so adding a fourth orientation is one entry in CORRIDOR_LANE_TYPES.
+function corridorParkingOrientation(type) {
+    const lane = CORRIDOR_LANE_TYPES[type];
+    return (lane && lane.orientation) || null;
+}
+
+// A lane whose width is a real-world constant (a parking bay's depth), not a free slider: the editor
+// shows it read-only, seam drags against it are refused, and a retype/reset snaps it to standard.
+function corridorLaneWidthFixed(type) {
+    return !!(CORRIDOR_LANE_TYPES[type] && CORRIDOR_LANE_TYPES[type].fixedWidth);
+}
+
+// The gauges a rail lane can have, in millimetres: 1000 mm is metre gauge (Zagreb's trams), 1435 mm is
+// standard gauge (HŽ mainline). OSM spells this exactly the same way, in the `gauge=*` tag.
+const CORRIDOR_RAIL_GAUGES = [1000, 1435];
+const CORRIDOR_DEFAULT_RAIL_GAUGE = 1435;
 
 // Presets keyed by the total widths the width picker already offers, so an existing road keeps its
 // footprint exactly and only gains an interior. Every preset sums to its key.
+//
+// Right-hand traffic (Croatia): the strip list runs LEFT-of-travel → right (corridorStripSpans
+// seeds the cursor at +total/2, the left offset, for index 0). So forward-travelling lanes must sit
+// on the RIGHT half (later in the list) and the oncoming/backward lanes on the LEFT half — the near
+// (right) kerb carries traffic moving in the drawing direction. Cycleways follow their adjacent
+// carriageway. A single lane added in the editor still defaults to 'forward'; only these placed-road
+// defaults must be handed the correct sides.
 const CORRIDOR_PROFILE_PRESETS = {
     7.5: [
-        { type: 'sidewalk', width: 1 }, { type: 'driving', width: 2.75, direction: 'forward' },
-        { type: 'driving', width: 2.75, direction: 'backward' }, { type: 'sidewalk', width: 1 }
+        { type: 'sidewalk', width: 1 }, { type: 'driving', width: 2.75, direction: 'backward' },
+        { type: 'driving', width: 2.75, direction: 'forward' }, { type: 'sidewalk', width: 1 }
     ],
     10: [
-        { type: 'sidewalk', width: 1.5 }, { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'sidewalk', width: 1.5 }
+        { type: 'sidewalk', width: 1.5 }, { type: 'driving', width: 3.5, direction: 'backward' },
+        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'sidewalk', width: 1.5 }
     ],
     18: [
-        { type: 'sidewalk', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'forward' }, { type: 'parking', width: 2 },
-        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'parking', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'backward' }, { type: 'sidewalk', width: 2 }
+        { type: 'sidewalk', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'backward' }, { type: 'parking', width: 2 },
+        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'parking', width: 2 }, { type: 'cycleway', width: 1.5, direction: 'forward' }, { type: 'sidewalk', width: 2 }
     ],
     26: [
-        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'cycleway', width: 1.5, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'median', width: 2.5, landscape: 'grass' },
-        { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 1.5, direction: 'backward' },
+        { type: 'sidewalk', width: 3 }, { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'cycleway', width: 1.5, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'median', width: 2.5, landscape: 'grass' },
+        { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 1.5, direction: 'forward' },
         { type: 'verge', width: 1.5, landscape: 'trees' }, { type: 'sidewalk', width: 3 }
     ],
     40: [
-        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'cycleway', width: 2, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'driving', width: 3.25, direction: 'forward' },
+        { type: 'sidewalk', width: 4 }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'cycleway', width: 2, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'driving', width: 3.25, direction: 'backward' },
         { type: 'median', width: 6, landscape: 'grass' },
-        { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'driving', width: 3.25, direction: 'backward' }, { type: 'parking', width: 2.5 },
-        { type: 'cycleway', width: 2, direction: 'backward' }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'sidewalk', width: 4 }
+        { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'driving', width: 3.25, direction: 'forward' }, { type: 'parking', width: 2.5 },
+        { type: 'cycleway', width: 2, direction: 'forward' }, { type: 'verge', width: 2, landscape: 'trees' }, { type: 'sidewalk', width: 4 }
     ],
     80: [
-        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5, landscape: 'trees' }, { type: 'cycleway', width: 3, direction: 'forward' },
-        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'sidewalk', width: 7 }, { type: 'verge', width: 5, landscape: 'trees' }, { type: 'cycleway', width: 3, direction: 'backward' },
+        { type: 'parking', width: 2.5 }, { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' },
+        { type: 'driving', width: 3.5, direction: 'backward' },
         { type: 'median', width: 24, landscape: 'grass' },
-        { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' }, { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'backward' }, { type: 'verge', width: 5, landscape: 'trees' },
+        { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' }, { type: 'driving', width: 3.5, direction: 'forward' },
+        { type: 'parking', width: 2.5 }, { type: 'cycleway', width: 3, direction: 'forward' }, { type: 'verge', width: 5, landscape: 'trees' },
         { type: 'sidewalk', width: 7 }
     ]
 };
@@ -77,7 +122,12 @@ const CORRIDOR_PROFILE_PRESETS = {
 // OSM default widths, used only when a way says nothing more specific.
 const OSM_DEFAULT_SIDEWALK_WIDTH = 2;
 const OSM_DEFAULT_CYCLEWAY_WIDTH = 1.5;
+// The standard modern depth of a kerbside parking lane, by orientation: a parallel bay is only as deep
+// as a car is wide (2.5 m), a 90° bay is a car length (5 m), and an angled bay sits between the two.
+// These are the fixed widths the three parking lane types take — a bay's depth is a constant, not a slider.
 const OSM_DEFAULT_PARKING_WIDTH = 2.5;
+const CORRIDOR_PARKING_PERPENDICULAR_WIDTH = 5;
+const CORRIDOR_PARKING_ANGLED_WIDTH = 4.5;
 const OSM_DEFAULT_VERGE_WIDTH = 1.5;
 const OSM_DEFAULT_MEDIAN_WIDTH = 2.5;
 
@@ -104,12 +154,74 @@ const OSM_CARRIAGEWAY_FREE_HIGHWAYS = {
 // Classes that carry a single lane unless the way says otherwise.
 const OSM_SINGLE_LANE_HIGHWAYS = new Set(['service', 'track']);
 
+// The width a lane of each type gets when it is added to a cross-section: the same numbers the OSM
+// defaults above already use, so a lane we create and a lane read off an untagged OSM way are the same
+// width. One standard per type, not per road class — a traffic lane is 3 m whether the street is a
+// local road or an avenue; the difference between those streets is how many lanes they have, not how
+// wide each one is, and the presets below carry that.
+// The width of the STRIP one track occupies in the cross-section — sleepers, ballast shoulder and the
+// clearance beside them — NOT the rail-to-rail distance the gauge names (that is 1.0 m and 1.435 m, and
+// no track is that narrow). A metre-gauge tram track takes 2.75 m of street; a standard-gauge railway
+// track takes 3.5 m. Two tracks side by side are two rail lanes, so a double track is 2 x this.
+const CORRIDOR_RAIL_GAUGE_WIDTHS = {
+    1000: 2.75,
+    1435: 3.5
+};
+
+const CORRIDOR_STANDARD_WIDTHS = {
+    driving: OSM_DEFAULT_LANE_WIDTH,
+    bus: OSM_LANE_WIDTH_BY_HIGHWAY.busway,
+    parking: OSM_DEFAULT_PARKING_WIDTH,
+    parking_perpendicular: CORRIDOR_PARKING_PERPENDICULAR_WIDTH,
+    parking_angled: CORRIDOR_PARKING_ANGLED_WIDTH,
+    cycleway: OSM_DEFAULT_CYCLEWAY_WIDTH,
+    sidewalk: OSM_DEFAULT_SIDEWALK_WIDTH,
+    verge: OSM_DEFAULT_VERGE_WIDTH,
+    median: OSM_DEFAULT_MEDIAN_WIDTH,
+    // A rail lane has no single standard: its width follows its gauge (see corridorStandardWidth). This
+    // entry is the default-gauge one, and it is what an untagged single track gets, here and from OSM.
+    rail: CORRIDOR_RAIL_GAUGE_WIDTHS[CORRIDOR_DEFAULT_RAIL_GAUGE]
+};
+
+// The standard width of a lane of this type. Rail is the one type whose standard depends on a property
+// of the lane — its gauge — so callers that have a lane pass its gauge; callers that only have a type
+// (the palette, inserting a fresh lane) get the default gauge's width.
+function corridorStandardWidth(type, gauge) {
+    if (type === 'rail') return CORRIDOR_RAIL_GAUGE_WIDTHS[corridorRailGauge(gauge)];
+    return CORRIDOR_STANDARD_WIDTHS[type] || OSM_DEFAULT_LANE_WIDTH;
+}
+
 function isCorridorLaneType(type) {
     return Object.prototype.hasOwnProperty.call(CORRIDOR_LANE_TYPES, type);
 }
 
 function corridorLandscapeOf(strip) {
     return strip && CORRIDOR_GREEN_TYPES.has(strip.type) && strip.landscape === 'trees' ? 'trees' : 'grass';
+}
+
+// A gauge value, coerced to one we know: anything unrecognised is standard gauge.
+function corridorRailGauge(gauge) {
+    const value = parseInt(gauge, 10);
+    return CORRIDOR_RAIL_GAUGES.includes(value) ? value : CORRIDOR_DEFAULT_RAIL_GAUGE;
+}
+
+// The paving of a lane — only a footway has one, exactly as only a green lane has a landscape.
+// Defaults to asphalt, so a profile written before paving existed reads as what it always was.
+function corridorPavingOf(strip) {
+    if (!strip || !CORRIDOR_PAVED_TYPES.has(strip.type)) return null;
+    return CORRIDOR_PAVINGS.includes(strip.paving) ? strip.paving : 'asphalt';
+}
+
+// The colour a strip is drawn in, wherever it is drawn. Paving is the one property that changes it.
+function corridorStripSurface(strip) {
+    const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip && strip.type]) || {};
+    if (corridorPavingOf(strip) === 'paved') return CORRIDOR_PAVED_SURFACE;
+    return lane.surface || '#2b2b2b';
+}
+
+// The gauge of a lane — only a rail lane has one, exactly as only a green lane has a landscape.
+function corridorRailGaugeOf(strip) {
+    return strip && strip.type === 'rail' ? corridorRailGauge(strip.gauge) : null;
 }
 
 const CORRIDOR_DIRECTIONS = ['forward', 'backward', 'both'];
@@ -128,6 +240,17 @@ function normalizeCorridorProfile(profile) {
         }
         if (CORRIDOR_GREEN_TYPES.has(type) && CORRIDOR_LANDSCAPES.includes(strip && strip.landscape)) {
             lane.landscape = strip.landscape;
+        }
+        // A parking lane may reserve every Nth bay for a tree; kept only when it is a positive whole number.
+        if (corridorParkingOrientation(type)) {
+            const treeEvery = parseInt(strip && strip.treeEvery, 10);
+            if (Number.isFinite(treeEvery) && treeEvery > 0) lane.treeEvery = treeEvery;
+        }
+        // Every rail lane has a gauge; an unrecognised or missing one becomes the default.
+        if (type === 'rail') lane.gauge = corridorRailGauge(strip && strip.gauge);
+        // A footway's paving, likewise: kept only where it means something, and only when known.
+        if (CORRIDOR_PAVED_TYPES.has(type) && CORRIDOR_PAVINGS.includes(strip && strip.paving)) {
+            lane.paving = strip.paving;
         }
         return lane;
     }).filter(strip => isCorridorLaneType(strip.type) && Number.isFinite(strip.width) && strip.width > 0);
@@ -148,21 +271,38 @@ function roundStripWidth(width) {
 // ---------------------------------------------------------------------------
 // Editing
 //
-// Every edit here preserves the corridor's total width, and that is the whole point: the footprint is a
-// function of the total alone, so a profile-only edit cannot move the corridor, cannot change the parcel
-// split, and cannot invalidate a proposal derived from it. Whatever a lane gains or gives up is taken
-// from or handed to the traffic lanes, which are the only lanes with slack.
+// THE LANE LIST IS THE TRUTH. The total width is derived from it — `corridorProfileWidth` is a sum —
+// and the footprint follows the total. So you change a road's width by adding, removing, resizing and
+// reordering its lanes: add a bus lane and the road gets 3.5 m wider, delete the parking and it gets
+// 2.5 m narrower. There is nothing to "absorb" an edit and therefore nothing an edit can fail against;
+// a caller that wants a width ceiling (the editor caps corridors at the widest preset) enforces it on
+// the resulting total, where the user can be told about it.
 //
-// An edit that the traffic lanes cannot absorb returns null. That is a refusal, not a rounding problem:
-// the caller must reject the change rather than quietly widening the road.
+// The one deliberate exception is `withSeamMoved`: dragging the boundary between two neighbours moves
+// width from one to the other and holds the total — and therefore the footprint, the parcel split and
+// every proposal derived from it — exactly where it was. That is a distinct gesture, not the rule.
+//
+// `withSidewalkWidth` also still pays out of the traffic lanes, because it is not a user edit: it fits
+// a legacy corridor's recorded sidewalk number into a preset whose total is already the road's width.
+//
+// An edit returns null only when it is meaningless (no such lane, an unknown type, a width below the
+// minimum, removing the last lane). That is a refusal the caller must show, not swallow.
 // ---------------------------------------------------------------------------
 
 // A traffic lane narrower than this is not a traffic lane.
 const CORRIDOR_MIN_DRIVING_WIDTH = 2.5;
+// Any other lane narrower than this is a line, not a lane.
+const CORRIDOR_MIN_LANE_WIDTH = 0.5;
+
+// The smallest a lane of this type may be.
+function corridorMinLaneWidth(type) {
+    return type === 'driving' ? CORRIDOR_MIN_DRIVING_WIDTH : CORRIDOR_MIN_LANE_WIDTH;
+}
 
 // Take `delta` metres out of the driving lanes (negative gives metres back), in proportion to their
-// widths. `exceptIndex` holds one lane out of the redistribution — the lane being resized cannot pay
-// for its own change. Returns new strips, or null when the lanes have no room.
+// widths, holding the total. The one caller left is `withSidewalkWidth`, which fits a legacy corridor's
+// sidewalks into a preset without moving the width that corridor was drawn at. `exceptIndex` holds one
+// lane out of the redistribution. Returns new strips, or null when the lanes have no room.
 function redistributeToDriving(strips, delta, exceptIndex = -1) {
     if (Math.abs(delta) < 1e-9) return strips.map(strip => ({ ...strip }));
 
@@ -190,18 +330,21 @@ function redistributeToDriving(strips, delta, exceptIndex = -1) {
     });
 }
 
-// Drag the seam between two adjacent lanes: width moves from one side to the other, the
-// total stays put. Refused (null) when either lane would drop below half a metre.
+// Drag the seam between two adjacent lanes: width moves from one side to the other, the total stays put.
+// This is the ONE edit that deliberately holds the total constant — it reshuffles what the road contains
+// without touching its footprint, so nothing derived from that footprint is invalidated. Every other
+// edit is free to change the width. Refused (null) when either lane would drop below half a metre.
 function withSeamMoved(profile, seamIndex, delta) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return null;
     const left = normalized.strips[seamIndex];
     const right = normalized.strips[seamIndex + 1];
     if (!left || !right || !Number.isFinite(delta)) return null;
-    const MIN_LANE = 0.5;
+    // A fixed-width lane (parking) cannot give or take width, so a seam touching one does not move.
+    if (corridorLaneWidthFixed(left.type) || corridorLaneWidthFixed(right.type)) return null;
     const widthLeft = roundStripWidth(left.width + delta);
     const widthRight = roundStripWidth(right.width - delta);
-    if (widthLeft < MIN_LANE || widthRight < MIN_LANE) return null;
+    if (widthLeft < CORRIDOR_MIN_LANE_WIDTH || widthRight < CORRIDOR_MIN_LANE_WIDTH) return null;
     return normalizeCorridorProfile(normalized.strips.map((strip, index) => {
         if (index === seamIndex) return { ...strip, width: widthLeft };
         if (index === seamIndex + 1) return { ...strip, width: widthRight };
@@ -209,59 +352,50 @@ function withSeamMoved(profile, seamIndex, delta) {
     }));
 }
 
-// Set one lane's width, paying for it out of the traffic lanes.
+// Set one lane's width. Nothing else moves: the road grows or shrinks by the difference.
+// Refused (null) below the type's minimum — a 1 m traffic lane is not a traffic lane.
+//
+// A FIXED-WIDTH lane (parking) has no arbitrary width: any width edit on one snaps it to its type's
+// standard depth. This is what makes "reset to standard" work on a legacy parking lane recorded at an
+// off-standard width, while a free-typed value simply lands back on the standard.
 function withLaneWidth(profile, index, width) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !normalized.strips[index]) return null;
-    const target = Number(width);
-    if (!Number.isFinite(target) || target <= 0) return null;
 
     const lane = normalized.strips[index];
-    if (lane.type === 'driving' && target < CORRIDOR_MIN_DRIVING_WIDTH) return null;
-
-    const resized = normalized.strips.map((strip, i) => (i === index ? { ...strip, width: roundStripWidth(target) } : { ...strip }));
-    // A traffic lane cannot pay for its own widening, so it is held out of the redistribution.
-    const strips = redistributeToDriving(resized, target - lane.width, index);
-    return strips ? { strips } : null;
-}
-
-// Change the whole footprint while drawing. Roadside furniture keeps its real-world width; the traffic
-// lanes absorb the difference, just as they do for an individual strip edit.
-function withCorridorWidth(profile, width) {
-    const normalized = normalizeCorridorProfile(profile);
-    const target = Number(width);
-    if (!normalized || !Number.isFinite(target) || target <= 0) return null;
-    const current = corridorProfileWidth(normalized);
-    // No traffic lanes (a pedestrian footpath): every strip scales proportionally — there are
-    // no driving lanes to absorb the change, but the width must still be editable.
-    if (!normalized.strips.some(strip => strip.type === 'driving')) {
-        const scale = target / current;
-        let assigned = 0;
-        const scaled = normalized.strips.map((strip, index) => {
-            if (index === normalized.strips.length - 1) return { ...strip, width: roundStripWidth(target - assigned) };
-            const next = roundStripWidth(strip.width * scale);
-            assigned += next;
-            return { ...strip, width: next };
-        });
-        return normalizeCorridorProfile(scaled);
+    if (corridorLaneWidthFixed(lane.type)) {
+        const standard = corridorStandardWidth(lane.type);
+        if (Math.abs(lane.width - standard) < 1e-6) return null; // already there; a no-op edit is a refusal
+        return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+            i === index ? { ...strip, width: standard } : { ...strip }
+        )));
     }
-    const strips = redistributeToDriving(normalized.strips, current - target);
-    return strips ? normalizeCorridorProfile(strips) : null;
+
+    const target = Number(width);
+    if (!Number.isFinite(target) || target <= 0) return null;
+    if (target < corridorMinLaneWidth(lane.type)) return null;
+
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, width: roundStripWidth(target) } : { ...strip }
+    )));
 }
 
-// Change what a lane *is* without changing how wide it is — parking becomes trees, a lane becomes a
-// cycleway. The total cannot move, so this never fails on width.
+// Change what a lane *is* — a traffic lane becomes parking, parking becomes trees. The width is kept as
+// it was, so retyping normally holds the total; the exception is a fixed-width target (parking), which
+// takes its standard depth and moves the total by the difference, exactly as inserting one would.
 function withLaneType(profile, index, type) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !normalized.strips[index] || !isCorridorLaneType(type)) return null;
 
     return normalizeCorridorProfile(normalized.strips.map((strip, i) => {
         if (i !== index) return strip;
-        const lane = { type, width: strip.width };
+        const lane = { type, width: corridorLaneWidthFixed(type) ? corridorStandardWidth(type) : strip.width };
         if (CORRIDOR_LANE_TYPES[type].directional) lane.direction = strip.direction || 'forward';
         if (CORRIDOR_GREEN_TYPES.has(type)) {
             lane.landscape = CORRIDOR_GREEN_TYPES.has(strip.type) ? corridorLandscapeOf(strip) : 'grass';
         }
+        // Becoming a track means becoming a track OF A GAUGE; the width is the caller's to keep.
+        if (type === 'rail') lane.gauge = corridorRailGauge(strip.gauge);
         return lane;
     }));
 }
@@ -275,7 +409,59 @@ function withLaneLandscape(profile, index, landscape) {
     )));
 }
 
-// Insert a lane at `index`, taking its width out of the traffic lanes.
+// Surface a footway with asphalt or stone. Purely a material: it changes no width and moves no seam.
+function withLanePaving(profile, index, paving) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !CORRIDOR_PAVED_TYPES.has(normalized.strips[index].type)) return null;
+    if (!CORRIDOR_PAVINGS.includes(paving)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, paving } : { ...strip }
+    )));
+}
+
+// Re-gauge a track. The gauge IS the width of the strip a track occupies, so the lane takes its new
+// gauge's standard width — and the corridor gets wider or narrower by the difference, like any other
+// width edit. A hand-tuned width is deliberately overwritten: picking a gauge is picking a track.
+function withLaneGauge(profile, index, gauge) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || normalized.strips[index].type !== 'rail') return null;
+    const value = parseInt(gauge, 10);
+    if (!CORRIDOR_RAIL_GAUGES.includes(value)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, gauge: value, width: corridorStandardWidth('rail', value) } : { ...strip }
+    )));
+}
+
+// Flip (or set) a directional lane's travel direction — the thing a direction arrow paints. Only lanes
+// that carry a direction (traffic, bus, cycleway) have one to set; a sidewalk has none. Width is untouched.
+function withLaneDirection(profile, index, direction) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index]) return null;
+    const lane = normalized.strips[index];
+    if (!isCorridorLaneType(lane.type) || !CORRIDOR_LANE_TYPES[lane.type].directional) return null;
+    if (!CORRIDOR_DIRECTIONS.includes(direction)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, direction } : { ...strip }
+    )));
+}
+
+// Reserve every Nth bay of a parking lane for a tree (0 = none, the default). Purely a planting choice:
+// it changes nothing about the lane's width or the bays, only how many of them hold a tree not a car.
+function withLaneTreeEvery(profile, index, treeEvery) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !corridorParkingOrientation(normalized.strips[index].type)) return null;
+    const n = parseInt(treeEvery, 10);
+    if (!Number.isFinite(n) || n < 0) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => {
+        if (i !== index) return { ...strip };
+        const next = { ...strip };
+        if (n > 0) next.treeEvery = n; else delete next.treeEvery;
+        return next;
+    }));
+}
+
+// Insert a lane at `index`. The road gets that much wider — an insert cannot fail for want of room,
+// which is exactly why adding a lane is a thing the user can always do.
 function withLaneInserted(profile, index, lane) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !lane || !isCorridorLaneType(lane.type)) return null;
@@ -283,28 +469,19 @@ function withLaneInserted(profile, index, lane) {
     if (!Number.isFinite(width) || width <= 0) return null;
 
     const at = Math.max(0, Math.min(index, normalized.strips.length));
-    const strips = redistributeToDriving(normalized.strips, width);
-    if (!strips) return null;
+    const strips = normalized.strips.map(strip => ({ ...strip }));
     strips.splice(at, 0, { ...lane, width: roundStripWidth(width) });
     return normalizeCorridorProfile(strips);
 }
 
-// Remove a lane and hand its width back to the traffic lanes.
+// Remove a lane. The road gets that much narrower. A corridor with no lanes is not a corridor, so the
+// last one stays.
 function withLaneRemoved(profile, index) {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized || !normalized.strips[index]) return null;
     if (normalized.strips.length < 2) return null;
 
-    const removed = normalized.strips[index];
-    const remaining = normalized.strips.filter((strip, i) => i !== index);
-    // Removing the last traffic lane leaves nothing to hand the width to; widen the neighbours instead.
-    const hasDriving = remaining.some(strip => strip.type === 'driving');
-    if (!hasDriving) {
-        const share = removed.width / remaining.length;
-        return normalizeCorridorProfile(remaining.map(strip => ({ ...strip, width: roundStripWidth(strip.width + share) })));
-    }
-    const strips = redistributeToDriving(remaining, -removed.width);
-    return strips ? normalizeCorridorProfile(strips) : null;
+    return normalizeCorridorProfile(normalized.strips.filter((strip, i) => i !== index).map(strip => ({ ...strip })));
 }
 
 // Reorder: move the lane at `from` to `to`. Pure permutation, so the total is untouched.
@@ -340,12 +517,25 @@ function withSidewalkWidth(profile, sidewalkWidth) {
     return strips ? { strips } : null;
 }
 
+// The cross-section a NEWLY drawn track starts from: one track, at the standard gauge, occupying the
+// strip that gauge needs. Everything else — a second track, a platform-side sidewalk, a green verge —
+// is added in the cross-section editor, and the corridor's width follows the lanes as it does for a road.
+function corridorDefaultTrackProfile(gauge = CORRIDOR_DEFAULT_RAIL_GAUGE) {
+    const value = corridorRailGauge(gauge);
+    return { strips: [{ type: 'rail', width: corridorStandardWidth('rail', value), gauge: value }] };
+}
+
 // The profile a corridor should have when it predates this model (or was drawn by the older picker,
 // which only ever produced a total width and an unused sidewalk number).
+//
+// It must SUM TO THE WIDTH IT IS GIVEN: the footprint of an existing corridor — and every parcel split
+// and proposal derived from it — is that width. So a legacy track stays one rail lane stretched to its
+// recorded width, however far that is from a standard track. New tracks are seeded by the drawing tool
+// with corridorDefaultTrackProfile() instead; this function never sees them.
 function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
     const total = Number(width);
     if (!Number.isFinite(total) || total <= 0) return null;
-    if (isTrack) return { strips: [{ type: 'rail', width: total }] };
+    if (isTrack) return { strips: [{ type: 'rail', width: total, gauge: CORRIDOR_DEFAULT_RAIL_GAUGE }] };
 
     const preset = CORRIDOR_PROFILE_PRESETS[total];
     if (preset) {
@@ -364,7 +554,8 @@ function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
     const lane = roundStripWidth((total - 2 * sidewalk) / 2);
     const strips = [];
     if (sidewalk) strips.push({ type: 'sidewalk', width: sidewalk });
-    strips.push({ type: 'driving', width: lane, direction: 'forward' }, { type: 'driving', width: lane, direction: 'backward' });
+    // Right-hand traffic: left-of-travel (lower index) is the oncoming/backward lane, the right the forward one.
+    strips.push({ type: 'driving', width: lane, direction: 'backward' }, { type: 'driving', width: lane, direction: 'forward' });
     if (sidewalk) strips.push({ type: 'sidewalk', width: sidewalk });
     return { strips };
 }
@@ -417,6 +608,26 @@ function osmSidePresent(value) {
     return value !== undefined && !OSM_ABSENT.has(String(value));
 }
 
+// The orientation OSM records for a side's parking, from either scheme: the current
+// `parking:<side>:orientation=parallel|diagonal|perpendicular`, or the older `parking:lane:<side>`
+// whose value IS the orientation. Undefined when the way says nothing (an untagged `parking:<side>=lane`).
+function osmParkingOrientation(tags, side) {
+    if (!tags) return undefined;
+    const explicit = [`parking:${side}:orientation`, 'parking:both:orientation', 'parking:orientation']
+        .map(key => tags[key])
+        .find(value => value !== undefined);
+    if (explicit !== undefined) return explicit;
+    return osmSideValue(tags, 'parking:lane', side);
+}
+
+// OSM's orientation value -> our parking lane type. Anything we do not recognise (including a plain
+// `lane` with no orientation) is parallel parking, the ordinary kerbside lane.
+function corridorParkingTypeFromOsm(orientation) {
+    if (orientation === 'perpendicular') return 'parking_perpendicular';
+    if (orientation === 'diagonal' || orientation === 'inclined') return 'parking_angled';
+    return 'parking';
+}
+
 // Build a cross-section from an OSM way's tags. `lanes` (or the highway class) gives the carriageway;
 // the per-side schemes give what flanks it.
 //
@@ -428,9 +639,12 @@ function osmSidePresent(value) {
 function corridorProfileFromOsmTags(tags, fallbackWidth) {
     const source = tags || {};
     if (source.railway) {
-        const railWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || 3;
+        // OSM's `gauge` is the same millimetre figure a rail lane carries, so it maps straight across —
+        // and with no tagged width the gauge is what says how much street each track takes.
+        const gauge = corridorRailGauge(source.gauge);
         const tracks = Math.max(1, parseInt(source.tracks, 10) || 1);
-        return { strips: Array.from({ length: tracks }, () => ({ type: 'rail', width: railWidth / tracks })) };
+        const railWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || (corridorStandardWidth('rail', gauge) * tracks);
+        return { strips: Array.from({ length: tracks }, () => ({ type: 'rail', width: railWidth / tracks, gauge })) };
     }
 
     const taggedWidth = parseOsmNumber(source.width) || Number(fallbackWidth) || 0;
@@ -469,11 +683,13 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
         if (osmSidePresent(osmSideValue(source, 'cycleway', side))) {
             target.push({ type: 'cycleway', width: osmSideWidth(source, 'cycleway', side, OSM_DEFAULT_CYCLEWAY_WIDTH), direction });
         }
-        // The current `parking:<side>` scheme, falling back to the older `parking:lane:<side>`.
+        // The current `parking:<side>` scheme, falling back to the older `parking:lane:<side>`. The
+        // orientation picks which of the three parking lane types it is, and with it the default depth.
         const parking = osmSidePresent(osmSideValue(source, 'parking', side))
             || osmSidePresent(osmSideValue(source, 'parking:lane', side));
         if (parking) {
-            target.push({ type: 'parking', width: osmSideWidth(source, 'parking', side, OSM_DEFAULT_PARKING_WIDTH) });
+            const parkingType = corridorParkingTypeFromOsm(osmParkingOrientation(source, side));
+            target.push({ type: parkingType, width: osmSideWidth(source, 'parking', side, corridorStandardWidth(parkingType)) });
         }
     });
 
@@ -525,6 +741,10 @@ function corridorProfileToOsmTags(profile) {
         const rails = lanes.filter(lane => lane.type === 'rail');
         const tags = { railway: 'rail', width: String(roundStripWidth(corridorProfileWidth(normalized))) };
         if (rails.length > 1) tags.tracks = String(rails.length);
+        // `gauge` is a way tag, so it can only speak for the way as a whole: emitted when every track
+        // on it has the same gauge, and dropped (rather than guessed) for a mixed tram/railway corridor.
+        const gauges = new Set(rails.map(lane => corridorRailGaugeOf(lane)));
+        if (gauges.size === 1) tags.gauge = String([...gauges][0]);
         return tags;
     }
 
@@ -549,10 +769,12 @@ function corridorProfileToOsmTags(profile) {
 
     // `sidewalk:both=yes` + `sidewalk:both:width=2`, collapsing to one side when only one side has it,
     // and to per-side widths when the two sides differ — the same shape OSM's own per-side schemes take.
-    const emit = (type, key, presentValue) => {
+    // `matches` picks the lanes (a predicate, so the three parking types can be emitted as one group);
+    // `orientationOf`, when given, also writes `<key>:<side>:orientation` the same collapsing way.
+    const emit = (matches, key, presentValue, orientationOf) => {
         const found = lanes
             .map((lane, index) => ({ lane, index }))
-            .filter(entry => entry.lane.type === type);
+            .filter(entry => matches(entry.lane));
         if (!found.length) return;
 
         const sides = new Set(found.map(entry => sideOf(entry.index)));
@@ -565,12 +787,25 @@ function corridorProfileToOsmTags(profile) {
         } else {
             found.forEach(entry => { tags[`${key}:${sideOf(entry.index)}:width`] = String(roundStripWidth(entry.lane.width)); });
         }
+
+        if (orientationOf) {
+            const orientations = new Set(found.map(entry => orientationOf(entry.lane)));
+            if (orientations.size === 1) {
+                tags[`${key}:${sideKey}:orientation`] = [...orientations][0];
+            } else {
+                found.forEach(entry => { tags[`${key}:${sideOf(entry.index)}:orientation`] = orientationOf(entry.lane); });
+            }
+        }
     };
 
-    emit('sidewalk', 'sidewalk', 'yes');
-    emit('verge', 'verge', 'yes');
-    emit('cycleway', 'cycleway', 'lane');
-    emit('parking', 'parking', 'lane');
+    // OSM's orientation values are our own, save that an angled bay is `diagonal` there.
+    const osmParkingOrientationValue = lane => (corridorParkingOrientation(lane.type) === 'angled'
+        ? 'diagonal' : corridorParkingOrientation(lane.type));
+
+    emit(lane => lane.type === 'sidewalk', 'sidewalk', 'yes');
+    emit(lane => lane.type === 'verge', 'verge', 'yes');
+    emit(lane => lane.type === 'cycleway', 'cycleway', 'lane');
+    emit(lane => !!corridorParkingOrientation(lane.type), 'parking', 'lane', osmParkingOrientationValue);
     return tags;
 }
 
@@ -583,13 +818,60 @@ function corridorProfileFromOsmFeature(feature) {
 }
 
 // Read the profile off a stored corridor definition, synthesising one for corridors drawn before
-// profiles existed. Always returns a profile whose total equals the definition's width.
+// profiles existed. Always returns a profile whose total equals the definition's width — or null for a
+// DESIGNATION, which has no cross-section at all (see below): its width is a leftover number, and
+// synthesising lanes out of it would furnish a road that was never designed.
 function corridorProfileOf(definition) {
     if (!definition) return null;
     const stored = normalizeCorridorProfile(definition.profile);
     if (stored) return stored;
+    if (corridorIsDesignation(definition)) return null;
     const isTrack = !!(definition.metadata && definition.metadata.isTrack);
     return corridorProfileFromLegacy(definition.width, definition.sidewalkWidth, isTrack);
+}
+
+// ---------------------------------------------------------------------------
+// Track-ness
+//
+// A road and a track are the SAME object — a centerline plus a cross-section — so "is this a track"
+// is not a property the object carries, it is a fact about its lanes: a corridor is a track iff its
+// cross-section contains a rail lane. Add a rail lane to a street in the cross-section editor and it
+// is a tram street; take the rails out of a track and what is left is a road. Everything that used to
+// branch on a stored `isTrack` flag asks these two instead.
+// ---------------------------------------------------------------------------
+
+function corridorProfileHasRail(profile) {
+    const normalized = normalizeCorridorProfile(profile);
+    return !!normalized && normalized.strips.some(strip => strip.type === 'rail');
+}
+
+// The same question of a stored corridor. Corridors created before rail was a lane type carry
+// `metadata.isTrack`; that flag still answers for them (their profile is synthesised from a bare
+// width, so it cannot be asked). It is honoured, never rewritten — the footprint is the width, and
+// nothing may move it under an existing proposal.
+function corridorIsTrack(definition) {
+    if (!definition) return false;
+    if (corridorProfileHasRail(corridorProfileOf(definition))) return true;
+    return !!(definition.metadata && definition.metadata.isTrack === true);
+}
+
+// ---------------------------------------------------------------------------
+// Designations
+//
+// A DESIGNATION is not a corridor that was designed — it is existing parcels DECLARED to be road land.
+// Nothing was laid out: it has no centerline, only the polygon of the parcels it names. That makes it a
+// different kind of object from everything above, and the distinction is not cosmetic: a corridor's
+// footprint is swept from its centerline at its cross-section's width, while a designation's footprint
+// simply IS the land it names. So a designation has no lanes to edit, no rails to lay, no strips to draw
+// — and asking it for a cross-section would invent one out of a width that means nothing.
+//
+// This is the honest replacement for ticking a parcel "road" by hand: it goes through the proposal
+// lifecycle, so it carries an author, terms and a record, and unapplying it gives the land back.
+// ---------------------------------------------------------------------------
+function corridorIsDesignation(definition) {
+    if (!definition) return false;
+    if (corridorCenterlineOf(definition).length) return false;
+    return !!definition.polygon;
 }
 
 // ---------------------------------------------------------------------------
@@ -740,6 +1022,111 @@ function offsetPolylinePlanar(pointsXY, offset) {
     return result;
 }
 
+// Closed centerlines have no end caps. Keeping this separate from offsetPolylinePlanar is important:
+// the 2D renderer intentionally retains its established even-odd strip behaviour, while the 3D
+// renderer needs two clean cyclic boundaries so it can mesh a band with a real hole.
+function offsetClosedPolylinePlanar(pointsXY, offset) {
+    if (!Array.isArray(pointsXY) || pointsXY.length < 4 || !Number.isFinite(offset)) return null;
+    const EPS = 1e-9;
+    const same = (a, b) => a && b && Math.hypot(a[0] - b[0], a[1] - b[1]) < EPS;
+    const points = pointsXY.slice();
+    if (same(points[0], points[points.length - 1])) points.pop();
+
+    const clean = [];
+    points.forEach(point => {
+        if (Array.isArray(point) && point.length >= 2 && Number.isFinite(point[0]) && Number.isFinite(point[1])
+            && (!clean.length || !same(clean[clean.length - 1], point))) clean.push(point);
+    });
+    if (clean.length >= 2 && same(clean[0], clean[clean.length - 1])) clean.pop();
+    if (clean.length < 3) return null;
+
+    const edges = clean.map((point, index) => {
+        const next = clean[(index + 1) % clean.length];
+        const dx = next[0] - point[0];
+        const dy = next[1] - point[1];
+        const length = Math.hypot(dx, dy);
+        if (length < EPS) return null;
+        return { normal: [-dy / length, dx / length], direction: [dx / length, dy / length] };
+    });
+    if (edges.some(edge => !edge)) return null;
+
+    const result = [];
+    const push = point => {
+        if (!result.length || !same(result[result.length - 1], point)) result.push(point);
+    };
+    const move = (point, normal) => [point[0] + normal[0] * offset, point[1] + normal[1] * offset];
+
+    clean.forEach((vertex, index) => {
+        const previous = edges[(index - 1 + edges.length) % edges.length];
+        const next = edges[index];
+        const mx = previous.normal[0] + next.normal[0];
+        const my = previous.normal[1] + next.normal[1];
+        const mitreLength = Math.hypot(mx, my);
+        const cross = previous.direction[0] * next.direction[1] - previous.direction[1] * next.direction[0];
+        const onOutside = (cross > 0) ? offset < 0 : offset > 0;
+        const bevel = () => {
+            push(move(vertex, previous.normal));
+            push(move(vertex, next.normal));
+        };
+
+        if (mitreLength < EPS || onOutside || Math.abs(cross) < 1e-12) {
+            bevel();
+            return;
+        }
+        const mitre = [mx / mitreLength, my / mitreLength];
+        const cosHalf = mitre[0] * previous.normal[0] + mitre[1] * previous.normal[1];
+        if (Math.abs(cosHalf) < 1 / CORRIDOR_MITRE_LIMIT) {
+            bevel();
+            return;
+        }
+        push([vertex[0] + mitre[0] * offset / cosHalf, vertex[1] + mitre[1] * offset / cosHalf]);
+    });
+    return result.length >= 3 ? result : null;
+}
+
+function planarRingSignedArea(ring) {
+    if (!Array.isArray(ring) || ring.length < 3) return 0;
+    let twiceArea = 0;
+    for (let i = 0; i < ring.length; i += 1) {
+        const a = ring[i];
+        const b = ring[(i + 1) % ring.length];
+        twiceArea += a[0] * b[1] - b[0] * a[1];
+    }
+    return twiceArea / 2;
+}
+
+// Do two planar segments [a1,a2] and [b1,b2] properly cross? Endpoints touching don't count —
+// we only care about a genuine interior crossing, which is what makes a strip ring a bowtie.
+function planarSegmentsCross(a1, a2, b1, b2) {
+    const cross = (o, p, q) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
+    const d1 = cross(a1, a2, b1);
+    const d2 = cross(a1, a2, b2);
+    const d3 = cross(b1, b2, a1);
+    const d4 = cross(b1, b2, a2);
+    // Strictly opposite signs on both tests = the segments straddle each other (interior crossing).
+    return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+}
+
+// Does a closed ring of planar [x,y] points cross itself? A self-intersecting strip ring (a bowtie
+// from an offset larger than a bend's turn radius — exactly what dragging a road node can create)
+// extrudes into degenerate, black-lit 3D geometry, so the caller drops such a strip rather than mesh it.
+function ringSelfIntersectsXY(ring) {
+    const n = ring.length;
+    if (n < 4) return false;
+    for (let i = 0; i < n; i += 1) {
+        const a1 = ring[i];
+        const a2 = ring[(i + 1) % n];
+        // Compare against every later edge that shares no vertex with edge i (skip i's neighbours).
+        for (let j = i + 2; j < n; j += 1) {
+            if (i === 0 && j === n - 1) continue; // edge (n-1,0) is adjacent to edge (0,1)
+            const b1 = ring[j];
+            const b2 = ring[(j + 1) % n];
+            if (planarSegmentsCross(a1, a2, b1, b2)) return true;
+        }
+    }
+    return false;
+}
+
 // The ring for one strip, in whatever coordinate system `pointsXY` is in (metres, x east, y north):
 // the left boundary forward, the right boundary back. Kept free of the projection so it can be unit
 // tested without a map.
@@ -750,7 +1137,24 @@ function corridorStripRingPlanar(pointsXY, left, right) {
     const leftSide = offsetPolylinePlanar(pointsXY, Math.max(left, right));
     const rightSide = offsetPolylinePlanar(pointsXY, Math.min(left, right));
     if (!leftSide || !rightSide) return null;
+    // NOTE: a sharp bend can fold this ring into a bowtie. That renders FINE in 2D (Leaflet fills it
+    // with the even-odd rule), so the ring is returned as-is here — dropping it stripped the asphalt
+    // off legitimate roads. The bowtie only misbehaves in 3D (ExtrudeGeometry → black faces), so the
+    // self-intersection guard (ringSelfIntersectsXY) lives in the 3D mesh builder, not here.
     return [...leftSide, ...rightSide.reverse()];
+}
+
+// 3D-only closed-strip representation: an outer boundary plus an inner hole. This helper is pure;
+// buildCorridorStripPolygon deliberately continues returning the established flat ring for 2D.
+function corridorClosedStripPolygonPlanar(pointsXY, left, right) {
+    if (!Array.isArray(pointsXY) || pointsXY.length < 4) return null;
+    const first = pointsXY[0];
+    const last = pointsXY[pointsXY.length - 1];
+    if (!first || !last || Math.hypot(first[0] - last[0], first[1] - last[1]) >= 1e-7) return null;
+    const a = offsetClosedPolylinePlanar(pointsXY, Math.max(left, right));
+    const b = offsetClosedPolylinePlanar(pointsXY, Math.min(left, right));
+    if (!a || !b || ringSelfIntersectsXY(a) || ringSelfIntersectsXY(b)) return null;
+    return Math.abs(planarRingSignedArea(a)) >= Math.abs(planarRingSignedArea(b)) ? [a, b] : [b, a];
 }
 
 function corridorProjectionAvailable() {
@@ -849,12 +1253,19 @@ function buildCorridorDecorations(segments, profile) {
 
     spans.forEach(strip => {
         let kind = null;
-        if (strip.type === 'cycleway') kind = 'bike';
-        if (strip.type === 'sidewalk') kind = 'pedestrian';
-        if (CORRIDOR_GREEN_TYPES.has(strip.type) && corridorLandscapeOf(strip) === 'trees') kind = 'tree';
+        let spacing = null;
+        if (strip.type === 'cycleway') { kind = 'bike'; spacing = CORRIDOR_DECORATION_SPACING.bike; }
+        else if (strip.type === 'sidewalk') { kind = 'pedestrian'; spacing = CORRIDOR_DECORATION_SPACING.pedestrian; }
+        else if (CORRIDOR_GREEN_TYPES.has(strip.type) && corridorLandscapeOf(strip) === 'trees') {
+            kind = 'tree'; spacing = CORRIDOR_DECORATION_SPACING.tree;
+        } else if (corridorParkingOrientation(strip.type) && strip.treeEvery > 0) {
+            // A tree in every Nth parking bay: spaced N bays apart, so the trees line up with the stalls.
+            kind = 'tree';
+            const bay = CORRIDOR_PARKING_BAYS[corridorParkingOrientation(strip.type)] || CORRIDOR_PARKING_BAYS.parallel;
+            spacing = strip.treeEvery * bay.spacingAlong;
+        }
         if (!kind) return;
 
-        const spacing = CORRIDOR_DECORATION_SPACING[kind];
         const offset = (strip.left + strip.right) / 2;
         centerlines.forEach((centerline, segmentIndex) => {
             const offsetLine = buildCorridorOffsetLine(centerline, offset);
@@ -1132,6 +1543,136 @@ function corridorLaneSeparators(profile) {
     return separators;
 }
 
+// Contiguous motor-traffic lanes form one painted cross-section. The two outer boundaries are virtual
+// curb ancestors: they are not painted here, but a newly inserted side lane may inherit one of them.
+// A median creates two independent cross-sections, so its opposing carriageways cannot be paired.
+function corridorLaneTrafficRuns(profile) {
+    const runs = [];
+    let current = [];
+    const flush = () => {
+        if (!current.length) return;
+        const paths = [];
+        for (let index = 0; index < current.length - 1; index += 1) {
+            const a = current[index];
+            const b = current[index + 1];
+            paths.push({
+                offset: a.right,
+                kind: (a.direction && b.direction && a.direction !== b.direction)
+                    ? 'centerline'
+                    : 'lane'
+            });
+        }
+        const directions = [...new Set(current.map(strip => strip.direction).filter(Boolean))];
+        runs.push({
+            paths,
+            boundaries: [
+                { offset: current[0].left, kind: 'edge' },
+                ...paths.map(path => ({ ...path })),
+                { offset: current[current.length - 1].right, kind: 'edge' }
+            ],
+            flowDirection: directions.length === 1 ? directions[0] : 'mixed'
+        });
+        current = [];
+    };
+    corridorStripSpans(profile).forEach(strip => {
+        if (isMarkedTrafficLane(strip)) current.push(strip);
+        else flush();
+    });
+    flush();
+    return runs;
+}
+
+function densifyCorridorMarkingLine(points, maxStepM = 5) {
+    if (!Array.isArray(points) || points.length < 2) return [];
+    const dense = [points[0]];
+    for (let index = 0; index < points.length - 1; index += 1) {
+        const a = points[index];
+        const b = points[index + 1];
+        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const pieces = Math.max(1, Math.ceil(length / maxStepM));
+        for (let piece = 1; piece < pieces; piece += 1) {
+            const progress = piece / pieces;
+            dense.push([
+                a[0] + (b[0] - a[0]) * progress,
+                a[1] + (b[1] - a[1]) * progress
+            ]);
+        }
+        dense.push(b);
+    }
+    return dense;
+}
+
+function corridorLaneTopologyApi() {
+    if (typeof window !== 'undefined' && window.CorridorLaneTopology) {
+        return window.CorridorLaneTopology;
+    }
+    if (typeof require === 'function') {
+        try { return require('./corridor-lane-topology.js'); } catch (_) { }
+    }
+    return null;
+}
+
+// The shared topology pass for every segment entry. It is deliberately planar and view-agnostic:
+// Leaflet and Three.js consume these exact same connected lines.
+function buildCorridorLaneMarkingsForEntries(entries) {
+    if (!corridorProjectionAvailable()) return [];
+    const topology = corridorLaneTopologyApi();
+    if (!topology || typeof topology.build !== 'function') {
+        throw new Error('CorridorLaneTopology.build is required for lane markings');
+    }
+    const topologyEntries = [];
+    (entries || []).forEach((entry, ownerEntryIndex) => {
+        if (!entry || !entry.profile || !Array.isArray(entry.points) || entry.points.length < 2) return;
+        const centerline = entry.points
+            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .filter(point => Array.isArray(point) && point.every(Number.isFinite));
+        if (centerline.length < 2) return;
+        corridorLaneTrafficRuns(entry.profile).forEach((run, runIndex) => {
+            const buildPath = descriptor => {
+                const offset = offsetPolylinePlanar(centerline, descriptor.offset);
+                return offset && offset.length >= 2
+                    ? {
+                        ...descriptor,
+                        points: densifyCorridorMarkingLine(offset)
+                    }
+                    : null;
+            };
+            topologyEntries.push({
+                ownerEntryIndex,
+                runIndex,
+                corridorId: entry.corridorId,
+                flowDirection: run.flowDirection,
+                centerline,
+                paths: run.paths.map(buildPath).filter(Boolean),
+                boundaryPaths: run.boundaries.map(buildPath).filter(Boolean)
+            });
+        });
+    });
+    const markingsByEntry = (entries || []).map(() => []);
+    topology.build(topologyEntries).forEach(result => {
+        const topologyEntry = topologyEntries[result.sourceIndex];
+        if (!topologyEntry) return;
+        const groups = new Map();
+        (result.paths || []).forEach(path => {
+            const line = path.points.map(([x, y]) => {
+                const [lat, lng] = htrs96ToWGS84(x, y);
+                return { lat, lng };
+            });
+            if (line.length < 2) return;
+            const kind = path.kind || 'lane';
+            if (!groups.has(kind)) groups.set(kind, []);
+            groups.get(kind).push(line);
+        });
+        groups.forEach((lines, kind) => {
+            const existing = markingsByEntry[topologyEntry.ownerEntryIndex]
+                .find(marking => marking.kind === kind);
+            if (existing) existing.lines.push(...lines);
+            else markingsByEntry[topologyEntry.ownerEntryIndex].push({ kind, lines });
+        });
+    });
+    return markingsByEntry;
+}
+
 // One offset polyline of the centerline as Leaflet LatLngs — a lane marking is a line, not a band.
 function buildCorridorOffsetLine(points, offset) {
     if (!corridorProjectionAvailable() || !Array.isArray(points) || points.length < 2) return null;
@@ -1149,19 +1690,150 @@ function buildCorridorOffsetLine(points, offset) {
 
 // Every lane-separator line of a whole corridor: `[{ kind, lines }]`, one line per centerline segment.
 function buildCorridorLaneMarkings(segments, profile) {
-    const separators = corridorLaneSeparators(profile);
-    if (!separators.length) return [];
-
     const isLatLng = (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
         : (Array.isArray(segments) ? segments.filter(seg => Array.isArray(seg) && seg.length >= 2) : []);
     if (!centerlines.length) return [];
+    const byEntry = buildCorridorLaneMarkingsForEntries(
+        centerlines.map(points => ({ points, profile })),
+    );
+    const merged = new Map();
+    byEntry.flat().forEach(marking => {
+        if (!merged.has(marking.kind)) merged.set(marking.kind, []);
+        merged.get(marking.kind).push(...marking.lines);
+    });
+    return [...merged].map(([kind, lines]) => ({ kind, lines }));
+}
 
-    return separators.map(sep => ({
-        kind: sep.kind,
-        lines: centerlines.map(centerline => buildCorridorOffsetLine(centerline, sep.offset)).filter(Boolean)
-    })).filter(marking => marking.lines.length);
+// ---------------------------------------------------------------------------
+// Parking bays
+//
+// A parking lane is not a plain painted strip: its markings are the bay outlines, and their shape IS
+// the difference between the three parking types. Each bay is a divider line drawn across the lane at a
+// fixed interval along the road — perpendicular for parallel and 90° parking, slanted for angled — plus
+// the single edge line where the lane meets the carriageway. The dividers and their spacing come from
+// the standard bay dimensions, so what is drawn is a real row of bays, not a decorative hatch.
+// ---------------------------------------------------------------------------
+
+// Per orientation: the along-road interval between bay dividers and the angle each divider makes with
+// the road. A parallel bay is a car-length long (6 m) with perpendicular ends; a 90° bay is a car-width
+// apart (2.5 m); an angled bay is a car-width apart measured along the slant, so its along-road interval
+// is that width divided by sin(angle).
+const CORRIDOR_PARKING_STALL_WIDTH = 2.5; // the width of one bay, across the direction a car points
+const CORRIDOR_PARKING_BAYS = {
+    parallel: { spacingAlong: 6, angleDeg: 90 },
+    perpendicular: { spacingAlong: CORRIDOR_PARKING_STALL_WIDTH, angleDeg: 90 },
+    angled: { spacingAlong: CORRIDOR_PARKING_STALL_WIDTH / Math.sin(60 * Math.PI / 180), angleDeg: 60 }
+};
+
+// Every parking bay marking of a corridor, ready to draw: `[{ kind: 'edge' | 'divider', line: [latlng…] }]`.
+// `edge` is the solid line between the parking lane and the carriageway; each `divider` is one bay
+// boundary across the lane. View-agnostic (LatLngs), so 2D and 3D draw from the same geometry.
+function buildCorridorParkingBays(segments, profile) {
+    if (!corridorProjectionAvailable()) return [];
+    const parkingSpans = corridorStripSpans(profile).filter(span => corridorParkingOrientation(span.type));
+    if (!parkingSpans.length) return [];
+
+    const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
+    const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
+        ? [segments]
+        : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
+    if (!centerlines.length) return [];
+
+    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
+    const junctionClearance = corridorProfileWidth(profile) / 2 + 3;
+    const nearJunction = point => junctionPoints.some(j => Math.hypot(point[0] - j[0], point[1] - j[1]) < junctionClearance);
+    const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
+
+    const bays = [];
+    planarCenterlines.forEach(planar => {
+        parkingSpans.forEach(span => {
+            const bay = CORRIDOR_PARKING_BAYS[corridorParkingOrientation(span.type)] || CORRIDOR_PARKING_BAYS.parallel;
+            // The lane edge nearer the road centre (the carriageway side) gets the solid edge line; the
+            // far edge is the kerb, already the corridor's own boundary.
+            const inner = Math.abs(span.left) <= Math.abs(span.right) ? span.left : span.right;
+            const outer = inner === span.left ? span.right : span.left;
+            const centerOffset = (span.left + span.right) / 2;
+
+            const edge = offsetPolylinePlanar(planar, inner);
+            if (edge) bays.push({ kind: 'edge', line: edge.map(toLatLng) });
+
+            const centerLine = offsetPolylinePlanar(planar, centerOffset);
+            if (!centerLine) return;
+            // The slant only tilts the divider along the road; a 90° bay has no tilt at all.
+            const slant = bay.angleDeg >= 90 ? 0 : span.width / Math.tan(bay.angleDeg * Math.PI / 180);
+            samplePolylinePlanar(centerLine, bay.spacingAlong).forEach(sample => {
+                if (nearJunction(sample.point)) return;
+                const tangent = [Math.cos(sample.angle), Math.sin(sample.angle)];
+                const normalLeft = [-Math.sin(sample.angle), Math.cos(sample.angle)];
+                const at = (offset, along) => [
+                    sample.point[0] + normalLeft[0] * (offset - centerOffset) + tangent[0] * along,
+                    sample.point[1] + normalLeft[1] * (offset - centerOffset) + tangent[1] * along
+                ];
+                bays.push({ kind: 'divider', line: [toLatLng(at(inner, 0)), toLatLng(at(outer, slant))] });
+            });
+        });
+    });
+    return bays;
+}
+
+// ---------------------------------------------------------------------------
+// Direction arrows
+//
+// A motor-vehicle lane (traffic or bus) carries a direction; this paints it, as a road does: a white
+// arrow every so often down the lane, pointing the way it runs. So a one-way street reads as one, and a
+// single-lane stretch stops being ambiguous. Flipping a lane's direction (withLaneDirection) turns its
+// arrows around. Returned as flat convex rings (a head triangle + a stem rectangle) so 2D fills them
+// and 3D triangulates them from the same geometry.
+// ---------------------------------------------------------------------------
+
+const CORRIDOR_ARROW_SPACING = 30; // metres between direction arrows down a lane
+const CORRIDOR_ARROW = { length: 4, headLength: 1.6, headHalf: 0.7, stemHalf: 0.22 }; // metres
+const CORRIDOR_ARROW_LANE_TYPES = new Set(['driving', 'bus']);
+
+function buildCorridorDirectionArrows(segments, profile) {
+    if (!corridorProjectionAvailable()) return [];
+    const laneSpans = corridorStripSpans(profile).filter(span =>
+        CORRIDOR_ARROW_LANE_TYPES.has(span.type) && (span.direction === 'forward' || span.direction === 'backward'));
+    if (!laneSpans.length) return [];
+
+    const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
+    const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
+        ? [segments]
+        : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
+    if (!centerlines.length) return [];
+
+    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
+    const junctionClearance = corridorProfileWidth(profile) / 2 + 5;
+    const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
+    const { length: L, headLength: HL, headHalf: HH, stemHalf: SH } = CORRIDOR_ARROW;
+
+    const arrows = [];
+    laneSpans.forEach(span => {
+        const offset = (span.left + span.right) / 2;
+        const sign = span.direction === 'backward' ? -1 : 1;
+        centerlines.forEach(centerline => {
+            const offsetLine = buildCorridorOffsetLine(centerline, offset);
+            if (!offsetLine) return;
+            const planar = offsetLine.map(point => wgs84ToHTRS96(point.lat, point.lng));
+            samplePolylinePlanar(planar, CORRIDOR_ARROW_SPACING).forEach(sample => {
+                if (junctionPoints.some(p => Math.hypot(sample.point[0] - p[0], sample.point[1] - p[1]) < junctionClearance)) return;
+                const dir = [Math.cos(sample.angle) * sign, Math.sin(sample.angle) * sign];
+                const perp = [-dir[1], dir[0]];
+                const at = (along, across) => toLatLng([
+                    sample.point[0] + dir[0] * along + perp[0] * across,
+                    sample.point[1] + dir[1] * along + perp[1] * across
+                ]);
+                // Head triangle then stem rectangle — each convex, both filled white.
+                arrows.push([at(L / 2, 0), at(L / 2 - HL, HH), at(L / 2 - HL, -HH)]);
+                arrows.push([at(L / 2 - HL, SH), at(-L / 2, SH), at(-L / 2, -SH), at(L / 2 - HL, -SH)]);
+            });
+        });
+    });
+    return arrows;
 }
 
 // The cross-section of an OSM road, ready to draw — the same `{type, polygons}` the drawing tool and
@@ -1181,6 +1853,7 @@ if (typeof window !== 'undefined') {
     window.CORRIDOR_LANE_TYPES = CORRIDOR_LANE_TYPES;
     window.buildCorridorStripsForOsmFeature = buildCorridorStripsForOsmFeature;
     window.buildCorridorLaneMarkings = buildCorridorLaneMarkings;
+    window.buildCorridorLaneMarkingsForEntries = buildCorridorLaneMarkingsForEntries;
     window.corridorLaneSeparators = corridorLaneSeparators;
     window.corridorProfileFromOsmTags = corridorProfileFromOsmTags;
     window.corridorProfileToOsmTags = corridorProfileToOsmTags;
@@ -1191,16 +1864,38 @@ if (typeof window !== 'undefined') {
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
+    window.CORRIDOR_STANDARD_WIDTHS = CORRIDOR_STANDARD_WIDTHS;
+    window.CORRIDOR_RAIL_GAUGES = CORRIDOR_RAIL_GAUGES;
+    window.CORRIDOR_RAIL_GAUGE_WIDTHS = CORRIDOR_RAIL_GAUGE_WIDTHS;
+    window.CORRIDOR_DEFAULT_RAIL_GAUGE = CORRIDOR_DEFAULT_RAIL_GAUGE;
+    window.corridorStandardWidth = corridorStandardWidth;
+    window.corridorMinLaneWidth = corridorMinLaneWidth;
+    window.corridorParkingOrientation = corridorParkingOrientation;
+    window.corridorLaneWidthFixed = corridorLaneWidthFixed;
+    window.buildCorridorParkingBays = buildCorridorParkingBays;
+    window.buildCorridorDirectionArrows = buildCorridorDirectionArrows;
+    window.withLaneDirection = withLaneDirection;
+    window.withLaneTreeEvery = withLaneTreeEvery;
+    window.corridorRailGaugeOf = corridorRailGaugeOf;
+    window.corridorProfileHasRail = corridorProfileHasRail;
+    window.corridorIsTrack = corridorIsTrack;
+    window.corridorIsDesignation = corridorIsDesignation;
+    window.corridorDefaultTrackProfile = corridorDefaultTrackProfile;
     window.withSidewalkWidth = withSidewalkWidth;
-    window.withCorridorWidth = withCorridorWidth;
     window.withLaneWidth = withLaneWidth;
     window.withLaneType = withLaneType;
     window.withLaneLandscape = withLaneLandscape;
+    window.withLaneGauge = withLaneGauge;
     window.withLaneInserted = withLaneInserted;
     window.withLaneRemoved = withLaneRemoved;
     window.withLaneMoved = withLaneMoved;
     window.corridorCenterlineOf = corridorCenterlineOf;
     window.corridorLandscapeOf = corridorLandscapeOf;
+    window.corridorPavingOf = corridorPavingOf;
+    window.corridorStripSurface = corridorStripSurface;
+    window.withLanePaving = withLanePaving;
+    window.CORRIDOR_PAVINGS = CORRIDOR_PAVINGS;
+    window.CORRIDOR_PAVED_TYPES = CORRIDOR_PAVED_TYPES;
 
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
@@ -1227,22 +1922,52 @@ if (typeof module !== 'undefined' && module.exports) {
         normalizeCorridorProfile,
         corridorProfileWidth,
         corridorProfileFromLegacy,
+        corridorDefaultTrackProfile,
         corridorProfileOf,
+        corridorProfileHasRail,
+        corridorIsTrack,
+        corridorIsDesignation,
         corridorStripSpans,
         corridorCenterlineOf,
         corridorLandscapeOf,
+        corridorPavingOf,
+        corridorStripSurface,
+        withLanePaving,
+        CORRIDOR_PAVINGS,
+        CORRIDOR_PAVED_TYPES,
+        CORRIDOR_PAVED_SURFACE,
+        corridorRailGaugeOf,
         withSidewalkWidth,
-        withCorridorWidth,
         withLaneWidth,
         withLaneType,
         withLaneLandscape,
+        withLaneGauge,
         withLaneInserted,
         withLaneRemoved,
         withLaneMoved,
+        CORRIDOR_STANDARD_WIDTHS,
+        CORRIDOR_RAIL_GAUGES,
+        CORRIDOR_RAIL_GAUGE_WIDTHS,
+        CORRIDOR_DEFAULT_RAIL_GAUGE,
+        corridorStandardWidth,
+        corridorMinLaneWidth,
+        corridorParkingOrientation,
+        corridorLaneWidthFixed,
+        buildCorridorParkingBays,
+        buildCorridorDirectionArrows,
+        withLaneDirection,
+        withLaneTreeEvery,
         CORRIDOR_MIN_DRIVING_WIDTH,
+        CORRIDOR_MIN_LANE_WIDTH,
         offsetPolylinePlanar,
+        offsetClosedPolylinePlanar,
         corridorStripRingPlanar,
+        corridorClosedStripPolygonPlanar,
+        ringSelfIntersectsXY,
         corridorLaneSeparators,
+        corridorLaneTrafficRuns,
+        buildCorridorLaneMarkings,
+        buildCorridorLaneMarkingsForEntries,
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
         buildCorridorDecorations,

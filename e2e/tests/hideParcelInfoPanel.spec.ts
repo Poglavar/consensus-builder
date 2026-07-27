@@ -7,19 +7,8 @@ import { waitForMapReady } from '../helpers/app';
  */
 
 test.describe('Hide parcel info panel @core', () => {
-  test('hideParcelInfoPanel function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      const fn = w.Parcels?.uiParcelPanel?.hideParcelInfoPanel || w.hideParcelInfoPanel;
-      return { exists: typeof fn === 'function' };
-    });
-
-    test.skip(!result.exists, 'hideParcelInfoPanel not available');
-    expect(result.exists).toBe(true);
-  });
+  // A `typeof hideParcelInfoPanel === 'function'` check used to sit here. The two tests below call
+  // it (directly, and via the close button), which is what actually proves it hides the panel.
 
   test('programmatically showing then hiding panel works', async ({ mockApi: page }) => {
     await page.goto('/');

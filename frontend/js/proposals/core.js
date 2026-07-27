@@ -94,6 +94,27 @@ function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {})
     return message;
 }
 
+// Does at least one replacement slice of this parent actually exist ON THIS DEVICE?
+//
+// Slice ids are derived from the parent (`<parent>#p-<proposalId>-N`, legacy `<parent>_N`), so a
+// live child is a key in the parcel-layer index carrying one of those prefixes.
+function hasLiveReplacementSlice(idStr) {
+    const layerIndex = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+        ? window.parcelLayerById
+        : null;
+    // Cannot verify (index not up yet) — keep the pre-guard behaviour and treat it as replaced.
+    if (!layerIndex) return true;
+
+    const derivedPrefix = idStr + '#p-';
+    const legacyPrefix = idStr + '_';
+    for (const key of layerIndex.keys()) {
+        if (typeof key === 'string' && (key.startsWith(derivedPrefix) || key.startsWith(legacyPrefix))) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function isParcelReplacedByChildren(parcelId) {
     if (!parcelId) return false;
     const idStr = String(parcelId);
@@ -106,7 +127,21 @@ function isParcelReplacedByChildren(parcelId) {
     }
 
     if (typeof proposalStorage === 'undefined') return false;
-    return proposalStorage.isParcelAncestorOfAppliedProposal(idStr);
+    if (!proposalStorage.isParcelAncestorOfAppliedProposal(idStr)) return false;
+
+    // A parent is only really replaced once a replacement slice actually exists here. Slice ids
+    // drift between devices, and a shared proposal arrives already marked applied with the
+    // SENDER's childParcelIds — so on a receiving browser this predicate would otherwise report
+    // "replaced" for a parent whose children were never (re)generated locally. Every consumer
+    // then drops that parent: the shared-link fetcher skips fetching it, the recovery paths
+    // refuse to rebuild it, ingest leaves it off the map. The proposal still draws (its visuals
+    // are interactive:false and come from proposal data), leaving a parcel-shaped hole with
+    // nothing to click — "visible but not clickable".
+    //
+    // This check used to live in ingest.js alone, which desynchronised the call sites: ingest kept
+    // the parent while every other consumer still dropped it. It belongs in the predicate, so all
+    // of them agree on one answer.
+    return hasLiveReplacementSlice(idStr);
 }
 
 function getProposalAreaMap(proposal) {
@@ -454,11 +489,11 @@ function facetModeLabel(name, value) {
 }
 
 function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
-    proposalFacetState.parcels = mode;
-    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', mode, lock, reason);
-    // Merge requires ≥2 parcels — disable it (greyed pill) for a single-parcel selection.
-    const mergeRadio = document.querySelector('input[name="proposalParcelsMode"][value="merge"]');
-    if (mergeRadio) mergeRadio.disabled = proposalSingleParcelSelection;
+    // The active parcel model has two states: keep boundaries, or run land readjustment.
+    // Legacy callers asking for the removed merge mode safely resolve to no boundary change.
+    const normalized = mode === 'readjust' ? 'readjust' : 'as-is';
+    proposalFacetState.parcels = normalized;
+    applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', normalized, lock, reason);
 }
 
 function showProposalPerSliceOption(show) {
@@ -485,7 +520,6 @@ function deriveProposalGoalKey() {
     if (landUse === 'urban-rule') return 'urban-rule';
     if (parcels === 'readjust') return 'reparcellization';
     if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
-    if (parcels === 'merge') return 'decide-later';
     if (ownership && ownership !== 'no-change') return 'ownership-transfer';
     return null; // as-is / as-is / no-change: nothing to propose yet
 }
@@ -766,46 +800,8 @@ function sortProposalIdsForShare(ids) {
     });
 }
 
-function deepClone(value) {
-    try {
-        if (value === undefined) return undefined;
-        return JSON.parse(JSON.stringify(value));
-    } catch (_) {
-        return null;
-    }
-}
-
-function deepCloneArray(values) {
-    if (!Array.isArray(values)) return [];
-    return values.map(item => deepClone(item));
-}
-
-function ensureArrayOfStrings(list) {
-    if (!Array.isArray(list)) return [];
-    return list
-        .map(value => {
-            if (value === null || value === undefined) return '';
-            try {
-                return value.toString();
-            } catch (_) {
-                return '';
-            }
-        })
-        .filter(Boolean);
-}
-
-function escapeHtml(str) {
-    try {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    } catch (_) {
-        return '';
-    }
-}
+// deepClone, deepCloneArray, ensureArrayOfStrings and escapeHtml live in js/shared-utils.js and
+// are used here as globals.
 
 function computeSharedBoundingBoxFromFeatures(features) {
     if (!Array.isArray(features) || features.length === 0) {
@@ -869,21 +865,25 @@ function resolveFrontendBaseUrl() {
     return 'https://urbangametheory.xyz';
 }
 
+// Abstract 3D "model" view. Canonical: ?model. Back-compat aliases: ?mode3d / ?3d.
 function is3DModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        // Realistic (photoreal) mode is a sub-mode of 3D, so any realistic request also requests 3D.
-        return isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d') || isRealisticModeRequestedFromUrl(p);
+        // The "photo" view is a sub-mode of "model", so any photo request also requests model.
+        return isTruthyUrlFlag(p, 'model') || isTruthyUrlFlag(p, 'mode3d') || isTruthyUrlFlag(p, '3d')
+            || isRealisticModeRequestedFromUrl(p);
     } catch (_) {
         return false;
     }
 }
 
-// Realistic (Google Photorealistic 3D Tiles) mode. Aliases: ?real / ?rl / ?rw.
+// Photorealistic (Google Photorealistic 3D Tiles) "photo" view. Canonical: ?photo.
+// Back-compat aliases: ?real / ?rl / ?rw.
 function isRealisticModeRequestedFromUrl(params) {
     try {
         const p = params || new URLSearchParams(window.location.search || '');
-        return isTruthyUrlFlag(p, 'real') || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
+        return isTruthyUrlFlag(p, 'photo') || isTruthyUrlFlag(p, 'real')
+            || isTruthyUrlFlag(p, 'rl') || isTruthyUrlFlag(p, 'rw');
     } catch (_) {
         return false;
     }
@@ -904,7 +904,11 @@ function tryEnterRealisticMode(options) {
 // URL-driven view entry: enter 3D (framing the just-loaded proposal), then overlay realistic mode
 // when requested — framing the whole proposal from the top, tilted ~45°, with a gentle auto-rotate.
 function enterUrlDrivenView(focusProposalIds) {
-    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds });
+    // A shared AI render (?scene=<slug>) carries the exact camera pose it was shot from; when the
+    // scene has been fetched, reproduce it instead of auto-framing. If the fetch hasn't resolved
+    // yet, ai-scene-follow re-applies it once it lands, so this only misses on a fast race.
+    const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
+    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds, restoreView: restoreView });
     if (entered && isRealisticModeRequestedFromUrl()) {
         tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
     }
@@ -1287,6 +1291,16 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             return;
         }
 
+        // On-chain proposal location: /proposals/<chainType>/<chainId>:<contract>:<tokenId>.
+        // Only the LOCATION is in the URL — reconstruct the proposal from the NFT + its metadata.
+        const chainRef = (window.ChainProposalRef && typeof window.ChainProposalRef.parseChainProposalRef === 'function')
+            ? window.ChainProposalRef.parseChainProposalRef(pathname)
+            : null;
+        if (chainRef) {
+            await handleChainProposalRoute(chainRef);
+            return;
+        }
+
         // Check if URL matches /proposals/:id or comma-separated ids
         const pathMatch = pathname.match(/^\/proposals\/([0-9,]+)$/);
         if (!pathMatch) {
@@ -1307,6 +1321,37 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         await handleSharedPlanRoute(idParts);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
+    }
+}
+
+// Open a proposal from its on-chain location: reconstruct it from the NFT (wallet-gated read via the
+// connected wallet's provider), add it to local storage, and focus it. Never touches the server.
+async function handleChainProposalRoute(ref) {
+    const loader = window.ChainProposalLoader;
+    if (!loader || typeof loader.loadChainProposalFromRef !== 'function') {
+        if (typeof updateStatus === 'function') updateStatus('On-chain proposals are unavailable.');
+        return;
+    }
+    const result = await loader.loadChainProposalFromRef(ref);
+    if (result && result.ok && result.proposal) {
+        const key = (typeof getProposalKey === 'function' && getProposalKey(result.proposal)) || result.proposal.proposalId;
+        if (key && typeof selectAndHighlightProposal === 'function') {
+            selectAndHighlightProposal(key, null, true);
+        }
+        return;
+    }
+    // Canton proposals are private to their parties: a non-party (or no identity) can't see them.
+    if (result && result.reason === 'canton-private') {
+        if (typeof updateStatus === 'function') {
+            updateStatus('This is a private Canton proposal — you can only see it if you are logged in as a party to it.');
+        }
+        return;
+    }
+    // No wallet connected → the read can't run; prompt to connect. Other failures get a generic note.
+    if (result && result.reason === 'chain-unavailable') {
+        if (typeof updateStatus === 'function') updateStatus('Connect a wallet to open this on-chain proposal.');
+    } else if (typeof updateStatus === 'function') {
+        updateStatus('Could not load the on-chain proposal.');
     }
 }
 
@@ -1397,25 +1442,31 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // A vote proposal (no ownership/parcel change) collects non-binding yes-votes instead of
+    // binding acceptances: on-chain it calls castVote, and it never executes or transfers.
+    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
+
     // Check if this proposal is minted on-chain — if so, submit on-chain first
     const nftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const isOnChain = nftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.acceptProposal === 'function';
+    const bridge = window.ProposalChainBridge;
+    const bridgeMethod = isVote ? 'castVote' : 'acceptProposal';
+    const isOnChain = nftInfo && bridge && typeof bridge[bridgeMethod] === 'function';
 
     if (isOnChain) {
         try {
             if (typeof updateStatus === 'function') {
-                updateStatus('Submitting acceptance on chain...');
+                updateStatus(isVote ? 'Submitting vote on chain...' : 'Submitting acceptance on chain...');
             }
-            await window.ProposalChainBridge.acceptProposal({
+            await bridge[bridgeMethod]({
                 proposalId: nftInfo.tokenId,
                 parcelId: normalizedParcelId,
                 chainId: nftInfo.chain,
                 contractAddress: nftInfo.contract
             });
         } catch (onchainErr) {
-            console.warn('On-chain acceptance failed:', onchainErr);
+            console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage('on_chain_acceptance_failed', friendlyMessage);
+            showProposalAlertMessage(isVote ? 'on_chain_vote_failed' : 'on_chain_acceptance_failed', friendlyMessage);
             return;
         }
     }
@@ -1431,7 +1482,7 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus('Acceptance recorded on chain.');
+        updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
     }
 
     const ownerLabel = targetSlot.shareText
@@ -1462,7 +1513,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         }
     } else {
         if (typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`);
+            const logMsg = isVote
+                ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
+                : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
+            addUserActionToGameLog(logMsg);
         }
         if (!userAgent.proposalsAccepted) {
             userAgent.proposalsAccepted = [];

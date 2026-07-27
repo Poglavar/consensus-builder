@@ -3,6 +3,22 @@
 // read/write/clear + write-cache helpers (which read _parcelRecordWriteCache from state.js).
 // Extracted from proposals.js; leaf helpers, cross-module calls resolve as runtime globals.
 
+// Display-number schema belongs beside the display-number accessor. This used to live in the much
+// later-loaded sharing bundle; when that bundle's duplicate parcel helpers were removed, the accessor
+// retained a hidden global dependency and every proposal/block details render began throwing.
+const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
+    'BROJ_CESTICE',
+    'smp',
+    'SMP',
+    'parcelNumber',
+    'parcel_number',
+    'parcel',
+    'parcelNo',
+    'parcel_no',
+    'parcelId',
+    'parcel_id'
+];
+
 function normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
     const str = value.toString().trim();
@@ -76,6 +92,30 @@ function _flushParcelWriteCache() {
 
 function _discardParcelWriteCache() {
     _parcelRecordWriteCache = null;
+}
+
+function isParcelWriteBatchActive() {
+    return typeof _parcelRecordWriteCache !== 'undefined' && _parcelRecordWriteCache instanceof Map;
+}
+
+async function withParcelWriteBatch(operation) {
+    if (typeof operation !== 'function') {
+        throw new TypeError('withParcelWriteBatch requires an operation function');
+    }
+
+    const ownsBatch = !isParcelWriteBatchActive();
+    if (ownsBatch) _startParcelWriteCache();
+    let committed = false;
+
+    try {
+        const result = await operation();
+        if (result === false) return false;
+        if (ownsBatch) _flushParcelWriteCache();
+        committed = true;
+        return result;
+    } finally {
+        if (ownsBatch && !committed) _discardParcelWriteCache();
+    }
 }
 
 function readPersistedParcelRecord(parcelId) {
@@ -311,4 +351,31 @@ function getParcelDisplayNumberFromFeature(feature, fallback = '') {
     }
     const properties = feature.properties || feature;
     return getParcelDisplayNumberFromProperties(properties, fallback);
+}
+
+if (typeof window !== 'undefined') {
+    window.withParcelWriteBatch = withParcelWriteBatch;
+    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
+}
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = {
+        normalizeParcelId,
+        getParcelIdFromProperties,
+        getParcelIdFromFeature,
+        ensureParcelIdOnFeature,
+        normalizeParcelIdList,
+        readPersistedParcelRecord,
+        writePersistedParcelRecord,
+        clearPersistedParcelRecord,
+        getParcelAreaById,
+        getParcelDisplayNumberFromProperties,
+        getParcelDisplayNumberFromFeature,
+        _startParcelWriteCache,
+        _flushParcelWriteCache,
+        _discardParcelWriteCache,
+        withParcelWriteBatch,
+        isParcelWriteBatchActive,
+        PARCEL_NUMBER_PROPERTY_CANDIDATES
+    };
 }

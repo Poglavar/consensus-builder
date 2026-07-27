@@ -6,20 +6,8 @@ import { waitForMapReady } from '../helpers/app';
  */
 
 test.describe('Notification and alert system @features', () => {
-  test('showStyledAlert function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        exists: typeof w.showStyledAlert === 'function',
-      };
-    });
-
-    test.skip(!result.exists, 'showStyledAlert not loaded');
-    expect(result.exists).toBe(true);
-  });
+  // Two existence checks (`typeof showStyledAlert`, `typeof updateStatus`) were dropped from this
+  // file — both functions are called for real by the tests that remain.
 
   test('showStyledAlert creates overlay and dialog', async ({ mockApi: page }) => {
     await page.goto('/');
@@ -81,45 +69,29 @@ test.describe('Notification and alert system @features', () => {
     expect(afterDismiss.overlayGone).toBe(true);
   });
 
-  test('updateStatus function exists for status bar updates', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasUpdateStatus: typeof w.updateStatus === 'function',
-      };
-    });
-
-    // updateStatus is used across modules for status bar messages
-    expect(result.hasUpdateStatus).toBe(true);
-  });
-
   test('updateStatus sets status message in DOM', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    const hasFunction = await page.evaluate(() => typeof (window as any).updateStatus === 'function');
-    test.skip(!hasFunction, 'updateStatus not loaded');
-
     const result = await page.evaluate(() => {
       const w = window as any;
+      if (typeof w.updateStatus !== 'function') return { skip: true };
       w.updateStatus('E2E test status message');
       // Find status element — typically #status or .status-bar
       const statusEl = document.getElementById('status') ||
         document.querySelector('.status-bar') ||
         document.querySelector('[data-status]');
       return {
+        skip: false,
         statusText: statusEl?.textContent ?? '',
         found: !!statusEl,
       };
     });
 
-    if (result.found) {
-      expect(result.statusText).toContain('E2E test status message');
-    }
-    // If no status element found, at least verify the function didn't throw
-    expect(true).toBe(true);
+    test.skip(result.skip === true, 'updateStatus not loaded');
+    // The message must actually reach the status bar. (This used to end in `expect(true).toBe(true)`,
+    // so a missing status element passed silently.)
+    expect(result.found).toBe(true);
+    expect(result.statusText).toContain('E2E test status message');
   });
 });

@@ -692,7 +692,7 @@ async function showAgentsStatistics() {
                 if (typeof isProposalApplied === 'function') {
                     return isProposalApplied(proposal);
                 }
-                return (proposal.status || '').toLowerCase() === 'applied';
+                return isApplied(proposal);
             }).length;
         }
 

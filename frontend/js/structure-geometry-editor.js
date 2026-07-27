@@ -9,6 +9,9 @@
         decorations: null,
         tool: null,
         pathPoints: [],
+        pathCursor: null,
+        rubberBand: null,
+        geometryDrag: null,
         layer: null,
         panel: null,
         reselectKey: null
@@ -27,6 +30,18 @@
         }
     }
 
+    // The panel is built in JS, so it translates at build time: same fallback-aware helper the
+    // other JS-built panels use (window.i18n.t returns the key itself when a string is missing).
+    function t(key, fallback, params = {}) {
+        const fullKey = `structureEditor.${key}`;
+        const api = global.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(fullKey, params);
+            if (translated && translated !== fullKey) return translated;
+        }
+        return fallback;
+    }
+
     function clone(value) {
         if (value === undefined || value === null) return value;
         try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
@@ -37,6 +52,14 @@
         const lng = Number(value[0]);
         const lat = Number(value[1]);
         return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    }
+
+    function translateCoordinateCollection(value, deltaLng, deltaLat) {
+        if (!Array.isArray(value)) return value;
+        if (value.length >= 2 && Number.isFinite(Number(value[0])) && Number.isFinite(Number(value[1]))) {
+            return [Number(value[0]) + deltaLng, Number(value[1]) + deltaLat];
+        }
+        return value.map(item => translateCoordinateCollection(item, deltaLng, deltaLat));
     }
 
     function normalizeDecorations(kind, input) {
@@ -77,6 +100,15 @@
         return { type: 'Feature', properties: {}, geometry: clone(geometry) };
     }
 
+    function hasExplicitDecorationDesign(kind, decorations) {
+        if (!decorations || typeof decorations !== 'object') return false;
+        const decorationKeys = kind === 'park'
+            ? ['trees', 'flowerbeds', 'ponds', 'paths', 'benches']
+            : ['fountains', 'fountain', 'trees', 'benches', 'stalls', 'statues'];
+        return Number.isFinite(Number(decorations.version))
+            || decorationKeys.some(key => Object.prototype.hasOwnProperty.call(decorations, key));
+    }
+
     function pointInside(coord) {
         try {
             return !!(state.boundary && global.turf?.booleanPointInPolygon(global.turf.point(coord), state.boundary));
@@ -93,12 +125,18 @@
 
     function sourceDecorations(draft) {
         const direct = draft?.editorPayload?.structureProposal?.decorations;
-        if (direct) return direct;
+        // An explicit schema (even with every list empty) is a deliberate saved design. Only fall
+        // back to the rendered feature for legacy proposals that never stored decorations at all.
+        if (hasExplicitDecorationDesign(state.kind, direct)) return direct;
         const proposalId = draft?.sourceProposalId || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id;
-        if (!proposalId) return null;
+        if (!proposalId) return direct || null;
         const collection = state.kind === 'park' ? global.parks : global.squares;
         const feature = (Array.isArray(collection) ? collection : []).find(entry => String(entry?.properties?.proposalId || '') === String(proposalId));
-        return feature?.properties?.decorations || null;
+        try {
+            if (feature && state.kind === 'park') global.ensureParkDecorations?.(feature);
+            if (feature && state.kind === 'square') global.ensureSquareDecorations?.(feature);
+        } catch (_) { }
+        return feature?.properties?.decorations || direct || null;
     }
 
     function makeIcon(className, html, size = 26) {
@@ -111,7 +149,7 @@
     }
 
     function rejectOutside() {
-        if (typeof global.updateStatus === 'function') global.updateStatus('Place items inside the structure boundary.');
+        if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
     }
 
     function removeDecoration(type, index) {
@@ -126,6 +164,85 @@
             global.L.DomEvent.stopPropagation(event);
             if (state.tool === 'erase') removeDecoration(type, index);
         });
+        return layer;
+    }
+
+    function geometryInsideBoundary(type, coordinates) {
+        if (!Array.isArray(coordinates)) return false;
+        if (type === 'paths') {
+            try {
+                const line = global.turf.lineString(coordinates);
+                return global.turf.booleanWithin(line, state.boundary);
+            } catch (_) { return coordinates.every(pointInside); }
+        }
+        return ringInside(coordinates);
+    }
+
+    function endGeometryDrag() {
+        const drag = state.geometryDrag;
+        state.geometryDrag = null;
+        if (global.map) {
+            global.map.off('mousemove', moveGeometryDrag);
+            global.map.off('touchmove', moveGeometryDrag);
+            global.map.off('mouseup', endGeometryDrag);
+            global.map.off('touchend', endGeometryDrag);
+            try { global.map.dragging?.enable?.(); } catch (_) { }
+        }
+        global.document?.removeEventListener('mouseup', endGeometryDrag);
+        global.document?.removeEventListener('touchend', endGeometryDrag);
+        if (!drag) return;
+        if (drag.lastValid) state.decorations[drag.type][drag.index] = drag.lastValid;
+        if (drag.rejected && !drag.lastValid) rejectOutside();
+        render();
+    }
+
+    function moveGeometryDrag(event) {
+        const drag = state.geometryDrag;
+        const latlng = event?.latlng;
+        if (!drag || !latlng) return;
+        const next = translateCoordinateCollection(
+            drag.original,
+            latlng.lng - drag.start.lng,
+            latlng.lat - drag.start.lat
+        );
+        if (!geometryInsideBoundary(drag.type, next)) {
+            drag.rejected = true;
+            return;
+        }
+        drag.lastValid = next;
+        try { drag.layer.setLatLngs(next.map(([lng, lat]) => [lat, lng])); } catch (_) { }
+    }
+
+    function startGeometryDrag(event, layer, type, index) {
+        if (state.tool === 'erase' || state.geometryDrag) return;
+        const original = clone(state.decorations?.[type]?.[index]);
+        if (!Array.isArray(original) || !event?.latlng) return;
+        try {
+            if (event.originalEvent) global.L.DomEvent.stop(event.originalEvent);
+            else global.L.DomEvent.stopPropagation(event);
+        } catch (_) { }
+        state.geometryDrag = {
+            layer,
+            type,
+            index,
+            original,
+            start: { lng: event.latlng.lng, lat: event.latlng.lat },
+            lastValid: null,
+            rejected: false
+        };
+        try { global.map?.dragging?.disable?.(); } catch (_) { }
+        global.map?.on('mousemove', moveGeometryDrag);
+        global.map?.on('touchmove', moveGeometryDrag);
+        global.map?.on('mouseup', endGeometryDrag);
+        global.map?.on('touchend', endGeometryDrag);
+        global.document?.addEventListener('mouseup', endGeometryDrag);
+        global.document?.addEventListener('touchend', endGeometryDrag);
+    }
+
+    function bindDraggableGeometry(layer, type, index) {
+        bindErasable(layer, type, index);
+        layer.on('mousedown', event => startGeometryDrag(event, layer, type, index));
+        layer.on('touchstart', event => startGeometryDrag(event, layer, type, index));
         return layer;
     }
 
@@ -155,14 +272,17 @@
     }
 
     function renderPark(group) {
-        state.decorations.paths.forEach((path, index) => bindErasable(global.L.polyline(path.map(([lng, lat]) => [lat, lng]), {
-            color: '#f7edc8', weight: 5, opacity: 0.95, dashArray: '8 5', pane: EDITOR_PANE
+        state.decorations.paths.forEach((path, index) => bindDraggableGeometry(global.L.polyline(path.map(([lng, lat]) => [lat, lng]), {
+            color: '#f7edc8', weight: 5, opacity: 0.95, dashArray: '8 5', pane: EDITOR_PANE,
+            className: 'structure-geometry-draggable'
         }).addTo(group), 'paths', index));
-        state.decorations.ponds.forEach((ring, index) => bindErasable(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
-            color: '#1d4ed8', fillColor: '#38bdf8', fillOpacity: 0.75, weight: 2, pane: EDITOR_PANE
+        state.decorations.ponds.forEach((ring, index) => bindDraggableGeometry(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
+            color: '#1d4ed8', fillColor: '#38bdf8', fillOpacity: 0.75, weight: 2, pane: EDITOR_PANE,
+            className: 'structure-geometry-draggable'
         }).addTo(group), 'ponds', index));
-        state.decorations.flowerbeds.forEach((ring, index) => bindErasable(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
-            color: '#be185d', fillColor: '#f472b6', fillOpacity: 0.78, weight: 2, pane: EDITOR_PANE
+        state.decorations.flowerbeds.forEach((ring, index) => bindDraggableGeometry(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
+            color: '#be185d', fillColor: '#f472b6', fillOpacity: 0.78, weight: 2, pane: EDITOR_PANE,
+            className: 'structure-geometry-draggable'
         }).addTo(group), 'flowerbeds', index));
         state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
@@ -171,6 +291,31 @@
                 color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE
             }).addTo(group);
         }
+        updateRubberBand();
+    }
+
+    // The segment from the last placed point to the pointer. Without it a half-drawn path just
+    // sits there and the editor gives no sign that it is waiting for the next click. Red while
+    // the pointer is outside the boundary, because finishing there is refused anyway.
+    function updateRubberBand() {
+        const live = state.tool === 'path' && state.pathPoints.length && state.pathCursor && state.layer;
+        if (!live) {
+            if (state.rubberBand && state.layer) state.layer.removeLayer(state.rubberBand);
+            state.rubberBand = null;
+            return;
+        }
+        const [fromLng, fromLat] = state.pathPoints[state.pathPoints.length - 1];
+        const [toLng, toLat] = state.pathCursor;
+        const latlngs = [[fromLat, fromLng], [toLat, toLng]];
+        const color = pointInside(state.pathCursor) ? '#f59e0b' : '#dc2626';
+        if (state.rubberBand) {
+            state.rubberBand.setLatLngs(latlngs);
+            state.rubberBand.setStyle({ color });
+            return;
+        }
+        state.rubberBand = global.L.polyline(latlngs, {
+            color, weight: 3, opacity: 0.9, dashArray: '4 6', interactive: false, pane: EDITOR_PANE
+        }).addTo(state.layer);
     }
 
     function renderSquare(group) {
@@ -187,6 +332,8 @@
     function render() {
         if (!state.layer || !global.map) return;
         state.layer.clearLayers();
+        // clearLayers just dropped it; renderPark rebuilds it from the live cursor.
+        state.rubberBand = null;
         global.L.geoJSON(state.boundary, {
             style: {
                 color: state.kind === 'park' ? '#15803d' : '#475569',
@@ -257,7 +404,16 @@
             else rejectOutside();
         }
         state.pathPoints = [];
+        state.pathCursor = null;
         render();
+    }
+
+    // Cheap: the rubber band is moved in place rather than through a full render, so dragging the
+    // pointer across the park does not rebuild every tree, bench and pond on every frame.
+    function onMapMouseMove(event) {
+        if (state.tool !== 'path' || !state.pathPoints.length) return;
+        state.pathCursor = [event.latlng.lng, event.latlng.lat];
+        updateRubberBand();
     }
 
     function setTool(tool) {
@@ -274,7 +430,7 @@
         if (state.panel || !global.document?.body) return state.panel;
         const panel = global.document.createElement('section');
         panel.className = 'structure-geometry-editor';
-        panel.setAttribute('aria-label', 'Structure geometry editor');
+        panel.setAttribute('aria-label', t('ariaLabel', 'Structure geometry editor'));
         panel.addEventListener('click', handlePanelClick);
         global.document.body.appendChild(panel);
         state.panel = panel;
@@ -284,26 +440,29 @@
     function panelMarkup() {
         const tools = state.kind === 'park'
             ? [
-                toolButton('tree', '🌳', 'Tree'),
-                toolButton('flowerbed', '🌸', 'Flowerbed'),
-                toolButton('pond', '💧', 'Pond'),
-                toolButton('path', '〰', 'Footpath'),
-                toolButton('bench', '▰', 'Bench')
+                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
+                toolButton('flowerbed', '🌸', t('tools.flowerbed', 'Flowerbed')),
+                toolButton('pond', '💧', t('tools.pond', 'Pond')),
+                toolButton('path', '〰', t('tools.path', 'Footpath')),
+                toolButton('bench', '▰', t('tools.bench', 'Bench'))
             ].join('')
             : [
-                toolButton('fountain', '⛲', 'Fountain'),
-                toolButton('tree', '🌳', 'Tree'),
-                toolButton('bench', '▰', 'Bench'),
-                toolButton('stall', '🍽️', 'Table'),
-                toolButton('statue', '🗿', 'Statue')
+                toolButton('fountain', '⛲', t('tools.fountain', 'Fountain')),
+                toolButton('tree', '🌳', t('tools.tree', 'Tree')),
+                toolButton('bench', '▰', t('tools.bench', 'Bench')),
+                toolButton('stall', '🍽️', t('tools.stall', 'Table')),
+                toolButton('statue', '🗿', t('tools.statue', 'Statue'))
             ].join('');
+        const title = state.kind === 'park'
+            ? t('titlePark', 'Park editor')
+            : t('titleSquare', 'Square editor');
         return `
-            <header><div><strong>${state.kind === 'park' ? 'Park' : 'Square'} editor</strong><small>Choose an item, then click inside the boundary. Drag point items to move them.</small></div><button type="button" data-action="cancel" aria-label="Close">×</button></header>
-            <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', 'Remove')}</div>
+            <header><div><strong>${title}</strong><small>${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</small></div><button type="button" data-action="cancel" aria-label="${t('closeLabel', 'Close')}">×</button></header>
+            <div class="structure-geometry-tools">${tools}${toolButton('erase', '⌫', t('tools.erase', 'Remove'))}</div>
             <div class="structure-geometry-options">
-                <button type="button" data-action="finish-path">Finish path</button>
+                <button type="button" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
             </div>
-            <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">Cancel</button><button type="button" data-action="save" class="is-primary">Save design</button></div></footer>`;
+            <footer><span data-role="hint"></span><div><button type="button" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" data-action="save" class="is-primary">${t('save', 'Save design')}</button></div></footer>`;
     }
 
     function updatePanelState() {
@@ -321,8 +480,10 @@
         }
         const hint = panel.querySelector('[data-role="hint"]');
         if (hint) hint.textContent = state.tool === 'erase'
-            ? 'Click an item to remove it.'
-            : (state.tool ? 'Click the map to place the selected item.' : 'Select an item to begin.');
+            ? t('hintErase', 'Click an item to remove it.')
+            : (state.tool
+                ? t('hintPlace', 'Click the map to place the selected item.')
+                : t('hintSelect', 'Select an item to begin.'));
     }
 
     function handlePanelClick(event) {
@@ -355,8 +516,10 @@
         const draftId = state.draftId;
         const reselectKey = state.reselectKey || null;
         state.reselectKey = null;
+        if (state.geometryDrag) endGeometryDrag();
         if (global.map) {
             global.map.off('click', onMapClick);
+            global.map.off('mousemove', onMapMouseMove);
             if (state.layer) global.map.removeLayer(state.layer);
         }
         global.document?.removeEventListener('keydown', onKeyDown, true);
@@ -367,6 +530,9 @@
         state.decorations = null;
         state.tool = null;
         state.pathPoints = [];
+        state.pathCursor = null;
+        state.rubberBand = null;
+        state.geometryDrag = null;
         state.layer = null;
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
             global.finishProposalDraftDesignSession(draftId);
@@ -377,7 +543,7 @@
             try { global.updateParksLayer?.(); } catch (_) { }
             try { global.updateSquaresLayer?.(); } catch (_) { }
         }
-        if (saved && typeof global.updateStatus === 'function') global.updateStatus('Structure design saved.');
+        if (saved && typeof global.updateStatus === 'function') global.updateStatus(t('statusSaved', 'Structure design saved.'));
         // The editor replaced the proposal card for its duration — on cancel, bring the card
         // back for the proposal that was selected. (On save the shell re-selects the rebuilt
         // proposal itself, which may carry a NEW id.)
@@ -416,6 +582,8 @@
         state.decorations = normalizeDecorations(kind, sourceDecorations(draft));
         state.tool = null;
         state.pathPoints = [];
+        state.pathCursor = null;
+        state.rubberBand = null;
         ensureEditorPane();
         state.layer = global.L.layerGroup().addTo(global.map);
         // The editor owns the map and the UI for its duration: remember which proposal card was
@@ -435,6 +603,7 @@
         panel.innerHTML = panelMarkup();
         panel.classList.add('is-open');
         global.map.on('click', onMapClick);
+        global.map.on('mousemove', onMapMouseMove);
         global.document?.addEventListener('keydown', onKeyDown, true);
         render();
         try {
@@ -450,6 +619,11 @@
     global.isStructureGeometryEditorActive = () => !!state.draftId;
 
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { normalizeDecorations, boundaryFeature };
+        module.exports = {
+            normalizeDecorations,
+            boundaryFeature,
+            hasExplicitDecorationDesign,
+            translateCoordinateCollection
+        };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

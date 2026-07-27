@@ -300,7 +300,7 @@
             const proposals = proposalManager.getProposals() || [];
             const fromMeProposals = proposals.filter(p => {
                 const goal = (p.goal || p.type || '').toString().toLowerCase();
-                return goal === 'ownership-transfer-from-me' && p.status !== 'executed' && p.status !== 'expired';
+                return goal === 'ownership-transfer-from-me' && getLifecycleStatus(p) !== 'Executed' && getLifecycleStatus(p) !== 'Expired';
             });
 
             fromMeProposals.forEach(proposal => {

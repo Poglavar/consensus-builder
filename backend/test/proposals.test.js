@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { normalizeCityCode } from '../routes/proposals.js';
+import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import {
     validProposalBody,
     insertResult,
@@ -10,6 +11,12 @@ import {
     proposalDbRow,
     summaryDbRow,
 } from './helpers/fixtures.js';
+
+// The route renders a thumbnail on upload, which would otherwise fetch real basemap tiles over the
+// network. These are route tests: the renderer itself is covered in proposal-thumbnail.test.js.
+vi.mock('../thumbnails/proposal-thumbnail.js', () => ({
+    generateAndStoreProposalThumbnail: vi.fn(async () => null)
+}));
 
 let pool;
 let app;
@@ -27,6 +34,8 @@ function getRouteHandler(appInstance, routePath, method) {
 beforeEach(() => {
     pool = createMockPool();
     app = createTestApp(pool);
+    vi.mocked(generateAndStoreProposalThumbnail).mockReset();
+    vi.mocked(generateAndStoreProposalThumbnail).mockResolvedValue(null);
 });
 
 describe('POST /proposals', () => {
@@ -70,6 +79,59 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(500);
         expect(res.body.error).toMatch(/Internal server error/);
+    });
+
+    it('renders a thumbnail on upload and stores it on the proposal', async () => {
+        vi.mocked(generateAndStoreProposalThumbnail).mockResolvedValue({
+            url: 'http://api.test/uploads/images/proposal-thumb-1-123.png',
+            fileName: 'proposal-thumb-1-123.png',
+            frame: { zoom: 19 },
+            tiles: { loaded: 9, total: 9 },
+            bytes: 12345
+        });
+        pool.setResults([insertResult(), updateResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        expect(res.status).toBe(201);
+        expect(res.body.screenshotUrl).toBe('http://api.test/uploads/images/proposal-thumb-1-123.png');
+
+        const screenshotUpdate = pool.getCalls().find(call => call.sql.includes('SET screenshot_url'));
+        expect(screenshotUpdate).toBeTruthy();
+        expect(screenshotUpdate.params).toEqual([
+            'http://api.test/uploads/images/proposal-thumb-1-123.png',
+            1
+        ]);
+    });
+
+    it('still creates the proposal when thumbnail rendering fails', async () => {
+        vi.mocked(generateAndStoreProposalThumbnail).mockRejectedValue(new Error('all basemap tiles failed'));
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        // The proposal is the thing being uploaded; a picture of it is not worth failing an upload for.
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty('id', 1);
+        expect(res.body).toHaveProperty('proposalId', 'test-proposal-001');
+        expect(res.body.screenshotUrl).toBeNull();
+        expect(pool.getCalls().some(call => call.sql.includes('SET screenshot_url'))).toBe(false);
+    });
+
+    it('does not re-render when the client already supplied a screenshot url', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ screenshotUrl: 'https://gateway.pinata.cloud/ipfs/abc' }));
+
+        expect(res.status).toBe(201);
+        expect(res.body.screenshotUrl).toBe('https://gateway.pinata.cloud/ipfs/abc');
+        expect(generateAndStoreProposalThumbnail).not.toHaveBeenCalled();
     });
 
     it('returns 409 on duplicate proposal_id', async () => {
@@ -197,9 +259,9 @@ describe('POST /proposals', () => {
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
+        expect(insertParams[25]).toBeNull();
     });
 
     it('falls back to a generated local proposal id when no id field is supplied', async () => {
@@ -275,6 +337,76 @@ describe('POST /proposals', () => {
         expect(insertParams[19]).toBe(false);
     });
 
+    it('writes canonical lifecycle only and strips browser-local applied state', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                status: undefined,
+                lifecycleStatus: 'active',
+                applied: true,
+                type: 'road',
+                roadProposal: { applied: true, appliedAt: 'now', width: 6 }
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[7]).toBe('Active');
+        expect(insertParams).toHaveLength(39); // +1 for cadastre_parcel_ids
+        expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
+        expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
+        expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');
+    });
+
+    it('derives Active lifecycle for an older client that sends a legacy application status', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ status: 'Applied', lifecycleStatus: undefined, applied: undefined, type: 'road' }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[7]).toBe('Active');
+        expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
+    });
+
+    it('rejects unknown explicit lifecycle states', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ lifecycleStatus: 'pending' }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/lifecycleStatus must be one of/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('persists cadastreParcelIds — the base parcels a proposal covers', async () => {
+        // Stored alongside parentParcelIds, never instead of it. Cadastral ids are the same on every
+        // machine, unlike the derived ids parentParcelIds may hold. See rethink-proposals.md.
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: ['HR-339270-823/1#p-road-2'],
+                cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2']
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1#p-road-2']));
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
+    });
+
+    it('rejects a malformed cadastreParcelIds payload', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ cadastreParcelIds: [{ nope: true }] }));
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
     it('serializes only non-empty collections and nested proposal objects into insert params', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
@@ -300,18 +432,19 @@ describe('POST /proposals', () => {
 
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-child-1']));
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
-        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[31]).toBe(JSON.stringify(['parent-1']));
-        expect(insertParams[32]).toBeNull();
-        expect(insertParams[33]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[34]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[35]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[22]).toBeNull(); // cadastre_parcel_ids — absent from this payload
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-child-1']));
+        expect(insertParams[24]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[25]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[27]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[29]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[32]).toBe(JSON.stringify(['parent-1']));
+        expect(insertParams[33]).toBeNull();
+        expect(insertParams[34]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[35]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[36]).toBe(JSON.stringify({ txHash: '0x1' }));
     });
 
     it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
@@ -465,7 +598,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[35]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[36]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 
@@ -661,7 +794,7 @@ describe('GET /proposals/:id', () => {
                     description: 'JSON description',
                     author: 'json-author',
                     type: 'road',
-                    status: 'draft',
+                    lifecycleStatus: 'draft',
                     offer: 12,
                     offerCurrency: 'USD',
                     budget: 34,
@@ -697,7 +830,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            status: 'draft',
+            lifecycleStatus: 'draft',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -850,17 +983,17 @@ describe('GET /proposals/count', () => {
         pool.setResult({ rows: [{ count: '42' }] });
 
         const res = await request(app)
-            .get('/proposals/count?city=zg&status=applied');
+            .get('/proposals/count?city=zg&lifecycle=Active');
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(42);
         expect(res.body.city).toBe('zagreb');
-        expect(res.body.status).toBe('applied');
+        expect(res.body.lifecycle).toBe('Active');
 
         const call = pool.getCalls()[0];
         expect(call.sql).toContain('COUNT(*)');
         expect(call.params).toContain('zagreb');
-        expect(call.params).toContain('applied');
+        expect(call.params).toContain('Active');
     });
 
     it('returns count with no filters', async () => {
@@ -882,7 +1015,7 @@ describe('GET /proposals/count', () => {
         expect(res.body).toEqual({
             count: 0,
             city: 'custom-city',
-            status: null,
+            lifecycle: null,
             type: 'road',
             author: 'bob'
         });
@@ -910,6 +1043,45 @@ describe('GET /proposals/count', () => {
     });
 });
 
+describe('GET /proposals/counts', () => {
+    it('returns per-parcel counts as a { counts } map', async () => {
+        pool.setResult({
+            rows: [
+                { parcel_id: 'HR-1-100', n: 2 },
+                { parcel_id: 'HR-1-101', n: 1 },
+            ],
+        });
+
+        const res = await request(app).get('/proposals/counts?parcel_ids=HR-1-100,HR-1-101,HR-1-102&city=zg');
+
+        expect(res.status).toBe(200);
+        expect(res.body.counts).toEqual({ 'HR-1-100': 2, 'HR-1-101': 1 }); // 102 absent → 0
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/ancestor_parcel_ids \?\| \$1/);
+        expect(call.params[0]).toEqual(['HR-1-100', 'HR-1-101', 'HR-1-102']);
+        expect(call.params).toContain('zagreb'); // normalized city
+    });
+
+    it('dedupes the requested ids', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/counts?parcel_ids=A,A,B,B,B');
+        expect(pool.getCalls()[0].params[0]).toEqual(['A', 'B']);
+    });
+
+    it('400s when parcel_ids is missing or empty', async () => {
+        const res = await request(app).get('/proposals/counts');
+        expect(res.status).toBe(400);
+        const res2 = await request(app).get('/proposals/counts?parcel_ids=%20,%20');
+        expect(res2.status).toBe(400);
+    });
+
+    it('returns 500 when the count query fails', async () => {
+        pool.query = async () => { throw new Error('counts failed'); };
+        const res = await request(app).get('/proposals/counts?parcel_ids=A');
+        expect(res.status).toBe(500);
+    });
+});
+
 describe('GET /proposals/summary', () => {
     it('returns paginated proposals', async () => {
         pool.setResult({
@@ -931,6 +1103,39 @@ describe('GET /proposals/summary', () => {
         const call = pool.getCalls()[0];
         expect(call.params).toContain(5);
         expect(call.params).toContain(10);
+    });
+
+    it('serves the goal so the client does not re-derive it from the lossy type', async () => {
+        pool.setResult({
+            rows: [
+                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'building-blockify' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park-square' }),
+            ],
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(p => p.goal)).toEqual(['building-blockify', 'park-square']);
+        // The SELECT must expose goal for the client mapper.
+        expect(pool.getCalls()[0].sql).toMatch(/AS goal/);
+    });
+
+    it('reports the server-derived effective status (expired reads Expired, not the stale value)', async () => {
+        pool.setResult({
+            rows: [
+                summaryDbRow({ id: 1, proposal_id: 'p-1', status: 'Active', effective_status: 'Expired' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', status: 'Active', effective_status: 'Active' }),
+            ],
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(p => p.lifecycleStatus)).toEqual(['Expired', 'Active']);
+        // The SELECT must derive it server-side.
+        expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
+        expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
     });
 
     it('prefers display_title when display_name is absent', async () => {
@@ -966,6 +1171,45 @@ describe('GET /proposals/summary', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ proposals: [], count: 0, limit: 100, offset: 0 });
         expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
+    });
+
+    it('filters by EFFECTIVE lifecycle (expired-but-stale rows excluded from ?lifecycle=Active)', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?lifecycle=Active');
+        const call = pool.getCalls()[0];
+        // The WHERE clause derives the lifecycle, not a raw column compare.
+        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
+        expect(call.params).toContain('Active');
+    });
+
+    it('filters by goal (against the stored goal, falling back to type)', async () => {
+        pool.setResult({ rows: [] });
+        const res = await request(app).get('/proposals/summary?goal=park-square');
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/COALESCE\(proposal_data->>'goal', type\) = \$1/);
+        expect(call.params).toContain('park-square');
+    });
+
+    it('free-text search matches name/title and author across all rows', async () => {
+        pool.setResult({ rows: [] });
+        const res = await request(app).get('/proposals/summary?q=ilica');
+        expect(res.status).toBe(200);
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/ILIKE/);
+        expect(call.params).toContain('%ilica%');
+    });
+
+    it('honours a whitelisted sort and ignores an unknown one', async () => {
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?sort=value-desc');
+        expect(pool.getCalls()[0].sql).toMatch(/ORDER BY NULLIF\(proposal_data->>'offer', ''\)::numeric DESC NULLS LAST/);
+
+        pool.reset?.();
+        pool.setResult({ rows: [] });
+        await request(app).get('/proposals/summary?sort=; DROP TABLE proposal');
+        // Unknown/injection sort falls back to the safe default.
+        expect(pool.getCalls().at(-1).sql).toMatch(/ORDER BY created_at DESC/);
     });
 
     it('uses result length when total_count is absent', async () => {
@@ -1015,7 +1259,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            status: null,
+            lifecycleStatus: 'Active',
             createdAt: null
         });
     });

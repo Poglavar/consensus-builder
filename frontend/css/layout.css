@@ -125,18 +125,6 @@ body {
     gap: 6px;
 }
 
-.parcel-road-actions {
-    display: flex;
-    width: 100%;
-    gap: 6px;
-}
-
-.parcel-road-actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
-}
-
 /* -------------------- Mobile layout tweaks -------------------- */
 @media (max-width: 768px) {
     /* Stack layout vertically so map fills screen and sidebar overlays */

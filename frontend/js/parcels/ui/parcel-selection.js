@@ -37,6 +37,36 @@
             ))
             : null;
 
+        // Proposal browse mode (the proposals list is open): the map is inert to everything EXCEPT
+        // proposals. A click on a parcel carrying an applied proposal selects that proposal (which
+        // opens its details and closes the list — see selectAndHighlightProposal); a click on any
+        // other parcel is a no-op. Pan/zoom stay live because only the click action is suppressed.
+        if (global.proposalListBrowseMode) {
+            let browseProposal = appliedRoadProposal;
+            if (!browseProposal) {
+                try {
+                    const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
+                    browseProposal = parcelProposals.find(p => !p.roadProposal
+                        && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
+                    if (!browseProposal && typeof global.structureProposalsCoveringFeature === 'function') {
+                        const covering = global.structureProposalsCoveringFeature(feature);
+                        if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
+                            browseProposal = global.getProposalByIdOrHash(covering[0]) || null;
+                        }
+                    }
+                } catch (_) { }
+            }
+            if (browseProposal && typeof global.selectAndHighlightProposal === 'function') {
+                const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(browseProposal))
+                    || browseProposal.proposalId
+                    || feature.properties.ancestorProposal
+                    || feature.properties.proposalId;
+                global.selectAndHighlightProposal(proposalKey, parcelId, true, true); // center + details; its tail closes the list
+            }
+            if (e) L.DomEvent.stopPropagation(e);
+            return;
+        }
+
         const proposalDetailsPanel = global.document.getElementById('proposal-details-panel');
         if (proposalDetailsPanel && proposalDetailsPanel.classList.contains('visible')) {
             if (typeof global.hideProposalDetailsPanel === 'function') {
@@ -115,9 +145,6 @@
             showParcelInfoPanel(feature);
         }
         global.currentParcelCoordinates = feature.geometry.coordinates;
-        const currentIsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
-        global.document.getElementById('roadCheckbox').checked = currentIsRoad;
-
         const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
         const previousLayer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
         if (previousLayer && previousSelectedId && previousSelectedId !== parcelId.toString()) {
@@ -159,47 +186,6 @@
 
         global.window.selectedParcelId = global.selectedParcelId;
 
-        // Clear orange track highlighting from all parcels except the clicked one
-        // Only do this if track drawing mode is NOT active (during track drawing, highlighting should persist)
-        if (typeof global.trackDrawingMode === 'undefined' || !global.trackDrawingMode) {
-            if (typeof global.trackPreviewAffectedParcelIds !== 'undefined' &&
-                global.trackPreviewAffectedParcelIds instanceof Set &&
-                global.trackPreviewAffectedParcelIds.size > 0 &&
-                global.parcelLayer) {
-                const clickedParcelIdStr = parcelId.toString();
-                global.parcelLayer.eachLayer(layer => {
-                    if (!layer.feature || !layer.feature.properties) return;
-                    const layerParcelId = resolveParcelId(layer.feature);
-                    if (!layerParcelId) return;
-                    // If this parcel is in track preview but is not the clicked parcel, clear its orange highlighting
-                    if (global.trackPreviewAffectedParcelIds.has(layerParcelId) && layerParcelId !== clickedParcelIdStr) {
-                        const isMarkedAsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
-                        // Use getParcelBaseStyle or getParcelStyle to preserve ownership highlighting
-                        const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                        if (typeof styleFn === 'function') {
-                            layer.setStyle(styleFn(layerParcelId, layer, { isRoad: isMarkedAsRoad }));
-                        } else {
-                            // Fallback to basic style
-                            const baseStyle = isMarkedAsRoad ? global.roadStyle : global.normalStyle;
-                            if (baseStyle) {
-                                layer.setStyle(baseStyle);
-                            }
-                        }
-                    }
-                });
-                // Update the Set to only contain the clicked parcel (if it was in the set)
-                if (global.trackPreviewAffectedParcelIds.has(clickedParcelIdStr)) {
-                    global.trackPreviewAffectedParcelIds = new Set([clickedParcelIdStr]);
-                } else {
-                    global.trackPreviewAffectedParcelIds.clear();
-                }
-                // Also update window.trackPreviewAffectedParcelIds if it exists
-                if (typeof global.window !== 'undefined') {
-                    global.window.trackPreviewAffectedParcelIds = global.trackPreviewAffectedParcelIds;
-                }
-            }
-        }
-
         const blockName = feature.properties.block;
         const blocksActive = global.document.getElementById('parcelBlocksCheckbox') && global.document.getElementById('parcelBlocksCheckbox').checked;
         if (blocksActive) {
@@ -213,6 +199,9 @@
             }
         }
 
+        // Road status outlived the "is road" checkbox: it is still set by road auto-detection and by
+        // applying a road proposal, and consumers read it off currentParcel.
+        const currentIsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         global.currentParcel = {
             id: parcelId,
             layer: targetLayer,

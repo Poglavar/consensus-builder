@@ -22,6 +22,7 @@ import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
+import { setupOsmRoadRoute } from './routes/osm-road.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
@@ -32,13 +33,15 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
-import { setupParcelOwnershipRoute } from './routes/parcel-ownership.js';
+import { setupRoadCorridorRoute } from './routes/road-corridor.js';
+import { setupReparcellizationRoute } from './routes/reparcellization.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
 import { setupEnsPlansRoute } from './routes/ens-plans.js';
 import { setupCantonRoute } from './routes/canton.js';
+import { setupAiSceneRoute } from './routes/ai-scene.js';
 
 const { Pool } = pkg;
 
@@ -309,6 +312,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
+    setupOsmRoadRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);
@@ -319,13 +323,15 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
-    setupParcelOwnershipRoute(app, activePool);
+    setupRoadCorridorRoute(app, activePool);
+    setupReparcellizationRoute(app);
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
     setupEnsPlansRoute(app, activePool);
     setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
+    setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

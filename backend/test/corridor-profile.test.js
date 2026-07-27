@@ -1,6 +1,6 @@
 // Unit tests for the frontend's corridor cross-section model (pure geometry, no DOM or map).
-// The invariant that matters: a profile's strips always sum to the corridor's total width, because the
-// corridor footprint — and every proposal derived from it — depends on that total and nothing else.
+// The rule that matters: the lane list is the truth and the total width is its sum, so an edit to the
+// lanes moves the total (and with it the footprint). Only `withSeamMoved` deliberately holds the total.
 
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
@@ -10,6 +10,11 @@ const {
     CORRIDOR_PROFILE_PRESETS,
     normalizeCorridorProfile,
     corridorProfileWidth,
+    corridorPavingOf,
+    corridorStripSurface,
+    withLanePaving,
+    CORRIDOR_PAVED_SURFACE,
+    CORRIDOR_LANE_TYPES,
     corridorProfileFromLegacy,
     corridorProfileOf,
     corridorStripSpans,
@@ -20,18 +25,29 @@ const {
     withLaneRemoved,
     withLaneMoved,
     offsetPolylinePlanar,
+    offsetClosedPolylinePlanar,
     corridorStripRingPlanar,
+    corridorClosedStripPolygonPlanar,
+    ringSelfIntersectsXY,
     corridorProfileFromOsmTags,
     corridorProfileToOsmTags,
     corridorProfileFromOsmFeature,
     corridorLaneSeparators,
     corridorLandscapeOf,
-    withCorridorWidth,
+    corridorStandardWidth,
+    CORRIDOR_MIN_DRIVING_WIDTH,
+    withSeamMoved,
     withLaneLandscape,
     samplePolylinePlanar,
     findCorridorJunctionsPlanar,
     buildCorridorDecorations,
-    buildCorridorJunctionTreatments
+    buildCorridorJunctionTreatments,
+    corridorParkingOrientation,
+    corridorLaneWidthFixed,
+    buildCorridorParkingBays,
+    buildCorridorDirectionArrows,
+    withLaneDirection,
+    withLaneTreeEvery
 } = require('../../frontend/js/corridor-profile.js');
 
 const close = (a, b, tolerance = 1e-6) => Math.abs(a - b) < tolerance;
@@ -47,6 +63,19 @@ describe('corridor profile presets', () => {
         for (const [total, strips] of Object.entries(CORRIDOR_PROFILE_PRESETS)) {
             expect(strips[0].type, `preset ${total} left`).toBe('sidewalk');
             expect(strips[strips.length - 1].type, `preset ${total} right`).toBe('sidewalk');
+        }
+    });
+
+    it('puts forward traffic on the right and oncoming on the left (right-hand driving)', () => {
+        // corridorStripSpans measures positive offsets to the LEFT of travel, so on a right-hand-drive
+        // road every forward lane must sit to the right of (a smaller offset than) every backward lane.
+        for (const [total, strips] of Object.entries(CORRIDOR_PROFILE_PRESETS)) {
+            const spans = corridorStripSpans({ strips });
+            const center = s => (s.left + s.right) / 2;
+            const forward = spans.filter(s => s.type === 'driving' && s.direction === 'forward').map(center);
+            const backward = spans.filter(s => s.type === 'driving' && s.direction === 'backward').map(center);
+            if (!forward.length || !backward.length) continue;
+            expect(Math.max(...forward), `preset ${total}`).toBeLessThan(Math.min(...backward));
         }
     });
 });
@@ -95,7 +124,7 @@ describe('withSidewalkWidth', () => {
     });
 
     it('leaves profiles without sidewalks or without lanes alone', () => {
-        const rail = { strips: [{ type: 'rail', width: 3 }] };
+        const rail = { strips: [{ type: 'rail', width: 3, gauge: 1435 }] };
         expect(withSidewalkWidth(rail, 2)).toEqual(rail);
     });
 });
@@ -113,11 +142,11 @@ describe('corridorProfileFromLegacy', () => {
         expect(profile.strips.filter(s => s.type === 'sidewalk').every(s => s.width === 2)).toBe(true);
     });
 
-    it('synthesises two lanes for an off-preset width', () => {
+    it('synthesises two lanes for an off-preset width (right-hand traffic: left is backward, right forward)', () => {
         const profile = corridorProfileFromLegacy(9, 0, false);
         expect(profile.strips).toEqual([
-            { type: 'driving', width: 4.5, direction: 'forward' },
-            { type: 'driving', width: 4.5, direction: 'backward' }
+            { type: 'driving', width: 4.5, direction: 'backward' },
+            { type: 'driving', width: 4.5, direction: 'forward' }
         ]);
     });
 
@@ -132,8 +161,10 @@ describe('corridorProfileFromLegacy', () => {
         expect(profile.strips.map(s => s.type)).toEqual(['driving', 'driving']);
     });
 
-    it('makes a track a single rail bed', () => {
-        expect(corridorProfileFromLegacy(3, null, true)).toEqual({ strips: [{ type: 'rail', width: 3 }] });
+    // A legacy track must keep summing to the width it was drawn at — its footprint is that width, and
+    // every parcel split under it. Only a NEW track gets the standard single-track section.
+    it('keeps a legacy track at the width it was drawn at, as one rail lane', () => {
+        expect(corridorProfileFromLegacy(6, null, true)).toEqual({ strips: [{ type: 'rail', width: 6, gauge: 1435 }] });
     });
 
     it('rejects a nonsensical width', () => {
@@ -378,6 +409,42 @@ describe('corridorStripRingPlanar', () => {
         expect(corridorStripRingPlanar(straight, 3, 3)).toBe(null);
         expect(corridorStripRingPlanar([[0, 0]], 3, 1)).toBe(null);
     });
+
+    // A strip whose offset exceeds a bend's turn radius folds into a bowtie ring. In 2D that fills
+    // fine (even-odd), so it is NOT dropped here — the 3D mesh builder guards it (ringSelfIntersectsXY),
+    // and the ring must still be RETURNED so the 2D asphalt renders.
+    it('returns a bowtie ring rather than dropping it (2D fills it; 3D guards separately)', () => {
+        expect(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8)).not.toBe(null);
+        // But it IS a self-intersecting ring, which the 3D-side detector recognises.
+        expect(ringSelfIntersectsXY(corridorStripRingPlanar([[0, 0], [10, 0], [0, 0.5]], 8, -8))).toBe(true);
+    });
+
+    it('builds a smooth 3D band for a closed road without changing the flat 2D strip contract', () => {
+        const triangle = [[0, 0], [100, 0], [50, 80], [0, 0]];
+        const polygon = corridorClosedStripPolygonPlanar(triangle, 5, -5);
+        expect(polygon).toHaveLength(2);
+        expect(polygon.every(ring => !ringSelfIntersectsXY(ring))).toBe(true);
+        expect(Math.abs(ringArea(polygon[0]))).toBeGreaterThan(Math.abs(ringArea(polygon[1])));
+        expect(offsetClosedPolylinePlanar(triangle, 5)).not.toBe(null);
+        const flat2D = corridorStripRingPlanar(triangle, 5, -5);
+        expect(Array.isArray(flat2D[0])).toBe(true);
+        expect(Array.isArray(flat2D[0][0])).toBe(false);
+    });
+});
+
+describe('ringSelfIntersectsXY (guard used by the 3D mesh builder)', () => {
+    it('passes a simple convex band ring', () => {
+        expect(ringSelfIntersectsXY([[0, 4], [100, 4], [100, 3], [0, 3]])).toBe(false);
+    });
+
+    it('flags a bowtie / figure-eight ring', () => {
+        expect(ringSelfIntersectsXY([[0, 0], [2, 2], [2, 0], [0, 2]])).toBe(true);
+    });
+
+    it('ignores shared endpoints between adjacent edges', () => {
+        // A concave but simple polygon — adjacent edges share a vertex but nothing crosses.
+        expect(ringSelfIntersectsXY([[0, 0], [4, 0], [4, 4], [2, 1], [0, 4]])).toBe(false);
+    });
 });
 
 // The OSM bridge. A road we propose and a road imported from OSM must reach the renderer as the same
@@ -540,8 +607,11 @@ describe('corridorProfileToOsmTags', () => {
         expect(tags['lanes:forward']).toBe(undefined);
     });
 
-    it('describes a track as a railway', () => {
-        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 3 }] })).toEqual({ railway: 'rail', width: '3' });
+    it('describes a track as a railway, with its gauge', () => {
+        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 3 }] }))
+            .toEqual({ railway: 'rail', width: '3', gauge: '1435' });
+        expect(corridorProfileToOsmTags({ strips: [{ type: 'rail', width: 2.75, gauge: 1000 }] }))
+            .toEqual({ railway: 'rail', width: '2.75', gauge: '1000' });
     });
 
     it('refuses a profile with no carriageway to hang the tags on', () => {
@@ -570,26 +640,44 @@ describe('corridorProfileFromOsmFeature', () => {
     });
 });
 
-// Editing. The invariant under all of these: the total width never moves, because the total *is* the
-// corridor's footprint, and the footprint is what every descendant proposal was derived from.
-describe('profile edits preserve the total width', () => {
+// Editing. The lane list is the truth: an edit changes the lanes, and the total — and therefore the
+// footprint — follows them. Nothing "absorbs" an edit, so no edit can stall for want of room.
+describe('profile edits move the total with the lanes', () => {
     const preset = () => ({ strips: CORRIDOR_PROFILE_PRESETS[18].map(s => ({ ...s })) });
     const TOTAL = 18;
+    const drivingTotal = profile => profile.strips.filter(s => s.type === 'driving').reduce((t, s) => t + s.width, 0);
 
-    it('widening a sidewalk takes the metres from the traffic lanes', () => {
+    it('widening a sidewalk widens the road by the same amount, leaving every other lane alone', () => {
         const edited = withLaneWidth(preset(), 0, 3.5);
-        expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
+        expect(close(corridorProfileWidth(edited), TOTAL + 1.5)).toBe(true);
         expect(edited.strips[0].width).toBe(3.5);
-        expect(close(edited.strips.filter(s => s.type === 'driving').reduce((t, s) => t + s.width, 0), 7 - 1.5)).toBe(true);
+        expect(close(drivingTotal(edited), 7)).toBe(true); // the traffic lanes did not pay for it
     });
 
-    it('changes the total footprint while drawing by resizing only the traffic lanes', () => {
-        const wider = withCorridorWidth(preset(), 20);
-        expect(close(corridorProfileWidth(wider), 20)).toBe(true);
-        expect(wider.strips.filter(strip => strip.type !== 'driving').map(strip => strip.width))
-            .toEqual(preset().strips.filter(strip => strip.type !== 'driving').map(strip => strip.width));
-        expect(close(corridorProfileWidth(withCorridorWidth(preset(), 16)), 16)).toBe(true);
-        expect(withCorridorWidth(preset(), 15)).toBe(null); // the two traffic lanes would fall below 2.5 m
+    it('a road at the minimum traffic-lane width can still gain a lane — the road just gets wider', () => {
+        // The stall this model replaced: the old editor paid for every insert out of the traffic lanes,
+        // so once they hit CORRIDOR_MIN_DRIVING_WIDTH, "Add lane" returned null and did nothing at all.
+        const squeezed = {
+            strips: [
+                { type: 'sidewalk', width: 1.5 },
+                { type: 'driving', width: CORRIDOR_MIN_DRIVING_WIDTH, direction: 'forward' },
+                { type: 'driving', width: CORRIDOR_MIN_DRIVING_WIDTH, direction: 'backward' },
+                { type: 'sidewalk', width: 1.5 }
+            ]
+        };
+        const before = corridorProfileWidth(squeezed);
+        const edited = withLaneInserted(squeezed, 3, { type: 'bus', width: corridorStandardWidth('bus'), direction: 'backward' });
+        expect(edited).not.toBeNull();
+        expect(close(corridorProfileWidth(edited), before + corridorStandardWidth('bus'))).toBe(true);
+        expect(edited.strips.map(s => s.type)).toEqual(['sidewalk', 'driving', 'driving', 'bus', 'sidewalk']);
+        expect(drivingTotal(edited)).toBe(2 * CORRIDOR_MIN_DRIVING_WIDTH); // untouched
+    });
+
+    it('gives one standard width per lane type, not one per road class', () => {
+        expect(corridorStandardWidth('driving')).toBe(3);
+        expect(corridorStandardWidth('sidewalk')).toBe(2);
+        expect(corridorStandardWidth('cycleway')).toBe(1.5);
+        expect(corridorStandardWidth('parking')).toBe(2.5);
     });
 
     it('keeps a green strip planting choice through other edits', () => {
@@ -602,30 +690,42 @@ describe('profile edits preserve the total width', () => {
         expect(withLaneLandscape(green, green.strips.findIndex(strip => strip.type === 'driving'), 'trees')).toBe(null);
     });
 
-    it('narrowing a lane gives the metres back', () => {
-        const edited = withLaneWidth(preset(), 2, 1);
-        expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
-        expect(edited.strips[2].width).toBe(1);
+    it('narrowing a lane narrows the road', () => {
+        // Not the parking lane — parking is fixed-width now (see 'fixed-width parking edits'); a sidewalk
+        // is an ordinary resizable lane, and narrowing it takes the width straight off the total.
+        const edited = withLaneWidth(preset(), 0, 1); // the 2 m sidewalk
+        expect(close(corridorProfileWidth(edited), TOTAL - 1)).toBe(true);
+        expect(edited.strips[0].width).toBe(1);
     });
 
-    it('a traffic lane cannot pay for its own widening', () => {
+    it('widening a traffic lane widens the road; no other lane moves', () => {
         const profile = preset();
         const drivingIndex = profile.strips.findIndex(s => s.type === 'driving');
         const edited = withLaneWidth(profile, drivingIndex, 4.5);
-        expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
+        expect(close(corridorProfileWidth(edited), TOTAL + 1)).toBe(true);
         expect(edited.strips[drivingIndex].width).toBe(4.5);
-        expect(close(edited.strips[drivingIndex + 1].width, 2.5)).toBe(true); // the other lane paid
+        expect(edited.strips[drivingIndex + 1].width).toBe(3.5); // the neighbouring lane is untouched
     });
 
-    it('refuses an edit the traffic lanes cannot absorb', () => {
-        expect(withLaneWidth(preset(), 0, 7)).toBe(null); // would leave the lanes below 2.5 m each
+    it('refuses a width that is not a width', () => {
         expect(withLaneWidth(preset(), 0, 0)).toBe(null);
+        expect(withLaneWidth(preset(), 0, 0.25)).toBe(null); // under the half-metre lane minimum
         expect(withLaneWidth(preset(), 99, 2)).toBe(null);
     });
 
     it('refuses to narrow a traffic lane below the minimum', () => {
         const drivingIndex = preset().strips.findIndex(s => s.type === 'driving');
         expect(withLaneWidth(preset(), drivingIndex, 2)).toBe(null);
+    });
+
+    // The one edit that still holds the total: dragging a seam trades width between two neighbours, so
+    // the footprint — and every proposal derived from it — stays exactly where it was.
+    it('moving a seam holds the total and only touches the two lanes it separates', () => {
+        const edited = withSeamMoved(preset(), 0, 0.5); // sidewalk grows, the cycleway beside it shrinks
+        expect(corridorProfileWidth(edited)).toBe(TOTAL);
+        expect(edited.strips[0].width).toBe(2.5);
+        expect(edited.strips[1].width).toBe(1);
+        expect(edited.strips.slice(2)).toEqual(preset().strips.slice(2));
     });
 
     it('changing a lane type keeps its width, so the total cannot move', () => {
@@ -643,34 +743,31 @@ describe('profile edits preserve the total width', () => {
         expect(withLaneType(preset(), 2, 'helipad')).toBe(null);
     });
 
-    it('inserting a lane takes its width from the traffic lanes', () => {
-        // The 18 m preset has a 7 m carriageway over two lanes, so a 2 m bus lane leaves 2.5 m each.
-        const edited = withLaneInserted(preset(), 3, { type: 'bus', width: 2, direction: 'forward' });
-        expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
-        expect(edited.strips[3]).toEqual({ type: 'bus', width: 2, direction: 'forward' });
-        expect(close(edited.strips.filter(s => s.type === 'driving').reduce((t, s) => t + s.width, 0), 5)).toBe(true);
+    it('inserting a lane widens the road by that lane, whatever the traffic lanes are doing', () => {
+        const edited = withLaneInserted(preset(), 3, { type: 'bus', width: 3.5, direction: 'forward' });
+        expect(close(corridorProfileWidth(edited), TOTAL + 3.5)).toBe(true);
+        expect(edited.strips[3]).toEqual({ type: 'bus', width: 3.5, direction: 'forward' });
+        expect(close(drivingTotal(edited), 7)).toBe(true); // nothing was taken from the carriageway
     });
 
-    it('refuses to insert a lane there is no room for', () => {
-        expect(withLaneInserted(preset(), 3, { type: 'bus', width: 2 })).toEqual(expect.anything());
-        expect(withLaneInserted(preset(), 3, { type: 'bus', width: 2.5 })).toBe(null); // lanes would drop below 2.5 m each
-        expect(withLaneInserted(preset(), 3, { type: 'bus', width: 3 })).toBe(null);
+    it('refuses only a lane that is not a lane', () => {
         expect(withLaneInserted(preset(), 3, { type: 'helipad', width: 1 })).toBe(null);
+        expect(withLaneInserted(preset(), 3, { type: 'bus', width: 0 })).toBe(null);
     });
 
-    it('removing a lane hands its width back to the traffic lanes', () => {
-        const edited = withLaneRemoved(preset(), 2); // drop the parking
-        expect(close(corridorProfileWidth(edited), TOTAL)).toBe(true);
+    it('removing a lane narrows the road by that lane', () => {
+        const edited = withLaneRemoved(preset(), 2); // drop one parking lane
+        expect(close(corridorProfileWidth(edited), TOTAL - 2)).toBe(true);
         expect(edited.strips.filter(s => s.type === 'parking').length).toBe(1);
-        expect(close(edited.strips.filter(s => s.type === 'driving').reduce((t, s) => t + s.width, 0), 9)).toBe(true);
+        expect(close(drivingTotal(edited), 7)).toBe(true);
     });
 
-    it('removing the last traffic lane widens the neighbours instead of failing', () => {
+    it('removing the last traffic lane just narrows the road', () => {
         const pedestrian = { strips: [{ type: 'sidewalk', width: 3 }, { type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 3 }] };
         const edited = withLaneRemoved(pedestrian, 1);
-        expect(close(corridorProfileWidth(edited), 9)).toBe(true);
+        expect(close(corridorProfileWidth(edited), 6)).toBe(true);
         expect(edited.strips.map(s => s.type)).toEqual(['sidewalk', 'sidewalk']);
-        expect(edited.strips.every(s => s.width === 4.5)).toBe(true);
+        expect(edited.strips.every(s => s.width === 3)).toBe(true);
     });
 
     it('refuses to remove the only lane', () => {
@@ -683,16 +780,17 @@ describe('profile edits preserve the total width', () => {
         expect(edited.strips.slice(0, 3).map(s => s.type)).toEqual(['sidewalk', 'parking', 'cycleway']);
     });
 
-    it('a hundred edits do not drift the total by a millimetre', () => {
-        // Rounding each lane independently would lose a fraction of a millimetre per edit, and the total
-        // is the footprint — it has to come back exact however long the user plays with the sliders.
+    it('a hundred edits leave every lane on the millimetre grid', () => {
+        // The total is a sum, so it cannot drift on its own — but a lane whose width picked up float dust
+        // would carry it into the footprint. Every edit rounds to millimetres for exactly that reason.
         let profile = preset();
         for (let i = 0; i < 100; i++) {
             const width = 1 + (i % 5) * 0.37;
-            const next = withLaneWidth(profile, 0, width);
+            const next = withLaneWidth(profile, i % profile.strips.length, width);
             if (next) profile = next;
         }
-        expect(corridorProfileWidth(profile)).toBe(TOTAL);
+        expect(profile.strips.every(s => Math.abs(s.width * 1000 - Math.round(s.width * 1000)) < 1e-6)).toBe(true);
+        expect(close(corridorProfileWidth(profile), profile.strips.reduce((t, s) => t + s.width, 0))).toBe(true);
     });
 
     // OSM's per-side schemes record a lane's presence and width, never its position in the sequence:
@@ -764,27 +862,24 @@ describe('buildCrossCorridorJunctionTreatments', () => {
     });
 });
 
-// Pedestrian footpaths: a profile with no traffic lanes must still take width changes —
-// every strip scales proportionally since there are no driving lanes to absorb the delta.
-describe('withCorridorWidth on lane-free footpaths', () => {
-    const { withCorridorWidth, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
-
-    it('scales a sidewalk-only profile to the requested total', () => {
+// Pedestrian footpaths: a profile with no traffic lanes is edited exactly like any other — there is
+// nothing special about a carriageway now that no lane pays for another lane's change.
+describe('lane-free footpaths', () => {
+    it('narrows a sidewalk-only profile by resizing its one lane', () => {
         const footpath = { strips: [{ type: 'sidewalk', width: 4 }] };
-        const narrowed = withCorridorWidth(footpath, 2);
+        const narrowed = withLaneWidth(footpath, 0, 2);
         expect(narrowed).not.toBeNull();
         expect(corridorProfileWidth(narrowed)).toBeCloseTo(2, 3);
         expect(narrowed.strips).toHaveLength(1);
         expect(narrowed.strips[0].type).toBe('sidewalk');
     });
 
-    it('scales multi-strip lane-free profiles proportionally and exactly', () => {
+    it('takes a new lane without a carriageway to pay for it', () => {
         const alley = { strips: [{ type: 'sidewalk', width: 2 }, { type: 'verge', width: 1 }, { type: 'sidewalk', width: 1 }] };
-        const widened = withCorridorWidth(alley, 8);
+        const widened = withLaneInserted(alley, 2, { type: 'cycleway', width: corridorStandardWidth('cycleway'), direction: 'forward' });
         expect(widened).not.toBeNull();
-        expect(corridorProfileWidth(widened)).toBeCloseTo(8, 3);
-        expect(widened.strips[0].width).toBeCloseTo(4, 3);
-        expect(widened.strips[1].width).toBeCloseTo(2, 3);
+        expect(corridorProfileWidth(widened)).toBeCloseTo(5.5, 3);
+        expect(widened.strips.map(s => s.type)).toEqual(['sidewalk', 'verge', 'cycleway', 'sidewalk']);
     });
 });
 
@@ -863,5 +958,452 @@ describe('withSeamMoved', () => {
 
     it('refuses a seam index without two lanes around it', () => {
         expect(withSeamMoved(profile, 1, 1)).toBeNull();
+    });
+});
+
+// Railway tracks: a rail lane is one TRACK, and its gauge is what says how much of the corridor it takes.
+describe('rail lanes and their gauge', () => {
+    const {
+        corridorDefaultTrackProfile, withLaneGauge, corridorRailGaugeOf, corridorStandardWidth,
+        CORRIDOR_RAIL_GAUGE_WIDTHS
+    } = require('../../frontend/js/corridor-profile.js');
+
+    it('gives a new track one standard-gauge lane, at that gauge\'s width', () => {
+        const profile = corridorDefaultTrackProfile();
+        expect(profile.strips).toEqual([{ type: 'rail', width: 3.5, gauge: 1435 }]);
+        expect(corridorProfileWidth(profile)).toBe(3.5);
+    });
+
+    it('sizes a track lane by its gauge — a tram takes less street than a railway', () => {
+        expect(CORRIDOR_RAIL_GAUGE_WIDTHS[1000]).toBe(2.75);
+        expect(CORRIDOR_RAIL_GAUGE_WIDTHS[1435]).toBe(3.5);
+        expect(corridorStandardWidth('rail', 1000)).toBe(2.75);
+        expect(corridorStandardWidth('rail', 1435)).toBe(3.5);
+        expect(corridorStandardWidth('rail')).toBe(3.5); // no gauge given: the default one
+        expect(corridorStandardWidth('driving')).toBe(3); // every other type is unaffected by the gauge
+    });
+
+    it('changing the gauge re-widths the lane, and the corridor follows', () => {
+        const tram = withLaneGauge(corridorDefaultTrackProfile(), 0, 1000);
+        expect(tram.strips[0]).toEqual({ type: 'rail', width: 2.75, gauge: 1000 });
+        expect(corridorProfileWidth(tram)).toBe(2.75);
+        // ...even when the width had been hand-tuned: picking a gauge is picking a track.
+        const tuned = withLaneWidth(corridorDefaultTrackProfile(), 0, 5);
+        expect(corridorProfileWidth(withLaneGauge(tuned, 0, 1000))).toBe(2.75);
+    });
+
+    it('refuses a gauge we do not have a track for, or a lane that is not a track', () => {
+        expect(withLaneGauge(corridorDefaultTrackProfile(), 0, 1668)).toBe(null);
+        expect(withLaneGauge({ strips: [{ type: 'driving', width: 3 }] }, 0, 1000)).toBe(null);
+    });
+
+    it('normalize keeps a gauge on rail lanes, defaults a missing one, and puts none elsewhere', () => {
+        const normalized = normalizeCorridorProfile([
+            { type: 'rail', width: 2.75, gauge: 1000 },
+            { type: 'rail', width: 3.5 },
+            { type: 'rail', width: 3.5, gauge: 'nonsense' },
+            { type: 'sidewalk', width: 2, gauge: 1435 }
+        ]);
+        expect(normalized.strips.map(strip => strip.gauge)).toEqual([1000, 1435, 1435, undefined]);
+        expect(corridorRailGaugeOf(normalized.strips[0])).toBe(1000);
+        expect(corridorRailGaugeOf(normalized.strips[3])).toBe(null);
+    });
+
+    it('a second track is a second lane: two standard tracks are 7 m', () => {
+        const doubled = withLaneInserted(corridorDefaultTrackProfile(), 1, { type: 'rail', width: corridorStandardWidth('rail') });
+        expect(doubled.strips.map(strip => strip.type)).toEqual(['rail', 'rail']);
+        expect(corridorProfileWidth(doubled)).toBe(7);
+    });
+
+    it('a road can have a track in it — a street with trams is a street', () => {
+        const street = { strips: CORRIDOR_PROFILE_PRESETS[18].map(strip => ({ ...strip })) };
+        const before = corridorProfileWidth(street);
+        const withTram = withLaneInserted(street, 4, { type: 'rail', width: corridorStandardWidth('rail', 1000), gauge: 1000 });
+        expect(withTram.strips[4]).toEqual({ type: 'rail', width: 2.75, gauge: 1000 });
+        expect(close(corridorProfileWidth(withTram), before + 2.75)).toBe(true);
+    });
+
+    it('retyping a lane into a track gives it a gauge and leaves its width alone', () => {
+        const street = { strips: CORRIDOR_PROFILE_PRESETS[10].map(strip => ({ ...strip })) };
+        const retyped = withLaneType(street, 1, 'rail'); // the 3.5 m traffic lane
+        expect(retyped.strips[1]).toEqual({ type: 'rail', width: 3.5, gauge: 1435 });
+        expect(close(corridorProfileWidth(retyped), 10)).toBe(true);
+    });
+
+    it('reads a gauge off an OSM way, and sizes an untagged track by it', () => {
+        const tram = corridorProfileFromOsmTags({ railway: 'tram', gauge: '1000' });
+        expect(tram.strips).toEqual([{ type: 'rail', width: 2.75, gauge: 1000 }]);
+        const mainline = corridorProfileFromOsmTags({ railway: 'rail', tracks: '2' });
+        expect(mainline.strips.map(strip => strip.gauge)).toEqual([1435, 1435]);
+        expect(corridorProfileWidth(mainline)).toBe(7);
+        // A tagged width still wins: OSM's own number is the corridor's width.
+        expect(corridorProfileWidth(corridorProfileFromOsmTags({ railway: 'rail', width: '9', tracks: '2' }))).toBe(9);
+    });
+});
+
+// Track-ness is DERIVED, not stored: a corridor is a track iff its cross-section carries a rail lane.
+// This is the predicate the renderer, the drawing tool and the merge logic all branch on, so it has to
+// answer for corridors saved long before rail was a lane type as well as for ones drawn today.
+describe('corridorIsTrack / corridorProfileHasRail', () => {
+    const { corridorProfileHasRail, corridorIsTrack, corridorDefaultTrackProfile } = require('../../frontend/js/corridor-profile.js');
+
+    it('a profile has rails iff a lane is a rail lane', () => {
+        expect(corridorProfileHasRail(corridorDefaultTrackProfile())).toBe(true);
+        expect(corridorProfileHasRail({ strips: CORRIDOR_PROFILE_PRESETS[18] })).toBe(false);
+        expect(corridorProfileHasRail(null)).toBe(false);
+        expect(corridorProfileHasRail({ strips: [] })).toBe(false);
+    });
+
+    it('a street with a tram lane in it IS a track', () => {
+        const tramStreet = withLaneInserted(
+            { strips: CORRIDOR_PROFILE_PRESETS[18].map(strip => ({ ...strip })) },
+            4, { type: 'rail', width: 2.75, gauge: 1000 }
+        );
+        expect(corridorProfileHasRail(tramStreet)).toBe(true);
+        expect(corridorIsTrack({ profile: tramStreet, width: corridorProfileWidth(tramStreet) })).toBe(true);
+    });
+
+    it('a track whose rails are taken out is a road again', () => {
+        const platform = withLaneInserted(corridorDefaultTrackProfile(), 1, { type: 'sidewalk', width: 2 });
+        expect(corridorIsTrack({ profile: platform })).toBe(true);
+        const railless = withLaneRemoved(platform, 0);
+        expect(corridorProfileHasRail(railless)).toBe(false);
+        expect(corridorIsTrack({ profile: railless })).toBe(false);
+    });
+
+    it('a corridor drawn as a road is not a track', () => {
+        expect(corridorIsTrack({ profile: { strips: CORRIDOR_PROFILE_PRESETS[10] } })).toBe(false);
+        expect(corridorIsTrack({ width: 10, metadata: { isRoad: true } })).toBe(false);
+        expect(corridorIsTrack(null)).toBe(false);
+    });
+
+    // Compatibility: stored track proposals carry metadata.isTrack and (often) no profile at all. They
+    // must keep answering "track" — their footprint is their recorded width and nothing may move it.
+    it('honours a legacy metadata.isTrack, with or without a profile', () => {
+        expect(corridorIsTrack({ width: 6, metadata: { isTrack: true } })).toBe(true);
+        // The synthesised legacy profile is one rail lane as wide as the track was drawn.
+        expect(corridorProfileOf({ width: 6, metadata: { isTrack: true } }).strips)
+            .toEqual([{ type: 'rail', width: 6, gauge: 1435 }]);
+        // Even a stored profile with no rail lane loses to the flag: that is legacy data, not a
+        // contradiction to resolve — it says "track", so it is one.
+        expect(corridorIsTrack({
+            profile: { strips: [{ type: 'driving', width: 3 }] },
+            metadata: { isTrack: true }
+        })).toBe(true);
+    });
+});
+
+// A DESIGNATION is not a designed corridor: it is existing parcels declared to be road land. It has a
+// polygon and no centerline, so it has no cross-section — and must not be given a synthetic one.
+describe('corridorIsDesignation', () => {
+    const { corridorIsDesignation, corridorIsTrack } = require('../../frontend/js/corridor-profile.js');
+    const polygon = { type: 'Polygon', coordinates: [[[15.98, 45.80], [15.99, 45.80], [15.99, 45.81], [15.98, 45.81], [15.98, 45.80]]] };
+
+    it('a polygon with no centerline is a designation', () => {
+        expect(corridorIsDesignation({ points: [], width: 10, polygon })).toBe(true);
+        expect(corridorIsDesignation({ polygon })).toBe(true);
+    });
+
+    it('a drawn corridor is not a designation, even though it also has a polygon', () => {
+        const drawn = { points: [[{ lat: 45.80, lng: 15.98 }, { lat: 45.81, lng: 15.99 }]], width: 10, polygon };
+        expect(corridorIsDesignation(drawn)).toBe(false);
+    });
+
+    it('is nothing without a polygon', () => {
+        expect(corridorIsDesignation({ points: [], width: 10 })).toBe(false);
+        expect(corridorIsDesignation(null)).toBe(false);
+    });
+
+    // The load-bearing consequence: no phantom cross-section. A designation's `width` is a leftover
+    // number, and furnishing lanes out of it would put a road the user never designed on the map.
+    it('has no profile — corridorProfileOf refuses to invent one', () => {
+        expect(corridorProfileOf({ points: [], width: 10, polygon })).toBe(null);
+        // ...but a drawn corridor with the same width still gets its legacy profile.
+        expect(corridorProfileOf({ points: [[{ lat: 45.80, lng: 15.98 }, { lat: 45.81, lng: 15.99 }]], width: 10 }))
+            .not.toBe(null);
+    });
+
+    it('a designation is not a track, whatever its width', () => {
+        expect(corridorIsTrack({ points: [], width: 10, polygon })).toBe(false);
+    });
+});
+
+// The three parking lane types differ in standard depth (a bay's depth is a real-world constant),
+// carry an orientation the bay renderer and OSM bridge switch on, and are fixed-width — their depth is
+// not a free slider. `parking` is the legacy key and IS parallel parking.
+describe('parking lane types', () => {
+    it('each orientation has its standard modern bay depth', () => {
+        expect(corridorStandardWidth('parking')).toBe(2.5);
+        expect(corridorStandardWidth('parking_perpendicular')).toBe(5);
+        expect(corridorStandardWidth('parking_angled')).toBe(4.5);
+    });
+
+    it('reports an orientation for the parking types and null for everything else', () => {
+        expect(corridorParkingOrientation('parking')).toBe('parallel');
+        expect(corridorParkingOrientation('parking_perpendicular')).toBe('perpendicular');
+        expect(corridorParkingOrientation('parking_angled')).toBe('angled');
+        expect(corridorParkingOrientation('driving')).toBe(null);
+        expect(corridorParkingOrientation('sidewalk')).toBe(null);
+    });
+
+    it('marks the parking types fixed-width and nothing else', () => {
+        expect(corridorLaneWidthFixed('parking')).toBe(true);
+        expect(corridorLaneWidthFixed('parking_perpendicular')).toBe(true);
+        expect(corridorLaneWidthFixed('parking_angled')).toBe(true);
+        expect(corridorLaneWidthFixed('driving')).toBe(false);
+    });
+});
+
+describe('fixed-width parking edits', () => {
+    // A profile whose parking lane sits at a NON-standard 2 m — the shape a legacy/OSM parking lane takes.
+    const legacyParking = () => ({ strips: [
+        { type: 'driving', width: 3, direction: 'forward' },
+        { type: 'driving', width: 3, direction: 'backward' },
+        { type: 'parking', width: 2 }
+    ] });
+
+    it('snaps a parking lane to its standard depth on any width edit, never to the typed value', () => {
+        const edited = withLaneWidth(legacyParking(), 2, 4); // asked for 4 m
+        expect(edited.strips[2].width).toBe(2.5); // got the standard instead
+        expect(close(corridorProfileWidth(edited), 8.5)).toBe(true);
+    });
+
+    it('refuses a width edit on a parking lane already at its standard (a no-op)', () => {
+        const atStandard = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
+        expect(withLaneWidth(atStandard, 1, 4)).toBe(null);
+    });
+
+    it('still edits an ordinary lane freely', () => {
+        const edited = withLaneWidth(legacyParking(), 0, 3.5);
+        expect(edited.strips[0].width).toBe(3.5);
+    });
+
+    it('snaps to the standard depth when a lane becomes a parking type, moving the total', () => {
+        const base = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'driving', width: 3, direction: 'backward' }] };
+        const edited = withLaneType(base, 1, 'parking_perpendicular');
+        expect(edited.strips[1].type).toBe('parking_perpendicular');
+        expect(edited.strips[1].width).toBe(5); // took the standard, not the 3 m it had
+        expect(close(corridorProfileWidth(edited), 8)).toBe(true);
+    });
+
+    it('refuses to drag a seam that touches a fixed-width parking lane, but allows others', () => {
+        const profile = { strips: [
+            { type: 'sidewalk', width: 2 },
+            { type: 'parking', width: 2.5 },
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'sidewalk', width: 2 }
+        ] };
+        expect(withSeamMoved(profile, 0, 0.5)).toBe(null); // sidewalk|parking
+        expect(withSeamMoved(profile, 1, 0.5)).toBe(null); // parking|driving
+        expect(withSeamMoved(profile, 2, 0.5)).not.toBe(null); // driving|driving
+    });
+});
+
+describe('buildCorridorParkingBays', () => {
+    const horizontalRoad = [{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }];
+    const withProjection = (fn) => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try { return fn(); } finally {
+            delete global.wgs84ToHTRS96;
+            delete global.htrs96ToWGS84;
+        }
+    };
+
+    it('draws one carriageway-side edge line and a run of bay dividers for a parallel lane', () => {
+        withProjection(() => {
+            const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
+            const bays = buildCorridorParkingBays([horizontalRoad], profile);
+            expect(bays.filter(b => b.kind === 'edge')).toHaveLength(1);
+            const dividers = bays.filter(b => b.kind === 'divider');
+            expect(dividers.length).toBeGreaterThan(10);
+            // A parallel/perpendicular divider is square across the lane: its two ends share an along-road
+            // position (same lng under this projection) and differ only across the lane (lat).
+            const [a, b] = dividers[0].line;
+            expect(close(a.lng, b.lng)).toBe(true);
+            expect(Math.abs(a.lat - b.lat)).toBeGreaterThan(2); // spans the 2.5 m depth
+        });
+    });
+
+    it('spaces perpendicular bays closer than parallel ones over the same lane', () => {
+        withProjection(() => {
+            const parallel = buildCorridorParkingBays([horizontalRoad],
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] });
+            const perpendicular = buildCorridorParkingBays([horizontalRoad],
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_perpendicular', width: 5 }] });
+            const count = kind => kind.filter(b => b.kind === 'divider').length;
+            expect(count(perpendicular)).toBeGreaterThan(count(parallel));
+        });
+    });
+
+    it('slants the dividers of an angled lane along the road', () => {
+        withProjection(() => {
+            const bays = buildCorridorParkingBays([horizontalRoad],
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_angled', width: 4.5 }] });
+            const divider = bays.find(b => b.kind === 'divider');
+            const [a, b] = divider.line;
+            expect(Math.abs(a.lng - b.lng)).toBeGreaterThan(1); // ends offset along the road — a slant
+        });
+    });
+
+    it('produces nothing for a corridor with no parking lane', () => {
+        withProjection(() => {
+            const bays = buildCorridorParkingBays([horizontalRoad],
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 2 }] });
+            expect(bays).toEqual([]);
+        });
+    });
+});
+
+// OSM records parking orientation, and it survives the round trip: an imported diagonal lane comes
+// back angled, a perpendicular lane comes back perpendicular, an untagged one is parallel.
+describe('parking orientation through OSM tags', () => {
+    it('reads each orientation from the current and older schemes', () => {
+        const perp = corridorProfileFromOsmTags({ highway: 'residential', 'parking:right': 'lane', 'parking:right:orientation': 'perpendicular' });
+        expect(perp.strips.find(s => corridorParkingOrientation(s.type))?.type).toBe('parking_perpendicular');
+        const diag = corridorProfileFromOsmTags({ highway: 'residential', 'parking:lane:right': 'diagonal' });
+        expect(diag.strips.find(s => corridorParkingOrientation(s.type))?.type).toBe('parking_angled');
+        const plain = corridorProfileFromOsmTags({ highway: 'residential', 'parking:right': 'lane' });
+        expect(plain.strips.find(s => corridorParkingOrientation(s.type))?.type).toBe('parking');
+    });
+
+    it('emits the orientation and round-trips a perpendicular lane back to its type', () => {
+        const profile = { strips: [
+            { type: 'driving', width: 3, direction: 'forward' },
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'parking_perpendicular', width: 5 }
+        ] };
+        const tags = corridorProfileToOsmTags(profile);
+        expect(tags['parking:right:orientation']).toBe('perpendicular');
+        const back = corridorProfileFromOsmTags(tags);
+        expect(back.strips.some(s => s.type === 'parking_perpendicular')).toBe(true);
+    });
+});
+
+// A parking lane can reserve every Nth bay for a tree; direction arrows paint which way a car lane runs.
+describe('parking-lot trees', () => {
+    const withProjection = (fn) => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try { return fn(); } finally { delete global.wgs84ToHTRS96; delete global.htrs96ToWGS84; }
+    };
+
+    it('preserves a positive whole treeEvery on a parking lane and drops it elsewhere', () => {
+        const kept = normalizeCorridorProfile({ strips: [{ type: 'parking', width: 2.5, treeEvery: '3' }] });
+        expect(kept.strips[0].treeEvery).toBe(3);
+        const dropped = normalizeCorridorProfile({ strips: [{ type: 'driving', width: 3, treeEvery: 3 }] });
+        expect(dropped.strips[0].treeEvery).toBeUndefined();
+        const zero = normalizeCorridorProfile({ strips: [{ type: 'parking', width: 2.5, treeEvery: 0 }] });
+        expect(zero.strips[0].treeEvery).toBeUndefined();
+    });
+
+    it('sets and clears treeEvery, and refuses it on a non-parking lane', () => {
+        const base = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
+        expect(withLaneTreeEvery(base, 1, 4).strips[1].treeEvery).toBe(4);
+        expect(withLaneTreeEvery(withLaneTreeEvery(base, 1, 4), 1, 0).strips[1].treeEvery).toBeUndefined();
+        expect(withLaneTreeEvery(base, 0, 4)).toBe(null); // the driving lane is not parking
+    });
+
+    it('plants a tree every N bays down a parking lane', () => {
+        withProjection(() => {
+            const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5, treeEvery: 5 }] };
+            // Parallel bays are 6 m, so every 5th is a tree every 30 m; over 100 m that is 3 trees.
+            const trees = buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile)
+                .filter(d => d.kind === 'tree');
+            expect(trees).toHaveLength(3);
+        });
+    });
+
+    it('plants nothing when a parking lane has no treeEvery', () => {
+        withProjection(() => {
+            const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
+            expect(buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile)
+                .filter(d => d.kind === 'tree')).toHaveLength(0);
+        });
+    });
+});
+
+describe('lane direction and direction arrows', () => {
+    const road = [{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }];
+    const withProjection = (fn) => {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try { return fn(); } finally { delete global.wgs84ToHTRS96; delete global.htrs96ToWGS84; }
+    };
+    // The head ring is the three-point one; its tip is vertex 0.
+    const heads = arrows => arrows.filter(ring => ring.length === 3);
+
+    it('flips a directional lane and refuses a lane that has no direction', () => {
+        const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 2 }] };
+        expect(withLaneDirection(profile, 0, 'backward').strips[0].direction).toBe('backward');
+        expect(withLaneDirection(profile, 1, 'forward')).toBe(null); // sidewalks have no direction
+    });
+
+    it('points a forward lane forward and a backward lane back', () => {
+        withProjection(() => {
+            const forward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'forward' }] }));
+            expect(forward.length).toBeGreaterThan(0);
+            // lng grows eastwards here, so a forward arrow's tip is further east than its base.
+            expect(forward.every(ring => ring[0].lng > ring[1].lng)).toBe(true);
+            const backward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'backward' }] }));
+            expect(backward.every(ring => ring[0].lng < ring[1].lng)).toBe(true);
+        });
+    });
+
+    it('draws no arrows for lanes that are not motor-vehicle lanes', () => {
+        withProjection(() => {
+            expect(buildCorridorDirectionArrows([road], { strips: [{ type: 'sidewalk', width: 2 }, { type: 'parking', width: 2.5 }] })).toEqual([]);
+        });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Footway paving: a material carried by the lane, like a verge's landscape or a track's gauge.
+// It changes what the strip is drawn with and nothing else — no width, no seam.
+// ---------------------------------------------------------------------------
+describe('footway paving', () => {
+    const profileOf = paving => ({ strips: [{ type: 'sidewalk', width: 2, paving }, { type: 'driving', width: 3 }] });
+
+    it('defaults a footway to asphalt and gives nothing else a paving at all', () => {
+        expect(corridorPavingOf({ type: 'sidewalk', width: 2 })).toBe('asphalt');
+        expect(corridorPavingOf({ type: 'sidewalk', width: 2, paving: 'paved' })).toBe('paved');
+        expect(corridorPavingOf({ type: 'driving', width: 3 })).toBeNull();
+        expect(corridorPavingOf({ type: 'verge', width: 2, paving: 'paved' })).toBeNull();
+    });
+
+    it('drops a paving it does not recognise rather than carrying it into the renderers', () => {
+        const normalized = normalizeCorridorProfile(profileOf('cobbles'));
+        expect(normalized.strips[0].paving).toBeUndefined();
+        expect(corridorPavingOf(normalized.strips[0])).toBe('asphalt');
+    });
+
+    it('draws a paved footway in stone and an asphalt one in the lane colour', () => {
+        expect(corridorStripSurface({ type: 'sidewalk', paving: 'paved' })).toBe(CORRIDOR_PAVED_SURFACE);
+        expect(corridorStripSurface({ type: 'sidewalk', paving: 'asphalt' }))
+            .toBe(CORRIDOR_LANE_TYPES.sidewalk.surface);
+        // A paving on a lane that cannot have one changes nothing.
+        expect(corridorStripSurface({ type: 'driving', paving: 'paved' }))
+            .toBe(CORRIDOR_LANE_TYPES.driving.surface);
+    });
+
+    it('paves a footway without moving a single width', () => {
+        const before = profileOf('asphalt');
+        const after = withLanePaving(before, 0, 'paved');
+        expect(corridorPavingOf(after.strips[0])).toBe('paved');
+        expect(corridorProfileWidth(after)).toBe(corridorProfileWidth(before));
+        expect(after.strips.map(strip => strip.width)).toEqual([2, 3]);
+    });
+
+    it('refuses to pave anything that is not a footway, or with anything that is not a paving', () => {
+        expect(withLanePaving(profileOf('asphalt'), 1, 'paved')).toBeNull(); // the driving lane
+        expect(withLanePaving(profileOf('asphalt'), 0, 'cobbles')).toBeNull();
+        expect(withLanePaving(profileOf('asphalt'), 9, 'paved')).toBeNull();
+    });
+
+    it('carries the paving onto the strip spans the renderers read', () => {
+        const spans = corridorStripSpans(profileOf('paved'));
+        expect(spans[0].paving).toBe('paved');
+        expect(corridorStripSurface(spans[0])).toBe(CORRIDOR_PAVED_SURFACE);
     });
 });

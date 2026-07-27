@@ -274,7 +274,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
                     geometry: geometry,
                     properties: {
                         isRoad: true,
-                        isTrack: definition?.metadata?.isTrack === true,
+                        isTrack: corridorIsTrack(definition),
                         isProposed: true,
                         proposalId: proposal.proposalId || null,
                         source: 'road-definition'
@@ -315,7 +315,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
                     geometry: geometry,
                     properties: {
                         isRoad: true,
-                        isTrack: proposal?.roadProposal?.definition?.metadata?.isTrack === true,
+                        isTrack: corridorIsTrack(proposal?.roadProposal?.definition),
                         isProposed: true,
                         proposalId: proposal.proposalId || null,
                         source: 'road-geometry-stored'
@@ -687,31 +687,38 @@ function renderGeometrySection(goalKey) {
     updateCreateProposalSubmitState();
 }
 
-function handleGeometryAction(actionKey) {
+async function handleGeometryAction(actionKey) {
     const t = getProposalI18nHelper();
-    const tCorridor = getConstrainedCorridorTranslator(t);
+    const tCorridor = getRoadDesignationTranslator(t);
     const label = {
         submitted: t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
     };
 
     switch (actionKey) {
-        case 'edit':
+        case 'edit': {
+            let opened = true;
             if (currentGeometryGoal === 'reparcellization') {
-                handleReparcellizationAlgorithmClick('sweep-line');
-            }
-            if (currentGeometryGoal === 'single') {
-                launchSingleBuildingToolForSelection();
+                opened = await handleReparcellizationAlgorithmClick('sweep-line');
+            } else if (currentGeometryGoal === 'single') {
+                opened = await launchSingleBuildingToolForSelection();
             } else if (currentGeometryGoal === 'road-track') {
-                if (typeof openConstrainedCorridorModal === 'function') {
-                    openConstrainedCorridorModal();
+                // The road-track goal's geometry step DESIGNATES the selected parcels as road land.
+                // Designing a road (a centerline with a cross-section) is the corridor tool's job, on the
+                // main map — not a second drawing surface inside a modal.
+                if (typeof openRoadDesignationModal === 'function') {
+                    openRoadDesignationModal();
                 } else if (typeof updateStatus === 'function') {
-                    updateStatus(tCorridor('statusUnavailable', 'Constrained corridor modal is not available yet.'));
+                    updateStatus(tCorridor('statusUnavailable', 'Road designation is not available yet.'));
+                    opened = false;
                 }
             } else if (currentGeometryGoal === 'urban-rule') {
-                openUrbanRuleGeometry();
+                opened = await openUrbanRuleGeometry();
             }
-            setGeometryStatus(label.submitted, { submitted: true });
+            // Accepting the whole-block suggestion deliberately stops this one-parcel launch.
+            // Do not falsely mark geometry as submitted when no editor opened.
+            if (opened !== false) setGeometryStatus(label.submitted, { submitted: true });
             break;
+        }
         case 'upload':
             // Currently only the single-building goal supports uploading a 3D model.
             if (currentGeometryGoal === 'single') {
@@ -726,6 +733,8 @@ function handleGeometryAction(actionKey) {
                     if (typeof updateStatus === 'function') updateStatus('Select parcels before uploading a building.');
                     break;
                 }
+                if (typeof shouldStopFreshProposalForWholeBlock === 'function'
+                    && await shouldStopFreshProposalForWholeBlock('single', selection)) break;
                 window.BuildingUpload.open(
                     {
                         parcels: selection.layers,
@@ -1339,21 +1348,18 @@ function buildProposalThumbHtml(proposal) {
         `;
     }
 
+    // No image: show the goal badge and nothing else. Thumbnails are rendered server-side when a
+    // proposal is uploaded, so there is no "generate" action left for the user to take here — a
+    // proposal without one is either purely local or one the backfill has yet to reach.
     const goalKey = (typeof normalizeGoalKey === 'function')
         ? normalizeGoalKey(proposal.goal || proposal.proposalType || '')
         : '';
     const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
     const icon = badge ? badge.text : '🖼';
-    const t = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : ((_, fallback) => fallback);
-    const tooltip = t('modal.roadWidth.proposalList.thumb.generateTooltip', 'Click to generate a thumbnail (this may take a few seconds)');
-    const generateLabel = t('modal.roadWidth.proposalList.thumb.generateLabel', 'Generate');
     return `
         <div class="proposal-thumb proposal-thumb-empty" data-proposal-id="${safeProposalId}"
-             title="${escapeHtml(tooltip)}"
-             onclick="event.stopPropagation(); if (window.triggerProposalScreenshotRegeneration) window.triggerProposalScreenshotRegeneration('${safeProposalId.replace(/'/g, "\\'")}');">
+             ${badge ? `title="${escapeHtml(badge.label)}"` : ''}>
             <span class="proposal-thumb-icon" aria-hidden="true">${escapeHtml(icon)}</span>
-            <span class="proposal-thumb-label">${escapeHtml(generateLabel)}</span>
-            <div class="proposal-thumb-spinner" aria-hidden="true"></div>
         </div>
     `;
 }

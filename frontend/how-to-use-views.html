@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!-- English guide to the views: the 2D map, the 3D model with its controls and gain panels,
+     realistic context (Google Photorealistic 3D) and walk mode.
+     Croatian counterpart: kako-koristiti-prikazi.html. -->
+<html lang="en">
+
+<head>
+    <title>Views and 3D — Consensus Builder</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="css/howto.css" />
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Views and 3D</h1>
+        <div class="sidebar-links">
+            <a href="how-to-use.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                All guides
+            </a>
+            <a href="index.html?lang=en" class="back-link">
+                <i class="fas fa-map"></i>
+                Back to the app
+            </a>
+        </div>
+        <div class="lang-switch">
+            <a href="kako-koristiti-prikazi.html">HR</a>
+            <a href="how-to-use-views.html" class="is-current">EN</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Four views of the same proposal</h2>
+                <p>
+                    You work in 2D and you decide in 3D. The switch buttons are on the map, and you never redraw a
+                    proposal — it's the same intervention, seen four ways.
+                </p>
+            </div>
+
+            <div class="view-list">
+                <article>
+                    <span class="view-number">2D</span>
+                    <div>
+                        <h3>The map</h3>
+                        <p>Selecting parcels, drawing, boundaries, ownership. Everything that gets made, gets made here.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number">3D</span>
+                    <div>
+                        <h3>The spatial model</h3>
+                        <p>Buildings, roads and public space as volumes — and the arithmetic of what the proposal is
+                            worth.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number"><i class="fas fa-globe"></i></span>
+                    <div>
+                        <h3>Realistic context</h3>
+                        <p>Your intervention in the middle of Google's photorealistic model of the real city.</p>
+                    </div>
+                </article>
+                <article>
+                    <span class="view-number"><i class="fas fa-person-walking"></i></span>
+                    <div>
+                        <h3>Walk</h3>
+                        <p>From a pedestrian's eyes. The button only shows up in cities that support it.</p>
+                    </div>
+                </article>
+            </div>
+
+            <section id="three-d" class="guide-section">
+                <h2>The 3D view</h2>
+                <p>
+                    Rotate the view by holding <span class="ui-label">Ctrl</span> and dragging with the mouse (on a
+                    phone: swipe with two fingers). The wheel zooms.
+                </p>
+
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-01-3d.png" alt="A proposed park in the 3D view, next to the existing buildings"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>A proposal in the 3D view. Existing buildings are ghosted; the proposal is solid.</figcaption>
+                </figure>
+
+                <h3>View controls</h3>
+                <div class="table-scroll">
+                    <table class="tool-table">
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-building"></i>Building rendering</td>
+                                <td>You choose <strong>what</strong> is visible — <span class="ui-label">Built</span>,
+                                    <span class="ui-label">Planned</span>, <span class="ui-label">Both</span> or
+                                    <span class="ui-label">Neither</span> — and <strong>how</strong>:
+                                    <span class="ui-label">Solid</span>, <span class="ui-label">Transparent</span>,
+                                    <span class="ui-label">Surviving</span> or
+                                    <span class="ui-label">Off</span>.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-eye-slash"></i>Hide real buildings under proposals</td>
+                                <td>Removes the existing buildings your proposal replaces anyway, so they don't stand
+                                    inside one another.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-circle-notch"></i>Radius</td>
+                                <td>How much of the surrounding city gets loaded. Smaller radius = faster view.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-border-all"></i>Show all parcels</td>
+                                <td>Draws the parcel boundaries in 3D as well.</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-tree"></i>Trees</td>
+                                <td>Turns the greenery on or off.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout tip">
+                    <i class="fas fa-lightbulb"></i>
+                    For a before-and-after comparison, set <span class="ui-label">Built</span> to
+                    <span class="ui-label">Transparent</span> and <span class="ui-label">Planned</span> to
+                    <span class="ui-label">Solid</span>. You immediately see what the intervention adds and what it
+                    removes.
+                </div>
+            </section>
+
+            <section id="gain" class="guide-section">
+                <h2>What the proposal is worth</h2>
+                <p>
+                    Click a parcel in 3D and a panel with the arithmetic opens. It compares
+                    <span class="ui-label">Built</span> and <span class="ui-label">Proposed</span> by
+                    <span class="ui-label">Volume</span> and <span class="ui-label">Floor area</span>, and the
+                    <span class="ui-label">Price per m²</span> slider lets you set your assumption about the market.
+                </p>
+                <p>
+                    The result is a single number: <span class="ui-label">Proposal gain</span> — how much the parcel
+                    gains or loses. If there is no proposal, the panel only shows the
+                    <span class="ui-label">Current value</span>.
+                </p>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-02-panel.png"
+                            alt="The parcel panel comparing built and proposed volume, with the value estimate"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>The parcel panel: built versus proposed, and what that's worth.</figcaption>
+                </figure>
+                <p>
+                    Clicking <span class="ui-label">show</span> next to the proposal's name isolates the
+                    <strong>whole proposal</strong>. The panel then switches to
+                    <span class="ui-label">Proposal info</span>: the number of parcels, the total gain and the
+                    <span class="ui-label">Avg / parcel</span>.
+                </p>
+                <div class="callout note">
+                    <i class="fas fa-circle-info"></i>
+                    <strong>The average per parcel</strong> is often more important than the total gain. A proposal with
+                    a big total but a poor average means a handful of parcels are carrying all of it — and the other
+                    owners have no reason to say yes.
+                </div>
+            </section>
+
+            <section id="realistic" class="guide-section">
+                <h2>Realistic context</h2>
+                <p>
+                    The <span class="ui-label"><i class="fas fa-globe"></i></span> button drops your buildings into
+                    Google's photorealistic 3D model of the city. It is the best test of “would this look insane
+                    here?” — the neighbouring structures, their heights and their roofs are the real ones. Where no
+                    photorealistic data exists for the area, you get satellite imagery and terrain instead.
+                </p>
+                <figure class="howto-shot">
+                    <div class="shot-frame">
+                        <img src="images/howto/prikazi-03-realisticno.png"
+                            alt="A proposed block of buildings inside Google's photorealistic model of Zagreb"
+                            onerror="this.style.display='none'">
+                        <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
+                    </div>
+                    <figcaption>The proposed block (blue) inside a photorealistic model of the real city.</figcaption>
+                </figure>
+            </section>
+
+            <section id="walk" class="guide-section">
+                <h2>Walk</h2>
+                <p>
+                    The <span class="ui-label"><i class="fas fa-person-walking"></i></span> button puts you at eye
+                    level. What looks spacious in plan can turn out cramped on the street — and the other way round. The
+                    button only exists in cities for which walk mode has been set up.
+                </p>
+            </section>
+
+            <div class="callout tip final-tip">
+                <i class="fas fa-lightbulb"></i>
+                Before you share a proposal, check it in all three: <strong>2D</strong> for boundaries and ownership,
+                <strong>3D</strong> for volume and gain, <strong>realistic context</strong> for whether it fits the city
+                as it actually is.
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -14,6 +14,7 @@
     let parksLayer = null;
     let squaresLayer = null;
     let lakesLayer = null;
+    let buildingGroundLayer = null;
     // Dedicated Canvas renderer for dense square textures (faster than SVG)
     let squareTextureRenderer = null;
     const SQUARES_PANE = 'squaresPane';
@@ -154,8 +155,7 @@
                 const rp = p && p.roadProposal;
                 const polygon = rp && rp.definition && rp.definition.polygon;
                 if (!polygon || !polygon.type) return;
-                const status = String(rp.status || p.status || '').toLowerCase();
-                if (status !== 'applied' && status !== 'executed') return;
+                if (!isApplied(p, rp)) return;
                 cutters.push({ type: 'Feature', properties: {}, geometry: polygon });
             });
         } catch (_) { }
@@ -1212,6 +1212,71 @@
         try { window.dispatchEvent(new Event('lakesUpdated')); } catch (_) { }
     }
 
+    // A freeform building proposal can pave or green the parcel area around its buildings. That
+    // surround is not a structure — it belongs to the building proposal — but it is the same two
+    // surfaces, so it draws with the square/park styles into its own layer. See building-ground.js.
+    function appliedBuildingGroundSurfaces() {
+        const api = window.BuildingGround;
+        const storage = window.proposalStorage;
+        if (!api || !storage || typeof storage.getAllProposals !== 'function') return [];
+        try {
+            return api.appliedSurfaces(storage.getAllProposals(), isApplied);
+        } catch (error) {
+            console.error('[structures] building ground surfaces could not be collected', error);
+            return [];
+        }
+    }
+
+    function ensureBuildingGroundLayer() {
+        ensureSquaresPane();
+        ensureParksPane();
+        if (buildingGroundLayer && map && map.hasLayer(buildingGroundLayer)) return buildingGroundLayer;
+        if (buildingGroundLayer && map) { try { map.removeLayer(buildingGroundLayer); } catch (_) { } }
+        buildingGroundLayer = L.layerGroup();
+        if (typeof map !== 'undefined' && map) buildingGroundLayer.addTo(map);
+        return buildingGroundLayer;
+    }
+
+    // Signature of what the layer currently shows, so a refresh that changes nothing stays silent.
+    // The event drives a full 3D structure rebuild, and this runs on every proposed-buildings
+    // refresh — broadcasting unconditionally would rebuild the 3D scene for no reason at all.
+    let buildingGroundSignature = null;
+
+    function updateBuildingGroundLayer() {
+        if (typeof map === 'undefined') return;
+        const group = ensureBuildingGroundLayer();
+        try { group.clearLayers(); } catch (_) { }
+
+        const cutters = appliedCorridorCutters();
+        const surfaces = appliedBuildingGroundSurfaces();
+        let signature = '';
+        try { signature = JSON.stringify(surfaces.map(s => [s.proposalId, s.treatment, s.geometry])); } catch (_) { signature = String(surfaces.length); }
+        surfaces.forEach(surface => {
+            try {
+                const geometry = subtractCorridorsFromGeometry(surface.geometry, cutters);
+                if (!geometry) return; // fully paved over by applied roads
+                const paved = surface.treatment === 'paved';
+                const pane = paved ? SQUARES_PANE : PARKS_PANE;
+                const feature = { type: 'Feature', properties: { proposalId: surface.proposalId }, geometry };
+                L.geoJSON(feature, {
+                    style: { ...window.BuildingGround.SURFACE_STYLE_2D[surface.treatment], weight: 2, opacity: 1, pane },
+                    // Ground is an overlay on top of parcels; keep parcel clicks working.
+                    interactive: false,
+                    pane
+                }).addTo(group);
+                if (paved) drawSquareTexture(group, feature);
+            } catch (error) {
+                console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
+            }
+        });
+        // Corridor cuts are re-derived on every call, so the signature covers the stored surfaces
+        // only; a road change already refreshes parks/squares/lakes and this layer alongside them.
+        if (signature !== buildingGroundSignature) {
+            buildingGroundSignature = signature;
+            try { window.dispatchEvent(new Event('buildingGroundsUpdated')); } catch (_) { }
+        }
+    }
+
     // Toggle handler wired from checkbox in index.html
     function toggleSquaresVisibility() {
         const showSquaresEl = document.getElementById('showSquaresCheckbox');
@@ -1386,6 +1451,7 @@
     window.updateSquaresLayer = updateSquaresLayer;
     window.toggleSquaresVisibility = toggleSquaresVisibility;
     window.updateLakesLayer = updateLakesLayer;
+    window.updateBuildingGroundLayer = updateBuildingGroundLayer;
     window.ensureLakeGraphics = ensureLakeGraphics;
     window.lakesLayerRef = () => lakesLayer;
     // Expose decoration helpers for ProposalManager
@@ -1401,6 +1467,7 @@
                 try { updateParksLayer(); } catch (_) { }
                 try { updateSquaresLayer(); } catch (_) { }
                 try { updateLakesLayer(); } catch (_) { }
+                try { updateBuildingGroundLayer(); } catch (_) { }
             };
             if (document.readyState === 'loading') {
                 window.addEventListener('DOMContentLoaded', runUpdates, { once: true });

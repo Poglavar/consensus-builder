@@ -183,7 +183,7 @@
             const definition = proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition || null;
             if (!definition) return { kind: proposal?.primaryType === 'Track' ? 'track' : 'road', definition: null };
             return {
-                kind: definition?.metadata?.isTrack === true || proposal?.primaryType === 'Track' ? 'track' : 'road',
+                kind: global.corridorIsTrack(definition) || proposal?.primaryType === 'Track' ? 'track' : 'road',
                 definition: cloneDraftValue(definition)
             };
         }
@@ -378,7 +378,17 @@
                 if (isEmpty && typeof storage.getItem === 'function' && storage.getItem(storageKey) === null) {
                     return true;
                 }
-                storage.setItem(storageKey, JSON.stringify(envelope));
+                // A storage write can fail — most often QuotaExceededError when a draft carries a very
+                // large/complex geometry. This is a background autosave: losing the persisted copy is
+                // not fatal to editing, and it must NEVER throw into the caller (a live autosave firing
+                // mid-build once surfaced the raw "Failed to execute 'setItem'… exceeded the quota" in
+                // the status bar and aborted the flow). Swallow it, warn, and report the failure.
+                try {
+                    storage.setItem(storageKey, JSON.stringify(envelope));
+                } catch (error) {
+                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', error);
+                    return false;
+                }
             }
             return true;
         }
@@ -457,6 +467,7 @@
                 width: legacy.seed.width,
                 sidewalkWidth: legacy.seed.sidewalkWidth,
                 tunnels: cloneDraftValue(legacy.seed.tunnels || []),
+                gradeSeparations: cloneDraftValue(legacy.seed.gradeSeparations || []),
                 metadata: {
                     isTrack: legacy.kind === 'track',
                     isRoad: legacy.kind !== 'track',
@@ -777,6 +788,11 @@
             delete output.chainProposalId;
             delete output.onchain;
             delete output.nft;
+            // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
+            // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
+            // all commit through here); it must not inherit the source's server-upload identity, or an
+            // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
+            delete output.serverProposalId;
             output.sourceProposalId = draft.sourceProposalId || null;
             output.replacementOfProposalId = draft.sourceProposalId || null;
             output.proposalDraftId = draft.id;

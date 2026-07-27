@@ -104,6 +104,15 @@
             closeButton.dataset.parcelPanelBound = 'true';
         }
 
+        const minimizeButton = panel.querySelector('#parcel-info-minimize');
+        if (minimizeButton && minimizeButton.dataset.parcelPanelBound !== 'true') {
+            minimizeButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                setParcelInfoPanelMinimized(panel, !panel.classList.contains('is-minimized'));
+            });
+            minimizeButton.dataset.parcelPanelBound = 'true';
+        }
+
         const tabButtons = [
             ['info-tab', '.parcel-tab-btn[onclick*="info-tab"]'],
             ['proposals-tab', '.parcel-tab-btn[onclick*="proposals-tab"]'],
@@ -126,6 +135,31 @@
             });
             button.dataset.parcelTabBound = 'true';
         });
+    }
+
+    // Collapse the panel to its header: the tabs and the body fold away, the title stays. Used when
+    // the panel is the SECONDARY surface — selecting a road opens the road's own parcel beneath the
+    // proposal card without the parcel detail competing for the screen. Mirrors the proposal
+    // details panel's own minimize (setProposalDetailsPanelMinimized).
+    function setParcelInfoPanelMinimized(panel, minimized) {
+        if (!panel) return;
+        panel.classList.toggle('is-minimized', minimized);
+
+        const body = panel.querySelector('.panel-body');
+        if (body) body.hidden = minimized;
+        const tabs = panel.querySelector('.parcel-tabs');
+        if (tabs) tabs.hidden = minimized;
+
+        const toggleButton = panel.querySelector('#parcel-info-minimize');
+        if (toggleButton) {
+            const label = minimized
+                ? tParcel('sidebar.areaMonitor.expand', {}, 'Expand')
+                : tParcel('sidebar.areaMonitor.minimize', {}, 'Minimize');
+            toggleButton.setAttribute('aria-label', label);
+            toggleButton.setAttribute('title', label);
+            toggleButton.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+            toggleButton.innerHTML = minimized ? '+' : '&#8722;';
+        }
     }
 
     function showParcelInfoPanel(feature) {
@@ -314,13 +348,13 @@
                 ownershipHtml = ownershipListFromProps.map(owner => {
                     const name = (owner.name || owner.ownerLabel || owner.possessorName || fallbackOwnerName).trim();
                     let share = owner.actualShareText || owner.ownership || owner.shareText;
-                    // Handle percentageShare if actualShareText is not available
+                    // Handle percentageShare if actualShareText is not available. Route through the
+                    // shared formatter — the old inline copy stripped zeros from whole numbers too,
+                    // so 100 rendered as "1%".
                     if (!share && Number.isFinite(owner.percentageShare)) {
-                        const value = owner.percentageShare;
-                        const abs = Math.abs(value);
-                        const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
-                        const formatted = value.toFixed(decimals).replace(/\.?0+$/, '');
-                        share = `${formatted}%`;
+                        share = (typeof global.formatPercentValue === 'function')
+                            ? global.formatPercentValue(owner.percentageShare)
+                            : `${owner.percentageShare}%`;
                     }
                     share = share || '100%';
                     const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
@@ -375,7 +409,7 @@
                 const lifecycleKey = (typeof global.getProposalLifecycleKey === 'function') ? global.getProposalLifecycleKey(proposal) : null;
                 const statusText = (typeof global.getProposalLifecycleLabel === 'function' && lifecycleKey)
                     ? global.getProposalLifecycleLabel(lifecycleKey)
-                    : (proposal.status || activeStatusLabel);
+                    : (typeof global.getLifecycleStatus === 'function' ? global.getLifecycleStatus(proposal) : activeStatusLabel);
                 const statusClass = (typeof global.getProposalLifecycleClass === 'function' && lifecycleKey)
                     ? global.getProposalLifecycleClass(lifecycleKey)
                     : 'active';
@@ -393,7 +427,7 @@
                     ? `<span class="proposal-item-ancestor-pill" data-i18n-key="panel.parcel.proposalsSection.ancestorPill">${tParcel('panel.parcel.proposalsSection.ancestorPill', {}, 'Ancestor')}</span>`
                     : '';
 
-                const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
+                const isActive = (typeof global.getLifecycleStatus !== 'function' || global.getLifecycleStatus(proposal) !== 'Executed') && !mapApplied;
 
                 let actionButtons = '';
 
@@ -426,12 +460,14 @@
                     ? Number(proposal.offer)
                     : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null);
                 const offerCurrencyRaw = proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH';
-                const offerCurrency = typeof offerCurrencyRaw === 'string' ? offerCurrencyRaw.toUpperCase() : offerCurrencyRaw;
-                const currencySymbol = offerCurrency === 'EUR' ? '€' : '';
-                const currencySuffix = offerCurrency && offerCurrency !== 'EUR' ? ` ${offerCurrency}` : '';
-                const formattedOfferValue = rawOfferValue !== null && rawOfferValue > 0
-                    ? Math.round(rawOfferValue).toLocaleString('hr-HR')
+                // Shared formatter — the old Math.round path collapsed every sub-1-ETH agent offer
+                // (budgets are 0.01–0.05 ETH) to "0 ETH".
+                const offerParts = (typeof global.formatOffer === 'function')
+                    ? global.formatOffer(rawOfferValue, offerCurrencyRaw)
                     : null;
+                const currencySymbol = offerParts ? offerParts.symbol : '';
+                const currencySuffix = offerParts ? offerParts.suffix : '';
+                const formattedOfferValue = offerParts ? offerParts.value : null;
 
                 const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (goalKey || 'other');
                 const proposalTypeLabel = tParcel(
@@ -584,32 +620,9 @@
         </div>
     `;
 
-        const roadToolsEnabled = (typeof global.CityConfigManager !== 'undefined'
-            && typeof global.CityConfigManager.isFeatureEnabled === 'function')
-            ? global.CityConfigManager.isFeatureEnabled('roadTools')
-            : true;
-
-        const roadDrawingActions = roadToolsEnabled ? `
-        <div class="parcel-road-actions btn-group" data-feature="roadTools">
-            <button type="button" class="btn btn-action" onclick="requestRoadDrawTool()"
-                data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title"
-                title="">
-                <i class="fas fa-road" aria-hidden="true"></i>
-                <span data-i18n-key="sidebar.roads.drawManual">Draw Road</span>
-            </button>
-            <button type="button" class="btn btn-action" onclick="requestTrackDrawTool()"
-                data-i18n-key="sidebar.roads.drawTrackTooltip" data-i18n-attr="title"
-                title="">
-                <i class="fas fa-train" aria-hidden="true"></i>
-                <span data-i18n-key="sidebar.roads.drawTrack">Draw Track</span>
-            </button>
-        </div>
-    ` : '';
-
         const proposalsContent = `
         <div id="parcel-proposal-actions" class="parcel-proposal-actions">
             <div id="parcel-proposal-primary-actions"></div>
-            ${roadDrawingActions}
         </div>
         ${parcelProposals.length > 0 ? proposalsHtml : ''}
         <div id="canton-proposals-content" class="canton-card-host"></div>
@@ -626,13 +639,48 @@
             titleElement.removeAttribute('data-i18n-params');
 
             const resolvedId = displayParcelId || brojValue;
-            const headerText = resolvedId
-                ? tParcel('panel.parcel.multi.parcelLabel', { number: resolvedId }, `Parcel ${resolvedId}`)
-                : fallbackTitle;
-            titleElement.textContent = headerText;
+            titleElement.textContent = '';
+            if (resolvedId) {
+                const numberMarker = '__PARCEL_NUMBER__';
+                const headerTemplate = tParcel(
+                    'panel.parcel.multi.parcelLabel',
+                    { number: numberMarker },
+                    `Parcel ${numberMarker}`
+                );
+                const markerIndex = headerTemplate.indexOf(numberMarker);
+                const prefix = markerIndex >= 0 ? headerTemplate.slice(0, markerIndex) : `${headerTemplate} `;
+                const suffix = markerIndex >= 0 ? headerTemplate.slice(markerIndex + numberMarker.length) : '';
+                const copyHintKey = 'common.copyToClipboard';
+                const copyHint = tParcel(copyHintKey, {}, 'Copy to clipboard');
 
-            if (typeof global.i18n !== 'undefined' && typeof global.i18n.applyTranslations === 'function') {
-                try { global.i18n.applyTranslations(titleElement); } catch (_) { /* ignore */ }
+                titleElement.appendChild(global.document.createTextNode(prefix));
+                const copyTarget = global.document.createElement('span');
+                copyTarget.className = 'parcel-title-id';
+                copyTarget.tabIndex = 0;
+                copyTarget.setAttribute('role', 'button');
+                copyTarget.setAttribute('aria-label', `${copyHint}: ${resolvedId}`);
+                copyTarget.title = copyHint;
+
+                const valueElement = global.document.createElement('span');
+                valueElement.className = 'parcel-title-id-value';
+                valueElement.textContent = resolvedId;
+                copyTarget.appendChild(valueElement);
+
+                const copyParcelId = () => {
+                    if (typeof global.copyTextWithFeedback === 'function') {
+                        global.copyTextWithFeedback(resolvedId);
+                    }
+                };
+                copyTarget.addEventListener('click', copyParcelId);
+                copyTarget.addEventListener('keydown', event => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    copyParcelId();
+                });
+                titleElement.appendChild(copyTarget);
+                if (suffix) titleElement.appendChild(global.document.createTextNode(suffix));
+            } else {
+                titleElement.textContent = fallbackTitle;
             }
         }
 
@@ -813,7 +861,13 @@
 
         applyParcelTranslations(global.document.getElementById('parcel-info-panel'));
 
-        global.document.getElementById('parcel-info-panel').classList.add('visible');
+        const panelEl = global.document.getElementById('parcel-info-panel');
+        // One-shot flag (same idiom as __openProposalDetailsCollapsed): a proposal selection opens
+        // its own parcel collapsed, every other caller opens the panel in full.
+        const startCollapsed = global.__openParcelInfoCollapsed === true;
+        global.__openParcelInfoCollapsed = false;
+        setParcelInfoPanelMinimized(panelEl, startCollapsed);
+        panelEl.classList.add('visible');
 
         global.requestAnimationFrame(() => {
             if (typeof global.CityConfigManager !== 'undefined' &&
@@ -930,7 +984,8 @@
     global.ParcelsUIParcelPanel = {
         showParcelInfoPanel,
         resetMeasureAsRoadButton,
-        hideParcelInfoPanel
+        hideParcelInfoPanel,
+        setParcelInfoPanelMinimized
     };
 
     if (!global.showParcelInfoPanel) global.showParcelInfoPanel = showParcelInfoPanel;

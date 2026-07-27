@@ -1,0 +1,10 @@
+{
+  "//": "Dev-only. The server writes generated files into uploads/ at runtime (proposal thumbnails on every upload, plus /assets/upload). Without this, nodemon sees each written PNG as a source change and restarts the API mid-request. Production runs under PM2 with watch:false and never reads this file.",
+  "ignore": [
+    "uploads/*",
+    "uploads/**/*",
+    "coverage/*",
+    "coverage/**/*",
+    "logs/*"
+  ]
+}

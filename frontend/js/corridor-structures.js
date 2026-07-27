@@ -3,6 +3,9 @@
 // which stays ONE proposal), or reroute. Approvals are remembered per drawing session.
 (function attachCorridorStructures(global) {
     let promptActive = false;
+
+    // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
+    const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./proposals/status.js').isApplied;
     // Structures the user already agreed to build through in the current drawing session.
     const approvedStructureIds = new Set();
 
@@ -119,6 +122,17 @@
         approvedStructureIds.clear();
     }
 
+    // Persist/seed the build-through approvals so continuing an applied road does not re-ask about a
+    // structure it already runs through. The approval was session-only; the road definition now carries
+    // the approved structure ids (serialiseRoadDefinition) and seedRoadDrawing feeds them back here —
+    // the same reuse buildings/tunnels get. Only proposalId-based ids survive a reload meaningfully.
+    function getApprovedStructureIds() {
+        return [...approvedStructureIds];
+    }
+    function seedApprovedStructureCrossings(ids) {
+        (Array.isArray(ids) ? ids : []).forEach(id => { if (id) approvedStructureIds.add(String(id)); });
+    }
+
     // Applied structure proposals whose geometry covers the given parcel (centroid test).
     // Id-based matching fails when a structure's declared parcel ids drifted (old imports);
     // geometry doesn't drift, so clicking inside a lake finds the lake regardless.
@@ -149,8 +163,7 @@
             const definition = road?.definition;
             const polygon = definition?.polygon;
             if (!polygon || !polygon.type) return;
-            const status = String(road.status || proposal.status || '').toLowerCase();
-            if (status !== 'applied' && status !== 'executed') return;
+            if (!appliedOf(proposal, road)) return;
             const proposalId = proposal.proposalId || proposal.id;
             if (!proposalId) return;
             try {
@@ -165,6 +178,8 @@
         detectStructureCrossings,
         resolveStructureCrossings,
         resetApprovedStructureCrossings,
+        getApprovedStructureIds,
+        seedApprovedStructureCrossings,
         structureProposalsCoveringFeature,
         roadProposalsCoveringFeature
     });

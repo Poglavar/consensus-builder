@@ -25,7 +25,7 @@
 
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('No parcel selected. Please select a parcel first.');
+                global.updateStatus(tParcel('panel.parcel.build.noParcelSelected', {}, 'No parcel selected. Please select a parcel first.'));
             }
             return;
         }
@@ -41,7 +41,7 @@
             } else {
                 console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
+                    global.updateStatus(tParcel('panel.parcel.build.useMainCreateButton', {}, 'Please use the main "Create Proposal" button when multiple parcels are selected.'));
                 }
             }
         }
@@ -55,7 +55,7 @@
 
         if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Enable multi-parcel selection to use this action.');
+                global.updateStatus(tParcel('panel.parcel.build.enableMultiSelect', {}, 'Enable multi-parcel selection to use this action.'));
             }
             return;
         }
@@ -63,7 +63,7 @@
         const hasSelection = global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.size > 0;
         if (!hasSelection) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select at least one parcel to create a proposal.');
+                global.updateStatus(tParcel('panel.parcel.build.selectAtLeastOne', {}, 'Select at least one parcel to create a proposal.'));
             }
             return;
         }
@@ -84,11 +84,66 @@
         { key: 'reparcellization', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.reparcel', fallback: 'Reparcel' },
         { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
         { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },
-        { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' },
-        // Terms-first proposals (purchase, as-is, ownership) build nothing on the map: this one
-        // entry still opens the classic create dialog.
+        { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
+    ];
+
+    // Terms-first proposals change rights rather than the map. Keep them visually and
+    // conceptually separate from both construction and transport tools.
+    const PARCEL_OWNERSHIP_TOOLS = [
         { key: 'offer', icon: 'fa-handshake', labelKey: 'panel.parcel.build.offer', fallback: 'Offer' }
     ];
+
+    // Corridors and stops are all transport-network proposals. Keep them together at the end of
+    // the parcel palette instead of presenting Road/Track as unrelated full-width form buttons.
+    const PARCEL_TRANSPORT_TOOLS = [
+        {
+            key: 'road', icon: 'fa-road', labelKey: 'panel.parcel.build.road', fallback: 'Road',
+            titleKey: 'sidebar.roads.drawManualTooltip', titleFallback: 'Open the manual road drawing tool'
+        },
+        {
+            key: 'track', icon: 'fa-train', labelKey: 'panel.parcel.build.track', fallback: 'Track',
+            titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
+        },
+        {
+            key: 'bus', stationType: 'bus', icon: 'fa-bus', labelKey: 'panel.parcel.build.busStation', fallback: 'Bus station',
+            titleKey: 'sidebar.stations.bus', titleFallback: 'Bus station'
+        },
+        {
+            key: 'tram', stationType: 'tram', icon: 'fa-tram', labelKey: 'panel.parcel.build.tramStation', fallback: 'Tram station',
+            titleKey: 'sidebar.stations.tram', titleFallback: 'Tram station'
+        },
+        {
+            key: 'underground', stationType: 'underground', icon: 'fa-train-subway',
+            labelKey: 'panel.parcel.build.undergroundStation', fallback: 'Metro station',
+            titleKey: 'sidebar.stations.underground', titleFallback: 'Underground station'
+        },
+        {
+            key: 'elevated', stationType: 'elevated', icon: 'fa-train',
+            labelKey: 'panel.parcel.build.elevatedStation', fallback: 'Elevated station',
+            titleKey: 'sidebar.stations.elevated', titleFallback: 'Elevated train station'
+        }
+    ];
+
+    function roadToolsEnabled() {
+        return (typeof global.CityConfigManager !== 'undefined'
+            && typeof global.CityConfigManager.isFeatureEnabled === 'function')
+            ? global.CityConfigManager.isFeatureEnabled('roadTools')
+            : true;
+    }
+
+    function startParcelTransportTool(toolKey) {
+        const key = String(toolKey || '').trim().toLowerCase();
+        if (key === 'road') {
+            global.requestRoadDrawTool?.();
+            return;
+        }
+        if (key === 'track') {
+            global.requestTrackDrawTool?.();
+            return;
+        }
+        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.stationType === key)?.stationType;
+        if (stationType) global.startTransitStationPlacement?.(stationType);
+    }
 
     function parcelBuildSelectionIds() {
         const multi = global.multiParcelSelection;
@@ -98,19 +153,30 @@
         return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
     }
 
-    // A whole block of this size or smaller is a plausible "I meant the block" target;
-    // beyond it the suggestion is more likely noise than help.
-    const BLOCK_SUGGEST_MAX_PARCELS = 60;
+    // One policy for every FRESH parcel-based design. Terms-only offers and corridors target the
+    // exact parcel(s) selected, while these land/building tools commonly operate on a whole block.
+    const WHOLE_BLOCK_FRESH_PROPOSAL_GOALS = new Set([
+        'buildings', 'block', 'row', 'parcelbased', 'single', 'reparcellization',
+        'park', 'square', 'lake', 'urban-rule'
+    ]);
+
+    function shouldSuggestWholeBlockForFreshProposal(goal) {
+        const key = String(goal || '').trim().toLowerCase();
+        return WHOLE_BLOCK_FRESH_PROPOSAL_GOALS.has(key);
+    }
 
     // Single parcel selected but it sits in a multi-parcel block: the user may simply have
     // forgotten to select the block first. Offer to do it for them — Yes selects the whole
     // block (and lands on the Proposals tab, tool NOT auto-launched); No proceeds one-parcel.
     // Returns true when the tool launch should stop here.
-    async function maybeSuggestWholeBlock(ids) {
-        if (ids.length !== 1) return false;
+    async function maybeSuggestWholeBlockForFreshProposal(goal, ids = []) {
+        if (!shouldSuggestWholeBlockForFreshProposal(goal) || ids.length !== 1) return false;
         if (typeof global.detectBlockParcelIdsForParcel !== 'function') return false;
         const block = global.detectBlockParcelIdsForParcel(ids[0]);
-        if (!block || block.count <= 1 || block.count > BLOCK_SUGGEST_MAX_PARCELS) return false;
+        // The count belongs in the question, not in a hidden policy gate. A large block is still
+        // a block, and silently skipping the question made Detached behave differently depending
+        // on where in the city it was launched.
+        if (!block || block.count <= 1) return false;
         if (typeof global.showStyledConfirm !== 'function') return false;
         const message = tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
             `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`);
@@ -132,14 +198,13 @@
         const ids = parcelBuildSelectionIds();
         if (!ids.length) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel first.');
+                global.updateStatus(tParcel('panel.parcel.build.selectParcelFirst', {}, 'Select a parcel first.'));
             }
             return;
         }
-        // Ownership offers target the specific parcel the user picked — no block suggestion.
-        // For every other tool the suggestion runs BEFORE the per-tool guards (a row on one
-        // parcel is exactly the case where selecting the block solves the problem).
-        if (toolKey !== 'offer' && await maybeSuggestWholeBlock(ids)) return;
+        // The shared policy decides which fresh proposal types have block semantics. Run it before
+        // per-tool guards (a row on one parcel is exactly where selecting the block solves it).
+        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
         // A row dictates form across parcels — on a single parcel it degenerates to a building.
         if (toolKey === 'row' && ids.length < 2) {
             const message = tParcel('panel.parcel.build.rowNeedsTwo', {}, 'Row houses need at least two parcels.');
@@ -175,11 +240,37 @@
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
         const ruleButtons = PARCEL_BUILD_TOOLS.filter(tool => RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const otherButtons = PARCEL_BUILD_TOOLS.filter(tool => !RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
+        const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(buttonHtml).join('');
+        const transportButtons = PARCEL_TRANSPORT_TOOLS
+            .filter(tool => tool.stationType || roadToolsEnabled())
+            .map(tool => {
+                const label = tParcel(tool.labelKey, {}, tool.fallback);
+                const title = tParcel(tool.titleKey, {}, tool.titleFallback);
+                const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}"` : '';
+                return `
+                    <button type="button" class="parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
+                        onclick="startParcelTransportTool('${tool.key}')"${stationAttribute}
+                        title="${title}" aria-label="${title}">
+                        <i class="fas ${tool.icon}" aria-hidden="true"></i>
+                        <span>${label}</span>
+                    </button>
+                `;
+            }).join('');
+        const transportTitle = tParcel('panel.parcel.build.transport', {}, 'Transport');
+        const ownershipTitle = tParcel('panel.parcel.build.ownershipCategory', {}, 'Ownership');
         return `
             <div class="parcel-build-palette">
                 <div class="parcel-build-grid">
                     <div class="parcel-build-rules-group">${ruleButtons}</div>
                     ${otherButtons}
+                    <fieldset class="parcel-transport-group">
+                        <legend>${transportTitle}</legend>
+                        <div class="parcel-transport-grid">${transportButtons}</div>
+                    </fieldset>
+                    <fieldset class="parcel-ownership-group">
+                        <legend>${ownershipTitle}</legend>
+                        <div class="parcel-ownership-grid">${ownershipButtons}</div>
+                    </fieldset>
                 </div>
             </div>
         `;
@@ -206,7 +297,9 @@
 
     global.createProposalFromSingleParcel = createProposalFromSingleParcel;
     global.createProposalFromSelectedParcels = createProposalFromSelectedParcels;
+    global.shouldSuggestWholeBlockForFreshProposal = shouldSuggestWholeBlockForFreshProposal;
+    global.maybeSuggestWholeBlockForFreshProposal = maybeSuggestWholeBlockForFreshProposal;
     global.startParcelBuildTool = startParcelBuildTool;
+    global.startParcelTransportTool = startParcelTransportTool;
     global.renderParcelProposalActions = renderParcelProposalActions;
 })(typeof window !== 'undefined' ? window : globalThis);
-

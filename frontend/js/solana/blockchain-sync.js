@@ -24,9 +24,10 @@
     }
 
     function parseContractStatus(statusCode) {
-        // Must match ProposalStatus enum in proposal_nft: Active=0, Executed=1, Cancelled=2, Expired=3
-        const statusMap = { 0: 'Active', 1: 'Executed', 2: 'Cancelled', 3: 'Expired' };
-        return statusMap[statusCode] || 'Unknown';
+        const codec = g.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
     }
 
     function findLocalProposalByParcels(parcelIds) {
@@ -56,7 +57,7 @@
             author: onchainData.owner || 'Unknown',
             type: 'Purchase',
             proposalMainType: 'Purchase',
-            status: statusStr,
+            lifecycleStatus: statusStr,
             acquisitionStrategy: onchainData.isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {

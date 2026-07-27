@@ -15,25 +15,9 @@ test.describe('3D mode @features', () => {
     expect(hasThree).toBe(true);
   });
 
-  test('3D mode toggle or functions exist', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const threeDCapability = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasToggle: typeof w.toggle3DMode === 'function' || typeof w.enable3DMode === 'function',
-        hasThreeMode: typeof w.ThreeMode !== 'undefined' || typeof w.threeMode !== 'undefined',
-        hasInitThree: typeof w.initThreeMode === 'function',
-        hasThree: typeof w.THREE !== 'undefined',
-      };
-    });
-
-    const hasCapability = threeDCapability.hasToggle || threeDCapability.hasThreeMode || threeDCapability.hasInitThree;
-    // 3D functions depend on Three.js and its dependent scripts all loading
-    test.skip(!hasCapability, 'Three.js 3D module functions not available in this environment');
-    expect(hasCapability).toBe(true);
-  });
+  // A `typeof toggle3DMode === 'function'` check used to sit here. It named globals the app no
+  // longer exposes, so it skipped itself on every run — and it booted a browser to do so. Entering
+  // 3D for real (canvas, picking, isolation) is covered by proposal-editor.spec.ts.
 
   test('Three.js scene can be created', async ({ mockApi: page }) => {
     await page.goto('/');

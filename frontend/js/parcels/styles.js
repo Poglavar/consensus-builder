@@ -245,12 +245,10 @@
                 const proposals = global.proposalStorage.getAllProposals();
                 proposals.forEach(proposal => {
                     if (!proposal) return;
-                    const status = (proposal.status || '').toLowerCase();
                     const parcelIds = [];
                     const buildingProposal = proposal.buildingProposal || null;
                     if (buildingProposal) {
-                        const buildingStatus = (buildingProposal.status || status).toLowerCase();
-                        if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+                        if (isApplied(proposal, buildingProposal)) {
                             const ids = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
                                 ? buildingProposal.parentParcelIds
                                 : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
@@ -262,7 +260,7 @@
                             : (proposal.goal || '').toLowerCase();
                         const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
                         if ((isBuildingGoal || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length))
-                            && (status === 'applied' || status === 'executed')) {
+                            && isApplied(proposal)) {
                             if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
                         }
                     }
@@ -270,8 +268,7 @@
                     const structureProposal = proposal.structureProposal || null;
                     if (structureProposal) {
                         const kind = (structureProposal.kind || '').toLowerCase();
-                        const structureStatus = (structureProposal.status || status).toLowerCase();
-                        if ((kind === 'park' || kind === 'square') && (structureStatus === 'applied' || structureStatus === 'executed')) {
+                        if ((kind === 'park' || kind === 'square') && isApplied(proposal, structureProposal)) {
                             const ids = Array.isArray(structureProposal.parentParcelIds) && structureProposal.parentParcelIds.length > 0
                                 ? structureProposal.parentParcelIds
                                 : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);

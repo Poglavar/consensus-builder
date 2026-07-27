@@ -167,6 +167,8 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
   });
 }
 
+// Covers both surveys: ?source=gdi (the working set, object_id) and ?source=dgu (the cadastre
+// reference layer). `truncated: false` says the bbox is fully covered.
 export async function mockBuildingsRoute(page: Page): Promise<void> {
   await page.route('**/buildings**', (route) => {
     const request = route.request();
@@ -175,10 +177,11 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
       return;
     }
 
+    const source = new URL(request.url()).searchParams.get('source') || 'gdi';
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
+      body: JSON.stringify({ type: 'FeatureCollection', features: [], source, truncated: false }),
     });
   });
 }

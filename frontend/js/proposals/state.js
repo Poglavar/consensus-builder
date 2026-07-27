@@ -42,8 +42,6 @@ let pendingConstrainedCorridor = null;
 
 let constrainedCorridorState = null;
 
-let proposalSingleParcelSelection = false; // Merge needs ≥2 parcels; set per dialog
-
 let reparcellizationModulePromise = null;
 
 let teardownProposalBalanceWatcher = null;
