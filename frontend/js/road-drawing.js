@@ -1636,14 +1636,22 @@ function redrawRoadStrips() {
     // Per-segment: an absorbed road keeps ITS cross-section while being part of the drawing;
     // only segments without an override use the tool profile.
     const entries = getAllRoadSegments(true)
-        .map((segment, index) => ({ points: segment, profile: roadDrawingSegmentOverride(index) || roadProfile }))
+        .map((segment, index) => ({
+            points: segment,
+            profile: roadDrawingSegmentOverride(index) || roadProfile,
+            corridorId: 'active-drawing'
+        }))
         .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2);
     if (!entries.length) return restoreCorridorFill();
 
     // Same renderer as applied corridors — see js/corridor-render.js.
     const group = L.layerGroup();
     let drewAny = false;
-    entries.forEach(entry => {
+    const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+        ? buildCorridorLaneMarkingsForEntries(entries)
+        : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile));
+    const markings = [];
+    entries.forEach((entry, entryIndex) => {
         const strips = buildCorridorStrips([entry.points], entry.profile);
         if (!strips.length) {
             // A drawn segment with no strips renders as a bare dashed centerline — never
@@ -1651,19 +1659,19 @@ function redrawRoadStrips() {
             console.error('[road-drawing] no strips for a drawn segment', { points: entry.points.length, profile: entry.profile });
             return;
         }
-        const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
         // Trees only — bike/pedestrian lane explainers stay out of the map (cross-section
         // editor is the reference for lane meaning).
         const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
             .filter(decoration => decoration.kind === 'tree');
         const segmentLayer = renderCorridorStrips(strips, {
-            markings, decorations, junctions: [],
+            markings: [], decorations, junctions: [],
             // Rails come with the cross-section: a rail lane in the profile being drawn lays its track
             // right there on the map, so a track is drawn as a track from the first click.
             centerlines: [entry.points], profile: entry.profile
         });
         if (segmentLayer) {
             segmentLayer.addTo(group);
+            markings.push(...(markingsByEntry[entryIndex] || []));
             drewAny = true;
         }
     });
@@ -1673,6 +1681,9 @@ function redrawRoadStrips() {
         : [];
     if (junctions.length && typeof renderCorridorJunctions === 'function') {
         renderCorridorJunctions(junctions, group, undefined);
+    }
+    if (typeof renderCorridorLaneMarkings === 'function') {
+        renderCorridorLaneMarkings(markings, group, undefined);
     }
     roadStripLayer = group;
     if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });
