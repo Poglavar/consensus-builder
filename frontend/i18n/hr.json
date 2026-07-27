@@ -1907,6 +1907,7 @@
                 "borderPerpendicular": "Okomito na granicu",
                 "centroidalVoronoi": "Centroidalni Voronoi",
                 "manual": "Ručno",
+                "amend": "Zadrži parcele (izmijeni)",
                 "wasserstein": "Wasserstein"
             },
             "closeAria": "Zatvori",
@@ -1958,12 +1959,17 @@
             "coverageComplete": "Sva udružena zemlja dodijeljena ({{pct}}%).",
             "coverageIncomplete": "{{count}} parcela bez vlasnika · {{area}} još nije dodijeljeno ({{pct}}% pokriveno).",
             "status": {
+                "noBlockProposals": "Nijedan primijenjeni građevni blok ne preklapa odabrane parcele.",
+                "blockHasNoCourtyard": "Ovaj blok ima prekide ili nema zatvoreno dvorište.",
+                "courtyardCarved": "Dvorište je izrezano i dodijeljeno zajednički.",
                 "preparingPreview": "Pripremam pregled raspodjele...",
                 "missingOwners": "Nije moguće odrediti vlasnike za reparcelaciju.",
                 "algorithmUnavailable": "Odabrani algoritam još nije dostupan.",
                 "splitFailed": "Neuspjelo dijeljenje geometrije parcele.",
                 "success": "Sweep line uspješno primijenjen. Pregledaj i klikni Gotovo za spremanje.",
                 "manualHint": "Nacrtaj parcele na karti pa svaku dodijeli vlasniku.",
+                "amendHint": "Izvorne parcele su zadržane. Izreži ili podijeli samo ono što treba promijeniti.",
+                "amendOwnersMissing": "Neke vlasnike nije bilo moguće povezati; te su parcele ostale nedodijeljene.",
                 "drawHint": "Klikni za dodavanje točaka, povuci za prilagodbu, zatim pritisni Završi.",
                 "drawTooFew": "Dodaj barem 3 točke za parcelu.",
                 "drawInvalid": "Nije moguće izraditi valjanu parcelu iz tih točaka.",
@@ -1980,6 +1986,15 @@
             },
             "algorithmTitle": "Vrsta preparcelacije",
             "assignOwners": "Dodijeli vlasnike",
+            "deriveFromBuiltForm": "Izvedi dvorište iz izgrađenog oblika",
+            "choosePlanTitle": "Odaberi plan izgrađenog oblika",
+            "emissionModeTitle": "Sporazumi",
+            "emissionSingle": "Jedan sporazum",
+            "emissionIndividual": "Vlasnici pristupaju pojedinačno",
+            "perParcelProposalName": "{{plan}} — parcela {{parcel}}",
+            "emittedProposals": "Izrađeno je {{created}} sporazuma za parcele; {{skipped}} preskočeno.",
+            "jointOwnership": "Zajedničko vlasništvo",
+            "jointAssignButton": "Zajednički — svi primatelji",
             "colNewArea": "Novo",
             "colOrigArea": "Izvorno",
             "colOwner": "Vlasnik",
@@ -1992,7 +2007,9 @@
             "uploadGeojson": "Prenesi GeoJSON"
         }
     },
-    "status": {
+            "status": {
+                "jointRequiredForIndividual": "Izradi barem jednu zajedničku parcelu prije pojedinačnog pristupanja vlasnika.",
+                "emissionFailures": "Nije bilo moguće primijeniti {{count}} sporazuma za parcele: {{parcels}}.",
         "messages": {
             "all_local_data_cleared_reloading": "Svi lokalni podaci obrisani. Ponovno učitavanje...",
             "all_measurements_cleared": "Sva mjerenja obrisana",

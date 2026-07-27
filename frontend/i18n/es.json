@@ -1926,7 +1926,8 @@
                 "sweepLine": "Algoritmo de línea de barrido",
                 "centroidalVoronoi": "Voronoi centroidal",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual"
+                "manual": "Manual",
+                "amend": "Conservar parcelas (modificar)"
             },
             "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
@@ -1956,12 +1957,17 @@
             "coverageComplete": "Toda la tierra mancomunada asignada ({{pct}}%).",
             "coverageIncomplete": "{{count}} parcela(s) sin asignar · {{area}} aún sin asignar ({{pct}}% cubierto).",
             "status": {
+                "noBlockProposals": "Ningún bloque edificado aplicado se superpone con las parcelas seleccionadas.",
+                "blockHasNoCourtyard": "Este bloque tiene aberturas o no contiene un patio cerrado.",
+                "courtyardCarved": "El patio se recortó y se asignó en copropiedad.",
                 "preparingPreview": "Preparando vista previa de reparcelación...",
                 "missingOwners": "No se pudieron determinar los propietarios para la reparcelación.",
                 "algorithmUnavailable": "El algoritmo seleccionado aún no está disponible.",
                 "splitFailed": "No se pudo dividir la geometría de la parcela.",
                 "success": "Diseño generado. Revisa y pulsa Listo para guardar.",
                 "manualHint": "Dibuja parcelas en el mapa y asigna cada una a un propietario.",
+                "amendHint": "Se conservaron las parcelas originales. Recorta o divide solo lo que deba cambiar.",
+                "amendOwnersMissing": "No se pudieron asociar algunos propietarios; esas parcelas quedaron sin asignar.",
                 "drawHint": "Haz clic para añadir puntos, arrastra para ajustar y pulsa Terminar.",
                 "drawTooFew": "Añade al menos 3 puntos para crear una parcela.",
                 "drawInvalid": "No se pudo crear una parcela válida con esos puntos.",
@@ -1977,6 +1983,15 @@
                 "uploadSuccess": "Se cargaron {{count}} polígonos del archivo."
             },
             "assignOwners": "Asignar propietarios",
+            "deriveFromBuiltForm": "Derivar patio desde la forma construida",
+            "choosePlanTitle": "Elegir un plan de forma construida",
+            "emissionModeTitle": "Acuerdos",
+            "emissionSingle": "Un acuerdo",
+            "emissionIndividual": "Los propietarios se adhieren individualmente",
+            "perParcelProposalName": "{{plan}} — parcela {{parcel}}",
+            "emittedProposals": "Se crearon {{created}} acuerdos de parcela; {{skipped}} omitidos.",
+            "jointOwnership": "Copropiedad",
+            "jointAssignButton": "Copropiedad — todos los destinatarios",
             "colNewArea": "Nueva",
             "colOrigArea": "Original",
             "colOwner": "Propietario",
@@ -2012,7 +2027,9 @@
             "uploadGeojson": "Subir GeoJSON"
         }
     },
-    "status": {
+            "status": {
+                "jointRequiredForIndividual": "Crea al menos una parcela conjunta antes de permitir adhesiones individuales.",
+                "emissionFailures": "No se pudieron aplicar {{count}} acuerdos de parcela: {{parcels}}.",
         "messages": {
             "all_local_data_cleared_reloading": "Todos los datos locales borrados. Recargando...",
             "all_measurements_cleared": "Todas las mediciones borradas",

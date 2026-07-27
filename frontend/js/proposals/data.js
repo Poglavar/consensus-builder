@@ -1214,6 +1214,49 @@ const proposalStorage = {
     }
 };
 
+// Applied building proposals whose footprint materially overlaps the selected
+// reparcellization pool. Blockify stores its courtyard as an interior ring of
+// this footprint, so the editor can derive the shared courtyard from it.
+function buildingProposalsCoveringFeature(poolFeature) {
+    const out = [];
+    if (!poolFeature?.geometry || typeof turf === 'undefined') return out;
+    const normalizeFootprint = value => {
+        const candidate = value?.feature || value;
+        if (candidate?.type === 'Feature' && candidate.geometry) return candidate;
+        if (candidate?.type && candidate?.coordinates) {
+            return { type: 'Feature', properties: {}, geometry: candidate };
+        }
+        return null;
+    };
+
+    proposalStorage.getAllProposals().forEach(proposal => {
+        const bp = proposal?.buildingProposal;
+        if (!bp) return;
+        const status = String(bp.status || proposal.status || '').toLowerCase();
+        if (status !== 'applied' && status !== 'executed') return;
+        const footprint = normalizeFootprint(
+            bp.buildingFeature
+            || proposal.geometry?.buildings?.[0]
+            || bp.buildings?.[0]
+        );
+        if (!footprint) return;
+        try {
+            const overlap = turf.intersect(poolFeature, footprint);
+            if (!overlap || (Number(turf.area(overlap)) || 0) <= 2) return;
+        } catch (_) {
+            return;
+        }
+        const proposalId = proposal.proposalId || proposal.id;
+        if (!proposalId) return;
+        out.push({ proposalId: String(proposalId), proposal, footprint });
+    });
+    return out;
+}
+
+if (typeof window !== 'undefined') {
+    window.buildingProposalsCoveringFeature = buildingProposalsCoveringFeature;
+}
+
 const proposalHighlightState = {
     activeParcelIds: new Set(),
     activeChildFeatures: [],

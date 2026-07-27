@@ -406,6 +406,47 @@ function getOrCreateAgentForRecipient(label) {
     return id;
 }
 
+// Canonical ownership elsewhere in the app is intentionally single-agent. A
+// joint pool represents the member ledger without weakening that invariant.
+function getOrCreateJointPoolAgent(label, members) {
+    const normalizedMembers = (Array.isArray(members) ? members : [])
+        .map(member => ({
+            name: String(member?.name || member?.displayName || '').trim() || 'Owner',
+            agentId: member?.agentId ? String(member.agentId) : null,
+            share: Number(member?.share)
+        }))
+        .filter(member => Number.isFinite(member.share) && member.share >= 0);
+    if (!normalizedMembers.length) return null;
+
+    const poolLabel = String(label || 'Joint ownership').trim() || 'Joint ownership';
+    const signature = normalizedMembers
+        .map(member => `${member.agentId || member.name.toLowerCase()}:${member.share.toPrecision(12)}`)
+        .sort()
+        .join('|');
+    const id = 'agent_joint_pool_' + _recipientHash(signature);
+    const existing = agentStorage.getAgent(id);
+    if (!existing) {
+        agentStorage.addAgent({
+            id,
+            name: poolLabel,
+            avatarIndex: 0,
+            jointPool: true,
+            members: normalizedMembers,
+            ethBalance: 0,
+            walletAddresses: [],
+            ownedParcels: [],
+            proposalsCreated: [],
+            proposalsAccepted: [],
+            proposalsExecuted: [],
+            createdAt: new Date().toISOString(),
+            lastActionAt: null,
+            aiControlled: false,
+            userControlled: false
+        });
+    }
+    return id;
+}
+
 // Resolve the agent id that should RECEIVE the parcels for a proposal's ownership facet.
 // Returns null for no-transfer / open-sale (no fixed recipient yet).
 function resolveProposalRecipientAgentId(proposal) {
@@ -491,6 +532,7 @@ if (typeof window !== 'undefined') {
     window.hydrateParcelOwnershipFromServer = hydrateParcelOwnershipFromServer;
     window.resolveProposalRecipientAgentId = resolveProposalRecipientAgentId;
     window.getOrCreateCityAgent = getOrCreateCityAgent;
+    window.getOrCreateJointPoolAgent = getOrCreateJointPoolAgent;
     window.CITY_AGENT_ID = CITY_AGENT_ID;
 }
 

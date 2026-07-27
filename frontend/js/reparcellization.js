@@ -14,10 +14,13 @@
         legendListEl: null,
         statusEl: null,
         algorithm: 'sweep-line',
+        emissionMode: 'single',
+        emissionToggleEl: null,
         selection: null,
         superParcel: null,
         totalArea: 0,
         ownerShares: [],
+        parcelOwnerIndex: new Map(),
         slices: [],
         hasFitBounds: false,
         resizeHandler: null,
@@ -48,6 +51,7 @@
         drawing: { active: false, points: [], tempLayer: null, tempMarkers: [], mode: 'polygon', cursor: null },
         drawBtn: null,
         lineBtn: null,
+        deriveBtn: null,
         // Sweep-line orientation: a draggable point the cut lines point toward.
         sweepHandle: null,
         sweepDirLayer: null,
@@ -72,6 +76,10 @@
             displayName: t('reparcellization.modal.publicLand', 'Public land'),
             color: '#ffffff'
         };
+    }
+
+    function getJointRecipients() {
+        return state.ownerShares.filter(owner => owner.ownerKey !== PUBLIC_LAND_KEY);
     }
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -157,6 +165,11 @@
             {
                 key: 'manual',
                 label: t('reparcellization.modal.algorithms.manual', 'Manual'),
+                disabled: false
+            },
+            {
+                key: 'amend',
+                label: t('reparcellization.modal.algorithms.amend', 'Keep parcels (amend)'),
                 disabled: false
             }
         ];
@@ -262,6 +275,7 @@
             setProposalModalDimmed(false);
         }
         state.ownerShares = [];
+        state.parcelOwnerIndex = new Map();
         state.slices = [];
         state.selection = null;
         state.superParcel = null;
@@ -298,6 +312,7 @@
                             <div class="reparcel-legend-actions">
                                 <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x2B1F;</button>
                                 <button type="button" class="btn-icon" data-reparcel-line aria-pressed="false" title="${t('reparcellization.modal.drawLine', 'Split with line')}">&#x2702;&#xFE0F;</button>
+                                <button type="button" class="reparcel-form-derive" data-reparcel-derive hidden>${t('reparcellization.modal.deriveFromBuiltForm', 'Derive courtyard from built form')}</button>
                                 <button type="button" class="btn-icon" data-reparcel-shuffle title="${t('reparcellization.modal.shuffle', 'Shuffle ownership')}">&#x1f500;</button>
                                 <label class="btn-icon btn-upload-label" title="${t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON')}">
                                     &#x1F4C2;
@@ -343,6 +358,11 @@
                         </section>
                         ${sidePanel}
                         <div class="reparcel-actions">
+                            <div class="reparcel-emission-toggle" data-reparcel-emission hidden>
+                                <span>${t('reparcellization.modal.emissionModeTitle', 'Agreements')}</span>
+                                <label><input type="radio" name="reparcel-emission-mode" value="single" checked> ${t('reparcellization.modal.emissionSingle', 'One agreement')}</label>
+                                <label><input type="radio" name="reparcel-emission-mode" value="individual"> ${t('reparcellization.modal.emissionIndividual', 'Owners join individually')}</label>
+                            </div>
                             <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
                     </div>
@@ -356,7 +376,9 @@
         state.cashTotalEl = overlay.querySelector('[data-reparcel-cashtotal]');
         state.drawBtn = overlay.querySelector('[data-reparcel-draw]');
         state.lineBtn = overlay.querySelector('[data-reparcel-line]');
+        state.deriveBtn = overlay.querySelector('[data-reparcel-derive]');
         state.compareBtn = overlay.querySelector('[data-reparcel-compare]');
+        state.emissionToggleEl = overlay.querySelector('[data-reparcel-emission]');
         if (state.compareBtn) state.compareBtn.hidden = false;
         state.drawToolbar = overlay.querySelector('[data-reparcel-draw-toolbar]');
         state.finishBtn = overlay.querySelector('[data-reparcel-finish]');
@@ -371,8 +393,23 @@
 
         closeBtn.addEventListener('click', closeModal);
         commitBtns.forEach((btn) => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 if (btn.disabled) return;
+                if (state.algorithm === 'amend' && state.emissionMode === 'individual') {
+                    btn.disabled = true;
+                    const result = await emitPerParcelReparcellizationProposals();
+                    if (!result || result.created === 0) {
+                        updateCommitState();
+                        return;
+                    }
+                    window.pendingReparcellizationPlan = null;
+                    const draft = window.getActiveProposalDesignDraft?.();
+                    if (draft?.goal === 'reparcellization') {
+                        window.proposalDraftStore?.deleteDraft?.(draft.id);
+                    }
+                    closeModal({ skipPersist: true });
+                    return;
+                }
                 persistResult();
                 ensureProposalDefaults();
                 closeModal({ skipPersist: true });
@@ -434,6 +471,7 @@
                 if (!target || target.name !== 'reparcel-algorithm') return;
                 const option = getAlgorithmOptionByKey(target.value);
                 if (!option || option.disabled) return;
+                const previousAlgorithm = state.algorithm;
                 state.algorithm = option.key;
                 state.subtitleData.algorithmLabel = option.label;
                 updateSubtitleWithOwners(state.ownerShares.length);
@@ -441,8 +479,11 @@
                 if (option.key !== 'sweep-line') {
                     destroySweepOrientation();
                 }
-                // Drawing only applies to manual; cancel any active draw when leaving it.
-                if (option.key !== 'manual') {
+                // Manual and amend share the same carve/split tools, so switching
+                // between them does not unnecessarily drop an in-progress line.
+                const wasEditable = previousAlgorithm === 'manual' || previousAlgorithm === 'amend';
+                const isEditable = option.key === 'manual' || option.key === 'amend';
+                if (!wasEditable || !isEditable) {
                     cancelDraw();
                 }
                 updateDrawToolButtons();
@@ -464,6 +505,15 @@
         }
         if (state.lineBtn) {
             state.lineBtn.addEventListener('click', () => toggleDrawMode('line'));
+        }
+        if (state.deriveBtn) {
+            state.deriveBtn.addEventListener('click', openBuiltFormPicker);
+        }
+        if (state.emissionToggleEl) {
+            state.emissionToggleEl.addEventListener('change', event => {
+                const input = event.target;
+                if (input?.name === 'reparcel-emission-mode') state.emissionMode = input.value;
+            });
         }
         updateDrawToolButtons();
         if (state.finishBtn) {
@@ -569,6 +619,72 @@
         };
     }
 
+    // The courtyard belongs to every recipient in proportion to the value of the
+    // ordinary plots assigned to them. Joint plots are excluded to avoid making
+    // their own shares part of the weight calculation.
+    function computeProRataJointOwners() {
+        const recipients = getJointRecipients();
+        if (!recipients.length) return [];
+        const unit = ledgerUsesMoney() ? state.poolUnitValue : 1;
+        const weights = new Map(recipients.map(owner => [owner.ownerKey, 0]));
+
+        for (const slice of state.slices) {
+            if (slice.jointPool || !Array.isArray(slice.owners)) continue;
+            const sliceValue = computeFeatureArea(sliceToFeature(slice)) * unit;
+            slice.owners.forEach(owner => {
+                if (!weights.has(owner.ownerKey)) return;
+                const share = Number(owner.share);
+                if (!Number.isFinite(share) || share <= 0) return;
+                weights.set(owner.ownerKey, weights.get(owner.ownerKey) + sliceValue * share);
+            });
+        }
+
+        const computeShares = window.ReparcellizationPlanUtils?.computeJointProRataShares;
+        if (typeof computeShares !== 'function') {
+            console.error('[reparcellization] missing computeJointProRataShares helper');
+            return [];
+        }
+        const sharesByOwner = new Map(computeShares(recipients.map(owner => ({
+            ownerKey: owner.ownerKey,
+            weight: weights.get(owner.ownerKey) || 0
+        }))).map(entry => [entry.ownerKey, entry.share]));
+
+        return recipients.map(owner => ({
+            ownerKey: owner.ownerKey,
+            displayName: owner.displayName,
+            color: owner.color,
+            share: sharesByOwner.get(owner.ownerKey) || 0
+        }));
+    }
+
+    function applyJointOwnersToSlice(slice, owners) {
+        slice.owners = cloneOwners(owners);
+        slice.jointPool = true;
+        const primary = slice.owners[0] || null;
+        slice.ownerKey = primary ? primary.ownerKey : '';
+        slice.displayName = t('reparcellization.modal.jointOwnership', 'Joint ownership');
+        slice.color = slice.owners.length ? blendOwnerColors(slice.owners) : '#cccccc';
+    }
+
+    function resyncJointSliceShares() {
+        if (!state.slices.some(slice => slice.jointPool)) return;
+        const owners = computeProRataJointOwners();
+        if (!owners.length) return;
+        state.slices.forEach(slice => {
+            if (slice.jointPool) applyJointOwnersToSlice(slice, owners);
+        });
+    }
+
+    function assignJointToSlice(sliceIndex) {
+        const slice = state.slices[sliceIndex];
+        if (!slice) return false;
+        const owners = computeProRataJointOwners();
+        if (!owners.length) return false;
+        applyJointOwnersToSlice(slice, owners);
+        syncSlicePrimaryOwner(sliceIndex);
+        return true;
+    }
+
     // Default cash offer for an owner: the shortfall to compensate when they were
     // assigned less than their entitlement (negative balance), otherwise nothing.
     function defaultCashOffer(ledger) {
@@ -628,6 +744,7 @@
     }
 
     function updateCommitState() {
+        resyncJointSliceShares();
         const c = evaluatePlanCompleteness();
         ensureCommitAvailability(c.ok);
         if (state.slices.length && window.getActiveProposalDesignDraft?.()?.goal === 'reparcellization') {
@@ -661,6 +778,7 @@
     }
 
     function updateLegend(ownerShares) {
+        resyncJointSliceShares();
         // ── Original Owners table ──
         if (state.legendListEl) {
             state.legendListEl.innerHTML = '';
@@ -736,7 +854,7 @@
                 const tr = document.createElement('tr');
                 tr.className = 'reparcel-newplot-row';
                 tr.innerHTML = `
-                    <td class="plot-cell"><strong>${idx + 1}</strong> <span class="area-cell">${formatArea(area)}</span></td>
+                    <td class="plot-cell"><strong>${idx + 1}</strong> <span class="area-cell">${formatArea(area)}</span>${slice.jointPool ? `<span class="reparcel-joint-badge">${t('reparcellization.modal.jointOwnership', 'Joint ownership')}</span>` : ''}</td>
                     <td>${ownerHtml}</td>`;
                 // Hovering a row highlights that plot on the map — makes it clear that
                 // one plot can render as several disjoint pieces (carved MultiPolygon).
@@ -939,14 +1057,14 @@
 
     // Replace a slice with its disjoint parts as independent plots (each keeps the
     // slice's owners). Pieces under 1 m² are dropped as slivers.
-    function pushSliceParts(target, geometry, owners, source) {
+    function pushSliceParts(target, geometry, owners, source, flags = {}) {
         geometryToPolygonFeatures(geometry).forEach(part => {
             if (computeFeatureArea(part) < 1) return;
-            target.push(makePlotFromOwners(part.geometry, cloneOwners(owners), source));
+            target.push(makePlotFromOwners(part.geometry, cloneOwners(owners), source, flags));
         });
     }
 
-    function makePlotFromOwners(geometry, owners, source) {
+    function makePlotFromOwners(geometry, owners, source, flags = {}) {
         const safeOwners = (Array.isArray(owners) ? owners : []).map(o => ({
             ownerKey: o.ownerKey,
             displayName: o.displayName,
@@ -958,7 +1076,7 @@
             safeOwners.forEach(o => { if (!o.share) o.share = equalShare; });
         }
         const primary = safeOwners[0] || null;
-        return {
+        const plot = {
             ownerKey: primary ? primary.ownerKey : '',
             displayName: primary
                 ? (safeOwners.length > 1 ? safeOwners.map(o => o.displayName).join(' + ') : primary.displayName)
@@ -969,6 +1087,11 @@
             owners: safeOwners,
             source: source || 'manual'
         };
+        if (flags.jointPool) {
+            plot.jointPool = true;
+            plot.displayName = t('reparcellization.modal.jointOwnership', 'Joint ownership');
+        }
+        return plot;
     }
 
     function createUnassignedPlot(geometry, source) {
@@ -994,13 +1117,14 @@
                     color: owner.color,
                     share: owner.share || 0
                 })),
-                source: polygon.source || 'manual'
+                source: polygon.source || 'manual',
+                jointPool: polygon.jointPool === true
             }));
     }
 
     // Carve a polygon into the current plan: clip to the pool, subtract it from
     // every overlapping plot, then add it as a new plot. Returns true on success.
-    function carvePlotIntoPlan(polygonFeature, ownersForNew, source) {
+    function carvePlotIntoPlan(polygonFeature, ownersForNew, source, flags = {}) {
         if (typeof turf === 'undefined' || !state.superParcel) return false;
         let clipped = null;
         try { clipped = turf.intersect(state.superParcel, polygonFeature); } catch (_) { clipped = null; }
@@ -1014,12 +1138,127 @@
             try { diff = turf.difference(sliceToFeature(slice), clipped); } catch (_) { diff = sliceToFeature(slice); }
             if (!diff || !diff.geometry) continue;            // fully consumed by the new plot
             // A subtraction can split a plot into disjoint parts → separate plots.
-            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
+            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source, { jointPool: slice.jointPool });
         }
         // The new plot itself may be disjoint (drawn across a gap) → separate plots.
-        pushSliceParts(remaining, clipped.geometry, ownersForNew, source);
+        pushSliceParts(remaining, clipped.geometry, ownersForNew, source, flags);
         state.slices = remaining;
         return true;
+    }
+
+    function applyCourtyardFromProposal(entry) {
+        const derive = window.ReparcellizationPlanUtils?.deriveCourtyardFromFootprint;
+        if (typeof derive !== 'function') {
+            console.error('[reparcellization] missing deriveCourtyardFromFootprint helper');
+            return false;
+        }
+        const courtyard = derive(entry?.footprint);
+        if (!courtyard) {
+            setStatus(
+                t(
+                    'reparcellization.modal.status.blockHasNoCourtyard',
+                    'This block has gaps or no enclosed courtyard.'
+                ),
+                'error',
+                'reparcellization.modal.status.blockHasNoCourtyard'
+            );
+            return false;
+        }
+        const owners = computeProRataJointOwners();
+        // carvePlotIntoPlan clips to the selected pool, so a block footprint may
+        // safely extend over parcels that are not part of this readjustment.
+        const carved = carvePlotIntoPlan(courtyard, owners, 'form', { jointPool: true });
+        if (!carved) {
+            setStatus(
+                t(
+                    'reparcellization.modal.status.blockHasNoCourtyard',
+                    'This block has gaps or no enclosed courtyard.'
+                ),
+                'error',
+                'reparcellization.modal.status.blockHasNoCourtyard'
+            );
+            return false;
+        }
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
+        setStatus(
+            t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.'),
+            'info',
+            'reparcellization.modal.status.courtyardCarved'
+        );
+        return true;
+    }
+
+    function openBuiltFormPicker() {
+        if (state.algorithm !== 'amend') return;
+        const findCandidates = window.buildingProposalsCoveringFeature;
+        const candidates = typeof findCandidates === 'function'
+            ? findCandidates(state.superParcel)
+            : [];
+        if (!candidates.length) {
+            setStatus(
+                t(
+                    'reparcellization.modal.status.noBlockProposals',
+                    'No applied building block overlaps the selected parcels.'
+                ),
+                'error',
+                'reparcellization.modal.status.noBlockProposals'
+            );
+            return;
+        }
+        if (candidates.length === 1) {
+            applyCourtyardFromProposal(candidates[0]);
+            return;
+        }
+
+        dismissOwnerPopup();
+        const container = document.createElement('div');
+        container.className = 'reparcel-owner-popup';
+        const title = document.createElement('div');
+        title.className = 'reparcel-owner-popup__title';
+        title.textContent = t('reparcellization.modal.choosePlanTitle', 'Choose a built-form plan');
+        container.appendChild(title);
+        const list = document.createElement('div');
+        list.className = 'reparcel-owner-popup__list';
+        candidates.forEach(entry => {
+            const choice = document.createElement('button');
+            choice.type = 'button';
+            choice.className = 'reparcel-owner-popup__row reparcel-owner-popup__choice';
+            choice.textContent = entry.proposal?.title
+                || entry.proposal?.name
+                || entry.proposal?.proposalName
+                || entry.proposalId;
+            choice.addEventListener('click', evt => {
+                evt.stopPropagation();
+                dismissOwnerPopup();
+                applyCourtyardFromProposal(entry);
+            });
+            list.appendChild(choice);
+        });
+        container.appendChild(list);
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'reparcel-owner-popup__close';
+        closeBtn.textContent = '\u00d7';
+        closeBtn.addEventListener('click', evt => {
+            evt.stopPropagation();
+            dismissOwnerPopup();
+        });
+        container.appendChild(closeBtn);
+
+        const popup = L.popup({
+            closeButton: false,
+            className: 'reparcel-owner-leaflet-popup',
+            maxWidth: 320,
+            autoPan: true,
+            closeOnClick: false
+        }).setLatLng(state.map.getCenter()).setContent(container);
+        popup.on('remove', () => {
+            if (state.ownerAssignmentPopup === popup) state.ownerAssignmentPopup = null;
+        });
+        popup.openOn(state.map);
+        state.ownerAssignmentPopup = popup;
     }
 
     // Exact split of one polygon by a line, sharing the boundary (no gap): node the
@@ -1099,7 +1338,12 @@
                 didSplit = true;
                 facesForSlice.forEach(f => {
                     if (computeFeatureArea(f) < 1) return;
-                    remaining.push(makePlotFromOwners(f.geometry, cloneOwners(slice.owners), slice.source));
+                    remaining.push(makePlotFromOwners(
+                        f.geometry,
+                        cloneOwners(slice.owners),
+                        slice.source,
+                        { jointPool: slice.jointPool }
+                    ));
                 });
             } else {
                 remaining.push(slice); // keep original plot untouched
@@ -1127,7 +1371,7 @@
             try { diff = turf.difference(sliceToFeature(slice), cut); } catch (_) { diff = sliceToFeature(slice); }
             if (!diff || !diff.geometry) { didSplit = true; continue; } // entire slice inside the cut
             const before = remaining.length;
-            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
+            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source, { jointPool: slice.jointPool });
             if (remaining.length - before > 1) didSplit = true;
         }
         if (!didSplit) return false; // line crossed nothing → no-op
@@ -1153,11 +1397,13 @@
 
     // ── Manual plot drawing ──────────────────────────────────────────────
 
-    // Drawing/splitting only applies to the Manual (blank-slate) layout, so the
-    // pencil/scissors icons are disabled (greyed out) for other algorithms.
+    // Drawing/splitting applies to the blank-slate and original-parcel layouts.
     function updateDrawToolButtons() {
-        const enabled = state.ownershipMode === 'multiple' && state.algorithm === 'manual';
+        const enabled = state.ownershipMode === 'multiple'
+            && (state.algorithm === 'manual' || state.algorithm === 'amend');
         [state.drawBtn, state.lineBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
+        if (state.deriveBtn) state.deriveBtn.hidden = state.algorithm !== 'amend';
+        if (state.emissionToggleEl) state.emissionToggleEl.hidden = state.algorithm !== 'amend';
     }
 
     function setDrawButtonsActive() {
@@ -1548,6 +1794,16 @@
         title.textContent = t('reparcellization.modal.assignOwners', 'Assign owners');
         container.appendChild(title);
 
+        const jointBtn = document.createElement('button');
+        jointBtn.type = 'button';
+        jointBtn.className = 'reparcel-owner-popup__joint';
+        jointBtn.textContent = t('reparcellization.modal.jointAssignButton', 'Joint — all recipients');
+        jointBtn.addEventListener('click', (evt) => {
+            evt.stopPropagation();
+            if (assignJointToSlice(sliceIndex)) dismissOwnerPopup();
+        });
+        container.appendChild(jointBtn);
+
         const ownerList = document.createElement('div');
         ownerList.className = 'reparcel-owner-popup__list';
 
@@ -1619,6 +1875,7 @@
 
     function toggleOwnerOnSlice(sliceIndex, owner, add) {
         const slice = state.slices[sliceIndex];
+        slice.jointPool = false;
         if (!slice.owners) {
             slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
         }
@@ -1670,9 +1927,11 @@
         } else {
             const primary = slice.owners[0];
             slice.ownerKey = primary.ownerKey;
-            slice.displayName = slice.owners.length > 1
-                ? slice.owners.map(o => o.displayName).join(' + ')
-                : primary.displayName;
+            slice.displayName = slice.jointPool
+                ? t('reparcellization.modal.jointOwnership', 'Joint ownership')
+                : (slice.owners.length > 1
+                    ? slice.owners.map(o => o.displayName).join(' + ')
+                    : primary.displayName);
             slice.color = blendOwnerColors(slice.owners);
         }
 
@@ -2098,6 +2357,145 @@
         if (state.sweepHandle) updateSweepDirLine();
     }
 
+    async function emitPerParcelReparcellizationProposals() {
+        const jointSlices = state.slices.filter(slice => slice.jointPool);
+        if (!jointSlices.length) {
+            setStatus(
+                t(
+                    'reparcellization.modal.status.jointRequiredForIndividual',
+                    'Create at least one joint plot before owners can join individually.'
+                ),
+                'error',
+                'reparcellization.modal.status.jointRequiredForIndividual'
+            );
+            return null;
+        }
+        const splitPlan = window.ReparcellizationPlanUtils?.splitPlanPerParcel;
+        if (typeof splitPlan !== 'function') {
+            console.error('[reparcellization] missing splitPlanPerParcel helper');
+            return null;
+        }
+
+        const aggregateOwners = new Map(state.ownerShares.map(owner => [owner.ownerKey, owner]));
+        const parcelOwners = new Map();
+        state.parcelOwnerIndex.forEach((owners, parcelId) => {
+            parcelOwners.set(String(parcelId), (owners || []).map(owner => ({
+                ownerKey: owner.ownerKey,
+                displayName: owner.displayName,
+                color: aggregateOwners.get(owner.ownerKey)?.color || '#888888',
+                share: owner.share
+            })));
+        });
+        const parcelFeatures = (state.selection?.layers || []).map((layer, index) => {
+            const feature = JSON.parse(JSON.stringify(layer?.feature || {}));
+            feature.properties = feature.properties || {};
+            if (feature.properties.parcelId === undefined || feature.properties.parcelId === null) {
+                feature.properties.parcelId = state.selection?.ids?.[index];
+            }
+            return feature;
+        });
+
+        let miniPlans = null;
+        try {
+            miniPlans = splitPlan({
+                parcelFeatures,
+                jointPolygons: jointSlices.map(sliceToFeature),
+                parcelOwnerIndex: parcelOwners,
+                jointOwners: computeProRataJointOwners()
+            }, turf);
+        } catch (error) {
+            console.error('[reparcellization] per-parcel plan emission failed', error);
+            setStatus(error?.message || String(error), 'error');
+            return null;
+        }
+
+        const featureById = new Map(parcelFeatures.map(feature => [String(feature.properties?.parcelId), feature]));
+        const draft = window.getActiveProposalDesignDraft?.();
+        const planName = draft?.fields?.name
+            || t('reparcellization.modal.title', 'Land readjustment');
+        const failures = [];
+        let created = 0;
+        let skipped = 0;
+
+        for (const miniPlan of miniPlans) {
+            if (miniPlan.skipped) {
+                skipped += 1;
+                continue;
+            }
+            const parcelFeature = featureById.get(String(miniPlan.parcelId));
+            const parcelLabel = parcelFeature?.properties?.BROJ_CESTICE
+                || parcelFeature?.properties?.parcelNumber
+                || miniPlan.parcelId;
+            const title = t(
+                'reparcellization.modal.perParcelProposalName',
+                '{{plan}} — parcel {{parcel}}',
+                { plan: planName, parcel: parcelLabel }
+            );
+            const proposal = {
+                goal: 'reparcellization',
+                primaryType: 'Reparcellization',
+                title,
+                name: title,
+                proposalName: title,
+                status: 'unapplied',
+                parentParcelIds: [String(miniPlan.parcelId)],
+                reparcellization: {
+                    algorithm: 'amend',
+                    generatedAt: new Date().toISOString(),
+                    parcelIds: [String(miniPlan.parcelId)],
+                    totalArea: miniPlan.totalArea,
+                    isSingleOwner: false,
+                    polygons: miniPlan.polygons
+                }
+            };
+            const proposalId = typeof proposalStorage !== 'undefined'
+                ? proposalStorage.addProposal(proposal)
+                : null;
+            if (!proposalId) {
+                failures.push(String(miniPlan.parcelId));
+                continue;
+            }
+            created += 1;
+            try {
+                ProposalManager?._linkProposalToAncestors?.(proposalId, proposal.parentParcelIds);
+                const applied = await ProposalManager?.applyProposal?.(proposalId, {
+                    applyAnyway: true,
+                    suppressMissingParentAlerts: true
+                });
+                if (!applied) failures.push(String(miniPlan.parcelId));
+            } catch (error) {
+                console.error('[reparcellization] could not apply parcel agreement', miniPlan.parcelId, error);
+                failures.push(String(miniPlan.parcelId));
+            }
+        }
+
+        if (typeof showEphemeralMessage === 'function' && created > 0) {
+            showEphemeralMessage(
+                t(
+                    'reparcellization.modal.emittedProposals',
+                    'Created {{created}} parcel agreement(s); {{skipped}} skipped.',
+                    { created, skipped }
+                ),
+                5000,
+                'success'
+            );
+        }
+        if (failures.length) {
+            const message = t(
+                'reparcellization.modal.status.emissionFailures',
+                '{{count}} parcel agreement(s) could not be applied: {{parcels}}.',
+                { count: failures.length, parcels: failures.join(', ') }
+            );
+            console.error('[reparcellization] partial individual emission failure', failures);
+            setStatus(message, 'error', 'reparcellization.modal.status.emissionFailures', {
+                count: failures.length,
+                parcels: failures.join(', ')
+            });
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 7000, 'error');
+        }
+        return { created, skipped, failures };
+    }
+
     function persistResult() {
         if (!state.slices.length) return;
         const payload = {
@@ -2139,6 +2537,7 @@
                 source: slice.source || 'manual',
                 area: computeFeatureArea(sliceToFeature(slice)),
                 geometry: slice.geometry,
+                jointPool: slice.jointPool === true,
                 owners: Array.isArray(slice.owners) && slice.owners.length
                     ? slice.owners.map(o => ({ ownerKey: o.ownerKey, displayName: o.displayName, color: o.color, share: o.share }))
                     : []
@@ -2234,13 +2633,20 @@
     async function buildOwnerShares(selection) {
         const result = new Map();
         const parcelLayers = selection.layers || [];
+        state.parcelOwnerIndex = new Map();
         let totalArea = 0;
         let totalValue = 0;
 
-        for (const layer of parcelLayers) {
+        for (let layerIndex = 0; layerIndex < parcelLayers.length; layerIndex++) {
+            const layer = parcelLayers[layerIndex];
             const feature = layer?.feature;
             if (!feature || !feature.properties) continue;
-            const parcelId = feature.properties.parcelId;
+            const rawParcelId = feature.properties.parcelId
+                ?? feature.properties.parcel_id
+                ?? selection.ids?.[layerIndex];
+            const parcelId = rawParcelId !== undefined && rawParcelId !== null
+                ? String(rawParcelId)
+                : null;
             const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
             if (!area || !Number.isFinite(area)) continue;
 
@@ -2269,8 +2675,14 @@
             }
 
             const normalizedSlots = normalizeOwnerSlots(slots);
+            const parcelOwners = [];
             normalizedSlots.forEach(({ slot, fraction }) => {
                 const ownerKey = slot.key || `${parcelId}:${slot.displayName}`;
+                parcelOwners.push({
+                    ownerKey,
+                    displayName: slot.displayName || 'Owner',
+                    share: fraction
+                });
                 const existing = result.get(ownerKey) || {
                     ownerKey,
                     displayName: slot.displayName || 'Owner',
@@ -2280,9 +2692,12 @@
                 };
                 existing.totalArea += area * fraction;
                 existing.totalValue += value * fraction;
-                if (parcelId) existing.parcelIds.add(parcelId);
+                if (parcelId !== null) existing.parcelIds.add(parcelId);
                 result.set(ownerKey, existing);
             });
+            if (parcelId !== undefined && parcelId !== null) {
+                state.parcelOwnerIndex.set(String(parcelId), parcelOwners);
+            }
         }
 
         if (!totalArea) {
@@ -2311,6 +2726,46 @@
                 color: pickOwnerColor(entry.ownerKey, index)
             };
         }).filter(entry => entry.percent > 0).sort((a, b) => b.percent - a.percent);
+    }
+
+    function buildAmendSlices() {
+        const ownerByKey = new Map(state.ownerShares.map(owner => [owner.ownerKey, owner]));
+        const slices = [];
+        const missing = [];
+        (state.selection?.layers || []).forEach((layer, index) => {
+            const feature = layer?.feature;
+            if (!feature?.geometry) return;
+            const rawParcelId = feature.properties?.parcelId ?? state.selection?.ids?.[index];
+            const parcelId = rawParcelId !== undefined && rawParcelId !== null ? String(rawParcelId) : '';
+            const indexedOwners = parcelId ? state.parcelOwnerIndex.get(parcelId) : null;
+            const owners = (Array.isArray(indexedOwners) ? indexedOwners : []).map(owner => {
+                const aggregate = ownerByKey.get(owner.ownerKey);
+                return {
+                    ownerKey: owner.ownerKey,
+                    displayName: owner.displayName,
+                    color: aggregate?.color || '#888888',
+                    share: owner.share
+                };
+            });
+            if (!owners.length) missing.push(parcelId || String(index + 1));
+            slices.push(makePlotFromOwners(
+                JSON.parse(JSON.stringify(feature.geometry)),
+                owners,
+                'amend'
+            ));
+        });
+        if (missing.length) {
+            console.error('[reparcellization] amend mode could not map parcel owners', missing);
+            setStatus(
+                t(
+                    'reparcellization.modal.status.amendOwnersMissing',
+                    'Some parcel owners could not be mapped; those parcels were left unassigned.'
+                ),
+                'error',
+                'reparcellization.modal.status.amendOwnersMissing'
+            );
+        }
+        return slices;
     }
 
     function buildSlicePolygon(minLng, maxLng, minLat, maxLat, cutLng) {
@@ -2736,6 +3191,25 @@
                 return;
             }
             setStatus('', 'info');
+        } else if (state.algorithm === 'amend') {
+            // totalArea remains the super-parcel union. Minor boundary smoothing in
+            // that union is covered by the adapter's existing 0.5% tolerance.
+            state.slices = buildAmendSlices();
+            if (!state.slices.length) {
+                setStatus(
+                    t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
+                    'error',
+                    'reparcellization.modal.status.splitFailed'
+                );
+                return;
+            }
+            if (!state.slices.some(slice => !slice.owners.length)) {
+                setStatus(
+                    t('reparcellization.modal.status.amendHint', 'Original parcels retained. Carve or split only what should change.'),
+                    'info',
+                    'reparcellization.modal.status.amendHint'
+                );
+            }
         } else if (state.algorithm === 'manual') {
             // Manual: blank slate. Discard any sweep-line result and start from the
             // undivided superparcel as a single unassigned plot to draw/split on.
@@ -2814,6 +3288,7 @@
         state.ownershipMode = 'multiple';
         state.cashOfferOverrides = {};
         state.algorithm = options.algorithm || 'sweep-line';
+        state.emissionMode = 'single';
         state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
             ? JSON.parse(JSON.stringify(options.initialPolygons))
             : null;

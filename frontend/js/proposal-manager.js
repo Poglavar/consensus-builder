@@ -3418,6 +3418,29 @@ const ProposalManager = {
             return false;
         }
 
+        const invalidJointSlice = plan.polygons.find(slice => {
+            if (!Array.isArray(slice?.owners) || slice.owners.length <= 1) return false;
+            const shares = slice.owners.map(owner => Number(owner?.share));
+            return shares.some(share => !Number.isFinite(share) || share < 0)
+                || Math.abs(shares.reduce((sum, share) => sum + share, 0) - 1) > 1e-6;
+        });
+        if (invalidJointSlice) {
+            const message = 'Cannot apply reparcellization proposal: joint ownership shares must sum to 100%.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            console.error(`[_applyReparcellizationProposal] ${message}`, invalidJointSlice.owners);
+            return false;
+        }
+        const hasJointSlices = plan.polygons.some(slice => Array.isArray(slice?.owners) && slice.owners.length > 1);
+        const jointPoolFactory = (typeof getOrCreateJointPoolAgent === 'function')
+            ? getOrCreateJointPoolAgent
+            : (typeof window !== 'undefined' ? window.getOrCreateJointPoolAgent : null);
+        if (hasJointSlices && typeof jointPoolFactory !== 'function') {
+            const message = 'Cannot apply reparcellization proposal: joint ownership registry is unavailable.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            console.error(`[_applyReparcellizationProposal] ${message}`);
+            return false;
+        }
+
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
@@ -3471,12 +3494,35 @@ const ProposalManager = {
                     color: slice.color || null,
                     ownerKey: slice.ownerKey || null,
                     displayName: slice.displayName || null,
-                    percent: slice.percent !== undefined ? slice.percent : null
+                    percent: slice.percent !== undefined ? slice.percent : null,
+                    jointPool: slice.jointPool === true
                 }
             };
 
-            const pct = Number(slice.percent);
-            if (Number.isFinite(pct)) {
+            const sliceOwners = Array.isArray(slice.owners) && slice.owners.length
+                ? slice.owners
+                : null;
+            if (sliceOwners) {
+                feature.properties.ownershipDetails = {
+                    owners: sliceOwners.map((owner, ownerIndex) => {
+                        const share = Number(owner.share);
+                        const percentageShare = Number.isFinite(share) ? share * 100 : undefined;
+                        const name = owner.displayName || owner.name || `Owner ${ownerIndex + 1}`;
+                        return {
+                            ownerKey: owner.ownerKey || null,
+                            name,
+                            ownerLabel: name,
+                            displayName: name,
+                            color: owner.color || null,
+                            share,
+                            percentageShare,
+                            actualShareText: Number.isFinite(percentageShare) ? `${percentageShare}%` : ''
+                        };
+                    })
+                };
+            } else {
+                const pct = Number(slice.percent);
+                if (!Number.isFinite(pct)) return feature;
                 const isSingleOwnerPlan = proposalData?.reparcellization?.isSingleOwner === true;
                 const percentValue = isSingleOwnerPlan ? 100 : (pct > 1 ? pct : pct * 100);
                 feature.properties.ownershipDetails = {
@@ -3514,14 +3560,34 @@ const ProposalManager = {
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));
                 // Authoritative per-slice ownership from the readjustment plan: an ownerKey
-                // that's a real agent id wins; otherwise find-or-create one for the slice label.
+                // that's a real agent id wins; joint ownership is represented by one pool agent.
                 if (typeof transferParcelOwnership === 'function') {
-                    const ownerKey = feature.properties.ownerKey;
+                    const owners = feature.properties.ownershipDetails?.owners || [];
                     let agentId = null;
-                    if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
-                        agentId = ownerKey;
-                    } else if (typeof getOrCreateAgentForRecipient === 'function' && feature.properties.displayName) {
-                        agentId = getOrCreateAgentForRecipient(feature.properties.displayName);
+                    if (owners.length > 1) {
+                        const members = owners.map(owner => {
+                            let memberAgentId = null;
+                            if (owner.ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(owner.ownerKey)) {
+                                memberAgentId = owner.ownerKey;
+                            } else if (typeof getOrCreateAgentForRecipient === 'function') {
+                                memberAgentId = getOrCreateAgentForRecipient(owner.displayName || owner.name);
+                            }
+                            return {
+                                name: owner.displayName || owner.name,
+                                agentId: memberAgentId,
+                                share: owner.share
+                            };
+                        });
+                        agentId = jointPoolFactory(feature.properties.displayName || 'Joint ownership', members);
+                    } else {
+                        const owner = owners[0] || null;
+                        const ownerKey = owner?.ownerKey || feature.properties.ownerKey;
+                        const ownerName = owner?.displayName || owner?.name || feature.properties.displayName;
+                        if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
+                            agentId = ownerKey;
+                        } else if (typeof getOrCreateAgentForRecipient === 'function' && ownerName) {
+                            agentId = getOrCreateAgentForRecipient(ownerName);
+                        }
                     }
                     if (agentId) transferParcelOwnership(String(parcelId), null, agentId);
                 }
