@@ -2924,11 +2924,12 @@
     // Lane markings in 3D
     //
     // The 2D map paints lane separators and parking bays as white lines on the asphalt; 3D paints the
-    // SAME lines, from the same geometry builders, as flat opaque ribbons just above the surface. They
-    // sit below the junction patches (+0.16), so a crossing's asphalt still swallows the through-lines
-    // exactly as it does in 2D. Opaque, so they never join the translucent stack that flickers.
+    // SAME lines, from the same geometry builders, as flat opaque ribbons just above the surface.
+    // They sit above junction asphalt and crosswalk paint: straight-through lane continuity is most
+    // useful inside the conflict area, and the old draw order erased it there. Opaque, so they never
+    // join the translucent stack that flickers.
     // ---------------------------------------------------------------------------
-    const CORRIDOR_MARKING_Z = CORRIDOR_STRIP_Z + 0.03;
+    const CORRIDOR_MARKING_Z = CORRIDOR_STRIP_Z + 0.19;
     let corridorMarkingMat = null;
     function corridorMarkingMaterial() {
         if (!corridorMarkingMat) {
@@ -2956,27 +2957,31 @@
     }
 
     // Lay one marking polyline (Leaflet LatLngs) as flat paint: a solid ribbon, or dashes when `dash`
-    // ({ on, off } in metres) is given. Dashes restart at each vertex — fine for the near-straight road
-    // segments these lines run along.
+    // ({ on, off } in metres) is given. Dash phase follows cumulative distance, so the five-metre
+    // topology stations used to curve a transition never restart or stretch the paint pattern.
     function addCorridorMarkingPolyline(positions, line, half, dash, terrainHeightAt) {
         if (!Array.isArray(line) || line.length < 2) return;
         const pts = line.map(point => latLngToXY(point.lat, point.lng));
+        if (dash) {
+            const topology = window.CorridorLaneTopology;
+            if (!topology || typeof topology.splitDashedPolyline !== 'function') {
+                throw new Error('CorridorLaneTopology.splitDashedPolyline is required for 3D markings');
+            }
+            topology.splitDashedPolyline(pts, dash).forEach(segment => {
+                pushCorridorMarkingQuad(
+                    positions,
+                    segment[0],
+                    segment[1],
+                    half,
+                    terrainHeightAt
+                );
+            });
+            return;
+        }
         for (let i = 0; i < pts.length - 1; i++) {
             const a = pts[i];
             const b = pts[i + 1];
-            if (!dash) { pushCorridorMarkingQuad(positions, a, b, half, terrainHeightAt); continue; }
-            const dx = b[0] - a[0];
-            const dy = b[1] - a[1];
-            const length = Math.hypot(dx, dy);
-            if (length < 1e-6) continue;
-            const ux = dx / length;
-            const uy = dy / length;
-            for (let d = 0; d < length; d += dash.on + dash.off) {
-                const end = Math.min(d + dash.on, length);
-                pushCorridorMarkingQuad(positions,
-                    [a[0] + ux * d, a[1] + uy * d], [a[0] + ux * end, a[1] + uy * end],
-                    half, terrainHeightAt);
-            }
+            pushCorridorMarkingQuad(positions, a, b, half, terrainHeightAt);
         }
     }
 
@@ -2986,8 +2991,11 @@
     function addCorridorMarkings3D(targetGroup, entry, terrainHeightAt) {
         try {
         const positions = [];
-        const markings = (typeof buildCorridorLaneMarkings === 'function')
-            ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
+        const markings = Array.isArray(entry.markings)
+            ? entry.markings
+            : ((typeof buildCorridorLaneMarkings === 'function')
+                ? buildCorridorLaneMarkings([entry.points], entry.profile)
+                : []);
         markings.forEach(marking => {
             const isCenterline = marking.kind === 'centerline';
             const half = isCenterline ? 0.09 : 0.075;
@@ -3450,7 +3458,13 @@
                     ? corridorSurfaceRuns([entry.points], gradeSpanRecords)
                     : [entry.points];
                 surfaceRuns.forEach(points => {
-                    surfaceRenderEntries.push({ ...entry, points });
+                    surfaceRenderEntries.push({
+                        ...entry,
+                        points,
+                        corridorId: proposal && proposal.proposalId != null
+                            ? String(proposal.proposalId)
+                            : 'proposal'
+                    });
                     const fullFormation = terrainProfileByEntry.get(entry);
                     const inheritsFullFormation = !!(fullFormation && fullFormation.ok);
                     const derivesFromFullFormation = terrainMode && points !== entry.points
@@ -3509,8 +3523,13 @@
             const proposalTerrainHeightAt = proposalTerrainProfiles.length
                 ? function (x, y) { return terrainHeightFromProfiles(proposalTerrainProfiles, x, y); }
                 : null;
+            const surfaceMarkingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+                ? buildCorridorLaneMarkingsForEntries(surfaceRenderEntries)
+                : surfaceRenderEntries.map(surfaceEntry => (
+                    buildCorridorLaneMarkings([surfaceEntry.points], surfaceEntry.profile)
+                ));
 
-            surfaceRunRecords.forEach(record => {
+            surfaceRunRecords.forEach((record, recordIndex) => {
                 const entry = record.entry;
                 const points = record.points;
                 const runFormation = record.formation;
@@ -3536,7 +3555,11 @@
                     const decorations = (typeof buildCorridorDecorations === 'function')
                         ? buildCorridorDecorations([points], entry.profile) : [];
                     addCorridorDecorations3D(targetGroup, decorations, runTerrainHeightAt);
-                    addCorridorMarkings3D(targetGroup, { ...entry, points }, runTerrainHeightAt);
+                    addCorridorMarkings3D(targetGroup, {
+                        ...entry,
+                        points,
+                        markings: surfaceMarkingsByEntry[recordIndex] || []
+                    }, runTerrainHeightAt);
 
                     // The shader cut uses the exact successful run formation that produced the
                     // visible road. Protected tunnel/underpass/overpass edges are removed from that

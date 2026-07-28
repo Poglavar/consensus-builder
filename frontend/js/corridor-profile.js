@@ -1644,6 +1644,136 @@ function corridorLaneSeparators(profile) {
     return separators;
 }
 
+// Contiguous motor-traffic lanes form one painted cross-section. The two outer boundaries are virtual
+// curb ancestors: they are not painted here, but a newly inserted side lane may inherit one of them.
+// A median creates two independent cross-sections, so its opposing carriageways cannot be paired.
+function corridorLaneTrafficRuns(profile) {
+    const runs = [];
+    let current = [];
+    const flush = () => {
+        if (!current.length) return;
+        const paths = [];
+        for (let index = 0; index < current.length - 1; index += 1) {
+            const a = current[index];
+            const b = current[index + 1];
+            paths.push({
+                offset: a.right,
+                kind: (a.direction && b.direction && a.direction !== b.direction)
+                    ? 'centerline'
+                    : 'lane'
+            });
+        }
+        const directions = [...new Set(current.map(strip => strip.direction).filter(Boolean))];
+        runs.push({
+            paths,
+            boundaries: [
+                { offset: current[0].left, kind: 'edge' },
+                ...paths.map(path => ({ ...path })),
+                { offset: current[current.length - 1].right, kind: 'edge' }
+            ],
+            flowDirection: directions.length === 1 ? directions[0] : 'mixed'
+        });
+        current = [];
+    };
+    corridorStripSpans(profile).forEach(strip => {
+        if (isMarkedTrafficLane(strip)) current.push(strip);
+        else flush();
+    });
+    flush();
+    return runs;
+}
+
+function densifyCorridorMarkingLine(points, maxStepM = 5) {
+    if (!Array.isArray(points) || points.length < 2) return [];
+    const dense = [points[0]];
+    for (let index = 0; index < points.length - 1; index += 1) {
+        const a = points[index];
+        const b = points[index + 1];
+        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const pieces = Math.max(1, Math.ceil(length / maxStepM));
+        for (let piece = 1; piece < pieces; piece += 1) {
+            const progress = piece / pieces;
+            dense.push([
+                a[0] + (b[0] - a[0]) * progress,
+                a[1] + (b[1] - a[1]) * progress
+            ]);
+        }
+        dense.push(b);
+    }
+    return dense;
+}
+
+function corridorLaneTopologyApi() {
+    if (typeof window !== 'undefined' && window.CorridorLaneTopology) {
+        return window.CorridorLaneTopology;
+    }
+    if (typeof require === 'function') {
+        try { return require('./corridor-lane-topology.js'); } catch (_) { }
+    }
+    return null;
+}
+
+// The shared topology pass for every segment entry. It is deliberately planar and view-agnostic:
+// Leaflet and Three.js consume these exact same connected lines.
+function buildCorridorLaneMarkingsForEntries(entries) {
+    if (!corridorProjectionAvailable()) return [];
+    const topology = corridorLaneTopologyApi();
+    if (!topology || typeof topology.build !== 'function') {
+        throw new Error('CorridorLaneTopology.build is required for lane markings');
+    }
+    const topologyEntries = [];
+    (entries || []).forEach((entry, ownerEntryIndex) => {
+        if (!entry || !entry.profile || !Array.isArray(entry.points) || entry.points.length < 2) return;
+        const centerline = entry.points
+            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .filter(point => Array.isArray(point) && point.every(Number.isFinite));
+        if (centerline.length < 2) return;
+        corridorLaneTrafficRuns(entry.profile).forEach((run, runIndex) => {
+            const buildPath = descriptor => {
+                const offset = offsetPolylinePlanar(centerline, descriptor.offset);
+                return offset && offset.length >= 2
+                    ? {
+                        ...descriptor,
+                        points: densifyCorridorMarkingLine(offset)
+                    }
+                    : null;
+            };
+            topologyEntries.push({
+                ownerEntryIndex,
+                runIndex,
+                corridorId: entry.corridorId,
+                flowDirection: run.flowDirection,
+                centerline,
+                paths: run.paths.map(buildPath).filter(Boolean),
+                boundaryPaths: run.boundaries.map(buildPath).filter(Boolean)
+            });
+        });
+    });
+    const markingsByEntry = (entries || []).map(() => []);
+    topology.build(topologyEntries).forEach(result => {
+        const topologyEntry = topologyEntries[result.sourceIndex];
+        if (!topologyEntry) return;
+        const groups = new Map();
+        (result.paths || []).forEach(path => {
+            const line = path.points.map(([x, y]) => {
+                const [lat, lng] = htrs96ToWGS84(x, y);
+                return { lat, lng };
+            });
+            if (line.length < 2) return;
+            const kind = path.kind || 'lane';
+            if (!groups.has(kind)) groups.set(kind, []);
+            groups.get(kind).push(line);
+        });
+        groups.forEach((lines, kind) => {
+            const existing = markingsByEntry[topologyEntry.ownerEntryIndex]
+                .find(marking => marking.kind === kind);
+            if (existing) existing.lines.push(...lines);
+            else markingsByEntry[topologyEntry.ownerEntryIndex].push({ kind, lines });
+        });
+    });
+    return markingsByEntry;
+}
+
 // One offset polyline of the centerline as Leaflet LatLngs — a lane marking is a line, not a band.
 function buildCorridorOffsetLine(points, offset) {
     if (!corridorProjectionAvailable() || !Array.isArray(points) || points.length < 2) return null;
@@ -1661,19 +1791,20 @@ function buildCorridorOffsetLine(points, offset) {
 
 // Every lane-separator line of a whole corridor: `[{ kind, lines }]`, one line per centerline segment.
 function buildCorridorLaneMarkings(segments, profile) {
-    const separators = corridorLaneSeparators(profile);
-    if (!separators.length) return [];
-
     const isLatLng = (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
         : (Array.isArray(segments) ? segments.filter(seg => Array.isArray(seg) && seg.length >= 2) : []);
     if (!centerlines.length) return [];
-
-    return separators.map(sep => ({
-        kind: sep.kind,
-        lines: centerlines.map(centerline => buildCorridorOffsetLine(centerline, sep.offset)).filter(Boolean)
-    })).filter(marking => marking.lines.length);
+    const byEntry = buildCorridorLaneMarkingsForEntries(
+        centerlines.map(points => ({ points, profile })),
+    );
+    const merged = new Map();
+    byEntry.flat().forEach(marking => {
+        if (!merged.has(marking.kind)) merged.set(marking.kind, []);
+        merged.get(marking.kind).push(...marking.lines);
+    });
+    return [...merged].map(([kind, lines]) => ({ kind, lines }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1823,6 +1954,7 @@ if (typeof window !== 'undefined') {
     window.CORRIDOR_LANE_TYPES = CORRIDOR_LANE_TYPES;
     window.buildCorridorStripsForOsmFeature = buildCorridorStripsForOsmFeature;
     window.buildCorridorLaneMarkings = buildCorridorLaneMarkings;
+    window.buildCorridorLaneMarkingsForEntries = buildCorridorLaneMarkingsForEntries;
     window.corridorLaneSeparators = corridorLaneSeparators;
     window.corridorProfileFromOsmTags = corridorProfileFromOsmTags;
     window.corridorProfileToOsmTags = corridorProfileToOsmTags;
@@ -1942,6 +2074,9 @@ if (typeof module !== 'undefined' && module.exports) {
         buildCorridorLaneMarkings,
         ringSelfIntersectsXY,
         corridorLaneSeparators,
+        corridorLaneTrafficRuns,
+        buildCorridorLaneMarkings,
+        buildCorridorLaneMarkingsForEntries,
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
         buildCorridorDecorations,

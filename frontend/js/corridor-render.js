@@ -668,6 +668,7 @@ function refreshAppliedCorridorStrips() {
     const layer = L.layerGroup();
     let drawn = 0;
     const renderedCorridors = [];
+    const renderedMarkings = [];
 
     const proposals = proposalStorage.getAllProposals();
     proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
@@ -679,23 +680,33 @@ function refreshAppliedCorridorStrips() {
 
         // Per-segment cross-sections: each segment renders with ITS profile; junction patches
         // (sized per arm) then cover the seams where different widths meet.
+        const corridorId = String(
+            (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null)
+            || proposal.proposalId
+        );
         const entries = corridorRenderEntries(proposal, definition)
             .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
-            .map(entry => entry.profile ? entry : { ...entry, profile: fallbackProfile });
+            .map(entry => ({
+                ...(entry.profile ? entry : { ...entry, profile: fallbackProfile }),
+                corridorId
+            }));
         if (!entries.length) return;
+        const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+            ? buildCorridorLaneMarkingsForEntries(entries)
+            : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile));
 
         const group = L.layerGroup();
         const allStrips = [];
         const ownerClass = corridorOwnerClass((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
-        entries.forEach(entry => {
+        entries.forEach((entry, entryIndex) => {
             const strips = buildCorridorStrips([entry.points], entry.profile);
-            const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
+            const markings = markingsByEntry[entryIndex] || [];
             // Trees are physical objects and stay; bike/pedestrian lane explainers are clutter on
             // the map — lane meaning lives in the cross-section editor.
             const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
-                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [], ownerClass,
+                pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
                 // A placed corridor's rails are black, like the asphalt it is laid in.
                 centerlines: [entry.points], profile: entry.profile,
                 railColor: '#000000', sleeperColor: '#666666'
@@ -703,6 +714,7 @@ function refreshAppliedCorridorStrips() {
             if (segmentGroup) {
                 segmentGroup.addTo(group);
                 allStrips.push(...strips);
+                renderedMarkings.push(...markings);
             }
         });
         if (!allStrips.length) return;
@@ -717,7 +729,6 @@ function refreshAppliedCorridorStrips() {
 
         group.addTo(layer);
         renderAppliedCorridorHitTargets(allStrips, proposal, layer, definition, entries);
-        const corridorId = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
             ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
             : [];
@@ -748,6 +759,9 @@ function refreshAppliedCorridorStrips() {
         const crossJunctions = buildCrossCorridorJunctionTreatments(renderedCorridors);
         if (crossJunctions.length) renderCorridorJunctions(crossJunctions, layer, CORRIDOR_STRIPS_PANE);
     }
+    // Paint after every local and cross-corridor asphalt patch. Through lanes are most important in
+    // the conflict area; the old order erased them precisely at the crossroads.
+    renderCorridorLaneMarkings(renderedMarkings, layer, CORRIDOR_STRIPS_PANE);
 
     // Building passages hang off the definition rather than the cross-section, so they are a pass of
     // their own over every applied corridor — including ones whose strips failed to build.
