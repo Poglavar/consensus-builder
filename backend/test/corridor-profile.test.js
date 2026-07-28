@@ -1235,11 +1235,16 @@ describe('buildCorridorParkingBays', () => {
         }
     };
 
-    it('draws one carriageway-side edge line and a run of bay dividers for a parallel lane', () => {
+    it('boxes a parallel lane in: an edge line down each side and a run of bay dividers', () => {
         withProjection(() => {
             const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
             const bays = buildCorridorParkingBays([horizontalRoad], profile);
-            expect(bays.filter(b => b.kind === 'edge')).toHaveLength(1);
+            // Both sides, so each bay closes. With only the carriageway edge the dividers hung off one
+            // line and read as hatching on the road rather than as a row of parking spaces.
+            const edges = bays.filter(b => b.kind === 'edge');
+            expect(edges).toHaveLength(2);
+            const across = edges.map(edge => edge.line[0].lat);
+            expect(Math.abs(across[0] - across[1])).toBeCloseTo(2.5, 1); // the lane's own depth apart
             const dividers = bays.filter(b => b.kind === 'divider');
             expect(dividers.length).toBeGreaterThan(10);
             // A parallel/perpendicular divider is square across the lane: its two ends share an along-road
@@ -1429,5 +1434,51 @@ describe('footway paving', () => {
         const spans = corridorStripSpans(profileOf('paved'));
         expect(spans[0].paving).toBe('paved');
         expect(corridorStripSurface(spans[0])).toBe(CORRIDOR_PAVED_SURFACE);
+    });
+});
+
+// A lane's colour is a design choice, but two pairs of it are a legibility CONTRACT, because each pair
+// is drawn side by side in the same street and the map is read from directly above. A track that was
+// #d3d3d3 next to a #c2beb4 pavement — 1.24:1, indistinguishable — was the bug this locks shut.
+describe('the bands of a cross-section can be told apart from above', () => {
+    const { CORRIDOR_LANE_TYPES, corridorStripSurface } = require('../../frontend/js/corridor-profile.js');
+
+    // WCAG relative luminance, then the standard contrast ratio between two of them.
+    const luminance = (hex) => {
+        const channel = (i) => {
+            const value = parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16) / 255;
+            return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+        };
+        return 0.2126 * channel(0) + 0.7152 * channel(1) + 0.0722 * channel(2);
+    };
+    const contrast = (a, b) => {
+        const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (light + 0.05) / (dark + 0.05);
+    };
+
+    const surfaceOf = type => corridorStripSurface({ type, width: 3 });
+
+    // Ballast has a band on either side of it and has to clear both: a track sits between the
+    // carriageway and the pavement, and matching either one makes it disappear into that one.
+    it('separates a tram track from the pavement beside it', () => {
+        expect(contrast(surfaceOf('rail'), surfaceOf('sidewalk'))).toBeGreaterThan(2);
+    });
+
+    it('separates a tram track from the carriageway beside it', () => {
+        expect(contrast(surfaceOf('rail'), surfaceOf('driving'))).toBeGreaterThan(2);
+    });
+
+    it('separates a parking lane from the carriageway and from the bus lane', () => {
+        // Both are asphalt, so this is a nudge rather than a gulf — the yellow bay markings do the
+        // real work. It still has to be a nudge in the right direction, and not INTO the bus lane.
+        expect(contrast(surfaceOf('parking'), surfaceOf('driving'))).toBeGreaterThan(1.5);
+        expect(luminance(surfaceOf('parking'))).toBeGreaterThan(luminance(surfaceOf('driving')));
+        expect(surfaceOf('parking')).not.toBe(surfaceOf('bus'));
+    });
+
+    it('gives all three kinds of parking the same surface, since they are the same asphalt', () => {
+        const parking = Object.keys(CORRIDOR_LANE_TYPES).filter(type => CORRIDOR_LANE_TYPES[type].orientation);
+        expect(parking.length).toBe(3);
+        expect(new Set(parking.map(surfaceOf)).size).toBe(1);
     });
 });

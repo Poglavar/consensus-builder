@@ -30,6 +30,11 @@
         flankMaxOffset: 25,      // m — further out it belongs to another street
         flankCoverage: 0.5,      // fraction of stations a neighbour must run beside to count
         flankSideAgreement: 0.75,// a way that crosses the run is on both sides; a pavement is on one
+        railAlignment: 0.87,     // |cos| between a tramway and the run — about 30 degrees of slack
+        // Higher than flankCoverage, which it used to borrow. A real track's CLUSTER unions to nearly
+        // the whole run however many ways it is split into, so the bar costs it nothing; a single
+        // junction curve that happens to run alongside for half a segment never reaches it.
+        railCoverage: 0.8,
         maxLaneWidth: 3.5,       // m — wider than this is not a lane, it is unmarked asphalt
         minLaneWidth: 2.5,
         minSidewalkWidth: 1,
@@ -287,8 +292,15 @@
                 const near = nearestOnPolyline(station.x, station.y, line);
                 if (!near) return;
                 if (isRail) {
+                    // A tramway CROSSING the street is not a lane of it. Nothing used to test this: a
+                    // carrier is scored on alignment and a flank on staying to one side ("a way that
+                    // crosses the run is on both sides"), but a rail was taken on distance alone — so
+                    // the Branimirova tram, at 87 degrees to Ulica Petra i Tome Erdodyja, was drawn as
+                    // a track running down it. Absolute value, because the two tracks of a double line
+                    // are digitised in opposite directions and either is equally "along".
+                    const along = Math.abs(station.tx * near.tx + station.ty * near.ty) >= settings.railAlignment;
                     const within = polygon ? insidePolygon : (near.distance <= settings.flankMaxOffset);
-                    if (within) {
+                    if (along && within) {
                         railOffsets.push(sideOfStation(station, near.x, near.y) * near.distance);
                         railStations.push(index);
                     }
@@ -533,6 +545,28 @@
             .filter(flank => flank.kind === kind && flank.side === side)
             .sort((a, b) => b.coverage - a.coverage)[0] || null;
 
+        // WE DO NOT INVENT A CYCLE LANE ON THE LEFT OF A ONE-WAY STREET.
+        //
+        // A DUAL CARRIAGEWAY is two one-way runs inside ONE corridor, so the search for a cycleway way
+        // "beside the run" reaches across the median and finds the OTHER carriageway's lane. 66 of Ulica
+        // grada Vukovara's ways say nothing about cycleways at all and 34 speak only of the right, so
+        // every one of those matches was written in on our own authority — and the street came out with
+        // cycle lanes facing each other down the middle of the road. In Zagreb a one-way street does not
+        // carry a lane against its traffic, so a lane found on that side belongs to the other carriageway.
+        //
+        // This bites ONLY where OSM is silent about the side. An explicit `cycleway:left=lane` or
+        // `cycleway:both=separate` is honoured as tagged, because the exception is real and mapped:
+        // Gundulićeva is one-way and genuinely has a lane each side, tagged `cycleway:both:lane=exclusive`
+        // and `cycleway:right:oneway=no`. A rule that overrode that would delete a real bike lane.
+        //
+        // In the run's frame `oneway=-1` means the traffic runs the other way (reverseOsmTagSides flips
+        // the two), so the right of TRAVEL is the left of the RUN. Off by `contraflowCycleLanes: true`.
+        const oneway = String(tags.oneway === undefined ? '' : tags.oneway);
+        const isOneway = ['yes', 'true', '1', '-1'].includes(oneway);
+        const wrongCycleSide = (isOneway && !settings.contraflowCycleLanes)
+            ? (oneway === '-1' ? 'right' : 'left')
+            : null;
+
         ['left', 'right'].forEach(side => {
             // --- pavement -------------------------------------------------------------------
             const sidewalk = sideValue(tags, 'sidewalk', side);
@@ -582,8 +616,14 @@
                     notes.push(`cycleway ${side}: separate with nothing matched, left out`);
                 }
             } else if (cycleway === undefined && cycleFlank) {
-                tags[`cycleway:${side}`] = 'lane';
-                notes.push(`cycleway ${side}: untagged, matched a cycleway ${cycleFlank.offset} m off the centreline`);
+                if (side === wrongCycleSide) {
+                    tags[`cycleway:${side}`] = 'no';
+                    notes.push(`cycleway ${side}: a cycleway runs ${cycleFlank.offset} m out on the left of`
+                        + ' this one-way street, which makes it the other carriageway\'s, not this one\'s');
+                } else {
+                    tags[`cycleway:${side}`] = 'lane';
+                    notes.push(`cycleway ${side}: untagged, matched a cycleway ${cycleFlank.offset} m off the centreline`);
+                }
             }
 
             // --- kerbside parking -----------------------------------------------------------
@@ -721,8 +761,18 @@
     // down the middle of Savska and Draškovićeva; the union rejects them, as it should.
     function railTracksForRun(rails, options = {}) {
         const settings = { ...OSM_PROFILE_DEFAULTS, ...options };
+        // A track has to lie IN the street. The only bound on a rail's offset was flankMaxOffset, and
+        // 25 m is a question about NEIGHBOURS, not about lanes — so the trams on the square next door,
+        // 11 and 14 m off the centreline of Ulica Marka Stancica, were drawn as two lanes of it. A
+        // track whose centre falls outside the measured corridor is on another street. Measured in the
+        // section's own frame, since that is where the strip will be placed (insertRailStrips).
+        const available = Number(settings.availableWidth);
+        const halfWidth = available > 0 ? available / 2 : Infinity;
+        const shift = Number(settings.sectionShift) || 0;
+
         const clusters = [];
-        (rails || []).slice()
+        (rails || [])
+            .filter(rail => Math.abs(rail.offset - shift) <= halfWidth)
             .sort((a, b) => b.offset - a.offset)      // left to right
             .forEach(rail => {
                 const covered = Array.isArray(rail.stations) ? rail.stations : [];
@@ -754,7 +804,7 @@
                     ? cluster.stations.size / cluster.stationCount
                     : Math.min(1, cluster.weight)
             }))
-            .filter(cluster => cluster.coverage >= settings.flankCoverage)
+            .filter(cluster => cluster.coverage >= settings.railCoverage)
             .sort((a, b) => b.offset - a.offset)
             .slice(0, MAX_TRACKS);
     }
@@ -963,7 +1013,7 @@
         // width and not a decoration laid over it: a boulevard with a reservation really is its
         // carriageways PLUS its rails, and fitting the section without them puts the missing metres
         // into traffic lanes.
-        const tracks = railTracksForRun(match.rails, options);
+        const tracks = railTracksForRun(match.rails, { ...options, availableWidth });
         const nominal = tracks.length ? insertRailStrips(bare, tracks, options) : bare;
         tracks.forEach(track => {
             const where = Math.abs(track.offset) < 1

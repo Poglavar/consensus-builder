@@ -29,16 +29,26 @@ const CORRIDOR_LANE_TYPES = {
     // is what the bay-marking renderer and the OSM bridge switch on; `fixedWidth` locks the lane to its
     // standard depth (a bay's depth is a real-world constant, not a slider). `parking` is the legacy key,
     // kept so stored/imported parking lanes stay valid — it IS parallel parking (a 2.5 m kerbside lane).
-    parking: { label: 'Parallel parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
-    parking_perpendicular: { label: 'Perpendicular parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
-    parking_angled: { label: 'Angled parking', surface: '#3d3d3d', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
+    // A lighter, NEUTRAL asphalt: parking really is the same material as the carriageway, but the old
+    // #3d3d3d sat a hair off the traffic lane's #2b2b2b and vanished into it at 0.6 fill opacity over a
+    // map. Kept grey rather than warmed, because warm at this lightness is the bus lane's brown and
+    // trading one confusion for another is no gain. The yellow bay markings still carry the real
+    // distinction — this only stops the band from disappearing into the road between them.
+    parking: { label: 'Parallel parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
+    parking_perpendicular: { label: 'Perpendicular parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
+    parking_angled: { label: 'Angled parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
     cycleway: { label: 'Cycle path', surface: '#7d3b34', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
     verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
     // One TRACK — a single pair of rails and the ballast under it. A rail lane carries a `gauge`, the way
     // a verge carries a `landscape`: it is a property of the lane, and it sets the lane's width.
-    rail: { label: 'Track', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
+    // The surface is BALLAST, and it has to sit clear of BOTH its neighbours. It used to be #d3d3d3,
+    // which put a track in the same light-grey family as the #c2beb4 sidewalk; the first move away
+    // from that (#57514a) then landed it close enough to the #2b2b2b carriageway to read as more
+    // asphalt. Crushed stone is a mid warm grey — lighter than tarmac, darker than paving — which is
+    // the one band that clears both, and the bright steel rails drawn over it do the rest.
+    rail: { label: 'Track', surface: '#6d635a', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
@@ -1858,8 +1868,14 @@ function buildCorridorParkingBays(segments, profile) {
             const outer = inner === span.left ? span.right : span.left;
             const centerOffset = (span.left + span.right) / 2;
 
-            const edge = offsetPolylinePlanar(planar, inner);
-            if (edge) bays.push({ kind: 'edge', line: edge.map(toLatLng) });
+            // BOTH edges, so a bay is a closed box rather than a comb of dividers hanging off one
+            // line. The outer edge was left out as "already the corridor's own boundary", which is
+            // true of the geometry and useless to the eye: the boundary is not drawn in yellow, and
+            // an open-ended bay reads as hatching on the carriageway instead of as a parking space.
+            [inner, outer].forEach(offset => {
+                const edge = offsetPolylinePlanar(planar, offset);
+                if (edge) bays.push({ kind: 'edge', line: edge.map(toLatLng) });
+            });
 
             const centerLine = offsetPolylinePlanar(planar, centerOffset);
             if (!centerLine) return;
@@ -2040,6 +2056,7 @@ if (typeof module !== 'undefined' && module.exports) {
         CORRIDOR_PAVED_TYPES,
         CORRIDOR_PAVED_SURFACE,
         corridorRailGaugeOf,
+        corridorRailGauge,
         withSidewalkWidth,
         withLaneWidth,
         withLaneType,

@@ -64,6 +64,11 @@
     // without its own ceiling the register of everything ever looked at grows for as long as the map
     // is panned.
     const EXPLAINED_LIMIT = 3000;
+    // A segment's endpoints depend on which junctions happened to be included in the fetched
+    // viewport, but its OSM edges do not. Keep paint ownership at that stable, smaller unit so a
+    // 287 m chain from one viewport and the 111 m child chain from the next cannot both paint the
+    // same stretch. A decimetre absorbs projection noise without conflating parallel centrelines.
+    const SEGMENT_EDGE_PRECISION = 0.1;
 
     // The lanes are reference, not proposals: no outline, and translucent enough that the parcel and
     // basemap stay readable underneath. A proposed road is drawn opaque, which is what keeps the two
@@ -77,14 +82,20 @@
     //   * DECORATIONS (street trees, cycle and pedestrian pictograms) are Leaflet divIcons, one DOM
     //     node each, and trees are placed every 6 m. A viewport of streets is thousands of them —
     //     affordable for one road being edited, not for every road in sight.
-    //   * BAYS AND ARROWS below MARKING_DETAIL_ZOOM. On one 221 m street they are 76 and 28 separate
-    //     paths; over a viewport that is thousands, and at z17 a 5 m parking bay is a few pixels
-    //     wide, so the cost buys nothing that can be seen. They live in their own group so the zoom
+    //   * ARROWS AND SLEEPERS below MARKING_DETAIL_ZOOM. Both are repeated symbols — an arrow every
+    //     few metres, a sleeper every 0.6 m — that say nothing a closer look does not, and 28 arrows
+    //     on one 221 m street is thousands over a viewport. They live in their own group so the zoom
     //     can add and remove them without the lanes being rebuilt.
+    //
+    // BAY MARKINGS AND RAILS are not detail and are drawn with the lanes. They are the only thing
+    // distinguishing a parking lane from the carriageway and a tram track from a wide pavement, so
+    // holding them back to a closer zoom hid exactly the distinction they exist to make. Both are a
+    // handful of batched canvas paths per street (see renderCorridorParkingBays), not one per symbol.
     const MARKING_DETAIL_ZOOM = 18;
 
     let root = null;               // the group actually on the map
     const painted = new Map();     // run key -> { base, detail, seen, box, name, width }
+    const paintedEdgeOwners = new Map(); // stable source-edge key -> the one painted run that owns it
     // What was decided about every street looked at, painted or not — the map's own explanation of
     // itself, read by the hover readout. Runs are cheap records; the drawn layers live in `painted`.
     const explained = new Map();   // run key -> { name, reason, box, points, width, length }
@@ -148,6 +159,7 @@
             }
         });
         painted.clear();
+        paintedEdgeOwners.clear();
         explained.clear();
         explainedList = null;
         processed.length = 0;
@@ -441,6 +453,75 @@
         return best;
     }
 
+    // Stable ownership below a segment. A viewport can see a through road without the side street
+    // that splits it, then see that junction after a pan; the first segmentation contains one long
+    // chain and the second contains two shorter ones. Endpoint keys call those different segments,
+    // even though they contain the same source edges.
+    function segmentEdgeKeys(points, precision = SEGMENT_EDGE_PRECISION) {
+        if (!Array.isArray(points) || points.length < 2) return [];
+        const scale = 1 / (Number(precision) > 0 ? Number(precision) : SEGMENT_EDGE_PRECISION);
+        const pointKey = point => {
+            if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) return null;
+            return `${Math.round(point[0] * scale)},${Math.round(point[1] * scale)}`;
+        };
+        const keys = [];
+        for (let i = 1; i < points.length; i += 1) {
+            const a = pointKey(points[i - 1]);
+            const b = pointKey(points[i]);
+            if (!a || !b || a === b) continue;
+            keys.push(a < b ? `${a}|${b}` : `${b}|${a}`);
+        }
+        return [...new Set(keys)];
+    }
+
+    // Return only the contiguous parts whose source edges do not already have a paint owner. This is
+    // deliberately a split, not an all-or-nothing reject: if a newly fetched 287 m chain contains an
+    // already-painted 111 m child, the other 176 m still has to appear as the map pans into it.
+    function unownedSegmentRuns(segment, owners, unproject) {
+        const points = segment?.points;
+        if (!Array.isArray(points) || points.length < 2) return [];
+        const has = key => !!owners && typeof owners.has === 'function' && owners.has(key);
+        const scale = 1 / SEGMENT_EDGE_PRECISION;
+        const pointKey = point => `${Math.round(point[0] * scale)},${Math.round(point[1] * scale)}`;
+        const edgeKeyAt = index => {
+            const a = pointKey(points[index]);
+            const b = pointKey(points[index + 1]);
+            return a < b ? `${a}|${b}` : `${b}|${a}`;
+        };
+        const runs = [];
+        let runPoints = [];
+        let edgeKeys = [];
+        const flush = () => {
+            if (runPoints.length >= 2 && edgeKeys.length) {
+                const key = segmentKey(runPoints, unproject);
+                if (key) {
+                    runs.push({
+                        ...segment,
+                        key,
+                        points: runPoints,
+                        box: boxOf([runPoints]),
+                        edgeKeys: [...new Set(edgeKeys)]
+                    });
+                }
+            }
+            runPoints = [];
+            edgeKeys = [];
+        };
+
+        for (let i = 0; i < points.length - 1; i += 1) {
+            const key = edgeKeyAt(i);
+            if (has(key)) {
+                flush();
+                continue;
+            }
+            if (!runPoints.length) runPoints.push(points[i]);
+            runPoints.push(points[i + 1]);
+            edgeKeys.push(key);
+        }
+        flush();
+        return runs;
+    }
+
     // Pure: is this run already drawn as a road proposal? Tested by PROXIMITY rather than by matching
     // segment keys, because a re-segmented run's endpoints move with the fetched bbox while the ground
     // it covers does not — a key match would miss the very case this exists for. A run counts as
@@ -609,6 +690,7 @@
     function paintSegment(segment, context) {
         const record = fields => ({
             key: segment.key, points: segment.points, box: segment.box,
+            edgeKeys: segment.edgeKeys || segmentEdgeKeys(segment.points),
             streetId: segment.street?.id || null,
             name: segment.street?.name || null,
             parcelId: segment.parcel?.id || null,
@@ -762,27 +844,40 @@
         }).addTo(base));
 
         const detail = global.L.layerGroup();
+        // Each layer of paint is tried on its own. They used to share one try/catch, which made the
+        // first one to throw silently swallow every layer after it — so a street could lose its bay
+        // markings because its rails failed, and look merely plain rather than broken.
+        const mark = (what, draw) => {
+            try { draw(); } catch (error) {
+                console.warn(`[osmLanePaint] could not draw the ${what} of a street`, error);
+            }
+        };
         [street.markings].filter(Boolean).forEach(({ centerline, profile }) => {
-            try {
-                if (typeof global.renderCorridorLaneMarkings === 'function'
-                    && typeof global.buildCorridorLaneMarkings === 'function') {
-                    global.renderCorridorLaneMarkings(global.buildCorridorLaneMarkings([centerline], profile), base, PANE);
-                }
-                if (typeof global.renderCorridorParkingBays === 'function'
-                    && typeof global.buildCorridorParkingBays === 'function') {
-                    global.renderCorridorParkingBays(global.buildCorridorParkingBays([centerline], profile), detail, PANE);
-                }
-                if (typeof global.renderCorridorDirectionArrows === 'function'
-                    && typeof global.buildCorridorDirectionArrows === 'function') {
-                    global.renderCorridorDirectionArrows(global.buildCorridorDirectionArrows([centerline], profile), detail, PANE);
-                }
-            } catch (error) {
-                console.warn('[osmLanePaint] could not mark out a street', error);
+            const has = (...names) => names.every(name => typeof global[name] === 'function');
+            if (has('renderCorridorLaneMarkings', 'buildCorridorLaneMarkings')) {
+                mark('lane lines', () => global.renderCorridorLaneMarkings(
+                    global.buildCorridorLaneMarkings([centerline], profile), base, PANE));
+            }
+            if (has('renderCorridorParkingBays', 'buildCorridorParkingBays')) {
+                mark('parking bays', () => global.renderCorridorParkingBays(
+                    global.buildCorridorParkingBays([centerline], profile), base, PANE));
+            }
+            // The rails go with the lanes; their sleepers wait for the closer zoom. Without this an
+            // OSM tramway was a bare band of ballast — the one lane type whose whole identity is
+            // the thing drawn ON it, and the layer was drawing everything on a street except that.
+            if (has('renderCorridorRails')) {
+                mark('rails', () => global.renderCorridorRails(
+                    [centerline], profile, base, { pane: PANE, sleeperGroup: detail }));
+            }
+            if (has('renderCorridorDirectionArrows', 'buildCorridorDirectionArrows')) {
+                mark('direction arrows', () => global.renderCorridorDirectionArrows(
+                    global.buildCorridorDirectionArrows([centerline], profile), detail, PANE));
             }
         });
         return {
             base, detail, seen: 0,
-            box: street.box, name: street.name, width: street.width, length: street.length
+            box: street.box, name: street.name, width: street.width, length: street.length,
+            edgeKeys: street.edgeKeys || segmentEdgeKeys(street.points)
         };
     }
 
@@ -814,7 +909,13 @@
                 .filter(([, entry]) => !root || !root.hasLayer(entry.base))
                 .sort((a, b) => a[1].seen - b[1].seen)
                 .slice(0, painted.size - CACHE_LIMIT)
-                .forEach(([key]) => { painted.delete(key); forget(key); });
+                .forEach(([key, entry]) => {
+                    (entry.edgeKeys || []).forEach(edgeKey => {
+                        if (paintedEdgeOwners.get(edgeKey) === key) paintedEdgeOwners.delete(edgeKey);
+                    });
+                    painted.delete(key);
+                    forget(key);
+                });
         }
         // The verdicts of segments that were never painted are held by nothing else, so they need
         // their own ceiling.
@@ -864,14 +965,21 @@
             let drew = false;
             while (pending.length && remaining() > 1) {
                 const segment = pending.shift();
-                // Keyed by the SEGMENT, so the same one met again from another viewport is recognised
-                // and not painted twice — and so a road parcel far larger than the screen keeps being
-                // painted as the map moves along it.
+                // Exact segment keys avoid recomputing the ordinary case. Edge ownership handles the
+                // harder one: another viewport can split the same source edges at different junctions,
+                // giving the overlapping runs different endpoint keys.
                 if (painted.has(segment.key) || explained.has(segment.key)) continue;
-                const result = paintSegment(segment, context);
-                remember(segment.key, result);
-                const groups = buildSegmentGroups(result);
-                if (groups) { painted.set(segment.key, groups); drew = true; }
+                const candidates = unownedSegmentRuns(segment, paintedEdgeOwners, context.unproject);
+                candidates.forEach(candidate => {
+                    if (painted.has(candidate.key) || explained.has(candidate.key)) return;
+                    const result = paintSegment(candidate, context);
+                    remember(candidate.key, result);
+                    const groups = buildSegmentGroups(result);
+                    if (!groups) return;
+                    painted.set(candidate.key, groups);
+                    (groups.edgeKeys || []).forEach(edgeKey => paintedEdgeOwners.set(edgeKey, candidate.key));
+                    drew = true;
+                });
             }
             // Always, not only when something was drawn: a slice of segments that all turned out
             // unpaintable still adds a verdict apiece, and those are the ones with no layer to be
@@ -1196,7 +1304,10 @@
         growBbox, ringsNear, boxOf, ringsOf, boxesOverlap, contains, runIsUnderProposal,
         corridorFromSides, segmentsInView, segmentsInParcel, paintSegment, lanesForParcel,
         segmentKey, streetOf, segmentPolygon, dissolveRoadLand, explainAt, describeSegment,
-        keysToForget,
+        keysToForget, segmentEdgeKeys, unownedSegmentRuns,
+        // Exported for the same reason as `lanesForParcel`: WHICH group a mark goes into decides the
+        // zoom it appears at, and that is a decision worth a test rather than a look at the map.
+        buildSegmentGroups,
         // What the layer is holding on to, so a leak shows up as a number rather than as a slow map.
         sizes: () => ({ painted: painted.size, explained: explained.size, ways: wayCache.size }),
         // What the layer decided about every segment it has looked at, and the same grouped by
@@ -1217,7 +1328,7 @@
             }));
         },
         MIN_ZOOM, MARKING_DETAIL_ZOOM, CACHE_LIMIT, EXPLAINED_LIMIT, WAY_CACHE_LIMIT,
-        PAINT_MAX_WIDTH, MIN_PAINT_WIDTH
+        PAINT_MAX_WIDTH, MIN_PAINT_WIDTH, SEGMENT_EDGE_PRECISION
     };
     global.OsmLanePaint = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -157,12 +157,21 @@ function renderCorridorGradeSeparations(records, group, pane) {
 // ONE canvas element rather than becoming thousands of SVG paths.
 // ---------------------------------------------------------------------------
 
-let corridorRailCanvasRenderer = null;
-function corridorRailRenderer() {
-    if (!corridorRailCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
-        corridorRailCanvasRenderer = L.canvas({ padding: 0.5 });
+// ONE CANVAS PER PANE, and never a paneless one. A Leaflet path given an explicit `renderer` ignores
+// its own `pane` option entirely (Map.getRenderer: `layer.options.renderer || ...`), so the pane the
+// CANVAS was created in is the only one that counts. A single paneless canvas therefore dropped every
+// rail and every bay marking into the default overlayPane at z-index 400 — underneath the lane fills
+// at 610 that they are drawn to mark. They were being rendered correctly and then buried, which is
+// indistinguishable from not being rendered at all, and is why a tram track looked like a bare band
+// and a parking lane had no yellow on it.
+const corridorCanvasRenderers = new Map();
+function corridorRailRenderer(pane) {
+    if (typeof L === 'undefined' || !L.canvas) return undefined;
+    const key = pane || '';
+    if (!corridorCanvasRenderers.has(key)) {
+        corridorCanvasRenderers.set(key, L.canvas(pane ? { padding: 0.5, pane } : { padding: 0.5 }));
     }
-    return corridorRailCanvasRenderer;
+    return corridorCanvasRenderers.get(key);
 }
 
 const CORRIDOR_SLEEPER_SPACING = 0.6; // metres between sleepers
@@ -172,8 +181,8 @@ const CORRIDOR_SLEEPER_LENGTH = 2.5;  // metres, across the track
 // offset by `centerlineOffset` (the rail lane's own centre).
 function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, layerGroup) {
     const railOffset = corridorRailGauge(gauge) / 2000; // half the gauge, mm -> m
-    const renderer = corridorRailRenderer();
     const pane = options.pane || undefined;
+    const renderer = corridorRailRenderer(pane);
 
     // Pre-compute segment directions.
     const segmentDirs = [];
@@ -225,7 +234,7 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
 
     [leftRailPoints, rightRailPoints].forEach(railPoints => {
         L.polyline(railPoints, {
-            pane, renderer, color: options.railColor, weight: 2, opacity: 0.9,
+            pane, renderer, color: options.railColor, weight: 2.5, opacity: 1,
             interactive: false, className: 'corridor-rail'
         }).addTo(layerGroup);
     });
@@ -261,12 +270,17 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
         L.polyline(sleepers, {
             pane, renderer, color: options.sleeperColor, weight: 1, opacity: 0.7,
             interactive: false, className: 'corridor-sleepers'
-        }).addTo(layerGroup);
+        }).addTo(options.sleeperGroup || layerGroup);
     }
 }
 
 // Every track of a corridor: one per RAIL LANE of its cross-section, at that lane's gauge, on that
 // lane's centre. A corridor with no rail lane has no rails — which is the whole rule.
+//
+// Bright steel on dark ballast, so the pair of rails is the thing that catches the eye. `sleeperGroup`
+// splits the two apart for callers that want them at different zooms: the rails are what identifies a
+// track and are two lines per track, while the sleepers are texture laid every 0.6 m and are only
+// worth drawing close up.
 function renderCorridorRails(centerlines, profile, group, options = {}) {
     if (typeof wgs84ToHTRS96 !== 'function' || typeof corridorStripSpans !== 'function') return;
     const railLanes = corridorStripSpans(profile).filter(strip => strip.type === 'rail');
@@ -274,8 +288,9 @@ function renderCorridorRails(centerlines, profile, group, options = {}) {
 
     const railOptions = {
         pane: options.pane,
-        railColor: options.railColor || '#333333',
-        sleeperColor: options.sleeperColor || '#8B4513'
+        railColor: options.railColor || '#d9d3c7',
+        sleeperColor: options.sleeperColor || '#3f342a',
+        sleeperGroup: options.sleeperGroup || null
     };
     (centerlines || []).forEach(centerline => {
         if (!Array.isArray(centerline) || centerline.length < 2) return;
@@ -294,19 +309,35 @@ function renderCorridorRails(centerlines, profile, group, options = {}) {
 // otherwise, so they are the one marking allowed to differ in colour.
 const CORRIDOR_PARKING_MARKING_COLOR = '#f2c53d';
 
+// One multi-polyline per KIND, not one path per bay. A 221 m street carries 76 bay markings and a
+// viewport of streets carries thousands, which is the only reason they were ever held back to a closer
+// zoom — and holding them back defeats the point above, since the zoom where a parking lane is most
+// easily mistaken for carriageway is the zoom where you cannot see the bays. Grouped, a street's bays
+// are two canvas paths, cheap enough to draw wherever its lanes are drawn.
 function renderCorridorParkingBays(bays, group, pane) {
     if (!Array.isArray(bays) || !bays.length || typeof L === 'undefined') return;
-    const renderer = corridorRailRenderer();
+    const renderer = corridorRailRenderer(pane || undefined);
+
+    const byKind = new Map();
     bays.forEach(bay => {
-        const isEdge = bay.kind === 'edge';
-        L.polyline(bay.line, {
+        if (!bay || !Array.isArray(bay.line) || bay.line.length < 2) return;
+        const kind = String(bay.kind || 'divider');
+        if (!byKind.has(kind)) byKind.set(kind, []);
+        byKind.get(kind).push(bay.line);
+    });
+
+    byKind.forEach((lines, kind) => {
+        const isEdge = kind === 'edge';
+        L.polyline(lines, {
             pane: pane || undefined,
             renderer,
             color: CORRIDOR_PARKING_MARKING_COLOR,
-            weight: isEdge ? 1.6 : 1.2,
-            opacity: isEdge ? 0.95 : 0.85,
+            // Heavy and fully opaque: this is drawn over a 0.6-opacity strip on a busy basemap, and a
+            // 1.2 px line at 0.85 was a suggestion of yellow rather than a marking.
+            weight: isEdge ? 2.2 : 1.8,
+            opacity: isEdge ? 1 : 0.95,
             interactive: false,
-            className: `corridor-parking-marking corridor-parking-marking--${bay.kind}`
+            className: `corridor-parking-marking corridor-parking-marking--${kind}`
         }).addTo(group);
     });
 }
@@ -707,9 +738,10 @@ function refreshAppliedCorridorStrips() {
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
                 pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
-                // A placed corridor's rails are black, like the asphalt it is laid in.
-                centerlines: [entry.points], profile: entry.profile,
-                railColor: '#000000', sleeperColor: '#666666'
+                // No colour override: a placed track and an existing one are the same track, and used
+                // to be drawn differently only because the ballast under them was light enough for
+                // black rails. It is not any more.
+                centerlines: [entry.points], profile: entry.profile
             });
             if (segmentGroup) {
                 segmentGroup.addTo(group);

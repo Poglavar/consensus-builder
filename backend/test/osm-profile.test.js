@@ -195,6 +195,77 @@ describe('resolveSegmentTags', () => {
         expect(withPath.tags['cycleway:left']).toBe('no');
     });
 
+    // Zagreb has no contraflow cycle lanes: a one-way street never carries one on the left of its
+    // traffic. It matters on a DUAL CARRIAGEWAY, where each carriageway is its own one-way run and both
+    // sit in one corridor — so the hunt for the `separate` cycleway reaches across the median, finds the
+    // other carriageway's lane, and Ulica grada Vukovara ends up with four of them, two facing each
+    // other down the middle of the road.
+    describe('a one-way street carries no cycle lane against its traffic', () => {
+        const median = side => [{ kind: 'cycleway', side, offset: 14, coverage: 1, taggedWidth: NaN }];
+
+        it('drops the one matched across the median of a one-way carriageway', () => {
+            const { tags, notes } = resolveSegmentTags(
+                { highway: 'secondary', oneway: 'yes', 'cycleway:right': 'separate' },
+                [...median('left'), { kind: 'cycleway', side: 'right', offset: 6, coverage: 1, taggedWidth: NaN }], 40);
+            expect(tags['cycleway:right'], 'its own lane, on the right of its traffic').toBe('lane');
+            expect(tags['cycleway:left'], 'the other carriageway\'s, across the median').toBe('no');
+            expect(notes.some(note => note.includes('one-way'))).toBe(true);
+        });
+
+        // 66 of Vukovarska's ways say nothing about cycleways at all, so the invention happens with no
+        // cycleway tag in sight — the case above still has `cycleway:right`, this one has nothing.
+        it('drops it on a carriageway whose tags mention no cycleway at all', () => {
+            const { tags } = resolveSegmentTags(
+                { highway: 'secondary', oneway: 'yes' },
+                [...median('left'), { kind: 'cycleway', side: 'right', offset: 6, coverage: 1, taggedWidth: NaN }], 40);
+            expect(tags['cycleway:right']).toBe('lane');
+            expect(tags['cycleway:left']).toBe('no');
+        });
+
+        // Gundulićeva really is one-way with a lane each side — `cycleway:both:lane=exclusive`,
+        // `cycleway:right:oneway=no`. A blanket rule would have deleted a real bike lane, so the rule
+        // only bites where OSM said NOTHING about that side.
+        it('never overrides a lane OSM states outright for that side', () => {
+            // `cycleway:both=lane` needs no rewriting, so it must survive UNTOUCHED — the check is
+            // that nothing wrote a `cycleway:left=no` over the top of it.
+            const both = resolveSegmentTags({ highway: 'tertiary', oneway: 'yes', 'cycleway:both': 'lane' }, [], 16);
+            expect(both.tags['cycleway:both']).toBe('lane');
+            expect(both.tags['cycleway:left']).not.toBe('no');
+            expect(types(corridorProfileFromOsmTags(both.tags)).filter(t => t === 'cycleway')).toHaveLength(2);
+
+            const separate = resolveSegmentTags({ highway: 'tertiary', oneway: 'yes', 'cycleway:both': 'separate' },
+                [{ kind: 'cycleway', side: 'left', offset: 5, coverage: 1, taggedWidth: NaN },
+                    { kind: 'cycleway', side: 'right', offset: 5, coverage: 1, taggedWidth: NaN }], 16);
+            expect(separate.tags['cycleway:left']).toBe('lane');
+            expect(separate.tags['cycleway:right']).toBe('lane');
+        });
+
+        // oneway=-1 means the traffic runs against the run, so the right of TRAVEL is the run's LEFT.
+        // Getting this backwards would throw away the real lane and keep the median one.
+        it('reads the sides from the traffic, not from the run, when the way is drawn backwards', () => {
+            const { tags } = resolveSegmentTags(
+                { highway: 'secondary', oneway: '-1', 'cycleway:left': 'separate' },
+                [...median('right'), { kind: 'cycleway', side: 'left', offset: 6, coverage: 1, taggedWidth: NaN }], 40);
+            expect(tags['cycleway:left']).toBe('lane');
+            expect(tags['cycleway:right']).toBe('no');
+        });
+
+        it('leaves a two-way street with lanes on both sides alone', () => {
+            const { tags } = resolveSegmentTags(
+                { highway: 'residential', 'cycleway:both': 'separate' },
+                [{ kind: 'cycleway', side: 'left', offset: 5, coverage: 1, taggedWidth: NaN },
+                    { kind: 'cycleway', side: 'right', offset: 5, coverage: 1, taggedWidth: NaN }], 16);
+            expect(tags['cycleway:left']).toBe('lane');
+            expect(tags['cycleway:right']).toBe('lane');
+        });
+
+        it('can be switched off for a city that really has contraflow lanes', () => {
+            const { tags } = resolveSegmentTags({ highway: 'secondary', oneway: 'yes' },
+                median('left'), 20, { contraflowCycleLanes: true });
+            expect(tags['cycleway:left']).toBe('lane');
+        });
+    });
+
     it('takes a kerb bay out of the pavement rather than out of the carriageway', () => {
         const flanks = [{ kind: 'sidewalk', side: 'left', offset: 4, coverage: 1, taggedWidth: NaN }];
         const onKerb = resolveSegmentTags({ highway: 'residential', 'parking:left': 'on_kerb', 'sidewalk:both': 'separate' }, flanks, 16);
@@ -488,6 +559,29 @@ describe('matching a tramway to a run', () => {
         expect(offsets[1]).toBeCloseTo(1.2, 1);
     });
 
+    // Every street a tram line CROSSES used to get that tram as a lane of its own. Nothing tested a
+    // rail's direction: a carrier is scored on alignment and a flank on staying to one side, but a
+    // rail was taken on distance alone. Real case: the Branimirova tram sits at 87 degrees to Ulica
+    // Petra i Tome Erdodyja and covered 62% of its stations, so it was drawn straight down it.
+    it('does not take a tramway that CROSSES the street for one running down it', () => {
+        const crossing = {
+            pointsXY: [[-40, 100], [40, 100]],   // dead across a run heading north
+            properties: { osm_id: 'crossing', highway_type: null, railway_type: 'tram', tags: { railway: 'tram' } }
+        };
+        const match = matchWaysToRun(tramRun(), [road(0), crossing]);
+        expect(match.rails, 'a tram at 90 degrees is not a lane of this street').toEqual([]);
+    });
+
+    // ...but a real line is never dead straight, so the test cannot be "exactly parallel".
+    it('still takes one that runs along the street at a slight angle', () => {
+        const drifting = {
+            pointsXY: [[-3, 1], [-1, 199]],      // about 0.6 degrees off, as a mapped track really is
+            properties: { osm_id: 'drifting', highway_type: null, railway_type: 'tram', tags: { railway: 'tram' } }
+        };
+        const match = matchWaysToRun(tramRun(), [road(0), drifting]);
+        expect(match.rails.length).toBe(1);
+    });
+
     it('leaves the ordinary flanks alone — a pavement is still a pavement', () => {
         const match = matchWaysToRun(tramRun(), [
             road(0),
@@ -552,6 +646,38 @@ describe('resolving matched ways into tracks', () => {
     it('does not invent a track where there is no tram', () => {
         const match = matchWaysToRun(tramRun(), [road(0)]);
         expect(match.rails).toEqual([]);
+        expect(railTracksForRun(match.rails)).toEqual([]);
+    });
+
+    // A track has to lie IN the street. The only bound was flankMaxOffset, and 25 m is a question
+    // about neighbours, not lanes — so the trams on the square next door, 11 and 14 m off the
+    // centreline of the 12 m Ulica Marka Stančića, were drawn as two of its lanes.
+    it('will not put a track outside the street it is meant to be a lane of', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(-11), tram(-14)]);
+        expect(match.rails.length, 'both were matched by the geometry').toBe(2);
+        expect(railTracksForRun(match.rails, { availableWidth: 12 }),
+            'a 12 m street reaches 6 m either side; neither track is in it').toEqual([]);
+        // The same pair on a boulevard wide enough to hold them is a real reservation.
+        expect(railTracksForRun(match.rails, { availableWidth: 40 })).toHaveLength(2);
+    });
+
+    // The section is drawn on the shifted centreline, so the bound has to be asked in that frame or a
+    // track on the near side of an off-centre street is thrown away for being on the far side.
+    it('measures that against the shifted centreline, where the section is actually drawn', () => {
+        const match = matchWaysToRun(tramRun(), [road(0), tram(-9)]);
+        expect(railTracksForRun(match.rails, { availableWidth: 12 })).toEqual([]);
+        expect(railTracksForRun(match.rails, { availableWidth: 12, sectionShift: 5 }),
+            'shifted 5 m, the track is 4 m off the section centre and inside it').toHaveLength(1);
+    });
+
+    // One junction curve running alongside for most of a short segment used to clear the old 50% bar
+    // and add a phantom third track to Ulica kneza Branimira. A real track's cluster unions to nearly
+    // the whole run however many ways it is split into, so a high bar costs it nothing.
+    it('will not build a track from one way that runs alongside only part of the segment', () => {
+        const partial = tram(-6, { id: 'curve', from: 0, to: 130 });   // 65% of the run
+        const match = matchWaysToRun(tramRun(), [road(0), partial]);
+        expect(match.rails[0].coverage).toBeGreaterThan(0.5);
+        expect(match.rails[0].coverage).toBeLessThan(0.8);
         expect(railTracksForRun(match.rails)).toEqual([]);
     });
 });

@@ -13,7 +13,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const paint = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
 const {
     growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel,
-    describeSegment, keysToForget, explainAt, paintSegment, EXPLAINED_LIMIT
+    describeSegment, keysToForget, explainAt, paintSegment, segmentEdgeKeys,
+    unownedSegmentRuns, EXPLAINED_LIMIT
 } = paint;
 const segmentation = require(path.join(here, '../../frontend/js/road-segmentation.js'));
 const translator = require(path.join(here, '../../frontend/js/osm-profile.js'));
@@ -80,6 +81,75 @@ describe('the bbox the lane paint fetches', () => {
         expect(growBbox('', 80)).toBe(null);
         expect(growBbox('1,2,3', 80)).toBe(null);
         expect(growBbox('1,2,3,four', 80)).toBe(null);
+    });
+});
+
+// A real failure from Strojarska cesta. A northern viewport did not fetch the side street at the
+// western end, so these ten source edges belonged to one 287 m segment. After panning south, the
+// newly visible junction split the same edges into the 111 m segment shown by the hover readout.
+// Endpoint-keyed caching retained both profiles and drew the road twice with slightly different
+// centreline shifts. The source edges are the stable identity underneath both segmentations.
+describe('one paint owner when viewports segment the same road differently', () => {
+    const strojarskaParent = [
+        [460493.025100566, 5073964.416922977],
+        [460491.178067824, 5073962.43925142],
+        [460488.608022282, 5073960.44395135],
+        [460486.03967187, 5073958.715379377],
+        [460483.420374894, 5073957.531722308],
+        [460479.506200718, 5073956.85643834],
+        [460472.46742929, 5073956.212154017],
+        [460456.62587944, 5073955.001523501],
+        [460420.735404158, 5073952.251540888],
+        [460396.868323796, 5073950.469817897],
+        [460384.984663421, 5073949.478645901],
+        [460375.353980718, 5073948.295298539],
+        [460365.283761577, 5073946.447925962],
+        [460350.575371926, 5073942.540727739],
+        [460338.172938249, 5073938.218732744],
+        [460330.098144192, 5073934.802704827],
+        [460323.029408434, 5073930.691187934],
+        [460312.627064854, 5073923.100042606],
+        [460306.658529831, 5073917.214376019],
+        [460301.350960846, 5073911.36894705],
+        [460298.311720562, 5073907.731839779],
+        [460293.498544753, 5073901.405352046],
+        [460290.239054321, 5073896.147000974],
+        [460286.470681795, 5073887.891103636],
+        [460281.61644838, 5073876.36349831],
+        [460280.196272521, 5073870.648828546],
+        [460279.323778474, 5073864.274926234],
+        [460278.596649656, 5073856.321895292],
+        [460278.724382523, 5073845.907186482],
+        [460279.391745917, 5073834.788840203]
+    ];
+    const strojarskaChild = strojarskaParent.slice(0, 11);
+    const segment = points => ({
+        points,
+        key: paint.segmentKey(points),
+        box: boxOf([points]),
+        parcels: [{ id: 'road' }],
+        street: { id: 'name:Strojarska cesta', name: 'Strojarska cesta' }
+    });
+    const ownersOf = (points, owner = 'first') => new Map(segmentEdgeKeys(points).map(key => [key, owner]));
+
+    it('does not paint the 111 m child over the already-painted 287 m parent', () => {
+        expect(segmentation.polylineLength(strojarskaChild)).toBeCloseTo(110.7, 1);
+        expect(segmentation.polylineLength(strojarskaParent)).toBeCloseTo(287.4, 1);
+        expect(unownedSegmentRuns(segment(strojarskaChild), ownersOf(strojarskaParent))).toEqual([]);
+    });
+
+    it('keeps only the genuinely new tail when the shorter segmentation was painted first', () => {
+        const runs = unownedSegmentRuns(segment(strojarskaParent), ownersOf(strojarskaChild));
+        expect(runs).toHaveLength(1);
+        expect(runs[0].points[0]).toEqual(strojarskaParent[10]);
+        expect(runs[0].points.at(-1)).toEqual(strojarskaParent.at(-1));
+        expect(segmentation.polylineLength(runs[0].points)).toBeCloseTo(176.7, 1);
+        expect(segmentEdgeKeys(runs[0].points).some(key => ownersOf(strojarskaChild).has(key))).toBe(false);
+    });
+
+    it('does not confuse a nearby parallel centreline with the same source edges', () => {
+        const parallel = strojarskaChild.map(([x, y]) => [x, y + 0.5]);
+        expect(unownedSegmentRuns(segment(parallel), ownersOf(strojarskaChild))).toHaveLength(1);
     });
 });
 
@@ -795,5 +865,166 @@ describe('the console dump is behind a modifier', () => {
     it('asks the endpoint for the tramways too', () => {
         expect(fetched.length).toBeGreaterThan(0);
         expect(fetched.every(url => url.includes('rail=1'))).toBe(true);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Telling one band from the next
+//
+// Two lane types are only ever confused with the band beside them. A parking lane is the same asphalt
+// as the carriageway; a tram track used to be the same light grey as the pavement. In both cases what
+// resolves it is drawn ON the band — yellow bays, steel rails — so what matters is not that those
+// renderers exist but that the street layer actually reaches them, and at the zoom the street is drawn
+// at rather than one closer. Both were broken: the rails were never called at all, and the bays were
+// held back to z18 while the layer starts painting at z17.
+// ---------------------------------------------------------------------------
+describe('a parking lane and a tram track are marked out, not just coloured in', () => {
+    // corridor-render.js is a classic script with no CommonJS tail, so its free variables come in as
+    // parameters and the two renderers under test are handed back explicitly.
+    const renderSource = readFileSync(path.join(here, '../../frontend/js/corridor-render.js'), 'utf8');
+    const loadRenderers = (L) => new Function(
+        'L', 'corridorStripSpans', 'corridorRailGauge', 'wgs84ToHTRS96', 'htrs96ToWGS84',
+        `${renderSource}\n; return { renderCorridorParkingBays, renderCorridorRails };`
+    )(L, profiles.corridorStripSpans, profiles.corridorRailGauge, project, unproject);
+
+    // Enough Leaflet to record what was drawn and where it landed. `canvases` matters as much as the
+    // paths: a path given a renderer ignores its own pane, so the renderer's pane is the real answer
+    // to "where did this end up".
+    const drawingLeaflet = () => ({
+        canvases: [],
+        canvas(opts) { const c = { kind: 'canvas', opts }; this.canvases.push(c); return c; },
+        latLng: (lat, lng) => ({ lat, lng }),
+        layerGroup: () => ({ drawn: [], addLayer(layer) { this.drawn.push(layer); return this; } }),
+        polyline: (lines, opts) => ({ kind: 'polyline', lines, opts, addTo(g) { g.addLayer(this); return this; } }),
+        polygon: (ring, opts) => ({ kind: 'polygon', ring, opts, addTo(g) { g.addLayer(this); return this; } })
+    });
+
+    const classNames = group => group.drawn.map(layer => layer.opts?.className || '');
+    const straight = (metres, step = 10) => Array.from({ length: Math.round(metres / step) + 1 },
+        (_, i) => ({ lat: (i * step) / 1000, lng: 0 }));
+
+    // The geometry builders read the projection off the globals, so every test here needs at least
+    // those two; the wiring test needs the renderers there as well.
+    let restore = null;
+    function install(extra = {}) {
+        const previous = {};
+        Object.entries({ wgs84ToHTRS96: project, htrs96ToWGS84: unproject, ...extra })
+            .forEach(([key, value]) => { previous[key] = globalThis[key]; globalThis[key] = value; });
+        restore = () => Object.entries(previous).forEach(([key, value]) => {
+            if (value === undefined) delete globalThis[key]; else globalThis[key] = value;
+        });
+    }
+    afterEach(() => { if (restore) restore(); restore = null; });
+
+    it('draws a street\'s bay markings as two paths, not one per bay', () => {
+        install();
+        const L = drawingLeaflet();
+        const { renderCorridorParkingBays } = loadRenderers(L);
+        const profile = { strips: [{ type: 'parking', width: 2.5 }, { type: 'driving', width: 3.2 }] };
+
+        const bays = profiles.buildCorridorParkingBays([straight(220)], profile);
+        expect(bays.length, 'the street really does have many bays').toBeGreaterThan(20);
+
+        const group = L.layerGroup();
+        renderCorridorParkingBays(bays, group, 'somePane');
+
+        // One path per KIND. Per bay it was 76 Leaflet layers on a 221 m street, which is the whole
+        // reason they were once held back to a zoom nobody needed them at.
+        expect(group.drawn.length, 'paths drawn').toBe(2);
+        const kinds = new Set(bays.map(bay => bay.kind));
+        expect(new Set(classNames(group).map(n => n.split('--')[1]))).toEqual(kinds);
+        // ...and no bay was dropped on the way into the batch.
+        expect(group.drawn.reduce((total, layer) => total + layer.lines.length, 0)).toBe(bays.length);
+    });
+
+    // The bug that made every fix above invisible: one shared paneless canvas, so bays and rails were
+    // drawn into overlayPane (z-index 400) while the lanes they mark sit at 610. They were rendered
+    // and then buried. Leaflet gives a path's own `pane` option no say once a `renderer` is passed
+    // (Map.getRenderer), so the ONLY thing that can be asserted here is the canvas's own pane.
+    it('draws its marks into the pane the lanes are in, not the default one underneath', () => {
+        install();
+        const L = drawingLeaflet();
+        const { renderCorridorParkingBays, renderCorridorRails } = loadRenderers(L);
+        const profile = { strips: [{ type: 'parking', width: 2.5 }, { type: 'rail', width: 2.75, gauge: 1000 }] };
+        const centerline = straight(100);
+
+        const group = L.layerGroup();
+        renderCorridorParkingBays(profiles.buildCorridorParkingBays([centerline], profile), group, 'lanePane');
+        renderCorridorRails([centerline], profile, group, { pane: 'lanePane' });
+
+        expect(group.drawn.length).toBeGreaterThan(0);
+        group.drawn.forEach(layer => {
+            expect(layer.opts.renderer, `${layer.opts.className} has a renderer`).toBeTruthy();
+            expect(layer.opts.renderer.opts?.pane, `${layer.opts.className} lands in the lane pane`).toBe('lanePane');
+        });
+
+        // And a second pane gets its own canvas rather than everything sharing the first one's.
+        renderCorridorRails([centerline], profile, L.layerGroup(), { pane: 'otherPane' });
+        expect(new Set(L.canvases.map(c => c.opts?.pane))).toEqual(new Set(['lanePane', 'otherPane']));
+    });
+
+    it('lays the rails apart from their sleepers when asked to', () => {
+        install();
+        const L = drawingLeaflet();
+        const { renderCorridorRails } = loadRenderers(L);
+        const profile = { strips: [{ type: 'rail', width: 2.75, gauge: 1000 }] };
+
+        const rails = L.layerGroup();
+        const sleepers = L.layerGroup();
+        renderCorridorRails([straight(100)], profile, rails, { sleeperGroup: sleepers });
+
+        expect(classNames(rails), 'two rails, no sleepers').toEqual(['corridor-rail', 'corridor-rail']);
+        expect(classNames(sleepers)).toEqual(['corridor-sleepers']);
+
+        // Given one group it still draws the whole track into it, which is what every other caller does.
+        const together = L.layerGroup();
+        renderCorridorRails([straight(100)], profile, together);
+        expect(classNames(together)).toEqual(['corridor-rail', 'corridor-rail', 'corridor-sleepers']);
+    });
+
+    it('puts the bays and rails with the lanes, and only the repeated symbols behind the closer zoom', () => {
+        const L = drawingLeaflet();
+        const renderers = loadRenderers(L);
+        install({
+            L,
+            corridorStripSpans: profiles.corridorStripSpans,
+            corridorRailGauge: profiles.corridorRailGauge,
+            buildCorridorParkingBays: profiles.buildCorridorParkingBays,
+            buildCorridorLaneMarkings: profiles.buildCorridorLaneMarkings,
+            buildCorridorDirectionArrows: profiles.buildCorridorDirectionArrows,
+            renderCorridorParkingBays: renderers.renderCorridorParkingBays,
+            renderCorridorRails: renderers.renderCorridorRails,
+            renderCorridorLaneMarkings: () => {},
+            renderCorridorDirectionArrows: (arrows, group) => arrows
+                .forEach(ring => L.polygon(ring, { className: 'corridor-direction-arrow' }).addTo(group))
+        });
+
+        // A boulevard: traffic, kerbside parking and a tram track down the middle.
+        const profile = {
+            strips: [
+                { type: 'sidewalk', width: 3 }, { type: 'parking', width: 2.5 },
+                { type: 'driving', width: 3.2, direction: 'forward' },
+                { type: 'rail', width: 2.75, gauge: 1000 },
+                { type: 'driving', width: 3.2, direction: 'backward' },
+                { type: 'parking', width: 2.5 }, { type: 'sidewalk', width: 3 }
+            ]
+        };
+        const groups = paint.buildSegmentGroups({
+            lanes: [{ polygon: [[0, 0], [0.1, 0], [0.1, 0.001]], type: 'driving', surface: '#2b2b2b' }],
+            markings: { centerline: straight(220), profile },
+            box: null, name: 'Boulevard', width: 20.15, length: 220
+        });
+
+        const withLanes = classNames(groups.base);
+        const closerIn = classNames(groups.detail);
+
+        // The two marks that say what a band IS are drawn with the lanes.
+        expect(withLanes.filter(n => n.includes('corridor-parking-marking')).length).toBeGreaterThan(0);
+        expect(withLanes.filter(n => n === 'corridor-rail').length).toBe(2);
+        // The repeated symbols are not.
+        expect(withLanes.some(n => n === 'corridor-sleepers')).toBe(false);
+        expect(withLanes.some(n => n === 'corridor-direction-arrow')).toBe(false);
+        expect(closerIn).toContain('corridor-sleepers');
+        expect(closerIn.filter(n => n === 'corridor-direction-arrow').length).toBeGreaterThan(0);
     });
 });
