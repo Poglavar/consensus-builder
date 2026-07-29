@@ -3395,6 +3395,9 @@
                         targetGroup.add(mesh);
                     });
                 });
+                // Embedded rails sit on the traffic/PSV surface above; unlike a dedicated rail strip,
+                // they add track hardware without taking another strip of corridor width.
+                if (strip.embeddedRail === true) addProposalTrack3D(targetGroup, points, strip);
             });
         };
 
@@ -3545,6 +3548,9 @@
                                 && CORRIDOR_LANE_TYPES[strip.type]) || {};
                             if (!addTerrainStrip3D(targetGroup, runFormation, strip, lane, strip.type)) {
                                 console.warn('[three-mode] terrain strip skipped', strip.type);
+                            }
+                            if (strip.embeddedRail === true) {
+                                addProposalTrack3D(targetGroup, points, strip, runFormation);
                             }
                         });
                     } else {

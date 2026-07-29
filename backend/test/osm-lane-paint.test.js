@@ -14,7 +14,8 @@ const paint = require(path.join(here, '../../frontend/js/osm-lane-paint.js'));
 const {
     growBbox, ringsNear, boxOf, ringsOf, runIsUnderProposal, lanesForParcel,
     describeSegment, keysToForget, explainAt, paintSegment, segmentEdgeKeys,
-    unownedSegmentRuns, EXPLAINED_LIMIT
+    unownedSegmentRuns, supersededSegmentKeys, wgsBboxForHtrs,
+    parkingPolygonsFromGeoJSON, parkingSpansForSegment, EXPLAINED_LIMIT
 } = paint;
 const segmentation = require(path.join(here, '../../frontend/js/road-segmentation.js'));
 const translator = require(path.join(here, '../../frontend/js/osm-profile.js'));
@@ -84,6 +85,59 @@ describe('the bbox the lane paint fetches', () => {
     });
 });
 
+describe('separately mapped street-side parking', () => {
+    const feature = (id, coordinates, orientation = 'parallel') => ({
+        type: 'Feature',
+        id,
+        properties: { parking: 'street_side', orientation },
+        geometry: { type: 'Polygon', coordinates: [coordinates] }
+    });
+
+    it('converts the planar viewport to the WGS84 bbox the parking endpoint expects', () => {
+        const bbox = wgsBboxForHtrs('0,100,20,140', (x, y) => [40 + y / 100, 10 + x / 100]);
+        expect(bbox.split(',').map(Number)).toEqual([10, 41, 10.2, 41.4]);
+    });
+
+    it('normalizes parking polygons into partial left and right spans, not full road lanes', () => {
+        const collection = {
+            type: 'FeatureCollection',
+            features: [
+                feature('left', [
+                    [-7.5, 20], [-5, 20], [-5, 80], [-7.5, 80], [-7.5, 20]
+                ]),
+                feature('right', [
+                    [5, 100], [7.5, 100], [7.5, 160], [5, 160], [5, 100]
+                ], 'diagonal')
+            ]
+        };
+        const polygons = parkingPolygonsFromGeoJSON(collection, (lat, lng) => [lng, lat]);
+        const road = [[0, 0], [0, 200]];
+        const spans = parkingSpansForSegment(road, polygons, [road]);
+
+        expect(spans).toHaveLength(2);
+        expect(spans.map(span => span.side)).toEqual(['left', 'right']);
+        expect(spans.map(span => [span.sMin, span.sMax])).toEqual([[20, 80], [100, 160]]);
+        expect(spans[0].width).toBeCloseTo(2.5);
+        expect(spans[1].type).toBe('parking_angled');
+        expect(spans.every(span => span.sMin > 0 && span.sMax < 200)).toBe(true);
+    });
+
+    it('gives a junction-side parking area only to its nearest road segment', () => {
+        const northSouth = [[0, 0], [0, 100]];
+        const eastWest = [[-100, 50], [100, 50]];
+        const polygons = parkingPolygonsFromGeoJSON({
+            type: 'FeatureCollection',
+            features: [feature('east-west', [
+                [20, 44], [70, 44], [70, 47], [20, 47], [20, 44]
+            ])]
+        }, (lat, lng) => [lng, lat]);
+        const network = [northSouth, eastWest];
+
+        expect(parkingSpansForSegment(northSouth, polygons, network)).toEqual([]);
+        expect(parkingSpansForSegment(eastWest, polygons, network)).toHaveLength(1);
+    });
+});
+
 // A real failure from Strojarska cesta. A northern viewport did not fetch the side street at the
 // western end, so these ten source edges belonged to one 287 m segment. After panning south, the
 // newly visible junction split the same edges into the 111 m segment shown by the hover readout.
@@ -150,6 +204,57 @@ describe('one paint owner when viewports segment the same road differently', () 
     it('does not confuse a nearby parallel centreline with the same source edges', () => {
         const parallel = strojarskaChild.map(([x, y]) => [x, y + 0.5]);
         expect(unownedSegmentRuns(segment(parallel), ownersOf(strojarskaChild))).toHaveLength(1);
+    });
+});
+
+// The reciprocal cache failure, also from the real Zagreb source geometry. OSM stores this straight
+// run as a 53.2 m way followed by a 182.4 m way. The shared node has graph degree two, so with both
+// ways fetched the segmentation correctly joins them into one 235.6 m segment. Seeing the two ways
+// from separate viewports must not preserve their obsolete OSM-way boundary as a segment boundary.
+describe('a complete fetch replaces cached fragments with its real segment', () => {
+    const draskoviceva = [
+        [459872.530940311, 5074572.345553716],
+        [459872.980039271, 5074563.662539212],
+        [459873.235075475, 5074558.626203752],
+        [459875.296671378, 5074519.224512414],
+        [459875.692003582, 5074511.842195981],
+        [459877.204937357, 5074480.146124033],
+        [459877.843976073, 5074465.971519375],
+        [459879.06144774, 5074439.067535629],
+        [459879.292317742, 5074433.897988481],
+        [459880.065093833, 5074418.766708838],
+        [459881.713028984, 5074386.302898445],
+        [459882.913578529, 5074357.976424197],
+        [459883.041654468, 5074354.941448492],
+        [459884.114957106, 5074336.996363909]
+    ];
+    const fragment = points => ({
+        key: paint.segmentKey(points),
+        points,
+        box: boxOf([points]),
+        edgeKeys: segmentEdgeKeys(points)
+    });
+    const shortWay = fragment(draskoviceva.slice(0, 4));
+    const longWay = fragment(draskoviceva.slice(3));
+    const joined = fragment(draskoviceva);
+    const wholeArea = [459800, 5074300, 459950, 5074600];
+
+    it('has no geometric break at the native OSM-way boundary', () => {
+        expect(segmentation.polylineLength(shortWay.points)).toBeCloseTo(53.2, 1);
+        expect(segmentation.polylineLength(longWay.points)).toBeCloseTo(182.4, 1);
+        expect(segmentation.polylineLength(joined.points)).toBeCloseTo(235.6, 1);
+        expect(shortWay.points.at(-1)).toEqual(longWay.points[0]);
+    });
+
+    it('supersedes both cached fragments when the authoritative graph joins them', () => {
+        expect(supersededSegmentKeys([joined], [shortWay, longWay], wholeArea))
+            .toEqual([shortWay.key, longWay.key]);
+    });
+
+    it('keeps an unchanged segment and never rewrites beyond the authoritative fetch', () => {
+        expect(supersededSegmentKeys([joined], [joined], wholeArea)).toEqual([]);
+        const northOnly = [459800, 5074510, 459950, 5074600];
+        expect(supersededSegmentKeys([joined], [shortWay, longWay], northOnly)).toEqual([]);
     });
 });
 
@@ -863,8 +968,9 @@ describe('the console dump is behind a modifier', () => {
 
     // The tramways carry no highway class, so they come only when they are asked for by name.
     it('asks the endpoint for the tramways too', () => {
-        expect(fetched.length).toBeGreaterThan(0);
-        expect(fetched.every(url => url.includes('rail=1'))).toBe(true);
+        const roadFetches = fetched.filter(url => url.includes('/osm-road'));
+        expect(roadFetches.length).toBeGreaterThan(0);
+        expect(roadFetches.every(url => url.includes('rail=1'))).toBe(true);
     });
 });
 
@@ -892,7 +998,14 @@ describe('a parking lane and a tram track are marked out, not just coloured in',
     // to "where did this end up".
     const drawingLeaflet = () => ({
         canvases: [],
-        canvas(opts) { const c = { kind: 'canvas', opts }; this.canvases.push(c); return c; },
+        canvas(opts) {
+            const c = {
+                kind: 'canvas', opts, handlers: {},
+                on(event, handler) { this.handlers[event] = handler; return this; }
+            };
+            this.canvases.push(c);
+            return c;
+        },
         latLng: (lat, lng) => ({ lat, lng }),
         layerGroup: () => ({ drawn: [], addLayer(layer) { this.drawn.push(layer); return this; } }),
         polyline: (lines, opts) => ({ kind: 'polyline', lines, opts, addTo(g) { g.addLayer(this); return this; } }),
@@ -935,6 +1048,50 @@ describe('a parking lane and a tram track are marked out, not just coloured in',
         expect(new Set(classNames(group).map(n => n.split('--')[1]))).toEqual(kinds);
         // ...and no bay was dropped on the way into the batch.
         expect(group.drawn.reduce((total, layer) => total + layer.lines.length, 0)).toBe(bays.length);
+    });
+
+    it('makes its full-viewport canvas click-through so parcel and road hover still receive the pointer', () => {
+        install();
+        const L = drawingLeaflet();
+        const { renderCorridorParkingBays } = loadRenderers(L);
+        const bays = profiles.buildCorridorParkingBays([straight(30)], {
+            strips: [{ type: 'parking', width: 2.5 }, { type: 'driving', width: 3.2 }]
+        });
+
+        renderCorridorParkingBays(bays, L.layerGroup(), 'lanePane');
+        expect(L.canvases).toHaveLength(1);
+        const renderer = L.canvases[0];
+        renderer._container = { style: {} };
+        renderer.handlers.add.call(renderer);
+        expect(renderer._container.style.pointerEvents).toBe('none');
+    });
+
+    it('draws a partial parking surface and its bays with the base lanes', () => {
+        const L = drawingLeaflet();
+        const { renderCorridorParkingBays } = loadRenderers(L);
+        install({
+            L,
+            buildCorridorParkingBaysForSpans: profiles.buildCorridorParkingBaysForSpans,
+            renderCorridorParkingBays
+        });
+        const partialParking = [{
+            polygon: [{ lat: 0.02, lng: -0.003 }, { lat: 0.06, lng: -0.003 },
+                { lat: 0.06, lng: -0.0055 }, { lat: 0.02, lng: -0.0055 }],
+            centerline: [{ lat: 0.02, lng: 0 }, { lat: 0.06, lng: 0 }],
+            left: 5.5, right: 3, width: 2.5, type: 'parking', surface: '#2b2b2b'
+        }];
+        const groups = paint.buildSegmentGroups({
+            lanes: [{ polygon: [[0, 0], [0.1, 0], [0.1, 0.001]], type: 'driving', surface: '#2b2b2b' }],
+            partialParking,
+            markings: null,
+            box: null, name: 'Palmotićeva', width: 9.5, length: 215
+        });
+
+        expect(classNames(groups.base)).toContain(
+            'corridor-strip corridor-strip--parking corridor-strip--partial');
+        expect(classNames(groups.base).filter(name => name.includes('corridor-parking-marking')).length)
+            .toBeGreaterThan(0);
+        expect(groups.detail.drawn).toEqual([]);
     });
 
     // The bug that made every fix above invisible: one shared paneless canvas, so bays and rails were
@@ -980,6 +1137,25 @@ describe('a parking lane and a tram track are marked out, not just coloured in',
         const together = L.layerGroup();
         renderCorridorRails([straight(100)], profile, together);
         expect(classNames(together)).toEqual(['corridor-rail', 'corridor-rail', 'corridor-sleepers']);
+    });
+
+    it('draws rails in an embedded traffic/PSV lane without requiring a rail strip', () => {
+        install();
+        const L = drawingLeaflet();
+        const { renderCorridorRails } = loadRenderers(L);
+        const profile = {
+            strips: [
+                { type: 'driving', width: 3, direction: 'forward' },
+                { type: 'bus', width: 3.25, direction: 'forward', embeddedRail: true, gauge: 1000 }
+            ]
+        };
+        const group = L.layerGroup();
+
+        renderCorridorRails([straight(100)], profile, group);
+
+        expect(classNames(group)).toEqual(['corridor-rail', 'corridor-rail', 'corridor-sleepers']);
+        expect(profile.strips).toHaveLength(2);
+        expect(profile.strips.some(strip => strip.type === 'rail')).toBe(false);
     });
 
     it('puts the bays and rails with the lanes, and only the repeated symbols behind the closer zoom', () => {

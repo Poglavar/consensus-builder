@@ -7,7 +7,7 @@
 
 import { randomBytes } from 'crypto';
 import { createRequire } from 'node:module';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { saveImageBuffer } from '../utils/image-store.js';
 
 // The canonical prompt template is the SAME pure function the UI uses, required rather than copied
@@ -208,7 +208,11 @@ const RENDER_QUOTA_MAX = Number(process.env.AI_SCENE_QUOTA_MAX) || 10;
 // True client IP behind Cloudflare -> nginx: CF-Connecting-IP is the real visitor; req.ip would be
 // the proxy, bucketing everyone together. Falls back to req.ip in dev where the header is absent.
 function clientIp(req) {
-    return req.headers['cf-connecting-ip'] || req.ip;
+    const forwarded = req.headers['cf-connecting-ip'];
+    const raw = String(Array.isArray(forwarded) ? forwarded[0] : (forwarded || req.ip || ''))
+        .split(',')[0]
+        .trim();
+    return ipKeyGenerator(raw);
 }
 
 // Map a provider failure to a stable code the UI can localise. "No funds" spans several providers'

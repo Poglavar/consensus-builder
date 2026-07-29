@@ -23,7 +23,11 @@ const project = (lat, lng) => [lng * 1000, lat * 1000];
 const unproject = (x, y) => [y / 1000, x / 1000];
 const toLngLat = ([x, y]) => { const [lat, lng] = unproject(x, y); return [lng, lat]; };
 
-const counters = { fetches: 0, polygons: 0, profiled: 0, urls: [] };
+const counters = {
+    fetches: 0, roadFetches: 0, parkingFetches: 0,
+    parcelLoads: 0, buildingLoads: 0, measurementBounds: [],
+    polygons: 0, profiled: 0, urls: []
+};
 
 // A road parcel around the street, as the parcel layer holds it (lng/lat GeoJSON).
 function parcelFeature(id, shift = 0) {
@@ -67,7 +71,20 @@ function fakeLeaflet() {
         layerGroup: () => group(),
         polygon: (...args) => { counters.polygons += 1; return shape('polygon')(...args); },
         polyline: shape('polyline'),
-        canvas: () => ({ kind: 'canvas' })
+        canvas: () => ({ kind: 'canvas' }),
+        latLngBounds: ([[south, west], [north, east]]) => ({
+            getSouth: () => south,
+            getWest: () => west,
+            getNorth: () => north,
+            getEast: () => east,
+            getSouthWest: () => ({ lat: south, lng: west }),
+            getNorthEast: () => ({ lat: north, lng: east }),
+            getCenter: () => ({ lat: (south + north) / 2, lng: (west + east) / 2 }),
+            intersects: () => true,
+            contains: () => false,
+            isValid: () => true,
+            pad() { return this; }
+        })
     };
 }
 
@@ -101,6 +118,11 @@ const pan = async () => { globalThis.map.fire('moveend'); await settle(520); };
 describe('a street is painted once, not on every pan', () => {
     beforeEach(() => {
         counters.fetches = 0;
+        counters.roadFetches = 0;
+        counters.parkingFetches = 0;
+        counters.parcelLoads = 0;
+        counters.buildingLoads = 0;
+        counters.measurementBounds = [];
         counters.polygons = 0;
         counters.profiled = 0;
         counters.urls = [];
@@ -116,6 +138,14 @@ describe('a street is painted once, not on every pan', () => {
         globalThis.__bbox = '0,0,1000,1000';
         globalThis.getBboxFromBounds = () => globalThis.__bbox;
         globalThis.getBackendBase = () => '';
+        globalThis.fetchParcelData = async bounds => {
+            counters.parcelLoads += 1;
+            counters.measurementBounds.push(bounds);
+        };
+        globalThis.ensureBuildingFootprintsForBounds = async bounds => {
+            counters.buildingLoads += 1;
+            counters.measurementBounds.push(bounds);
+        };
 
         // Count every reconstruction: this is the expensive step the cache exists to avoid.
         globalThis.OsmProfile = {
@@ -144,13 +174,16 @@ describe('a street is painted once, not on every pan', () => {
         // not in area B's answer, so panning there really does bring streets never seen before.
         globalThis.fetch = async (url) => {
             counters.fetches += 1;
-            counters.urls.push(String(url));
+            const requested = String(url);
+            counters.urls.push(requested);
+            if (requested.includes('/osm-road')) counters.roadFetches += 1;
+            if (requested.includes('/osm-parking')) counters.parkingFetches += 1;
             const away = globalThis.__bbox.startsWith('4000');
             const move = ([x, y]) => (away ? [x + 4000, y + 4000] : [x, y]);
             return {
                 ok: true,
                 json: async () => ({
-                    features: block.ways.map(way => ({
+                    features: requested.includes('/osm-parking') ? [] : block.ways.map(way => ({
                         properties: way.properties,
                         geometry: { type: 'LineString', coordinates: way.pointsXY.map(move).map(toLngLat) }
                     }))
@@ -166,7 +199,8 @@ describe('a street is painted once, not on every pan', () => {
     afterEach(() => {
         ['L', 'map', 'RoadSegmentation', 'OsmProfile', 'wgs84ToHTRS96', 'htrs96ToWGS84',
             'corridorProfileFromOsmTags', 'buildCorridorStrips', 'corridorStripSurface',
-            'getBboxFromBounds', '__bbox', 'getBackendBase', 'parcelLayer', 'fetch',
+            'getBboxFromBounds', '__bbox', 'getBackendBase', 'fetchParcelData',
+            'ensureBuildingFootprintsForBounds', 'parcelLayer', 'fetch',
             'toggleOsmLanePaint', 'refreshOsmLanePaint', 'refreshOsmLanePaintForProposals', 'OsmLanePaint']
             .forEach(key => { delete globalThis[key]; });
     });
@@ -176,7 +210,23 @@ describe('a street is painted once, not on every pan', () => {
         await settle();
         expect(counters.polygons).toBeGreaterThan(0);
         expect(counters.profiled).toBeGreaterThan(0);
-        expect(counters.fetches).toBe(1);
+        expect(counters.roadFetches).toBe(1);
+        expect(counters.parkingFetches).toBe(1);
+    });
+
+    it('loads parcel and building boundaries over the same 80 m margin as the road network', async () => {
+        globalThis.toggleOsmLanePaint();
+        await settle();
+
+        expect(counters.parcelLoads).toBe(1);
+        expect(counters.buildingLoads).toBe(1);
+        expect(counters.measurementBounds).toHaveLength(2);
+        counters.measurementBounds.forEach(bounds => {
+            expect(bounds.getWest()).toBeCloseTo(-0.08);
+            expect(bounds.getSouth()).toBeCloseTo(-0.08);
+            expect(bounds.getEast()).toBeCloseTo(1.08);
+            expect(bounds.getNorth()).toBeCloseTo(1.08);
+        });
     });
 
     it('does no work at all when the map moves over ground it has already painted', async () => {
@@ -226,7 +276,8 @@ describe('a street is painted once, not on every pan', () => {
         globalThis.toggleOsmLanePaint();
         await settle();
         const after = { ...counters };
-        expect(after.fetches).toBe(1);
+        expect(after.roadFetches).toBe(1);
+        expect(after.parkingFetches).toBe(1);
 
         globalThis.refreshOsmLanePaintForProposals();
         await settle();
@@ -241,8 +292,9 @@ describe('a street is painted once, not on every pan', () => {
     it('asks for the tramways along with the roads', async () => {
         globalThis.toggleOsmLanePaint();
         await settle();
-        expect(counters.urls.length).toBeGreaterThan(0);
-        expect(counters.urls.every(url => url.includes('rail=1'))).toBe(true);
+        const roads = counters.urls.filter(url => url.includes('/osm-road'));
+        expect(roads.length).toBeGreaterThan(0);
+        expect(roads.every(url => url.includes('rail=1'))).toBe(true);
     });
 
     // A cadastral road parcel can be far larger than the screen — Ulica grada Vukovara's is 3.8 km

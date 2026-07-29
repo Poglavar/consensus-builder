@@ -23,6 +23,7 @@ import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
+import { setupOsmParkingRoute } from './routes/osm-parking.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
@@ -42,6 +43,7 @@ import { setupEnsRoute } from './routes/ens.js';
 import { setupEnsPlansRoute } from './routes/ens-plans.js';
 import { setupCantonRoute } from './routes/canton.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
+import { setupLaneTopologyRoute } from './routes/lane-topology.js';
 
 const { Pool } = pkg;
 
@@ -313,6 +315,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
     setupOsmRoadRoute(app, activePool);
+    setupOsmParkingRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);
@@ -332,6 +335,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupEnsPlansRoute(app, activePool);
     setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
     setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
+    setupLaneTopologyRoute(app, activePool); // Separate, versioned OSM lane-topology workbench
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

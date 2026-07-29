@@ -29,14 +29,13 @@ const CORRIDOR_LANE_TYPES = {
     // is what the bay-marking renderer and the OSM bridge switch on; `fixedWidth` locks the lane to its
     // standard depth (a bay's depth is a real-world constant, not a slider). `parking` is the legacy key,
     // kept so stored/imported parking lanes stay valid — it IS parallel parking (a 2.5 m kerbside lane).
-    // A lighter, NEUTRAL asphalt: parking really is the same material as the carriageway, but the old
-    // #3d3d3d sat a hair off the traffic lane's #2b2b2b and vanished into it at 0.6 fill opacity over a
-    // map. Kept grey rather than warmed, because warm at this lightness is the bus lane's brown and
-    // trading one confusion for another is no gain. The yellow bay markings still carry the real
-    // distinction — this only stops the band from disappearing into the road between them.
-    parking: { label: 'Parallel parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
-    parking_perpendicular: { label: 'Perpendicular parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
-    parking_angled: { label: 'Angled parking', surface: '#514f4c', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
+    // Parking and traffic are one asphalt surface. A lighter parking fill made a street with deep bays
+    // on both sides read as a light-grey paved space, because parking legitimately occupied most of
+    // its cross-section. The yellow closed-bay markings carry the distinction without falsifying the
+    // material underneath.
+    parking: { label: 'Parallel parking', surface: '#2b2b2b', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'parallel', fixedWidth: true },
+    parking_perpendicular: { label: 'Perpendicular parking', surface: '#2b2b2b', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'perpendicular', fixedWidth: true },
+    parking_angled: { label: 'Angled parking', surface: '#2b2b2b', height: 0, osm: { key: 'parking', value: 'lane' }, orientation: 'angled', fixedWidth: true },
     cycleway: { label: 'Cycle path', surface: '#7d3b34', height: 0, osm: { key: 'cycleway', value: 'lane' }, directional: true },
     sidewalk: { label: 'Sidewalk', surface: '#c2beb4', height: 0.15, osm: { key: 'sidewalk', value: 'yes' } },
     verge: { label: 'Green verge', surface: '#4f7f52', height: 0.15, osm: { key: 'verge', value: 'yes' } },
@@ -231,7 +230,8 @@ function corridorStripSurface(strip) {
 
 // The gauge of a lane — only a rail lane has one, exactly as only a green lane has a landscape.
 function corridorRailGaugeOf(strip) {
-    return strip && strip.type === 'rail' ? corridorRailGauge(strip.gauge) : null;
+    return strip && (strip.type === 'rail' || strip.embeddedRail === true)
+        ? corridorRailGauge(strip.gauge) : null;
 }
 
 const CORRIDOR_DIRECTIONS = ['forward', 'backward', 'both'];
@@ -256,8 +256,13 @@ function normalizeCorridorProfile(profile) {
             const treeEvery = parseInt(strip && strip.treeEvery, 10);
             if (Number.isFinite(treeEvery) && treeEvery > 0) lane.treeEvery = treeEvery;
         }
-        // Every rail lane has a gauge; an unrecognised or missing one becomes the default.
+        // A dedicated rail strip owns its surface. Embedded rails keep the traffic/PSV surface and
+        // carry only the track metadata, so they consume no second lane's width.
         if (type === 'rail') lane.gauge = corridorRailGauge(strip && strip.gauge);
+        if ((type === 'driving' || type === 'bus') && strip?.embeddedRail === true) {
+            lane.embeddedRail = true;
+            lane.gauge = corridorRailGauge(strip.gauge);
+        }
         // A footway's paving, likewise: kept only where it means something, and only when known.
         if (CORRIDOR_PAVED_TYPES.has(type) && CORRIDOR_PAVINGS.includes(strip && strip.paving)) {
             lane.paving = strip.paving;
@@ -1057,6 +1062,36 @@ function corridorStripSpans(profile) {
     });
 }
 
+// The direction an angled parking space is entered from. A corridor's centerline direction is only
+// a geometry convention; on the left side of an ordinary two-way road the adjacent traffic travels
+// backward along it. Use the nearest motor lane instead, so the road-edge end of a bay divider points
+// toward the curb further along the ACTUAL traffic flow. The side-based fallback is right-hand traffic
+// and only applies to incomplete profiles with no directional driving/PSV lane.
+function corridorParkingFlowDirection(profile, parkingSpan) {
+    const left = Number(parkingSpan?.left);
+    const right = Number(parkingSpan?.right);
+    if (!Number.isFinite(left) || !Number.isFinite(right)) return 'forward';
+    const center = (left + right) / 2;
+    const gapBetween = (a, b) => Math.max(
+        Number(a.right) - Number(b.left),
+        Number(b.right) - Number(a.left),
+        0
+    );
+    const motorLanes = corridorStripSpans(profile)
+        .filter(span => (span.type === 'driving' || span.type === 'bus')
+            && ['forward', 'backward', 'both'].includes(span.direction));
+    const nearest = motorLanes.reduce((best, lane) => {
+        const gap = gapBetween(parkingSpan, lane);
+        const centerDistance = Math.abs(center - (lane.left + lane.right) / 2);
+        if (!best || gap < best.gap || (gap === best.gap && centerDistance < best.centerDistance)) {
+            return { lane, gap, centerDistance };
+        }
+        return best;
+    }, null)?.lane;
+    if (nearest?.direction === 'forward' || nearest?.direction === 'backward') return nearest.direction;
+    return center >= 0 ? 'backward' : 'forward';
+}
+
 // ---------------------------------------------------------------------------
 // Geometry
 //
@@ -1838,6 +1873,49 @@ const CORRIDOR_PARKING_BAYS = {
     angled: { spacingAlong: CORRIDOR_PARKING_STALL_WIDTH / Math.sin(60 * Math.PI / 180), angleDeg: 60 }
 };
 
+// Bay marks for one longitudinal parking span. Keeping this below the profile abstraction matters:
+// separately mapped OSM parking exists for only PART of a road, so it has a centerline slice and two
+// offsets but deliberately is not a full-length corridor strip.
+function corridorParkingBaysForPlanarSpan(planar, span, toLatLng, nearJunction = () => false) {
+    const bays = [];
+    if (!Array.isArray(planar) || planar.length < 2 || !span) return bays;
+    const orientation = corridorParkingOrientation(span.type) || span.orientation || 'parallel';
+    const bay = CORRIDOR_PARKING_BAYS[orientation] || CORRIDOR_PARKING_BAYS.parallel;
+    const left = Number(span.left);
+    const right = Number(span.right);
+    const width = Number(span.width) || Math.abs(left - right);
+    if (!Number.isFinite(left) || !Number.isFinite(right) || !(width > 0)) return bays;
+
+    // The lane edge nearer the road centre (the carriageway side) gets the solid edge line; the far
+    // edge is the kerb. Both are painted so a bay reads as a closed box rather than as hatching.
+    const inner = Math.abs(left) <= Math.abs(right) ? left : right;
+    const outer = inner === left ? right : left;
+    const centerOffset = (left + right) / 2;
+    [inner, outer].forEach(offset => {
+        const edge = offsetPolylinePlanar(planar, offset);
+        if (edge) bays.push({ kind: 'edge', line: edge.map(toLatLng) });
+    });
+
+    const centerLine = offsetPolylinePlanar(planar, centerOffset);
+    if (!centerLine) return bays;
+    const slant = bay.angleDeg >= 90 ? 0 : width / Math.tan(bay.angleDeg * Math.PI / 180);
+    const flowSign = span.direction === 'backward' ? -1 : 1;
+    samplePolylinePlanar(centerLine, bay.spacingAlong).forEach(sample => {
+        if (nearJunction(sample.point)) return;
+        const tangent = [Math.cos(sample.angle), Math.sin(sample.angle)];
+        const normalLeft = [-Math.sin(sample.angle), Math.cos(sample.angle)];
+        const at = (offset, along) => [
+            sample.point[0] + normalLeft[0] * (offset - centerOffset) + tangent[0] * along,
+            sample.point[1] + normalLeft[1] * (offset - centerOffset) + tangent[1] * along
+        ];
+        bays.push({
+            kind: 'divider',
+            line: [toLatLng(at(inner, 0)), toLatLng(at(outer, slant * flowSign))]
+        });
+    });
+    return bays;
+}
+
 // Every parking bay marking of a corridor, ready to draw: `[{ kind: 'edge' | 'divider', line: [latlng…] }]`.
 // `edge` is the solid line between the parking lane and the carriageway; each `divider` is one bay
 // boundary across the lane. View-agnostic (LatLngs), so 2D and 3D draw from the same geometry.
@@ -1858,42 +1936,25 @@ function buildCorridorParkingBays(segments, profile) {
     const nearJunction = point => junctionPoints.some(j => Math.hypot(point[0] - j[0], point[1] - j[1]) < junctionClearance);
     const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
 
-    const bays = [];
-    planarCenterlines.forEach(planar => {
-        parkingSpans.forEach(span => {
-            const bay = CORRIDOR_PARKING_BAYS[corridorParkingOrientation(span.type)] || CORRIDOR_PARKING_BAYS.parallel;
-            // The lane edge nearer the road centre (the carriageway side) gets the solid edge line; the
-            // far edge is the kerb, already the corridor's own boundary.
-            const inner = Math.abs(span.left) <= Math.abs(span.right) ? span.left : span.right;
-            const outer = inner === span.left ? span.right : span.left;
-            const centerOffset = (span.left + span.right) / 2;
+    return planarCenterlines.flatMap(planar => parkingSpans.flatMap(span =>
+        corridorParkingBaysForPlanarSpan(planar, {
+            ...span,
+            direction: corridorParkingFlowDirection(profile, span)
+        }, toLatLng, nearJunction)));
+}
 
-            // BOTH edges, so a bay is a closed box rather than a comb of dividers hanging off one
-            // line. The outer edge was left out as "already the corridor's own boundary", which is
-            // true of the geometry and useless to the eye: the boundary is not drawn in yellow, and
-            // an open-ended bay reads as hatching on the carriageway instead of as a parking space.
-            [inner, outer].forEach(offset => {
-                const edge = offsetPolylinePlanar(planar, offset);
-                if (edge) bays.push({ kind: 'edge', line: edge.map(toLatLng) });
-            });
-
-            const centerLine = offsetPolylinePlanar(planar, centerOffset);
-            if (!centerLine) return;
-            // The slant only tilts the divider along the road; a 90° bay has no tilt at all.
-            const slant = bay.angleDeg >= 90 ? 0 : span.width / Math.tan(bay.angleDeg * Math.PI / 180);
-            samplePolylinePlanar(centerLine, bay.spacingAlong).forEach(sample => {
-                if (nearJunction(sample.point)) return;
-                const tangent = [Math.cos(sample.angle), Math.sin(sample.angle)];
-                const normalLeft = [-Math.sin(sample.angle), Math.cos(sample.angle)];
-                const at = (offset, along) => [
-                    sample.point[0] + normalLeft[0] * (offset - centerOffset) + tangent[0] * along,
-                    sample.point[1] + normalLeft[1] * (offset - centerOffset) + tangent[1] * along
-                ];
-                bays.push({ kind: 'divider', line: [toLatLng(at(inner, 0)), toLatLng(at(outer, slant))] });
-            });
-        });
+// Parking spans whose start/end come from mapped areas instead of from the segment-wide profile.
+// Each item is `{ centerline, left, right, width, type }`, where centerline is already sliced to the
+// occupied interval. This is also the shape future loading bays and turn pockets can share.
+function buildCorridorParkingBaysForSpans(spans) {
+    if (!corridorProjectionAvailable() || !Array.isArray(spans)) return [];
+    const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
+    return spans.flatMap(span => {
+        const centerline = span?.centerline;
+        if (!Array.isArray(centerline) || centerline.length < 2) return [];
+        const planar = centerline.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        return corridorParkingBaysForPlanarSpan(planar, span, toLatLng);
     });
-    return bays;
 }
 
 // ---------------------------------------------------------------------------
@@ -1981,6 +2042,7 @@ if (typeof window !== 'undefined') {
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
+    window.corridorParkingFlowDirection = corridorParkingFlowDirection;
     window.CORRIDOR_STANDARD_WIDTHS = CORRIDOR_STANDARD_WIDTHS;
     window.CORRIDOR_RAIL_GAUGES = CORRIDOR_RAIL_GAUGES;
     window.CORRIDOR_RAIL_GAUGE_WIDTHS = CORRIDOR_RAIL_GAUGE_WIDTHS;
@@ -1991,6 +2053,7 @@ if (typeof window !== 'undefined') {
     window.corridorParkingTypeForWidth = corridorParkingTypeForWidth;
     window.corridorLaneWidthFixed = corridorLaneWidthFixed;
     window.buildCorridorParkingBays = buildCorridorParkingBays;
+    window.buildCorridorParkingBaysForSpans = buildCorridorParkingBaysForSpans;
     window.buildCorridorDirectionArrows = buildCorridorDirectionArrows;
     window.withLaneDirection = withLaneDirection;
     window.withLaneTreeEvery = withLaneTreeEvery;
@@ -2047,6 +2110,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorIsTrack,
         corridorIsDesignation,
         corridorStripSpans,
+        corridorParkingFlowDirection,
         corridorCenterlineOf,
         corridorLandscapeOf,
         corridorPavingOf,
@@ -2075,6 +2139,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorParkingTypeForWidth,
         corridorLaneWidthFixed,
         buildCorridorParkingBays,
+        buildCorridorParkingBaysForSpans,
         buildCorridorDirectionArrows,
         withLaneDirection,
         withLaneTreeEvery,

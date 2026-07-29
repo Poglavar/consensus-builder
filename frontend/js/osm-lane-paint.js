@@ -106,6 +106,7 @@
     let refreshTimer = null;
     const processed = [];          // planar boxes whose streets have all been looked at
     const wayCache = new Map();    // fetched bbox -> { ways, truncated }; outlives the paint
+    const parkingCache = new Map();// fetched bbox -> separately mapped street-side parking polygons
     let run = 0;                   // bumped to abandon a paint in flight
     let seenCounter = 0;
 
@@ -169,6 +170,7 @@
         const m = map();
         dropCache();
         wayCache.clear();
+        parkingCache.clear();
         if (root && m && typeof m.hasLayer === 'function' && m.hasLayer(root)) m.removeLayer(root);
         root = null;
     }
@@ -230,6 +232,96 @@
         return answer;
     }
 
+    // The road table is queried in planar HTRS96; the separately maintained parking table is indexed
+    // in WGS84. Convert all four corners rather than assuming the projection is axis-aligned.
+    function wgsBboxForHtrs(bboxHTRS, unproject = global.htrs96ToWGS84) {
+        const parts = String(bboxHTRS || '').split(',').map(Number);
+        if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))
+            || typeof unproject !== 'function') return null;
+        const [minX, minY, maxX, maxY] = parts;
+        const corners = [
+            unproject(minX, minY), unproject(minX, maxY),
+            unproject(maxX, minY), unproject(maxX, maxY)
+        ].filter(value => Array.isArray(value) && Number.isFinite(value[0]) && Number.isFinite(value[1]));
+        if (corners.length !== 4) return null;
+        const lats = corners.map(value => value[0]);
+        const lngs = corners.map(value => value[1]);
+        return [Math.min(...lngs), Math.min(...lats), Math.max(...lngs), Math.max(...lats)].join(',');
+    }
+
+    // The road network is deliberately fetched beyond the screen so junctions just outside it can
+    // terminate a segment. Width measurement needs the SAME ground: otherwise a complete 69 m road
+    // can arrive from /osm-road while only the two stations inside the visible parcel cells have
+    // cadastral boundaries to measure against.
+    function leafletBoundsForHtrs(bboxHTRS, unproject = global.htrs96ToWGS84, leaflet = global.L) {
+        const bbox = wgsBboxForHtrs(bboxHTRS, unproject);
+        const [west, south, east, north] = String(bbox || '').split(',').map(Number);
+        if (![west, south, east, north].every(Number.isFinite)
+            || typeof leaflet?.latLngBounds !== 'function') return null;
+        try {
+            return leaflet.latLngBounds([[south, west], [north, east]]);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    // Project separately mapped parking AREAS once. The painter below turns each outer ring into a
+    // longitudinal interval and lateral bounds in the frame of the nearest road.
+    function parkingPolygonsFromGeoJSON(collection, project = global.wgs84ToHTRS96) {
+        if (typeof project !== 'function') return [];
+        const polygons = [];
+        (collection?.features || []).forEach((feature, featureIndex) => {
+            const geometry = feature?.geometry;
+            const outerRings = geometry?.type === 'Polygon'
+                ? [geometry.coordinates?.[0]]
+                : (geometry?.type === 'MultiPolygon'
+                    ? (geometry.coordinates || []).map(part => part?.[0])
+                    : []);
+            outerRings.forEach((coordinates, partIndex) => {
+                const ring = (coordinates || [])
+                    .map(point => {
+                        if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) return null;
+                        return project(point[1], point[0]);
+                    })
+                    .filter(point => Array.isArray(point) && Number.isFinite(point[0]) && Number.isFinite(point[1]));
+                if (ring.length < 3) return;
+                const properties = feature.properties || {};
+                polygons.push({
+                    id: String(feature.id || properties.osm_id || `parking-${featureIndex}`) + `:${partIndex}`,
+                    ring,
+                    box: boxOf([ring]),
+                    orientation: properties.orientation || null,
+                    properties
+                });
+            });
+        });
+        return polygons;
+    }
+
+    async function fetchParkingPolygons(bboxHTRS) {
+        const key = bboxHTRS || '';
+        if (parkingCache.has(key)) return parkingCache.get(key);
+        const bbox = wgsBboxForHtrs(bboxHTRS);
+        if (!bbox) return [];
+        const base = (typeof global.getBackendBase === 'function' && global.getBackendBase()) || '';
+        const url = `${base}/osm-parking?bbox=${encodeURIComponent(bbox)}`;
+        try {
+            const data = (typeof global.fetchJsonWithRetry === 'function')
+                ? await global.fetchJsonWithRetry(url)
+                : await global.fetch(url).then(response => (response.ok ? response.json() : null));
+            if (!data) return [];
+            const polygons = parkingPolygonsFromGeoJSON(data);
+            parkingCache.set(key, polygons);
+            if (parkingCache.size > WAY_CACHE_LIMIT) parkingCache.delete(parkingCache.keys().next().value);
+            return polygons;
+        } catch (error) {
+            // Parking is enrichment of the road profile. A failed DB request must not make the
+            // existing lanes disappear, and a failed answer is deliberately not cached.
+            console.warn('[osmLanePaint] could not fetch locally stored parking', error);
+            return [];
+        }
+    }
+
     // Whether a way is one of the driveable classes a segment can belong to — the same question
     // system-road-adoption asks when deciding what defines a segment at all.
     function isDriveable(way) {
@@ -266,11 +358,11 @@
     // street's corridor ends where somebody's plot begins, and that boundary is drawn in the cadastre
     // whether or not a building was ever surveyed on it — so it is a far more dependable edge than a
     // building footprint, which may be set back from the line, missing, or not yet loaded.
-    function parcelsInView() {
+    function parcelsInView(boundsOverride = null) {
         const road = [];
         const other = [];
         const project = global.wgs84ToHTRS96;
-        const bounds = map()?.getBounds?.();
+        const bounds = boundsOverride || map()?.getBounds?.();
         if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function' || typeof project !== 'function') {
             return { road, other };
         }
@@ -345,15 +437,13 @@
     // then the only thing left to measure against, and a layer that merely used whatever the map
     // happened to have fetched would drop those streets with "no kerb line found on both sides" —
     // which is to say, it would paint differently depending on whether the Buildings layer was on.
-    async function ensureBuildingsLoaded() {
+    async function ensureBuildingsLoaded(boundsOverride = null) {
         try {
             const m = map();
-            if (typeof global.ensureBuildingFootprintsForBounds !== 'function' || !m?.getBounds) return;
-            const bounds = m.getBounds();
-            await global.ensureBuildingFootprintsForBounds([
-                [bounds.getSouth(), bounds.getWest()],
-                [bounds.getNorth(), bounds.getEast()]
-            ]);
+            if (typeof global.ensureBuildingFootprintsForBounds !== 'function'
+                || (!boundsOverride && !m?.getBounds)) return;
+            const bounds = boundsOverride || m.getBounds();
+            await global.ensureBuildingFootprintsForBounds(bounds);
         } catch (error) {
             console.warn('[osmLanePaint] could not preload the buildings', error);
         }
@@ -522,6 +612,41 @@
         return runs;
     }
 
+    // A fetch is authoritative for a cached segment only when its grown bbox contains that whole
+    // segment: every way meeting any node inside that box necessarily intersects the query too. If
+    // the current graph groups those source edges differently, the cached grouping came from an
+    // earlier incomplete viewport and must give way. Equal edge sets are the same segment regardless
+    // of direction or endpoint rounding; parallel roads share no keys and remain independent.
+    function supersededSegmentKeys(currentSegments, records, authoritativeBox) {
+        if (!Array.isArray(currentSegments) || !Array.isArray(records)
+            || !Array.isArray(authoritativeBox) || authoritativeBox.length !== 4) return [];
+        const current = currentSegments.map(segment => {
+            const keys = segment.edgeKeys || segmentEdgeKeys(segment.points);
+            return { keys, set: new Set(keys) };
+        }).filter(segment => segment.keys.length);
+        if (!current.length) return [];
+        const sameEdges = (a, b) => a.size === b.size && [...a].every(key => b.has(key));
+        const old = records.map(record => {
+            const oldKeys = record.edgeKeys || segmentEdgeKeys(record.points);
+            return { record, keys: oldKeys, set: new Set(oldKeys) };
+        }).filter(entry => entry.record?.key && entry.keys.length);
+        const stale = new Set();
+
+        current.forEach(segment => {
+            const overlapping = old.filter(entry => entry.keys.some(key => segment.set.has(key)));
+            if (!overlapping.length) return;
+            // Replacing only half of an old grouping recreates the same seam: the new combined run is
+            // immediately split around the still-owned half. Wait until the fetch contains every old
+            // owner participating in this current segment, then replace the group atomically.
+            if (overlapping.some(entry => !Array.isArray(entry.record.box)
+                || !contains(authoritativeBox, entry.record.box))) return;
+            overlapping.forEach(entry => {
+                if (!sameEdges(entry.set, segment.set)) stale.add(entry.record.key);
+            });
+        });
+        return [...stale];
+    }
+
     // Pure: is this run already drawn as a road proposal? Tested by PROXIMITY rather than by matching
     // segment keys, because a re-segmented run's endpoints move with the fetched bbox while the ground
     // it covers does not — a key match would miss the very case this exists for. A run counts as
@@ -680,6 +805,105 @@
         return first < last ? `${first}|${last}` : `${last}|${first}`;
     }
 
+    let edgeGeometryModule = null;
+    function edgeGeometryFunction(name, supplied) {
+        if (typeof supplied === 'function') return supplied;
+        if (typeof global[name] === 'function') return global[name];
+        if (typeof require === 'function') {
+            try {
+                if (!edgeGeometryModule) edgeGeometryModule = require('./corridor-edge-fill.js');
+                if (typeof edgeGeometryModule?.[name] === 'function') return edgeGeometryModule[name];
+            } catch (_) { }
+        }
+        return null;
+    }
+
+    function polylineLength(pointsXY) {
+        let length = 0;
+        for (let i = 1; i < (pointsXY || []).length; i += 1) {
+            length += Math.hypot(
+                pointsXY[i][0] - pointsXY[i - 1][0],
+                pointsXY[i][1] - pointsXY[i - 1][1]
+            );
+        }
+        return length;
+    }
+
+    function parkingTypeForOrientation(value) {
+        const orientation = String(value || '').toLowerCase();
+        if (orientation === 'perpendicular') return 'parking_perpendicular';
+        if (orientation === 'diagonal' || orientation === 'angled') return 'parking_angled';
+        return 'parking';
+    }
+
+    // Normalize one mapped parking polygon into the road topology's frame:
+    //
+    //   polygon -> nearest road -> left/right side -> [start, end] chainage + lateral bounds
+    //
+    // This does NOT split the road segment. It gives one lane/use an interval along that segment,
+    // which is the representation needed later for loading zones, bus bays and turn pockets too.
+    function parkingSpansForSegment(runXY, parkingPolygons, roadSegments = [], options = {}) {
+        if (!Array.isArray(runXY) || runXY.length < 2 || !Array.isArray(parkingPolygons)) return [];
+        const projectPoint = edgeGeometryFunction('projectPointOntoPolyline', options.projectPointOntoPolyline);
+        if (typeof projectPoint !== 'function') return [];
+        const maxDistance = Number.isFinite(options.maxDistance) ? Number(options.maxDistance) : 20;
+        const nearestTolerance = Number.isFinite(options.nearestTolerance)
+            ? Number(options.nearestTolerance) : 0.35;
+        const minLength = Number.isFinite(options.minLength) ? Number(options.minLength) : 3;
+        const minWidth = Number.isFinite(options.minWidth) ? Number(options.minWidth) : 0.8;
+        const maxWidth = Number.isFinite(options.maxWidth) ? Number(options.maxWidth) : 8;
+        const total = polylineLength(runXY);
+        const candidates = (roadSegments || [])
+            .filter(line => Array.isArray(line) && line.length >= 2);
+        if (!candidates.length) candidates.push(runXY);
+
+        return parkingPolygons.flatMap(area => {
+            const ring = area?.ring;
+            if (!Array.isArray(ring) || ring.length < 3) return [];
+            // Do not count a repeated closing vertex twice.
+            const vertices = ring.length > 3
+                && ring[0][0] === ring[ring.length - 1][0]
+                && ring[0][1] === ring[ring.length - 1][1]
+                ? ring.slice(0, -1)
+                : ring;
+            const centroid = vertices.reduce((sum, point) => [sum[0] + point[0], sum[1] + point[1]], [0, 0])
+                .map(value => value / vertices.length);
+            const onRun = projectPoint(runXY, centroid);
+            if (!onRun || onRun.distance > maxDistance || Math.abs(onRun.signed) < 0.25) return [];
+
+            // A polygon near a junction is seen by more than one segment. Exactly the nearest one
+            // owns it; tolerance only absorbs the tiny numeric difference between a cached sub-run
+            // and the same source geometry in the current viewport.
+            const nearestDistance = Math.min(...candidates.map(line => {
+                const projected = projectPoint(line, centroid);
+                return projected ? projected.distance : Infinity;
+            }));
+            if (onRun.distance > nearestDistance + nearestTolerance) return [];
+
+            const projections = vertices.map(point => projectPoint(runXY, point)).filter(Boolean);
+            if (projections.length < 3) return [];
+            const sign = onRun.signed > 0 ? 1 : -1;
+            const sameSide = projections.map(value => value.signed)
+                .filter(offset => offset * sign > 0.25);
+            if (sameSide.length < 2) return [];
+            const sMin = Math.max(0, Math.min(...projections.map(value => value.chainage)));
+            const sMax = Math.min(total, Math.max(...projections.map(value => value.chainage)));
+            const left = Math.max(...sameSide);
+            const right = Math.min(...sameSide);
+            const width = left - right;
+            if (sMax - sMin < minLength || width < minWidth || width > maxWidth) return [];
+
+            const type = parkingTypeForOrientation(area.orientation || area.properties?.orientation);
+            return [{
+                id: area.id,
+                side: sign > 0 ? 'left' : 'right',
+                sMin, sMax, left, right, width, type,
+                orientation: type === 'parking_perpendicular'
+                    ? 'perpendicular' : (type === 'parking_angled' ? 'angled' : 'parallel')
+            }];
+        });
+    }
+
     // ---------------------------------------------------------------------------
     // 3. Painting
     // ---------------------------------------------------------------------------
@@ -696,6 +920,7 @@
             parcelId: segment.parcel?.id || null,
             length: (global.RoadSegmentation?.polylineLength(segment.points)) || 0,
             state: 'skipped', reason: null, width: null, lanes: [], markings: null,
+            partialParking: [],
             ...fields
         });
         try {
@@ -803,12 +1028,58 @@
             const strips = global.buildCorridorStrips([centerline], reconstructed.profile) || [];
             if (!strips.length) return record({ reason: 'no strips could be built' });
 
+            // `parking:*=separate` is intentionally absent from the segment-wide profile: the OSM
+            // polygons carry the missing longitudinal truth. Clip those areas into road-frame spans,
+            // then build their surface on the shifted centerline that the rest of this street uses.
+            const profileParkingSides = new Set(
+                (typeof global.corridorStripSpans === 'function'
+                    ? global.corridorStripSpans(reconstructed.profile) : [])
+                    .filter(span => typeof global.corridorParkingOrientation === 'function'
+                        && global.corridorParkingOrientation(span.type))
+                    .map(span => ((span.left + span.right) / 2 >= 0 ? 'left' : 'right'))
+            );
+            const slicePolyline = edgeGeometryFunction('corridorEdgeFillSlicePolyline');
+            const partialParking = (typeof slicePolyline === 'function'
+                && typeof global.corridorStripRingPlanar === 'function')
+                ? parkingSpansForSegment(segment.points, context.parkingPolygons || [], context.segments || [])
+                    .filter(span => !profileParkingSides.has(span.side))
+                    .flatMap(span => {
+                        // The span offsets were measured from the OSM line. Everything is rendered
+                        // from the measured corridor's shifted line, so express them in that frame
+                        // and keep them inside the measured road surface.
+                        const left = Math.min(corridor.width / 2, span.left - corridor.shift);
+                        const right = Math.max(-corridor.width / 2, span.right - corridor.shift);
+                        if (left - right < 0.8) return [];
+                        const slicedXY = slicePolyline(points, span.sMin, span.sMax);
+                        if (!slicedXY) return [];
+                        const ring = global.corridorStripRingPlanar(slicedXY, left, right);
+                        if (!Array.isArray(ring) || ring.length < 3) return [];
+                        const asLatLng = point => {
+                            const value = unproject(point[0], point[1]);
+                            return Array.isArray(value) && Number.isFinite(value[0])
+                                ? { lat: value[0], lng: value[1] } : null;
+                        };
+                        const polygon = ring.map(asLatLng).filter(Boolean);
+                        const slicedCenterline = slicedXY.map(asLatLng).filter(Boolean);
+                        if (polygon.length < 3 || slicedCenterline.length < 2) return [];
+                        const direction = typeof global.corridorParkingFlowDirection === 'function'
+                            ? global.corridorParkingFlowDirection(reconstructed.profile, { left, right })
+                            : ((left + right) / 2 >= 0 ? 'backward' : 'forward');
+                        return [{
+                            ...span, left, right, width: left - right,
+                            polygon, centerline: slicedCenterline, direction,
+                            surface: global.corridorStripSurface({ type: span.type })
+                        }];
+                    })
+                : [];
+
             return record({
                 state: 'painted',
                 parcelIds: segment.parcels.map(parcel => parcel.id),
                 name: segment.street?.name || reconstructed.name || null,
                 width: reconstructed.width,
                 markings: { centerline, profile: reconstructed.profile },
+                partialParking,
                 lanes: strips.flatMap(strip => strip.polygons.map(polygon => ({
                     polygon, type: strip.type, surface: global.corridorStripSurface(strip)
                 })))
@@ -842,6 +1113,10 @@
         street.lanes.forEach(lane => global.L.polygon(lane.polygon, {
             ...STRIP_STYLE, pane: PANE, fillColor: lane.surface, interactive: false
         }).addTo(base));
+        (street.partialParking || []).forEach(span => global.L.polygon(span.polygon, {
+            ...STRIP_STYLE, pane: PANE, fillColor: span.surface, interactive: false,
+            className: 'corridor-strip corridor-strip--parking corridor-strip--partial'
+        }).addTo(base));
 
         const detail = global.L.layerGroup();
         // Each layer of paint is tried on its own. They used to share one try/catch, which made the
@@ -874,6 +1149,12 @@
                     global.buildCorridorDirectionArrows([centerline], profile), detail, PANE));
             }
         });
+        if ((street.partialParking || []).length
+            && typeof global.renderCorridorParkingBays === 'function'
+            && typeof global.buildCorridorParkingBaysForSpans === 'function') {
+            mark('partial parking bays', () => global.renderCorridorParkingBays(
+                global.buildCorridorParkingBaysForSpans(street.partialParking), base, PANE));
+        }
         return {
             base, detail, seen: 0,
             box: street.box, name: street.name, width: street.width, length: street.length,
@@ -909,17 +1190,46 @@
                 .filter(([, entry]) => !root || !root.hasLayer(entry.base))
                 .sort((a, b) => a[1].seen - b[1].seen)
                 .slice(0, painted.size - CACHE_LIMIT)
-                .forEach(([key, entry]) => {
-                    (entry.edgeKeys || []).forEach(edgeKey => {
-                        if (paintedEdgeOwners.get(edgeKey) === key) paintedEdgeOwners.delete(edgeKey);
-                    });
-                    painted.delete(key);
-                    forget(key);
-                });
+                .forEach(([key]) => discardPaintedSegment(key));
         }
         // The verdicts of segments that were never painted are held by nothing else, so they need
         // their own ceiling.
         keysToForget([...explained.keys()], painted, EXPLAINED_LIMIT).forEach(forget);
+    }
+
+    function discardPaintedSegment(key) {
+        const entry = painted.get(key);
+        if (entry) {
+            if (root && typeof root.removeLayer === 'function') {
+                root.removeLayer(entry.base);
+                if (entry.detail) root.removeLayer(entry.detail);
+            }
+            (entry.edgeKeys || []).forEach(edgeKey => {
+                if (paintedEdgeOwners.get(edgeKey) === key) paintedEdgeOwners.delete(edgeKey);
+            });
+            painted.delete(key);
+        }
+        forget(key);
+    }
+
+    // Replace stale segment groupings only after a complete-enough fetch proves the grouping changed.
+    // This is the other half of edge ownership: ownership prevents double paint, while reconciliation
+    // lets a newly discovered continuation merge two cached OSM-way fragments (and lets a newly
+    // discovered junction split an old through-chain).
+    function reconcileSegmentTopology(currentSegments, authoritativeBox) {
+        const records = [...explained.entries()].map(([key, record]) => ({ ...record, key }));
+        const staleKeys = supersededSegmentKeys(currentSegments, records, authoritativeBox);
+        if (!staleKeys.length) return [];
+        const staleBoxes = staleKeys
+            .map(key => explained.get(key)?.box || painted.get(key)?.box)
+            .filter(box => Array.isArray(box));
+        staleKeys.forEach(discardPaintedSegment);
+        // Ground remembered as processed while it held the old grouping must be eligible for another
+        // cached fetch if a removed sibling lay just outside this viewport.
+        for (let i = processed.length - 1; i >= 0; i -= 1) {
+            if (staleBoxes.some(box => boxesOverlap(processed[i], box))) processed.splice(i, 1);
+        }
+        return staleKeys;
     }
 
     // Pure: which verdicts to drop so a register of this size comes down to `limit` — oldest first
@@ -1023,9 +1333,6 @@
             const segmentation = global.RoadSegmentation;
             if (typeof project !== 'function' || !segmentation) return;
 
-            const { road: parcels, other } = parcelsInView();
-            if (!parcels.length) return;   // parcels still loading; the next move tries again
-
             // Show what is already painted, then decide whether anything here is new.
             //
             // The test is on the AREA, not on the parcels: which streets a parcel holds cannot be
@@ -1041,8 +1348,21 @@
             // Reach past the viewport so a run is segmented against the junctions just off-screen.
             const key = bboxKey();
             const grown = growBbox(key, FETCH_MARGIN);
-            const { ways, truncated } = await fetchWays(grown || key);
+            const fetchKey = grown || key;
+            const measurementBounds = leafletBoundsForHtrs(fetchKey);
+            // The roads and parking are indexed local database reads. The parcel/building preload
+            // covers the same buffered area, so every station of a segment has the boundary evidence
+            // that the segment itself had when it was formed.
+            const [{ ways, truncated }, parkingPolygons] = await Promise.all([
+                fetchWays(fetchKey),
+                fetchParkingPolygons(fetchKey),
+                (measurementBounds && typeof global.fetchParcelData === 'function')
+                    ? global.fetchParcelData(measurementBounds) : null,
+                ensureBuildingsLoaded(measurementBounds)
+            ]);
             if (token !== run || !enabled) return;
+            const { road: parcels, other } = parcelsInView(measurementBounds);
+            if (!parcels.length) return;   // parcels still loading; the next move tries again
             // Remember the ground this fetch covered, so panning back over it costs nothing.
             const grownBox = String(grown || key).split(',').map(Number);
             if (grownBox.length === 4 && grownBox.every(Number.isFinite)) {
@@ -1058,8 +1378,6 @@
                 .map(way => way.pointsXY);
             const segments = segmentation.segmentRoadNetwork(lines);
 
-            await ensureBuildingsLoaded();
-            if (token !== run || !enabled) return;
             const buildings = buildingRings(project);
             const roadLand = dissolveRoadLand(parcels);
             const otherRings = other.flatMap(parcel => parcel.rings);
@@ -1077,11 +1395,14 @@
                 adopted: adoptedSegmentKeys(),
                 // Whether the ways above are all of them, or all the endpoint would give.
                 truncated,
+                parkingPolygons,
                 unproject: global.htrs96ToWGS84
             };
             // STREETS, then SEGMENTS, then painting. The parcels only say where a segment's kerb
             // lines are; what gets remembered and drawn is the segment.
-            paintSegments(segmentsInView(context, parcels), context, token);
+            const pending = segmentsInView(context, parcels);
+            reconcileSegmentTopology(pending, grownBox);
+            paintSegments(pending, context, token);
         } catch (error) {
             console.warn('[osmLanePaint] could not paint the viewport', error);
         }
@@ -1304,12 +1625,16 @@
         growBbox, ringsNear, boxOf, ringsOf, boxesOverlap, contains, runIsUnderProposal,
         corridorFromSides, segmentsInView, segmentsInParcel, paintSegment, lanesForParcel,
         segmentKey, streetOf, segmentPolygon, dissolveRoadLand, explainAt, describeSegment,
-        keysToForget, segmentEdgeKeys, unownedSegmentRuns,
+        keysToForget, segmentEdgeKeys, unownedSegmentRuns, supersededSegmentKeys,
+        wgsBboxForHtrs, leafletBoundsForHtrs, parkingPolygonsFromGeoJSON, parkingSpansForSegment,
         // Exported for the same reason as `lanesForParcel`: WHICH group a mark goes into decides the
         // zoom it appears at, and that is a decision worth a test rather than a look at the map.
         buildSegmentGroups,
         // What the layer is holding on to, so a leak shows up as a number rather than as a slow map.
-        sizes: () => ({ painted: painted.size, explained: explained.size, ways: wayCache.size }),
+        sizes: () => ({
+            painted: painted.size, explained: explained.size,
+            ways: wayCache.size, parkingAreas: parkingCache.size
+        }),
         // What the layer decided about every segment it has looked at, and the same grouped by
         // street — both for the console.
         segments: () => [...explained.values()],

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zagreb Lane Topology Manager</title>
+    <link rel="icon" href="../images/consensus-builder-logo-2.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" href="topology.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <div class="eyebrow">Zagreb road laboratory</div>
+            <h1>Lane topology manager</h1>
+        </div>
+        <div class="topbar-stats" id="topbar-stats" aria-live="polite">
+            <span><b>0</b> ways</span>
+            <span><b>0</b> lanes</span>
+            <span><b>0</b> connections</span>
+            <span><b>0</b> problems</span>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <aside class="sidebar">
+            <section class="panel panel--primary">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Area</div>
+                        <h2>Viewport evidence</h2>
+                    </div>
+                    <span class="status-pill" id="snapshot-pill">not loaded</span>
+                </div>
+                <p class="muted">Pan and zoom to a small area, then load the OSM evidence currently inside the viewport.</p>
+                <div class="bbox-readout" id="bbox-readout">—</div>
+                <button class="button button--primary button--wide" id="load-viewport">Load viewport</button>
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Layers</div>
+                        <h2>Compare representations</h2>
+                    </div>
+                </div>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-osm">
+                    <span class="swatch swatch--osm"></span>
+                    <span><b>Raw OSM ways</b><small>Way boundaries, source tags and rails</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-topology" checked>
+                    <span class="swatch swatch--topology"></span>
+                    <span><b>Lane topology</b><small>Directed lanes and graph connections</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-painted" checked>
+                    <span class="swatch swatch--painted"></span>
+                    <span><b>Painted lanes</b><small>Road surfaces derived from the graph</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-problems" checked>
+                    <span class="swatch swatch--problem"></span>
+                    <span><b>Problems</b><small>Contradictions and unresolved decisions</small></span>
+                </label>
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Recognition</div>
+                        <h2>Build a graph version</h2>
+                    </div>
+                </div>
+                <button class="button button--wide" id="build-deterministic">Build deterministic base</button>
+                <div class="provider-grid">
+                    <button class="button button--provider" id="run-codex" disabled>
+                        <span>Run Codex</span><small id="codex-status">checking CLI…</small>
+                    </button>
+                    <button class="button button--provider" id="run-claude" disabled>
+                        <span>Run Claude</span><small id="claude-status">checking CLI…</small>
+                    </button>
+                </div>
+                <div class="job-status" id="job-status">No recognition job running.</div>
+            </section>
+
+            <section class="panel panel--versions">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">History</div>
+                        <h2>Solution versions</h2>
+                    </div>
+                    <button class="button button--tiny" id="refresh-solutions">Refresh</button>
+                </div>
+                <div class="version-list" id="version-list">
+                    <div class="empty-state">Load a viewport to see its versions.</div>
+                </div>
+            </section>
+
+            <section class="panel panel--inspector">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Inspector</div>
+                        <h2 id="inspector-title">Nothing selected</h2>
+                    </div>
+                </div>
+                <pre id="inspector-content">Click an OSM way, topology lane, connection, node or problem.</pre>
+            </section>
+        </aside>
+
+        <section class="map-shell">
+            <div id="map" aria-label="Lane topology map"></div>
+            <div class="topology-focus-bar" aria-live="polite">
+                <span class="topology-focus-bar__icon">➤</span>
+                <span id="focus-status">Hover a lane or node to trace it. Click to pin; Esc clears.</span>
+                <button class="button button--tiny" id="clear-topology-focus" type="button" disabled>Nothing pinned</button>
+            </div>
+            <div class="map-legend">
+                <span><i class="legend-arrow legend-arrow--forward">➤</i>with OSM way</span>
+                <span><i class="legend-arrow legend-arrow--backward">➤</i>against OSM way</span>
+                <span><i class="legend-line legend-line--transit"></i>restricted transit</span>
+                <span><i class="legend-line legend-line--connection"></i>permitted movement</span>
+                <span><i class="legend-portal"></i>junction portal</span>
+                <span><i class="legend-node legend-node--boundary"></i>way boundary</span>
+                <span><i class="legend-node legend-node--junction"></i>junction</span>
+            </div>
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
+    <script src="../js/corridor-lane-topology.js"></script>
+    <script src="../js/corridor-profile.js"></script>
+    <script src="../js/osm-profile.js"></script>
+    <script src="../js/lane-topology-graph.js"></script>
+    <script src="../js/lane-topology-view.js"></script>
+    <script src="topology.js"></script>
+</body>
+</html>

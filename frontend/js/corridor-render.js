@@ -169,7 +169,17 @@ function corridorRailRenderer(pane) {
     if (typeof L === 'undefined' || !L.canvas) return undefined;
     const key = pane || '';
     if (!corridorCanvasRenderers.has(key)) {
-        corridorCanvasRenderers.set(key, L.canvas(pane ? { padding: 0.5, pane } : { padding: 0.5 }));
+        const renderer = L.canvas(pane ? { padding: 0.5, pane } : { padding: 0.5 });
+        // Leaflet's SVG paths respect `interactive: false`, but a Canvas renderer is one viewport-sized
+        // DOM element. Without this it still catches the pointer before the parcel SVG underneath, so
+        // merely showing batched parking marks/rails disables the road-segment hover and parcel hover.
+        // Every path placed on this renderer is paint-only.
+        if (renderer && typeof renderer.on === 'function') {
+            renderer.on('add', function () {
+                if (this._container?.style) this._container.style.pointerEvents = 'none';
+            });
+        }
+        corridorCanvasRenderers.set(key, renderer);
     }
     return corridorCanvasRenderers.get(key);
 }
@@ -274,8 +284,9 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
     }
 }
 
-// Every track of a corridor: one per RAIL LANE of its cross-section, at that lane's gauge, on that
-// lane's centre. A corridor with no rail lane has no rails — which is the whole rule.
+// Every track of a corridor: a dedicated RAIL LANE, or rails embedded in the centre of a traffic/PSV
+// lane. The latter keeps its asphalt surface and width — the rails are carried by that lane rather
+// than manufacturing a second strip beside it.
 //
 // Bright steel on dark ballast, so the pair of rails is the thing that catches the eye. `sleeperGroup`
 // splits the two apart for callers that want them at different zooms: the rails are what identifies a
@@ -283,7 +294,8 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
 // worth drawing close up.
 function renderCorridorRails(centerlines, profile, group, options = {}) {
     if (typeof wgs84ToHTRS96 !== 'function' || typeof corridorStripSpans !== 'function') return;
-    const railLanes = corridorStripSpans(profile).filter(strip => strip.type === 'rail');
+    const railLanes = corridorStripSpans(profile)
+        .filter(strip => strip.type === 'rail' || strip.embeddedRail === true);
     if (!railLanes.length) return;
 
     const railOptions = {

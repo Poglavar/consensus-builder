@@ -26,6 +26,9 @@
         sampleSpacing: 5,        // m between the stations the run is measured at
         carrierTolerance: 4,     // m — a way this close all along the run IS the run
         carrierCoverage: 0.25,   // fraction of stations a way must cover to describe the run
+        carrierSourceTolerance: 0.75, // m — source fragments lie on the segmented run, not merely beside it
+        carrierSourceStations: 2, // rejects a side street that only touches the run at its junction node
+        carrierAlignment: 0.8,   // |cos| — a carrier runs along the segment rather than crossing it
         flankMinOffset: 1.5,     // m — nearer than this it is the carriageway, not a thing beside it
         flankMaxOffset: 25,      // m — further out it belongs to another street
         flankCoverage: 0.5,      // fraction of stations a neighbour must run beside to count
@@ -281,6 +284,8 @@
             const isRail = STREET_RAILWAYS.has(railway);
             let onRun = 0;
             let alignment = 0;
+            let sourceOnRun = 0;
+            let sourceAlignment = 0;
             const beside = { left: [], right: [] };
             // A track is placed by WHERE IT LIES, so its offsets are kept signed (+ left of travel) and
             // at every station, including the ones inside `flankMinOffset` — a tram running down the
@@ -307,7 +312,12 @@
                 }
                 if (near.distance <= settings.carrierTolerance) {
                     onRun += 1;
-                    alignment += station.tx * near.tx + station.ty * near.ty;
+                    const along = station.tx * near.tx + station.ty * near.ty;
+                    alignment += along;
+                    if (near.distance <= settings.carrierSourceTolerance) {
+                        sourceOnRun += 1;
+                        sourceAlignment += along;
+                    }
                     return;
                 }
                 // A FLANK has to be inside the segment's own polygon when there is one — that is the
@@ -329,8 +339,11 @@
                 name: way?.properties?.name || undefined,
                 tags: tagsOf(way),
                 coverage: onRun / stations.length,
+                sourceCoverage: sourceOnRun / stations.length,
+                sourceStations: sourceOnRun,
                 driveable: DRIVEABLE_HIGHWAYS.has(highway),
                 alignment,
+                sourceAlignment,
                 beside,
                 railOffsets,
                 railStations
@@ -339,7 +352,19 @@
 
         // Only the driveable ways describe a street; the footways that happen to lie along it are
         // pavements. With no driveable one at all the run IS a footway or a pedestrian street.
-        const covering = measured.filter(entry => entry.coverage >= settings.carrierCoverage);
+        // A topology segment is normally made from a CHAIN of native OSM ways. Requiring each native
+        // way to cover 25% of a long segment discarded every short fragment, so one 108 m seven-lane
+        // junction approach outweighed the many four-lane pieces over a 307 m Savska segment.
+        //
+        // Source fragments sit on the segmented line itself. Keep every aligned fragment that owns at
+        // least two stations; a crossing side street normally owns only the shared junction station.
+        // The old broad-coverage rule remains the fallback for callers whose run did not come directly
+        // from the fetched source geometry.
+        const sourceCovering = measured.filter(entry => entry.sourceStations >= settings.carrierSourceStations
+            && Math.abs(entry.sourceAlignment / entry.sourceStations) >= settings.carrierAlignment);
+        const covering = sourceCovering.length
+            ? sourceCovering
+            : measured.filter(entry => entry.coverage >= settings.carrierCoverage);
         const driveable = covering.filter(entry => entry.driveable);
         const carriers = (driveable.length ? driveable : covering).slice().sort((a, b) => b.coverage - a.coverage);
 
@@ -449,20 +474,19 @@
             const flippedKey = key
                 .replace(/(^|:)left(:|$)/, '$1__SIDE__$2')
                 .replace(/(^|:)right(:|$)/, '$1left$2')
-                .replace(/(^|:)__SIDE__(:|$)/, '$1right$2');
+                .replace(/(^|:)__SIDE__(:|$)/, '$1right$2')
+                .replace(/(^|:)forward(:|$)/, '$1__DIRECTION__$2')
+                .replace(/(^|:)backward(:|$)/, '$1forward$2')
+                .replace(/(^|:)__DIRECTION__(:|$)/, '$1backward$2');
             let value = tags[key];
             if (value === 'left') value = 'right';
             else if (value === 'right') value = 'left';
+            else if (value === 'forward') value = 'backward';
+            else if (value === 'backward') value = 'forward';
             out[flippedKey] = value;
         });
         if (out.oneway === 'yes') out.oneway = '-1';
         else if (out.oneway === '-1') out.oneway = 'yes';
-        const forward = out['lanes:forward'];
-        const backward = out['lanes:backward'];
-        if (forward !== undefined || backward !== undefined) {
-            if (backward !== undefined) out['lanes:forward'] = backward; else delete out['lanes:forward'];
-            if (forward !== undefined) out['lanes:backward'] = forward; else delete out['lanes:backward'];
-        }
         return out;
     }
 
@@ -858,6 +882,102 @@
         return { strips };
     }
 
+    function directionalLaneTokens(tags, key, direction) {
+        const value = tags?.[`${key}:${direction}`];
+        return value === undefined ? [] : String(value).split('|').map(token => token.trim().toLowerCase());
+    }
+
+    function tramLaneToken(value) {
+        return String(value || '').split(';').some(token => ['tram', 'light_rail'].includes(token.trim()));
+    }
+
+    function psvLaneToken(value) {
+        return String(value || '').split(';').some(token => ['yes', 'designated', 'permissive'].includes(token.trim()));
+    }
+
+    // Embedded rails occupy a lane that ALREADY exists; a reservation occupies width of its own.
+    // OSM distinguishes the two with per-lane tags. Keep the former as a traffic/PSV surface carrying
+    // rails and return only the genuinely dedicated tracks for insertRailStrips().
+    function integrateRailTracks(profile, tracks, tags, options = {}) {
+        const strips = ((profile && profile.strips) || []).map(strip => ({ ...strip }));
+        const allTracks = Array.isArray(tracks) ? tracks : [];
+        if (!strips.length) return { profile: { strips }, dedicatedTracks: allTracks, sharedTracks: 0 };
+
+        const taggedRailIndices = new Set();
+        ['forward', 'backward'].forEach(direction => {
+            const indices = strips
+                .map((strip, index) => ((strip.type === 'driving' || strip.type === 'bus')
+                    && strip.direction === direction ? index : -1))
+                .filter(index => index >= 0);
+            // OSM lane lists are left-to-right as seen in that direction. Backward traffic sees the
+            // physical cross-section in reverse.
+            const ordered = direction === 'backward' ? indices.slice().reverse() : indices;
+            const psv = directionalLaneTokens(tags, 'psv:lanes', direction);
+            const access = directionalLaneTokens(tags, 'access:lanes', direction);
+            const embedded = directionalLaneTokens(tags, 'embedded_rails:lanes', direction);
+            const railway = directionalLaneTokens(tags, 'railway:lanes', direction);
+            ordered.forEach((index, laneIndex) => {
+                if (psvLaneToken(psv[laneIndex]) && ['no', 'private'].includes(access[laneIndex])) {
+                    strips[index].type = 'bus';
+                }
+                if (tramLaneToken(embedded[laneIndex]) || tramLaneToken(railway[laneIndex])) {
+                    taggedRailIndices.add(index);
+                }
+            });
+        });
+
+        if (!allTracks.length) return {
+            profile: { strips }, dedicatedTracks: [], sharedTracks: 0
+        };
+
+        const hasScalarEmbedded = tramLaneToken(tags?.embedded_rails);
+        let candidates = [...taggedRailIndices];
+        if (!candidates.length && hasScalarEmbedded) {
+            candidates = strips
+                .map((strip, index) => (strip.type === 'driving' || strip.type === 'bus') ? index : -1)
+                .filter(index => index >= 0);
+        }
+        if (!candidates.length) return {
+            profile: { strips }, dedicatedTracks: allTracks, sharedTracks: 0
+        };
+
+        const total = stripsWidth(strips);
+        let cursor = total / 2;
+        const centers = strips.map(strip => {
+            const center = cursor - strip.width / 2;
+            cursor -= strip.width;
+            return center;
+        });
+        const shift = Number(options.sectionShift) || 0;
+        const available = new Set(candidates);
+        const shared = new Set();
+        const dedicatedTracks = [];
+        allTracks.forEach(track => {
+            if (!available.size) {
+                dedicatedTracks.push(track);
+                return;
+            }
+            const offset = Number(track.offset) - shift;
+            const index = [...available].reduce((best, candidate) => (
+                best === null || Math.abs(centers[candidate] - offset) < Math.abs(centers[best] - offset)
+                    ? candidate : best
+            ), null);
+            if (index === null) {
+                dedicatedTracks.push(track);
+                return;
+            }
+            available.delete(index);
+            shared.add(index);
+            strips[index].embeddedRail = true;
+            strips[index].gauge = Number.isFinite(track.gauge) ? track.gauge : 1000;
+        });
+        return {
+            profile: { strips },
+            dedicatedTracks,
+            sharedTracks: shared.size
+        };
+    }
+
     // Make the section sum to EXACTLY `available`, in a fixed order of preference.
     //
     // Growing: the lanes take what they need up to a real lane's width, then a pair of parking bays
@@ -1014,13 +1134,20 @@
         // carriageways PLUS its rails, and fitting the section without them puts the missing metres
         // into traffic lanes.
         const tracks = railTracksForRun(match.rails, { ...options, availableWidth });
-        const nominal = tracks.length ? insertRailStrips(bare, tracks, options) : bare;
+        const integrated = integrateRailTracks(bare, tracks, resolved.tags, options);
+        const nominal = integrated.dedicatedTracks.length
+            ? insertRailStrips(integrated.profile, integrated.dedicatedTracks, options)
+            : integrated.profile;
         tracks.forEach(track => {
             const where = Math.abs(track.offset) < 1
                 ? 'down the middle'
                 : `${roundWidth(Math.abs(track.offset))} m to the ${track.offset > 0 ? 'left' : 'right'}`;
             resolved.notes.push(`tram: one track ${where} of the centreline`);
         });
+        if (integrated.sharedTracks) {
+            resolved.notes.push(`tram: ${integrated.sharedTracks} ${integrated.sharedTracks === 1 ? 'track shares' : 'tracks share'}`
+                + ' existing traffic/PSV lanes rather than adding separate rail lanes');
+        }
         // Rails the tags claim and the geometry cannot find. Said out loud, because the alternative is
         // a street that quietly has a tram in real life and none in its section.
         if (!tracks.length && Object.keys(resolved.tags).some(key => key.startsWith('embedded_rails'))) {
@@ -1060,6 +1187,7 @@
             highway: merged.highway || null,
             reversed: match.reversed,
             tracks: tracks.length,
+            sharedTracks: integrated.sharedTracks,
             // The ways this section was read off, most of the run first — what a "this is wrong" link
             // has to point at, since the fault is in the tagging rather than in the reading of it.
             osmIds: match.carriers
@@ -1079,6 +1207,7 @@
         matchWaysToRun,
         railTracksForRun,
         insertRailStrips,
+        integrateRailTracks,
         lineTouchesRing,
         mergeTagsAlongRun,
         reverseOsmTagSides,

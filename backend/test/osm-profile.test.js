@@ -21,7 +21,8 @@ const {
     orientForRightHandTraffic,
     osmProfileForSegment,
     railTracksForRun,
-    insertRailStrips
+    insertRailStrips,
+    integrateRailTracks
 } = require(path.join(here, '../../frontend/js/osm-profile.js'));
 const {
     corridorProfileFromOsmTags, corridorProfileWidth, corridorStandardWidth
@@ -79,6 +80,38 @@ describe('matchWaysToRun', () => {
         const match = matchWaysToRun(straightRun(), [parallelWay(0.2, 'footway', { footway: 'sidewalk' })]);
         expect(match.carriers.length).toBe(1);
         expect(match.carriers[0].highway).toBe('footway');
+    });
+
+    it('keeps short aligned source fragments, so one long junction approach cannot dominate a long run', () => {
+        const run = straightRun(300);
+        const source = (from, to, lanes, id) => ({
+            pointsXY: [[0, from], [0, to]],
+            properties: {
+                osm_id: id,
+                highway_type: 'secondary',
+                name: 'Savska cesta',
+                tags: { highway: 'secondary', name: 'Savska cesta', lanes }
+            }
+        });
+        const crossing = {
+            pointsXY: [[-30, 200], [30, 200]],
+            properties: {
+                osm_id: 'crossing',
+                highway_type: 'secondary',
+                name: 'Side street',
+                tags: { highway: 'secondary', name: 'Side street', lanes: '9' }
+            }
+        };
+        const match = matchWaysToRun(run, [
+            source(0, 110, '7', 'junction-approach'),
+            source(110, 175, '4', 'ordinary-a'),
+            source(175, 235, '4', 'ordinary-b'),
+            source(235, 300, '4', 'ordinary-c'),
+            crossing
+        ]);
+
+        expect(match.carriers.map(carrier => carrier.way.properties.osm_id)).not.toContain('crossing');
+        expect(mergeTagsAlongRun(match.carriers).lanes).toBe('4');
     });
 
     // Which ways describe a segment is a question about the SEGMENT'S OWN AREA, not about a fixed
@@ -145,7 +178,9 @@ describe('reverseOsmTagSides', () => {
     it('swaps the sides, the direction of travel and the per-direction lane counts', () => {
         const flipped = reverseOsmTagSides({
             'sidewalk:left': 'yes', 'parking:right:orientation': 'diagonal', sidewalk: 'left',
-            oneway: 'yes', 'lanes:forward': '3', 'lanes:backward': '1', lanes: '4'
+            oneway: 'yes', 'lanes:forward': '3', 'lanes:backward': '1', lanes: '4',
+            'embedded_rails:lanes:forward': '|tram||',
+            'psv:lanes:backward': '|designated'
         });
         expect(flipped['sidewalk:right']).toBe('yes');
         expect(flipped['sidewalk:left']).toBe(undefined);
@@ -154,6 +189,8 @@ describe('reverseOsmTagSides', () => {
         expect(flipped.oneway).toBe('-1');
         expect(flipped['lanes:forward']).toBe('1');
         expect(flipped['lanes:backward']).toBe('3');
+        expect(flipped['embedded_rails:lanes:backward']).toBe('|tram||');
+        expect(flipped['psv:lanes:forward']).toBe('|designated');
         expect(flipped.lanes).toBe('4');
     });
 
@@ -735,6 +772,34 @@ describe('putting the tracks in the section', () => {
         expect(rail.width).toBe(corridorStandardWidth('rail', 1000));
         expect(rail.gauge).toBe(1000);
     });
+
+    it('keeps per-lane embedded tram tracks inside their traffic/PSV lanes', () => {
+        const profile = corridorProfileFromOsmTags({
+            highway: 'secondary',
+            lanes: '4',
+            'lanes:forward': '2',
+            'lanes:backward': '2'
+        });
+        const out = integrateRailTracks(profile, [
+            { offset: 4.8, gauge: 1000 },
+            { offset: -4.8, gauge: 1000 }
+        ], {
+            'psv:lanes:forward': '|designated',
+            'psv:lanes:backward': '|designated',
+            'access:lanes:forward': 'yes|no',
+            'access:lanes:backward': 'yes|no',
+            'embedded_rails:lanes:forward': '|tram',
+            'embedded_rails:lanes:backward': '|tram'
+        });
+
+        expect(out.dedicatedTracks).toEqual([]);
+        expect(out.sharedTracks).toBe(2);
+        expect(out.profile.strips).toHaveLength(4);
+        expect(out.profile.strips.filter(strip => strip.type === 'driving')).toHaveLength(2);
+        expect(out.profile.strips.filter(strip => strip.type === 'bus')).toHaveLength(2);
+        expect(out.profile.strips.filter(strip => strip.embeddedRail)).toHaveLength(2);
+        expect(corridorProfileWidth(out.profile)).toBeCloseTo(corridorProfileWidth(profile));
+    });
 });
 
 describe('a boulevard with a tram, end to end', () => {
@@ -780,6 +845,36 @@ describe('a boulevard with a tram, end to end', () => {
         });
         expect(out.tracks).toBe(0);
         expect(out.notes.some(note => note.includes('no tramway runs along this'))).toBe(true);
+    });
+
+    it('does not add two extra rail strips when Savska tags the tracks as embedded per lane', () => {
+        const out = osmProfileForSegment({
+            runXY: tramRun(),
+            ways: [
+                road(0, {
+                    highway: 'secondary', lanes: '4',
+                    'lanes:forward': '2', 'lanes:backward': '2',
+                    'psv:lanes:forward': '|designated',
+                    'psv:lanes:backward': '|designated',
+                    'access:lanes:forward': 'yes|no',
+                    'access:lanes:backward': 'yes|no',
+                    'embedded_rails:lanes:forward': '|tram',
+                    'embedded_rails:lanes:backward': '|tram'
+                }),
+                tram(-4.8, { id: 'tram-a' }),
+                tram(4.8, { id: 'tram-b' })
+            ],
+            availableWidth: 26.6,
+            profileFromTags: corridorProfileFromOsmTags,
+            options: { preferNominal: true }
+        });
+
+        expect(out.tracks).toBe(2);
+        expect(out.sharedTracks).toBe(2);
+        expect(out.profile.strips.filter(strip => strip.type === 'rail')).toEqual([]);
+        expect(out.profile.strips.filter(strip => strip.embeddedRail)).toHaveLength(2);
+        expect(out.profile.strips.filter(strip => strip.type === 'driving')).toHaveLength(2);
+        expect(out.profile.strips.filter(strip => strip.type === 'bus')).toHaveLength(2);
     });
 });
 

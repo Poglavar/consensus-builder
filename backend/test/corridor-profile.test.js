@@ -44,7 +44,9 @@ const {
     buildCorridorJunctionTreatments,
     corridorParkingOrientation,
     corridorLaneWidthFixed,
+    corridorParkingFlowDirection,
     buildCorridorParkingBays,
+    buildCorridorParkingBaysForSpans,
     buildCorridorDirectionArrows,
     withLaneDirection,
     withLaneTreeEvery
@@ -100,6 +102,20 @@ describe('normalizeCorridorProfile', () => {
         const strips = [{ type: 'driving', width: 3 }];
         expect(normalizeCorridorProfile(strips)).toEqual({ strips });
         expect(normalizeCorridorProfile({ strips })).toEqual({ strips });
+    });
+
+    it('preserves rails embedded in a traffic or PSV lane without turning them into another strip', () => {
+        const profile = normalizeCorridorProfile([
+            { type: 'driving', width: 3, direction: 'forward', embeddedRail: true, gauge: 1000 },
+            { type: 'bus', width: 3.25, direction: 'backward', embeddedRail: true, gauge: 1000 },
+            { type: 'sidewalk', width: 2, embeddedRail: true, gauge: 1000 }
+        ]);
+        expect(profile.strips).toEqual([
+            { type: 'driving', width: 3, direction: 'forward', embeddedRail: true, gauge: 1000 },
+            { type: 'bus', width: 3.25, direction: 'backward', embeddedRail: true, gauge: 1000 },
+            { type: 'sidewalk', width: 2 }
+        ]);
+        expect(corridorProfileWidth(profile)).toBe(8.25);
     });
 });
 
@@ -1276,11 +1292,68 @@ describe('buildCorridorParkingBays', () => {
         });
     });
 
+    it('slants each side along its adjacent traffic flow, not the arbitrary centerline direction', () => {
+        withProjection(() => {
+            const profile = {
+                strips: [
+                    { type: 'parking_angled', width: 4.5 },
+                    { type: 'driving', width: 3, direction: 'backward' },
+                    { type: 'driving', width: 3, direction: 'forward' },
+                    { type: 'parking_angled', width: 4.5 }
+                ]
+            };
+            const spans = corridorStripSpans(profile).filter(span => span.type === 'parking_angled');
+            expect(spans.map(span => corridorParkingFlowDirection(profile, span)))
+                .toEqual(['backward', 'forward']);
+
+            const dividers = buildCorridorParkingBays([horizontalRoad], profile)
+                .filter(bay => bay.kind === 'divider');
+            const left = dividers.find(bay => bay.line[0].lat > 0);
+            const right = dividers.find(bay => bay.line[0].lat < 0);
+            // Each line is [road-edge, curb-edge]. The curb end advances in that side's traffic flow.
+            expect(left.line[1].lng).toBeLessThan(left.line[0].lng);
+            expect(right.line[1].lng).toBeGreaterThan(right.line[0].lng);
+        });
+    });
+
+    it('points angled parking on both sides the same way along a one-way street', () => {
+        withProjection(() => {
+            const profile = {
+                strips: [
+                    { type: 'parking_angled', width: 4.5 },
+                    { type: 'driving', width: 3, direction: 'forward' },
+                    { type: 'parking_angled', width: 4.5 }
+                ]
+            };
+            const dividers = buildCorridorParkingBays([horizontalRoad], profile)
+                .filter(bay => bay.kind === 'divider');
+            expect(dividers.length).toBeGreaterThan(2);
+            dividers.forEach(divider => {
+                expect(divider.line[1].lng).toBeGreaterThan(divider.line[0].lng);
+            });
+        });
+    });
+
     it('produces nothing for a corridor with no parking lane', () => {
         withProjection(() => {
             const bays = buildCorridorParkingBays([horizontalRoad],
                 { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 2 }] });
             expect(bays).toEqual([]);
+        });
+    });
+
+    it('marks only the mapped longitudinal interval of a partial parking lane', () => {
+        withProjection(() => {
+            const bays = buildCorridorParkingBaysForSpans([{
+                centerline: [{ lat: 0, lng: 20 }, { lat: 0, lng: 60 }],
+                left: -3, right: -5.5, width: 2.5, type: 'parking'
+            }]);
+            expect(bays.filter(bay => bay.kind === 'edge')).toHaveLength(2);
+            expect(bays.filter(bay => bay.kind === 'divider').length).toBeGreaterThan(4);
+            bays.flatMap(bay => bay.line).forEach(point => {
+                expect(point.lng).toBeGreaterThanOrEqual(20);
+                expect(point.lng).toBeLessThanOrEqual(60);
+            });
         });
     });
 });
@@ -1468,11 +1541,10 @@ describe('the bands of a cross-section can be told apart from above', () => {
         expect(contrast(surfaceOf('rail'), surfaceOf('driving'))).toBeGreaterThan(2);
     });
 
-    it('separates a parking lane from the carriageway and from the bus lane', () => {
-        // Both are asphalt, so this is a nudge rather than a gulf — the yellow bay markings do the
-        // real work. It still has to be a nudge in the right direction, and not INTO the bus lane.
-        expect(contrast(surfaceOf('parking'), surfaceOf('driving'))).toBeGreaterThan(1.5);
-        expect(luminance(surfaceOf('parking'))).toBeGreaterThan(luminance(surfaceOf('driving')));
+    it('keeps parking on the carriageway asphalt and clear of the bus-lane material', () => {
+        // Yellow closed-bay markings say "parking". A lighter fill made deep parking on both sides
+        // turn almost the whole road light grey even though it is physically one asphalt surface.
+        expect(surfaceOf('parking')).toBe(surfaceOf('driving'));
         expect(surfaceOf('parking')).not.toBe(surfaceOf('bus'));
     });
 
