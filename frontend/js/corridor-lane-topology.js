@@ -11,6 +11,10 @@
     const DEFAULT_TRANSITION_LENGTH_M = 28;
     const ENDPOINT_KEY_PRECISION = 2;
     const MIN_CONTINUATION_DOT = Math.cos(Math.PI / 4);
+    // How far a divider's predicted offset may sit from a real one before the two stop being the
+    // same line. Half a narrow lane: wide enough to absorb a modelled-vs-drawn width difference,
+    // narrow enough that a divider never captures its neighbour.
+    const OFFSET_MATCH_TOLERANCE_M = 1.2;
 
     function cleanPoints(points) {
         return (points || [])
@@ -246,6 +250,121 @@
         else setEndpointTargets(b, a, false);
     }
 
+    // Where an offset in one cross-section lands in the neighbouring one, given the lane pairs that
+    // are known to continue. Between known pairs the cross-section is interpolated; outside them
+    // there is nothing to interpolate between, so a curb keeps its measured DISTANCE from the
+    // outermost matched lane rather than being scaled by a slope it never had.
+    //
+    // Which way that distance points is the catch. Two sections digitized head to head have mirrored
+    // frames, so their offsets run in opposite directions and a curb outside the lanes has to extend
+    // outward in the mirrored sense. Two or more pairs reveal that from the data; with only one,
+    // nothing in the numbers can, and the caller's fallbackDirection (+1 aligned, -1 mirrored, known
+    // from which ends meet) decides.
+    function mapOffsetAcross(offset, pairs, fallbackDirection) {
+        // Number(null) is 0 — a real, central, entirely plausible offset. An absent one has to stay
+        // absent or a lane with no cross-section position anchors every interpolation to the middle.
+        const finiteOffset = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+        const value = finiteOffset(offset);
+        if (value === null) return null;
+        const sorted = (pairs || [])
+            .map(pair => ({ from: finiteOffset(pair && pair.from), to: finiteOffset(pair && pair.to) }))
+            .filter(pair => pair.from !== null && pair.to !== null)
+            .sort((left, right) => left.from - right.from);
+        if (!sorted.length) return null;
+        const first = sorted[0];
+        const last = sorted[sorted.length - 1];
+        const measured = Math.sign(last.to - first.to);
+        const supplied = finiteOffset(fallbackDirection);
+        const direction = measured !== 0
+            ? measured
+            : (supplied !== null && supplied < 0 ? -1 : 1);
+        if (value <= first.from) return first.to + direction * (value - first.from);
+        if (value >= last.from) return last.to + direction * (value - last.from);
+        for (let index = 0; index + 1 < sorted.length; index += 1) {
+            const low = sorted[index];
+            const high = sorted[index + 1];
+            if (value > high.from) continue;
+            const span = high.from - low.from;
+            const progress = span > 1e-9 ? (value - low.from) / span : 0;
+            return low.to + (high.to - low.to) * progress;
+        }
+        return last.to + (value - last.from);
+    }
+
+    // The offset-driven counterpart of setEndpointTargets. Candidates are every divider endpoint on
+    // the far side of the link, flattened across its runs — a divider's mapped offset can only land
+    // near a divider of the run that occupies that band, so the run pairing falls out of the numbers.
+    function setEndpointTargetsFromOffsets(source, candidates, pairs, direction) {
+        const scored = [];
+        source.entry.paths.forEach((path, sourceIndex) => {
+            const mapped = mapOffsetAcross(path.offset, pairs, direction);
+            if (mapped === null) return;
+            candidates.forEach((candidate, candidateIndex) => {
+                const distance = Math.abs(candidate.offset - mapped);
+                if (!Number.isFinite(distance) || distance > OFFSET_MATCH_TOLERANCE_M) return;
+                scored.push({ sourceIndex, candidateIndex, distance });
+            });
+        });
+        scored.sort((left, right) => left.distance - right.distance
+            || left.sourceIndex - right.sourceIndex
+            || left.candidateIndex - right.candidateIndex);
+
+        const targets = source.entry.paths.map(() => null);
+        const branches = source.entry.paths.map(() => null);
+        const usedSources = new Set();
+        const usedCandidates = new Set();
+        scored.forEach(match => {
+            if (usedSources.has(match.sourceIndex) || usedCandidates.has(match.candidateIndex)) return;
+            usedSources.add(match.sourceIndex);
+            usedCandidates.add(match.candidateIndex);
+            const candidate = candidates[match.candidateIndex];
+            targets[match.sourceIndex] = { x: candidate.x, y: candidate.y };
+        });
+        if (!usedSources.size) return;
+
+        source.entry.paths.forEach((path, sourceIndex) => {
+            if (usedSources.has(sourceIndex)) return;
+            let nearest = null;
+            usedSources.forEach(parentIndex => {
+                // Cross-section adjacency, not endpoint distance: which divider this one merges into
+                // is a question about the lane layout, and offsets do not carry geometry noise.
+                const distance = Math.abs(source.entry.paths[parentIndex].offset - path.offset);
+                if (!nearest || distance < nearest.distance) nearest = { parentIndex, distance };
+            });
+            branches[sourceIndex] = nearest ? nearest.parentIndex : null;
+        });
+        source.entry.endpointTargets[source.side] = targets;
+        source.entry.endpointBranches[source.side] = branches;
+    }
+
+    function isSide(side) {
+        return side === 'start' || side === 'end';
+    }
+
+    function applyExplicitLinks(prepared, links) {
+        const byTopologyIndex = new Map(prepared.map(entry => [entry.topologyIndex, entry]));
+        (links || []).forEach(link => {
+            const sourceEntry = byTopologyIndex.get(link && link.source && link.source.entryIndex);
+            if (!sourceEntry || !isSide(link.source.side)) return;
+            const candidates = [];
+            (link.targets || []).forEach(target => {
+                const entry = byTopologyIndex.get(target && target.entryIndex);
+                if (!entry || !isSide(target.side)) return;
+                entry.paths.forEach(path => {
+                    const point = pathEndpoint(path.points, target.side);
+                    if (point) candidates.push({ offset: path.offset, x: point.x, y: point.y });
+                });
+            });
+            if (!candidates.length) return;
+            setEndpointTargetsFromOffsets(
+                { entry: sourceEntry, side: link.source.side },
+                candidates,
+                link.offsetPairs,
+                link.offsetDirection,
+            );
+        });
+    }
+
     function interpolatePathPoint(from, to, arc) {
         const span = to.arc - from.arc;
         if (span <= 1e-9) return { ...from, arc };
@@ -328,7 +447,12 @@
         const prepared = (entries || [])
             .map((entry, index) => prepareEntry(entry, index))
             .filter(Boolean);
-        pairContinuationEndpoints(prepared).forEach(pair => assignTransitionTargets(pair[0], pair[1]));
+        const links = options && Array.isArray(options.links) ? options.links : null;
+        // A solved lane topology states which lane continues into which, so when the caller supplies
+        // links there is nothing left to infer from endpoint distance and heading. The geometric
+        // pairing stays for callers that have no solved graph — corridors drawn in the editor.
+        if (links && links.length) applyExplicitLinks(prepared, links);
+        else pairContinuationEndpoints(prepared).forEach(pair => assignTransitionTargets(pair[0], pair[1]));
         prepared.forEach(entry => {
             ['start', 'end'].forEach(side => {
                 const targets = entry.endpointTargets[side];
@@ -404,7 +528,9 @@
 
     return {
         DEFAULT_TRANSITION_LENGTH_M,
+        OFFSET_MATCH_TOLERANCE_M,
         build,
+        mapOffsetAcross,
         splitDashedPolyline,
     };
 });

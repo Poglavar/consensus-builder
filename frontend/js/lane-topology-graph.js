@@ -100,8 +100,23 @@
         return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
     }
 
+    function onewayDirection(tags) {
+        const value = String(tags?.oneway ?? '').trim().toLowerCase();
+        if (value === 'yes' || value === 'true' || value === '1') return 'forward';
+        if (value === '-1' || value === 'reverse') return 'backward';
+        return null;
+    }
+
     function splitLaneTokens(tags, key, direction) {
-        const value = tags?.[`${key}:${direction}`];
+        const suffixed = tags?.[`${key}:${direction}`];
+        // A one-way street carries the BARE key: with a single direction of travel there is nothing
+        // to disambiguate, so OSM omits the suffix. Reading only the suffixed form silently discards
+        // turn:lanes on every one-way avenue — which is where nearly all turn assignments live.
+        // Restricted to the direction the way actually runs, so a bare key on a two-way street (where
+        // it would span both directions in way order) is still left alone as ambiguous.
+        const value = suffixed !== undefined && suffixed !== null
+            ? suffixed
+            : (onewayDirection(tags) === direction ? tags?.[key] : undefined);
         return value === undefined || value === null
             ? []
             : String(value).split('|').map(token => token.trim().toLowerCase());

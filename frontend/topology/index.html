@@ -19,6 +19,8 @@
             <span><b>0</b> ways</span>
             <span><b>0</b> lanes</span>
             <span><b>0</b> connections</span>
+            <span><b>0</b> observations</span>
+            <span><b>0</b> widths</span>
             <span><b>0</b> problems</span>
         </div>
     </header>
@@ -31,11 +33,13 @@
                         <div class="step">Area</div>
                         <h2>Viewport evidence</h2>
                     </div>
-                    <span class="status-pill" id="snapshot-pill">not loaded</span>
+                    <div class="panel-heading__aside">
+                        <span class="status-pill" id="snapshot-pill">not loaded</span>
+                        <button class="button button--tiny" id="reload-viewport" type="button">Reload</button>
+                    </div>
                 </div>
-                <p class="muted">Pan and zoom to a small area, then load the OSM evidence currently inside the viewport.</p>
+                <p class="muted">OSM evidence follows the map: pan and zoom to a small area and it loads itself.</p>
                 <div class="bbox-readout" id="bbox-readout">—</div>
-                <button class="button button--primary button--wide" id="load-viewport">Load viewport</button>
             </section>
 
             <section class="panel">
@@ -44,9 +48,17 @@
                         <div class="step">Layers</div>
                         <h2>Compare representations</h2>
                     </div>
+                    <div class="panel-heading__aside">
+                        <button type="button" class="button button--tiny" id="layers-toggle-all">Uncheck all</button>
+                    </div>
                 </div>
                 <label class="layer-toggle">
-                    <input type="checkbox" id="toggle-osm">
+                    <input type="checkbox" id="toggle-imagery" checked>
+                    <span class="swatch swatch--imagery"></span>
+                    <span><b>CDOF 2022 orthophoto</b><small>15 cm aerial evidence from the City of Zagreb</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-osm" checked>
                     <span class="swatch swatch--osm"></span>
                     <span><b>Raw OSM ways</b><small>Way boundaries, source tags and rails</small></span>
                 </label>
@@ -54,6 +66,16 @@
                     <input type="checkbox" id="toggle-topology" checked>
                     <span class="swatch swatch--topology"></span>
                     <span><b>Lane topology</b><small>Directed lanes and graph connections</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-observations" checked>
+                    <span class="swatch swatch--observation"></span>
+                    <span><b>Imagery observations</b><small>Edges, dividers, tapers and measured widths</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-widths" checked>
+                    <span class="swatch swatch--width"></span>
+                    <span><b>CV width candidates</b><small>Detected paint boundaries and cross-road rulers</small></span>
                 </label>
                 <label class="layer-toggle">
                     <input type="checkbox" id="toggle-painted" checked>
@@ -75,6 +97,7 @@
                     </div>
                 </div>
                 <button class="button button--wide" id="build-deterministic">Build deterministic base</button>
+                <p class="muted" id="imagery-status">Checking imagery source…</p>
                 <div class="provider-grid">
                     <button class="button button--provider" id="run-codex" disabled>
                         <span>Run Codex</span><small id="codex-status">checking CLI…</small>
@@ -86,6 +109,29 @@
                 <div class="job-status" id="job-status">No recognition job running.</div>
             </section>
 
+            <section class="panel panel--widths">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Widths</div>
+                        <h2>Measure from CDOF</h2>
+                    </div>
+                    <span class="status-pill">local CV · $0</span>
+                </div>
+                <p class="muted">Rectify visible roads into metric strips and find recurring lane paint. Candidates remain separate from the graph until reviewed.</p>
+                <button class="button button--primary button--wide" id="analyze-widths">Analyze visible widths</button>
+                <div class="job-status" id="width-status">No width analysis selected.</div>
+                <div class="panel-heading panel-heading--subsection">
+                    <div>
+                        <div class="step">Runs</div>
+                        <h2>Width versions</h2>
+                    </div>
+                    <button class="button button--tiny" id="refresh-widths">Refresh</button>
+                </div>
+                <div class="version-list" id="width-version-list">
+                    <div class="empty-state">No width runs for this viewport yet.</div>
+                </div>
+            </section>
+
             <section class="panel panel--versions">
                 <div class="panel-heading">
                     <div>
@@ -95,19 +141,10 @@
                     <button class="button button--tiny" id="refresh-solutions">Refresh</button>
                 </div>
                 <div class="version-list" id="version-list">
-                    <div class="empty-state">Load a viewport to see its versions.</div>
+                    <div class="empty-state">No saved versions for this viewport yet.</div>
                 </div>
             </section>
 
-            <section class="panel panel--inspector">
-                <div class="panel-heading">
-                    <div>
-                        <div class="step">Inspector</div>
-                        <h2 id="inspector-title">Nothing selected</h2>
-                    </div>
-                </div>
-                <pre id="inspector-content">Click an OSM way, topology lane, connection, node or problem.</pre>
-            </section>
         </aside>
 
         <section class="map-shell">
@@ -117,17 +154,70 @@
                 <span id="focus-status">Hover a lane or node to trace it. Click to pin; Esc clears.</span>
                 <button class="button button--tiny" id="clear-topology-focus" type="button" disabled>Nothing pinned</button>
             </div>
-            <div class="map-legend">
-                <span><i class="legend-arrow legend-arrow--forward">➤</i>with OSM way</span>
-                <span><i class="legend-arrow legend-arrow--backward">➤</i>against OSM way</span>
-                <span><i class="legend-line legend-line--transit"></i>restricted transit</span>
-                <span><i class="legend-line legend-line--connection"></i>permitted movement</span>
-                <span><i class="legend-portal"></i>junction portal</span>
-                <span><i class="legend-node legend-node--boundary"></i>way boundary</span>
-                <span><i class="legend-node legend-node--junction"></i>junction</span>
+            <div class="map-corner">
+                <section class="map-inspector" id="inspector">
+                    <button class="map-inspector__handle" id="inspector-toggle" type="button"
+                        aria-expanded="true" aria-controls="inspector-body">
+                        <span class="map-inspector__step">Inspector</span>
+                        <span class="map-inspector__title" id="inspector-title">Nothing selected</span>
+                        <span class="map-inspector__chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="map-inspector__body" id="inspector-body">
+                        <pre id="inspector-content">Click an OSM way, topology lane, connection, node or problem.</pre>
+                    </div>
+                </section>
+                <div class="map-legend">
+                    <span><i class="legend-arrow legend-arrow--forward">➤</i>with OSM way</span>
+                    <span><i class="legend-arrow legend-arrow--backward">➤</i>against OSM way</span>
+                    <span><i class="legend-line legend-line--transit"></i>restricted transit</span>
+                    <span><i class="legend-line legend-line--connection"></i>permitted movement</span>
+                    <span><i class="legend-line legend-line--width"></i>measured width</span>
+                    <span><i class="legend-portal"></i>junction portal</span>
+                    <span><i class="legend-node legend-node--boundary"></i>way boundary</span>
+                    <span><i class="legend-node legend-node--junction"></i>junction</span>
+                </div>
             </div>
             <div class="toast" id="toast" role="status" aria-live="polite"></div>
         </section>
+
+        <div class="run-dialog" id="run-dialog" hidden>
+            <div class="run-dialog__backdrop" id="run-dialog-backdrop"></div>
+            <div class="run-dialog__panel panel" role="dialog" aria-modal="true"
+                aria-labelledby="run-dialog-title">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Review the run</div>
+                        <h2 id="run-dialog-title">Run</h2>
+                    </div>
+                    <span class="status-pill" id="run-dialog-version">—</span>
+                </div>
+                <div class="run-dialog__scroll">
+                    <div id="run-dialog-notices"></div>
+                    <dl class="run-facts" id="run-dialog-facts"></dl>
+                    <div class="run-junctions">
+                        <div class="run-junctions__heading" id="run-dialog-junctions-heading">
+                            Junctions to solve
+                        </div>
+                        <ul class="run-junctions__list" id="run-dialog-junctions"></ul>
+                    </div>
+                    <label class="evidence-option">
+                        <input type="checkbox" id="run-dialog-imagery" checked>
+                        <span>
+                            <b>Attach orthophoto</b>
+                            <small id="run-dialog-imagery-note">—</small>
+                        </span>
+                    </label>
+                    <details class="run-request">
+                        <summary>Request body</summary>
+                        <pre id="run-dialog-request"></pre>
+                    </details>
+                </div>
+                <div class="run-dialog__actions">
+                    <button class="button" id="run-dialog-cancel" type="button">Cancel</button>
+                    <button class="button button--primary" id="run-dialog-confirm" type="button">Run</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -137,6 +227,12 @@
     <script src="../js/corridor-profile.js"></script>
     <script src="../js/osm-profile.js"></script>
     <script src="../js/lane-topology-graph.js"></script>
+    <script src="../js/lane-topology-viewport.js"></script>
+    <script src="../js/lane-topology-junction-paint.js"></script>
+    <script src="../js/lane-topology-junctions.js"></script>
+    <script src="../js/lane-topology-marking-links.js"></script>
+    <script src="../js/lane-topology-run-plan.js"></script>
+    <script src="../js/lane-turn-arrows.js"></script>
     <script src="../js/lane-topology-view.js"></script>
     <script src="topology.js"></script>
 </body>

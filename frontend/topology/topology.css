@@ -138,6 +138,13 @@ input {
     line-height: 1.5;
 }
 
+.panel-heading__aside {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+}
+
 .status-pill {
     max-width: 120px;
     overflow: hidden;
@@ -148,6 +155,16 @@ input {
     font-size: 10px;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.status-pill.is-busy {
+    color: #d7e4b4;
+    background: #2c3320;
+}
+
+.status-pill.is-error {
+    color: #f3c0b6;
+    background: #3a2320;
 }
 
 .bbox-readout {
@@ -295,9 +312,60 @@ input {
 }
 
 .swatch--osm { background: #a8bbc0; }
+.swatch--imagery {
+    background: linear-gradient(135deg, #446c35 0 48%, #b99b70 50% 100%);
+    border: 1px solid #acc69c;
+}
 .swatch--topology { background: var(--forward); }
+.swatch--observation {
+    background: #bef264;
+    box-shadow: 0 0 0 2px rgba(190, 242, 100, .18);
+}
+.swatch--width {
+    background: #22d3ee;
+    box-shadow: 0 0 0 2px rgba(34, 211, 238, .18);
+}
 .swatch--painted { background: #343b3c; border: 1px solid #758083; }
 .swatch--problem { background: var(--problem); }
+
+.evidence-option {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 9px;
+    align-items: start;
+    margin-top: 9px;
+    padding: 9px;
+    color: #d9e3e5;
+    border: 1px solid #29383b;
+    border-radius: 9px;
+    background: #0d1517;
+    cursor: pointer;
+}
+
+.evidence-option input {
+    margin: 2px 0 0;
+    accent-color: var(--accent-strong);
+}
+
+.evidence-option b,
+.evidence-option small {
+    display: block;
+}
+
+.evidence-option b {
+    font-size: 11px;
+}
+
+.evidence-option small {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.35;
+}
+
+.evidence-option small.is-error {
+    color: #ffaaa5;
+}
 
 .version-list {
     display: grid;
@@ -362,21 +430,17 @@ input {
     background: var(--accent);
 }
 
+.panel-heading--subsection {
+    margin-top: 15px;
+    padding-top: 13px;
+    border-top: 1px solid var(--line);
+}
+
 .empty-state {
     padding: 14px 4px;
     color: #6f8185;
     font-size: 11px;
     text-align: center;
-}
-
-.panel--inspector pre {
-    max-height: 260px;
-    margin: 0;
-    overflow: auto;
-    color: #aebdc0;
-    font: 10px/1.45 "SFMono-Regular", Consolas, monospace;
-    white-space: pre-wrap;
-    word-break: break-word;
 }
 
 .map-shell {
@@ -394,21 +458,109 @@ input {
     filter: grayscale(.78) brightness(.57) contrast(1.16) saturate(.55);
 }
 
+.leaflet-topology-imagery-pane {
+    filter: none;
+}
+
 .leaflet-control-zoom a {
     color: #dce7e9 !important;
     border-color: #344246 !important;
     background: #172124 !important;
 }
 
-.map-legend {
+/* Bottom-right stack: the inspector sits above the legend and both grow upward from the corner,
+   so an expanded inspector never needs a hardcoded offset for the legend's wrapping height. */
+.map-corner {
     position: absolute;
     z-index: 800;
     right: 14px;
     bottom: 14px;
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: min(420px, calc(100% - 28px));
+}
+
+.map-inspector {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 10px;
+    background: rgba(12, 19, 21, .92);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(9px);
+}
+
+.map-inspector__handle {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 10px;
+    color: #dce7e9;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.map-inspector__handle:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.map-inspector__step {
+    flex: 0 0 auto;
+    color: var(--accent);
+    font-size: 9px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.map-inspector__title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.map-inspector__chevron {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: #8fa3a8;
+    transition: transform .15s ease;
+}
+
+.map-inspector.is-collapsed .map-inspector__chevron {
+    transform: rotate(-90deg);
+}
+
+.map-inspector.is-collapsed .map-inspector__body {
+    display: none;
+}
+
+.map-inspector__body {
+    padding: 0 10px 10px;
+}
+
+#inspector-content {
+    max-height: min(38vh, 320px);
+    margin: 0;
+    overflow: auto;
+    color: #aebdc0;
+    font: 10px/1.45 "SFMono-Regular", Consolas, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.map-legend {
+    display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    max-width: calc(100% - 28px);
+    max-width: 100%;
     padding: 9px 12px;
     color: #aebdc0;
     border: 1px solid rgba(255, 255, 255, .12);
@@ -491,6 +643,11 @@ input {
     border-top: 2px dashed #fff;
 }
 
+.legend-line--width {
+    height: 1px;
+    border-top: 3px solid #22d3ee;
+}
+
 .legend-node {
     display: inline-block;
     width: 9px;
@@ -551,6 +708,27 @@ input {
 
 .topology-tooltip::before {
     border-top-color: #42555a !important;
+}
+
+.width-label-icon {
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+.width-label-icon span {
+    display: inline-block;
+    padding: 2px 5px;
+    color: #06181b;
+    border: 1px solid rgba(255, 255, 255, .65);
+    border-radius: 999px;
+    background: #67e8f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .45);
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    font-weight: 850;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .toast {
@@ -648,4 +826,149 @@ input {
     #focus-status {
         display: none;
     }
+
+    .map-corner {
+        right: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    #inspector-content {
+        max-height: 30vh;
+    }
+}
+
+/* Pre-run review. A CLI recognition costs minutes and money, so the inputs are chosen and shown
+   before the job is queued rather than reconstructed from the result afterwards. */
+.run-dialog {
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.run-dialog[hidden] {
+    display: none;
+}
+
+.run-dialog__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 9, 10, .62);
+    backdrop-filter: blur(2px);
+}
+
+.run-dialog__panel {
+    position: relative;
+    display: flex;
+    width: min(520px, 100%);
+    max-height: min(84vh, 720px);
+    flex-direction: column;
+    box-shadow: var(--shadow);
+}
+
+.run-dialog__scroll {
+    min-height: 0;
+    overflow: auto;
+}
+
+.run-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 13px;
+    margin-top: 13px;
+    border-top: 1px solid var(--line);
+}
+
+.run-notice {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.run-notice--blocker {
+    color: #f3c0b6;
+    border: 1px solid rgba(243, 192, 182, .3);
+    background: rgba(58, 35, 32, .6);
+}
+
+.run-notice--warning {
+    color: #e8dcae;
+    border: 1px solid rgba(232, 220, 174, .22);
+    background: rgba(48, 43, 26, .5);
+}
+
+.run-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 14px;
+    margin: 0 0 13px;
+    font-size: 11px;
+}
+
+.run-facts dt {
+    color: var(--muted);
+}
+
+.run-facts dd {
+    margin: 0;
+    color: #dce7e9;
+    overflow-wrap: anywhere;
+}
+
+.run-junctions__heading {
+    margin-bottom: 6px;
+    color: var(--accent);
+    font-size: 9px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.run-junctions__list {
+    padding: 0;
+    margin: 0 0 13px;
+    list-style: none;
+    font-size: 11px;
+}
+
+.run-junctions__list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--line);
+    color: #dce7e9;
+}
+
+.run-junctions__list li:last-child {
+    border-bottom: 0;
+}
+
+.run-junctions__list small {
+    flex: 0 0 auto;
+    color: var(--muted);
+}
+
+.run-request {
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.run-request summary {
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.run-request pre {
+    max-height: 160px;
+    margin: 8px 0 0;
+    overflow: auto;
+    color: #aebdc0;
+    font: 10px/1.45 "SFMono-Regular", Consolas, monospace;
 }

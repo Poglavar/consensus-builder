@@ -114,6 +114,65 @@ describe('deterministic OSM lane graph', () => {
         }));
     });
 
+    // Every lane-wise OSM key (turn:lanes, psv:lanes, access:lanes, …) drops its :forward/:backward
+    // suffix on a one-way street, because with one direction of travel there is nothing to
+    // disambiguate. Reading only the suffixed form threw away the turn assignment on 14 of the 15
+    // tagged ways over Vukovarska/Držića — every one-way avenue in the area.
+    describe('lane-wise tags on a one-way street', () => {
+        const line = [[15.96, 45.80], [15.962, 45.80]];
+
+        function turnsOf(tags) {
+            return LaneTopologyGraph.build([way(1, line, tags)], BUILD_OPTIONS)
+                .lanes
+                .sort((left, right) => left.ordinal - right.ordinal)
+                .map(lane => lane.turn);
+        }
+
+        it('reads the bare key when the way runs one way', () => {
+            expect(turnsOf({
+                highway: 'secondary', lanes: '3', oneway: 'yes',
+                'turn:lanes': 'left;through|through|right'
+            })).toEqual(['left;through', 'through', 'right']);
+        });
+
+        it('applies it to the backward lanes when the way runs against its drawing', () => {
+            const lanes = LaneTopologyGraph.build([way(1, line, {
+                highway: 'secondary', lanes: '2', oneway: '-1',
+                'turn:lanes': 'left|right'
+            })], BUILD_OPTIONS).lanes;
+
+            expect(lanes.every(lane => lane.direction === 'backward')).toBe(true);
+            expect(lanes.sort((left, right) => left.ordinal - right.ordinal).map(lane => lane.turn))
+                .toEqual(['left', 'right']);
+        });
+
+        it('leaves a bare key on a two-way street alone, where it spans both directions', () => {
+            expect(turnsOf({
+                highway: 'secondary', lanes: '2', oneway: 'no',
+                'turn:lanes': 'left|right'
+            })).toEqual([null, null]);
+        });
+
+        it('lets an explicit suffixed key win over the bare one', () => {
+            expect(turnsOf({
+                highway: 'secondary', lanes: '2', oneway: 'yes',
+                'turn:lanes': 'left|left',
+                'turn:lanes:forward': 'through|right'
+            })).toEqual(['through', 'right']);
+        });
+
+        it('finds the one-way bus lane the suffix-only read was hiding', () => {
+            const lanes = LaneTopologyGraph.build([way(1, line, {
+                highway: 'secondary', lanes: '2', oneway: 'yes',
+                'access:lanes': 'no|yes',
+                'psv:lanes': 'designated|no'
+            })], BUILD_OPTIONS).lanes.sort((left, right) => left.ordinal - right.ordinal);
+
+            expect(lanes.map(lane => lane.type)).toEqual(['bus', 'driving']);
+            expect(lanes.map(lane => lane.access)).toEqual(['psv', 'yes']);
+        });
+    });
+
     it('is independent of input way order', () => {
         const first = way(1, [[15.96, 45.80], [15.961, 45.80]], { highway: 'secondary', lanes: '2' }, [10, 20]);
         const second = way(2, [[15.961, 45.80], [15.962, 45.80]], { highway: 'secondary', lanes: '2' }, [20, 30]);

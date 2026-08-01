@@ -137,16 +137,12 @@
         ];
     }
 
-    function connectionCurve(connection, index, sampleCount = 16) {
-        const fromCoordinates = coordinatesOf(index?.lanes?.get(connection?.fromLaneId));
-        const toCoordinates = coordinatesOf(index?.lanes?.get(connection?.toLaneId));
-        const fallback = connection?.geometry?.coordinates || [];
-        if (fromCoordinates.length < 2 || toCoordinates.length < 2) return fallback;
-
-        const start = fromCoordinates[fromCoordinates.length - 1];
-        const before = fromCoordinates[fromCoordinates.length - 2];
-        const end = toCoordinates[0];
-        const after = toCoordinates[1];
+    // The curve a movement traces between two points with known headings: leaves `start` along the
+    // heading it arrived on, meets `end` along the heading it leaves on. Shared so a junction guide
+    // line and a connection overlay cannot drift into two different ideas of the same turn.
+    function curveBetween(start, before, end, after, options) {
+        const sampleCount = Number.isFinite(Number(options?.sampleCount)) ? Number(options.sampleCount) : 16;
+        const isTurn = !!options?.turn;
         const projection = localProjection([start, before, end, after]);
         const p0 = projection.project(start);
         const p3 = projection.project(end);
@@ -154,7 +150,7 @@
         const outbound = normalize([projection.project(after)[0] - p3[0], projection.project(after)[1] - p3[1]]);
         const chord = Math.hypot(p3[0] - p0[0], p3[1] - p0[1]);
         const defaultHandle = clamp(Math.max(chord * 0.55, 1.8), 1.8, 14);
-        const turnHandles = connection?.type === 'turn'
+        const turnHandles = isTurn
             ? turnHandleLengths(p0, p3, inbound, outbound, chord)
             : null;
         const startHandle = turnHandles?.[0] ?? defaultHandle;
@@ -181,6 +177,20 @@
         result[0] = start;
         result[result.length - 1] = end;
         return result;
+    }
+
+    function connectionCurve(connection, index, sampleCount = 16) {
+        const fromCoordinates = coordinatesOf(index?.lanes?.get(connection?.fromLaneId));
+        const toCoordinates = coordinatesOf(index?.lanes?.get(connection?.toLaneId));
+        const fallback = connection?.geometry?.coordinates || [];
+        if (fromCoordinates.length < 2 || toCoordinates.length < 2) return fallback;
+        return curveBetween(
+            fromCoordinates[fromCoordinates.length - 1],
+            fromCoordinates[fromCoordinates.length - 2],
+            toCoordinates[0],
+            toCoordinates[1],
+            { sampleCount, turn: connection?.type === 'turn' }
+        );
     }
 
     function pointAlong(coordinates, fraction = 0.5) {
@@ -331,16 +341,54 @@
         };
     }
 
+    // Below this, a trimmed section is junction interior rather than road, and painting it leaves a
+    // stub floating in the middle of the intersection.
+    const MIN_PAINTED_SECTION_LENGTH_M = 4;
+
+    // Paint has to stop at the same junction portal the lanes are trimmed to. Section geometry runs
+    // node to node, and the node a minor road shares with a major one sits on the MAJOR road's
+    // centreline — so unclipped paint drives the minor road's markings into the middle of the major
+    // carriageway, which is not how it is marked. trimCoordinates alone will not do: it always keeps
+    // ~1 m so a lane never vanishes, and here a section swallowed by the junction must vanish.
+    function paintableSections(graph, options) {
+        if (!graph) return [];
+        const minLengthM = Number.isFinite(Number(options?.minLengthM))
+            ? Number(options.minLengthM)
+            : MIN_PAINTED_SECTION_LENGTH_M;
+        const setbacks = junctionSetbacks(graph);
+        const entries = [];
+        (graph.sections || []).forEach(section => {
+            const coordinates = section?.coordinates;
+            if (!Array.isArray(coordinates) || coordinates.length < 2) return;
+            const startSetbackM = setbacks.get(section.startNode) || 0;
+            const endSetbackM = setbacks.get(section.endNode) || 0;
+            const lengthM = Number(section.lengthM);
+            // A missing length must not become a real-looking survivor via 0 - setbacks.
+            if (Number.isFinite(lengthM) && lengthM - startSetbackM - endSetbackM < minLengthM) return;
+            entries.push({
+                section,
+                coordinates: trimCoordinates(coordinates, startSetbackM, endSetbackM),
+                startSetbackM,
+                endSetbackM
+            });
+        });
+        return entries;
+    }
+
     return {
+        MIN_PAINTED_SECTION_LENGTH_M,
         createIndex,
         focusFor,
         focusLane,
         focusConnection,
         focusNode,
+        localProjection,
+        curveBetween,
         connectionCurve,
         pointAlong,
         trimCoordinates,
         junctionSetbacks,
+        paintableSections,
         buildDisplayGraph
     };
 });

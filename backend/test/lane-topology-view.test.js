@@ -180,3 +180,105 @@ describe('lane topology viewer model', () => {
         expect(point.after).toEqual([15.001, 45]);
     });
 });
+
+// A T-junction where a minor road meets a major one. The shared node sits on the MAJOR road's
+// centreline, so unclipped section geometry paints the minor road's markings into the middle of the
+// major carriageway. Paint has to stop at the same portal the lanes are trimmed to.
+function tJunctionFixture(minorLengthM = 60) {
+    const junction = [15.96, 45.8];
+    return {
+        nodes: [
+            { id: 'osm-node:1', point: junction, degree: 3, sectionIds: ['major-w', 'major-e', 'minor'] },
+            { id: 'osm-node:2', point: [15.9585, 45.8], degree: 1, sectionIds: ['major-w'] },
+            { id: 'osm-node:3', point: [15.9615, 45.8], degree: 1, sectionIds: ['major-e'] },
+            { id: 'osm-node:4', point: [15.96, 45.8008], degree: 1, sectionIds: ['minor'] }
+        ],
+        sections: [
+            {
+                id: 'major-w', startNode: 'osm-node:2', endNode: 'osm-node:1', lengthM: 120,
+                coordinates: [[15.9585, 45.8], junction], profile: { strips: [{}] }
+            },
+            {
+                id: 'major-e', startNode: 'osm-node:1', endNode: 'osm-node:3', lengthM: 120,
+                coordinates: [junction, [15.9615, 45.8]], profile: { strips: [{}] }
+            },
+            {
+                id: 'minor', startNode: 'osm-node:1', endNode: 'osm-node:4', lengthM: minorLengthM,
+                coordinates: [junction, [15.96, 45.8008]], profile: { strips: [{}] }
+            }
+        ],
+        // Four wide lanes on the major road, one narrow each way on the minor.
+        lanes: [
+            { id: 'mw1', fromNode: 'osm-node:2', toNode: 'osm-node:1', offset: -5.25, width: 3.5 },
+            { id: 'mw2', fromNode: 'osm-node:2', toNode: 'osm-node:1', offset: -1.75, width: 3.5 },
+            { id: 'me1', fromNode: 'osm-node:1', toNode: 'osm-node:3', offset: 1.75, width: 3.5 },
+            { id: 'me2', fromNode: 'osm-node:1', toNode: 'osm-node:3', offset: 5.25, width: 3.5 },
+            { id: 'mn1', fromNode: 'osm-node:1', toNode: 'osm-node:4', offset: 1.5, width: 3 }
+        ]
+    };
+}
+
+describe('paintableSections', () => {
+    it('stops the minor road short of the major road centreline', () => {
+        const graph = tJunctionFixture();
+        const minor = LaneTopologyView.paintableSections(graph)
+            .find(entry => entry.section.id === 'minor');
+        expect(minor).toBeTruthy();
+        // The junction node itself must no longer be a painted vertex.
+        expect(minor.coordinates[0]).not.toEqual([15.96, 45.8]);
+        expect(minor.startSetbackM).toBeGreaterThan(0);
+        // It is pulled back along the minor road, away from the crossing.
+        expect(minor.coordinates[0][1]).toBeGreaterThan(45.8);
+        expect(minor.coordinates.at(-1)).toEqual([15.96, 45.8008]);
+    });
+
+    it('clips paint to exactly the setback the lanes are trimmed to', () => {
+        const graph = tJunctionFixture();
+        const setbacks = LaneTopologyView.junctionSetbacks(graph);
+        const display = LaneTopologyView.buildDisplayGraph(graph);
+        const painted = LaneTopologyView.paintableSections(graph)
+            .find(entry => entry.section.id === 'minor');
+        const lane = display.lanes.find(entry => entry.id === 'mn1');
+        // Same portal for both representations, or paint and lanes disagree at every junction.
+        expect(painted.startSetbackM).toBe(setbacks.get('osm-node:1'));
+        expect(lane.displayPortal.startSetbackM).toBe(painted.startSetbackM);
+    });
+
+    it('leaves the far end of a section untouched when it is not a junction', () => {
+        const graph = tJunctionFixture();
+        const majorWest = LaneTopologyView.paintableSections(graph)
+            .find(entry => entry.section.id === 'major-w');
+        expect(majorWest.startSetbackM).toBe(0);
+        expect(majorWest.endSetbackM).toBeGreaterThan(0);
+        expect(majorWest.coordinates[0]).toEqual([15.9585, 45.8]);
+    });
+
+    it('paints nothing for a section the junction swallows whole', () => {
+        // 8 m of road between two junction portals is intersection, not street; trimCoordinates
+        // would keep a ~1 m stub floating inside the crossing, so the section is dropped instead.
+        const graph = tJunctionFixture(8);
+        const ids = LaneTopologyView.paintableSections(graph).map(entry => entry.section.id);
+        expect(ids).not.toContain('minor');
+        expect(ids).toEqual(['major-w', 'major-e']);
+    });
+
+    it('keeps a section whose length is unknown rather than inventing a zero', () => {
+        const graph = tJunctionFixture();
+        delete graph.sections[2].lengthM;
+        const ids = LaneTopologyView.paintableSections(graph).map(entry => entry.section.id);
+        expect(ids).toContain('minor');
+    });
+
+    it('honours a caller-supplied minimum painted length', () => {
+        const graph = tJunctionFixture(30);
+        expect(LaneTopologyView.paintableSections(graph).map(entry => entry.section.id))
+            .toContain('minor');
+        expect(LaneTopologyView.paintableSections(graph, { minLengthM: 40 })
+            .map(entry => entry.section.id)).not.toContain('minor');
+    });
+
+    it('survives a graph with no sections', () => {
+        expect(LaneTopologyView.paintableSections(null)).toEqual([]);
+        expect(LaneTopologyView.paintableSections({})).toEqual([]);
+    });
+});

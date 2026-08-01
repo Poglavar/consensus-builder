@@ -1758,9 +1758,65 @@ function corridorLaneTopologyApi() {
     return null;
 }
 
+// Translates section-level marking links (from a solved lane topology) into the per-run links the
+// topology pass consumes. A section becomes one run per contiguous block of traffic lanes, and both
+// runs of a section are candidates at both of its ends; which divider actually matches is settled by
+// offset downstream, so every run of the neighbour is offered as a target.
+function corridorMarkingLinksForTopologyEntries(links, topologyEntries) {
+    const indexesBySection = new Map();
+    topologyEntries.forEach((entry, entryIndex) => {
+        if (entry.sectionId == null) return;
+        const key = String(entry.sectionId);
+        if (!indexesBySection.has(key)) indexesBySection.set(key, []);
+        indexesBySection.get(key).push(entryIndex);
+    });
+
+    const resolved = [];
+    (links || []).forEach(link => {
+        if (!link || !link.a || !link.b || !Array.isArray(link.matches) || !link.matches.length) return;
+        const aIndexes = indexesBySection.get(String(link.a.sectionId)) || [];
+        const bIndexes = indexesBySection.get(String(link.b.sectionId)) || [];
+        if (!aIndexes.length || !bIndexes.length) return;
+        const pathCount = indexes => indexes.reduce(
+            (total, entryIndex) => total + topologyEntries[entryIndex].paths.length,
+            0
+        );
+        const aCount = pathCount(aIndexes);
+        const bCount = pathCount(bIndexes);
+        // The busier cross-section warps into the simpler one, the same asymmetry the geometric
+        // pairing uses: a dropped lane should taper away, not drag the surviving lanes sideways.
+        // On a tie the larger section id gives way, so the result cannot depend on input order.
+        const sourceIsA = aCount !== bCount
+            ? aCount > bCount
+            : String(link.a.sectionId) > String(link.b.sectionId);
+        const source = sourceIsA ? link.a : link.b;
+        const target = sourceIsA ? link.b : link.a;
+        const sourceIndexes = sourceIsA ? aIndexes : bIndexes;
+        const targetIndexes = sourceIsA ? bIndexes : aIndexes;
+        const offsetPairs = link.matches.map(match => ({
+            from: sourceIsA ? match.aOffset : match.bOffset,
+            to: sourceIsA ? match.bOffset : match.aOffset
+        }));
+        // Two sections that meet on the same kind of end were digitized head to head, so their
+        // cross-section frames are mirrored and offsets run in opposite directions. Only matters
+        // outside the matched lanes, and only when a single match leaves the data unable to say.
+        const offsetDirection = link.a.side === link.b.side ? -1 : 1;
+        const targets = targetIndexes.map(entryIndex => ({ entryIndex, side: target.side }));
+        sourceIndexes.forEach(entryIndex => {
+            resolved.push({
+                source: { entryIndex, side: source.side },
+                targets,
+                offsetPairs,
+                offsetDirection
+            });
+        });
+    });
+    return resolved;
+}
+
 // The shared topology pass for every segment entry. It is deliberately planar and view-agnostic:
 // Leaflet and Three.js consume these exact same connected lines.
-function buildCorridorLaneMarkingsForEntries(entries) {
+function buildCorridorLaneMarkingsForEntries(entries, options) {
     if (!corridorProjectionAvailable()) return [];
     const topology = corridorLaneTopologyApi();
     if (!topology || typeof topology.build !== 'function') {
@@ -1787,6 +1843,7 @@ function buildCorridorLaneMarkingsForEntries(entries) {
                 ownerEntryIndex,
                 runIndex,
                 corridorId: entry.corridorId,
+                sectionId: entry.sectionId == null ? null : entry.sectionId,
                 flowDirection: run.flowDirection,
                 centerline,
                 paths: run.paths.map(buildPath).filter(Boolean),
@@ -1795,7 +1852,8 @@ function buildCorridorLaneMarkingsForEntries(entries) {
         });
     });
     const markingsByEntry = (entries || []).map(() => []);
-    topology.build(topologyEntries).forEach(result => {
+    const links = corridorMarkingLinksForTopologyEntries(options && options.links, topologyEntries);
+    topology.build(topologyEntries, { links }).forEach(result => {
         const topologyEntry = topologyEntries[result.sourceIndex];
         if (!topologyEntry) return;
         const groups = new Map();
@@ -2159,6 +2217,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorLaneTrafficRuns,
         buildCorridorLaneMarkings,
         buildCorridorLaneMarkingsForEntries,
+        corridorMarkingLinksForTopologyEntries,
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
         buildCorridorDecorations,
