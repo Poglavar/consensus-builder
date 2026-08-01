@@ -1326,16 +1326,20 @@ function curatedRoadsConfig() {
     try { return window.CityConfigManager?.getCuratedRoadsConfig?.() || null; } catch (_) { return null; }
 }
 
+function curatedRoadsUrl(config, bbox) {
+    const base = (typeof window.getRoadsApiBase === 'function') ? window.getRoadsApiBase() : '';
+    return window.CuratedRoadsUrl.build(config, bbox, base, window.location.href);
+}
+
 async function fetchCuratedRoadParcels() {
     const config = curatedRoadsConfig();
-    if (!config?.url || typeof map === 'undefined' || !map) return 0;
+    if (!config?.path || typeof map === 'undefined' || !map) return 0;
     if (curatedRoadFetchInFlight) return 0;
     curatedRoadFetchInFlight = true;
     try {
         const bounds = map.getBounds();
         const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
-        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        const response = await fetch(`${base}${config.url}?bbox=${encodeURIComponent(bbox)}`);
+        const response = await fetch(curatedRoadsUrl(config, bbox));
         if (!response.ok) throw new Error(`curated road source responded ${response.status}`);
         const collection = await response.json();
         let added = 0;

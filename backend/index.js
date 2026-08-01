@@ -32,7 +32,7 @@ import { setupWalrusRoute } from './routes/walrus.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
-import { setupRoadParcelsRoute } from './routes/road-parcels.js';
+import { setupGovtPlanRoute } from './routes/govt-plan.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupReparcellizationRoute } from './routes/reparcellization.js';
@@ -324,7 +324,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
-    setupRoadParcelsRoute(app, activePool);
+    setupGovtPlanRoute(app, activePool);
     setupProposalsRoute(app, activePool);
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);

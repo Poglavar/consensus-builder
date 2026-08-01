@@ -129,8 +129,11 @@
             // Server-curated road classification (road_parcel_classification MV via the app
             // backend). Cities with this key get existing roads marked from the endpoint —
             // auto-fetched after parcels load — instead of client-side OSM/GUP/WFS detection.
+            // Path under the SHARED roads API (getRoadsApiBase), not this app's backend. Zagreb
+            // only — the road_parcel_classification MV covers no other city.
             curatedRoads: {
-                url: '/road-parcels'
+                path: '/roads/parcels',
+                params: { classification: 'road' }
             },
             // Immutable OSM-derived alignments shared by station snapping and 3D rendering.
             // Editable proposal corridors remain a separate game-data source.

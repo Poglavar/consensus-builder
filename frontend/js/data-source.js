@@ -12,6 +12,14 @@
         return 'http://localhost:3000';
     })();
     const UGT_BASE = 'https://api.urbangametheory.xyz'; // placeholder, not used yet
+    // The shared cadastre roads API — a DIFFERENT service from this app's backend, and the one
+    // canonical source of road parcels, streets, stretches and (soon) topology and carriageways.
+    // consensus-builder used to run its own copy of the road-parcel query; the two drifted into
+    // different identifier systems, which is why there is exactly one of them now.
+    // Same resolution convention as the other consumers (zagreb-isochrone, Širine): the local
+    // container in dev, the clean zagreb.lol mount in production.
+    const ROADS_API_LOCAL_PORT = 3001;
+    const ROADS_API_PROD_BASE = 'https://zagreb.lol/api';
     const GUP_ARCGIS_BASE = 'https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/Ulice_200409/FeatureServer/1/query';
 
     // Persist choice in PersistentStorage so it survives reloads
@@ -80,6 +88,20 @@
             }
             try { return localStorage.getItem('cb_dev_backend_base') || null; } catch (_) { return null; }
         } catch (_) { return null; }
+    }
+
+    // Deliberately NOT getBackendBase(): this app's backend and the shared roads API are two
+    // different services, and conflating them is what produced two road-parcel endpoints.
+    function getRoadsApiBase() {
+        try {
+            const host = (window.location.hostname || '').toLowerCase();
+            const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0'
+                || window.location.protocol === 'file:';
+            if (isLocal) {
+                return `http://${host || 'localhost'}:${ROADS_API_LOCAL_PORT}/api`;
+            }
+        } catch (_) { }
+        return ROADS_API_PROD_BASE;
     }
 
     function getBackendBase() {
@@ -378,6 +400,7 @@
     window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;
     window.buildStreetRequestParams = buildStreetRequestParams;
     window.getBackendBase = getBackendBase;
+    window.getRoadsApiBase = getRoadsApiBase;
     window.getCurrentDataSource = getDataSource;
 })();
 

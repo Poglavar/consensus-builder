@@ -8,11 +8,23 @@ import {
     providerAvailability,
     runCliTopologyProvider
 } from '../lane-topology/cli-providers.js';
+import {
+    LANE_IMAGERY_SOURCES,
+    fetchImageryCrop,
+    imageryCropSpec,
+    publicImagerySource,
+    resolveImagerySource
+} from '../lane-topology/imagery.js';
+import {
+    LANE_WIDTH_ALGORITHM_VERSION,
+    analyzeLaneWidths
+} from '../lane-topology/lane-width-analysis.js';
 
 const require = createRequire(import.meta.url);
 const LaneTopologyGraph = require('../../frontend/js/lane-topology-graph.js');
 const CorridorProfile = require('../../frontend/js/corridor-profile.js');
 const OsmProfile = require('../../frontend/js/osm-profile.js');
+const LaneTopologyRestrictions = require('../../frontend/js/lane-topology-restrictions.js');
 const DDL = readFileSync(new URL('./lane-topology-ddl.sql', import.meta.url), 'utf8');
 
 const STREET_RAILWAYS = ['tram', 'light_rail'];
@@ -23,6 +35,8 @@ const DRIVEABLE_HIGHWAYS = [
 ];
 const MAX_FEATURES = 5000;
 const MAX_BBOX_SPAN_DEG = 0.08;
+const MAX_RECOGNITION_GSD_M = 0.35;
+const MAX_WIDTH_ANALYSIS_GSD_M = 0.2;
 const DEFAULT_LIMIT = 30;
 const MAX_LIMIT = 100;
 
@@ -74,7 +88,43 @@ function graphBuildOptions(snapshotAt) {
     };
 }
 
-export async function fetchTopologyOsm(pool, bbox, city = 'zagreb') {
+// The shared roads API owns the snapshot query. Overridable so a worktree can point at another
+// instance; localhost by default, because both services run on the same host in every environment.
+const ROADS_API_BASE = (process.env.ROADS_API_BASE || 'http://localhost:3001/api').replace(/\/+$/, '');
+
+// Lane-graph evidence, from the one place that owns it. This used to be a near-copy of the shared
+// API's query against the same tables — the same duplication that let the road-parcel endpoints
+// drift into different identifier systems. Going through the API also brings turn restrictions,
+// which no amount of osm_road querying can produce.
+export async function fetchTopologyOsm(pool, bbox, city = 'zagreb', options = {}) {
+    const [west, south, east, north] = bbox;
+    const base = (options.roadsApiBase || ROADS_API_BASE).replace(/\/+$/, '');
+    const url = `${base}/roads/topology?bbox=${[west, south, east, north].join(',')}`
+        + `&city=${encodeURIComponent(city)}`;
+    // Injectable so a route test can answer without reaching a live service — the old direct-SQL
+    // path was stubbable through the pool, and losing that would have made the suite hit the network.
+    const response = await (options.roadsFetchImpl || fetch)(url);
+    if (!response.ok) {
+        throw new Error(`roads API responded ${response.status} for ${url}`);
+    }
+    const body = await response.json();
+    return {
+        type: 'FeatureCollection',
+        features: Array.isArray(body.features) ? body.features : [],
+        restrictions: Array.isArray(body.restrictions) ? body.restrictions : [],
+        // The snapshot is the evidence's identity; snapshotAt alone can only say when.
+        snapshot: body.snapshot || null,
+        snapshotAt: body.snapshot?.sourceTimestamp
+            ? new Date(body.snapshot.sourceTimestamp).toISOString()
+            : null,
+        truncated: !!body.truncated,
+        limit: MAX_FEATURES
+    };
+}
+
+// Kept for the migration window: the direct-SQL path this replaced, so a comparison test can prove
+// the API returns the same ways rather than merely a plausible number of them.
+export async function fetchTopologyOsmViaSql(pool, bbox, city = 'zagreb') {
     const [west, south, east, north] = bbox;
     const { rows } = await pool.query(
         `SELECT
@@ -187,6 +237,7 @@ export async function storeTopologySolution(pool, {
     model = null,
     promptVersion = null,
     snapshotAt = null,
+    snapshotId = null,
     graph
 }) {
     const areaKey = bboxAreaKey(city, bbox);
@@ -194,15 +245,17 @@ export async function storeTopologySolution(pool, {
         const { rows } = await client.query(
             `INSERT INTO public.lane_topology_solution
                 (parent_id, city, area_key, status, source_kind, provider, model, prompt_version,
-                 graph_schema_version, osm_snapshot_at, coverage, selected_bbox, graph, stats)
+                 graph_schema_version, osm_snapshot_at, osm_snapshot_id, coverage, selected_bbox,
+                 graph, stats)
              VALUES
-                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                 ST_MakeEnvelope($11, $12, $13, $14, 4326), $15::numeric[], $16::jsonb, $17::jsonb)
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
+                 ST_MakeEnvelope($12, $13, $14, $15, 4326), $16::numeric[], $17::jsonb, $18::jsonb)
              RETURNING id, created_at`,
             [
                 parentId, city, areaKey, status, sourceKind, provider, model, promptVersion,
                 Number(graph.schemaVersion) || LaneTopologyGraph.SCHEMA_VERSION,
                 snapshotAt,
+                snapshotId,
                 bbox[0], bbox[1], bbox[2], bbox[3],
                 bbox,
                 JSON.stringify(graph),
@@ -222,6 +275,7 @@ export async function storeTopologySolution(pool, {
             model,
             promptVersion,
             snapshotAt,
+            snapshotId,
             bbox,
             graph,
             createdAt: stored.created_at instanceof Date ? stored.created_at.toISOString() : stored.created_at
@@ -229,15 +283,40 @@ export async function storeTopologySolution(pool, {
     });
 }
 
-async function buildDeterministicSolution(pool, bbox, city, parentId = null) {
-    const evidence = await fetchTopologyOsm(pool, bbox, city);
-    const graph = LaneTopologyGraph.build(evidence, graphBuildOptions(evidence.snapshotAt));
+// OSM turn restrictions are the only deterministic check we have on junction connections, which
+// otherwise come from an LLM and cannot be contradicted by anything. Applied to every graph the
+// moment it exists, so a violation is stored with the solution rather than found later by eye.
+export function withRestrictionProblems(graph, restrictions) {
+    if (!graph) return graph;
+    const { problems, stats } = LaneTopologyRestrictions.checkConnections(graph, restrictions);
+    const merged = [...(graph.problems || []), ...problems];
+    return {
+        ...graph,
+        problems: merged,
+        stats: {
+            ...(graph.stats || {}),
+            problems: merged.length,
+            errors: merged.filter(problem => problem.severity === 'error').length,
+            // Sparse coverage: this can refute a movement, never confirm one, and the counts have
+            // to say so or "0 violations" reads as "verified".
+            turnRestrictions: stats
+        }
+    };
+}
+
+async function buildDeterministicSolution(pool, bbox, city, parentId = null, options = {}) {
+    const evidence = await fetchTopologyOsm(pool, bbox, city, options);
+    const graph = withRestrictionProblems(
+        LaneTopologyGraph.build(evidence, graphBuildOptions(evidence.snapshotAt)),
+        evidence.restrictions
+    );
     const solution = await storeTopologySolution(pool, {
         parentId,
         city,
         bbox,
         sourceKind: 'deterministic',
         snapshotAt: evidence.snapshotAt,
+        snapshotId: evidence.snapshot?.id ?? null,
         graph
     });
     return { evidence, solution };
@@ -260,6 +339,7 @@ function serializedSolution(row, includeGraph = false) {
         model: row.model,
         promptVersion: row.prompt_version,
         graphSchemaVersion: row.graph_schema_version,
+        snapshotId: row.osm_snapshot_id == null ? null : Number(row.osm_snapshot_id),
         snapshotAt: row.osm_snapshot_at instanceof Date ? row.osm_snapshot_at.toISOString() : row.osm_snapshot_at,
         bbox: row.selected_bbox?.map(Number) || [],
         coverage: row.coverage || null,
@@ -272,12 +352,80 @@ function serializedSolution(row, includeGraph = false) {
     return result;
 }
 
+function serializedWidthAnalysis(row, includeResult = false) {
+    const analysis = {
+        id: Number(row.id),
+        parentId: row.parent_id == null ? null : Number(row.parent_id),
+        city: row.city,
+        areaKey: row.area_key,
+        status: row.status,
+        method: row.method,
+        algorithmVersion: row.algorithm_version,
+        imagerySource: row.imagery_source,
+        imageryCapturedAt: row.imagery_captured_at,
+        snapshotId: row.osm_snapshot_id == null ? null : Number(row.osm_snapshot_id),
+        snapshotAt: row.osm_snapshot_at instanceof Date
+            ? row.osm_snapshot_at.toISOString()
+            : row.osm_snapshot_at,
+        bbox: row.selected_bbox?.map(Number) || [],
+        coverage: row.coverage || null,
+        stats: row.stats || {},
+        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+        updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
+    };
+    if (includeResult) analysis.result = row.result;
+    return analysis;
+}
+
+export async function storeWidthAnalysis(pool, {
+    parentId = null,
+    city = 'zagreb',
+    bbox,
+    imagerySource,
+    imageryCapturedAt = null,
+    snapshotAt = null,
+    snapshotId = null,
+    result
+}) {
+    const areaKey = bboxAreaKey(city, bbox);
+    const { rows } = await pool.query(
+        `INSERT INTO public.lane_width_analysis
+            (parent_id, city, area_key, status, method, algorithm_version,
+             imagery_source, imagery_captured_at, osm_snapshot_at, osm_snapshot_id, coverage,
+             selected_bbox, result, stats)
+         VALUES
+            ($1, $2, $3, 'candidate', $4, $5, $6, $7, $8, $9,
+             ST_MakeEnvelope($10, $11, $12, $13, 4326), $14::numeric[], $15::jsonb, $16::jsonb)
+         RETURNING *`,
+        [
+            parentId,
+            city,
+            areaKey,
+            result.algorithm?.method || 'road-aligned paint recurrence',
+            result.algorithm?.version || LANE_WIDTH_ALGORITHM_VERSION,
+            imagerySource,
+            imageryCapturedAt,
+            snapshotAt,
+            snapshotId,
+            bbox[0], bbox[1], bbox[2], bbox[3],
+            bbox,
+            JSON.stringify(result),
+            JSON.stringify(result.stats || {})
+        ]
+    );
+    return serializedWidthAnalysis(rows[0], true);
+}
+
 async function updateJobFailure(pool, jobId, error) {
     await pool.query(
         `UPDATE public.lane_topology_job
          SET status='failed', error=$2, output_tail=$3, finished_at=now(), updated_at=now()
          WHERE id=$1`,
-        [jobId, String(error?.message || error).slice(0, 12000), String(error?.stack || '').slice(-8000)]
+        [
+            jobId,
+            String(error?.message || error).slice(0, 12000),
+            String(error?.outputTail || error?.stack || '').slice(-8000)
+        ]
     );
 }
 
@@ -288,18 +436,45 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
             `UPDATE public.lane_topology_job SET status='running', started_at=now(), updated_at=now() WHERE id=$1`,
             [job.id]
         );
+        const imagerySource = job.imagerySourceKey
+            ? resolveImagerySource(job.imagerySourceKey)
+            : null;
+        const imagery = imagerySource
+            ? await (options.fetchImageryCrop || fetchImageryCrop)(imagerySource, job.bbox, {
+                fetchImpl: options.fetchImpl,
+                maxDimension: options.imageryMaxDimension
+            })
+            : null;
         const result = await runProvider(job.provider, {
             selection: {
                 city: job.city,
                 bbox: job.bbox,
-                snapshotAt: evidence.snapshotAt
+                snapshotAt: evidence.snapshotAt,
+                snapshotId: evidence.snapshot?.id ?? null
             },
             osmWays: evidence.features,
-            deterministicGraph: deterministicSolution.graph
+            deterministicGraph: deterministicSolution.graph,
+            imagery: imagery?.metadata || null
         }, {
             ...(options.providerOptions || {}),
-            model: job.model || options.providerOptions?.model || null
+            model: job.model || options.providerOptions?.model || null,
+            imageBuffer: imagery?.buffer || null
         });
+        // The provider's junction connections are the whole point of the run, and the only thing
+        // that can contradict them is OSM's own turn restrictions. Checked here, before the
+        // solution is stored, so a violation ships with the answer rather than waiting to be seen.
+        const graph = withRestrictionProblems(
+            imagery
+                ? {
+                    ...result.graph,
+                    source: {
+                        ...(result.graph.source || {}),
+                        imagery: imagery.metadata
+                    }
+                }
+                : result.graph,
+            evidence.restrictions
+        );
         const solution = await storeTopologySolution(pool, {
             parentId: deterministicSolution.id,
             city: job.city,
@@ -309,7 +484,8 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
             model: job.model,
             promptVersion: TOPOLOGY_PROMPT_VERSION,
             snapshotAt: evidence.snapshotAt,
-            graph: result.graph
+            snapshotId: evidence.snapshot?.id ?? null,
+            graph
         });
         await pool.query(
             `UPDATE public.lane_topology_job
@@ -343,17 +519,186 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         res.json({ enabled: cliEnabled, providers: availability, promptVersion: TOPOLOGY_PROMPT_VERSION });
     });
 
+    app.get('/lane-topology/imagery/sources', (_req, res) => {
+        res.json({
+            sources: Object.values(LANE_IMAGERY_SOURCES).map(publicImagerySource)
+        });
+    });
+
+    app.get('/lane-topology/imagery/crop', async (req, res) => {
+        const bbox = parseTopologyBbox(req.query.bbox);
+        if (!bbox) {
+            return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
+        }
+        const source = resolveImagerySource(req.query.source || 'zagreb_cdof_2022');
+        if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        try {
+            const crop = await (options.fetchImageryCrop || fetchImageryCrop)(source, bbox, {
+                fetchImpl: options.fetchImpl,
+                maxDimension: req.query.maxDimension
+            });
+            res.set({
+                'Cache-Control': 'public, max-age=86400',
+                'X-Imagery-Source': source.key,
+                'X-Imagery-Width': String(crop.metadata.width),
+                'X-Imagery-Height': String(crop.metadata.height),
+                'X-Imagery-GSD-M': String(crop.metadata.effectiveGsdM)
+            });
+            return res.type(crop.contentType).send(crop.buffer);
+        } catch (error) {
+            console.error('[lane-topology] orthophoto crop failed:', error);
+            return res.status(502).json({ error: `Failed to load orthophoto evidence: ${error.message}` });
+        }
+    });
+
+    app.get('/lane-topology/imagery/crop-spec', (req, res) => {
+        const bbox = parseTopologyBbox(req.query.bbox);
+        if (!bbox) {
+            return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
+        }
+        const source = resolveImagerySource(req.query.source || 'zagreb_cdof_2022');
+        if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        const spec = imageryCropSpec(source, bbox, { maxDimension: req.query.maxDimension });
+        return res.json({ crop: { ...spec, url: undefined } });
+    });
+
     app.get('/lane-topology/osm', async (req, res) => {
         const bbox = parseTopologyBbox(req.query.bbox);
         if (!bbox) {
             return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
         }
         try {
-            const evidence = await fetchTopologyOsm(pool, bbox, String(req.query.city || 'zagreb'));
+            const evidence = await fetchTopologyOsm(pool, bbox, String(req.query.city || 'zagreb'), options);
             return res.json(evidence);
         } catch (error) {
             console.error('[lane-topology] OSM fetch failed:', error);
             return res.status(500).json({ error: 'Failed to load OSM topology evidence.' });
+        }
+    });
+
+    app.get('/lane-topology/widths/analyses', async (req, res) => {
+        const bbox = req.query.bbox ? parseTopologyBbox(req.query.bbox) : null;
+        if (req.query.bbox && !bbox) {
+            return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
+        }
+        const city = String(req.query.city || 'zagreb').slice(0, 64);
+        try {
+            await ensureSchema(pool);
+            const params = [city, parseLimit(req.query.limit)];
+            let spatial = '';
+            if (bbox) {
+                params.push(...bbox);
+                spatial = 'AND a.coverage && ST_MakeEnvelope($3,$4,$5,$6,4326)';
+            }
+            const { rows } = await pool.query(
+                `SELECT a.*, ST_AsGeoJSON(a.coverage)::json AS coverage
+                 FROM public.lane_width_analysis a
+                 WHERE a.city=$1 ${spatial}
+                 ORDER BY a.created_at DESC
+                 LIMIT $2`,
+                params
+            );
+            return res.json({ analyses: rows.map(row => serializedWidthAnalysis(row)) });
+        } catch (error) {
+            console.error('[lane-topology] width analysis list failed:', error);
+            return res.status(500).json({ error: 'Failed to list lane-width analyses.' });
+        }
+    });
+
+    app.get('/lane-topology/widths/analyses/:id', async (req, res) => {
+        try {
+            await ensureSchema(pool);
+            const { rows } = await pool.query(
+                `SELECT a.*, ST_AsGeoJSON(a.coverage)::json AS coverage
+                 FROM public.lane_width_analysis a
+                 WHERE a.id=$1`,
+                [req.params.id]
+            );
+            if (!rows.length) return res.status(404).json({ error: 'Lane-width analysis not found.' });
+            return res.json({ analysis: serializedWidthAnalysis(rows[0], true) });
+        } catch (error) {
+            console.error('[lane-topology] width analysis fetch failed:', error);
+            return res.status(500).json({ error: 'Failed to fetch the lane-width analysis.' });
+        }
+    });
+
+    app.post('/lane-topology/widths/analyze', async (req, res) => {
+        const bbox = parseTopologyBbox(req.body?.bbox);
+        if (!bbox) {
+            return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
+        }
+        const city = String(req.body?.city || 'zagreb').slice(0, 64);
+        const source = resolveImagerySource(req.body?.imagerySource || 'zagreb_cdof_2022');
+        if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        const cropSpec = imageryCropSpec(source, bbox, {
+            maxDimension: options.imageryMaxDimension
+        });
+        if (cropSpec.effectiveGsdM > MAX_WIDTH_ANALYSIS_GSD_M) {
+            return res.status(400).json({
+                error: `Zoom in before width analysis; this crop would be ${cropSpec.effectiveGsdM.toFixed(2)} m/px (maximum ${MAX_WIDTH_ANALYSIS_GSD_M.toFixed(2)} m/px).`
+            });
+        }
+        try {
+            await ensureSchema(pool);
+            const [evidence, imagery] = await Promise.all([
+                fetchTopologyOsm(pool, bbox, city, options),
+                (options.fetchImageryCrop || fetchImageryCrop)(source, bbox, {
+                    fetchImpl: options.fetchImpl,
+                    maxDimension: options.imageryMaxDimension
+                })
+            ]);
+            const analyze = options.analyzeLaneWidths || analyzeLaneWidths;
+            const result = await analyze(imagery.buffer, imagery.metadata, evidence, {
+                alongStepM: req.body?.alongStepM
+            });
+            const analysis = await storeWidthAnalysis(pool, {
+                parentId: req.body?.parentId || null,
+                city,
+                bbox,
+                imagerySource: source.key,
+                imageryCapturedAt: source.capturedAt,
+                snapshotAt: evidence.snapshotAt,
+                snapshotId: evidence.snapshot?.id ?? null,
+                result
+            });
+            return res.status(201).json({ analysis });
+        } catch (error) {
+            console.error('[lane-topology] width analysis failed:', error);
+            return res.status(500).json({
+                error: `Failed to analyze lane widths: ${error.message}`
+            });
+        }
+    });
+
+    app.post('/lane-topology/widths/analyses/:id/promote', async (req, res) => {
+        try {
+            await ensureSchema(pool);
+            const promoted = await withTransaction(pool, async client => {
+                const selected = await client.query(
+                    `SELECT id, city, area_key FROM public.lane_width_analysis WHERE id=$1 FOR UPDATE`,
+                    [req.params.id]
+                );
+                if (!selected.rows.length) return null;
+                const row = selected.rows[0];
+                await client.query(
+                    `UPDATE public.lane_width_analysis
+                     SET status='candidate', updated_at=now()
+                     WHERE city=$1 AND area_key=$2 AND status='canonical' AND id<>$3`,
+                    [row.city, row.area_key, row.id]
+                );
+                await client.query(
+                    `UPDATE public.lane_width_analysis
+                     SET status='canonical', updated_at=now()
+                     WHERE id=$1`,
+                    [row.id]
+                );
+                return Number(row.id);
+            });
+            if (!promoted) return res.status(404).json({ error: 'Lane-width analysis not found.' });
+            return res.json({ id: promoted, status: 'canonical' });
+        } catch (error) {
+            console.error('[lane-topology] width analysis promotion failed:', error);
+            return res.status(500).json({ error: 'Failed to promote the lane-width analysis.' });
         }
     });
 
@@ -365,7 +710,7 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         const city = String(req.body?.city || 'zagreb').slice(0, 64);
         try {
             await ensureSchema(pool);
-            const result = await buildDeterministicSolution(pool, bbox, city, req.body?.parentId || null);
+            const result = await buildDeterministicSolution(pool, bbox, city, req.body?.parentId || null, options);
             return res.status(201).json({
                 solution: result.solution,
                 evidence: {
@@ -398,7 +743,7 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                 `SELECT
                     s.id, s.parent_id, s.city, s.area_key, s.status, s.source_kind,
                     s.provider, s.model, s.prompt_version, s.graph_schema_version,
-                    s.osm_snapshot_at, s.selected_bbox, s.stats, s.created_at, s.updated_at,
+                    s.osm_snapshot_at, s.osm_snapshot_id, s.selected_bbox, s.stats, s.created_at, s.updated_at,
                     ST_AsGeoJSON(s.coverage)::json AS coverage,
                     jsonb_build_object(
                         'error', count(p.id) FILTER (WHERE p.severity='error'),
@@ -473,7 +818,9 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
             return res.status(400).json({ error: 'Provider must be "codex" or "claude".' });
         }
         const availability = providerAvailability(provider, options.spawnSyncImpl);
-        if (!availability.available) {
+        // Refuse only on a definite answer. An indeterminate probe (it timed out under load) must
+        // not block a run the CLI can perfectly well do; the run itself reports a real failure.
+        if (!availability.available && !availability.indeterminate) {
             return res.status(503).json({ error: `${provider} CLI is not available.` });
         }
         const bbox = parseTopologyBbox(req.body?.bbox);
@@ -481,10 +828,26 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
             return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
         }
         const city = String(req.body?.city || 'zagreb').slice(0, 64);
+        const imagerySourceKey = req.body?.imagerySource
+            ? String(req.body.imagerySource)
+            : null;
+        if (imagerySourceKey && !resolveImagerySource(imagerySourceKey)) {
+            return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        }
+        if (imagerySourceKey) {
+            const crop = imageryCropSpec(resolveImagerySource(imagerySourceKey), bbox, {
+                maxDimension: options.imageryMaxDimension
+            });
+            if (crop.effectiveGsdM > MAX_RECOGNITION_GSD_M) {
+                return res.status(400).json({
+                    error: `Zoom in before imagery recognition; this crop would be ${crop.effectiveGsdM.toFixed(2)} m/px (maximum ${MAX_RECOGNITION_GSD_M.toFixed(2)} m/px).`
+                });
+            }
+        }
         try {
             await ensureSchema(pool);
             const { evidence, solution: deterministicSolution } = await buildDeterministicSolution(
-                pool, bbox, city, req.body?.baseSolutionId || null
+                pool, bbox, city, req.body?.baseSolutionId || null, options
             );
             const areaKey = bboxAreaKey(city, bbox);
             const { rows } = await pool.query(
@@ -499,7 +862,8 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                     TOPOLOGY_PROMPT_VERSION,
                     JSON.stringify({
                         sourceWays: evidence.features.length,
-                        deterministicStats: deterministicSolution.graph.stats
+                        deterministicStats: deterministicSolution.graph.stats,
+                        imagerySource: imagerySourceKey
                     })
                 ]
             );
@@ -508,7 +872,8 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                 provider,
                 city,
                 bbox,
-                model: req.body?.model ? String(req.body.model).slice(0, 128) : null
+                model: req.body?.model ? String(req.body.model).slice(0, 128) : null,
+                imagerySourceKey
             };
             queueMicrotask(() => executeRecognitionJob(
                 pool, job, evidence, deterministicSolution, options
@@ -549,7 +914,9 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                     resultSolutionId: row.result_solution_id == null ? null : Number(row.result_solution_id),
                     model: row.model,
                     promptVersion: row.prompt_version,
+                    imagerySource: row.input_summary?.imagerySource || null,
                     error: row.error,
+                    outputTail: row.status === 'failed' ? row.output_tail : null,
                     createdAt: row.created_at,
                     startedAt: row.started_at,
                     finishedAt: row.finished_at
