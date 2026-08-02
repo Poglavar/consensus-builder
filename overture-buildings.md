@@ -189,21 +189,38 @@ transaction, and refuses to run when the local region is empty (which would othe
       ingest CLI removed.
 - [x] Trees scattered through `osm_decor` greenery, anchored so they cannot crawl while panning.
 - [x] Index prefilter on both radius queries (buildings 42x, trees 8.6x).
-- [ ] Drop the now-orphaned `overture_feature` table (contents verified duplicated; see below).
+- [x] Dropped the orphaned `overture_feature` table (see below).
 - [ ] i18n the scenery toggle labels (match the surrounding hardcoded control labels for now).
 - [ ] Schedule a periodic ingest+copy refresh (monthly, tracking Overture releases).
 - [ ] More layers from `osm_decor`, which already carries them: hedges, benches, footpaths, and
       greenery as a rendered green ground surface (only its trees are used today).
 - [ ] ML height gap-fill (e.g. GlobalBuildingAtlas) for buildings with no floors tag in the periphery.
 
-### Dropping `overture_feature`
+### `overture_feature` is gone (dropped 2026-08-02)
 
-Nothing reads it any more (no code, no views — checked via `pg_depend`). Its contents were verified
-present in the shared tables before the switch: Belgrade 187,126 buildings re-ingested into
-`overture_building_footprint` (now *with* `osm_id`, which the old copy lacked) and its 3,185 trees
-migrated into `osm_decor`; Split existed in both already. It is left in place only because dropping
-is destructive and was not needed to finish the switch:
+Checks run before dropping — worth repeating for any table retired this way:
 
-```sql
-DROP TABLE public.overture_feature;
-```
+- **No dependents.** No views, matviews or rules (`pg_depend` join on `pg_rewrite`), no foreign keys
+  referencing it (`pg_constraint.confrelid`), no non-internal triggers. The drop was a plain
+  `DROP TABLE`, never `CASCADE`, so an unnoticed dependent would have *failed* the command rather
+  than been silently deleted along with it.
+- **Row-level duplication, not just matching counts.** All **240,663** buildings (Belgrade 187,126,
+  Split 53,537) matched `overture_building_footprint` **by id**, zero missing.
+- **28 Split tree points did NOT match** any `osm_decor` tree within 1 m. Equal-ish totals hid this:
+  3,878 vs 3,885 is a net +7, but the sets differ both ways. So the table was 99.3% duplicated, not
+  100% — the trees came from Overture's `base/land` and the decor load from OSM directly, and the
+  two had drifted slightly. They were dropped deliberately: 28 decorative points, superseded by a
+  greenery scatter that plants hundreds in the same area, and preserved in the backup below.
+- **Backed up first**, verified to contain 247,726 data rows in exactly the live per-city/layer
+  proportions plus the `CREATE TABLE`:
+  `~/backups/overture_feature_before_drop_20260802.sql.gz` (23 MB).
+  Restore with `gunzip -c <file> | docker exec -i consensus-builder-db-1 psql -U zagreb_user -d geodata`.
+- **Verified from the artifact afterwards**, not from "DROP TABLE" succeeding: all three cities serve
+  the same numbers through the real endpoints as before the drop — Šibenik 383 buildings / 139 trees,
+  Split 347 / 397, Belgrade 388 / 107.
+
+**Prod still has this table, and must keep it until the new backend is deployed.** Production is
+still running the old code, which reads `overture_feature`; dropping it there before the deploy
+breaks every 3D building and tree request. The deploy order is: populate
+`overture_building_footprint` + `osm_decor` on prod (see `scripts/copy-overture-to-prod.sh` for the
+buildings half) → deploy this backend → only then drop.
