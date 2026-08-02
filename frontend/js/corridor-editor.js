@@ -1117,7 +1117,10 @@ function corridorEditorEdgeFillRegions() {
     // Cutting the band against every parcel is real work, and a render can be triggered by things
     // that do not move the fill at all — a tab switch, an obstacle re-check. Scope, limit, survey
     // and geometry cover the surroundings; the profile covers every cross-section change.
-    const cacheKey = [state.scope, state.segmentId || '', state.clearanceMode,
+    // The preview must show what will actually be drawn, so it reads the ROAD's stored fill choice,
+    // not the clearance tab's measurement mode. Keyed on the same value it passes below.
+    const edgeFillLimit = (state.definition && state.definition.edgeFill && state.definition.edgeFill.limit) || 'none';
+    const cacheKey = [state.scope, state.segmentId || '', edgeFillLimit,
         corridorEditorBuildingSurveyKey(), state.geometryVersion || 0, JSON.stringify(state.profile)].join('|');
     if (state.edgeFillCache && state.edgeFillCache.key === cacheKey) return state.edgeFillCache.regions;
 
@@ -1131,7 +1134,7 @@ function corridorEditorEdgeFillRegions() {
     // The preview and what the map, the 3D model and photo view will draw are ONE derivation
     // (corridor-edge-fill-scene.js). Two implementations of this drifted once already.
     const out = window.CorridorEdgeFill.regionsFor(state.definition, {
-        limit: state.clearanceMode,
+        limit: edgeFillLimit,
         surveys: corridorEditorBuildingSurveys(),
         segments,
         heldEndpoints: held,
@@ -2081,8 +2084,14 @@ async function corridorEditorSave() {
     // The pavement fill is derived, not stored — but WHICH LIMIT it was drawn to is the author's
     // decision, and every later viewer (the 2D map, the 3D model, photo view) must honour it rather
     // than fall back to a default. Read before the editor closes; written in the mutator below.
-    const edgeFillLimit = corridorEditorState.clearanceMode === 'parcels' ? 'parcels' : 'buildings';
-    const edgeFillSurvey = corridorEditorBuildingSurveyKey();
+    //
+    // CARRY THE STORED CHOICE THROUGH — do not re-derive it from clearanceMode. That is the
+    // CLEARANCE tab's measurement basis (what the corridor's free width is measured against), and it
+    // starts at 'buildings'; deriving the fill from it meant merely opening the cross-section editor
+    // and saving switched pavement expansion ON for a road whose author never asked for it.
+    const storedEdgeFill = (corridorEditorState.definition && corridorEditorState.definition.edgeFill) || null;
+    const edgeFillLimit = (storedEdgeFill && storedEdgeFill.limit) || 'none';
+    const edgeFillSurvey = (storedEdgeFill && storedEdgeFill.survey) || corridorEditorBuildingSurveyKey();
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();

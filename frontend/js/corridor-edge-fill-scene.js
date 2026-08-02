@@ -13,7 +13,19 @@
 (function (global) {
     'use strict';
 
-    const DEFAULT_LIMIT = 'buildings';
+    // OFF unless the author asked for it. A drawn road DECLARES its full cross-section — its
+    // sidewalks are as wide as they were designed to be — so expanding them out to the frontage is
+    // wrong by definition. The expansion exists for an ADOPTED existing street, where the real
+    // pavement does run from kerb to building line; nothing adopts a street yet (the OSM →
+    // cross-section translator in corridor-profile.js has no caller), so nothing should be filling.
+    //
+    // It used to default to 'buildings', and worse, the cross-section editor rewrote the stored
+    // choice from the CLEARANCE tab's mode on every save — so drawing a road and editing its
+    // profile silently switched the fill on. In Šibenik that put 25 m aprons (4,000 m² each) down
+    // both sides of a rural road: the cuts are meant to shape the fill to the frontage, but across
+    // large agricultural parcels there is no frontage within reach, and EDGE_FILL_MAX_REACH — a
+    // backstop, explicitly "not a shaping rule" — became the pavement width.
+    const DEFAULT_LIMIT = 'none';
 
     function turfApi() { return global.turf; }
 
@@ -146,6 +158,9 @@
 
         const stored = definition.edgeFill || {};
         const limit = options.limit || stored.limit || DEFAULT_LIMIT;
+        // 'none' is a real choice, not a missing one: the road's drawn width IS its pavement.
+        // Checked before any parcel or building work so it costs nothing.
+        if (limit === 'none') return out;
         const surveys = sceneSurveys(options.surveys);
         const entries = Array.isArray(options.segments) && options.segments.length
             ? options.segments.map(segment => ({ segment, profile: options.profile || global.corridorProfileOf(definition) }))
