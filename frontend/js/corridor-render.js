@@ -341,8 +341,15 @@ function renderCorridorStrips(strips, options = {}) {
     const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
-        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
-        const surface = lane.surface || '#2b2b2b';
+        // The colour is the lane's, unless the lane carries a paving that overrides it (a stone
+        // footway). corridorStripSurface owns that rule so 2D and 3D cannot disagree about it.
+        const surface = (typeof corridorStripSurface === 'function')
+            ? corridorStripSurface(strip)
+            : (((typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {}).surface || '#2b2b2b');
+        const paving = (typeof corridorPavingOf === 'function') ? corridorPavingOf(strip) : null;
+        // The stone pattern itself is CSS (an SVG pattern fill); at map zooms it is texture, not
+        // information, so the colour above has to carry the difference on its own.
+        const pavingClass = paving === 'paved' ? ' corridor-strip--paved' : '';
         strip.polygons.forEach(polygon => {
             L.polygon(polygon, {
                 color: surface,
@@ -351,7 +358,7 @@ function renderCorridorStrips(strips, options = {}) {
                 fillOpacity,
                 interactive: false,
                 pane: options.pane || undefined,
-                className: `corridor-strip corridor-strip--${strip.type}${ownerClass}`
+                className: `corridor-strip corridor-strip--${strip.type}${pavingClass}${ownerClass}`
             }).addTo(group);
         });
     });
@@ -616,6 +623,35 @@ function clearAppliedCorridorStrips() {
     appliedCorridorLayer = null;
 }
 
+// The filled footway of one corridor, as Leaflet polygons. Derived by the one shared builder
+// (corridor-edge-fill-scene.js), so the map cannot disagree with the editor's preview or with 3D.
+function renderCorridorEdgeFill(definition, group, ownerClass) {
+    if (!definition || !group || !window.CorridorEdgeFill || typeof L === 'undefined') return;
+    let regions = [];
+    try { regions = window.CorridorEdgeFill.regionsFor(definition) || []; } catch (error) {
+        console.warn('[corridor-render] edge fill could not be derived', error);
+        return;
+    }
+    regions.forEach(region => {
+        const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[region.type]) || {};
+        const surface = (typeof corridorStripSurface === 'function')
+            ? corridorStripSurface({ type: region.type, paving: region.paving })
+            : (lane.surface || '#c2beb4');
+        const pavingClass = region.paving === 'paved' ? ' corridor-strip--paved' : '';
+        L.geoJSON(region.geojson, {
+            pane: CORRIDOR_STRIPS_PANE,
+            interactive: false,
+            style: {
+                color: surface,
+                weight: 0.5,
+                fillColor: surface,
+                fillOpacity: 0.85,
+                className: `corridor-strip corridor-strip--${region.type}${pavingClass}${ownerClass ? ' ' + ownerClass : ''}`
+            }
+        }).addTo(group);
+    });
+}
+
 function refreshAppliedCorridorStrips() {
     clearAppliedCorridorStrips();
     if (typeof map === 'undefined' || !map) return;
@@ -626,6 +662,7 @@ function refreshAppliedCorridorStrips() {
     const layer = L.layerGroup();
     let drawn = 0;
     const renderedCorridors = [];
+    const renderedMarkings = [];
 
     const proposals = proposalStorage.getAllProposals();
     proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
@@ -637,23 +674,33 @@ function refreshAppliedCorridorStrips() {
 
         // Per-segment cross-sections: each segment renders with ITS profile; junction patches
         // (sized per arm) then cover the seams where different widths meet.
+        const corridorId = String(
+            (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null)
+            || proposal.proposalId
+        );
         const entries = corridorRenderEntries(proposal, definition)
             .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
-            .map(entry => entry.profile ? entry : { ...entry, profile: fallbackProfile });
+            .map(entry => ({
+                ...(entry.profile ? entry : { ...entry, profile: fallbackProfile }),
+                corridorId
+            }));
         if (!entries.length) return;
+        const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+            ? buildCorridorLaneMarkingsForEntries(entries)
+            : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile));
 
         const group = L.layerGroup();
         const allStrips = [];
         const ownerClass = corridorOwnerClass((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
-        entries.forEach(entry => {
+        entries.forEach((entry, entryIndex) => {
             const strips = buildCorridorStrips([entry.points], entry.profile);
-            const markings = (typeof buildCorridorLaneMarkings === 'function') ? buildCorridorLaneMarkings([entry.points], entry.profile) : [];
+            const markings = markingsByEntry[entryIndex] || [];
             // Trees are physical objects and stay; bike/pedestrian lane explainers are clutter on
             // the map — lane meaning lives in the cross-section editor.
             const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
-                pane: CORRIDOR_STRIPS_PANE, markings, decorations, junctions: [], ownerClass,
+                pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
                 // A placed corridor's rails are black, like the asphalt it is laid in.
                 centerlines: [entry.points], profile: entry.profile,
                 railColor: '#000000', sleeperColor: '#666666'
@@ -661,9 +708,14 @@ function refreshAppliedCorridorStrips() {
             if (segmentGroup) {
                 segmentGroup.addTo(group);
                 allStrips.push(...strips);
+                renderedMarkings.push(...markings);
             }
         });
         if (!allStrips.length) return;
+        // The pavement where the footway fills out to the frontage. Drawn UNDER the junction patches
+        // and over the strips, in the lane's own surface — so the 2D map shows the same road width
+        // the 3D model and photo view do, rather than the drawn minimum.
+        renderCorridorEdgeFill(definition, group, ownerClass);
         const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
             ? buildCorridorJunctionTreatmentsForEntries(entries)
             : [];
@@ -671,7 +723,6 @@ function refreshAppliedCorridorStrips() {
 
         group.addTo(layer);
         renderAppliedCorridorHitTargets(allStrips, proposal, layer, definition, entries);
-        const corridorId = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
             ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
             : [];
@@ -702,6 +753,9 @@ function refreshAppliedCorridorStrips() {
         const crossJunctions = buildCrossCorridorJunctionTreatments(renderedCorridors);
         if (crossJunctions.length) renderCorridorJunctions(crossJunctions, layer, CORRIDOR_STRIPS_PANE);
     }
+    // Paint after every local and cross-corridor asphalt patch. Through lanes are most important in
+    // the conflict area; the old order erased them precisely at the crossroads.
+    renderCorridorLaneMarkings(renderedMarkings, layer, CORRIDOR_STRIPS_PANE);
 
     // Building passages hang off the definition rather than the cross-section, so they are a pass of
     // their own over every applied corridor — including ones whose strips failed to build.

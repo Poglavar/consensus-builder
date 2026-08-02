@@ -1,8 +1,9 @@
 // Route for 3D "decor" — toggleable OSM-derived scenery (currently trees) around a proposal/camera.
 // Mirrors /buildings/near: the client posts a GeoJSON geometry + radius + city, and gets back the
 // nearby scenery in a compact shape the Three.js renderer instances. Trees come from the generic
-// Overture provider (backend/decor/overture-trees.js), reading the shared overture_feature table, so
-// any city with ingested scenery rows is covered. Built to grow more `kinds` (parks, water) later.
+// provider (backend/decor/overture-trees.js), reading the shared `osm_decor` table that
+// zagreb-isochrone's 3D world uses too, so any area with loaded scenery rows is covered. Built to
+// grow more `kinds` (parks, water) later — osm_decor already carries greenery/hedges/benches/etc.
 //
 // GET /decor/layers tells the frontend which scenery layers a city actually has, so it can render a
 // toggle only for available layers — data-driven from what's ingested, not a hardcoded per-city list.
@@ -10,8 +11,8 @@
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
 import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
 
-// Which overture_feature layers are renderable scenery toggles in the 3D view (i.e. not 'buildings',
-// which renders via the Built/Both/Planned controls). Extend as new layers get a renderer.
+// Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
+// they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
 const SCENERY_LAYERS = ['trees'];
 
 export function setupDecorRoute(app, pool) {
@@ -35,12 +36,20 @@ export function setupDecorRoute(app, pool) {
                 return res.json({ layers: cached.layers });
             }
 
+            // Resolve the city id to the decor row set it reads: several cities can share one
+            // regional load (sibenik → sjeverna-dalmacija), so an unmapped city has no scenery.
+            const region = OVERTURE_CITIES[city]?.region;
+            if (!region) {
+                layersCache.set(city, { at: Date.now(), layers: [] });
+                return res.json({ layers: [] });
+            }
+
             const { rows } = await pool.query(
-                `SELECT DISTINCT layer FROM overture_feature WHERE city = $1 AND layer = ANY($2)`,
-                [city, SCENERY_LAYERS]
+                `SELECT DISTINCT kind FROM osm_decor WHERE city = $1 AND kind = ANY($2)`,
+                [region, SCENERY_LAYERS]
             );
             // Preserve SCENERY_LAYERS order so toggles render in a stable, intentional sequence.
-            const present = new Set(rows.map(r => r.layer));
+            const present = new Set(rows.map(r => r.kind));
             const layers = SCENERY_LAYERS.filter(l => present.has(l));
             layersCache.set(city, { at: Date.now(), layers });
             res.json({ layers });

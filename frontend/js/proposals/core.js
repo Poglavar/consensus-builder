@@ -904,7 +904,11 @@ function tryEnterRealisticMode(options) {
 // URL-driven view entry: enter 3D (framing the just-loaded proposal), then overlay realistic mode
 // when requested — framing the whole proposal from the top, tilted ~45°, with a gentle auto-rotate.
 function enterUrlDrivenView(focusProposalIds) {
-    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds });
+    // A shared AI render (?scene=<slug>) carries the exact camera pose it was shot from; when the
+    // scene has been fetched, reproduce it instead of auto-framing. If the fetch hasn't resolved
+    // yet, ai-scene-follow re-applies it once it lands, so this only misses on a fast race.
+    const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
+    const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds, restoreView: restoreView });
     if (entered && isRealisticModeRequestedFromUrl()) {
         tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
     }

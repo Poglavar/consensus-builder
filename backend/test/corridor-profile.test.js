@@ -10,6 +10,11 @@ const {
     CORRIDOR_PROFILE_PRESETS,
     normalizeCorridorProfile,
     corridorProfileWidth,
+    corridorPavingOf,
+    corridorStripSurface,
+    withLanePaving,
+    CORRIDOR_PAVED_SURFACE,
+    CORRIDOR_LANE_TYPES,
     corridorProfileFromLegacy,
     corridorProfileOf,
     corridorStripSpans,
@@ -1350,5 +1355,55 @@ describe('lane direction and direction arrows', () => {
         withProjection(() => {
             expect(buildCorridorDirectionArrows([road], { strips: [{ type: 'sidewalk', width: 2 }, { type: 'parking', width: 2.5 }] })).toEqual([]);
         });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Footway paving: a material carried by the lane, like a verge's landscape or a track's gauge.
+// It changes what the strip is drawn with and nothing else — no width, no seam.
+// ---------------------------------------------------------------------------
+describe('footway paving', () => {
+    const profileOf = paving => ({ strips: [{ type: 'sidewalk', width: 2, paving }, { type: 'driving', width: 3 }] });
+
+    it('defaults a footway to asphalt and gives nothing else a paving at all', () => {
+        expect(corridorPavingOf({ type: 'sidewalk', width: 2 })).toBe('asphalt');
+        expect(corridorPavingOf({ type: 'sidewalk', width: 2, paving: 'paved' })).toBe('paved');
+        expect(corridorPavingOf({ type: 'driving', width: 3 })).toBeNull();
+        expect(corridorPavingOf({ type: 'verge', width: 2, paving: 'paved' })).toBeNull();
+    });
+
+    it('drops a paving it does not recognise rather than carrying it into the renderers', () => {
+        const normalized = normalizeCorridorProfile(profileOf('cobbles'));
+        expect(normalized.strips[0].paving).toBeUndefined();
+        expect(corridorPavingOf(normalized.strips[0])).toBe('asphalt');
+    });
+
+    it('draws a paved footway in stone and an asphalt one in the lane colour', () => {
+        expect(corridorStripSurface({ type: 'sidewalk', paving: 'paved' })).toBe(CORRIDOR_PAVED_SURFACE);
+        expect(corridorStripSurface({ type: 'sidewalk', paving: 'asphalt' }))
+            .toBe(CORRIDOR_LANE_TYPES.sidewalk.surface);
+        // A paving on a lane that cannot have one changes nothing.
+        expect(corridorStripSurface({ type: 'driving', paving: 'paved' }))
+            .toBe(CORRIDOR_LANE_TYPES.driving.surface);
+    });
+
+    it('paves a footway without moving a single width', () => {
+        const before = profileOf('asphalt');
+        const after = withLanePaving(before, 0, 'paved');
+        expect(corridorPavingOf(after.strips[0])).toBe('paved');
+        expect(corridorProfileWidth(after)).toBe(corridorProfileWidth(before));
+        expect(after.strips.map(strip => strip.width)).toEqual([2, 3]);
+    });
+
+    it('refuses to pave anything that is not a footway, or with anything that is not a paving', () => {
+        expect(withLanePaving(profileOf('asphalt'), 1, 'paved')).toBeNull(); // the driving lane
+        expect(withLanePaving(profileOf('asphalt'), 0, 'cobbles')).toBeNull();
+        expect(withLanePaving(profileOf('asphalt'), 9, 'paved')).toBeNull();
+    });
+
+    it('carries the paving onto the strip spans the renderers read', () => {
+        const spans = corridorStripSpans(profileOf('paved'));
+        expect(spans[0].paving).toBe('paved');
+        expect(corridorStripSurface(spans[0])).toBe(CORRIDOR_PAVED_SURFACE);
     });
 });

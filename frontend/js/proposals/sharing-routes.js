@@ -405,11 +405,32 @@ function buildSharedProposalsPayload(appliedProposals) {
 // proposals has a materialized building feature. Entering the instant the route decides
 // raced hydration/reapply: the focus subset matched nothing yet, and the camera silently
 // fell back to framing EVERY applied proposal.
+// A proposal that has no BUILDINGS can never satisfy a wait for proposedBuildings. A road or a
+// structure link therefore sat out the whole 8 s deadline before 3D opened — measured at 9 s on
+// prod for /proposals/95 — with nothing on screen to explain it. Waiting is only meaningful for
+// building proposals; anything else is ready as soon as it is applied.
+function urlFocusNeedsBuildings(ids) {
+    try {
+        const all = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
+            ? proposalStorage.getAllProposals() : [];
+        const focused = all.filter(p => {
+            const key = String((typeof getProposalKey === 'function' ? getProposalKey(p) : null)
+                || p.proposalId || p.serverProposalId || '');
+            return ids.includes(key) || ids.includes(String(p.serverProposalId || ''));
+        });
+        // Unknown to storage yet: keep the old behaviour and wait.
+        if (!focused.length) return true;
+        return focused.some(p => p && p.buildingProposal);
+    } catch (_) {
+        return true;
+    }
+}
+
 function enterUrlDrivenViewWhenReady(focusIds) {
     const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
     const deadline = Date.now() + 8000;
     const attempt = () => {
-        let ready = ids.length === 0;
+        let ready = ids.length === 0 || !urlFocusNeedsBuildings(ids);
         try {
             const feats = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
                 ? window.proposedBuildings : [];
@@ -1186,18 +1207,25 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 // that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
 // existing behaviour rather than stranding the user on a dialog.
 async function sharedProposalCityBlocksLoad(firstProposalId) {
-    if (!firstProposalId || typeof promptCityMismatchForProposal !== 'function') return false;
+    // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
+    // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
+    // very same proposal a SECOND time. Hand the payload back so the caller can reuse it — one fetch
+    // instead of two. `blocked` is true only when the user chose to stay in the other city.
+    if (!firstProposalId) return { blocked: false, payload: null };
+    let payload = null;
     try {
         const backendBase = resolveBackendBaseUrl();
         const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
-        if (!response.ok) return false;
-        const payload = await response.json();
+        if (!response.ok) return { blocked: false, payload: null };
+        payload = await response.json();
+        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload };
         const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
-        if (!proposalCityId) return false;
-        return await promptCityMismatchForProposal(String(proposalCityId));
+        if (!proposalCityId) return { blocked: false, payload };
+        const blocked = await promptCityMismatchForProposal(String(proposalCityId));
+        return { blocked, payload };
     } catch (error) {
         console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
-        return false;
+        return { blocked: false, payload };
     }
 }
 
@@ -1260,20 +1288,27 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
+        const firstProposalId = idParts.map(normalizeId).filter(Boolean)[0];
 
-        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
-        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
-        // map happens to be on screen.
-        if (await sharedProposalCityBlocksLoad(idParts.map(normalizeId).filter(Boolean)[0])) {
-            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
-            return;
-        }
-
+        // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
+        // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
         showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
             total: totalProposals,
             title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
         });
+
+        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
+        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
+        // map happens to be on screen. The fetched payload is reused below (see prefetchedFirst) so
+        // the apply loop does not fetch this same proposal again.
+        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId);
+        if (cityCheck.blocked) {
+            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
+            hideProposalLoadOverlay();
+            return;
+        }
+        const prefetchedFirst = cityCheck.payload || null;
 
         const backendBase = resolveBackendBaseUrl();
         const applied = [];
@@ -1409,6 +1444,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
+        // Reuse the proposal the city check already fetched — keyed by the same normalized id the
+        // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
+        if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
         const lastUnfetchedBasePrereqIdsById = new Map();
@@ -1434,18 +1472,57 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
         // to a whole-block building proposal). Waiting here makes that detection deterministic.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
-            // stall the whole route.
-            await Promise.race([
-                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
-                new Promise(resolve => setTimeout(resolve, 10000))
-            ]);
-            // If a reapply was already in flight, the call above returned immediately without
-            // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
-            let waitedForReapply = 0;
-            while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                waitedForReapply += 100;
+            // The barrier only matters when we are about to APPLY a proposal that could conflict with
+            // a DIFFERENT already-applied one — it waits for the background reapply to re-materialize
+            // everything so that conflict is detectable. It is pure cost, freezing the loader at
+            // "0 / 1" for up to 10 s, in two cases where nothing new gets applied:
+            //   - nothing else is applied at all, or
+            //   - every incoming proposal is ALREADY applied (re-opening a link). Re-opening applies
+            //     nothing, so there is no conflict to resolve — and with a stack of test proposals on
+            //     the map this was the usual reason for the stall.
+            // The reapply still runs in the background either way (materialization is not skipped),
+            // we just do not block on it. Keep the barrier only for a genuine plan switch: a NEW
+            // proposal arriving while others are applied.
+            const incomingIdSet = new Set(queue.map(normalizeId).filter(Boolean));
+            let hasOtherApplied = false;
+            let allIncomingAlreadyApplied = false;
+            try {
+                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
+                    const appliedIdSet = new Set();
+                    (proposalStorage.getAllProposals() || []).forEach(p => {
+                        if (!p || !isProposalCurrentlyApplied(p)) return;
+                        [
+                            p.serverProposalId,
+                            p.proposalId,
+                            (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null)
+                        ].filter(Boolean).forEach(id => appliedIdSet.add(String(id)));
+                    });
+                    hasOtherApplied = [...appliedIdSet].some(id => !incomingIdSet.has(id));
+                    allIncomingAlreadyApplied = incomingIdSet.size > 0
+                        && [...incomingIdSet].every(id => appliedIdSet.has(id));
+                }
+            } catch (_) {
+                hasOtherApplied = true; // unsure → keep the safe barrier
+                allIncomingAlreadyApplied = false;
+            }
+            if (hasOtherApplied && !allIncomingAlreadyApplied) {
+                // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
+                // stall the whole route.
+                await Promise.race([
+                    Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
+                    new Promise(resolve => setTimeout(resolve, 10000))
+                ]);
+                // If a reapply was already in flight, the call above returned immediately without
+                // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
+                let waitedForReapply = 0;
+                while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    waitedForReapply += 100;
+                }
+            } else {
+                // Still let materialization proceed in the background (the in-flight guard makes this
+                // a no-op if the load-time reapply is already running) — we simply do not block on it.
+                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { });
             }
         }
 
@@ -1746,7 +1823,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         await ensureParentParcelsLoaded(toFetch, { forceRefreshParcels: true });
                     }
                     if (typeof waitForParcelLayersReady === 'function') {
-                        await waitForParcelLayersReady(toFetch, { timeoutMs: 15000, pollIntervalMs: 200 });
+                        // The fetch above has already resolved, so every parcel it returned is in the
+                        // index (or rehydratable from storage) and becomes ready within a poll or two.
+                        // The only ids that reach the timeout are PHANTOMS — a declared base/cadastre
+                        // parent the fetch never returned, which will never become ready no matter how
+                        // long we wait. 15 s of that froze the loader at "1 / 1"; 4 s covers real
+                        // render lag and stops burning time on ids that are not coming.
+                        await waitForParcelLayersReady(toFetch, { timeoutMs: 4000, pollIntervalMs: 150 });
                     }
                 } catch (err) {
                     console.warn('[handleSharedPlanRoute] Failed to bulk fetch base parcels for apply plan', { ids: toFetch, err });

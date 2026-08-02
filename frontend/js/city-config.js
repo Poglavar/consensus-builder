@@ -7,6 +7,7 @@
         bg: 'belgrade',
         zg: 'zagreb',
         st: 'split',
+        si: 'sibenik',
         lj: 'ljubljana',
         co: 'colorado',
         ny: 'new_york'
@@ -187,8 +188,8 @@
                 requiresBackend: true
             },
             buildings: {
-                // Overture-Maps footprints + heights (overture_feature table, extruded
-                // server-side like Belgrade). 3D buildings load automatically in 3D mode.
+                // Overture-Maps footprints + heights (shared overture_building_footprint table,
+                // extruded server-side like Belgrade). 3D buildings load automatically in 3D mode.
                 source: 'overture'
             },
             sidebar: {
@@ -204,6 +205,65 @@
             walk: {
                 url: 'https://zagreb.lol/prijevoz/',
                 locParam: 'split'
+            }
+        },
+        sibenik: {
+            id: 'sibenik',
+            label: 'Šibenik, Croatia',
+            currency: { locale: 'hr-HR', code: 'EUR' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: SHARED_DEFAULT_ZOOM
+                },
+                // Šibenik old town, by the cathedral. The city as configured is the coastal
+                // corridor out to Vodice (~15 km NW): the 11 cadastral municipalities whose
+                // ownership is loaded are Šibenik, Crnica, Mandalina, Gorica, Donje Polje,
+                // Bilice, Martinska, Zaton-Raslina, Srima, Vodice and Tribunj.
+                defaultCenter: [43.7350, 15.8896],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.1
+            },
+            // Same national HTRS96 grid and DGU parcel source as Zagreb and Split — one
+            // countrywide dataset, so nothing about parcels is city-specific here.
+            projection: {
+                datasetCrs: 'EPSG:3765',
+                definition: '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.7350, 15.8896],
+                fallbackDataset: [450830, 4844075],
+                datasetBounds: {
+                    minX: 240000,
+                    maxX: 730000,
+                    minY: 4460000,
+                    maxY: 5160000
+                }
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 500,
+                source: 'oss-wfs',
+                requiresBackend: true
+            },
+            buildings: {
+                // Overture-Maps footprints + heights, extruded server-side. Reads the shared
+                // overture_building_footprint rows already ingested for the whole
+                // Zadar–Šibenik–Knin area (see backend/buildings/overture-cities.js).
+                source: 'overture'
+            },
+            sidebar: {
+                // Zagreb-only datasets (city blocks, GUP roads, area monitor, 2D buildings
+                // WFS layer) stay off until ingested for Šibenik.
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            // The transit sim's prepared location for this coast is the whole Zadar–Šibenik–Knin
+            // area, so locParam is the region id, not the city id.
+            walk: {
+                url: 'https://zagreb.lol/prijevoz/',
+                locParam: 'sjeverna-dalmacija'
             }
         },
         belgrade: {
@@ -236,9 +296,10 @@
                 requiresBackend: true
             },
             buildings: {
-                // Overture-Maps footprints + heights, ingested into overture_feature (layer=buildings)
-                // and extruded server-side (backend/buildings/overture-3d.js). Resolved by city id, not
-                // this string. Like NYC, the 3D buildings load automatically in 3D mode.
+                // Overture-Maps footprints + heights, ingested into the shared
+                // overture_building_footprint table and extruded server-side
+                // (backend/buildings/overture-3d.js). Resolved by city id, not this string.
+                // Like NYC, the 3D buildings load automatically in 3D mode.
                 source: 'overture'
             },
             sidebar: {
@@ -1283,10 +1344,16 @@
         return config.projection?.fallbackLatLng || null;
     }
 
-    function findNearestCity(lat, lon) {
+    // Nearest configured city to a point. `options.filter` narrows the candidates — used to answer
+    // "which of the cities that serve THIS dataset is this parcel in?", where letting every city
+    // compete would be wrong: eastern Croatia is closer to Belgrade than to Zagreb, but a Croatian
+    // cadastre parcel can never belong to a city whose parcels come from the Serbian source.
+    function findNearestCity(lat, lon, options = {}) {
+        const filter = typeof options.filter === 'function' ? options.filter : null;
         let best = null;
         let bestDistance = Infinity;
         Object.values(CITY_CONFIGS).forEach(config => {
+            if (filter && !filter(config)) return;
             const center = getCityCenter(config);
             if (!center) return;
             const d = haversineDistance(lat, lon, center[0], center[1]);
@@ -1296,6 +1363,13 @@
             }
         });
         return best;
+    }
+
+    // The cities whose parcels come from a given backend source ('oss-wfs' is the Croatian DGU
+    // cadastre, shared by Zagreb, Split and Šibenik). Adding a fourth Croatian city automatically
+    // joins this set — nothing else needs updating for deep links to resolve to it.
+    function getCitiesByParcelSource(source) {
+        return Object.values(CITY_CONFIGS).filter(config => config.parcels?.source === source);
     }
 
     function setupDetectCityButton() {
@@ -1403,6 +1477,8 @@
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
         getCityCodeForCityId,
+        findNearestCity,
+        getCitiesByParcelSource,
         datasetToLatLng,
         latLngToDataset,
         latLngToMetric,

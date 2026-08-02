@@ -58,6 +58,20 @@ dataset and rendered another — and ~110 lines of footprint-overlap matching, a
 that is deleted. `dgu_gdi_building_match` stays in the schema (it still relates the two surveys, and
 `zagreb-3d.js` uses it for heights) but is no longer part of the carve.
 
+## Generic-city 3D sources are cadastre-data's, not ours (2026-08-02)
+
+`public.overture_building_footprint` (Overture footprints+heights) and `public.osm_decor`
+(kind='trees' and five other scenery kinds) are ingested by **cadastre-data** and read by
+zagreb-isochrone too. This repo used to keep its own copies in `public.overture_feature` from its own
+DuckDB ingest — Split lived in both, byte-for-byte — so every city needed ingesting twice. That table
+and `backend/scripts/ingest-overture.js` are gone; see `overture-buildings.md`.
+
+`overture_feature` is **gone from both local and prod** (dropped 2026-08-02, after the backend that
+reads the shared tables was deployed). Backups of both copies are in `~/backups/`.
+
+Both are keyed by an **area**, not a city id: `sibenik` reads the `sjeverna-dalmacija` rows. The
+mapping lives in `backend/buildings/overture-cities.js`.
+
 - ads.ad
 - ads.ad_parcel
 - public.area_monitor
@@ -70,7 +84,8 @@ that is deleted. `dgu_gdi_building_match` stays in the schema (it still relates 
 - public.gdi_building_3d (schema-only)
 - public.gdi_building_footprint
 - stats.numbeo_city
-- public.overture_feature
+- public.osm_decor
+- public.overture_building_footprint
 - public.parcel
 - public.parcel_ba
 - public.parcel_bg (schema-only)

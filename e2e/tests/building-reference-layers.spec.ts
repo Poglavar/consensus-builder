@@ -8,7 +8,7 @@
 // These tests cover the three things that used to be wrong or absent:
 //   1. a demolition record is keyed by object_id, not by the cadastre's zgrada_id
 //   2. detection reads the DATA, not the Leaflet layer, so a cosmetic toggle cannot change the cut
-//   3. B toggles the reference layers instantly, and only explains itself when nothing is chosen
+//   3. B opens the survey picker every time, prefilled with what is on the map
 
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
@@ -160,55 +160,68 @@ test.describe('Building reference layers @features', () => {
     expect(result.dguOn).toBe(true);
   });
 
-  test('B toggles instantly when a layer is on, and only opens the dialog when nothing is chosen', async ({ mockApi: page }) => {
+  test('B opens the picker every time, prefilled with what is on the map', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
 
-    const dialogVisible = () => page.locator('.cb-confirm-dialog').isVisible().catch(() => false);
-
-    // Start with GDI on: B must turn it off with NO dialog. B is hammered mid-draw.
+    // GDI on, DGU off: the dialog must open showing exactly that, not a fresh guess.
     await page.evaluate(() => {
       const gdi = document.getElementById('showBuildings') as HTMLInputElement;
       gdi.checked = true;
       gdi.dispatchEvent(new Event('change'));
+      const dgu = document.getElementById('showBuildingsDgu') as HTMLInputElement;
+      dgu.checked = false;
+      dgu.dispatchEvent(new Event('change'));
     });
 
     await page.keyboard.press('b');
-    expect(await dialogVisible()).toBe(false);
-    expect(await page.evaluate(() => (document.getElementById('showBuildings') as HTMLInputElement).checked)).toBe(false);
+    const dialog = page.locator('.building-layers-dialog');
+    await expect(dialog).toBeVisible();
+    const boxes = dialog.locator('input[type="checkbox"]');
+    await expect(boxes).toHaveCount(3);
+    expect(await boxes.nth(0).isChecked()).toBe(true);   // GDI, as on the map
+    expect(await boxes.nth(1).isChecked()).toBe(false);  // DGU
+    // The surveys are named so they can be told apart, and there is no all-in-one shortcut.
+    await expect(dialog).toContainText(/GDI/);
+    await expect(dialog).toContainText(/DGU/);
+    await expect(dialog).toContainText(/OSM/);
 
-    // B again restores the SAME choice — still no dialog, because a choice is remembered.
-    await page.keyboard.press('b');
-    expect(await dialogVisible()).toBe(false);
-    expect(await page.evaluate(() => (document.getElementById('showBuildings') as HTMLInputElement).checked)).toBe(true);
+    // Pressing B again while it is up must not stack a second dialog behind the first.
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
   });
 
-  test('B with nothing on and nothing ever chosen explains the two surveys and applies the pick', async ({ mockApi: page }) => {
+  test('Enter applies the checked surveys; Escape leaves the map alone', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
 
-    // Both layers off and no remembered choice → the dialog is the ONLY way B behaves slowly.
+    const layerState = () => page.evaluate(() => ({
+      gdi: (document.getElementById('showBuildings') as HTMLInputElement).checked,
+      dgu: (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked,
+    }));
+
     await page.evaluate(() => {
       (document.getElementById('showBuildings') as HTMLInputElement).checked = false;
       (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked = false;
     });
 
+    // Tick GDI and DGU, confirm with Enter — the action button is focused, so Enter is Show.
     await page.keyboard.press('b');
-
-    const dialog = page.locator('.cb-confirm-dialog');
+    const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
-    // It names both surveys so the user can tell them apart.
-    await expect(dialog).toContainText(/GDI/);
-    await expect(dialog).toContainText(/DGU/);
+    await dialog.locator('input[type="checkbox"]').nth(0).check();
+    await dialog.locator('input[type="checkbox"]').nth(1).check();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toHaveCount(0);
+    expect(await layerState()).toEqual({ gdi: true, dgu: true });
 
-    // Pick "both" — the dialog must set the sidebar checkboxes.
-    await dialog.getByRole('button', { name: /both|oboje|ambos/i }).click();
-
-    const state = await page.evaluate(() => ({
-      gdi: (document.getElementById('showBuildings') as HTMLInputElement).checked,
-      dgu: (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked,
-    }));
-    expect(state.gdi).toBe(true);
-    expect(state.dgu).toBe(true);
+    // Reopen, untick everything, then Escape: the map must be exactly as it was.
+    await page.keyboard.press('b');
+    await expect(dialog).toBeVisible();
+    await dialog.locator('input[type="checkbox"]').nth(0).uncheck();
+    await dialog.locator('input[type="checkbox"]').nth(1).uncheck();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    expect(await layerState()).toEqual({ gdi: true, dgu: true });
   });
 });

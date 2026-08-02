@@ -1,40 +1,70 @@
 #!/usr/bin/env bash
-# Copies the locally-ingested overture_feature table to a remote/prod Postgres. Prod has no DuckDB,
-# so the workflow is: ingest locally (scripts/ingest-overture.js, needs DuckDB) → copy the one table
-# up with this script. Because every Overture layer lives in the single overture_feature table, this
-# is one dump → one restore, regardless of how many layers you've ingested.
+# Copies ONE region's locally-ingested Overture buildings to a remote/prod Postgres. Prod has no
+# DuckDB, so the workflow is: ingest locally in cadastre-data
+# (`node buildings/fetch-overture-buildings.js --run --city <region>`) → push that region up here.
 #
-# It dumps from the LOCAL docker Postgres using that server's own pg_dump (version-matched) and pipes
-# a self-contained SQL stream (schema + data, DROP/CREATE) into the target you provide. The table is
-# fully replaced on the target each run (idempotent).
+# Region-scoped ON PURPOSE. The old version of this script dumped a whole table with
+# `pg_dump --clean`, which was safe while the table was this app's private `overture_feature`. It is
+# not safe now: `public.overture_building_footprint` is SHARED with cadastre-data and
+# zagreb-isochrone and holds regions this repo never ingests (zagreb, rijeka, rail-corridor pulls).
+# A DROP/CREATE from here would delete every one of them on the target. So we replace only the rows
+# for the region named.
 #
 # Usage:
-#   PROD_DATABASE_URL='postgres://user:pass@host:5432/dbname' ./scripts/copy-overture-to-prod.sh
+#   PROD_DATABASE_URL='postgres://user:pass@host:5432/geodata' \
+#     ./scripts/copy-overture-to-prod.sh <region>
+#
+# <region> is the `city` value in overture_building_footprint — the `region` field in
+# backend/buildings/overture-cities.js (e.g. sjeverna-dalmacija, split, belgrade).
 #
 # Optional overrides (defaults match local dev):
-#   LOCAL_CONTAINER=consensus-builder-db-1  LOCAL_USER=zagreb_user  LOCAL_DB=zagreb
+#   LOCAL_CONTAINER=consensus-builder-db-1  LOCAL_USER=zagreb_user  LOCAL_DB=geodata
 #
 # NOTE: this writes to whatever PROD_DATABASE_URL points at — double-check it's the intended target.
 
 set -euo pipefail
 
+REGION="${1:-}"
+if [ -z "$REGION" ]; then
+    echo "Usage: PROD_DATABASE_URL=... $0 <region>" >&2
+    echo "  <region> is the overture_building_footprint.city value, e.g. sjeverna-dalmacija" >&2
+    exit 1
+fi
+
 : "${PROD_DATABASE_URL:?Set PROD_DATABASE_URL to the target Postgres connection string}"
 LOCAL_CONTAINER="${LOCAL_CONTAINER:-consensus-builder-db-1}"
 LOCAL_USER="${LOCAL_USER:-zagreb_user}"
-LOCAL_DB="${LOCAL_DB:-zagreb}"
+LOCAL_DB="${LOCAL_DB:-geodata}"
+TABLE=overture_building_footprint
 
 ts() { date -u +%Y-%m-%dT%H:%M:%SZ; }
-echo "[$(ts)] Dumping overture_feature from ${LOCAL_DB} (container ${LOCAL_CONTAINER}) → target ${PROD_DATABASE_URL%%\?*}"
 
-# --clean --if-exists: DROP TABLE IF EXISTS then recreate + reload, so a re-run fully replaces the
-# table (and its indexes) on the target. --no-owner/--no-acl: don't carry local roles to prod.
-# The sed strips `SET transaction_timeout` — a PG17-only GUC the PG17 pg_dump emits that an older
-# (PG16) target rejects; harmless to drop. Remove the sed once the target is also >= PG17.
+LOCAL_COUNT=$(docker exec -i "${LOCAL_CONTAINER}" \
+    psql -U "${LOCAL_USER}" -d "${LOCAL_DB}" -tAc \
+    "SELECT count(*) FROM ${TABLE} WHERE city = '${REGION}'" | tr -d '[:space:]')
+
+if [ "${LOCAL_COUNT}" = "0" ]; then
+    echo "[$(ts)] Refusing to run: local ${TABLE} has no rows for region '${REGION}'." >&2
+    echo "         Pushing an empty region would delete it on the target. Ingest it first." >&2
+    exit 1
+fi
+
+echo "[$(ts)] Copying ${LOCAL_COUNT} '${REGION}' rows from ${LOCAL_DB} (container ${LOCAL_CONTAINER})"
+echo "[$(ts)] Target: ${PROD_DATABASE_URL%%\?*}"
+
+# Stream the region's rows as a text COPY into a staging table on the target, then swap that region
+# across inside ONE transaction, so a failed run leaves the target untouched rather than half
+# replaced. ON_ERROR_STOP makes psql abort (and roll back) on the first error instead of carrying on.
 docker exec -i "${LOCAL_CONTAINER}" \
-    pg_dump -U "${LOCAL_USER}" -d "${LOCAL_DB}" \
-    --table=overture_feature --clean --if-exists --no-owner --no-acl \
-  | sed '/^SET transaction_timeout/d' \
-  | psql "${PROD_DATABASE_URL}"
+    psql -U "${LOCAL_USER}" -d "${LOCAL_DB}" \
+    -c "\\copy (SELECT * FROM ${TABLE} WHERE city = '${REGION}') TO STDOUT" \
+  | psql "${PROD_DATABASE_URL}" -v ON_ERROR_STOP=1 -c "
+        BEGIN;
+        CREATE TEMP TABLE _ovt_stage (LIKE ${TABLE} INCLUDING DEFAULTS) ON COMMIT DROP;
+        COPY _ovt_stage FROM STDIN;
+        DELETE FROM ${TABLE} WHERE city = '${REGION}';
+        INSERT INTO ${TABLE} SELECT * FROM _ovt_stage;
+        COMMIT;"
 
 echo "[$(ts)] Done. Verify on the target:"
-echo "  psql \"\$PROD_DATABASE_URL\" -c \"SELECT city, layer, count(*) FROM overture_feature GROUP BY 1,2 ORDER BY 1,2;\""
+echo "  psql \"\$PROD_DATABASE_URL\" -c \"SELECT city, count(*) FROM ${TABLE} GROUP BY 1 ORDER BY 1;\""

@@ -110,7 +110,8 @@
                 'css/road-analysis.css',
                 'css/utilities.css',
                 'css/canton-mode.css',
-                'css/photoreal-mode.css'
+                'css/photoreal-mode.css',
+                'css/ai-scene.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -128,6 +129,11 @@
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
+    <script>
+        window.writeVersionedLocalScripts(['js/reduced-motion.js']);
+    </script>
 
     <!-- Proj4js for coordinate transformations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
@@ -159,6 +165,20 @@
 </head>
 
 <body class="app-loading">
+    <!-- Shared SVG defs. A Leaflet vector lives in its own inline <svg>, but `fill: url(#id)` is
+         resolved against the whole document, so one running-bond paving pattern defined here can be
+         referenced from the map's paths (see .corridor-strip--paved). -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+            <pattern id="corridor-paving-pattern" width="16" height="12" patternUnits="userSpaceOnUse">
+                <rect width="16" height="12" fill="#d8d2c4"></rect>
+                <g stroke="#b3ab99" stroke-width="0.8" fill="none">
+                    <path d="M0 0 H16 M0 6 H16"></path>
+                    <path d="M4 0 V6 M12 0 V6 M0 6 V12 M8 6 V12 M16 6 V12"></path>
+                </g>
+            </pattern>
+        </defs>
+    </svg>
     <!-- Main container with sidebar and map -->
     <div id="sidebar">
         <!-- Sidebar header -->
@@ -941,6 +961,9 @@
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Photo view (Google Photorealistic 3D)" aria-label="Photo view (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
             <i class="fas fa-globe" aria-hidden="true"></i>
         </button>
+        <button id="mode-ai-toggle" class="map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+        </button>
         <div id="three-container" aria-hidden="true"></div>
 
         <!-- Username Display -->
@@ -1398,6 +1421,8 @@
             'js/proposals/copy.js',
             'js/proposal-editor-adapters.js',
             'js/proposal-editor-shell.js',
+            'js/road-editing-zoom.js',
+            'js/building-layers-dialog.js',
             'js/road-node-edit.js',
             'js/proposals/dialog-create.js',
             'js/proposals/dialog-upload.js',
@@ -1489,9 +1514,12 @@
             'js/road-analysis.js',
             'js/road-detection.js',
             'js/legacy-road-centerlines.js',
+            'js/corridor-lane-topology.js',
             'js/corridor-profile.js',
             'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',
+            'js/corridor-edge-fill.js',
+            'js/corridor-edge-fill-scene.js',
             'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',
@@ -1568,7 +1596,11 @@
             'js/photoreal-frame.js',
             'js/photoreal-ground.js',
             'js/photoreal-seam.js',
+            'js/photoreal-protect.js',
             'js/photoreal-mode.js',
+            'js/ai-scene-frustum.js',
+            'js/ai-scene.js',
+            'js/ai-scene-follow.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',
             'js/parcel-blocks.js',

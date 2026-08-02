@@ -43,6 +43,14 @@ const CORRIDOR_LANE_TYPES = {
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
 const CORRIDOR_LANDSCAPES = ['grass', 'trees'];
+// What a footway is surfaced with. Asphalt is the default (a strip of the same black the road is
+// made of); paved is stone — drawn with the running-bond paving texture in 3D and photo view, and a
+// stone fill in 2D. A property of the lane, exactly like a verge's landscape or a track's gauge.
+const CORRIDOR_PAVINGS = ['asphalt', 'paved'];
+const CORRIDOR_PAVED_TYPES = new Set(['sidewalk']);
+// The stone a paved footway reads as where the texture cannot be drawn (2D, and 3D before the
+// texture loads). Light enough to separate from the asphalt beside it at any zoom.
+const CORRIDOR_PAVED_SURFACE = '#d8d2c4';
 const CORRIDOR_DECORATION_SPACING = { bike: 50, pedestrian: 75, tree: 6 };
 
 // The orientation a parking lane paints its bays at, or null for a lane that is not parking. The three
@@ -197,6 +205,20 @@ function corridorRailGauge(gauge) {
     return CORRIDOR_RAIL_GAUGES.includes(value) ? value : CORRIDOR_DEFAULT_RAIL_GAUGE;
 }
 
+// The paving of a lane — only a footway has one, exactly as only a green lane has a landscape.
+// Defaults to asphalt, so a profile written before paving existed reads as what it always was.
+function corridorPavingOf(strip) {
+    if (!strip || !CORRIDOR_PAVED_TYPES.has(strip.type)) return null;
+    return CORRIDOR_PAVINGS.includes(strip.paving) ? strip.paving : 'asphalt';
+}
+
+// The colour a strip is drawn in, wherever it is drawn. Paving is the one property that changes it.
+function corridorStripSurface(strip) {
+    const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip && strip.type]) || {};
+    if (corridorPavingOf(strip) === 'paved') return CORRIDOR_PAVED_SURFACE;
+    return lane.surface || '#2b2b2b';
+}
+
 // The gauge of a lane — only a rail lane has one, exactly as only a green lane has a landscape.
 function corridorRailGaugeOf(strip) {
     return strip && strip.type === 'rail' ? corridorRailGauge(strip.gauge) : null;
@@ -226,6 +248,10 @@ function normalizeCorridorProfile(profile) {
         }
         // Every rail lane has a gauge; an unrecognised or missing one becomes the default.
         if (type === 'rail') lane.gauge = corridorRailGauge(strip && strip.gauge);
+        // A footway's paving, likewise: kept only where it means something, and only when known.
+        if (CORRIDOR_PAVED_TYPES.has(type) && CORRIDOR_PAVINGS.includes(strip && strip.paving)) {
+            lane.paving = strip.paving;
+        }
         return lane;
     }).filter(strip => isCorridorLaneType(strip.type) && Number.isFinite(strip.width) && strip.width > 0);
     return strips.length ? { strips } : null;
@@ -380,6 +406,16 @@ function withLaneLandscape(profile, index, landscape) {
     if (!CORRIDOR_LANDSCAPES.includes(landscape)) return null;
     return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
         i === index ? { ...strip, landscape } : { ...strip }
+    )));
+}
+
+// Surface a footway with asphalt or stone. Purely a material: it changes no width and moves no seam.
+function withLanePaving(profile, index, paving) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized || !normalized.strips[index] || !CORRIDOR_PAVED_TYPES.has(normalized.strips[index].type)) return null;
+    if (!CORRIDOR_PAVINGS.includes(paving)) return null;
+    return normalizeCorridorProfile(normalized.strips.map((strip, i) => (
+        i === index ? { ...strip, paving } : { ...strip }
     )));
 }
 
@@ -1507,6 +1543,136 @@ function corridorLaneSeparators(profile) {
     return separators;
 }
 
+// Contiguous motor-traffic lanes form one painted cross-section. The two outer boundaries are virtual
+// curb ancestors: they are not painted here, but a newly inserted side lane may inherit one of them.
+// A median creates two independent cross-sections, so its opposing carriageways cannot be paired.
+function corridorLaneTrafficRuns(profile) {
+    const runs = [];
+    let current = [];
+    const flush = () => {
+        if (!current.length) return;
+        const paths = [];
+        for (let index = 0; index < current.length - 1; index += 1) {
+            const a = current[index];
+            const b = current[index + 1];
+            paths.push({
+                offset: a.right,
+                kind: (a.direction && b.direction && a.direction !== b.direction)
+                    ? 'centerline'
+                    : 'lane'
+            });
+        }
+        const directions = [...new Set(current.map(strip => strip.direction).filter(Boolean))];
+        runs.push({
+            paths,
+            boundaries: [
+                { offset: current[0].left, kind: 'edge' },
+                ...paths.map(path => ({ ...path })),
+                { offset: current[current.length - 1].right, kind: 'edge' }
+            ],
+            flowDirection: directions.length === 1 ? directions[0] : 'mixed'
+        });
+        current = [];
+    };
+    corridorStripSpans(profile).forEach(strip => {
+        if (isMarkedTrafficLane(strip)) current.push(strip);
+        else flush();
+    });
+    flush();
+    return runs;
+}
+
+function densifyCorridorMarkingLine(points, maxStepM = 5) {
+    if (!Array.isArray(points) || points.length < 2) return [];
+    const dense = [points[0]];
+    for (let index = 0; index < points.length - 1; index += 1) {
+        const a = points[index];
+        const b = points[index + 1];
+        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const pieces = Math.max(1, Math.ceil(length / maxStepM));
+        for (let piece = 1; piece < pieces; piece += 1) {
+            const progress = piece / pieces;
+            dense.push([
+                a[0] + (b[0] - a[0]) * progress,
+                a[1] + (b[1] - a[1]) * progress
+            ]);
+        }
+        dense.push(b);
+    }
+    return dense;
+}
+
+function corridorLaneTopologyApi() {
+    if (typeof window !== 'undefined' && window.CorridorLaneTopology) {
+        return window.CorridorLaneTopology;
+    }
+    if (typeof require === 'function') {
+        try { return require('./corridor-lane-topology.js'); } catch (_) { }
+    }
+    return null;
+}
+
+// The shared topology pass for every segment entry. It is deliberately planar and view-agnostic:
+// Leaflet and Three.js consume these exact same connected lines.
+function buildCorridorLaneMarkingsForEntries(entries) {
+    if (!corridorProjectionAvailable()) return [];
+    const topology = corridorLaneTopologyApi();
+    if (!topology || typeof topology.build !== 'function') {
+        throw new Error('CorridorLaneTopology.build is required for lane markings');
+    }
+    const topologyEntries = [];
+    (entries || []).forEach((entry, ownerEntryIndex) => {
+        if (!entry || !entry.profile || !Array.isArray(entry.points) || entry.points.length < 2) return;
+        const centerline = entry.points
+            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .filter(point => Array.isArray(point) && point.every(Number.isFinite));
+        if (centerline.length < 2) return;
+        corridorLaneTrafficRuns(entry.profile).forEach((run, runIndex) => {
+            const buildPath = descriptor => {
+                const offset = offsetPolylinePlanar(centerline, descriptor.offset);
+                return offset && offset.length >= 2
+                    ? {
+                        ...descriptor,
+                        points: densifyCorridorMarkingLine(offset)
+                    }
+                    : null;
+            };
+            topologyEntries.push({
+                ownerEntryIndex,
+                runIndex,
+                corridorId: entry.corridorId,
+                flowDirection: run.flowDirection,
+                centerline,
+                paths: run.paths.map(buildPath).filter(Boolean),
+                boundaryPaths: run.boundaries.map(buildPath).filter(Boolean)
+            });
+        });
+    });
+    const markingsByEntry = (entries || []).map(() => []);
+    topology.build(topologyEntries).forEach(result => {
+        const topologyEntry = topologyEntries[result.sourceIndex];
+        if (!topologyEntry) return;
+        const groups = new Map();
+        (result.paths || []).forEach(path => {
+            const line = path.points.map(([x, y]) => {
+                const [lat, lng] = htrs96ToWGS84(x, y);
+                return { lat, lng };
+            });
+            if (line.length < 2) return;
+            const kind = path.kind || 'lane';
+            if (!groups.has(kind)) groups.set(kind, []);
+            groups.get(kind).push(line);
+        });
+        groups.forEach((lines, kind) => {
+            const existing = markingsByEntry[topologyEntry.ownerEntryIndex]
+                .find(marking => marking.kind === kind);
+            if (existing) existing.lines.push(...lines);
+            else markingsByEntry[topologyEntry.ownerEntryIndex].push({ kind, lines });
+        });
+    });
+    return markingsByEntry;
+}
+
 // One offset polyline of the centerline as Leaflet LatLngs — a lane marking is a line, not a band.
 function buildCorridorOffsetLine(points, offset) {
     if (!corridorProjectionAvailable() || !Array.isArray(points) || points.length < 2) return null;
@@ -1524,19 +1690,20 @@ function buildCorridorOffsetLine(points, offset) {
 
 // Every lane-separator line of a whole corridor: `[{ kind, lines }]`, one line per centerline segment.
 function buildCorridorLaneMarkings(segments, profile) {
-    const separators = corridorLaneSeparators(profile);
-    if (!separators.length) return [];
-
     const isLatLng = (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
         : (Array.isArray(segments) ? segments.filter(seg => Array.isArray(seg) && seg.length >= 2) : []);
     if (!centerlines.length) return [];
-
-    return separators.map(sep => ({
-        kind: sep.kind,
-        lines: centerlines.map(centerline => buildCorridorOffsetLine(centerline, sep.offset)).filter(Boolean)
-    })).filter(marking => marking.lines.length);
+    const byEntry = buildCorridorLaneMarkingsForEntries(
+        centerlines.map(points => ({ points, profile })),
+    );
+    const merged = new Map();
+    byEntry.flat().forEach(marking => {
+        if (!merged.has(marking.kind)) merged.set(marking.kind, []);
+        merged.get(marking.kind).push(...marking.lines);
+    });
+    return [...merged].map(([kind, lines]) => ({ kind, lines }));
 }
 
 // ---------------------------------------------------------------------------
@@ -1686,6 +1853,7 @@ if (typeof window !== 'undefined') {
     window.CORRIDOR_LANE_TYPES = CORRIDOR_LANE_TYPES;
     window.buildCorridorStripsForOsmFeature = buildCorridorStripsForOsmFeature;
     window.buildCorridorLaneMarkings = buildCorridorLaneMarkings;
+    window.buildCorridorLaneMarkingsForEntries = buildCorridorLaneMarkingsForEntries;
     window.corridorLaneSeparators = corridorLaneSeparators;
     window.corridorProfileFromOsmTags = corridorProfileFromOsmTags;
     window.corridorProfileToOsmTags = corridorProfileToOsmTags;
@@ -1723,6 +1891,11 @@ if (typeof window !== 'undefined') {
     window.withLaneMoved = withLaneMoved;
     window.corridorCenterlineOf = corridorCenterlineOf;
     window.corridorLandscapeOf = corridorLandscapeOf;
+    window.corridorPavingOf = corridorPavingOf;
+    window.corridorStripSurface = corridorStripSurface;
+    window.withLanePaving = withLanePaving;
+    window.CORRIDOR_PAVINGS = CORRIDOR_PAVINGS;
+    window.CORRIDOR_PAVED_TYPES = CORRIDOR_PAVED_TYPES;
 
     window.buildCorridorStrips = buildCorridorStrips;
     window.buildCorridorStripPolygon = buildCorridorStripPolygon;
@@ -1757,6 +1930,12 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorStripSpans,
         corridorCenterlineOf,
         corridorLandscapeOf,
+        corridorPavingOf,
+        corridorStripSurface,
+        withLanePaving,
+        CORRIDOR_PAVINGS,
+        CORRIDOR_PAVED_TYPES,
+        CORRIDOR_PAVED_SURFACE,
         corridorRailGaugeOf,
         withSidewalkWidth,
         withLaneWidth,
@@ -1786,6 +1965,9 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorClosedStripPolygonPlanar,
         ringSelfIntersectsXY,
         corridorLaneSeparators,
+        corridorLaneTrafficRuns,
+        buildCorridorLaneMarkings,
+        buildCorridorLaneMarkingsForEntries,
         samplePolylinePlanar,
         findCorridorJunctionsPlanar,
         buildCorridorDecorations,

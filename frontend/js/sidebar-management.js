@@ -3,7 +3,6 @@ function toggleAccordion(checkbox, options = {}) {
     const skipParcelFetch = options.skipParcelFetch === true;
     // Checkbox is now inside the accordion-content, so we need to find the section differently
     const section = checkbox.closest('.accordion-section');
-    const content = section ? section.querySelector('.accordion-content') : null;
     const header = section ? section.querySelector('.accordion-header') : null;
     const layerName = checkbox.dataset.layer;
 
@@ -625,11 +624,6 @@ function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
     const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
 
-    if (layerType === 'parcels') {
-        // This is now handled by toggleAccordion calling showAllParcels/hideAllParcels
-        // And by handleParcelLayerChange for internal parcel type toggles (if those are re-introduced)
-    }
-
     if (layerType === 'buildings') {
         if (showBuildings) {
             if (typeof fetchBuildings === 'function') {
@@ -681,6 +675,12 @@ function toggleLayer(layerType) {
 // Update block section button states based on checkbox and selection state
 function updateBlockButtonStates() {
     const blockButtons = document.querySelectorAll('.accordion-section[data-section="blocks"] .btn-group button');
+
+    // Predicate used below to exclude road parcels from the block's parcel count. It resolves the
+    // same way toggleAccordion does; previously this was referenced as a bare `isRoadFn`, which only
+    // existed as a local in toggleAccordion, so the guard silently never fired and roads were counted.
+    const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
+    const isRoadFn = uiVisibility.isRoad || (typeof window !== 'undefined' ? window.isRoad : null);
 
     // Get references to specific buttons
     const clearBlocksButton = document.querySelector('button[onclick="clearBlocks()"]');

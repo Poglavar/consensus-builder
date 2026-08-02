@@ -1210,8 +1210,6 @@
             },
             "tabSection": "Cross-section",
             "tabCorridor": "Corridor",
-            "constraintParcels": "Also stay within road parcels",
-            "constraintParcelsTitle": "Treat every parcel that is not road land as a wall: the corridor can only use road parcels and land this road already takes.",
             "noClearance": "Nothing to measure yet — the road has no centerline here.",
             "noObstacles": "No buildings are loaded near this road, so nothing constrains the corridor yet.",
             "corridorMinWidth": "The widest road that fits here without demolishing anything",
@@ -1245,7 +1243,20 @@
                 "w": "west",
                 "nw": "north-west"
             },
-            "fitHint": "Can it fit if moved? Open the Corridor tab"
+            "fitHint": "Can it fit if moved? Open the Corridor tab",
+            "limitLabel": "Limited by",
+            "limitParcels": "Road parcels",
+            "limitParcelsTitle": "The road keeps to road land: it stops at the road parcel boundary, and buildings beyond it are not considered.",
+            "limitBuildings": "Buildings",
+            "limitBuildingsTitle": "The road ignores the road parcel and runs to the buildings: each parcel gives up the strip in front of its main building.",
+            "paving": "Footway surface",
+            "pavings": {
+                "asphalt": "Asphalt",
+                "paved": "Paved (stone)"
+            },
+            "measuredAgainst": "Measured against",
+            "measuredFallback": "nothing shown — measuring against GDI",
+            "lockedControl": "Not available while the cross-section is open — apply or cancel first"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -1266,8 +1277,8 @@
             "dguHint": "DGU cadastre: what is officially registered.",
             "osm": "OSM buildings (matches the map)",
             "osmHint": "OSM buildings: the community map — the outlines drawn on the basemap.",
-            "all": "All",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "show": "Show"
         },
         "corridorTunnel": {
             "offer": "This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?",
@@ -2756,7 +2767,9 @@
             "switchTo3d": "Switch to model (3D)",
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
-            "realistic": "Photo view (Google Photorealistic 3D)"
+            "realistic": "Photo view (Google Photorealistic 3D)",
+            "ai": "AI photorealistic render",
+            "aiNeedsPhoto": "Switch to photo view first — the AI render works from the photorealistic scene"
         },
         "parcelPanel": {
             "title": "Parcel",
@@ -2776,6 +2789,53 @@
             "title": "Proposal info",
             "parcelsLabel": "Parcels",
             "avgPerParcel": "Avg / parcel"
+        },
+        "ai": {
+            "title": "AI photorealistic render",
+            "sourceLabel": "Captured scene",
+            "promptLabel": "Prompt (editable)",
+            "costHint": "~{{c}} per image",
+            "resultLabel": "Result",
+            "download": "Download",
+            "sessionTotal": "Session spend: {{c}}",
+            "generate": "Generate",
+            "generating": "Generating…",
+            "working": "Sending scene to the model…",
+            "done": "Done in {{s}}s — this render cost {{c}}",
+            "error": "Render failed: {{m}}",
+            "need3d": "Enter 3D mode first to render the scene.",
+            "captureFailed": "Could not capture the 3D scene.",
+            "emptyPrompt": "Prompt is empty.",
+            "heightMapTitle": "Height map (white = tallest) — sent to keep heights faithful",
+            "showHeightMap": "Show height map",
+            "hideHeightMap": "Hide height map",
+            "modelLabel": "Model",
+            "keyNeeded": "API key needed",
+            "copyLink": "Copy link",
+            "share": "Share",
+            "tweet": "Share on X",
+            "tweetText": "Photorealistic view of my urban proposal",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Preparing share link…",
+            "linkCopied": "Link copied",
+            "copyFailed": "Copy failed — long-press the link to copy it.",
+            "shareFailed": "Could not create a share link: {{m}}",
+            "errCooldown": "Please wait a few seconds before generating another image.",
+            "errQuota": "You have reached your image limit for now. Please try again later.",
+            "errNoFunds": "Image generation is temporarily unavailable. Please try again later.",
+            "errTimeout": "The image took too long to generate. Please try again.",
+            "errNotConfigured": "Image generation is not available right now.",
+            "promptLocked": "The prompt is set by the server and cannot be edited.",
+            "warnPromptOverridden": "Note: the standard server prompt was used — the prompt sent was ignored.",
+            "errBudget": "The image generation budget has been used up. Please try again another time.",
+            "errBudgetCheck": "Image generation is briefly unavailable. Please try again shortly."
+        },
+        "aiFollow": {
+            "title": "AI render",
+            "note": "You are viewing the real 3D scene this AI image was made from."
+        },
+        "hints": {
+            "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle"
         }
     },
     "structureEditor": {

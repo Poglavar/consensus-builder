@@ -48,3 +48,11 @@
 @keyframes corridor-segment-ants {
     to { stroke-dashoffset: -20; }
 }
+
+/* A paved footway. The stone pattern is only legible when zoomed right in — the fill COLOUR
+   (corridorStripSurface) is what separates it from asphalt at map zooms, and this is the texture on
+   top of that. Defined once in index.html so every Leaflet SVG can reference the same pattern. */
+.corridor-strip--paved {
+    fill: url(#corridor-paving-pattern);
+    fill-opacity: 0.95;
+}

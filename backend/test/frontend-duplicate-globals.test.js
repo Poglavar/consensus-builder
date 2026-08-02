@@ -90,7 +90,10 @@ describe('frontend global namespace', () => {
             + `SyntaxError that aborts the whole second file. Keep one definition and delete the rest —\n`
             + `do not add them to KNOWN_COLLISIONS.\n\n${collisions.join('\n')}\n`
         ).toEqual([]);
-    });
+        // Parses every frontend script, so it runs ~0.4 s idle but blows the 5 s default whenever the
+        // machine is busy. It produced three "failures" in one session that were pure timeouts, which
+        // is worse than useless: a suite that cries wolf gets its real red ignored.
+    }, 60_000);
 
     it('KNOWN_COLLISIONS has no stale entries — fixed duplicates must be removed from the list', () => {
         const duplicated = new Set();
@@ -105,5 +108,5 @@ describe('frontend global namespace', () => {
 
         const stale = [...KNOWN_COLLISIONS].filter(name => !duplicated.has(name));
         expect(stale, `No longer duplicated — remove from KNOWN_COLLISIONS: ${stale.join(', ')}`).toEqual([]);
-    });
+    }, 60_000); // Same full-tree parse as above — same timeout, same reason.
 });

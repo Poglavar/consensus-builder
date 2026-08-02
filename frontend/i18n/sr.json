@@ -1211,8 +1211,6 @@
             },
             "tabSection": "Poprečni presek",
             "tabCorridor": "Koridor",
-            "constraintParcels": "Ostani unutar putnih parcela",
-            "constraintParcelsTitle": "Svaku parcelu koja nije putno zemljište tretiraj kao zid: koridor sme da koristi samo putne parcele i zemljište koje ovaj put već zauzima.",
             "noClearance": "Još nema šta da se meri — put ovde nema osu.",
             "noObstacles": "U blizini puta nema učitanih zgrada, pa koridor ništa ne ograničava.",
             "corridorMinWidth": "Najširi put koji ovde staje bez rušenja",
@@ -1246,7 +1244,20 @@
                 "w": "zapad",
                 "nw": "severozapad"
             },
-            "fitHint": "Može li da stane pomeranjem? Otvorite karticu Koridor"
+            "fitHint": "Može li da stane pomeranjem? Otvorite karticu Koridor",
+            "limitLabel": "Ograničeno sa",
+            "limitParcels": "Putne parcele",
+            "limitParcelsTitle": "Put ostaje na putnom zemljištu: staje na granici putne parcele, a zgrade iza nje se ne uzimaju u obzir.",
+            "limitBuildings": "Zgrade",
+            "limitBuildingsTitle": "Put zanemaruje putnu parcelu i ide do zgrada: svaka parcela ustupa pojas ispred svoje glavne zgrade.",
+            "paving": "Površina trotoara",
+            "pavings": {
+                "asphalt": "Asfalt",
+                "paved": "Popločano (kamen)"
+            },
+            "measuredAgainst": "Mereno prema",
+            "measuredFallback": "ništa nije prikazano — meri se prema GDI-ju",
+            "lockedControl": "Nedostupno dok je presek otvoren — prvo primeni ili odustani"
         },
         "corridorDraft": {
             "title": "Nesačuvani nacrt trase",
@@ -1267,8 +1278,8 @@
             "dguHint": "DGU katastar: ono što je zvanično upisano.",
             "osm": "OSM zgrade (poklapa se s mapom)",
             "osmHint": "OSM zgrade: zajednička mapa — obrisi ucrtani na podlozi.",
-            "all": "Sve",
-            "cancel": "Odustani"
+            "cancel": "Odustani",
+            "show": "Prikaži"
         },
         "corridorTunnel": {
             "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} novu zgradu/nove zgrade. Preseći ih, srušiti ili prokopati tunel?",
@@ -2786,7 +2797,9 @@
             "switchTo3d": "Prebaci na model (3D)",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmene",
-            "realistic": "Foto prikaz (Google fotorealistični 3D)"
+            "realistic": "Foto prikaz (Google fotorealistični 3D)",
+            "ai": "AI fotorealistični prikaz",
+            "aiNeedsPhoto": "Prvo pređi na foto prikaz — AI render radi iz fotorealistične scene"
         },
         "parcelPanel": {
             "title": "Parcela",
@@ -2806,6 +2819,53 @@
             "title": "Podaci o predlogu",
             "parcelsLabel": "Parcele",
             "avgPerParcel": "Prosek / parceli"
+        },
+        "ai": {
+            "title": "AI fotorealistični prikaz",
+            "sourceLabel": "Snimljena scena",
+            "promptLabel": "Uputstvo (izmenjivo)",
+            "costHint": "~{{c}} po slici",
+            "resultLabel": "Rezultat",
+            "download": "Preuzmi",
+            "sessionTotal": "Potrošnja u sesiji: {{c}}",
+            "generate": "Generiši",
+            "generating": "Generisanje…",
+            "working": "Slanje scene modelu…",
+            "done": "Gotovo za {{s}}s — ovaj prikaz koštao je {{c}}",
+            "error": "Generisanje nije uspelo: {{m}}",
+            "need3d": "Prvo uđite u 3D režim za prikaz scene.",
+            "captureFailed": "Nije moguće snimiti 3D scenu.",
+            "emptyPrompt": "Uputstvo je prazno.",
+            "heightMapTitle": "Mapa visina (belo = najviše) — šalje se da visine ostanu verne",
+            "showHeightMap": "Prikaži mapu visina",
+            "hideHeightMap": "Sakrij mapu visina",
+            "modelLabel": "Model",
+            "keyNeeded": "treba API ključ",
+            "copyLink": "Kopiraj link",
+            "share": "Podeli",
+            "tweet": "Podeli na X",
+            "tweetText": "Fotorealistični prikaz mog urbanog predloga",
+            "shareTitle": "Urban Game Theory",
+            "savingShare": "Pripremam link za deljenje…",
+            "linkCopied": "Link kopiran",
+            "copyFailed": "Kopiranje nije uspelo — dugo pritisnite link da ga kopirate.",
+            "shareFailed": "Nije moguće napraviti link za deljenje: {{m}}",
+            "errCooldown": "Sačekajte nekoliko sekundi pre generisanja nove slike.",
+            "errQuota": "Dostigli ste ograničenje broja slika za sada. Pokušajte kasnije.",
+            "errNoFunds": "Generisanje slika trenutno nije dostupno. Pokušajte kasnije.",
+            "errTimeout": "Generisanje slike je trajalo predugo. Pokušajte ponovo.",
+            "errNotConfigured": "Generisanje slika trenutno nije dostupno.",
+            "promptLocked": "Prompt je zadat na serveru i ne može se menjati.",
+            "warnPromptOverridden": "Napomena: korišćen je standardni prompt servera — poslati prompt je zanemaren.",
+            "errBudget": "Budžet za generisanje slika je potrošen. Pokušajte neki drugi put.",
+            "errBudgetCheck": "Generisanje slika je nakratko nedostupno. Pokušajte uskoro."
+        },
+        "aiFollow": {
+            "title": "AI prikaz",
+            "note": "Gledate stvarnu 3D scenu iz koje je napravljena ova AI slika."
+        },
+        "hints": {
+            "viewAngle": "Drži Ctrl (ili Cmd) i prevuci za promenu ugla pogleda"
         }
     },
     "structureEditor": {

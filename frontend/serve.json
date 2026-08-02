@@ -1,0 +1,14 @@
+{
+    "rewrites": [
+        { "source": "/proposals/**", "destination": "/index.html" },
+        { "source": "/proposal/**", "destination": "/index.html" }
+    ],
+    "headers": [
+        {
+            "source": "**",
+            "headers": [
+                { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+            ]
+        }
+    ]
+}
