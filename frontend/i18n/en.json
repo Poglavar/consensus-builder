@@ -750,6 +750,23 @@
                 "missingIdentifier": "Parcel identifier unavailable.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}"
+            },
+            "dossier": {
+                "channel": {
+                    "acceptance": "Consent needed",
+                    "offer": "Offer to you",
+                    "vote": "Vote",
+                    "disclosure": "Info"
+                },
+                "destination": {
+                    "public": "public",
+                    "proposer": "the proposer",
+                    "mapping": "per plan",
+                    "undecided": "to be decided"
+                },
+                "takes": "Takes {{area}} m² of this parcel → {{destination}}",
+                "remainder": "Proposed formations take {{taken}} m²; you keep {{kept}} m².",
+                "remainderSplit": "Proposed formations take {{taken}} m²; you keep {{kept}} m² in {{count}} separate pieces ({{pieces}} m²)."
             }
         },
         "proposal": {
@@ -1630,7 +1647,11 @@
                     },
                     "failedCount": "{{count}} failed.",
                     "title": "Applied Shared Proposals",
-                    "unapplyApplied": "Unapply applied"
+                    "unapplyApplied": "Unapply applied",
+                    "blockedAncestors": "Blocked by missing applied ancestors:",
+                    "blockedWaitingOn": "waiting on {{titles}}",
+                    "blockedMissingFabric": "the re-cut land under it is not present here",
+                    "blockedMissingParcels": "missing cadastral parcels: {{list}}"
                 },
                 "saveJsonError": "Failed to save JSON.",
                 "shareExplainer": "To save or share a proposal with others you can:",
@@ -1987,6 +2008,19 @@
                 "mintsOn": "Mints on",
                 "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
             }
+        },
+        "unapplyTour": {
+            "titleUnapply": "Un-apply “{{title}}”",
+            "titleDelete": "Delete “{{title}}”",
+            "message": "This proposal has dependent items. The following will be removed from the map and storage. Click an item to see it.",
+            "counts": "{{proposals}} proposal(s) · {{parcels}} parcel slice(s)",
+            "badgeProposal": "proposal",
+            "badgeParcel": "parcel",
+            "cancel": "Cancel",
+            "confirmUnapply": "Un-apply",
+            "confirmDelete": "Delete",
+            "working": "Working…",
+            "failed": "Could not complete: {{reason}}"
         }
     },
     "blockify": {

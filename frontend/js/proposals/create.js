@@ -2024,6 +2024,24 @@ function buildUploadReadyProposal(proposal) {
         console.warn('[createProposal] cadastral ancestry unavailable for upload', error);
     }
 
+    // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
+    // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the
+    // stamped copy — footprint + per-parcel cession — and is what acceptances bind to (§11): a later
+    // edit that changes the effect changes this hash and voids consent automatically. All additive:
+    // none of these are in proposalContentFingerprint's allowlist, so share ids never move.
+    try {
+        if (window.__cadastreAncestry && typeof window.__cadastreAncestry.computeOwnershipFlow === 'function') {
+            uploadProposal.ownershipFlow = window.__cadastreAncestry.computeOwnershipFlow(proposal);
+        }
+        uploadProposal.cadastreFrame = { capturedAt: new Date().toISOString() };
+        if (window.__ownershipFlow) {
+            const effectHash = window.__ownershipFlow.effectFingerprintOf(uploadProposal);
+            if (effectHash) uploadProposal.effectHash = effectHash;
+        }
+    } catch (error) {
+        console.warn('[createProposal] ownership flow unavailable for upload', error);
+    }
+
     // Ensure backend-required proposal.type is set using the proposal goal
     const rawType = uploadProposal.type ? String(uploadProposal.type).trim().toLowerCase() : '';
     const goalKey = resolveProposalGoalKey(uploadProposal, null);

@@ -354,7 +354,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(39); // +1 for cadastre_parcel_ids
+        expect(insertParams).toHaveLength(41); // +cadastre_parcel_ids, +ownership_flow, +cadastre_frame
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');
@@ -405,6 +405,42 @@ describe('POST /proposals', () => {
             .post('/proposals')
             .send(validProposalBody({ cadastreParcelIds: [{ nope: true }] }));
         expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('persists the ownership flow and cadastre frame stamps', async () => {
+        // §9/§12 step 2: per crossed base parcel, ceded area + destination, plus the frame the
+        // stamps were measured against. Appended as the last two insert params.
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                ownershipFlow: [
+                    { parcelId: 'HR-339270-823/1', cededM2: 1700.4, destination: 'public' },
+                    { parcelId: 'HR-339270-823/2', cededM2: 15, destination: 'public' }
+                ],
+                cadastreFrame: { capturedAt: '2026-08-02T10:00:00.000Z' }
+            }));
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        // cededM2 is normalized to whole m² by the validator.
+        expect(JSON.parse(insertParams[39])).toEqual([
+            { parcelId: 'HR-339270-823/1', cededM2: 1700, destination: 'public' },
+            { parcelId: 'HR-339270-823/2', cededM2: 15, destination: 'public' }
+        ]);
+        expect(JSON.parse(insertParams[40])).toEqual({ capturedAt: '2026-08-02T10:00:00.000Z' });
+    });
+
+    it('rejects an ownership flow with an unknown destination', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                ownershipFlow: [{ parcelId: 'HR-339270-823/1', cededM2: 10, destination: 'me' }]
+            }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/destination/);
         expect(pool.getCalls()).toHaveLength(0);
     });
 

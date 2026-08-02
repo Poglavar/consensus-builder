@@ -64,6 +64,10 @@ export function serializeProposalRow(row, options = {}) {
     // The CADASTRAL parcels the geometry covers. Unlike ancestor_parcel_ids these are never derived
     // ids, so they mean the same thing on every machine. See rethink-proposals.md.
     proposal.cadastreParcelIds = choose(row.cadastre_parcel_ids, proposal.cadastreParcelIds ?? null);
+    // Publish-time stamps of the formation's ownership flow and the cadastre frame it was measured
+    // against (rethink-proposals.md §9/§12 step 2, D5).
+    proposal.ownershipFlow = choose(row.ownership_flow, proposal.ownershipFlow ?? null);
+    proposal.cadastreFrame = choose(row.cadastre_frame, proposal.cadastreFrame ?? null);
     proposal.childParcelIds = choose(row.descendant_parcel_ids, proposal.childParcelIds ?? null);
     proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
     proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);

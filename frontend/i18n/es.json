@@ -797,6 +797,23 @@
                 "missingIdentifier": "Identificador de parcela no disponible.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}"
+            },
+            "dossier": {
+                "channel": {
+                    "acceptance": "Consentimiento necesario",
+                    "offer": "Oferta para usted",
+                    "vote": "Votación",
+                    "disclosure": "Info"
+                },
+                "destination": {
+                    "public": "público",
+                    "proposer": "el proponente",
+                    "mapping": "según el plan",
+                    "undecided": "por decidir"
+                },
+                "takes": "Toma {{area}} m² de esta parcela → {{destination}}",
+                "remainder": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m².",
+                "remainderSplit": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m² en {{count}} piezas separadas ({{pieces}} m²)."
             }
         },
         "proposal": {
@@ -1649,6 +1666,10 @@
                         "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes)."
                     },
                     "failedCount": "{{count}} fallaron.",
+                    "blockedAncestors": "Bloqueado por antecesores aplicados faltantes:",
+                    "blockedWaitingOn": "esperando a {{titles}}",
+                    "blockedMissingFabric": "el terreno recortado debajo no está presente aquí",
+                    "blockedMissingParcels": "faltan parcelas catastrales: {{list}}",
                     "title": "Propuestas compartidas aplicadas",
                     "unapplyApplied": "Deshacer aplicadas"
                 },
@@ -2036,6 +2057,19 @@
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
             }
+        },
+        "unapplyTour": {
+            "titleUnapply": "Desaplicar «{{title}}»",
+            "titleDelete": "Eliminar «{{title}}»",
+            "message": "Esta propuesta tiene elementos dependientes. Lo siguiente se eliminará del mapa y del almacenamiento. Haga clic en un elemento para verlo.",
+            "counts": "{{proposals}} propuesta(s) · {{parcels}} fracción(es) de parcela",
+            "badgeProposal": "propuesta",
+            "badgeParcel": "parcela",
+            "cancel": "Cancelar",
+            "confirmUnapply": "Desaplicar",
+            "confirmDelete": "Eliminar",
+            "working": "Procesando…",
+            "failed": "No se pudo completar: {{reason}}"
         }
     },
     "blockify": {

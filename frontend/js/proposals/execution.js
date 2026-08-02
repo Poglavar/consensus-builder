@@ -1193,6 +1193,42 @@ function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
     });
 }
 
+// ── Effect-hash consent binding (rethink-proposals.md §11/§12 step 4) ────────────────────────────
+// An acceptance binds to what the proposal DOES — footprint + per-parcel cession (the effect
+// fingerprint from ownership-flow.js) — falling back to the content fingerprint for content-only
+// proposals (an offer's "effect" is its terms). Both derive from STORED fields only, so the hash
+// is identical on every machine. An edit that changes the effect changes the hash and the stored
+// acceptances stop counting — automatically, with the records preserved (consent history is
+// immutable; an edit back to the accepted effect even revalidates them). Records from before this
+// mechanism carry no hash and stay valid.
+function currentConsentBindingHash(proposal) {
+    try {
+        const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
+        const effect = flowApi ? flowApi.effectFingerprintOf(proposal) : null;
+        if (effect) return effect;
+    } catch (_) { /* fall through to the content fingerprint */ }
+    try {
+        return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+// The validity logic itself is pure and lives in ownership-flow.js (isAcceptanceRecordValid,
+// refreshAcceptanceValidity); this wrapper supplies the current hash and tolerates the module
+// being absent (then nothing ever lapses, which is the pre-mechanism behaviour).
+function refreshProposalAcceptanceValidity(proposal) {
+    const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
+    if (!flowApi || !proposal) return { lapsedOwners: 0 };
+    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal));
+    if (result.lapsedOwners > 0) {
+        console.debug('[refreshProposalAcceptanceValidity] acceptances lapsed against the current effect', {
+            proposalId: proposal.proposalId, lapsedOwners: result.lapsedOwners
+        });
+    }
+    return result;
+}
+
 function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
     try {
         const suppressAlerts = metadata && metadata.suppressAlerts === true;
@@ -1263,7 +1299,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         entry.acceptedBy[effectiveOwnerKey] = {
             agentId: metadata.acceptedByAgentId || null,
             username: metadata.acceptedByName || null,
-            acceptedAt: new Date().toISOString()
+            acceptedAt: new Date().toISOString(),
+            // What this owner is consenting TO (§12 step 4): the proposal's effect as it stands
+            // right now. If the effect later changes, this acceptance stops counting.
+            effectHash: currentConsentBindingHash(proposal)
         };
 
         proposal.ownerAcceptances[normalizedParcelId] = entry;
@@ -1296,6 +1335,9 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const canExecute = proposal.funded !== false
             && !isVoteProposal(proposal)
             && proposalRecipientConsentSatisfied(proposal);
+        // Execution counts only acceptances valid against the CURRENT effect — consent given to a
+        // since-edited proposal must never carry it over the line (§12 step 4).
+        refreshProposalAcceptanceValidity(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.lifecycleStatus = 'Executed';
             proposal.executedAt = new Date().toISOString();

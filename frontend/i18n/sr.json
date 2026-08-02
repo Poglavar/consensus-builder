@@ -775,6 +775,23 @@
                 "missingIdentifier": "Identifikator parcele nije dostupan.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}"
+            },
+            "dossier": {
+                "channel": {
+                    "acceptance": "Potrebna saglasnost",
+                    "offer": "Ponuda vama",
+                    "vote": "Glasanje",
+                    "disclosure": "Info"
+                },
+                "destination": {
+                    "public": "javno",
+                    "proposer": "predlagač",
+                    "mapping": "po planu",
+                    "undecided": "odlučiće se"
+                },
+                "takes": "Uzima {{area}} m² ove parcele → {{destination}}",
+                "remainder": "Predložena preoblikovanja uzimaju {{taken}} m²; ostaje vam {{kept}} m².",
+                "remainderSplit": "Predložena preoblikovanja uzimaju {{taken}} m²; ostaje vam {{kept}} m² u {{count}} odvojena dela ({{pieces}} m²)."
             }
         },
         "proposal": {
@@ -1603,6 +1620,10 @@
                         "other": "Preskočeno {{count}} dupliranih predloga (već prisutni)."
                     },
                     "failedCount": "{{count}} neuspešno.",
+                    "blockedAncestors": "Blokirano — nedostaju primenjeni prethodnici:",
+                    "blockedWaitingOn": "čeka na {{titles}}",
+                    "blockedMissingFabric": "prekrojeno zemljište pod njim ovde ne postoji",
+                    "blockedMissingParcels": "nedostaju katastarske parcele: {{list}}",
                     "title": "Primеnjeni podeljeni predlozi",
                     "unapplyApplied": "Poništi primеnjeno"
                 },
@@ -2017,6 +2038,19 @@
             "statusLabel": "Status: {{status}}",
             "title": "Iskovani predlozi",
             "walletRequired": "Povežite novčanik za pregled iskovanih predloga."
+        },
+        "unapplyTour": {
+            "titleUnapply": "Poništi primenu „{{title}}”",
+            "titleDelete": "Obriši „{{title}}”",
+            "message": "Ovaj predlog ima zavisne stavke. Sledeće će biti uklonjeno sa mape i iz skladišta. Kliknite stavku da je vidite.",
+            "counts": "{{proposals}} predlog(a) · {{parcels}} deo(va) parcela",
+            "badgeProposal": "predlog",
+            "badgeParcel": "parcela",
+            "cancel": "Odustani",
+            "confirmUnapply": "Poništi primenu",
+            "confirmDelete": "Obriši",
+            "working": "U toku…",
+            "failed": "Nije uspelo: {{reason}}"
         }
     },
     "blockify": {

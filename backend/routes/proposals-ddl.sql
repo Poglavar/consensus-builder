@@ -44,7 +44,9 @@ CREATE TABLE IF NOT EXISTS proposal (
     descendant_parcel_ids JSONB, -- Array of parcel IDs that are descendants (child parcels created by proposal)
     accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
-    
+    ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
+    cadastre_frame JSONB, -- Which cadastre frame the publish-time stamps were computed against ({ capturedAt })
+
     -- Proposal-specific data (stored as JSONB for flexibility)
     -- For road proposals: definition (points, width), parentFeatures, childFeatures, metadata
     -- For building proposals: buildingGeometry, parameters, parentParcelIds
@@ -96,6 +98,8 @@ COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle s
 COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
 COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
 COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Base cadastral parcel IDs the proposal geometry covers. Stable across machines, unlike ancestor_parcel_ids which may name derived (re-minted) parcels.';
+COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
+COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
 COMMENT ON COLUMN proposal.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
 COMMENT ON COLUMN proposal.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
 COMMENT ON COLUMN proposal.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
