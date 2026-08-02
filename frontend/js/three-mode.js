@@ -4262,7 +4262,7 @@
         }
     }
 
-    // Registry of renderable scenery layers: maps an overture_feature layer key to its panel label and
+    // Registry of renderable scenery layers: maps an osm_decor `kind` to its panel label and
     // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
     // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
     // here and it shows up automatically wherever it's been ingested.

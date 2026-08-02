@@ -161,16 +161,30 @@ describe('Overture 3D provider — near()', () => {
         expect(sql).toContain('ST_DWithin(b.geom::geography, q.g::geography, $3)');
         // City scoping precedes the spatial test so the cap counts only this city's buildings.
         expect(sql).toContain('b.city = $2');
-        // One shared table for all Overture layers, discriminated by the layer column.
-        expect(sql).toContain('overture_feature');
-        expect(sql).toContain("b.layer = 'buildings'");
+        // The SHARED footprint table, ingested once by cadastre-data and read by the isochrone
+        // 3D world too — not a second private copy.
+        expect(sql).toContain('overture_building_footprint');
+        expect(sql).not.toContain('overture_feature');
         // Distance order must precede the cap, else the LIMIT keeps an arbitrary, shuffling subset.
         const orderIdx = sql.indexOf('b.geom <-> q.g');
         const limitIdx = sql.indexOf('LIMIT 4000');
         expect(orderIdx).toBeGreaterThan(-1);
         expect(limitIdx).toBeGreaterThan(orderIdx);
-        expect(params[1]).toBe('belgrade'); // city filter
+        expect(params[1]).toBe('belgrade'); // region filter (belgrade reads its own ingest)
         expect(params[2]).toBe(300);        // buffer straight through to ST_DWithin
+    });
+
+    it('scopes to the config REGION, not the city id, so cities can share one ingest', async () => {
+        const pool = createMockPool();
+        // Šibenik has no ingest of its own: it reads the Zadar–Šibenik–Knin rows already pulled for
+        // the railway reconstructions. Passing the city id here would query an empty row set and the
+        // city would silently render with no buildings at all.
+        const provider = createOvertureProvider(pool, 'sibenik');
+
+        await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+
+        expect(pool.getCalls()[0].params[1]).toBe('sjeverna-dalmacija');
+        expect(OVERTURE_CITIES.sibenik.region).toBe('sjeverna-dalmacija');
     });
 
     it('extrudes each footprint with the height fallback (measured → floors → default)', async () => {
@@ -216,14 +230,27 @@ describe('Overture trees provider — near()', () => {
         const { sql, params } = pool.getCalls()[0];
         expect(sql).toContain('ST_DWithin(t.geom::geography, q.g::geography, $3)');
         expect(sql).toContain('t.city = $2');
-        expect(sql).toContain('overture_feature');
-        expect(sql).toContain("t.layer = 'trees'");
-        const orderIdx = sql.indexOf('t.geom <-> q.g');
+        // The SHARED decor table the isochrone 3D world reads, not a second Overture tree copy.
+        expect(sql).toContain('osm_decor');
+        expect(sql).not.toContain('overture_feature');
+        expect(sql).toContain("t.kind = 'trees'");
+        // Ordered on the UNION of mapped + planted trees (alias `a`), so the cap keeps the nearest
+        // of both sources rather than exhausting one before considering the other.
+        const orderIdx = sql.indexOf('a.geom <-> q.g');
         const limitIdx = sql.indexOf('LIMIT 8000');
         expect(orderIdx).toBeGreaterThan(-1);
         expect(limitIdx).toBeGreaterThan(orderIdx);
         expect(params[1]).toBe('belgrade');
         expect(params[2]).toBe(300);
+    });
+
+    it('scopes to the config REGION, not the city id', async () => {
+        const pool = createMockPool();
+        const provider = createOvertureTreesProvider(pool, 'sibenik');
+
+        await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+
+        expect(pool.getCalls()[0].params[1]).toBe('sjeverna-dalmacija');
     });
 
     it('returns trees as [lng, lat] pairs', async () => {
@@ -235,5 +262,62 @@ describe('Overture trees provider — near()', () => {
         expect(source).toBe('overture-trees');
         expect(count).toBe(2);
         expect(trees[0]).toEqual([20.46, 44.81]);
+    });
+
+    it('also scatters trees through mapped greenery, since mapped tree POINTS are far too sparse', async () => {
+        const pool = createMockPool();
+        const provider = createOvertureTreesProvider(pool, 'sibenik');
+
+        await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+
+        const { sql, params } = pool.getCalls()[0];
+        // OSM has 139 mapped trees across the whole Šibenik–Vodice strip but 1,812 greenery
+        // polygons over 9,830 ha, so greenery is the only thing that can make the view read as
+        // vegetated. Both sources are unioned into one distance-ordered result.
+        expect(sql).toContain("d.kind = 'greenery'");
+        expect(sql).toContain('UNION ALL');
+        expect(params[3]).toBe(12);   // spacing (m), per-city overridable
+        expect(params[4]).toBe(0.72); // acceptance, so the lattice never reads as a grid
+        expect(params[5]).toBe(5);    // planted trees this close to a mapped one are duplicates
+    });
+
+    it('anchors the scatter lattice to absolute coordinates, not to the query point', async () => {
+        const pool = createMockPool();
+        const provider = createOvertureTreesProvider(pool, 'sibenik');
+
+        await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+        const { sql } = pool.getCalls()[0];
+
+        // This is the property that stops the woodland crawling as you pan: cell indices come from
+        // absolute EPSG:3857 metres and the jitter is hashed from those indices, so clipping to a
+        // radius only ever REMOVES trees. A lattice laid out relative to `q.g` would re-roll every
+        // tree on every camera move. Verified against the live DB: 136 of 139 trees survive a 100 m
+        // pan byte-identical, and radius 300 is a strict subset of radius 450.
+        expect(sql).toContain('3857');
+        expect(sql).toMatch(/hashtext\(l\.gx \|\| ':' \|\| l\.gy/);
+        // The jitter must not depend on the query geometry in any way.
+        const jitterExpr = sql.slice(sql.indexOf('candidate AS'), sql.indexOf('planted AS'));
+        expect(jitterExpr).not.toContain('q.g');
+        // 3857 units are not metres away from the equator (x1.38 at Šibenik); the step is corrected
+        // by each polygon's OWN centroid latitude, which is fixed per polygon and so stable too.
+        expect(sql).toContain('cos(radians(ST_Y(ST_Centroid(d.geom))))');
+    });
+
+    it('prefilters on the indexable bbox before the geography radius test', async () => {
+        // The geography cast hides `geom` behind a function call, so the GIST index cannot serve
+        // ST_DWithin and Postgres scans the whole table. Measured on the live DB, 300 m at Šibenik:
+        // trees 2,654 ms -> 309 ms, buildings 3,185 ms -> 75 ms. The buffer envelope is an exact
+        // superset of the circle, so this narrows the scan without changing the result.
+        const buildingsPool = createMockPool();
+        await createOvertureProvider(buildingsPool, 'sibenik').near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+        const buildingsSql = buildingsPool.getCalls()[0].sql;
+        expect(buildingsSql).toContain('ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry)');
+        expect(buildingsSql.indexOf('b.geom && box.b')).toBeLessThan(buildingsSql.indexOf('ST_DWithin(b.geom::geography'));
+
+        const treesPool = createMockPool();
+        await createOvertureTreesProvider(treesPool, 'sibenik').near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+        const treesSql = treesPool.getCalls()[0].sql;
+        expect(treesSql).toContain('ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry)');
+        expect(treesSql.indexOf('t.geom && box.b')).toBeLessThan(treesSql.indexOf('ST_DWithin(t.geom::geography'));
     });
 });

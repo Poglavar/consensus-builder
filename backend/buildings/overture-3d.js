@@ -1,8 +1,9 @@
-// Generic Overture-Maps 3D building provider. Source: the `overture_feature` table, layer='buildings'
-// — footprints (EPSG:4326) with an optional measured `height_m` and `num_floors`, ingested per city
-// from the Overture `buildings` theme (see scripts/ingest-overture.js). Each footprint is extruded to
-// a flat-top LOD1 block, the same face-mesh shape every city's provider yields, so the route and
-// renderer stay source-agnostic. This is the fallback for cities without a bespoke local 3D source.
+// Generic Overture-Maps 3D building provider. Source: the SHARED `public.overture_building_footprint`
+// table — footprints (EPSG:4326) with an optional measured `height` and `num_floors`, ingested per
+// area by cadastre-data (`buildings/fetch-overture-buildings.js`) and read by zagreb-isochrone's 3D
+// world too. Each footprint is extruded to a flat-top LOD1 block, the same face-mesh shape every
+// city's provider yields, so the route and renderer stay source-agnostic. This is the fallback for
+// cities without a bespoke local 3D source.
 
 import { extrudeFootprint } from './extrude.js';
 import { OVERTURE_CITIES, effectiveHeight } from './overture-cities.js';
@@ -22,24 +23,36 @@ export function createOvertureProvider(pool, cityKey) {
         // (nearest-first): without the order the LIMIT keeps an arbitrary subset, so growing the
         // radius shuffles which buildings survive and they flicker in/out. With it, a larger radius
         // only ever adds farther rings.
+        //
+        // `box` is not redundant with the ST_DWithin below — it is what makes this query fast.
+        // Casting to geography puts the operand behind a function call, so the GIST index on
+        // `geom` cannot serve it and Postgres scans every row in the table computing geodesic
+        // distances. Measured on the shared table (734k rows, 300 m radius at Šibenik):
+        // 3,185 ms without this prefilter, 75 ms with it — 42x, same box, back to back. The
+        // envelope of the geodesic buffer is an exact superset of the circle, so `&&` narrows to
+        // an index scan and ST_DWithin only refines what survives; the result set is identical.
         const sql = `
             WITH q AS (
                 SELECT ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) AS g
+            ), box AS (
+                SELECT ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry) AS b FROM q
             )
             SELECT
-                b.overture_id,
-                b.height_m,
+                b.id AS overture_id,
+                b.height AS height_m,
                 b.num_floors,
                 ST_AsGeoJSON(b.geom, 7)::json AS geometry
-            FROM overture_feature b, q
+            FROM overture_building_footprint b, q, box
             WHERE b.city = $2
-              AND b.layer = 'buildings'
+              AND b.geom && box.b
               AND ST_DWithin(b.geom::geography, q.g::geography, $3)
             ORDER BY b.geom <-> q.g
             LIMIT ${MAX_BUILDINGS}
         `;
 
-        const { rows } = await pool.query(sql, [JSON.stringify(geometry), cityKey, bufferMeters]);
+        // cfg.region, not cityKey: several cities can read one regional ingest (sibenik →
+        // sjeverna-dalmacija), so the row set is named by the config, never by the city id.
+        const { rows } = await pool.query(sql, [JSON.stringify(geometry), cfg.region, bufferMeters]);
 
         const buildings = [];
         for (const row of rows) {
