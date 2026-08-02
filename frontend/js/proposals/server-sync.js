@@ -52,6 +52,9 @@ function normalizeServerProposalSummary(raw, cityCode) {
         // the goal emoji for every row, even though almost all of them have a picture.
         screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
         parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
+        // The BASE-ancestry stamp — what the claims/dossier surfaces match on. Dropping it here
+        // would silently blind every "does this server proposal touch my parcel" check.
+        cadastreParcelIds: Array.isArray(raw.cadastreParcelIds) ? raw.cadastreParcelIds : [],
         childParcelIds: Array.isArray(raw.childParcelIds) ? raw.childParcelIds : [],
         acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],
         isMinted: false
@@ -380,24 +383,38 @@ async function headProposalExists(proposalId, _city, proposalForSync) {
     return false;
 }
 
-// Which ancestors of `proposal` are not going to reach the server.
+// The old ancestry walk, kept only as the fallback when plan-order.js cannot see a footprint:
+// live parcel state (findAncestorTree -> _getParcelAncestors -> most recent creator). This is the
+// walk that manufactured cycles — see the comment on ensureAncestorProposalsUploaded.
+function computeAncestorHashesLegacy(proposalKey) {
+    if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function') return [];
+    try {
+        const nodes = ProposalManager.findAncestorTree(String(proposalKey), { depthLimit: 32 }) || [];
+        return Array.from(new Set(nodes.map(n => n.proposalId).filter(Boolean)));
+    } catch (error) {
+        console.warn('ensureAncestorProposalsUploaded: failed to compute ancestor tree', error);
+        return [];
+    }
+}
+
+// Which prerequisites of `proposal` are not going to reach the server.
 //
 // This used to gate on upload ORDER — every ancestor had to already be on the server before its
 // descendant could be POSTed. Nothing depends on that order: proposals are POSTed independently, the
 // server stores ancestor ids as an opaque column with no foreign key, and the order a recipient
 // APPLIES a plan in is decided at apply time. Worse, the order was not always satisfiable. Ancestry
-// is derived from live parcel state (findAncestorTree -> _getParcelAncestors -> most recent creator),
-// so two proposals that each re-cut the other's children are each genuinely downstream of the other:
-// a real cycle, and an unbreakable deadlock for an ordering gate. One plan on prod had
+// used to be derived from live parcel state (findAncestorTree -> _getParcelAncestors -> most recent
+// creator), so two proposals that each re-cut the other's children were each genuinely downstream of
+// the other: a real cycle, and an unbreakable deadlock for an ordering gate. One plan on prod had
 // `Road 2107-2043 <-> Subdivide 2107-2048`, which left five proposals permanently unuploadable.
 //
-// What a recipient actually needs is COMPLETENESS: every ancestor PRESENT in the plan. So callers
-// that know the whole set being shared pass it as `options.satisfiedBy`, and any ancestor in that set
-// is fine no matter what order things upload in — cycles included, since every member of a cycle is
-// in the same plan by construction (the dialog auto-selects ancestors).
+// Now the prerequisite set itself comes from the A6 constraint graph (older intersecting applied
+// fabric-changers — acyclic by construction), and callers that know the whole set being shared pass
+// it as `options.satisfiedBy`: any prerequisite in that set is fine no matter what order things
+// upload in, since presence — completeness — is what a recipient actually needs.
 async function ensureAncestorProposalsUploaded(proposal, options = {}) {
     const missing = [];
-    if (!proposal || typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function' || typeof proposalStorage === 'undefined') {
+    if (!proposal || typeof proposalStorage === 'undefined') {
         return { ok: true, missing };
     }
 
@@ -411,15 +428,44 @@ async function ensureAncestorProposalsUploaded(proposal, options = {}) {
         return { ok: true, missing };
     }
 
-    let ancestorNodes = [];
-    try {
-        ancestorNodes = ProposalManager.findAncestorTree(String(proposalKey), { depthLimit: 32 }) || [];
-    } catch (error) {
-        console.warn('ensureAncestorProposalsUploaded: failed to compute ancestor tree', error);
-        return { ok: true, missing };
-    }
-
-    const ancestorHashes = Array.from(new Set(ancestorNodes.map(n => n.proposalId).filter(Boolean)));
+    // The prerequisite set comes from the A6 constraint graph (plan-order.js), NOT from walking
+    // live parcel state: two fabric-changers are related only when their footprints intersect,
+    // and the earlier-created one is the prerequisite. Strictly-older is antisymmetric, so the
+    // mutual-ancestor deadlock this gate used to manufacture (§2.2: `Road 2043 <-> Subdivide
+    // 2048`, five rows stuck) is unrepresentable. Overlays need no prerequisites at all — a
+    // recipient re-parents them onto whatever fabric it has (geometry resolution in the shared
+    // routes), so only fabric-changers can genuinely require another proposal first.
+    const ancestorHashes = (() => {
+        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
+        if (!planOrderApi) return computeAncestorHashesLegacy(proposalKey);
+        try {
+            if (!planOrderApi.isFabricGoal(proposal.goal)) return [];
+            const footprint = planOrderApi.footprintOf(proposal);
+            if (!footprint) return computeAncestorHashesLegacy(proposalKey);
+            const isAppliedFn = (typeof isProposalCurrentlyApplied === 'function')
+                ? isProposalCurrentlyApplied
+                : (p => p && p.applied === true);
+            const items = [{ id: String(proposalKey), goal: proposal.goal, footprint, createdAt: proposal.createdAt || null }];
+            const all = (typeof proposalStorage.getAllProposals === 'function' ? proposalStorage.getAllProposals() : []) || [];
+            all.forEach(other => {
+                const key = getProposalKey(other) || (other && other.proposalId);
+                if (!key || String(key) === String(proposalKey)) return;
+                if (!planOrderApi.isFabricGoal(other.goal)) return;
+                // Only fabric that is actually part of this browser's map constrains: an unapplied
+                // road never cut anything this proposal could stand on.
+                if (!isAppliedFn(other)) return;
+                let otherFootprint = null;
+                try { otherFootprint = planOrderApi.footprintOf(other); } catch (_) { }
+                if (!otherFootprint) return;
+                items.push({ id: String(key), goal: other.goal, footprint: otherFootprint, createdAt: other.createdAt || null });
+            });
+            const graph = planOrderApi.buildConstraintGraph(items);
+            return graph.edges.filter(e => e.to === String(proposalKey)).map(e => e.from);
+        } catch (error) {
+            console.warn('ensureAncestorProposalsUploaded: constraint-graph ancestry failed', error);
+            return computeAncestorHashesLegacy(proposalKey);
+        }
+    })();
     if (!ancestorHashes.length) {
         return { ok: true, missing };
     }
@@ -601,6 +647,16 @@ function prepareProposalForImport(sharedProposal) {
         color: sharedProposal.color || null,
         parentParcelIds: parentIds
     };
+    // Publish-time stamps ride along unchanged: base ancestry, ownership flow, and the effect
+    // hash. They describe the PUBLISHED version, so an import must never recompute them.
+    const stampedCadastre = ensureArrayOfStrings(sharedProposal.cadastreParcelIds);
+    if (stampedCadastre.length) base.cadastreParcelIds = stampedCadastre;
+    if (Array.isArray(sharedProposal.ownershipFlow) && sharedProposal.ownershipFlow.length) {
+        base.ownershipFlow = deepCloneArray(sharedProposal.ownershipFlow);
+    }
+    if (typeof sharedProposal.effectHash === 'string' && sharedProposal.effectHash) {
+        base.effectHash = sharedProposal.effectHash;
+    }
     const lensEntries = normalizeLensEntries(sharedProposal.lens || sharedProposal.lensEntries || sharedProposal.lensAddresses);
     if (lensEntries.length) {
         base.lens = lensEntries;

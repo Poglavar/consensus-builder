@@ -97,3 +97,99 @@ describe('ancestor upload gate', () => {
         expect(gate.ok).toBe(true);
     });
 });
+
+// The A6 path: with plan-order available the prerequisite set comes from the constraint graph —
+// older intersecting APPLIED fabric-changers — not from the live-parcel ancestry walk. Strictly
+// -older is antisymmetric, so the mutual-ancestor deadlock is unrepresentable, and overlays have
+// no upload prerequisites at all (recipients re-parent them from geometry).
+describe('ancestor upload gate — A6 constraint-graph ancestry', () => {
+    const square = (lngWest, latSouth, lngWidth, latHeight) => ({
+        type: 'Polygon',
+        coordinates: [[
+            [lngWest, latSouth],
+            [lngWest + lngWidth, latSouth],
+            [lngWest + lngWidth, latSouth + latHeight],
+            [lngWest, latSouth + latHeight],
+            [lngWest, latSouth]
+        ]]
+    });
+    // Two overlapping fabric-changers (the prod cycle pair, now with geometry) + one overlay.
+    const A6_PROPOSALS = {
+        [ROAD]: {
+            proposalId: ROAD, title: 'Road 2107-2043', city: 'zagreb', goal: 'road-track',
+            createdAt: '2026-01-01T00:00:00Z', applied: true,
+            geometry: square(16.000, 45.8004, 0.002, 0.0002)
+        },
+        [SUBDIVIDE]: {
+            proposalId: SUBDIVIDE, title: 'Subdivide 2107-2048', city: 'zagreb', goal: 'reparcellization',
+            createdAt: '2026-01-02T00:00:00Z', applied: true,
+            reparcellization: { polygons: [{ geometry: square(16.000, 45.800, 0.001, 0.001) }] }
+        },
+        [PARK]: {
+            proposalId: PARK, title: 'Park 2107-2047', city: 'zagreb', goal: 'park',
+            createdAt: '2026-01-03T00:00:00Z', applied: true,
+            structureProposal: { kind: 'park', geometry: square(16.0002, 45.8002, 0.0004, 0.0004) }
+        }
+    };
+
+    beforeEach(() => {
+        globalThis.turf = require('@turf/turf');
+        globalThis.window = globalThis;
+        globalThis.__planOrder = require('../../frontend/js/proposals/plan-order.js');
+        globalThis.proposalStorage = {
+            getProposal: (id) => A6_PROPOSALS[id] || null,
+            getAllProposals: () => Object.values(A6_PROPOSALS)
+        };
+        // The legacy walk must NOT be consulted when footprints resolve; make it explode if it is.
+        globalThis.ProposalManager = {
+            findAncestorTree: () => { throw new Error('legacy ancestry walk must not run on the A6 path'); }
+        };
+    });
+
+    afterEach(() => {
+        delete globalThis.__planOrder;
+        delete globalThis.window;
+    });
+
+    it('an overlay has no upload prerequisites, whatever it stands on', async () => {
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[PARK]);
+        expect(gate.ok).toBe(true);
+        expect(gate.missing).toEqual([]);
+        expect(fetched).toEqual([]);
+    });
+
+    it('the older fabric-changer of an intersecting pair uploads freely — no cycle exists', async () => {
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[ROAD]);
+        expect(gate.ok).toBe(true);
+        expect(fetched).toEqual([]);
+    });
+
+    it('the newer fabric-changer requires the older one it intersects', async () => {
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[SUBDIVIDE]);
+        expect(gate.ok).toBe(false);
+        expect(gate.missing.map(m => m.hash)).toEqual([ROAD]);
+    });
+
+    it('the requirement is satisfied by shipping together (completeness), not by order', async () => {
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[SUBDIVIDE], { satisfiedBy: new Set([ROAD, SUBDIVIDE]) });
+        expect(gate.ok).toBe(true);
+        expect(fetched).toEqual([]);
+    });
+
+    it('an unapplied fabric-changer never constrains', async () => {
+        const detached = { ...A6_PROPOSALS[ROAD], applied: false };
+        globalThis.proposalStorage.getAllProposals = () => [detached, A6_PROPOSALS[SUBDIVIDE]];
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[SUBDIVIDE]);
+        expect(gate.ok).toBe(true);
+    });
+
+    it('non-intersecting fabric-changers do not constrain each other', async () => {
+        const farAway = {
+            ...A6_PROPOSALS[ROAD],
+            geometry: square(17.000, 46.000, 0.002, 0.0002)
+        };
+        globalThis.proposalStorage.getAllProposals = () => [farAway, A6_PROPOSALS[SUBDIVIDE]];
+        const gate = await ensureAncestorProposalsUploaded(A6_PROPOSALS[SUBDIVIDE]);
+        expect(gate.ok).toBe(true);
+    });
+});
