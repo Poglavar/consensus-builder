@@ -138,14 +138,20 @@
                 const gj = layer.toGeoJSON();
                 const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                 if (!feature || !feature.geometry || !/Polygon/.test(feature.geometry.type || '')) return;
+                const baseStyle = { color: '#b91c1c', weight: 1.4, opacity: 0.9, fillColor: '#fef3c7', fillOpacity: 0.28 };
+                const hoverStyle = { color: '#7f1d1d', weight: 2.5, opacity: 1, fillColor: '#fde68a', fillOpacity: 0.5 };
                 const clone = L.geoJSON(feature, {
                     pane: CADASTRE_PANE,
-                    style: { color: '#b91c1c', weight: 1.4, opacity: 0.9, fillColor: '#fef3c7', fillOpacity: 0.28 },
+                    style: baseStyle,
                     onEachFeature: (_f, lyr) => {
                         lyr.on('click', (event) => {
                             try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
                             openBaseParcel(key);
                         });
+                        // Hover highlight: the clones are the only interactive surface in this
+                        // view, so the affordance lives here rather than on the hidden originals.
+                        lyr.on('mouseover', () => { try { lyr.setStyle(hoverStyle); lyr.bringToFront?.(); } catch (_) { } });
+                        lyr.on('mouseout', () => { try { lyr.setStyle(baseStyle); } catch (_) { } });
                     }
                 });
                 group.addLayer(clone);
