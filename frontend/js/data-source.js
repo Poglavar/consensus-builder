@@ -236,13 +236,14 @@
             return { url: `${OSS_BASE}?${params}`, isOSS: true };
         }
 
-        if (dataSource === 'localhost') {
-            const url = `${LOCAL_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
-            return { url, isOSS: false, returnsWGS84: true };
-        }
-
-        // Fallback / placeholder for api.urbangametheory.xyz (visible but not used yet)
-        const url = `${UGT_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
+        // Croatian cities (Zagreb, Split, Šibenik) all land here. getBackendBase() rather than
+        // LOCAL_BASE/UGT_BASE: it already resolves dev override -> localhost -> prod, and it is what
+        // honours a localhost worktree's `?backend=` override. Hardcoding LOCAL_BASE sent every
+        // parcel request to port 3000 no matter which port ./dev.sh had actually started the
+        // backend on, so a worktree loaded zero parcels while every OTHER city source — which all
+        // call getBackendBase() — worked fine. Same bug, same fix, as buildBuildingRequestParams
+        // below; that one was caught earlier and this one was missed.
+        const url = `${getBackendBase()}/parcels?bbox=${encodeURIComponent(bbox)}`;
         return { url, isOSS: false, returnsWGS84: true };
     }
 
