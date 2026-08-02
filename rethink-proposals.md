@@ -592,6 +592,29 @@ Croatia the way a building does. If not, parks are non-forming and the line move
    every proposal fragments at least one neighbouring parcel; the worst leaves one owner with four
    disconnected pieces. Open question it raises: does A7 imply that each formation is really a small
    reparcellization of the affected block?
+9. ~~Demote derived ids from the proposal's IDENTITY.~~ **DONE 2026-08-02 (fingerprint v2).**
+   `proposalContentFingerprint` (`c2-…`, the upload/dedup id) no longer hashes parent-parcel
+   lists — top level or inside the typology payloads — so derived-name churn (a re-apply, a heal)
+   can never mint a new share url for byte-identical content; the geometry was always in the hash
+   and is the actual truth. The legacy `c-…` bytes live on as
+   `proposalContentFingerprintLegacy`, doing two jobs: upload ADOPTION (unchanged content already
+   on the server under its v1 id keeps that id — verified live: staged v1 row, unchanged
+   re-upload, same serial, no new row) and CONSENT binding for content-only proposals, where the
+   parcel targets ARE part of the terms (an offer silently retargeted must lapse). Wire-format
+   demotion continues: the declared parent lists still ship as hints; the next slice is
+   geometry-first parent resolution on the receiving side.
+   **Geometry-first landed same day:** both shared routes now run the ghost re-parent BEFORE the
+   first apply attempt (idempotent, same ≥95% coverage guard) — declared derived parents are
+   consulted, found dead, and replaced from geometry without burning an apply→fail→heal→retry
+   round-trip. Verified: clean replay 8/8 with 7 proactive re-parents and the failure round-trips
+   gone.
+10. ~~Read the effect stamp on replay.~~ **DONE 2026-08-02 (§11's first rung).**
+   `compareOwnershipFlows` (tolerance: 5 m² or 5%, whichever is larger; a parcel missing from the
+   live flow counts only when it is actually loaded) checks every applied shared proposal's
+   stamped ownership flow against one re-derived from the receiver's cadastre. Divergence — a
+   different cadastre vintage, a missing sibling formation — surfaces as one summary line naming
+   the re-based proposals, detail in the console. Invariant #5 is now a check, not a motto: a
+   green apply that took different ground SAYS so.
 
 ---
 
@@ -935,9 +958,18 @@ footprint takes a short path (persist + mirror + re-render, identity still detac
 CONTENT changed), and a fully unchanged definition is a pure no-op that keeps even the published
 identity. Only a real footprint change re-litigates the ground. *Untested headlessly* —
 road-drawing.js has no node harness; verified by syntax + suite + manual browser pass.
-Remaining fix: run the unapply tour (disclosure variant) before a real recut. Consent-side is
-already covered: a footprint change moves the effect hash, so acceptances lapse automatically
-(§12 step 4).
+~~Remaining fix: run the unapply tour (disclosure variant) before a real recut.~~ **DONE
+2026-08-03**: a footprint-changing edit of an applied road WITH dependent proposals opens the
+unapply tour in its recut variant — dependents listed and clickable over the live map, cancel
+rolls the definition back before the identity detach (the proposal is left exactly as it was),
+confirm proceeds to the recut. Drags are exempt (the user is watching the road move; a prompt
+per drag-end would kill the tool), and a dependent-free road recuts silently as before. Verified
+live: cancel → rolled back and still applied; confirm → footprint moved, re-applied, identity
+forked. Same day, the per-building cut/demolish/tunnel verdicts JOINED the effect hash
+(`collectImpactModes` — records read from the stored definition; absent records leave existing
+hashes untouched), so a mind-change like cut → tunnel now lapses acceptances automatically —
+the choices are consent-bearing demands, not rendering hints. Consent-side of a plain width
+change was already covered (footprint moves the hash, §12 step 4).
 
 Two modal-helper gotchas locked into comments because they cost a debugging cycle each:
 `showSimpleShareModal` fires `onClose` BEFORE the clicked action's `onClick` (the dismiss-default
