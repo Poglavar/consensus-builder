@@ -25,6 +25,9 @@ const LaneTopologyGraph = require('../../frontend/js/lane-topology-graph.js');
 const CorridorProfile = require('../../frontend/js/corridor-profile.js');
 const OsmProfile = require('../../frontend/js/osm-profile.js');
 const LaneTopologyRestrictions = require('../../frontend/js/lane-topology-restrictions.js');
+const LaneParcelFit = require('../../frontend/js/lane-parcel-fit.js');
+const LaneWidthProvenance = require('../../frontend/js/lane-width-provenance.js');
+const turf = require('@turf/turf');
 const DDL = readFileSync(new URL('./lane-topology-ddl.sql', import.meta.url), 'utf8');
 
 const STREET_RAILWAYS = ['tram', 'light_rail'];
@@ -178,6 +181,38 @@ export async function fetchTopologyOsmViaSql(pool, bbox, city = 'zagreb') {
     };
 }
 
+// Road parcels bound the carriageway. Classified server-side so a viewport overlay does not ship
+// every non-road parcel, and unclipped because a parcel sliced at the viewport edge would look
+// like the road running out of land there.
+export async function fetchRoadParcels(bbox, city = 'zagreb', options = {}) {
+    const base = (options.roadsApiBase || ROADS_API_BASE).replace(/\/+$/, '');
+    const url = `${base}/roads/parcels?bbox=${bbox.join(',')}&classification=road`;
+    const response = await (options.roadsFetchImpl || fetch)(url);
+    if (!response.ok) throw new Error(`roads API responded ${response.status} for ${url}`);
+    const body = await response.json();
+    return (body.features || []).map(feature => ({
+        parcelId: feature.properties?.parcelId ?? null,
+        score: feature.properties?.score ?? null,
+        rings: ringsOfGeometry(feature.geometry)
+    })).filter(parcel => parcel.rings.length);
+}
+
+function ringsOfGeometry(geometry) {
+    if (geometry?.type === 'Polygon') return geometry.coordinates;
+    if (geometry?.type === 'MultiPolygon') return geometry.coordinates.flat();
+    return [];
+}
+
+// Metres, x east, y north, anchored at the viewport centre. Over a bbox capped at 0.08 deg the
+// scale error is far below the centimetre these widths are compared at.
+function planarProjector(bbox) {
+    const [west, south, east, north] = bbox;
+    const lat0 = (south + north) / 2;
+    const lon0 = (west + east) / 2;
+    const mx = 111320 * Math.cos(lat0 * Math.PI / 180);
+    return ([lng, lat]) => [(lng - lon0) * mx, (lat - lat0) * 110540];
+}
+
 async function insertProblems(client, solutionId, problems) {
     if (!Array.isArray(problems) || !problems.length) return;
     const keys = [];
@@ -295,6 +330,9 @@ export function withRestrictionProblems(graph, restrictions) {
         problems: merged,
         stats: {
             ...(graph.stats || {}),
+            // What decided each lane's width. Without this a defaulted 3.0 m is indistinguishable
+            // from a measured 2.7 m, and the map reads as surveyed when it is mostly guessed.
+            widthSources: LaneWidthProvenance.summarise(graph.lanes),
             problems: merged.length,
             errors: merged.filter(problem => problem.severity === 'error').length,
             // Sparse coverage: this can refute a movement, never confirm one, and the counts have
@@ -306,8 +344,19 @@ export function withRestrictionProblems(graph, restrictions) {
 
 async function buildDeterministicSolution(pool, bbox, city, parentId = null, options = {}) {
     const evidence = await fetchTopologyOsm(pool, bbox, city, options);
+    // A parcel fetch that fails must not take the whole graph with it: the lane model alone is a
+    // worse answer, not no answer, and it is the only answer available outside Zagreb anyway.
+    let parcels = [];
+    try {
+        parcels = await fetchRoadParcels(bbox, city, options);
+    } catch (error) {
+        console.warn('[lane-topology] road parcels unavailable, building without them:', error.message);
+    }
     const graph = withRestrictionProblems(
-        LaneTopologyGraph.build(evidence, graphBuildOptions(evidence.snapshotAt)),
+        LaneTopologyGraph.build(evidence, {
+            ...graphBuildOptions(evidence.snapshotAt),
+            parcelFit: { parcels, turf, fit: LaneParcelFit, project: planarProjector(bbox) }
+        }),
         evidence.restrictions
     );
     const solution = await storeTopologySolution(pool, {

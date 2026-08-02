@@ -385,6 +385,64 @@
         });
     }
 
+
+    // options.parcelFit = { parcels, turf, project, fit } — absent means no parcel evidence, which
+    // is a normal state (any city but Zagreb), not a failure. Reports the disagreement either way:
+    // narrowing the road without saying why would hide that the lane count and the land conflict.
+    // Local, not corridor-profile's parseOsmNumber: that is a browser global here and undefined
+    // under node, so borrowing it would throw only in tests and only on the tagged-width path.
+    function taggedWidthMeters(tags) {
+        const raw = tags?.width;
+        if (raw === undefined || raw === null) return null;
+        const parsed = Number.parseFloat(String(raw).replace(',', '.'));
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }
+
+    function applyParcelConstraint(profile, section, options, problems) {
+        const config = options.parcelFit;
+        const fitApi = config && (config.fit || root.LaneParcelFit);
+        if (!config || !fitApi || !Array.isArray(config.parcels) || !config.parcels.length) return profile;
+        if (!Array.isArray(section.coordinates) || section.coordinates.length < 2) return profile;
+        const project = config.project;
+        if (typeof project !== 'function') return profile;
+
+        // Project the parcels HERE, not at the call site. A lat/lng ring measured against a
+        // centreline in metres yields distances around 15.99 — plausible enough to raise no
+        // problem at all, which is how this first shipped silently doing nothing. Memoised on the
+        // config so the whole parcel set is projected once per build, not once per section.
+        if (!config.projectedParcels) {
+            config.projectedParcels = config.parcels.map(parcel => ({
+                ...parcel,
+                rings: (parcel.rings || [])
+                    .filter(ring => Array.isArray(ring) && ring.length >= 3)
+                    .map(ring => ring.map(project))
+            })).filter(parcel => parcel.rings.length);
+        }
+        const parcels = config.projectedParcels;
+        if (!parcels.length) return profile;
+
+        const lanes = stripSpans(profile)
+            .filter(span => span.type === 'driving' || span.type === 'bus')
+            .map(span => ({ offset: span.offset, width: span.width }));
+        if (!lanes.length) return profile;
+
+        const fit = fitApi.fitSectionToParcels(
+            section.coordinates.map(project), lanes, parcels, { turf: config.turf }
+        );
+        const problem = fitApi.parcelFitProblem(section, fit, parcels, { turf: config.turf });
+        if (problem) problems.push(problem);
+        const scaled = fitApi.scaleProfileToFit(profile, fit, {});
+        section.parcelNarrowed = !!scaled.scaled;
+        if (scaled.scaled && problem) {
+            problem.narrowedToFit = true;
+            problem.widthScale = scaled.scale;
+            // The parcel cannot hold this many lanes even at minimum width, so the COUNT is what
+            // disagrees with the land, not the widths. A different fix, and worth saying so.
+            if (scaled.flooredBelowParcel) problem.severity = 'error';
+        }
+        return scaled.profile;
+    }
+
     function sectionLanes(section, options, problems) {
         const counts = deriveLaneCounts(section.tags);
         if (counts.contradictory) {
@@ -418,7 +476,12 @@
             });
         }
 
-        const profile = profileForTags(section.tags, counts, options);
+        // The road parcel bounds the carriageway, so it constrains the cross-section BEFORE lanes
+        // are derived from it — scaling the profile afterwards would leave lane offsets describing
+        // a width the strips no longer have.
+        const profile = applyParcelConstraint(
+            profileForTags(section.tags, counts, options), section, options, problems
+        );
         const spans = stripSpans(profile);
         const lanes = spans
             .filter(span => span.type === 'driving' || span.type === 'bus')
@@ -460,6 +523,15 @@
                 span.access = lane.access;
             }
         });
+        const provenance = (typeof root.LaneWidthProvenance === 'object' && root.LaneWidthProvenance)
+            || (typeof require === 'function' ? require('./lane-width-provenance.js') : null);
+        if (provenance) {
+            section.widthSource = provenance.resolveWidthSource({
+                parcelNarrowed: section.parcelNarrowed,
+                taggedWidthM: taggedWidthMeters(section.tags)
+            });
+            lanes.forEach(lane => { lane.widthSource = section.widthSource; });
+        }
         section.profile = {
             strips: spans.map(span => {
                 const { left, right, offset, index, ...strip } = span;
