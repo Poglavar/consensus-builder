@@ -7,6 +7,12 @@ const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
 
 const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
 
+// Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared key above.
+// Separate key on purpose: the primary tab's blob stays untouched, so nothing can be clobbered, and
+// the work survives the reload that used to destroy it. Per-city already, since PersistentStorage
+// opens one database per city.
+const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
+
 const proposalMetadataFetchPromises = new Map();
 
 const proposalListTranslationsHydrated = new Set();
@@ -675,9 +681,16 @@ const proposalStorage = {
         // banner is dismissable, so it cannot be the only signal that work is being dropped.
         if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
             this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
-            console.error('[proposalStorage] NOT SAVED — this tab is read-only because the app is open in another tab.'
-                + ` Nothing created here survives a reload (dropped writes: ${this._blockedWriteCount}).`
-                + ' Close the other tabs and reload this one to edit.');
+            // Warning the user that work MIGHT be lost was never a licence to throw it away. The
+            // reason a secondary tab must not write is that all tabs share ONE proposals blob with
+            // no cross-tab merge, so saving here would clobber the primary tab's work. That argument
+            // only covers the SHARED key — writing our own is harmless (PersistentStorage is a
+            // key/value store; each key is its own record), so the work is parked under a private
+            // recovery key and offered back the next time this city opens as the primary tab.
+            this._persistRecovery();
+            console.error('[proposalStorage] This tab is read-only because the app is open in another tab,'
+                + ` so nothing here is saved to the shared store (dropped writes: ${this._blockedWriteCount}).`
+                + ' Your work has been parked and will be offered back when you reload with the other tabs closed.');
             try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
             return;
         }
@@ -689,6 +702,66 @@ const proposalStorage = {
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
         }
+    },
+
+    // Park this read-only tab's proposals under its own key so a reload cannot destroy them. Safe
+    // against the primary: a different key is a different record, so the shared blob is untouched.
+    // Best-effort by construction — a rescue that throws must never break the edit the user is
+    // making, and it is only ever a second chance at work the tab could not save anyway.
+    _persistRecovery() {
+        if (typeof PersistentStorage === 'undefined') return;
+        try {
+            const serialisable = Array.from(this.proposals.values());
+            if (!serialisable.length) return;
+            PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
+                savedAt: new Date().toISOString(),
+                proposals: serialisable
+            }));
+        } catch (error) {
+            console.error('[proposalStorage] could not park read-only work for recovery', error);
+        }
+    },
+
+    // What a previous read-only tab parked, or null. Read on load by the PRIMARY tab only — a
+    // secondary tab offering to restore would just park it again on the next keystroke.
+    readRecovery() {
+        if (typeof PersistentStorage === 'undefined') return null;
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return null;
+        try {
+            const raw = PersistentStorage.getItem(PROPOSALS_RECOVERY_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            const proposals = Array.isArray(parsed && parsed.proposals) ? parsed.proposals : null;
+            if (!proposals || !proposals.length) return null;
+            // Only what this store does NOT already have: the usual case is that the user gave up
+            // and redrew the road in the primary tab, and re-adding the parked copy would duplicate it.
+            const missing = proposals.filter(entry => {
+                const id = entry && (entry.proposalId || entry.id);
+                return id && !this.proposals.has(String(id));
+            });
+            return missing.length ? { savedAt: parsed.savedAt || null, proposals: missing } : null;
+        } catch (error) {
+            console.error('[proposalStorage] could not read parked work', error);
+            return null;
+        }
+    },
+
+    // Merge parked work back in and clear the slot. Returns how many were restored.
+    restoreRecovery() {
+        const parked = this.readRecovery();
+        if (!parked) return 0;
+        parked.proposals.forEach(entry => {
+            try { this.addProposal({ ...entry }); } catch (error) {
+                console.error('[proposalStorage] could not restore a parked proposal', error);
+            }
+        });
+        this.discardRecovery();
+        return parked.proposals.length;
+    },
+
+    discardRecovery() {
+        if (typeof PersistentStorage === 'undefined') return;
+        try { PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY); } catch (_) { }
     },
 
     _roadAssetKey(proposalId, suffix) {
