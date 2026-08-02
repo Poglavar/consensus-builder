@@ -2913,6 +2913,19 @@ const ProposalManager = {
 
     // UI: Show a modal with the full list of descendants and ask for confirmation
     _showDescendantsConfirmModal({ action, proposalId, descendants, onConfirm }) {
+        // The side-panel tour is the primary UI: dependents listed over the live map, each entry
+        // clickable to focus and blink the item (unapply-tour.js — the impact tour pointed
+        // backwards in time). The modal below survives only as the fallback for environments the
+        // panel declines (no map/Leaflet) or a failure inside it.
+        try {
+            const tour = (typeof window !== 'undefined') ? window.__unapplyTour : null;
+            if (tour && typeof tour.showUnapplyDependentsPanel === 'function') {
+                const shown = tour.showUnapplyDependentsPanel({ action, proposalId, descendants, onConfirm });
+                if (shown && typeof shown.then === 'function') return;
+            }
+        } catch (error) {
+            console.warn('[proposal-manager] unapply tour unavailable, falling back to modal', error);
+        }
         try {
             // Remove any existing modal
             const existing = document.querySelector('.descendants-confirm-modal');

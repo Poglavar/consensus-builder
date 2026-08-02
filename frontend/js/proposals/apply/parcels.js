@@ -15,6 +15,7 @@
 
         if (!proposalData || !proposalData.reparcellization) {
             console.warn(`[_applyReparcellizationProposal] Invalid proposal data or missing reparcellization`);
+            try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal record carries no reparcellization plan.' }); } catch (_) { }
             return false;
         }
         const plan = proposalData.reparcellization;
@@ -23,6 +24,7 @@
                 updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
             }
             console.warn(`[_applyReparcellizationProposal] Missing polygons: ${plan.polygons?.length || 0}`);
+            try { this._setLastApplyFailure(idLabel, { code: 'no-slices', message: 'The reparcellization plan holds no generated slices to cut the parcels into.' }); } catch (_) { }
             return false;
         }
 
@@ -105,6 +107,7 @@
                 updateStatus('Cannot apply reparcellization proposal: failed to build parcel geometries.');
             }
             console.warn(`[_applyReparcellizationProposal] Failed to build child parcel features for ${idLabel}`);
+            try { this._setLastApplyFailure(idLabel, { code: 'no-children-derived', message: `None of the ${plan.polygons.length} plan slice(s) carried a usable geometry, so no child parcels were built.` }); } catch (_) { }
             return false;
         }
 
@@ -522,6 +525,7 @@
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply decide later proposal: no ancestor parcels found.');
             }
+            try { this._setLastApplyFailure(idLabel, { code: 'no-parent-parcels', message: 'The decide-later proposal names no ancestor parcels to merge.' }); } catch (_) { }
             return false;
         }
 
@@ -546,6 +550,13 @@
                 : 'Cannot apply decide later proposal: missing ancestor parcels.';
             if (typeof updateStatus === 'function') updateStatus(message);
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'dependency-missing',
+                    message: `${missingParents.length} of the ${parentIds.length} ancestor parcel(s) could not be found, even after refetching.`,
+                    missingIds: missingParents.map(info => (info && info.id) ? info.id : null).filter(Boolean)
+                });
+            } catch (_) { }
             return false;
         }
 
@@ -554,6 +565,7 @@
             const message = 'Cannot apply decide later proposal: failed to merge parcel geometry.';
             if (typeof updateStatus === 'function') updateStatus(message);
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            try { this._setLastApplyFailure(idLabel, { code: 'merge-failed', message: `The ${parentIds.length} ancestor parcel geometries could not be merged into a single parcel.` }); } catch (_) { }
             return false;
         }
 
@@ -602,6 +614,7 @@
             const message = 'Cannot apply decide later proposal: failed to assign parcel id to merged parcel.';
             if (typeof updateStatus === 'function') updateStatus(message);
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            try { this._setLastApplyFailure(idLabel, { code: 'child-id-assignment-failed', message: 'The merged parcel came back without a synthetic parcel id, so it cannot be placed on the map.' }); } catch (_) { }
             return false;
         }
 

@@ -58,6 +58,9 @@
 
         if (!proposalData || (!proposalData.parentParcelIds && !roadProposal.parentParcelIds)) {
             console.warn(`[_applyRoadProposal] Invalid proposal data: missing parent parcel IDs`);
+            // Every refusal RECORDS its reason: "Proposal did not apply" with no stored failure
+            // info is a debugging dead end (a shared-plan summary can only echo what is stored).
+            try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal declares no parent parcels at all.' }); } catch (_) { }
             return false;
         }
 
@@ -192,6 +195,7 @@
         }
 
         if (!isRestoring && isGovernmentPlan && !childFeatures.length) {
+            try { this._setLastApplyFailure(idLabel, { code: 'no-children-derived', message: 'The corridor produced no child parcels on this fabric.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
@@ -317,15 +321,17 @@
                     // Still need to hide parent parcels if they exist
                     // The early return check below will handle this
                 } else {
+                    const missingChildIds = childParcelIds.filter(id => !childrenInIndex.has(id));
                     console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are in index.', {
                         proposalId,
                         expected: childParcelIds.length,
                         found: childrenInIndex.size,
-                        missing: childParcelIds.filter(id => !childrenInIndex.has(id))
+                        missing: missingChildIds
                     });
                     if (typeof updateStatus === 'function') {
                         updateStatus('Cannot restore proposal: missing child parcel geometries.');
                     }
+                    try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: missingChildIds }); } catch (_) { }
                     if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                     return false;
                 }
@@ -334,6 +340,7 @@
                 if (typeof updateStatus === 'function') {
                     updateStatus('Cannot restore proposal: missing child parcel geometries.');
                 }
+                try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: (childParcelIds || []).slice() }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -428,6 +435,7 @@
             const mapById = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
             if (!mapById) {
                 console.error('Cannot restore road proposal: parcelLayerById map is unavailable.');
+                try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -446,6 +454,7 @@
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage('Cannot restore proposal: missing child parcel geometries.', 5000, 'error');
                 }
+                try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: missing.slice() }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -471,6 +480,7 @@
         const mapByIdRemove = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
         if (!mapByIdRemove) {
             console.error('[_applyRoadProposal] parcelLayerById map is unavailable; aborting parent removal detection.');
+            try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
@@ -492,6 +502,7 @@
             const mapByIdRestore = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
             if (!mapByIdRestore) {
                 console.error('[_applyRoadProposal] parcelLayerById map is unavailable during restoration check.');
+                try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -564,6 +575,7 @@
         }
 
         if (!allChildrenAdded) {
+            try { this._setLastApplyFailure(idLabel, { code: 'children-not-added', message: 'One or more child parcels could not be added to the map.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }

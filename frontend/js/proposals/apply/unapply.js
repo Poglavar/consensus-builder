@@ -8,6 +8,56 @@
     'use strict';
 
     return {
+    // A parent whose ground is still covered by live slices of a DIFFERENT applied proposal must
+    // not be resurrected by this proposal's unapply — restoring it stacks the whole parcel under
+    // the other proposal's fabric (measured: un-applying a subdivision put base 823/2 back on the
+    // map underneath an applied road that had cut it). The test is STRUCTURAL — any index id
+    // prefixed `<parent>#` — with the minting proposal's applied state as the authority for
+    // new-style ids (`#c-<proposalId>-N`); unattributable old-style tokens count only when their
+    // slice is actually on the map.
+    _parentStillConsumedElsewhere(parcelId, unappliedProposalId) {
+        try {
+            const byId = (typeof getParcelLayerIdMap === 'function') ? getParcelLayerIdMap()
+                : ((typeof window !== 'undefined' && window.parcelLayerById instanceof Map) ? window.parcelLayerById : null);
+            if (!byId) return false;
+            const prefix = String(parcelId) + '#';
+            const self = String(unappliedProposalId || '');
+            for (const [key, layer] of byId.entries()) {
+                const id = String(key);
+                if (!id.startsWith(prefix)) continue;
+                const mintId = id.slice(prefix.length).replace(/-\d+$/, '');
+                if (self && mintId === self) continue; // this proposal's own slices are on their way out
+                const minting = (typeof proposalStorage !== 'undefined' && proposalStorage.getProposal)
+                    ? proposalStorage.getProposal(mintId) : null;
+                if (minting) {
+                    const applied = (typeof isProposalApplied === 'function')
+                        ? isProposalApplied(minting) : minting.applied === true;
+                    if (applied) return true;
+                    continue; // known but unapplied — an orphan, not a consumer
+                }
+                try {
+                    if (typeof map !== 'undefined' && map && typeof map.hasLayer === 'function' && map.hasLayer(layer)) return true;
+                } catch (_) { }
+            }
+        } catch (_) { /* the guard must never block an unapply */ }
+        return false;
+    },
+
+    // Drop parents the guard above vetoes, with one log line naming them.
+    _filterRestorableParents(parentFeatures, unappliedProposalId) {
+        const kept = [];
+        const blocked = [];
+        (Array.isArray(parentFeatures) ? parentFeatures : []).forEach(feature => {
+            const id = _getParcelIdFromFeature(feature);
+            if (id && this._parentStillConsumedElsewhere(String(id), unappliedProposalId)) blocked.push(String(id));
+            else kept.push(feature);
+        });
+        if (blocked.length) {
+            console.info('[unapply] Not restoring parent(s) still consumed by another applied proposal', blocked);
+        }
+        return kept;
+    },
+
     // Internal: perform unapply after confirmation. `visitedProposals` breaks CYCLES in the
     // child-proposal links (old imports carry mutual A<->B references; a proposal's status only
     // flips at the END of its own frame, so without this the recursion never terminates —
@@ -70,7 +120,10 @@
             // definition; on imported proposals their ids drift and may simply not exist here.
             // Blocking the whole unapply on them locked such roads forever — restore what exists
             // and only refuse when a REAL cadastre parcel cannot be recovered.
-            const missingBase = remainingMissing.filter(id => !String(id).includes('#p-'));
+            // Structural: ANY '#' marks a derived slice — both the old '#p-<token>' and the new
+            // '#c-<proposalId>' generations. The old '#p-' literal misread new-style slices as
+            // missing BASE parcels and blocked the unapply on ids that never fetch.
+            const missingBase = remainingMissing.filter(id => !String(id).includes('#'));
             if (missingBase.length > 0) {
                 const message = `Missing ancestor parcels: ${missingBase.join(', ')}`;
                 console.error(message);
@@ -147,9 +200,15 @@
             this._unmarkParcelModified(parcelId);
         });
 
-        // Fetch parent features by ID (don't rely on stored parentFeatures)
+        // Fetch parent features by ID (don't rely on stored parentFeatures). allowMissing is
+        // load-bearing: declared parents can include another proposal's DEAD-generation slice ids
+        // (an imported road carrying the sender's ancient `#p-…` names), and without it the
+        // resolver THROWS on the first ghost — which aborted the whole family unapply after its
+        // children were already processed. The other two restore sites always passed it.
         const parentParcelIds = this._collectParentParcelIds(roadProposal, proposalData);
-        const parentFeaturesResolved = this._resolveParcelFeaturesByIds(parentParcelIds, { preferMap: true, allowStorage: true });
+        const parentFeaturesResolved = this._filterRestorableParents(
+            this._resolveParcelFeaturesByIds(parentParcelIds, { preferMap: true, allowStorage: true, allowMissing: true }),
+            proposalId);
 
         // Show hidden parents first (they're in parcelLayerById but not visible)
         this._showFeaturesOnMap(parentFeaturesResolved);
@@ -247,9 +306,9 @@
 
         // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
 
-        const parentFeatures = parentIds.length
+        const parentFeatures = this._filterRestorableParents(parentIds.length
             ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
-            : [];
+            : [], proposalId);
         if (parentFeatures.length) {
             // IMPORTANT: pass proposalData so the descendant filter can exclude this proposal while it is being unapplied.
             this._addFeaturesToMap(parentFeatures, true, proposalData);
@@ -532,6 +591,7 @@
                 console.warn('[_unapplyReparcellizationProposalConfirmed] Failed to fetch parent parcels', err);
             }
         }
+        parentFeatures = this._filterRestorableParents(parentFeatures, proposalId);
         if (parentFeatures.length) {
             this._showFeaturesOnMap(parentFeatures);
             this._addFeaturesToMap(parentFeatures, true, proposalData);
