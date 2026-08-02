@@ -94,6 +94,36 @@
         return node;
     }
 
+    // The corridor's per-building verdicts are part of the EFFECT: cutting a building, demolishing
+    // it outright, or tunnelling under it are materially different takings over the same footprint,
+    // so a mind-change (cut → tunnel) must move the hash and lapse acceptances. Read from the
+    // STORED records (definition.demolishedBuildings — a record with a `remainder` is a partial
+    // cut, one without is a full demolition — and definition.tunnels). Returns null when there are
+    // no records at all, so proposals without building impacts keep their existing hashes.
+    function collectImpactModes(proposal) {
+        const demolished = [];
+        const tunnelled = [];
+        ['roadProposal', 'structureProposal', 'buildingProposal'].forEach(key => {
+            const sub = proposal && proposal[key];
+            if (!sub || typeof sub !== 'object') return;
+            const definition = sub.definition && typeof sub.definition === 'object' ? sub.definition : null;
+            const records = (definition && definition.demolishedBuildings) || sub.demolishedBuildings;
+            (Array.isArray(records) ? records : []).forEach(record => {
+                if (record && record.id !== undefined && record.id !== null) {
+                    demolished.push({ id: String(record.id), cut: !!record.remainder });
+                }
+            });
+            const tunnels = definition && definition.tunnels;
+            (Array.isArray(tunnels) ? tunnels : []).forEach(record => {
+                (record && Array.isArray(record.buildingIds) ? record.buildingIds : [])
+                    .forEach(buildingId => tunnelled.push(String(buildingId)));
+            });
+        });
+        if (!demolished.length && !tunnelled.length) return null;
+        demolished.sort((a, b) => a.id.localeCompare(b.id));
+        return { demolished, tunnelled: Array.from(new Set(tunnelled)).sort() };
+    }
+
     // The hash of the proposal's EFFECT: footprint + per-parcel cession + where ownership goes.
     // Null when the proposal has no footprint (content-only) — callers fall back to the content
     // fingerprint for those, since an offer's "effect" is its terms.
@@ -125,7 +155,64 @@
                 }))
                 .sort((a, b) => a.parcelId.localeCompare(b.parcelId))
         };
+        const modes = collectImpactModes(proposal);
+        if (modes) effect.modes = modes;
         return 'e-' + effectHashString(stableStringifyLocal(effect));
+    }
+
+    // --- replay fidelity (§11 first rung) ---------------------------------------------------
+
+    // Does this proposal take the SAME ground here as when it was published? `stamped` is the
+    // publish-time ownership flow; `live` is the flow re-derived against the receiver's cadastre.
+    // Sub-tolerance drift is surveyor noise, not a divergence (the doc's open tolerance question,
+    // answered pragmatically: 5 m² or 5%, whichever is larger). A parcel missing from `live` only
+    // counts as REMOVED when the receiver actually has that parcel loaded (`knownParcelIds`) —
+    // an unloaded parcel is unknown, not absent.
+    function compareOwnershipFlows(stamped, live, options) {
+        const opts = options || {};
+        const tolM2 = Number.isFinite(opts.toleranceM2) ? opts.toleranceM2 : 5;
+        const tolPct = Number.isFinite(opts.tolerancePct) ? opts.tolerancePct : 0.05;
+        const known = opts.knownParcelIds instanceof Set ? opts.knownParcelIds
+            : (Array.isArray(opts.knownParcelIds) ? new Set(opts.knownParcelIds.map(String)) : null);
+        const toMap = (flow) => {
+            const map = new Map();
+            (Array.isArray(flow) ? flow : []).forEach(entry => {
+                if (entry && entry.parcelId) {
+                    map.set(String(entry.parcelId), {
+                        cededM2: Math.round(Number(entry.cededM2) || 0),
+                        destination: String(entry.destination || '')
+                    });
+                }
+            });
+            return map;
+        };
+        const before = toMap(stamped);
+        const after = toMap(live);
+        const withinTolerance = (a, b) => Math.abs(a - b) <= Math.max(tolM2, tolPct * Math.max(a, b));
+
+        const added = [];
+        const removed = [];
+        const changed = [];
+        before.forEach((entry, parcelId) => {
+            const now = after.get(parcelId);
+            if (!now) {
+                if (entry.cededM2 > tolM2 && (!known || known.has(parcelId))) {
+                    removed.push({ parcelId, wasM2: entry.cededM2 });
+                }
+                return;
+            }
+            if (!withinTolerance(entry.cededM2, now.cededM2)) {
+                changed.push({ parcelId, wasM2: entry.cededM2, nowM2: now.cededM2 });
+            } else if (entry.destination && now.destination && entry.destination !== now.destination) {
+                changed.push({ parcelId, wasM2: entry.cededM2, nowM2: now.cededM2, destination: now.destination });
+            }
+        });
+        after.forEach((entry, parcelId) => {
+            if (!before.has(parcelId) && entry.cededM2 > tolM2) {
+                added.push({ parcelId, nowM2: entry.cededM2 });
+            }
+        });
+        return { same: !added.length && !removed.length && !changed.length, added, removed, changed };
     }
 
     // --- consent validity against the current effect (§12 step 4) ---------------------------
@@ -179,6 +266,7 @@
         hasFormation,
         computeOwnershipFlow,
         effectFingerprintOf,
+        compareOwnershipFlows,
         isAcceptanceRecordValid,
         refreshAcceptanceValidity
     };

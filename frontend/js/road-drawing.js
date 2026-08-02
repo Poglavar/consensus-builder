@@ -884,6 +884,59 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         } catch (_) { /* treat as changed */ }
     }
 
+    // The footprint is DERIVED (centerline × per-segment totals, minus tunnel spans), so whether
+    // this edit moved it is decided by deriving it from both states and comparing — not by
+    // guessing which fields matter. Computed HERE, before the identity detach, so a cancelled
+    // recut below leaves the proposal exactly as it was.
+    const wasAppliedBeforeEdit = (typeof isProposalApplied === 'function') ? isProposalApplied(proposal) : false;
+    const footprintUnchanged = (() => {
+        try {
+            const signatureOf = (def) => JSON.stringify({
+                poly: (typeof buildRoadUnionPolygonForDefinition === 'function')
+                    ? buildRoadUnionPolygonForDefinition(def) : null,
+                tunnels: (Array.isArray(def.tunnels) ? def.tunnels : [])
+                    .map(record => record && record.edgeKey).filter(Boolean).sort(),
+                fill: def.edgeFill || null
+            });
+            return signatureOf(definitionSnapshot) === signatureOf(definition);
+        } catch (_) {
+            return false; // when in doubt, take the full path
+        }
+    })();
+
+    // Recut disclosure (rethink-proposals.md §13): a footprint change on an APPLIED road re-cuts
+    // the ground under it and re-derives everything standing on that ground. When dependent
+    // proposals exist, say so BEFORE doing it — the unapply tour in its recut variant, items
+    // clickable on the map, cancel rolls the definition back untouched. Drags are exempt
+    // (options.preEditSnapshot): the user is watching the road move under their cursor, and a
+    // prompt per drag-end would make the tool unusable.
+    if (!footprintUnchanged && wasAppliedBeforeEdit && !options.preEditSnapshot
+        && typeof window !== 'undefined' && window.__unapplyTour
+        && typeof window.__unapplyTour.showUnapplyDependentsPanel === 'function') {
+        let dependentProposals = [];
+        try {
+            const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+            dependentProposals = (ProposalManager.findDescendantTree(String(key)) || [])
+                .map(node => node && node.proposalId).filter(Boolean);
+        } catch (_) { dependentProposals = []; }
+        if (dependentProposals.length) {
+            const confirmed = await window.__unapplyTour.showUnapplyDependentsPanel({
+                action: 'recut',
+                proposalId: (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId,
+                descendants: dependentProposals,
+                onConfirm: async () => { }
+            });
+            if (confirmed === false) {
+                try {
+                    Object.keys(definition).forEach(field => { delete definition[field]; });
+                    Object.assign(definition, JSON.parse(JSON.stringify(definitionSnapshot)));
+                } catch (_) { }
+                return false;
+            }
+            // `null` means the panel cannot run here (no map/Leaflet) — proceed as before.
+        }
+    }
+
     // A local edit (profile change, node move, reroute…) forks a PUBLISHED road into your own local
     // copy: the uploaded row or minted NFT it points at no longer matches its geometry. Detach every
     // published pointer and record where it came from (sourceProposalId), so the next Share/Upload
@@ -905,29 +958,13 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
     }
 
-    // The footprint is DERIVED (centerline × per-segment totals, minus tunnel spans), so whether
-    // this edit moved it is decided by deriving it from both states and comparing — not by
-    // guessing which fields matter. A cross-section change that keeps every total (a lane
-    // reshuffle, a re-striping) leaves the ground untouched: no unapply→re-apply, no slice
-    // re-mint (each re-mint breeds a new derived-id generation — the §3.1 ghost factory), no
-    // building re-check. The lane list is persisted, mirrored and re-rendered; the identity was
-    // already detached above, because the CONTENT changed even though the ground did not.
-    // (Drawing mode has had this gate all along — `footprintChanged` in corridor-editor.js; this
-    // is the placed-road counterpart.)
-    const footprintUnchanged = (() => {
-        try {
-            const signatureOf = (def) => JSON.stringify({
-                poly: (typeof buildRoadUnionPolygonForDefinition === 'function')
-                    ? buildRoadUnionPolygonForDefinition(def) : null,
-                tunnels: (Array.isArray(def.tunnels) ? def.tunnels : [])
-                    .map(record => record && record.edgeKey).filter(Boolean).sort(),
-                fill: def.edgeFill || null
-            });
-            return signatureOf(definitionSnapshot) === signatureOf(definition);
-        } catch (_) {
-            return false; // when in doubt, take the full path
-        }
-    })();
+    // A cross-section change that keeps every total (a lane reshuffle, a re-striping) leaves the
+    // ground untouched: no unapply→re-apply, no slice re-mint (each re-mint breeds a new
+    // derived-id generation — the §3.1 ghost factory), no building re-check. The lane list is
+    // persisted, mirrored and re-rendered; the identity was already detached above, because the
+    // CONTENT changed even though the ground did not. (Drawing mode has had this gate all along —
+    // `footprintChanged` in corridor-editor.js; this is the placed-road counterpart. The
+    // comparison itself is computed before the detach, beside the recut disclosure.)
     if (footprintUnchanged) {
         try {
             const copy = JSON.parse(JSON.stringify(definition));

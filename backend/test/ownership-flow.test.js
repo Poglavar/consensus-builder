@@ -134,6 +134,30 @@ describe('effectFingerprintOf', () => {
         expect(flowApi.effectFingerprintOf({ goal: 'urban-rule', parentParcelIds: ['HR-1-P'] })).toBeNull();
     });
 
+    it('per-building verdicts move the hash: cut vs demolish vs tunnel are different takings', () => {
+        const bare = makeRoad();
+        const reference = flowApi.effectFingerprintOf(bare);
+
+        const withCut = makeRoad();
+        withCut.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {}, remainder: { type: 'Polygon' } }] } };
+        const cutHash = flowApi.effectFingerprintOf(withCut);
+        expect(cutHash).not.toBe(reference);
+
+        const withDemolish = makeRoad();
+        withDemolish.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {} }] } }; // no remainder = full
+        expect(flowApi.effectFingerprintOf(withDemolish)).not.toBe(cutHash);
+
+        const withTunnel = makeRoad();
+        withTunnel.roadProposal = { definition: { tunnels: [{ edgeKey: 'e1', buildingIds: ['b1'] }] } };
+        expect(flowApi.effectFingerprintOf(withTunnel)).not.toBe(reference);
+        expect(flowApi.effectFingerprintOf(withTunnel)).not.toBe(cutHash);
+
+        // Empty record arrays are the same effect as no records at all.
+        const withEmpty = makeRoad();
+        withEmpty.roadProposal = { definition: { demolishedBuildings: [], tunnels: [] } };
+        expect(flowApi.effectFingerprintOf(withEmpty)).toBe(reference);
+    });
+
     it('accepts a computed flow for never-published proposals via options', () => {
         const local = { goal: 'road-track', geometry: JSON.parse(JSON.stringify(STRIP.geometry)) };
         const flow = flowApi.computeOwnershipFlow(local, [{ id: 'HR-1-P', feature: PARCEL }]);
@@ -141,6 +165,56 @@ describe('effectFingerprintOf', () => {
         const without = flowApi.effectFingerprintOf(local);
         expect(withFlow).toMatch(/^e-/);
         expect(withFlow).not.toBe(without);
+    });
+});
+
+describe('compareOwnershipFlows — replay fidelity (§11 first rung)', () => {
+    const stamped = [
+        { parcelId: 'HR-1-A', cededM2: 1700, destination: 'public' },
+        { parcelId: 'HR-1-B', cededM2: 100, destination: 'public' },
+        { parcelId: 'HR-1-C', cededM2: 40, destination: 'public' }
+    ];
+
+    it('identical flows are the same, sub-tolerance drift included', () => {
+        const live = [
+            { parcelId: 'HR-1-A', cededM2: 1703, destination: 'public' }, // 3 m² < 5% — noise
+            { parcelId: 'HR-1-B', cededM2: 96, destination: 'public' },
+            { parcelId: 'HR-1-C', cededM2: 40, destination: 'public' }
+        ];
+        expect(flowApi.compareOwnershipFlows(stamped, live).same).toBe(true);
+    });
+
+    it('a material cession change is reported with before/after', () => {
+        const live = [
+            { parcelId: 'HR-1-A', cededM2: 900, destination: 'public' },
+            { parcelId: 'HR-1-B', cededM2: 100, destination: 'public' },
+            { parcelId: 'HR-1-C', cededM2: 40, destination: 'public' }
+        ];
+        const diff = flowApi.compareOwnershipFlows(stamped, live);
+        expect(diff.same).toBe(false);
+        expect(diff.changed).toEqual([{ parcelId: 'HR-1-A', wasM2: 1700, nowM2: 900 }]);
+    });
+
+    it('a parcel missing from the live flow counts as removed only when it is actually loaded', () => {
+        const live = stamped.filter(e => e.parcelId !== 'HR-1-A');
+        const known = new Set(['HR-1-B', 'HR-1-C']); // A is not loaded here — unknown, not absent
+        expect(flowApi.compareOwnershipFlows(stamped, live, { knownParcelIds: known }).same).toBe(true);
+        const knownAll = new Set(['HR-1-A', 'HR-1-B', 'HR-1-C']);
+        const diff = flowApi.compareOwnershipFlows(stamped, live, { knownParcelIds: knownAll });
+        expect(diff.removed).toEqual([{ parcelId: 'HR-1-A', wasM2: 1700 }]);
+    });
+
+    it('new ground taken here that the publish never touched is reported as added', () => {
+        const live = stamped.concat([{ parcelId: 'HR-1-D', cededM2: 200, destination: 'public' }]);
+        const diff = flowApi.compareOwnershipFlows(stamped, live);
+        expect(diff.added).toEqual([{ parcelId: 'HR-1-D', nowM2: 200 }]);
+    });
+
+    it('a destination change is a divergence even at identical area', () => {
+        const live = stamped.map(e => e.parcelId === 'HR-1-B' ? { ...e, destination: 'proposer' } : e);
+        const diff = flowApi.compareOwnershipFlows(stamped, live);
+        expect(diff.same).toBe(false);
+        expect(diff.changed[0].parcelId).toBe('HR-1-B');
     });
 });
 

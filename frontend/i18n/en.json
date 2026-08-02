@@ -2021,7 +2021,10 @@
             "confirmUnapply": "Un-apply",
             "confirmDelete": "Delete",
             "working": "Working…",
-            "failed": "Could not complete: {{reason}}"
+            "failed": "Could not complete: {{reason}}",
+            "titleRecut": "Re-cut “{{title}}”",
+            "messageRecut": "Changing this footprint re-cuts the ground under it. The following stand on that ground and will be re-derived. Click an item to see it.",
+            "confirmRecut": "Re-cut"
         }
     },
     "blockify": {

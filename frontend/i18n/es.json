@@ -2070,7 +2070,10 @@
             "confirmUnapply": "Desaplicar",
             "confirmDelete": "Eliminar",
             "working": "Procesando…",
-            "failed": "No se pudo completar: {{reason}}"
+            "failed": "No se pudo completar: {{reason}}",
+            "titleRecut": "Recortar «{{title}}»",
+            "messageRecut": "Cambiar esta huella vuelve a cortar el terreno debajo. Lo siguiente se asienta en ese terreno y se volverá a derivar. Haga clic en un elemento para verlo.",
+            "confirmRecut": "Recortar"
         }
     },
     "blockify": {

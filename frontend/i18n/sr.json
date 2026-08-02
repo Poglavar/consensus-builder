@@ -2051,7 +2051,10 @@
             "confirmUnapply": "Poništi primenu",
             "confirmDelete": "Obriši",
             "working": "U toku…",
-            "failed": "Nije uspelo: {{reason}}"
+            "failed": "Nije uspelo: {{reason}}",
+            "titleRecut": "Prekroji „{{title}}”",
+            "messageRecut": "Promena ovog obrisa prekraja zemljište pod njim. Sledeće stoji na tom zemljištu i biće ponovo izvedeno. Kliknite stavku da je vidite.",
+            "confirmRecut": "Prekroji"
         }
     },
     "blockify": {

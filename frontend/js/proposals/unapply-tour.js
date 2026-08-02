@@ -181,6 +181,7 @@
         if (!items.length) return null;
 
         const isDelete = action === 'delete';
+        const isRecut = action === 'recut';
         const sourceTitle = (() => {
             try {
                 const record = (typeof proposalStorage !== 'undefined' && proposalStorage.getProposal)
@@ -209,15 +210,20 @@
 
             const title = document.createElement('div');
             title.className = 'cb-unapply-tour-title';
-            title.textContent = isDelete
-                ? t('modal.unapplyTour.titleDelete', 'Delete “{{title}}”', { title: sourceTitle })
-                : t('modal.unapplyTour.titleUnapply', 'Un-apply “{{title}}”', { title: sourceTitle });
+            title.textContent = isRecut
+                ? t('modal.unapplyTour.titleRecut', 'Re-cut “{{title}}”', { title: sourceTitle })
+                : (isDelete
+                    ? t('modal.unapplyTour.titleDelete', 'Delete “{{title}}”', { title: sourceTitle })
+                    : t('modal.unapplyTour.titleUnapply', 'Un-apply “{{title}}”', { title: sourceTitle }));
             body.appendChild(title);
 
             const message = document.createElement('div');
             message.className = 'cb-impact-tour-message';
-            message.textContent = t('modal.unapplyTour.message',
-                'This proposal has dependent items. The following will be removed from the map and storage. Click an item to see it.');
+            message.textContent = isRecut
+                ? t('modal.unapplyTour.messageRecut',
+                    'Changing this footprint re-cuts the ground under it. The following stand on that ground and will be re-derived. Click an item to see it.')
+                : t('modal.unapplyTour.message',
+                    'This proposal has dependent items. The following will be removed from the map and storage. Click an item to see it.');
             body.appendChild(message);
 
             const counts = items.reduce((acc, it) => { acc[it.kind]++; return acc; }, { parcel: 0, proposal: 0 });
@@ -265,9 +271,11 @@
             const confirmBtn = document.createElement('button');
             confirmBtn.type = 'button';
             confirmBtn.className = 'btn btn-danger cb-unapply-tour-confirm';
-            confirmBtn.textContent = isDelete
-                ? t('modal.unapplyTour.confirmDelete', 'Delete')
-                : t('modal.unapplyTour.confirmUnapply', 'Un-apply');
+            confirmBtn.textContent = isRecut
+                ? t('modal.unapplyTour.confirmRecut', 'Re-cut')
+                : (isDelete
+                    ? t('modal.unapplyTour.confirmDelete', 'Delete')
+                    : t('modal.unapplyTour.confirmUnapply', 'Un-apply'));
             confirmBtn.addEventListener('click', async () => {
                 if (busy) return;
                 busy = true;
