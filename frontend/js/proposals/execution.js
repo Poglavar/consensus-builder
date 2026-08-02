@@ -1208,6 +1208,12 @@ function currentConsentBindingHash(proposal) {
         if (effect) return effect;
     } catch (_) { /* fall through to the content fingerprint */ }
     try {
+        // Deliberately the LEGACY variant: for a content-only proposal the parcel TARGETS are part
+        // of the terms an owner consented to — an offer silently retargeted to other parcels must
+        // lapse. (The v2 upload identity drops the parent lists for the opposite reason: derived
+        // name churn must not move a share id.) Also keeps pre-v2 acceptance records valid: the
+        // legacy bytes are exactly what they were stamped with.
+        if (typeof proposalContentFingerprintLegacy === 'function') return proposalContentFingerprintLegacy(proposal);
         return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
     } catch (_) {
         return null;

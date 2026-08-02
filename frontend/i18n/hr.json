@@ -1751,7 +1751,8 @@
                     }
                 },
                 "processingImageForUpload": "Obrada slike za prijenos...",
-                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga"
+                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga",
+                "rebased": "{{count}} od njih ovdje zauzima drugačije zemljište nego pri objavi: {{titles}} (detalji u konzoli)."
             },
             "sharedInspector": {
                 "author": "Autor:",

@@ -318,6 +318,21 @@ async function uploadProposalToServer(proposal) {
         return { ok: false, message: 'Invalid proposal.' };
     }
 
+    // Identity migration (fingerprint v1 → v2): content the server already holds under its LEGACY
+    // id (which hashed the parent lists) keeps that id, so an old share url never goes stale and
+    // no duplicate row is minted. Content the server has never seen uploads under the v2 id,
+    // which derived-name churn can no longer move.
+    if (String(uploadProposal.proposalId || '').startsWith('c2-')
+        && typeof proposalContentFingerprintLegacy === 'function') {
+        try {
+            const legacyId = proposalContentFingerprintLegacy(proposal);
+            if (legacyId && await headProposalExists(legacyId)) {
+                uploadProposal.proposalId = legacyId;
+                uploadProposal.hash = legacyId;
+            }
+        } catch (_) { /* adoption is best-effort; the v2 id stands */ }
+    }
+
     const backendBase = resolveBackendBaseUrl();
     try {
         const response = await fetch(`${backendBase}/proposals/`, {

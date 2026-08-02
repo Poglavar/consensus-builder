@@ -748,6 +748,38 @@ function describeMissingPrereqs(missingIds, members, self, tShare) {
     return parts.join(' · ');
 }
 
+// §11's first rung — replay fidelity. After a shared apply, verify each proposal takes the SAME
+// ground here as when it was published: the stamped ownership flow against one re-derived from
+// the receiver's live cadastre. A green apply proves the mechanics ran, not that the effect
+// reproduced (invariant #5) — a different cadastre vintage or a missing sibling formation shows
+// up as a flow difference, and that is a fact the user should see, not a silent divergence.
+// Returns [{ id, title, diff }]; detail goes to the console, the summary shows one line.
+function collectRebasedSharedProposals(appliedIds) {
+    try {
+        const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
+        const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+        if (!flowApi || !ancestry || typeof flowApi.compareOwnershipFlows !== 'function') return [];
+        const knownParcelIds = new Set(ancestry.loadedCadastreParcels().map(entry => String(entry.id)));
+        const rebased = [];
+        (Array.isArray(appliedIds) ? appliedIds : []).forEach(id => {
+            const stored = (typeof getProposalByIdOrHash === 'function')
+                ? getProposalByIdOrHash(id)
+                : ((typeof proposalStorage !== 'undefined' && proposalStorage.getProposal) ? proposalStorage.getProposal(id) : null);
+            if (!stored || !Array.isArray(stored.ownershipFlow) || !stored.ownershipFlow.length) return;
+            const live = ancestry.computeOwnershipFlow(stored);
+            const diff = flowApi.compareOwnershipFlows(stored.ownershipFlow, live, { knownParcelIds });
+            if (!diff.same) rebased.push({ id: String(id), title: stored.title || String(id), diff });
+        });
+        if (rebased.length) {
+            console.info('[shared-apply] re-based: these take different ground here than when published', rebased);
+        }
+        return rebased;
+    } catch (error) {
+        console.warn('[shared-apply] replay-fidelity check failed', error);
+        return [];
+    }
+}
+
 // Ghost prerequisites in a shared PAYLOAD, healed the same way handleSharedPlanRoute heals them
 // (§12 step 1, extended to this route per next step 6): when every missing prerequisite is a
 // derived id (…#p-…) minted in the sender's browser, resolve the stored proposal's parents from
@@ -915,6 +947,21 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                     }
                 } catch (_) { }
 
+                // Geometry-first for records already in storage (an earlier pass or a prior
+                // share): heal ghost parents BEFORE the attempt instead of after another failure.
+                try {
+                    const existingKey = getProposalKey(proposal) || proposal.proposalId;
+                    if (existingKey && !reparentedOnce.has(String(existingKey))
+                        && typeof proposalStorage !== 'undefined' && proposalStorage.getProposal(existingKey)
+                        && typeof ProposalManager !== 'undefined' && typeof ProposalManager.canApplyProposal === 'function') {
+                        const check = ProposalManager.canApplyProposal(existingKey);
+                        if (check && check.ok === false && Array.isArray(check.missing) && check.missing.length
+                            && reparentSharedProposalByGeometry(existingKey, check.missing)) {
+                            reparentedOnce.add(String(existingKey));
+                        }
+                    }
+                } catch (_) { }
+
                 const result = await importAndApplySharedProposal(proposal);
                 const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
 
@@ -1026,6 +1073,15 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 bodyLines.push(`<p>${tShare('summary.appliedCount', '{{count}} applied.', {
                     count: actuallyApplied.length
                 })}</p>`);
+                const rebased = collectRebasedSharedProposals(actuallyApplied);
+                if (rebased.length) {
+                    const escapeRebased = typeof escapeHtml === 'function' ? escapeHtml : (v => v);
+                    bodyLines.push(`<p class="shared-plan-rebased">${tShare('rebased',
+                        '{{count}} of them take different ground here than when published: {{titles}} (details in the console).', {
+                            count: rebased.length,
+                            titles: rebased.map(r => escapeRebased(r.title)).join(', ')
+                        })}</p>`);
+                }
             }
             if (skipped.length > 0) {
                 bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposals (already present).', {
@@ -2417,6 +2473,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { }
                 }
 
+                // Geometry-first (the wire-format demotion, receiving side): declared DERIVED
+                // parents are hints, not prerequisites. When any of them has no live layer here,
+                // re-resolve this proposal's parents from its geometry NOW instead of burning an
+                // apply→fail→heal→retry round-trip. The hook is idempotent and keeps its ≥95%
+                // coverage guard, so genuinely missing land still fails loudly just below.
+                try { tryReparentGhostPrereqs(id, proposal); } catch (_) { }
+
                 updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying proposal #{{id}}…', { id }) });
                 let result;
                 try {
@@ -2798,6 +2861,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposals:', {
                 count: applied.length
             })}</p>${appliedItems}`);
+            const rebased = collectRebasedSharedProposals(applied.map(item => item.id));
+            if (rebased.length) {
+                bodyLines.push(`<p class="shared-plan-rebased">${tShare('rebased',
+                    '{{count}} of them take different ground here than when published: {{titles}} (details in the console).', {
+                        count: rebased.length,
+                        titles: rebased.map(r => escape(r.title)).join(', ')
+                    })}</p>`);
+            }
         }
         if (skipped.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');

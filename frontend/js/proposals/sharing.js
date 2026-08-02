@@ -127,20 +127,31 @@ function proposalContentHash(str) {
 // changes, and a re-upload of unchanged content reuses the existing serial. So the local proposalId
 // stays stable across edits, and a new server id (new share url) is minted only at SAVE, only when
 // the content actually changed — a no-op edit reuses the old url.
-function proposalContentFingerprint(proposal) {
-    if (!proposal || typeof proposal !== 'object') return null;
+//
+// TWO VERSIONS, deliberately (rethink-proposals.md — the wire-format demotion):
+//
+//   v2 `c2-…` — the UPLOAD identity. Excludes parentParcelIds everywhere (top level AND inside the
+//   typology payloads): those lists carry DERIVED parcel names, which are re-minted local
+//   bookkeeping — hashing them meant a slice-id churn (a re-apply, a heal) could mint a new share
+//   url for byte-identical content. The geometry is already in the hash and is the actual truth.
+//
+//   v1 `c-…` (legacy) — byte-identical to the historical fingerprint, WITH the parent lists. Kept
+//   for two jobs: upload ADOPTION (content already on the server under its v1 id keeps that id, so
+//   old share urls never break) and CONSENT binding for content-only proposals (an offer's parcel
+//   targets are part of its terms — an offer silently retargeted to other parcels must lapse).
+function proposalContentPayload(proposal, includeParentIds) {
     const cleanPayload = (payload) => {
         if (!payload || typeof payload !== 'object') return null;
         const copy = { ...payload };
         ['applied', 'appliedAt', 'childParcelIds', 'childFeatures', 'parentFeatures', 'hash']
             .forEach(key => { delete copy[key]; });
+        if (!includeParentIds) delete copy.parentParcelIds;
         return copy;
     };
     const goal = (typeof resolveProposalGoalKey === 'function')
         ? resolveProposalGoalKey(proposal, null) : (proposal.goal || null);
     const content = {
         goal,
-        parentParcelIds: (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []).map(String).slice().sort(),
         offer: (proposal.offer === undefined || proposal.offer === null) ? null : Number(proposal.offer),
         offerCurrency: proposal.offerCurrency || null,
         isConditional: !!proposal.isConditional,
@@ -151,6 +162,22 @@ function proposalContentFingerprint(proposal) {
         reparcellization: cleanPayload(proposal.reparcellization),
         decideLaterProposal: cleanPayload(proposal.decideLaterProposal)
     };
+    if (includeParentIds) {
+        content.parentParcelIds = (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []).map(String).slice().sort();
+    }
+    return content;
+}
+
+function proposalContentFingerprint(proposal) {
+    if (!proposal || typeof proposal !== 'object') return null;
+    const content = proposalContentPayload(proposal, false);
+    const str = (typeof stableStringify === 'function') ? stableStringify(content) : JSON.stringify(content);
+    return 'c2-' + proposalContentHash(str);
+}
+
+function proposalContentFingerprintLegacy(proposal) {
+    if (!proposal || typeof proposal !== 'object') return null;
+    const content = proposalContentPayload(proposal, true);
     const str = (typeof stableStringify === 'function') ? stableStringify(content) : JSON.stringify(content);
     return 'c-' + proposalContentHash(str);
 }
@@ -193,6 +220,7 @@ function decodeSharedPayload(encoded) {
 if (typeof window !== 'undefined') {
     window.getSerialProposalId = getSerialProposalId;
     window.proposalContentFingerprint = proposalContentFingerprint;
+    window.proposalContentFingerprintLegacy = proposalContentFingerprintLegacy;
     window.decodeSharedPayload = decodeSharedPayload;
     window.base64UrlEncodeBytes = base64UrlEncodeBytes;
     window.base64UrlDecodeToBytes = base64UrlDecodeToBytes;
@@ -211,6 +239,7 @@ if (typeof module !== 'undefined' && module.exports) {
         decodeSharedPayload,
         collectProposalParentParcelIdsForShare,
         getSerialProposalId,
-        proposalContentFingerprint
+        proposalContentFingerprint,
+        proposalContentFingerprintLegacy
     };
 }

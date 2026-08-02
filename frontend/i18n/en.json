@@ -1776,7 +1776,8 @@
                         "applyToAll": "Do this for all remaining conflicts",
                         "keptCountDetailed": "You kept the existing proposals — {{count}} incoming proposal(s) stay unapplied (find them in the proposals list):"
                     }
-                }
+                },
+                "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console)."
             },
             "sharedInspector": {
                 "author": "Author:",

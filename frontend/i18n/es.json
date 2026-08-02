@@ -1796,7 +1796,8 @@
                         "applyToAll": "Aplicar a todos los conflictos restantes",
                         "keptCountDetailed": "Mantuviste las propuestas existentes — {{count}} propuesta(s) entrante(s) quedan sin aplicar (búscalas en la lista de propuestas):"
                     }
-                }
+                },
+                "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola)."
             },
             "sharedInspector": {
                 "author": "Autor:",
