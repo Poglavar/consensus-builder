@@ -69,6 +69,26 @@
         'ŽUPANIJA'
     ]);
 
+    // Croatian local government names its own land by FORM, not by instance: "GRAD <place>",
+    // "OPĆINA <place>", "<x>-<y>ska ŽUPANIJA". The keyword list above enumerates them one city at a
+    // time (ZAGREB, KAŠTELA, TROGIR), so every new city reads its own land as privately owned until
+    // somebody remembers to add a line — Šibenik launched with GRAD ŠIBENIK, GRAD VODICE, OPĆINA
+    // BILICE and OPĆINA TRIBUNJ all classified 'private individual'. Match the form instead.
+    //
+    // ANCHORED at the start on purpose. A private owner's stored name usually carries their address,
+    // and Croatian streets are named after cities: "FERDO VIDOVIĆ, ULICA GRADA CHICAGA 24, ZAGREB" is
+    // a person, and an unanchored /GRADA \w+/ reclassifies him as government. The {3,} tail keeps a
+    // company literally called "GRAD d.o.o." out, since the loose normaliser reduces that to "GRAD D".
+    //
+    // Measured against every distinct owner label we hold — Zagreb 448,751 and Šibenik 85,673 — this
+    // moves 7 and 17 labels respectively, every one of them a real city or municipality, and nothing
+    // else. Re-measure the same way before widening it.
+    const PUBLIC_BODY_PATTERNS = Object.freeze([
+        /^GRAD [A-Z]{3,}/,
+        /^OPCINA [A-Z]{3,}/,
+        /\bZUPANIJA\b/
+    ]);
+
     const INSTITUTION_KEYWORDS = createNormalizedKeywordList([
         'KAPTOL',
         'CRKVA',
@@ -147,6 +167,10 @@
             return options.preserveCity === true ? 'city' : 'government';
         }
         if (includesAnyKeyword(normalizedLabel, GOVERNMENT_KEYWORDS)) {
+            return 'government';
+        }
+        // Any city or municipality, not just the handful spelled out in GOVERNMENT_KEYWORDS.
+        if (PUBLIC_BODY_PATTERNS.some(pattern => pattern.test(normalizedLabel))) {
             return 'government';
         }
         if (includesAnyKeyword(normalizedLabel, INSTITUTION_KEYWORDS)) {
