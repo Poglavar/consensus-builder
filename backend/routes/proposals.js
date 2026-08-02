@@ -28,6 +28,8 @@ const MAX_DISBURSEMENT_MODE_LENGTH = 50;
 const CITY_CODE_TO_ID = {
     zg: 'zagreb',
     zgb: 'zagreb',
+    st: 'split',
+    si: 'sibenik',
     bg: 'belgrade',
     ba: 'buenos_aires',
     caba: 'buenos_aires',
