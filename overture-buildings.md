@@ -219,8 +219,19 @@ Checks run before dropping — worth repeating for any table retired this way:
   the same numbers through the real endpoints as before the drop — Šibenik 383 buildings / 139 trees,
   Split 347 / 397, Belgrade 388 / 107.
 
-**Prod still has this table, and must keep it until the new backend is deployed.** Production is
-still running the old code, which reads `overture_feature`; dropping it there before the deploy
-breaks every 3D building and tree request. The deploy order is: populate
-`overture_building_footprint` + `osm_decor` on prod (see `scripts/copy-overture-to-prod.sh` for the
-buildings half) → deploy this backend → only then drop.
+**Prod followed the same sequence and is now also clear** (2026-08-02). The order matters — getting
+it wrong blanks every 3D building and tree in production:
+
+1. **Populate prod's shared tables first.** It already had `sjeverna-dalmacija` and `split`, but
+   **not `belgrade`** — those 187,126 buildings and 3,185 trees existed only on the laptop, so
+   deploying before copying them up would have emptied Belgrade's 3D view. Copied region-scoped and
+   verified by geometry checksum against local.
+2. **Then deploy** the backend that reads the shared tables (`dfbc66b`).
+3. **Confirm nothing live still references it.** On the server the only remaining `overture_feature`
+   mentions were two comments and two `expect(sql).not.toContain(...)` assertions; no views, no
+   foreign keys, no triggers.
+4. **Back up, then drop.** Prod's copy (247,726 rows, verified) is at
+   `~/backups/prod_overture_feature_before_drop_20260802.sql.gz`.
+5. **Verify from the live API, not from `DROP TABLE` succeeding.** Šibenik 383 buildings / 139 trees,
+   Split 347 / 397, Belgrade 388 / 107 — identical to before the drop, PM2 online with no extra
+   restart.

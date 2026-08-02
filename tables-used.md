@@ -66,9 +66,8 @@ zagreb-isochrone too. This repo used to keep its own copies in `public.overture_
 DuckDB ingest — Split lived in both, byte-for-byte — so every city needed ingesting twice. That table
 and `backend/scripts/ingest-overture.js` are gone; see `overture-buildings.md`.
 
-⚠️ **`overture_feature` was dropped LOCALLY on 2026-08-02 and still exists on prod, where it must
-stay until this backend is deployed** — prod runs the old code that reads it. Deploy order:
-populate `overture_building_footprint` + `osm_decor` on prod → deploy → then drop.
+`overture_feature` is **gone from both local and prod** (dropped 2026-08-02, after the backend that
+reads the shared tables was deployed). Backups of both copies are in `~/backups/`.
 
 Both are keyed by an **area**, not a city id: `sibenik` reads the `sjeverna-dalmacija` rows. The
 mapping lives in `backend/buildings/overture-cities.js`.
