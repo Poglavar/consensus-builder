@@ -216,11 +216,21 @@
 
         global.document.getElementById('parcel-info-panel').classList.add('visible');
 
+        // The drill decides what the click means: it computes the full vertical stack at the
+        // point (content proposals → slices → formation → base parcels), selects the topmost
+        // proposal above this parcel — roads included — and shows the chain as a button column.
+        let drillHandled = false;
+        try {
+            if (global.__drillUi && e && e.latlng) {
+                drillHandled = global.__drillUi.handleParcelClick(e.latlng, parcelId) === true;
+            }
+        } catch (_) { }
+
         // Any parcel carrying an applied proposal doubles as that proposal's surface: opening the
         // parcel also opens the proposal's action buttons, referring to the applied one. Other
         // proposals on the parcel stay reachable through the panel's Proposals list.
-        let appliedProposal = appliedRoadProposal;
-        if (!appliedProposal) {
+        let appliedProposal = drillHandled ? null : appliedRoadProposal;
+        if (!appliedProposal && !drillHandled) {
             try {
                 const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
                 // Roads are excluded here: every slice a road cut lists that road, so an ordinary

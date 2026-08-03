@@ -32,6 +32,10 @@
 
     function highlightFeature(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // The drill owns hover when active: it highlights the TOPMOST claim at the cursor —
+        // which may be a building or structure standing above this parcel — so the parcel's own
+        // hover (style change + proposal hover overlay) must not compete with it.
+        if (global.__drillUi && typeof global.__drillUi.ownsHover === 'function' && global.__drillUi.ownsHover()) return;
         // Proposal browse mode (the proposals list is open): the map is inert to parcels — no hover
         // highlight, matching the click behaviour (only proposals are interactive).
         if (global.proposalListBrowseMode) return;
@@ -227,6 +231,9 @@
 
     function resetHighlight(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // Mirror of the drill guard in highlightFeature: when the drill owns hover it also owns
+        // clearing — a mouseout here would wipe the drill's outline from the shared hover group.
+        if (global.__drillUi && typeof global.__drillUi.ownsHover === 'function' && global.__drillUi.ownsHover()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;

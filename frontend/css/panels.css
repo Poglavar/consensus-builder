@@ -1649,6 +1649,30 @@ above the scroll fold.
     text-overflow: ellipsis;
 }
 
+/* A too-long proposal name rotates like text on a cylinder instead of ellipsizing: the track
+   holds two copies and slides exactly one copy-width (plus the gap) left, looping seamlessly.
+   details-panel.js applies .title-marquee only when the name overflows; hover pauses it, and
+   reduced motion keeps the plain ellipsis. */
+#proposal-details-title.title-marquee {
+    text-overflow: clip;
+}
+
+#proposal-details-title .title-marquee-track {
+    display: inline-flex;
+    gap: 48px;
+    animation: title-marquee var(--marquee-duration, 12s) linear infinite;
+    will-change: transform;
+}
+
+#proposal-details-title.title-marquee:hover .title-marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes title-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-1 * var(--marquee-distance, 100%))); }
+}
+
 #proposal-details-panel .proposal-details-toggle {
     font-weight: 700;
 }

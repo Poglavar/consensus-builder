@@ -33,7 +33,15 @@
             layer.on('click', (event) => {
                 if (window.cadastreViewActive === true) return;
                 try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
-                if (typeof window.selectAndHighlightProposal === 'function') {
+                // The drill resolves the whole stack at the point (something may stand above
+                // this structure) and shows the chain; without it, select the structure itself.
+                let drillHandled = false;
+                try {
+                    if (window.__drillUi && event && event.latlng) {
+                        drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
+                    }
+                } catch (_) { }
+                if (!drillHandled && typeof window.selectAndHighlightProposal === 'function') {
                     window.selectAndHighlightProposal(String(pid), null, false, true);
                 }
             });

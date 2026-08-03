@@ -840,14 +840,15 @@ const proposalStorage = {
         if (!id) {
             return [];
         }
-        // A synthetic descendant (e.g. 605#p-xxx-1, possibly nested) inherits its ancestors'
-        // proposals: an urban rule applied to the original parcel still concerns the slices a
-        // later road cut out of it, so it must appear on those slices too.
+        // A synthetic descendant (e.g. 605#p-xxx-1 or 605#c-xxx-1, possibly nested) inherits its
+        // ancestors' proposals: an urban rule applied to the original parcel still concerns the
+        // slices a later road cut out of it, so it must appear on those slices too. Strip on any
+        // '#' so new-style c-/c2- slice ids project the same way the old p- tokens did.
         const matchIds = new Set([id]);
         {
             let cursor = id;
             while (true) {
-                const cut = cursor.lastIndexOf('#p-');
+                const cut = cursor.lastIndexOf('#');
                 if (cut <= 0) break;
                 cursor = cursor.slice(0, cut);
                 matchIds.add(cursor);

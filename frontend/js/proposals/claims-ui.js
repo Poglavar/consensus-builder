@@ -45,7 +45,8 @@
                 try {
                     if (typeof layer.getBounds === 'function' && typeof map !== 'undefined' && map) {
                         const bounds = layer.getBounds();
-                        if (bounds && bounds.isValid && bounds.isValid()) {
+                        // Only move the view when the parcel is not already fully visible.
+                        if (bounds && bounds.isValid && bounds.isValid() && !map.getBounds().contains(bounds)) {
                             map.fitBounds(bounds, { padding: [60, 60], maxZoom: 18, animate: false });
                         }
                     }
@@ -202,6 +203,7 @@
 
     const api = {
         injectProposalBreadcrumb,
+        openBaseParcel,
         setCadastreView,
         toggleCadastreView
     };
