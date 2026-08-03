@@ -879,9 +879,38 @@
     width: 100%;
 }
 
+/* Action row: the destructive-ish shortcut sits small on the left, the two decisions
+   (Cancel, Done) together on the right — closing is a decision, not a shortcut, so it
+   belongs beside Done rather than as an X the user has to hunt for. */
+.reparcel-actions {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+.reparcel-actions-spacer {
+    flex: 1 1 auto;
+}
+
 .reparcel-actions .btn {
-    min-width: 200px;
-    width: min(240px, 100%);
+    min-width: 0;
+    width: auto;
+}
+
+.reparcel-actions [data-reparcel-cancel],
+.reparcel-actions [data-reparcel-commit] {
+    min-width: 120px;
+}
+
+/* "All public" is a one-click convenience, not a primary action — it used to be a 240px
+   slab competing with Done. */
+.reparcel-actions .reparcel-allpublic-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    min-width: 0;
+    width: auto;
+    color: #475569;
+    border-color: #cbd5e1;
 }
 
 @media (max-width: 1024px) {
@@ -944,8 +973,18 @@
         padding-top: 8px;
     }
 
-    .reparcel-actions .btn {
-        width: 100%;
+    /* Phones: the two decisions stay side by side and take the row; All public wraps above. */
+    .reparcel-actions {
+        flex-wrap: wrap;
+    }
+
+    .reparcel-actions-spacer {
+        display: none;
+    }
+
+    .reparcel-actions [data-reparcel-cancel],
+    .reparcel-actions [data-reparcel-commit] {
+        flex: 1 1 40%;
     }
 }
 
@@ -4996,3 +5035,57 @@
     margin: 0 6px 0 0;
     vertical-align: middle;
 }
+
+/* Kill the browser focus ring on plot paths: on an SVG <path> it is drawn around the element's
+   BOUNDING BOX, so clicking a plot flashed a rectangle that looked like a selection but was not
+   the plot's shape. Hover and selection are carried by the boundary style instead (drawPreview). */
+#reparcel-map path:focus,
+#reparcel-map path:focus-visible {
+    outline: none;
+}
+
+/* Node/edge editing handles for the manual layout. Shared nodes move every plot that touches
+   them, so the handle has to read as a grab target, not a decoration. */
+.reparcel-node-handle {
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #1d4ed8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    cursor: grab;
+    box-sizing: border-box;
+}
+
+.reparcel-node-handle:active,
+.reparcel-node-handle.dragging {
+    cursor: grabbing;
+    background: #1d4ed8;
+}
+
+/* A node shared by several plots is the interesting one — moving it re-shapes all of them. */
+.reparcel-node-handle.shared {
+    border-color: #b45309;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+}
+
+/* Midpoint "insert a node here" handles, deliberately fainter than real nodes. */
+.reparcel-edge-handle {
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1.5px dashed #1d4ed8;
+    cursor: copy;
+    box-sizing: border-box;
+}
+
+/* Corner popup in the node editor: what this corner is, and the one action it has. */
+.reparcel-node-popup__title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
+.reparcel-node-popup__hint { font-size: 11px; color: #555; margin-bottom: 8px; }
+.reparcel-node-popup .btn-sm { font-size: 12px; padding: 4px 10px; }
+.leaflet-popup.reparcel-node-popup-wrap .leaflet-popup-content { margin: 10px 12px; min-width: 150px; }
