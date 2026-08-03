@@ -1030,6 +1030,12 @@
             "histogramSubtitle": "Ukupna vidljiva duljina ceste grupirana po prosječnoj širini.",
             "segmentTitle": "Segmenti",
             "segmentSubtitle": "Sortirani po prosječnoj širini (silazno). Klikni za fokus na karti."
+        },
+        "drill": {
+            "title": "Na ovom mjestu",
+            "close": "Zatvori",
+            "baseParcel": "Katastarska čestica",
+            "slice": "Formirana čestica"
         }
     },
     "modal": {
@@ -2054,7 +2060,13 @@
             "failed": "Nije uspjelo: {{reason}}",
             "titleRecut": "Prekroji „{{title}}”",
             "messageRecut": "Promjena ovog obrisa prekraja zemljište pod njim. Sljedeće stoji na tom zemljištu i bit će ponovno izvedeno. Kliknite stavku da je vidite.",
-            "confirmRecut": "Prekroji"
+            "confirmRecut": "Prekroji",
+            "titleOccupied": "Zemljište koje zauzima „{{title}}”",
+            "messageOccupied": "Ovo zauzima zemljište koje drže sljedeći primijenjeni prijedlozi. Prijedlog se nikada ne reže napola, pa ih je najprije potrebno poništiti. Kliknite stavku da je vidite.",
+            "confirmOccupied": "Poništi i nastavi",
+            "titleReform": "Preoblikovanje „{{title}}”",
+            "messageReform": "Spremanje ovog rasporeda mijenja oblik čestica na kojima već stoje drugi prijedlozi. Ti će prijedlozi biti poništeni — čestice koje niste mijenjali zadržavaju svoje. Kliknite stavku da je vidite.",
+            "confirmReform": "Poništi i spremi"
         }
     },
     "blockify": {
@@ -2320,7 +2332,11 @@
                 "uploadEmpty": "Prenesena datoteka ne sadrži poligone.",
                 "uploadNoOverlap": "Preneseni poligoni ne preklapaju se s odabranim česticama.",
                 "uploadParseError": "Neuspješno čitanje GeoJSON datoteke.",
-                "uploadSuccess": "Učitano {{count}} poligona iz datoteke."
+                "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
+                "editBlocked": "Ova izmjena izmješta primijenjene prijedloge i ovdje se ne može spremiti.",
+                "nodeHint": "Povucite vrh da ga pomaknete — zajednički vrhovi pomiču sve čestice koje ih dodiruju. Kliknite blijedu točku za dodavanje, Alt-klik na vrh za uklanjanje.",
+                "nodeKept": "Taj se vrh ne može ukloniti — čestica bi prestala biti poligon.",
+                "undone": "Zadnja promjena je poništena."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -2343,7 +2359,20 @@
                 "one": "{{count}} vlasnik",
                 "few": "{{count}} vlasnika",
                 "other": "{{count}} vlasnika"
-            }
+            },
+            "cancel": "Odustani",
+            "discardTitle": "Odbaciti ove promjene?",
+            "discardMessage": "Izmjene koje ste ovdje napravili nisu spremljene u prijedlog. Ako sada zatvorite, odbacuju se.",
+            "discardConfirm": "Odbaci promjene",
+            "discardCancel": "Nastavi uređivati",
+            "editNodes": "Uređivanje granica (čvorovi)",
+            "undoEdit": "Poništi (Cmd/Ctrl+Z)",
+            "undoNothing": "Nema što poništiti",
+            "nodeShared": "Zajednički vrh · {{count}} čestica",
+            "nodeOwn": "Vrh jedne čestice",
+            "nodeSharedHint": "Povlačenjem se pomiču sve čestice koje ga dodiruju.",
+            "nodeOwnHint": "Povucite da ga pomaknete.",
+            "nodeRemove": "Ukloni vrh"
         }
     },
     "status": {

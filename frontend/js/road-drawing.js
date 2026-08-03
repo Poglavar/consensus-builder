@@ -1501,7 +1501,14 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                     } catch (_) { }
                 }
             }
-            await ProposalManager.applyProposal(key, { applyAnyway: true, suppressMissingParentAlerts: true });
+            // allowOccupation: this is the RE-apply half of a recut whose disclosure already ran
+            // (the tour above listed the dependents and the user confirmed). Re-asking the
+            // occupation question here would block every recut on its own dependents.
+            await ProposalManager.applyProposal(key, {
+                applyAnyway: true,
+                suppressMissingParentAlerts: true,
+                allowOccupation: true
+            });
         }
 
         // Split-on-disconnect (the inverse of merge-on-connect): components the edit severed

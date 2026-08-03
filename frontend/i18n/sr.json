@@ -1030,6 +1030,12 @@
             "histogramSubtitle": "Ukupna vidljiva dužina puta agregirana po prosečnoj širini.",
             "segmentTitle": "Segmenti",
             "segmentSubtitle": "Sortirani po prosečnoj širini (opadajuće). Klikni da fokusiraš mapu."
+        },
+        "drill": {
+            "title": "Na ovom mestu",
+            "close": "Zatvori",
+            "baseParcel": "Katastarska parcela",
+            "slice": "Formirana parcela"
         }
     },
     "modal": {
@@ -2054,7 +2060,13 @@
             "failed": "Nije uspelo: {{reason}}",
             "titleRecut": "Prekroji „{{title}}”",
             "messageRecut": "Promena ovog obrisa prekraja zemljište pod njim. Sledeće stoji na tom zemljištu i biće ponovo izvedeno. Kliknite stavku da je vidite.",
-            "confirmRecut": "Prekroji"
+            "confirmRecut": "Prekroji",
+            "titleOccupied": "Zemljište koje zauzima „{{title}}”",
+            "messageOccupied": "Ovo zauzima zemljište koje drže sledeći primenjeni predlozi. Predlog se nikada ne seče napola, pa ih je najpre potrebno poništiti. Kliknite na stavku da je vidite.",
+            "confirmOccupied": "Poništi i nastavi",
+            "titleReform": "Preoblikovanje „{{title}}”",
+            "messageReform": "Čuvanje ovog rasporeda menja oblik parcela na kojima već stoje drugi predlozi. Ti predlozi će biti poništeni — parcele koje niste menjali zadržavaju svoje. Kliknite na stavku da je vidite.",
+            "confirmReform": "Poništi i sačuvaj"
         }
     },
     "blockify": {
@@ -2320,7 +2332,11 @@
                 "uploadEmpty": "Otpremljena datoteka ne sadrži poligone.",
                 "uploadNoOverlap": "Otpremljeni poligoni se ne preklapaju sa izabranim parcelama.",
                 "uploadParseError": "Neuspešno čitanje GeoJSON datoteke.",
-                "uploadSuccess": "Učitano {{count}} poligona iz datoteke."
+                "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
+                "editBlocked": "Ova izmena izmešta primenjene predloge i ovde se ne može sačuvati.",
+                "nodeHint": "Prevucite teme da ga pomerite — zajednička temena pomeraju sve parcele koje ih dodiruju. Kliknite bledu tačku za dodavanje, Alt-klik na teme za uklanjanje.",
+                "nodeKept": "To teme se ne može ukloniti — parcela bi prestala da bude poligon.",
+                "undone": "Poslednja promena je poništena."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodeli vlasnike",
@@ -2343,7 +2359,20 @@
                 "one": "{{count}} vlasnik",
                 "few": "{{count}} vlasnika",
                 "other": "{{count}} vlasnika"
-            }
+            },
+            "cancel": "Odustani",
+            "discardTitle": "Odbaciti ove promene?",
+            "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u predlog. Ako sada zatvorite, odbacuju se.",
+            "discardConfirm": "Odbaci promene",
+            "discardCancel": "Nastavi uređivanje",
+            "editNodes": "Uređivanje granica (čvorovi)",
+            "undoEdit": "Poništi (Cmd/Ctrl+Z)",
+            "undoNothing": "Nema šta da se poništi",
+            "nodeShared": "Zajedničko teme · {{count}} parcela",
+            "nodeOwn": "Teme jedne parcele",
+            "nodeSharedHint": "Prevlačenjem se pomeraju sve parcele koje ga dodiruju.",
+            "nodeOwnHint": "Prevucite da ga pomerite.",
+            "nodeRemove": "Ukloni teme"
         }
     },
     "status": {

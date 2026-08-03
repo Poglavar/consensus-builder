@@ -1052,6 +1052,12 @@
             "histogramSubtitle": "Longitud total visible agrupada por ancho promedio.",
             "segmentTitle": "Segmentos",
             "segmentSubtitle": "Ordenados por ancho promedio (descendente). Haz clic para enfocar el mapa."
+        },
+        "drill": {
+            "title": "En este punto",
+            "close": "Cerrar",
+            "baseParcel": "Parcela catastral",
+            "slice": "Parcela formada"
         }
     },
     "modal": {
@@ -2073,7 +2079,13 @@
             "failed": "No se pudo completar: {{reason}}",
             "titleRecut": "Recortar «{{title}}»",
             "messageRecut": "Cambiar esta huella vuelve a cortar el terreno debajo. Lo siguiente se asienta en ese terreno y se volverá a derivar. Haga clic en un elemento para verlo.",
-            "confirmRecut": "Recortar"
+            "confirmRecut": "Recortar",
+            "titleOccupied": "Suelo ocupado por «{{title}}»",
+            "messageOccupied": "Esto ocupa suelo que tienen las siguientes propuestas aplicadas. Una propuesta nunca se parte por la mitad, así que primero hay que desaplicarlas. Haz clic en un elemento para verlo.",
+            "confirmOccupied": "Desaplicar y continuar",
+            "titleReform": "Reformando «{{title}}»",
+            "messageReform": "Guardar este trazado cambia la forma de parcelas sobre las que ya se apoyan otras propuestas. Esas propuestas se desaplicarán; las parcelas que no cambiaste conservan las suyas. Haz clic en un elemento para verlo.",
+            "confirmReform": "Desaplicar y guardar"
         }
     },
     "blockify": {
@@ -2317,7 +2329,11 @@
                 "uploadEmpty": "El archivo subido no contiene polígonos.",
                 "uploadNoOverlap": "Los polígonos subidos no se solapan con las parcelas seleccionadas.",
                 "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
-                "uploadSuccess": "Se cargaron {{count}} polígonos del archivo."
+                "uploadSuccess": "Se cargaron {{count}} polígonos del archivo.",
+                "editBlocked": "Esta edición desplaza propuestas aplicadas y no puede guardarse aquí.",
+                "nodeHint": "Arrastra un vértice para moverlo; los vértices compartidos mueven todas las parcelas que los tocan. Haz clic en un punto tenue para añadir uno, Alt+clic en un vértice para quitarlo.",
+                "nodeKept": "Ese vértice no se puede quitar: una parcela dejaría de ser un polígono.",
+                "undone": "Se deshizo el último cambio."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2362,7 +2378,20 @@
                 "one": "{{count}} propietario",
                 "few": "{{count}} propietarios",
                 "other": "{{count}} propietarios"
-            }
+            },
+            "cancel": "Cancelar",
+            "discardTitle": "¿Descartar estos cambios?",
+            "discardMessage": "Los cambios que hiciste aquí no se han guardado en la propuesta. Si cierras ahora, se descartan.",
+            "discardConfirm": "Descartar cambios",
+            "discardCancel": "Seguir editando",
+            "editNodes": "Editar límites (nodos)",
+            "undoEdit": "Deshacer (Cmd/Ctrl+Z)",
+            "undoNothing": "Nada que deshacer",
+            "nodeShared": "Vértice compartido · {{count}} parcelas",
+            "nodeOwn": "Vértice de una parcela",
+            "nodeSharedHint": "Al arrastrarlo se mueven todas las parcelas que lo tocan.",
+            "nodeOwnHint": "Arrastra para moverlo.",
+            "nodeRemove": "Quitar vértice"
         }
     },
     "status": {

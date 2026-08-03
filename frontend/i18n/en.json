@@ -1005,6 +1005,12 @@
             "histogramSubtitle": "Total visible road length aggregated by average width.",
             "segmentTitle": "Segments",
             "segmentSubtitle": "Sorted by average width (descending). Click to focus the map."
+        },
+        "drill": {
+            "title": "At this spot",
+            "close": "Close",
+            "baseParcel": "Cadastral parcel",
+            "slice": "Formed parcel"
         }
     },
     "modal": {
@@ -2024,7 +2030,13 @@
             "failed": "Could not complete: {{reason}}",
             "titleRecut": "Re-cut “{{title}}”",
             "messageRecut": "Changing this footprint re-cuts the ground under it. The following stand on that ground and will be re-derived. Click an item to see it.",
-            "confirmRecut": "Re-cut"
+            "confirmRecut": "Re-cut",
+            "titleOccupied": "Ground taken by “{{title}}”",
+            "messageOccupied": "This takes ground the following applied proposals hold. A proposal is never cut in half, so they have to be un-applied first. Click an item to see it.",
+            "confirmOccupied": "Un-apply and continue",
+            "titleReform": "Re-forming “{{title}}”",
+            "messageReform": "Saving this layout changes the shape of plots that other proposals already stand on. Those proposals will be un-applied — plots you did not change keep theirs. Click an item to see it.",
+            "confirmReform": "Un-apply and save"
         }
     },
     "blockify": {
@@ -2302,7 +2314,11 @@
                 "uploadEmpty": "Uploaded file contains no polygon features.",
                 "uploadParseError": "Failed to parse GeoJSON file.",
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
-                "uploadSuccess": "Loaded {{count}} polygons from file."
+                "uploadSuccess": "Loaded {{count}} polygons from file.",
+                "editBlocked": "This edit displaces applied proposals and cannot be saved here.",
+                "nodeHint": "Drag a corner to move it — shared corners move every plot that touches them. Click a faint dot to add one, Alt-click a corner to remove it.",
+                "nodeKept": "That corner cannot be removed — a plot would stop being a polygon.",
+                "undone": "Undid the last change."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2313,7 +2329,20 @@
                 "one": "{{count}} owner",
                 "few": "{{count}} owners",
                 "other": "{{count}} owners"
-            }
+            },
+            "cancel": "Cancel",
+            "discardTitle": "Discard these changes?",
+            "discardMessage": "The edits you made here have not been saved to the proposal. Closing now discards them.",
+            "discardConfirm": "Discard changes",
+            "discardCancel": "Keep editing",
+            "editNodes": "Edit boundaries (nodes)",
+            "undoEdit": "Undo (Cmd/Ctrl+Z)",
+            "undoNothing": "Nothing to undo",
+            "nodeShared": "Shared corner · {{count}} plots",
+            "nodeOwn": "Corner of one plot",
+            "nodeSharedHint": "Dragging it moves every plot that touches it.",
+            "nodeOwnHint": "Drag to move it.",
+            "nodeRemove": "Remove corner"
         }
     },
     "status": {

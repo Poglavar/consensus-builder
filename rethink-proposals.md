@@ -971,6 +971,24 @@ hashes untouched), so a mind-change like cut → tunnel now lapses acceptances a
 the choices are consent-bearing demands, not rendering hints. Consent-side of a plain width
 change was already covered (footprint moves the hash, §12 step 4).
 
+**The drill panel (2026-08-03) — the claims z-order made visible.** One click anywhere resolves
+the full vertical stack at that point (`drill-stack.js`, pure + tested: content proposals →
+formed slices → the formation that minted them → base parcels, depth-ordered with formations
+seated BETWEEN the ground they consume and the slices they mint; ties by creation time). The
+click selects the topmost claim — now including roads, which the old parcel funnel deliberately
+excluded — and a button column docks under the proposal card (`drill-ui.js`): one row per level,
+derivation arrows between rows, chips from the shared goal vocabulary, the selected level
+marked. Any row hops the selection: proposal rows via the normal proposal selection, parcel rows
+via `openBaseParcel` (consumed base parcels included — invariant #3 again). Hovering the map
+highlights the topmost claim (buildings had no hover at all before); hovering a row previews
+that level. All three click funnels (parcel, structure fill, corridor hit target) route through
+the drill, with the pre-drill behaviour kept only as the no-module fallback. En route, two
+old-format literals died: `getProposalsForParcel` projected derived ids with a hardcoded `#p-`
+(new `#c-…` slices never inherited their ancestors' proposals) and `hasLiveReplacementSlice`
+matched only `#p-` children — both now strip on any `#`. Verified live on the Borovje plan: a
+five-level chain (recreation → street slice → street network → parcelacija → base 1791/69),
+chain-hopping, and the base-parcel row opening the parcel panel from under applied fabric.
+
 Two modal-helper gotchas locked into comments because they cost a debugging cycle each:
 `showSimpleShareModal` fires `onClose` BEFORE the clicked action's `onClick` (the dismiss-default
 must yield a tick), and it removes the modal DOM before `onClick` runs (checkbox state must be
@@ -1006,7 +1024,61 @@ cached on change, not read at decision time).
 
 ---
 
-## 15. Related notes
+## 15. Decisions 2026-08-03 (Simun) — the flat record, and what a park is
+
+Prompted by reading the Borovje UPU on clean fabric and finding overlaps nobody had flagged.
+Measured evidence for every claim here is in `formation-depth.js` + its scan of that plan.
+
+1. **The flat-record invariant — three levels, never more.** A record reaches at most
+   `base cadastral parcel → one formation → content`. A road cutting a building proposal must NOT
+   produce two buildings whose ancestor is the road whose ancestor is the original building; and
+   three roads successively cutting a parcel into four pieces must leave each piece traceable to
+   the cadastral parcel below it and **one** operation, not three chained ones.
+   - **Temporally separate operations stay legal.** Drawing is sequential and stays that way; the
+     flattening happens when the thing becomes a shared artifact — at draw/mint time where the cut
+     is computed (the base ids are already known there, so the declaration can be written flat
+     immediately), with **publish as the gate** that verifies it, because imported, healed and
+     older records arrive from outside the drawing path.
+   - **Flat ≠ single-parent.** The invariant is DEPTH. A comasation plot spanning thirty original
+     parcels is one formation at one level with thirty base parents.
+   - **Id parsing cannot compute base ancestry.** Every derived id is minted against ONE root
+     (`_assignSyntheticChildIdentitiesImpl` uses `rootParcelId`), so Borovje's 38 comasation slices
+     are all named `1791/25#…` although 29 base parcels were consumed. Flattening must use the
+     geometric ancestry (`computeBaseAncestry` / the `cadastreParcelIds` stamp); id projection is a
+     last-resort fallback only.
+   - **Roles are behavioural, not goal-based.** What matters is whether a record MINTS ground. A
+     park sitting on a plot a reparcellization already shaped for it mints nothing and is content
+     on that plot — the legal third level. The first cut of this rule flagged 18 of Borovje's 19
+     records; keying it on minting instead leaves exactly one true offender, the road.
+   - **Formation is adoptive/idempotent.** If the ground a formation would create already exists as
+     a parcel matching its footprint, it TAKES that parcel (ownership moves) instead of re-cutting
+     it. This is what keeps plan-style composition at depth 1.
+2. **A road may not silently claim ground it never declared.** Borovje's street network declares 3
+   parcelacija slices, cuts them into 32 pieces — and its footprint covers **3,733 m² (22%) outside
+   that declared ground**, where it cuts nothing and asks nobody. Every "why is this proposal on
+   top of / below the road" oddity in the plan traces to this one fact: the parks each fill their
+   own plot exactly (100%, 0 m² outside), and the buildings sit inside their plots, so the corridor
+   is the only geometry out of place. Geometry must be reconciled with declared ground, not merely
+   drawn over it.
+3. **Content colliding with a formation: unapply, don't cut.** A road crossing an applied BUILDING
+   proposal must not split it into two proposals — half a building is not something its author
+   proposed, and forging two records in their name destroys the authorship. The existing proposal
+   is unapplied first (the conflict tour's Replace/Keep, blanket included). This applies to
+   PROPOSED fabric only: surveyed buildings are facts on the ground and keep the cut/tunnel/
+   demolish impact modes. Today proposed buildings are invisible to corridors entirely — the
+   collision pool holds 123 GDI survey buildings and zero proposed ones, which is why the street
+   network runs through M1-9 (25% of it), M1-4 and M1-11 with `demolishedBuildings: 0`.
+4. **Two kinds of park, and only one is supported.**
+   - *Structure park* — forms/takes its own parcel, ownership → public. **Supported.** For now it
+     must occupy a WHOLE parcel exactly: one parcel, filled completely. Borovje already satisfies
+     this (all six parks fill their plot 100%).
+   - *Urban-rule park* — the parcel stays yours, but only a park may be built on it: a use
+     restriction, no formation, no ownership move. **Not supported yet**; it belongs to the urban
+     rules vocabulary (§14 decision 1 already placed it there).
+
+---
+
+## 16. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes
