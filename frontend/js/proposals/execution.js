@@ -642,14 +642,28 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
-            // Restore button on failure
-            if (button && originalButtonContent) {
-                button.innerHTML = originalButtonContent;
-                button.disabled = false;
-                button.style.opacity = '';
-                button.style.cursor = '';
+            // A refusal because applied proposals hold this ground is a QUESTION, not a dead end
+            // (rethink §15 decision 3): the tour lists them, and confirming un-applies them and
+            // re-applies. Anything else falls through to the ordinary failure path below.
+            let resolved = false;
+            try {
+                const info = ProposalManager.getLastApplyFailureInfo?.(safeId);
+                if (info && info.code === 'content-occupied' && window.__unapplyTour?.resolveContentOccupation) {
+                    resolved = await window.__unapplyTour.resolveContentOccupation(safeId);
+                }
+            } catch (occupationError) {
+                console.warn('[applyProposalToMap] Occupation resolution failed', occupationError);
             }
-            return false;
+            if (!resolved) {
+                // Restore button on failure
+                if (button && originalButtonContent) {
+                    button.innerHTML = originalButtonContent;
+                    button.disabled = false;
+                    button.style.opacity = '';
+                    button.style.cursor = '';
+                }
+                return false;
+            }
         }
     } catch (error) {
         console.error(`[applyProposalToMap] Error applying proposal to map (${(performance.now() - startTime).toFixed(2)}ms):`, error);

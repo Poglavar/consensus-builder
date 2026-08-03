@@ -8,6 +8,53 @@
     'use strict';
 
     return {
+    // The applied PROPOSED fabric standing on the ground this corridor would take. Geometry is the
+    // authority here, not declared ids — the whole point is to catch what the corridor covers but
+    // never declared. Returns [] when the pure module or turf is unavailable: a missing helper must
+    // not silently block every road apply.
+    _detectContentOccupations(proposalData, exemptKeys) {
+        const occupation = window.__contentOccupation;
+        const planOrder = window.__planOrder;
+        const turf = window.turf;
+        if (!occupation || !planOrder || !turf || typeof turf.intersect !== 'function') return [];
+
+        let footprint = null;
+        try {
+            const definition = (proposalData && proposalData.roadProposal && proposalData.roadProposal.definition)
+                || (proposalData && proposalData.definition) || null;
+            // The SURFACE footprint is what parcel cutting consumes — the same ground the occupation
+            // question is about.
+            footprint = (definition && typeof corridorSurfaceFootprintForDefinition === 'function')
+                ? corridorSurfaceFootprintForDefinition(definition)
+                : null;
+            if (!footprint) footprint = planOrder.footprintOf(proposalData);
+        } catch (_) { return []; }
+        if (!footprint) return [];
+
+        const selfKey = String((typeof getProposalKey === 'function' ? getProposalKey(proposalData) : null)
+            || (proposalData && proposalData.proposalId) || '');
+
+        const candidates = [];
+        try {
+            proposalStorage.getAllProposals().forEach(other => {
+                if (!other || typeof isProposalApplied !== 'function' || !isProposalApplied(other)) return;
+                const key = String((typeof getProposalKey === 'function' ? getProposalKey(other) : null)
+                    || other.proposalId || '');
+                if (!key || key === selfKey) return;
+                let otherFootprint = null;
+                try { otherFootprint = planOrder.footprintOf(other); } catch (_) { otherFootprint = null; }
+                if (otherFootprint) candidates.push({ key, proposal: other, footprint: otherFootprint });
+            });
+        } catch (_) { return []; }
+
+        return occupation.occupationsOf(footprint, candidates, {
+            area: f => turf.area(f),
+            intersectionArea: (a, b) => {
+                try { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; } catch (_) { return 0; }
+            }
+        }, { selfKey, exemptKeys: Array.isArray(exemptKeys) ? exemptKeys : [] });
+    },
+
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
         if (
             options._parcelWriteBatchActive !== true
@@ -103,6 +150,31 @@
 
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
+
+        // A corridor never cuts PROPOSED fabric (rethink §15 decision 3): half a building is not
+        // something its author proposed. Anything applied standing on the ground this corridor
+        // takes has to be un-applied first — by the shared-plan conflict tour (which reads the
+        // conflict ids off this failure) or by the local occupation prompt. Restores are exempt:
+        // the occupier question was answered when the road was first applied. Surveyed buildings
+        // are untouched by this — they are facts on the ground and keep cut/tunnel/demolish.
+        if (!isRestoring && options.allowOccupation !== true) {
+            const occupations = this._detectContentOccupations(proposalData, options.occupationExemptKeys);
+            if (occupations && occupations.length) {
+                const describe = window.__contentOccupation?.describeOccupations;
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'content-occupied',
+                        message: typeof describe === 'function'
+                            ? describe(occupations)
+                            : `This takes ground held by ${occupations.length} applied proposal(s).`,
+                        conflictTitles: occupations.map(o => o.title).filter(Boolean),
+                        conflictProposalIds: occupations.map(o => o.key).filter(Boolean)
+                    });
+                } catch (_) { }
+                if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+                return false;
+            }
+        }
 
         // Parent availability + conflict decision (new applications only). Runs BEFORE ownership
         // enrichment and child-building so the settled parent set feeds those steps. See

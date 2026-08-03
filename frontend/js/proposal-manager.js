@@ -737,6 +737,27 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         return;
     }
 
+    // A parcel is ONE connected piece of ground. A cut whose result falls in two disconnected
+    // areas mints two parcels — never one parcel in two places, which cannot be owned or
+    // transferred as a unit and breaks "which parcel is under this point". Enforced here because
+    // every mint path funnels through identity assignment, so nothing can route around it.
+    // In place: callers hold this array and return it.
+    try {
+        const contiguity = (typeof window !== 'undefined') ? window.__parcelContiguity : null;
+        if (contiguity && childFeatures.some(f => contiguity.partCount(f) > 1)) {
+            const turf = (typeof window !== 'undefined') ? window.turf : null;
+            const exploded = contiguity.explodeAll(childFeatures, {
+                minAreaM2: 1,
+                areaOf: turf && typeof turf.area === 'function' ? f => turf.area(f) : null
+            });
+            console.debug('[_assignSyntheticChildIdentities] split non-contiguous child parcels',
+                { proposalId, before: childFeatures.length, after: exploded.length });
+            childFeatures.splice(0, childFeatures.length, ...exploded);
+        }
+    } catch (error) {
+        console.warn('[_assignSyntheticChildIdentities] contiguity split failed', error);
+    }
+
     const token = _buildSyntheticToken(proposalId, 'proposal');
     const counters = new Map();
 

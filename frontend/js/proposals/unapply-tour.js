@@ -182,6 +182,12 @@
 
         const isDelete = action === 'delete';
         const isRecut = action === 'recut';
+        // 'occupied': the incoming formation would take ground these applied proposals hold, and
+        // proposed fabric is never cut in half — confirming un-applies them so the apply can run.
+        const isOccupied = action === 'occupied';
+        // 'reform': saving an edited land readjustment re-forms the ground, so what stands on the
+        // plots whose shape changed cannot survive the save and goes first.
+        const isReform = action === 'reform';
         const sourceTitle = (() => {
             try {
                 const record = (typeof proposalStorage !== 'undefined' && proposalStorage.getProposal)
@@ -210,7 +216,11 @@
 
             const title = document.createElement('div');
             title.className = 'cb-unapply-tour-title';
-            title.textContent = isRecut
+            title.textContent = isReform
+                ? t('modal.unapplyTour.titleReform', 'Re-forming “{{title}}”', { title: sourceTitle })
+                : isOccupied
+                ? t('modal.unapplyTour.titleOccupied', 'Ground taken by “{{title}}”', { title: sourceTitle })
+                : isRecut
                 ? t('modal.unapplyTour.titleRecut', 'Re-cut “{{title}}”', { title: sourceTitle })
                 : (isDelete
                     ? t('modal.unapplyTour.titleDelete', 'Delete “{{title}}”', { title: sourceTitle })
@@ -219,7 +229,13 @@
 
             const message = document.createElement('div');
             message.className = 'cb-impact-tour-message';
-            message.textContent = isRecut
+            message.textContent = isReform
+                ? t('modal.unapplyTour.messageReform',
+                    'Saving this layout changes the shape of plots that other proposals already stand on. Those proposals will be un-applied — plots you did not change keep theirs. Click an item to see it.')
+                : isOccupied
+                ? t('modal.unapplyTour.messageOccupied',
+                    'This takes ground the following applied proposals hold. A proposal is never cut in half, so they have to be un-applied first. Click an item to see it.')
+                : isRecut
                 ? t('modal.unapplyTour.messageRecut',
                     'Changing this footprint re-cuts the ground under it. The following stand on that ground and will be re-derived. Click an item to see it.')
                 : t('modal.unapplyTour.message',
@@ -271,7 +287,11 @@
             const confirmBtn = document.createElement('button');
             confirmBtn.type = 'button';
             confirmBtn.className = 'btn btn-danger cb-unapply-tour-confirm';
-            confirmBtn.textContent = isRecut
+            confirmBtn.textContent = isReform
+                ? t('modal.unapplyTour.confirmReform', 'Un-apply and save')
+                : isOccupied
+                ? t('modal.unapplyTour.confirmOccupied', 'Un-apply and continue')
+                : isRecut
                 ? t('modal.unapplyTour.confirmRecut', 'Re-cut')
                 : (isDelete
                     ? t('modal.unapplyTour.confirmDelete', 'Delete')
@@ -379,7 +399,37 @@
         });
     }
 
-    const api = { buildUnapplyItems, showUnapplyDependentsPanel };
+    // The local half of §15 decision 3: an apply that refused with 'content-occupied' becomes one
+    // question — un-apply what stands on the ground, then apply. Returns true when the apply
+    // finally succeeded, false when the user cancelled or it still failed. Callers that get
+    // `false` should leave the proposal unapplied; the reason stays on the apply-failure record.
+    async function resolveContentOccupation(proposalKey, applyAgain) {
+        const manager = global.ProposalManager;
+        if (!manager || typeof manager.getLastApplyFailureInfo !== 'function') return false;
+        const info = manager.getLastApplyFailureInfo(proposalKey);
+        if (!info || info.code !== 'content-occupied') return false;
+        const blockers = Array.isArray(info.conflictProposalIds) ? info.conflictProposalIds.filter(Boolean) : [];
+        if (!blockers.length) return false;
+
+        const confirmed = await showUnapplyDependentsPanel({
+            action: 'occupied',
+            proposalId: proposalKey,
+            descendants: blockers,
+            onConfirm: async () => {
+                for (const blocker of blockers) {
+                    await manager.unapplyProposal(String(blocker), { skipConfirm: true });
+                }
+            }
+        });
+        if (confirmed === false) return false;
+
+        // The ground is clear now, so the occupation gate has nothing left to find — but pass
+        // allowOccupation anyway: the question was just asked and answered.
+        if (typeof applyAgain === 'function') return (await applyAgain()) !== false;
+        return (await manager.applyProposal(String(proposalKey), { allowOccupation: true })) !== false;
+    }
+
+    const api = { buildUnapplyItems, showUnapplyDependentsPanel, resolveContentOccupation };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.

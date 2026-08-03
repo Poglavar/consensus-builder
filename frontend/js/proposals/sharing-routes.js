@@ -1246,6 +1246,10 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     // Plan replay may explicitly accept intra-plan occupancy (§3.3: proposals that coexisted
     // applied never geometrically conflict) — proceed with the parents that are present.
     if (options && options.applyAnyway === true) applyOptions.applyAnyway = true;
+    // Siblings in the same plan never block each other on occupation — see the call site.
+    if (options && Array.isArray(options.occupationExemptKeys) && options.occupationExemptKeys.length) {
+        applyOptions.occupationExemptKeys = options.occupationExemptKeys.slice();
+    }
 
     // Some flows (notably /proposals/:id1,id2,...) want to apply a queue where missing parcels
     // are expected to appear after other proposals apply. In that case do NOT fetch parcels here;
@@ -2487,7 +2491,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // Missing parcels are expected to be created by earlier applies.
                     result = await importAndApplySharedProposal(proposal, {
                         skipDependencyFetch: true,
-                        applyAnyway: applyAnywayIds.has(normalizeId(id))
+                        applyAnyway: applyAnywayIds.has(normalizeId(id)),
+                        // Occupation (§15 decision 3) protects OTHER people's applied proposals.
+                        // Inside one plan the author composed these together deliberately, so a
+                        // member overlapping a sibling is a geometry question for the author, not
+                        // a consent question at replay time — same intra/cross split the parcel
+                        // conflict tour already makes. Cross-plan occupiers still block and ask.
+                        occupationExemptKeys: Array.from(planMemberLocalIds())
                     });
                 } catch (err) {
                     // Convert thrown dependency errors into retryable results.
