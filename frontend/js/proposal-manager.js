@@ -732,10 +732,14 @@ function _filterChildFeaturesBlockedByDescendants(features, proposalId) {
 // get different ids. Because token (from proposalId) and per-root ordering are stable, a stable
 // parent set still reproduces identical ids naturally; a drifted split yields different ids, as it
 // should. No canonical list is honored anywhere.
-function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
+// `options.startIndexByRootId` continues an existing numbering instead of restarting at 1 — a road
+// that GROWS keeps the children it already minted, so a fresh count would hand the new slices ids
+// its old ones already hold. Absent (the whole-proposal build), numbering starts at 1 as before.
+function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options = {}) {
     if (!proposalId || !Array.isArray(childFeatures)) {
         return;
     }
+    const startIndexByRootId = (options && options.startIndexByRootId) || null;
 
     // A parcel is ONE connected piece of ground. A cut whose result falls in two disconnected
     // areas mints two parcels — never one parcel in two places, which cannot be owned or
@@ -773,7 +777,8 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         const key = `${rootNumber || ''}__${rootId || ''}`;
         let state = counters.get(key);
         if (!state) {
-            state = { nextIndex: 1 };
+            const resumeAt = startIndexByRootId ? Number(startIndexByRootId[rootId]) : NaN;
+            state = { nextIndex: Number.isFinite(resumeAt) && resumeAt > 1 ? resumeAt : 1 };
             counters.set(key, state);
         }
         const index = state.nextIndex++;
@@ -2062,8 +2067,8 @@ const ProposalManager = {
         return result;
     },
 
-    _assignSyntheticChildIdentities(proposalId, childFeatures) {
-        _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures);
+    _assignSyntheticChildIdentities(proposalId, childFeatures, options = {}) {
+        _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options);
     },
 
     _buildSyntheticToken,
@@ -4858,8 +4863,8 @@ const ProposalManager = {
 // Per-type apply/unapply live in proposals/apply/*.js and are mixed in here. Browser
 // global or node require, same pattern as the status/route helpers above.
 const __applyMixins = (typeof window !== 'undefined' && window.ProposalApplyRoad)
-    ? [window.ProposalApplyRoad, window.ProposalApplyBuildings, window.ProposalApplyStructures, window.ProposalApplyParcels, window.ProposalApplyUnapply]
-    : [require('./proposals/apply/road.js'), require('./proposals/apply/buildings.js'), require('./proposals/apply/structures.js'), require('./proposals/apply/parcels.js'), require('./proposals/apply/unapply.js')];
+    ? [window.ProposalApplyRoad, window.ProposalApplyRoadGrow, window.ProposalApplyBuildings, window.ProposalApplyStructures, window.ProposalApplyParcels, window.ProposalApplyUnapply]
+    : [require('./proposals/apply/road.js'), require('./proposals/apply/road-grow.js'), require('./proposals/apply/buildings.js'), require('./proposals/apply/structures.js'), require('./proposals/apply/parcels.js'), require('./proposals/apply/unapply.js')];
 __applyMixins.forEach(m => Object.assign(ProposalManager, m));
 
 // --- HELPER FUNCTIONS (moved from road-drawing.js) ---

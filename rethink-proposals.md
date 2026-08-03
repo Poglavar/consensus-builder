@@ -1053,6 +1053,17 @@ Measured evidence for every claim here is in `formation-depth.js` + its scan of 
    - **Formation is adoptive/idempotent.** If the ground a formation would create already exists as
      a parcel matching its footprint, it TAKES that parcel (ownership moves) instead of re-cutting
      it. This is what keeps plan-style composition at depth 1.
+   - **BUILT 2026-08-03 — drawing is additive at the finish.** A stroke that joins an existing road
+     no longer becomes a new proposal that absorbs the old one. It merges INTO the established road
+     (`growExistingCorridorWithDrawing`, host = oldest touched body): the host keeps its
+     proposalId, terms and applied fabric, `corridor-grow.js` derives the ground the corridor did
+     not already hold (a 0.1 m edge tolerance keeps the re-outlined shared edge out of it), and
+     `apply/road-grow.js` forms only that. Further roads on the same stroke hand their parcels over
+     as they are (`_adoptCorridorFabric` — same ids, same geometry, new owner). Nothing is
+     unapplied, so no slice is re-minted and no proposal standing on this road's ground is dragged
+     off the map. *Still chained:* a crossing the user did NOT merge (a track, a grade-separated
+     crossing, a minted road) is still cut by the newcomer, and the drag/edit path still unapplies
+     and re-applies the road it edits — both wait on §12 step 5.
 2. **A road may not silently claim ground it never declared.** Borovje's street network declares 3
    parcelacija slices, cuts them into 32 pieces — and its footprint covers **3,733 m² (22%) outside
    that declared ground**, where it cuts nothing and asks nobody. Every "why is this proposal on

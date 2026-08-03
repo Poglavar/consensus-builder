@@ -829,6 +829,28 @@ function isCorridorApplyInFlight() {
     return corridorApplyIndicatorCount > 0;
 }
 
+// Changing a PUBLISHED road's geometry — by editing it, or by growing it with a drawing that
+// joined it — forks it into your own local copy: the uploaded row or minted NFT it points at no
+// longer matches its shape. Detach every published pointer and record where it came from
+// (sourceProposalId), so the next Share/Upload makes a FRESH record — a new /proposals/:id, a new
+// mint — instead of reusing the original's link. The server row / on-chain NFT is left untouched at
+// its origin, and the local proposalId is kept (a chain-shaped id is not all-digits, so clearing
+// onchain/isMinted un-mints the copy).
+function detachPublishedRoadIdentity(proposal) {
+    if (!proposal) return;
+    const publishedId = (proposal.serverProposalId != null) ? String(proposal.serverProposalId)
+        : ((proposal.isMinted || proposal.onchain || proposal.nft) && proposal.proposalId != null ? String(proposal.proposalId) : null);
+    if (proposal.serverProposalId != null) proposal.serverProposalId = null;
+    if (proposal.isMinted || proposal.onchain || proposal.nft) {
+        if (publishedId && !proposal.sourceProposalId) proposal.sourceProposalId = publishedId;
+        delete proposal.isMinted;
+        delete proposal.onchain;
+        delete proposal.nft;
+        delete proposal.chainProposalId;
+        delete proposal.tokenId;
+    }
+}
+
 // Wrapper: every corridor geometry edit (node drag, bulldoze, delete, profile change) funnels through
 // here, so the "Applying…" spinner brackets all of them uniformly. The heavy work is in the impl below.
 async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
@@ -937,26 +959,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
     }
 
-    // A local edit (profile change, node move, reroute…) forks a PUBLISHED road into your own local
-    // copy: the uploaded row or minted NFT it points at no longer matches its geometry. Detach every
-    // published pointer and record where it came from (sourceProposalId), so the next Share/Upload
-    // makes a FRESH record — a new /proposals/:id, a new mint — instead of reusing the original's
-    // link. The server row / on-chain NFT is left untouched at its origin, and the local proposalId
-    // is kept (a chain-shaped id is not all-digits, so clearing onchain/isMinted un-mints the copy).
     // An internal re-normalization can pass options.keepServerProposalId to opt out.
-    if (options.keepServerProposalId !== true) {
-        const publishedId = (proposal.serverProposalId != null) ? String(proposal.serverProposalId)
-            : ((proposal.isMinted || proposal.onchain || proposal.nft) && proposal.proposalId != null ? String(proposal.proposalId) : null);
-        if (proposal.serverProposalId != null) proposal.serverProposalId = null;
-        if (proposal.isMinted || proposal.onchain || proposal.nft) {
-            if (publishedId && !proposal.sourceProposalId) proposal.sourceProposalId = publishedId;
-            delete proposal.isMinted;
-            delete proposal.onchain;
-            delete proposal.nft;
-            delete proposal.chainProposalId;
-            delete proposal.tokenId;
-        }
-    }
+    if (options.keepServerProposalId !== true) detachPublishedRoadIdentity(proposal);
 
     // A cross-section change that keeps every total (a lane reshuffle, a re-striping) leaves the
     // ground untouched: no unapply→re-apply, no slice re-mint (each re-mint breeds a new
@@ -1336,7 +1340,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 definition.tunnels.push(JSON.parse(JSON.stringify(tunnel)));
             });
             // Carry the absorbed road's grade-separation and demolition decisions too, exactly as the
-            // finish-path merge does (absorbConnectedLocalCorridors). A drag-time merge was dropping
+            // finish-path merge does (growExistingCorridorWithDrawing). A drag-time merge was dropping
             // them, silently losing the other road's bridged crossings and razed buildings.
             (targetDefinition.gradeSeparations || []).forEach(record => {
                 definition.gradeSeparations = definition.gradeSeparations || [];
@@ -3179,7 +3183,7 @@ async function handleRoadClick(e) {
     // Drawing NEVER mutates or removes a placed road: a snap onto an existing corridor only donates
     // the exact position for this new segment's vertex, attaching it to that vertex/centerline. All
     // merging and joining of touching corridors happens ONCE, at finish (F), in
-    // absorbConnectedLocalCorridors — never on a click.
+    // growExistingCorridorWithDrawing — never on a click.
     let snap = findRoadSnapTarget(e.latlng);
     let clickPoint = snap ? snap.latlng : e.latlng;
     clearRoadSnapMarker();
@@ -5091,10 +5095,14 @@ async function cancelRoadOrTrackDrawing() {
 // unit-tested. Callers below use the global unchanged.
 
 // One connected piece = one road: finishing a drawing that touches existing LOCAL (unminted)
-// corridors of the same kind absorbs them — their segments join the new definition, the oldest
-// donates its name and cross-section, and the absorbed records are removed. Minted corridors
+// corridors of the same kind merges it INTO the oldest of them. That road is the HOST — it keeps
+// its proposalId, its name, its terms and, above all, its APPLIED FABRIC. The drawing is added to
+// the host: only the ground the corridor newly covers is formed, so no parcel already on the map is
+// unapplied, re-cut or re-minted, and nothing standing on this road's slices is disturbed
+// (rethink-proposals.md §15.1 — drawing is additive; only affected parcels are touched). Further
+// roads the same stroke joined hand their parcels to the host exactly as they are. Minted corridors
 // are immutable and are never absorbed.
-async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
+async function growExistingCorridorWithDrawing(kind, newGeoPolygon, draftId) {
     if (!newGeoPolygon || typeof turf === 'undefined' || typeof turf.booleanIntersects !== 'function') return null;
     const store = window.proposalDraftStore;
     const draft = store?.getDraft?.(draftId);
@@ -5118,8 +5126,15 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     // is only pixel-precise, never within the exact-intersection tolerance).
     const targets = findTouchingLocalCorridors(kind, newGeoPolygon, gradeSeparatedProposalIds, drawnSegments, true);
     if (!targets.length) return null;
-    targets.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-    const oldest = targets[0];
+    const growth = (typeof window !== 'undefined') ? window.__corridorGrow : null;
+    if (!growth) {
+        console.error('[growExistingCorridorWithDrawing] corridor-grow.js is not loaded; the drawing cannot join an existing road');
+        return null;
+    }
+    const host = growth.pickMergeHost(targets);
+    if (!host || !host.roadProposal || !host.roadProposal.definition) return null;
+    const hostDefinition = host.roadProposal.definition;
+    const others = targets.filter(proposal => proposal !== host);
 
     const mergedSegments = [];
     const mergedSegmentIds = [];
@@ -5127,9 +5142,10 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const mergedGradeSeparations = [];
     const mergedDemolished = [];
     const mergedProfiles = {};
-    const mergedParents = new Set();
     let mintedMergeId = 1;
-    const collectDefinition = (definition, parents) => {
+    // Geometry only. The parcels each body holds are NOT re-derived here: the host keeps its own,
+    // the joined roads hand theirs over untouched, and the drawing forms just its new ground.
+    const collectDefinition = (definition) => {
         const entries = (typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [];
         (corridorCenterlineOf(definition) || []).forEach((segment, index) => {
             mergedSegments.push(segment.map(point => ({ lat: point.lat, lng: point.lng })));
@@ -5145,13 +5161,12 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         (definition.tunnels || []).forEach(tunnel => mergedTunnels.push(JSON.parse(JSON.stringify(tunnel))));
         (definition.gradeSeparations || []).forEach(record => mergedGradeSeparations.push(JSON.parse(JSON.stringify(record))));
         (definition.demolishedBuildings || []).forEach(record => mergedDemolished.push(JSON.parse(JSON.stringify(record))));
-        (parents || []).forEach(id => { if (id) mergedParents.add(String(id)); });
     };
-    targets.forEach(proposal => collectDefinition(
-        proposal.roadProposal.definition,
-        proposal.roadProposal.parentParcelIds || proposal.parentParcelIds
-    ));
-    collectDefinition(draftDefinition, draft.fields?.parentParcelIds);
+    // Host first, drawing last: the merged definition EXTENDS the established road instead of
+    // rebuilding it behind the newcomer, so the host's segment ids — and the per-segment profile
+    // overrides keyed to them — survive the merge untouched.
+    growth.orderHostFirst(targets, host).forEach(proposal => collectDefinition(proposal.roadProposal.definition));
+    collectDefinition(draftDefinition);
 
     // Weld end-to-end connections into continuous polylines (proper corners, no gaps), then
     // normalize every crossing into a shared graph node so junctions stay draggable and
@@ -5180,9 +5195,14 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     // cross-section: EVERY surviving segment gets an explicit override (deliberately no
     // "same as default, skip it" pruning — rendering must never depend on the default, or a
     // single dropped override silently repaints an absorbed road with the newest profile).
-    const profile = draftDefinition.profile ? JSON.parse(JSON.stringify(draftDefinition.profile)) : null;
-    const width = Number(draftDefinition.width) || 10;
-    const sidewalkWidth = draftDefinition.sidewalkWidth;
+    // The DEFAULTS are the host's: the drawing joined an existing road, so that road's cross-section
+    // stays the road's own. (Only a segment with no override would ever read them.)
+    const defaultSource = hostDefinition.profile ? hostDefinition : draftDefinition;
+    const profile = defaultSource.profile ? JSON.parse(JSON.stringify(defaultSource.profile)) : null;
+    const width = Number(hostDefinition.width) || Number(draftDefinition.width) || 10;
+    const sidewalkWidth = (hostDefinition.sidewalkWidth !== undefined && hostDefinition.sidewalkWidth !== null)
+        ? hostDefinition.sidewalkWidth
+        : draftDefinition.sidewalkWidth;
     const mergedDefaults = { profile, width };
     const weldedIds = new Set(mergedSegmentIds.filter(Boolean).map(String));
     Object.keys(mergedProfiles).forEach(id => { if (!weldedIds.has(id)) delete mergedProfiles[id]; });
@@ -5201,8 +5221,9 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
     const latLngPairs = convertRoadPolygonToLatLngPairs(unionPolygon);
     const mergedPolygon = convertLatLngPairsToGeoJSON(latLngPairs);
 
+    // Built on the HOST's definition — this is that road, grown, not a new object wearing its name.
     const mergedDefinition = attachCorridorSurfaceFootprint({
-        ...JSON.parse(JSON.stringify(draftDefinition)),
+        ...JSON.parse(JSON.stringify(hostDefinition)),
         points: mergedSegments,
         segments: mergedSegments,
         segmentIds: mergedSegmentIds,
@@ -5213,7 +5234,7 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         width: mergedDefaults.width,
         sidewalkWidth,
         segmentProfiles: mergedProfiles,
-        polygon: (mergedPolygon && mergedPolygon.type) ? mergedPolygon : draftDefinition.polygon || null,
+        polygon: (mergedPolygon && mergedPolygon.type) ? mergedPolygon : hostDefinition.polygon || null,
         latLngPairs
     });
     const mergedSurface = mergedDefinition.surfaceFootprint || mergedDefinition.polygon;
@@ -5224,39 +5245,75 @@ async function absorbConnectedLocalCorridors(kind, newGeoPolygon, draftId) {
         );
     }
 
-    // Absorb first: unapplying the targets restores the original parcel fabric, so the merged
-    // footprint (rebuilt at the merged width) can be tested against real parcels. The declared
-    // parent lists are POISON here — the connector's drawing-time detection saw the absorbed
-    // roads' slice parcels, and those ids stop existing the moment the targets are removed.
-    // Parents therefore come exclusively from the footprint test; the declared union is only a
-    // fallback when turf is unavailable.
-    for (const proposal of targets) {
+    // The ground the grown road covers that the merged bodies did not already hold. Everything
+    // else on the map is, by construction, unaffected by this drawing and is left alone.
+    const priorSurfaces = [host, ...others]
+        .map(proposal => {
+            const definition = proposal.roadProposal.definition || {};
+            return definition.surfaceFootprint || definition.polygon || null;
+        })
+        .filter(Boolean);
+    const newGround = mergedSurface ? growth.newGroundGeometry(mergedSurface, priorSurfaces, turf) : null;
+
+    const hostKey = (typeof getProposalKey === 'function' ? getProposalKey(host) : null) || host.proposalId;
+
+    // The host's geometry changes, so a published/uploaded pointer no longer describes it.
+    detachPublishedRoadIdentity(host);
+    try {
+        host.roadProposal.definition = JSON.parse(JSON.stringify(mergedDefinition));
+        host.definition = JSON.parse(JSON.stringify(mergedDefinition));
+        host.geometry = { ...(host.geometry || {}), roadPlan: JSON.parse(JSON.stringify(mergedDefinition)) };
+        if (mergedDefinition.polygon) {
+            host.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(mergedDefinition.polygon)) };
+        }
+        host.updatedAt = new Date().toISOString();
+        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(host);
+        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+    } catch (error) {
+        console.error('[growExistingCorridorWithDrawing] Could not store the merged definition', error);
+        return null;
+    }
+
+    // Roads joined further along the stroke hand their parcels over as they are — same geometry,
+    // same ids, new owner — and only then does their record go. Nothing is unapplied: their ground
+    // did not move, so re-cutting it would re-mint every slice for no reason.
+    const absorbedIds = [];
+    for (const proposal of others) {
         const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+        absorbedIds.push(String(key));
         clearSelectionVisualsForRemovedProposal(proposal);
-        try { await ProposalManager.unapplyProposal(key, { skipConfirm: true, skipRestoreSource: true }); } catch (_) { }
+        try { ProposalManager._adoptCorridorFabric(key, proposal, hostKey, host); } catch (error) {
+            console.error('[growExistingCorridorWithDrawing] Could not adopt the joined road\'s parcels', error);
+        }
         try { proposalStorage.removeProposal(key); } catch (_) { }
     }
-    let mergedParentIds = [...mergedParents];
-    if (mergedPolygon && mergedPolygon.type) {
-        const acquisitionPolygon = mergedSurface;
-        const touchedIds = acquisitionPolygon ? collectParcelsIntersectingFootprint(acquisitionPolygon) : [];
-        if (touchedIds.length) mergedParentIds = touchedIds;
+
+    // Form the new ground only.
+    if (newGround) {
+        try {
+            ProposalManager._growRoadFabricForCorridor(hostKey, host, { newGround, absorbedProposalIds: absorbedIds });
+        } catch (error) {
+            console.error('[growExistingCorridorWithDrawing] Could not form the corridor\'s new ground', error);
+        }
+    } else {
+        console.debug('[growExistingCorridorWithDrawing] The drawing added no new ground — definition merged, fabric untouched');
     }
 
-    store.updateDraft(draftId, {
-        fields: {
-            name: oldest.title || oldest.name || draft.fields?.name || '',
-            parentParcelIds: mergedParentIds
-        },
-        editorPayload: {
-            kind,
-            // Built above once so parcel acquisition and building carving consume the same merged
-            // surface geometry, including inherited tunnels.
-            definition: mergedDefinition
-        }
-    }, { recordHistory: false });
+    // The drawing became part of an existing road, so its draft is consumed without ever becoming
+    // a proposal of its own.
+    try { store.consumeAfterPublish(draftId, hostKey); } catch (_) { }
+    try { if (typeof clearProposalDraftComparison === 'function') clearProposalDraftComparison(); } catch (_) { }
+    try { ProposalManager._refreshUIAfterProposalChange?.(proposalStorage.getProposal?.(hostKey) || host); } catch (_) { }
+    try {
+        window.__openProposalDetailsCollapsed = true;
+        if (typeof selectAndHighlightProposal === 'function') selectAndHighlightProposal(hostKey, null, false, true);
+    } catch (_) { }
 
-    return { absorbed: targets.length, name: oldest.title || oldest.name || '' };
+    return {
+        hostId: hostKey,
+        absorbed: others.length,
+        name: host.title || host.name || host.proposalName || ''
+    };
 }
 
 // F is an idempotent "pen up" action. The gate is acquired before any asynchronous work begins, so
@@ -5486,17 +5543,19 @@ async function finishRoadDrawingOnce() {
     // proposal terms later. Drafts are created lazily on autosave — force one now if missing.
     if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft(corridorKind);
     const designDraftId = window.activeProposalDesignDraftId;
-    // A finished road that touches an existing one keeps the established road's name — but that
-    // naming now happens in absorbConnectedLocalCorridors (from the oldest touching road) at finish,
-    // since drawing no longer absorbs a road on click.
+    // A finished road that touches an existing one does not merely keep that road's name: it BECOMES
+    // part of it (growExistingCorridorWithDrawing at finish), since drawing no longer absorbs a road
+    // on click.
     if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
             kind: corridorKind
         }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
         exitRoadDrawingMode();
-        const merged = await absorbConnectedLocalCorridors(corridorKind, geoPolygon, designDraftId);
-        const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
+        // A stroke that joined an existing road becomes part of THAT road (it grows; nothing is
+        // unapplied). Only a stroke standing on its own becomes a proposal of its own.
+        const merged = await growExistingCorridorWithDrawing(corridorKind, geoPolygon, designDraftId);
+        const createdId = merged ? merged.hostId : await window.instantCreateProposalFromDraft?.(designDraftId);
         if (createdId && typeof updateStatus === 'function') {
             const mergedKey = isTrack ? 'panel.road.mergedStatusTrack' : 'panel.road.mergedStatus';
             const mergedFallback = isTrack ? 'Connected to “{{name}}” — now one track.' : 'Connected to “{{name}}” — now one road.';
