@@ -23,6 +23,7 @@
 
         if (!proposalData) {
             console.warn(`[_applyBuildingProposal] Invalid proposal data`);
+            try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal record is empty — there is no building data to apply.' }); } catch (_) { }
             return false;
         }
 
@@ -39,6 +40,7 @@
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply building proposal: no ancestor parcels found.');
             }
+            try { this._setLastApplyFailure(idLabel, { code: 'no-parent-parcels', message: 'The building proposal names no ancestor parcels to stand on.' }); } catch (_) { }
             return false;
         }
 
@@ -74,10 +76,24 @@
             });
             if (!conflictsCleared) {
                 console.warn('Could not unapply a conflicting building proposal', { proposalId, ancestorKey });
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'conflict-unapply-failed',
+                        message: `Another building proposal already stands on the same ${uniqueParentIds.length} parcel(s) and could not be unapplied.`,
+                        conflictTitles: conflicts.map(p => p && p.title).filter(Boolean),
+                        conflictProposalIds: conflicts.map(p => p && p.proposalId).filter(Boolean)
+                    });
+                } catch (_) { }
                 return false;
             }
         } catch (err) {
             console.warn('Failed to enforce unique building proposal constraint', err);
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'conflict-check-failed',
+                    message: `Checking for conflicting building proposals on the same parcels threw: ${err && err.message ? err.message : err}`
+                });
+            } catch (_) { }
             return false;
         }
         console.debug(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
@@ -103,6 +119,7 @@
             const message = 'Building proposal missing geometry; cannot apply.';
             console.warn(message, { proposalId });
             if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'missing-building-geometry', message: 'The proposal stores no building footprints (geometry.buildings is empty).' }); } catch (_) { }
             return false;
         }
 
@@ -140,6 +157,7 @@
             const message = 'Building proposal missing geometry; cannot apply.';
             console.warn(message, { proposalId });
             if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'building-geometry-unusable', message: `All ${candidateFeatures.length} stored building footprint(s) were dropped while preparing geometry.` }); } catch (_) { }
             return false;
         }
         console.debug(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);

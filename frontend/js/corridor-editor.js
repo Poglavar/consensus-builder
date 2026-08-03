@@ -91,6 +91,8 @@ function corridorEditorClose() {
         corridorEditorObstacleTimer = null;
     }
     corridorEditorState = null;
+    // Closing the editor drops the amber segment highlight (it exists only while editing).
+    try { window.refreshSelectedCorridorSegmentHighlight?.(); } catch (_) { }
 }
 
 function corridorEditorCancel() {
@@ -2217,6 +2219,8 @@ function corridorEditorOpenOverlay() {
             state.originalProfile = JSON.parse(JSON.stringify(state.profile));
             state.baselineBuildingHitIds = null;
             state.clearanceCache = null; // the scoped extent changed with the scope
+            // Segment scope shows the amber segment paint; road scope drops it.
+            try { window.refreshSelectedCorridorSegmentHighlight?.(); } catch (_) { }
             state.dirty = false;
             state.notice = null;
             if (typeof setCorridorProfilePreview === 'function') {
@@ -2315,6 +2319,8 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         dirty: false
     };
     corridorEditorOpenOverlay();
+    // The amber segment highlight is painted only while this editor is open in segment scope.
+    try { window.refreshSelectedCorridorSegmentHighlight?.(); } catch (_) { }
 }
 
 // The same editor while the corridor is still geometry-in-progress — a road OR a track, since a track's

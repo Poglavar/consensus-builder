@@ -18,7 +18,8 @@ body.sidebar-collapsed {
 }
 
 #mode-2d-toggle.map-mode-toggle,
-#mode-3d-toggle.map-mode-toggle {
+#mode-3d-toggle.map-mode-toggle,
+#cadastre-view-toggle.map-mode-toggle {
     position: absolute;
     left: var(--map-mode-stack-left);
     z-index: 1000;
@@ -41,6 +42,49 @@ body.sidebar-collapsed {
 
 #mode-2d-toggle.map-mode-toggle { bottom: 48px; }
 #mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+/* Top of the lower-left mode stack: 2D 48 / 3D 96 / globe 144 / walk 192. */
+#cadastre-view-toggle.map-mode-toggle { bottom: 240px; }
+#cadastre-view-toggle.map-mode-toggle.active { background: #b91c1c; color: #fff; }
+
+/* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
+   only interactive citizens; every proposal layer dims to context. The clone pane and the base
+   tiles stay full-strength. Leaflet strips the 'Pane' suffix when naming pane classes, so the
+   'cadastreViewPane' pane renders as .leaflet-cadastreView-pane. */
+body.cadastre-view .leaflet-map-pane > .leaflet-pane {
+    opacity: 0.25;
+    pointer-events: none;
+}
+body.cadastre-view .leaflet-map-pane > .leaflet-tile-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-cadastreView-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Claims breadcrumb: the base parcels a proposal stands on, at the top of its details panel. */
+.claim-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    background: #fef3c7;
+    border: 1px solid #f4d38a;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.claim-breadcrumb-label { color: #7c5a11; font-weight: 600; }
+.claim-breadcrumb-link {
+    border: 1px solid #d6b656;
+    background: #fff;
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: #7c2d12;
+    cursor: pointer;
+}
+.claim-breadcrumb-link:hover { background: #fde68a; }
 
 /* Loading spinner over a lower-left mode icon while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
@@ -865,4 +909,131 @@ body.three-mode-active #agent-bubbles-container {
     opacity: 0.4;
     cursor: not-allowed;
     filter: grayscale(1);
+}
+
+/* The drill panel: the vertical stack found under a map click — the middle slot of the right
+   dock, between the proposal card and the parcel panel (drill-ui.js computes top/max-height so
+   the three never overlap and keep one --right-dock-gap between them). Width comes from
+   .right-dock-panel, same as its neighbours. One row per object (top of the stack first),
+   derivation arrows between rows. */
+#drill-stack-panel {
+    position: fixed;
+    right: var(--right-dock-gap, 10px);
+    top: 10px;
+    display: none;
+    flex-direction: column;
+    padding: 8px 12px 10px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(3px);
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 11900; /* under the proposal card (12000) so an expanded card wins the corner */
+    overflow-y: auto;
+}
+
+#drill-stack-panel.visible {
+    display: flex;
+}
+
+/* The slot between the neighbours got too small to be usable — hide rather than squeeze. */
+#drill-stack-panel.no-room {
+    display: none;
+}
+
+#drill-stack-panel .drill-stack-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+#drill-stack-panel .drill-stack-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+}
+
+#drill-stack-panel .drill-stack-row:hover {
+    background: #f2f6ff;
+    border-color: #9db8e8;
+}
+
+#drill-stack-panel .drill-stack-row.selected {
+    border-color: #2563EB;
+    box-shadow: inset 0 0 0 1px #2563EB;
+    background: #eef3fd;
+}
+
+/* The derivation arrow between rows: the lower row is the ground the upper one stands on. */
+#drill-stack-panel .drill-stack-link {
+    text-align: center;
+    font-size: 11px;
+    line-height: 1;
+    color: #9aa4b2;
+    padding: 2px 0;
+    user-select: none;
+}
+
+#drill-stack-panel .drill-stack-chip {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #eef1f5;
+    color: #444;
+    white-space: nowrap;
+}
+
+#drill-stack-panel .drill-stack-chip.drill-chip-base {
+    background: #e8f0e8;
+    color: #2f5d2f;
+}
+
+#drill-stack-panel .drill-stack-chip.drill-chip-slice {
+    background: #fdf3e0;
+    color: #8a5a12;
+}
+
+#drill-stack-panel .drill-stack-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    #drill-stack-panel {
+        width: 200px;
+    }
+}
+
+/* One cursor for the map surface. Every point on the 2D map now resolves to a claim — the drill
+   picks the topmost proposal/parcel wherever you click, background included — so the whole
+   surface reads as clickable instead of alternating between pointer (over an interactive path)
+   and Leaflet's default grab (wherever no path happened to be under the cursor). Dragging still
+   shows `grabbing`, and genuinely DRAGGABLE things keep `grab`: a different affordance stays a
+   different cursor. */
+#map.leaflet-grab,
+#map .leaflet-interactive:not(.road-node-handle):not(.leaflet-marker-draggable) {
+    cursor: pointer;
+}
+
+#map.leaflet-dragging.leaflet-grab,
+#map.leaflet-dragging .leaflet-interactive:not(.road-node-handle):not(.leaflet-marker-draggable) {
+    cursor: grabbing;
 }

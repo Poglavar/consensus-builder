@@ -446,6 +446,15 @@ function renderSelectedCorridorSegmentHighlight() {
     if (!clicked || !clicked.proposalKey || !clicked.segmentId) return;
     const selection = window.ProposalSelection;
     if (selection && typeof selection.is === 'function' && !selection.is(clicked.proposalKey)) return;
+    // A plain click selects the ROAD (one crisp footprint outline); the amber segment paint only
+    // means something while the cross-section editor is open scoped to that segment — otherwise
+    // "hover shows the whole road, click highlights a segment" reads as two different objects.
+    // (try/catch: corridorEditorState is a top-level `let` in a later-loading script — TDZ.)
+    let editor = null;
+    try { editor = corridorEditorState; } catch (_) { editor = null; }
+    if (!editor || editor.scope !== 'segment'
+        || String(editor.proposalKey || '') !== String(clicked.proposalKey)
+        || String(editor.segmentId || '') !== String(clicked.segmentId)) return;
     const proposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(clicked.proposalKey) : null;
     const definition = corridorProposalDefinition(proposal);
     if (!definition) return;
@@ -504,6 +513,15 @@ function forwardAppliedCorridorClick(proposal, event) {
     // handles. Any active parcel selection ends first (panel closed, parcel restyled), so the
     // two selection systems never stack.
     try { if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel(); } catch (_) { }
+    // The drill resolves the whole stack at the point (an overlay may stand above the corridor)
+    // and shows the chain; without it, select the road itself.
+    let drillHandled = false;
+    try {
+        if (window.__drillUi && event && event.latlng) {
+            drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
+        }
+    } catch (_) { }
+    if (drillHandled) return;
     const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
     if (proposalKey && typeof selectAndHighlightProposal === 'function') {
         window.__openProposalDetailsCollapsed = true;
@@ -518,6 +536,9 @@ let _appliedCorridorHoverKey = null;
 function showAppliedCorridorHover(proposalKey, footprintFeature) {
     if (!footprintFeature || typeof highlightFeaturesForHover !== 'function') return;
     if (window.roadDrawingMode === true) return; // while drawing, a road is a surface, not a hover target
+    // The drill owns hover when active: it draws the TOPMOST claim at the cursor, which may be
+    // an overlay standing on the corridor rather than the corridor itself.
+    if (window.__drillUi && typeof window.__drillUi.ownsHover === 'function' && window.__drillUi.ownsHover()) return;
     if (_appliedCorridorHoverKey === proposalKey) return; // already shown for this corridor
     _appliedCorridorHoverKey = proposalKey;
     highlightFeaturesForHover([footprintFeature]);
@@ -565,6 +586,12 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
     const attachHitBehaviour = (layer) => {
         layer.on('mouseover', () => showAppliedCorridorHover(proposalKey, footprintFeature));
         layer.on('mouseout', () => clearAppliedCorridorHover(proposalKey));
+        // bubblingMouseEvents is off (a bubbled click would re-fire on the map), which also
+        // starves the map of mousemove while the cursor is INSIDE the corridor — so the drill
+        // hover only ever fired on the border. Forward moves to it explicitly.
+        layer.on('mousemove', event => {
+            try { window.__drillUi?.notifyHover?.(event); } catch (_) { }
+        });
     };
     strips.forEach(strip => {
         (strip.polygons || []).forEach(polygon => {

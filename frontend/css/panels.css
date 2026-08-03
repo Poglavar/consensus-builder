@@ -1649,6 +1649,30 @@ above the scroll fold.
     text-overflow: ellipsis;
 }
 
+/* A too-long proposal name rotates like text on a cylinder instead of ellipsizing: the track
+   holds two copies and slides exactly one copy-width (plus the gap) left, looping seamlessly.
+   details-panel.js applies .title-marquee only when the name overflows; hover pauses it, and
+   reduced motion keeps the plain ellipsis. */
+#proposal-details-title.title-marquee {
+    text-overflow: clip;
+}
+
+#proposal-details-title .title-marquee-track {
+    display: inline-flex;
+    gap: 48px;
+    animation: title-marquee var(--marquee-duration, 12s) linear infinite;
+    will-change: transform;
+}
+
+#proposal-details-title.title-marquee:hover .title-marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes title-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-1 * var(--marquee-distance, 100%))); }
+}
+
 #proposal-details-panel .proposal-details-toggle {
     font-weight: 700;
 }
@@ -1833,6 +1857,107 @@ above the scroll fold.
     font-size: 10px;
     white-space: nowrap;
 }
+
+/* ── Dossier triage (rethink-proposals.md §10) ────────────────────────────────
+   Which consent channel a proposal lands in for the open parcel. Acceptance is the
+   one that demands the owner's signature, so it is the loud one. */
+.proposal-item-channel {
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+.proposal-item-channel-acceptance { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.proposal-item-channel-offer      { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+.proposal-item-channel-vote       { background: #ede9fe; border-color: #c4b5fd; color: #6d28d9; }
+.proposal-item-channel-disclosure { background: #f1f5f9; border-color: #cbd5e1; color: #64748b; }
+
+/* What a formation takes from this parcel (shown only on acceptance entries). */
+.proposal-item-takes {
+    color: #b91c1c;
+    font-size: 12px;
+}
+
+/* The remainder report: what the parcel cedes to the listed formations and what is
+   left. Fragmentation (more than one piece) is the fact an owner most needs to see. */
+.parcel-dossier-remainder {
+    margin: 4px 0 8px;
+    padding: 6px 8px;
+    border-left: 3px solid #94a3b8;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    border-radius: 0 4px 4px 0;
+}
+.parcel-dossier-remainder.fragmented {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+/* ── Unapply tour ─────────────────────────────────────────────────────────────
+   The dependents panel for un-apply/delete: reuses the impact-tour chrome (dock/sheet), adds a
+   clickable list. Selecting an entry focuses and blinks it on the map behind the panel. */
+.cb-unapply-tour-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+.cb-unapply-tour-counts {
+    color: #64748b;
+    font-size: 12px;
+    margin: 4px 0 8px;
+}
+.cb-unapply-tour-list {
+    max-height: 42vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 4px;
+}
+.cb-unapply-tour-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+.cb-unapply-tour-item:hover { border-color: #94a3b8; }
+.cb-unapply-tour-item.selected {
+    border-color: #dc2626;
+    background: #fef2f2;
+}
+.cb-unapply-tour-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.cb-unapply-tour-badge-fabric  { background: #fee2e2; color: #b91c1c; }
+.cb-unapply-tour-badge-content { background: #dbeafe; color: #1d4ed8; }
+.cb-unapply-tour-badge-parcel  { background: #ffedd5; color: #c2410c; }
+.cb-unapply-tour-label {
+    font-weight: 600;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cb-unapply-tour-extra {
+    color: #64748b;
+    font-size: 12px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+.cb-unapply-tour-confirm { background: #d32f2f; border-color: #c62828; color: #fff; }
 
 /* ── Road impact tour ─────────────────────────────────────────────────────────
    The per-building "cut / demolish / tunnel" walkthrough. Not a dimming modal: the

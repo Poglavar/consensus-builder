@@ -143,7 +143,23 @@
         return ids;
     }
 
-    const api = { loadedCadastreParcels, loadedLiveParcels, computeCadastreParcelIds, resolveParentsByGeometry };
+    // The ownership flow of a proposal's formation against the live cadastre (see ownership-flow.js).
+    // Same contract as computeCadastreParcelIds: additive bookkeeping, so a failure costs the field,
+    // never the proposal.
+    function computeOwnershipFlow(proposal) {
+        const flowApi = (global && global.__ownershipFlow)
+            ? global.__ownershipFlow
+            : (typeof require === 'function' ? require('./ownership-flow.js') : null);
+        if (!flowApi || !proposal) return [];
+        try {
+            return flowApi.computeOwnershipFlow(proposal, loadedCadastreParcels());
+        } catch (error) {
+            console.warn('[cadastre-ancestry] ownership flow unavailable', error);
+            return [];
+        }
+    }
+
+    const api = { loadedCadastreParcels, loadedLiveParcels, computeCadastreParcelIds, computeOwnershipFlow, resolveParentsByGeometry };
 
     if (typeof window !== 'undefined') window.__cadastreAncestry = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

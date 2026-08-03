@@ -737,6 +737,27 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         return;
     }
 
+    // A parcel is ONE connected piece of ground. A cut whose result falls in two disconnected
+    // areas mints two parcels — never one parcel in two places, which cannot be owned or
+    // transferred as a unit and breaks "which parcel is under this point". Enforced here because
+    // every mint path funnels through identity assignment, so nothing can route around it.
+    // In place: callers hold this array and return it.
+    try {
+        const contiguity = (typeof window !== 'undefined') ? window.__parcelContiguity : null;
+        if (contiguity && childFeatures.some(f => contiguity.partCount(f) > 1)) {
+            const turf = (typeof window !== 'undefined') ? window.turf : null;
+            const exploded = contiguity.explodeAll(childFeatures, {
+                minAreaM2: 1,
+                areaOf: turf && typeof turf.area === 'function' ? f => turf.area(f) : null
+            });
+            console.debug('[_assignSyntheticChildIdentities] split non-contiguous child parcels',
+                { proposalId, before: childFeatures.length, after: exploded.length });
+            childFeatures.splice(0, childFeatures.length, ...exploded);
+        }
+    } catch (error) {
+        console.warn('[_assignSyntheticChildIdentities] contiguity split failed', error);
+    }
+
     const token = _buildSyntheticToken(proposalId, 'proposal');
     const counters = new Map();
 
@@ -2913,6 +2934,19 @@ const ProposalManager = {
 
     // UI: Show a modal with the full list of descendants and ask for confirmation
     _showDescendantsConfirmModal({ action, proposalId, descendants, onConfirm }) {
+        // The side-panel tour is the primary UI: dependents listed over the live map, each entry
+        // clickable to focus and blink the item (unapply-tour.js — the impact tour pointed
+        // backwards in time). The modal below survives only as the fallback for environments the
+        // panel declines (no map/Leaflet) or a failure inside it.
+        try {
+            const tour = (typeof window !== 'undefined') ? window.__unapplyTour : null;
+            if (tour && typeof tour.showUnapplyDependentsPanel === 'function') {
+                const shown = tour.showUnapplyDependentsPanel({ action, proposalId, descendants, onConfirm });
+                if (shown && typeof shown.then === 'function') return;
+            }
+        } catch (error) {
+            console.warn('[proposal-manager] unapply tour unavailable, falling back to modal', error);
+        }
         try {
             // Remove any existing modal
             const existing = document.querySelector('.descendants-confirm-modal');

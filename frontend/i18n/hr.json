@@ -775,6 +775,23 @@
                 "missingIdentifier": "Identifikator parcele nije dostupan.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}"
+            },
+            "dossier": {
+                "channel": {
+                    "acceptance": "Potrebna suglasnost",
+                    "offer": "Ponuda vama",
+                    "vote": "Glasanje",
+                    "disclosure": "Info"
+                },
+                "destination": {
+                    "public": "javno",
+                    "proposer": "predlagatelj",
+                    "mapping": "po planu",
+                    "undecided": "odlučit će se"
+                },
+                "takes": "Uzima {{area}} m² ove čestice → {{destination}}",
+                "remainder": "Predložena preoblikovanja uzimaju {{taken}} m²; ostaje vam {{kept}} m².",
+                "remainderSplit": "Predložena preoblikovanja uzimaju {{taken}} m²; ostaje vam {{kept}} m² u {{count}} odvojena dijela ({{pieces}} m²)."
             }
         },
         "proposal": {
@@ -1013,6 +1030,12 @@
             "histogramSubtitle": "Ukupna vidljiva duljina ceste grupirana po prosječnoj širini.",
             "segmentTitle": "Segmenti",
             "segmentSubtitle": "Sortirani po prosječnoj širini (silazno). Klikni za fokus na karti."
+        },
+        "drill": {
+            "title": "Na ovom mjestu",
+            "close": "Zatvori",
+            "baseParcel": "Katastarska čestica",
+            "slice": "Formirana čestica"
         }
     },
     "modal": {
@@ -1603,6 +1626,10 @@
                         "other": "Preskočeno {{count}} dupliranih prijedloga (već prisutni)."
                     },
                     "failedCount": "{{count}} nije uspjelo.",
+                    "blockedAncestors": "Blokirano — nedostaju primijenjeni prethodnici:",
+                    "blockedWaitingOn": "čeka na {{titles}}",
+                    "blockedMissingFabric": "prekrojeno zemljište pod njim ovdje ne postoji",
+                    "blockedMissingParcels": "nedostaju katastarske čestice: {{list}}",
                     "title": "Primijenjeni podijeljeni prijedlozi",
                     "unapplyApplied": "Poništi primijenjeno"
                 },
@@ -1719,10 +1746,19 @@
                         "one": "Primijenjen {{count}} prijedlog.",
                         "few": "Primijenjena {{count}} prijedloga.",
                         "other": "Primijenjeno {{count}} prijedloga."
+                    },
+                    "tour": {
+                        "title": "Sukob prostora",
+                        "body": "„{{incoming}}“ treba zemljište koje trenutno zauzima:",
+                        "replace": "Zamijeni postojeće",
+                        "keep": "Zadrži postojeće",
+                        "applyToAll": "Primijeni na sve preostale sukobe",
+                        "keptCountDetailed": "Zadržali ste postojeće prijedloge — {{count}} dolazni prijedlog(a) ostaje neprimijenjen (pronađite ih na popisu prijedloga):"
                     }
                 },
                 "processingImageForUpload": "Obrada slike za prijenos...",
-                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga"
+                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga",
+                "rebased": "{{count}} od njih ovdje zauzima drugačije zemljište nego pri objavi: {{titles}} (detalji u konzoli)."
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -2009,6 +2045,28 @@
             "statusLabel": "Status: {{status}}",
             "title": "Iskovani prijedlozi",
             "walletRequired": "Povežite novčanik za pregled iskovanih prijedloga."
+        },
+        "unapplyTour": {
+            "titleUnapply": "Poništi primjenu „{{title}}”",
+            "titleDelete": "Obriši „{{title}}”",
+            "message": "Ovaj prijedlog ima ovisne stavke. Sljedeće će biti uklonjeno s karte i iz pohrane. Kliknite stavku da je vidite.",
+            "counts": "{{proposals}} prijedlog(a) · {{parcels}} dio(va) čestica",
+            "badgeProposal": "prijedlog",
+            "badgeParcel": "čestica",
+            "cancel": "Odustani",
+            "confirmUnapply": "Poništi primjenu",
+            "confirmDelete": "Obriši",
+            "working": "U tijeku…",
+            "failed": "Nije uspjelo: {{reason}}",
+            "titleRecut": "Prekroji „{{title}}”",
+            "messageRecut": "Promjena ovog obrisa prekraja zemljište pod njim. Sljedeće stoji na tom zemljištu i bit će ponovno izvedeno. Kliknite stavku da je vidite.",
+            "confirmRecut": "Prekroji",
+            "titleOccupied": "Zemljište koje zauzima „{{title}}”",
+            "messageOccupied": "Ovo zauzima zemljište koje drže sljedeći primijenjeni prijedlozi. Prijedlog se nikada ne reže napola, pa ih je najprije potrebno poništiti. Kliknite stavku da je vidite.",
+            "confirmOccupied": "Poništi i nastavi",
+            "titleReform": "Preoblikovanje „{{title}}”",
+            "messageReform": "Spremanje ovog rasporeda mijenja oblik čestica na kojima već stoje drugi prijedlozi. Ti će prijedlozi biti poništeni — čestice koje niste mijenjali zadržavaju svoje. Kliknite stavku da je vidite.",
+            "confirmReform": "Poništi i spremi"
         }
     },
     "blockify": {
@@ -2274,7 +2332,11 @@
                 "uploadEmpty": "Prenesena datoteka ne sadrži poligone.",
                 "uploadNoOverlap": "Preneseni poligoni ne preklapaju se s odabranim česticama.",
                 "uploadParseError": "Neuspješno čitanje GeoJSON datoteke.",
-                "uploadSuccess": "Učitano {{count}} poligona iz datoteke."
+                "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
+                "editBlocked": "Ova izmjena izmješta primijenjene prijedloge i ovdje se ne može spremiti.",
+                "nodeHint": "Povucite vrh da ga pomaknete — zajednički vrhovi pomiču sve čestice koje ih dodiruju. Kliknite blijedu točku za dodavanje, Alt-klik na vrh za uklanjanje.",
+                "nodeKept": "Taj se vrh ne može ukloniti — čestica bi prestala biti poligon.",
+                "undone": "Zadnja promjena je poništena."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -2297,7 +2359,20 @@
                 "one": "{{count}} vlasnik",
                 "few": "{{count}} vlasnika",
                 "other": "{{count}} vlasnika"
-            }
+            },
+            "cancel": "Odustani",
+            "discardTitle": "Odbaciti ove promjene?",
+            "discardMessage": "Izmjene koje ste ovdje napravili nisu spremljene u prijedlog. Ako sada zatvorite, odbacuju se.",
+            "discardConfirm": "Odbaci promjene",
+            "discardCancel": "Nastavi uređivati",
+            "editNodes": "Uređivanje granica (čvorovi)",
+            "undoEdit": "Poništi (Cmd/Ctrl+Z)",
+            "undoNothing": "Nema što poništiti",
+            "nodeShared": "Zajednički vrh · {{count}} čestica",
+            "nodeOwn": "Vrh jedne čestice",
+            "nodeSharedHint": "Povlačenjem se pomiču sve čestice koje ga dodiruju.",
+            "nodeOwnHint": "Povucite da ga pomaknete.",
+            "nodeRemove": "Ukloni vrh"
         }
     },
     "status": {
@@ -2898,5 +2973,9 @@
         "cancel": "Odustani",
         "save": "Gotovo",
         "saved": "Geometrija postaje je spremljena."
+    },
+    "claims": {
+        "onParcels": "Na česticama:",
+        "cadastreViewToggle": "Katastarski prikaz: samo izvorne čestice"
     }
 }

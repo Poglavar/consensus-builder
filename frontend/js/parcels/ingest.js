@@ -79,9 +79,39 @@
             ? global.ParcelsState.getParcelCache()
             : global.parcelCache;
         var skippedExisting = 0;
+        var orphanSlicesSkipped = [];
         convertedFeatures.forEach(function (feature) {
             var parcelId = normalizeFeatureParcelId(feature);
             if (!parcelId) return;
+
+            // Orphan-slice sweep: a DERIVED parcel whose minting proposal is known here and NOT
+            // applied is stale bookkeeping — typically debris from an older session that
+            // un-applied by a different id generation and left the slices behind. It must not
+            // reach the map, the cache, or persistence again. New-style ids carry their minting
+            // proposal literally (`…#c-<proposalId>-N`); old-style tokens (`…#p-<token>-N`) do
+            // not resolve to a proposal and are conservatively kept — never destroy what we
+            // cannot attribute.
+            try {
+                var idString = parcelId.toString();
+                var hashAt = idString.lastIndexOf('#');
+                if (hashAt > 0) {
+                    var mintId = idString.slice(hashAt + 1).replace(/-\d+$/, '');
+                    var storage = global.proposalStorage;
+                    var minting = (storage && typeof storage.getProposal === 'function') ? storage.getProposal(mintId) : null;
+                    if (minting) {
+                        var mintingApplied = (typeof global.isProposalApplied === 'function')
+                            ? global.isProposalApplied(minting)
+                            : minting.applied === true;
+                        if (!mintingApplied) {
+                            orphanSlicesSkipped.push(idString);
+                            try { if (typeof global.clearPersistedParcelRecord === 'function') global.clearPersistedParcelRecord(idString); } catch (_) { }
+                            try { if (parcelStore && parcelStore.byId instanceof Map) parcelStore.byId.delete(idString); } catch (_) { }
+                            return;
+                        }
+                    }
+                }
+            } catch (_) { /* best-effort guard — never blocks a legitimate parcel */ }
+
             if (parcelStore && parcelStore.byId instanceof Map) {
                 const existing = parcelStore.byId.get(parcelId.toString());
                 if (existing && existing.properties) {
@@ -134,6 +164,10 @@
         });
 
         // Skip logging; best-effort skip of removed ancestors only.
+        if (orphanSlicesSkipped.length) {
+            console.warn('[ingestParcelFeatures] dropped ' + orphanSlicesSkipped.length
+                + ' orphan slice(s) whose minting proposal is not applied', orphanSlicesSkipped);
+        }
 
         var prepMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tPrepStart;
 

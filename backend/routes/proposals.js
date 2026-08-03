@@ -119,6 +119,35 @@ function stringArrayValidator(fieldLabel) {
     );
 }
 
+// Ownership flow entries: [{ parcelId, cededM2, destination }] — the publish-time stamp of what a
+// formation takes from each base parcel and where the ownership goes (rethink-proposals.md §9).
+const OWNERSHIP_FLOW_DESTINATIONS = new Set(['public', 'proposer', 'mapping', 'undecided']);
+function ownershipFlowValidator(value) {
+    if (!Array.isArray(value)) return { ok: false, error: 'ownershipFlow must be an array.' };
+    if (value.length > 2000) return { ok: false, error: 'ownershipFlow has too many entries.' };
+    const normalized = [];
+    for (let i = 0; i < value.length; i++) {
+        const entry = value[i];
+        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+            return { ok: false, error: `ownershipFlow[${i}] must be an object.` };
+        }
+        const parcelId = typeof entry.parcelId === 'string' ? entry.parcelId.trim() : '';
+        if (!parcelId || /\p{C}/u.test(parcelId)) {
+            return { ok: false, error: `ownershipFlow[${i}].parcelId must be a non-empty string.` };
+        }
+        const cededM2 = Number(entry.cededM2);
+        if (!Number.isFinite(cededM2) || cededM2 < 0) {
+            return { ok: false, error: `ownershipFlow[${i}].cededM2 must be a non-negative number.` };
+        }
+        const destination = typeof entry.destination === 'string' ? entry.destination.trim() : '';
+        if (!OWNERSHIP_FLOW_DESTINATIONS.has(destination)) {
+            return { ok: false, error: `ownershipFlow[${i}].destination must be one of: ${[...OWNERSHIP_FLOW_DESTINATIONS].join(', ')}.` };
+        }
+        normalized.push({ parcelId, cededM2: Math.round(cededM2), destination });
+    }
+    return { ok: true, value: normalized };
+}
+
 // The frontend stores bounds as either an `[minX, minY, maxX, maxY]` array (legacy / direct
 // lat-lng) or a `{north, south, east, west, ...}` object (current `calculateProposalBounds`).
 // The DB column is JSONB so we accept and pass through either shape after a sanity check.
@@ -204,8 +233,14 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
         parentParcelIds: { required: false, validate: validators.optional(stringArrayValidator('parentParcelIds'), { nullValue: [] }) },
         // Cadastral (base) parcels the geometry covers — stable across machines, unlike the derived
-        // ids parentParcelIds may hold. Additive: nothing reads it yet. See rethink-proposals.md.
+        // ids parentParcelIds may hold. See rethink-proposals.md.
         cadastreParcelIds: { required: false, validate: validators.optional(stringArrayValidator('cadastreParcelIds'), { nullValue: [] }) },
+        // Per crossed base parcel: ceded area + ownership destination, stamped at publish (§9/§12).
+        ownershipFlow: { required: false, validate: validators.optional(ownershipFlowValidator, { nullValue: [] }) },
+        // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
+        cadastreFrame: { required: false, validate: validators.optional(validators.plainObject({ label: 'cadastreFrame' })) },
+        // Hash of the published EFFECT (footprint + per-parcel cession); acceptances bind to it.
+        effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 64, label: 'effectHash', disallowControlChars: true })) },
         childParcelIds: { required: false, validate: validators.optional(stringArrayValidator('childParcelIds'), { nullValue: [] }) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
@@ -395,6 +430,8 @@ export function setupProposalsRoute(app, pool) {
 
             const parentParcelIds = validated.parentParcelIds ?? [];
             const cadastreParcelIds = validated.cadastreParcelIds ?? [];
+            const ownershipFlow = validated.ownershipFlow ?? [];
+            const cadastreFrame = validated.cadastreFrame ?? null;
             const childParcelIds = validated.childParcelIds ?? [];
             const acceptedParcelIds = validated.acceptedParcelIds ?? [];
             const ownerAcceptances = validated.ownerAcceptances ?? {};
@@ -459,7 +496,8 @@ export function setupProposalsRoute(app, pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
-                    lens, bounds, onchain_data, screenshot_url, proposal_data
+                    lens, bounds, onchain_data, screenshot_url, proposal_data,
+                    ownership_flow, cadastre_frame
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7,
                     $8,
@@ -472,7 +510,8 @@ export function setupProposalsRoute(app, pool) {
                     $27, $28, $29, $30,
                     $31, $32,
                     $33, $34,
-                    $35, $36, $37, $38, $39
+                    $35, $36, $37, $38, $39,
+                    $40, $41
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -502,7 +541,9 @@ export function setupProposalsRoute(app, pool) {
                 bounds ? JSON.stringify(bounds) : null,
                 onchainData ? JSON.stringify(onchainData) : null,
                 screenshotUrl,
-                JSON.stringify(proposalData)
+                JSON.stringify(proposalData),
+                ownershipFlow.length ? JSON.stringify(ownershipFlow) : null,
+                cadastreFrame ? JSON.stringify(cadastreFrame) : null
             ];
 
             const result = await pool.query(sql, params);
@@ -648,17 +689,21 @@ export function setupProposalsRoute(app, pool) {
             const cityClause = city ? `AND p.city = $${params.push(city)}` : '';
 
             // Pre-filter with ?| (GIN-indexed) so only proposals touching a requested id are scanned,
-            // then unnest each proposal's ancestor+descendant ids and count per requested id.
+            // then unnest each proposal's ancestor+descendant+cadastre ids and count per requested id.
+            // cadastre_parcel_ids is what makes the badge true for BASE parcels: a proposal whose
+            // declared parents are all derived ids is invisible to the other two columns (§3.4).
             const sql = `
                 SELECT ids.pid AS parcel_id, COUNT(DISTINCT p.id)::int AS n
                 FROM proposal p
                 CROSS JOIN LATERAL (
                     SELECT DISTINCT e AS pid
                     FROM jsonb_array_elements_text(
-                        COALESCE(p.ancestor_parcel_ids, '[]'::jsonb) || COALESCE(p.descendant_parcel_ids, '[]'::jsonb)
+                        COALESCE(p.ancestor_parcel_ids, '[]'::jsonb)
+                        || COALESCE(p.descendant_parcel_ids, '[]'::jsonb)
+                        || COALESCE(p.cadastre_parcel_ids, '[]'::jsonb)
                     ) AS e
                 ) ids
-                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.descendant_parcel_ids ?| $1::text[])
+                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.descendant_parcel_ids ?| $1::text[] OR p.cadastre_parcel_ids ?| $1::text[])
                   AND ids.pid = ANY($1::text[])
                   ${cityClause}
                 GROUP BY ids.pid
@@ -696,6 +741,9 @@ export function setupProposalsRoute(app, pool) {
                 COALESCE(proposal_data->>'goal', type) AS goal,
                 ${EFFECTIVE_STATUS_SQL} AS effective_status,
                 created_at,
+                -- Base ancestry rides along so the claims/dossier surfaces can answer "does this
+                -- server proposal touch my parcel" without fetching every proposal in full.
+                cadastre_parcel_ids,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
@@ -720,6 +768,7 @@ export function setupProposalsRoute(app, pool) {
                     goal: row.goal || null,
                     lifecycleStatus: proposal.lifecycleStatus,
                     createdAt: proposal.createdAt || null,
+                    cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
                     screenshotUrl: proposal.screenshotUrl || null
                 };
             });
@@ -787,7 +836,8 @@ export function setupProposalsRoute(app, pool) {
                     decay_enabled, decay_percent, decay_duration_ms,
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, cadastre_frame,
+                    descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
@@ -834,7 +884,10 @@ export function setupProposalsRoute(app, pool) {
                 params.push(filters.lifecycle);
             }
 
-            clauses.push(`(ancestor_parcel_ids @> $${params.length + 1}::jsonb OR descendant_parcel_ids @> $${params.length + 1}::jsonb)`);
+            // Membership by BASE ancestry too (cadastre_parcel_ids, GIN-indexed): a proposal whose
+            // declared parents are all derived ids would otherwise never list against the base
+            // parcel a user actually clicks — three of eight in the measured plan (§3.4).
+            clauses.push(`(ancestor_parcel_ids @> $${params.length + 1}::jsonb OR descendant_parcel_ids @> $${params.length + 1}::jsonb OR cadastre_parcel_ids @> $${params.length + 1}::jsonb)`);
             params.push(JSON.stringify([String(parcelId)]));
 
             const sql = `
@@ -843,7 +896,7 @@ export function setupProposalsRoute(app, pool) {
                     lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
-                    ancestor_parcel_ids, descendant_parcel_ids,
+                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, descendant_parcel_ids,
                     onchain_data, screenshot_url, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}

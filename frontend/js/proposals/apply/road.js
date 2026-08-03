@@ -8,6 +8,53 @@
     'use strict';
 
     return {
+    // The applied PROPOSED fabric standing on the ground this corridor would take. Geometry is the
+    // authority here, not declared ids — the whole point is to catch what the corridor covers but
+    // never declared. Returns [] when the pure module or turf is unavailable: a missing helper must
+    // not silently block every road apply.
+    _detectContentOccupations(proposalData, exemptKeys) {
+        const occupation = window.__contentOccupation;
+        const planOrder = window.__planOrder;
+        const turf = window.turf;
+        if (!occupation || !planOrder || !turf || typeof turf.intersect !== 'function') return [];
+
+        let footprint = null;
+        try {
+            const definition = (proposalData && proposalData.roadProposal && proposalData.roadProposal.definition)
+                || (proposalData && proposalData.definition) || null;
+            // The SURFACE footprint is what parcel cutting consumes — the same ground the occupation
+            // question is about.
+            footprint = (definition && typeof corridorSurfaceFootprintForDefinition === 'function')
+                ? corridorSurfaceFootprintForDefinition(definition)
+                : null;
+            if (!footprint) footprint = planOrder.footprintOf(proposalData);
+        } catch (_) { return []; }
+        if (!footprint) return [];
+
+        const selfKey = String((typeof getProposalKey === 'function' ? getProposalKey(proposalData) : null)
+            || (proposalData && proposalData.proposalId) || '');
+
+        const candidates = [];
+        try {
+            proposalStorage.getAllProposals().forEach(other => {
+                if (!other || typeof isProposalApplied !== 'function' || !isProposalApplied(other)) return;
+                const key = String((typeof getProposalKey === 'function' ? getProposalKey(other) : null)
+                    || other.proposalId || '');
+                if (!key || key === selfKey) return;
+                let otherFootprint = null;
+                try { otherFootprint = planOrder.footprintOf(other); } catch (_) { otherFootprint = null; }
+                if (otherFootprint) candidates.push({ key, proposal: other, footprint: otherFootprint });
+            });
+        } catch (_) { return []; }
+
+        return occupation.occupationsOf(footprint, candidates, {
+            area: f => turf.area(f),
+            intersectionArea: (a, b) => {
+                try { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; } catch (_) { return 0; }
+            }
+        }, { selfKey, exemptKeys: Array.isArray(exemptKeys) ? exemptKeys : [] });
+    },
+
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
         if (
             options._parcelWriteBatchActive !== true
@@ -58,6 +105,9 @@
 
         if (!proposalData || (!proposalData.parentParcelIds && !roadProposal.parentParcelIds)) {
             console.warn(`[_applyRoadProposal] Invalid proposal data: missing parent parcel IDs`);
+            // Every refusal RECORDS its reason: "Proposal did not apply" with no stored failure
+            // info is a debugging dead end (a shared-plan summary can only echo what is stored).
+            try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal declares no parent parcels at all.' }); } catch (_) { }
             return false;
         }
 
@@ -100,6 +150,31 @@
 
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
+
+        // A corridor never cuts PROPOSED fabric (rethink §15 decision 3): half a building is not
+        // something its author proposed. Anything applied standing on the ground this corridor
+        // takes has to be un-applied first — by the shared-plan conflict tour (which reads the
+        // conflict ids off this failure) or by the local occupation prompt. Restores are exempt:
+        // the occupier question was answered when the road was first applied. Surveyed buildings
+        // are untouched by this — they are facts on the ground and keep cut/tunnel/demolish.
+        if (!isRestoring && options.allowOccupation !== true) {
+            const occupations = this._detectContentOccupations(proposalData, options.occupationExemptKeys);
+            if (occupations && occupations.length) {
+                const describe = window.__contentOccupation?.describeOccupations;
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'content-occupied',
+                        message: typeof describe === 'function'
+                            ? describe(occupations)
+                            : `This takes ground held by ${occupations.length} applied proposal(s).`,
+                        conflictTitles: occupations.map(o => o.title).filter(Boolean),
+                        conflictProposalIds: occupations.map(o => o.key).filter(Boolean)
+                    });
+                } catch (_) { }
+                if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+                return false;
+            }
+        }
 
         // Parent availability + conflict decision (new applications only). Runs BEFORE ownership
         // enrichment and child-building so the settled parent set feeds those steps. See
@@ -192,6 +267,7 @@
         }
 
         if (!isRestoring && isGovernmentPlan && !childFeatures.length) {
+            try { this._setLastApplyFailure(idLabel, { code: 'no-children-derived', message: 'The corridor produced no child parcels on this fabric.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
@@ -317,15 +393,17 @@
                     // Still need to hide parent parcels if they exist
                     // The early return check below will handle this
                 } else {
+                    const missingChildIds = childParcelIds.filter(id => !childrenInIndex.has(id));
                     console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are in index.', {
                         proposalId,
                         expected: childParcelIds.length,
                         found: childrenInIndex.size,
-                        missing: childParcelIds.filter(id => !childrenInIndex.has(id))
+                        missing: missingChildIds
                     });
                     if (typeof updateStatus === 'function') {
                         updateStatus('Cannot restore proposal: missing child parcel geometries.');
                     }
+                    try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: missingChildIds }); } catch (_) { }
                     if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                     return false;
                 }
@@ -334,6 +412,7 @@
                 if (typeof updateStatus === 'function') {
                     updateStatus('Cannot restore proposal: missing child parcel geometries.');
                 }
+                try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: (childParcelIds || []).slice() }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -428,6 +507,7 @@
             const mapById = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
             if (!mapById) {
                 console.error('Cannot restore road proposal: parcelLayerById map is unavailable.');
+                try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -446,6 +526,7 @@
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage('Cannot restore proposal: missing child parcel geometries.', 5000, 'error');
                 }
+                try { this._setLastApplyFailure(idLabel, { code: 'restore-missing-children', message: 'Cannot restore: child parcel geometries are missing.', missingIds: missing.slice() }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -471,6 +552,7 @@
         const mapByIdRemove = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
         if (!mapByIdRemove) {
             console.error('[_applyRoadProposal] parcelLayerById map is unavailable; aborting parent removal detection.');
+            try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
@@ -492,6 +574,7 @@
             const mapByIdRestore = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
             if (!mapByIdRestore) {
                 console.error('[_applyRoadProposal] parcelLayerById map is unavailable during restoration check.');
+                try { this._setLastApplyFailure(idLabel, { code: 'map-unavailable', message: 'The parcel index is unavailable — the map has not finished booting.' }); } catch (_) { }
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
                 return false;
             }
@@ -564,6 +647,7 @@
         }
 
         if (!allChildrenAdded) {
+            try { this._setLastApplyFailure(idLabel, { code: 'children-not-added', message: 'One or more child parcels could not be added to the map.' }); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }

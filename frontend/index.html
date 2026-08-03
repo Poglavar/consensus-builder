@@ -955,6 +955,7 @@
         <button id="mode-walk-toggle" class="map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
             <i class="fas fa-person-walking" aria-hidden="true"></i>
         </button>
+        <button id="cadastre-view-toggle" class="map-mode-toggle" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-border-all" aria-hidden="true"></i></button>
         <button id="mode-2d-toggle" class="map-mode-toggle" title="Switch to 2D" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title">2D</button>
         <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to model (3D)" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title">3D</button>
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn" title="Photo view (Google Photorealistic 3D)" aria-label="Photo view (Google Photorealistic 3D)" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
@@ -1396,7 +1397,19 @@
             'js/proposals/lifecycle.js',
             'js/proposals/parcel-id.js',
             'js/proposals/plan-order.js',
+            'js/proposals/formation-depth.js',
+            'js/proposals/content-occupation.js',
+            'js/proposals/parcel-contiguity.js',
+            'js/proposals/reparcel-edit-impact.js',
+            'js/proposals/plot-topology.js',
+            'js/proposals/drill-stack.js',
+            'js/proposals/ownership-flow.js',
             'js/proposals/cadastre-ancestry.js',
+            'js/proposals/claims.js',
+            'js/proposals/dossier.js',
+            'js/proposals/conflict-tour.js',
+            'js/proposals/unapply-tour.js',
+            'js/proposals/claims-ui.js',
             'js/footprint-geometry.js',
             'js/building-ground.js',
             'js/proposal-own-parcel.js',
@@ -1410,6 +1423,7 @@
             'js/proposals/list-ui.js',
             'js/proposals/execution.js',
             'js/proposals/layer-render.js',
+            'js/proposals/drill-ui.js',
             'js/proposals/details-panel.js',
             'js/proposals/create.js',
             'js/proposal-drafts.js',

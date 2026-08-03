@@ -642,14 +642,28 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
-            // Restore button on failure
-            if (button && originalButtonContent) {
-                button.innerHTML = originalButtonContent;
-                button.disabled = false;
-                button.style.opacity = '';
-                button.style.cursor = '';
+            // A refusal because applied proposals hold this ground is a QUESTION, not a dead end
+            // (rethink §15 decision 3): the tour lists them, and confirming un-applies them and
+            // re-applies. Anything else falls through to the ordinary failure path below.
+            let resolved = false;
+            try {
+                const info = ProposalManager.getLastApplyFailureInfo?.(safeId);
+                if (info && info.code === 'content-occupied' && window.__unapplyTour?.resolveContentOccupation) {
+                    resolved = await window.__unapplyTour.resolveContentOccupation(safeId);
+                }
+            } catch (occupationError) {
+                console.warn('[applyProposalToMap] Occupation resolution failed', occupationError);
             }
-            return false;
+            if (!resolved) {
+                // Restore button on failure
+                if (button && originalButtonContent) {
+                    button.innerHTML = originalButtonContent;
+                    button.disabled = false;
+                    button.style.opacity = '';
+                    button.style.cursor = '';
+                }
+                return false;
+            }
         }
     } catch (error) {
         console.error(`[applyProposalToMap] Error applying proposal to map (${(performance.now() - startTime).toFixed(2)}ms):`, error);
@@ -1193,6 +1207,48 @@ function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
     });
 }
 
+// ── Effect-hash consent binding (rethink-proposals.md §11/§12 step 4) ────────────────────────────
+// An acceptance binds to what the proposal DOES — footprint + per-parcel cession (the effect
+// fingerprint from ownership-flow.js) — falling back to the content fingerprint for content-only
+// proposals (an offer's "effect" is its terms). Both derive from STORED fields only, so the hash
+// is identical on every machine. An edit that changes the effect changes the hash and the stored
+// acceptances stop counting — automatically, with the records preserved (consent history is
+// immutable; an edit back to the accepted effect even revalidates them). Records from before this
+// mechanism carry no hash and stay valid.
+function currentConsentBindingHash(proposal) {
+    try {
+        const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
+        const effect = flowApi ? flowApi.effectFingerprintOf(proposal) : null;
+        if (effect) return effect;
+    } catch (_) { /* fall through to the content fingerprint */ }
+    try {
+        // Deliberately the LEGACY variant: for a content-only proposal the parcel TARGETS are part
+        // of the terms an owner consented to — an offer silently retargeted to other parcels must
+        // lapse. (The v2 upload identity drops the parent lists for the opposite reason: derived
+        // name churn must not move a share id.) Also keeps pre-v2 acceptance records valid: the
+        // legacy bytes are exactly what they were stamped with.
+        if (typeof proposalContentFingerprintLegacy === 'function') return proposalContentFingerprintLegacy(proposal);
+        return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+// The validity logic itself is pure and lives in ownership-flow.js (isAcceptanceRecordValid,
+// refreshAcceptanceValidity); this wrapper supplies the current hash and tolerates the module
+// being absent (then nothing ever lapses, which is the pre-mechanism behaviour).
+function refreshProposalAcceptanceValidity(proposal) {
+    const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
+    if (!flowApi || !proposal) return { lapsedOwners: 0 };
+    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal));
+    if (result.lapsedOwners > 0) {
+        console.debug('[refreshProposalAcceptanceValidity] acceptances lapsed against the current effect', {
+            proposalId: proposal.proposalId, lapsedOwners: result.lapsedOwners
+        });
+    }
+    return result;
+}
+
 function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
     try {
         const suppressAlerts = metadata && metadata.suppressAlerts === true;
@@ -1263,7 +1319,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         entry.acceptedBy[effectiveOwnerKey] = {
             agentId: metadata.acceptedByAgentId || null,
             username: metadata.acceptedByName || null,
-            acceptedAt: new Date().toISOString()
+            acceptedAt: new Date().toISOString(),
+            // What this owner is consenting TO (§12 step 4): the proposal's effect as it stands
+            // right now. If the effect later changes, this acceptance stops counting.
+            effectHash: currentConsentBindingHash(proposal)
         };
 
         proposal.ownerAcceptances[normalizedParcelId] = entry;
@@ -1296,6 +1355,9 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const canExecute = proposal.funded !== false
             && !isVoteProposal(proposal)
             && proposalRecipientConsentSatisfied(proposal);
+        // Execution counts only acceptances valid against the CURRENT effect — consent given to a
+        // since-edited proposal must never carry it over the line (§12 step 4).
+        refreshProposalAcceptanceValidity(proposal);
         if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.lifecycleStatus = 'Executed';
             proposal.executedAt = new Date().toISOString();

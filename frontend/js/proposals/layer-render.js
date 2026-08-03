@@ -481,7 +481,10 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     }
 
     const _tCollect0 = performance.now();
-    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: false });
+    // Building geometry is part of the selection: without it, selecting a building proposal
+    // highlighted only its parcels, and on ground shared by several buildings there was no way
+    // to see WHICH building was selected.
+    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true });
     const _tCollect1 = performance.now();
 
     // A corridor proposal (road or track — the same object) styles its geometry differently from a

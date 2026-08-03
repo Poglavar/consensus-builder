@@ -547,6 +547,11 @@ Croatia the way a building does. If not, parks are non-forming and the line move
    a parcel of their own. If A7 is adopted this invariant is rewritten, not extended; the §2.1
    hole-prevention rule then has to be re-derived under the new regime.
 5. **A green apply is not proof.** Verify the resulting fabric, not the absence of an error.
+6. **A refusal explains itself** (decided 2026-08-02). Every `return false` in an apply path
+   records a structured reason (`_setLastApplyFailure`: code + human message + context ids)
+   before returning — "Proposal did not apply" with nothing stored is a debugging dead end, and
+   a shared-plan summary can only echo what was recorded. All four apply modules
+   (road/buildings/structures/parcels) comply; new refusal paths must too.
 
 ---
 
@@ -558,25 +563,58 @@ Croatia the way a building does. If not, parks are non-forming and the line move
    and backfilled (92 of 98 rows); `plan-order.js` implements the A6 ordering; and as of 2026-07-23
    the shared-plan apply route *reads* it: constraint-graph ordering + geometry re-parenting (§12
    step 1).
-3. **Stamp the cadastre snapshot** next to `cadastreParcelIds` (version or capture date), so a stale
-   view is detectable — cheap now. See D5. Superseded in shape by §11: what should be recorded is
-   the **effective-frame version**, not just the official snapshot.
+3. ~~Stamp the cadastre snapshot.~~ **DONE 2026-08-02** — `cadastreFrame` (`{ capturedAt }`) is
+   stamped in `buildUploadReadyProposal` beside `cadastreParcelIds` and stored in
+   `proposal.cadastre_frame`. Historical rows are left NULL (no honest capture date exists for
+   them). The §11 refinement — recording the effective-frame version — waits for the
+   executed-formations log to exist.
 4. ~~A6 before A2.~~ **A6 shipped; A2 stays demoted** — ordering + geometric resolution made the
    plan replayable without shipping derived geometry.
-5. **Improve the failure message.** Partly moot: the ghost case now self-heals (§12 step 1), so a
-   surviving "Missing prerequisite parcels: …" means the land is genuinely absent (<95% coverage) —
-   the message should say *that*, and name the proposal whose output is missing rather than the
-   parcel ids.
-6. **Extend the completeness gate + re-parenting** to the single-proposal upload paths
-   (`dialog-upload.js`, `dialog-create.js`) and the payload-share route
-   (`applySharedProposalsFromPayload`), which still use the old order-based gating and can still
-   deadlock.
+5. ~~Improve the failure message.~~ **DONE 2026-08-02** — `describeMissingPrereqs`
+   (sharing-routes.js) renders every surviving miss as *who*, not *which ids*: ghost-derived
+   misses name the plan member whose output is absent ("waiting on Road 2043") or say the re-cut
+   land is not present here; base misses list cadastral parcels. Used by the plan route (both
+   give-up sites) and the payload route; raw id dumps stay in the console. i18n en/es/hr/sr.
+6. ~~Extend the completeness gate + re-parenting.~~ **DONE 2026-08-02** —
+   (a) `applySharedProposalsFromPayload` now orders by `resolveApplyOrder` (footprints from the
+   in-memory payload; numeric-id sort kept as fallback) and heals ghost prerequisites via
+   `reparentSharedProposalByGeometry` (same ≥95% coverage guard as the plan route).
+   (b) `ensureAncestorProposalsUploaded` derives its prerequisite set from the **A6 constraint
+   graph** — older intersecting APPLIED fabric-changers — instead of the live-parcel ancestry walk
+   that manufactured cycles. Strictly-older is antisymmetric, so the §2.2 deadlock is now
+   unrepresentable on every path (dialog-upload, dialog-create walk gate, plan dialog); overlays
+   have no upload prerequisites at all (recipients re-parent them from geometry — single links go
+   through the healed plan route). Legacy walk kept only as fallback when no footprint resolves.
+   Locked by `ancestor-upload-gate.test.js` (A6 describe block).
 7. ~~Decide D2.~~ **DECIDED — §10.** Unit of consent = the owner's slice, per-proposal acceptance
    bound to the slice fingerprint.
 8. ~~Evaluate A7.~~ **DONE — see §3.8.** Formable everywhere (1 m² uncovered across the plan), but
    every proposal fragments at least one neighbouring parcel; the worst leaves one owner with four
    disconnected pieces. Open question it raises: does A7 imply that each formation is really a small
    reparcellization of the affected block?
+9. ~~Demote derived ids from the proposal's IDENTITY.~~ **DONE 2026-08-02 (fingerprint v2).**
+   `proposalContentFingerprint` (`c2-…`, the upload/dedup id) no longer hashes parent-parcel
+   lists — top level or inside the typology payloads — so derived-name churn (a re-apply, a heal)
+   can never mint a new share url for byte-identical content; the geometry was always in the hash
+   and is the actual truth. The legacy `c-…` bytes live on as
+   `proposalContentFingerprintLegacy`, doing two jobs: upload ADOPTION (unchanged content already
+   on the server under its v1 id keeps that id — verified live: staged v1 row, unchanged
+   re-upload, same serial, no new row) and CONSENT binding for content-only proposals, where the
+   parcel targets ARE part of the terms (an offer silently retargeted must lapse). Wire-format
+   demotion continues: the declared parent lists still ship as hints; the next slice is
+   geometry-first parent resolution on the receiving side.
+   **Geometry-first landed same day:** both shared routes now run the ghost re-parent BEFORE the
+   first apply attempt (idempotent, same ≥95% coverage guard) — declared derived parents are
+   consulted, found dead, and replaced from geometry without burning an apply→fail→heal→retry
+   round-trip. Verified: clean replay 8/8 with 7 proactive re-parents and the failure round-trips
+   gone.
+10. ~~Read the effect stamp on replay.~~ **DONE 2026-08-02 (§11's first rung).**
+   `compareOwnershipFlows` (tolerance: 5 m² or 5%, whichever is larger; a parcel missing from the
+   live flow counts only when it is actually loaded) checks every applied shared proposal's
+   stamped ownership flow against one re-derived from the receiver's cadastre. Divergence — a
+   different cadastre vintage, a missing sibling formation — surfaces as one summary line naming
+   the re-based proposals, detail in the console. Invariant #5 is now a check, not a motto: a
+   green apply that took different ground SAYS so.
 
 ---
 
@@ -810,18 +848,41 @@ bookkeeping, per-parcel acceptance rows, the vote flow and share fingerprinting 
    from the id structure itself: every `#`-prefix of a live derived id is consumed fabric,
    whatever the flag says. With both fixed, the 97–104 plan replays **8/8** from clean state —
    observed directly, map fabric and parent rewrites inspected, zero residual failure records.
-   *Not yet covered:* the payload-share route (`applySharedProposalsFromPayload`) and the
-   single-proposal upload gates (next steps 6) still use the old logic.
-2. **Stamp ownership flow at publish.** Additive, like `cadastreParcelIds` was: per crossed base
-   parcel, ceded area (parent minus remainder, computed before the merge erases it) and destination
-   (public / proposer / mapping). Backfillable from stored geometry. Fills §10's one data gap.
-   Ownership *machinery* stays assumed-working (§9).
-3. **Dossiers, read-only.** "As the owner of A": every proposal whose base ancestry touches A,
-   triaged per §10, including the remainder report ("you end up with four fragments of
-   9471/2219/365/308 m²" — §3.8 as disclosure, not blocker). Pure read over steps 1–2 + the
-   existing fingerprint discipline. First user-visible product of the rethink.
-4. **Bind acceptance to slice fingerprints / effect hashes.** The semantic change (§10, §11). Do it
-   after dossiers make slices a visible, understood thing.
+   ~~*Not yet covered:* the payload-share route (`applySharedProposalsFromPayload`) and the
+   single-proposal upload gates (next steps 6) still use the old logic.~~ **Covered 2026-08-02 —
+   see §7 step 6.**
+2. ~~Stamp ownership flow at publish.~~ **DONE 2026-08-02.** New pure module
+   `frontend/js/proposals/ownership-flow.js`: `computeOwnershipFlow(proposal, baseParcels)` →
+   `[{ parcelId, cededM2, destination }]`, destination declared per typology
+   (road/park/square/lake/station → `public`, freeform building → `proposer`, reparcellization →
+   `mapping`, decide-later → `undecided`; content-only goals have no formation). Stamped in
+   `buildUploadReadyProposal` and in the payload-share builder, stored in
+   `proposal.ownership_flow`, validated server-side, returned by the serializer, carried through
+   import. Backfill: `backend/scripts/backfill-ownership-flow.js` (dry-run default) recomputes
+   from stored geometry via the same module. Ownership *machinery* stays assumed-working (§9).
+3. ~~Dossiers, read-only.~~ **DONE 2026-08-02.** New pure module
+   `frontend/js/proposals/dossier.js`: `buildDossier(parcelId, proposals, opts)` triages every
+   proposal claiming the parcel's ground into the four §10 channels, plus `remainderReport` (what
+   the owner keeps, piece by piece). The §10 chain rule is computable via creation time: a take
+   that falls (within noise) inside ground an EARLIER formation already consumes is a
+   *disclosure* — the school on the strip taken for the road defers to the road; A6's total order
+   makes the deferral acyclic. Surfaced in the parcel panel's Proposals tab: a channel chip per
+   proposal (Consent needed / Offer to you / Vote / Info), a "takes N m² → destination" line on
+   acceptances, and the remainder note (amber when fragmented). Missing geometry degrades to
+   *acceptance* — over-asking is safe, silently skipping an owner is the §3.5 bug.
+4. ~~Bind acceptance to slice fingerprints / effect hashes.~~ **DONE 2026-08-02 (local).**
+   `effectFingerprintOf(proposal)` (ownership-flow.js) hashes the EFFECT — footprint quantised to
+   ~0.1 m (surveyor drift must not void consent) + per-parcel cession + goal — from STORED fields
+   only, so it is identical on every machine; content-only proposals fall back to
+   `proposalContentFingerprint` (an offer's effect is its terms). Every acceptance record stamps
+   `effectHash` at accept time (`execution.js`); `refreshAcceptanceValidity` (pure, in
+   ownership-flow.js) recomputes which acceptances count against the current hash and runs before
+   any execute decision — so a proposal can never execute on consent given to a different effect.
+   Records are never deleted (consent history immutable; an edit back to the accepted effect
+   revalidates). Pre-mechanism records carry no hash and stay valid. *Out of scope for now:* the
+   on-chain accept/vote path still keys on raw `parentParcelIds` strings
+   (`ProposalNFT.sol:_requireParcelInProposal`) — moving the chain to base ids + effect hashes is
+   a contract change, deliberately deferred.
 5. **One formation engine — only when it hurts.** Unify roads/structures/reparcellization behind
    `formationPlan` with characterization tests, per typology, opportunistically. Roads already do
    cut-then-merge; conceptual clarity does not require immediate code unification.
@@ -831,16 +892,210 @@ Between 4 and 5 sits the **executed-formations log** (§11): server-held, force-
 
 ---
 
-## 13. Related notes
+## 13. The claims model: what a click means (resolves the clickability tension)
+
+Decided 2026-07-23, built on branch `proposals-rework`. The tension: invariant #3 said base
+parcels stay clickable, but the implementation drifted to frame-swapping — applied fabric-changers
+hide their parents and the derived pieces become the map. The resolution follows from this week's
+identity work: once nothing identity-critical lives in derived ids, "which layer is clickable"
+becomes a free choice.
+
+**Everything clickable is a CLAIM about a piece of ground.** A proposal's content (building,
+lake), a fabric-changer's output piece (corridor, remainder, slice), or the null claim — the bare
+cadastral parcel, meaning "no change proposed here". One uniform click semantics; z-order:
+content > fabric piece > ground. Two surfaces, not three: base parcels (land identity) and
+proposals (their outputs, reachable as proposal interaction); derived parcels stop being an
+interactive class of their own.
+
+Built and browser-verified (clean-state sandbox against the prod API):
+
+- **Structures flip** — park/square/lake base fills are clickable and open their proposal
+  (`bindStructureClaimClick` in structures.js). Reverses the deliberate earlier choice; the
+  ground stays one tap away via the breadcrumb.
+- **The breadcrumb** (invariant #3 restored) — every proposal details panel opens with "On
+  parcels: [823/1] …", the BASE parcels the proposal stands on (`__claims.baseParcelIdsOf`:
+  cadastreParcelIds stamp first, declared roots as fallback). Clicking one opens the base
+  parcel's panel **even when the parcel is consumed and hidden** — claims-ui falls back to the
+  layer index, which is why hidden layers were kept all along.
+- **The dossier** — the parcel panel's Proposals tab gains a claims rescue: any proposal whose
+  base ancestry includes this parcel's root lists there, whatever generation its declared ids
+  are from. Verified: 6804/1 (hidden under the plan) lists Road 2043 + Park 2047 + Freeform 2053.
+- **Cadastre view** — a map-corner toggle; the original cadastral parcels render full-strength
+  and interactive (clones in a dedicated pane, consumed parents included), every proposal pane
+  dims to 0.25 and goes inert. This is the dossier surface and the first rung of the §11 frame
+  ladder (official / effective / plan).
+
+**The conflict tour** (§12 step 1 companion, same branch): cross-plan occupations during a
+shared-plan replay stop the ordered apply, highlight both footprints, and ask — Replace existing
+or Keep existing, optionally for all remaining conflicts. Intra-plan occupancy stays automatic;
+dismissing is the non-destructive keep; nothing is unapplied before the user says so (the silent
+scenario-2 auto-replace from `84d30ea` is gone). Skip-cascades need no bookkeeping: a member that
+loses its ground to a kept existing proposal simply surfaces as the next stop, and one that
+chained onto a REPLACED occupier's fabric is detected (applied-state sweep) and requeued to
+re-apply on the post-replace fabric. Verified both paths in the sandbox: keep → 7 applied + kept
+section naming the occupier; replace → 8/8 applied, the existing proposal unapplied but preserved
+in the list.
+
+**The unapply tour (2026-08-02, same family).** The "dependent items will be removed" confirm
+modal is replaced by an impact-tour-style dock (`unapply-tour.js`): dependents listed over the
+live map, each entry clickable — the map focuses and blinks that item (proposal footprints red,
+parcel slices orange; fabric dependents listed first). Dismissal is the non-destructive cancel;
+the old modal survives only as fallback. Same removal SEMANTICS for now — the panel discloses,
+it does not yet shrink the cascade (an overlay on a road remainder could in principle survive by
+re-parenting, exactly like replay healing; that behavioural change is future work).
+
+**The recut disclosure gap (found 2026-08-02, not yet fixed).** Width lives in the lane list
+(`corridorProfileWidth` = sum; the profile editor is the only width editor), and every
+placed-road edit funnels through `runLocalCorridorGeometryUpdate` which ALREADY does the recut:
+auto-unapply → re-derive parents from the new footprint → fresh re-apply. Two gaps: (a) it
+passes `skipConfirm: true`, so child slices are destroyed and re-minted with zero disclosure —
+this silent re-mint is the ghost factory of §3.1 (Road 2043 v1→v2); the building impact tour
+fires only for newly-hit buildings on widening, never for parcels/dependents. (b) ~~A placed-road
+profile save has no width-diff gate~~ **FIXED 2026-08-02**: `runLocalCorridorGeometryUpdate` now
+derives the footprint from both the pre-edit snapshot and the mutated definition
+(`buildRoadUnionPolygonForDefinition` + tunnel edge keys + edgeFill) and compares — an unchanged
+footprint takes a short path (persist + mirror + re-render, identity still detached since the
+CONTENT changed), and a fully unchanged definition is a pure no-op that keeps even the published
+identity. Only a real footprint change re-litigates the ground. *Untested headlessly* —
+road-drawing.js has no node harness; verified by syntax + suite + manual browser pass.
+~~Remaining fix: run the unapply tour (disclosure variant) before a real recut.~~ **DONE
+2026-08-03**: a footprint-changing edit of an applied road WITH dependent proposals opens the
+unapply tour in its recut variant — dependents listed and clickable over the live map, cancel
+rolls the definition back before the identity detach (the proposal is left exactly as it was),
+confirm proceeds to the recut. Drags are exempt (the user is watching the road move; a prompt
+per drag-end would kill the tool), and a dependent-free road recuts silently as before. Verified
+live: cancel → rolled back and still applied; confirm → footprint moved, re-applied, identity
+forked. Same day, the per-building cut/demolish/tunnel verdicts JOINED the effect hash
+(`collectImpactModes` — records read from the stored definition; absent records leave existing
+hashes untouched), so a mind-change like cut → tunnel now lapses acceptances automatically —
+the choices are consent-bearing demands, not rendering hints. Consent-side of a plain width
+change was already covered (footprint moves the hash, §12 step 4).
+
+**The drill panel (2026-08-03) — the claims z-order made visible.** One click anywhere resolves
+the full vertical stack at that point (`drill-stack.js`, pure + tested: content proposals →
+formed slices → the formation that minted them → base parcels, depth-ordered with formations
+seated BETWEEN the ground they consume and the slices they mint; ties by creation time). The
+click selects the topmost claim — now including roads, which the old parcel funnel deliberately
+excluded — and a button column docks under the proposal card (`drill-ui.js`): one row per level,
+derivation arrows between rows, chips from the shared goal vocabulary, the selected level
+marked. Any row hops the selection: proposal rows via the normal proposal selection, parcel rows
+via `openBaseParcel` (consumed base parcels included — invariant #3 again). Hovering the map
+highlights the topmost claim (buildings had no hover at all before); hovering a row previews
+that level. All three click funnels (parcel, structure fill, corridor hit target) route through
+the drill, with the pre-drill behaviour kept only as the no-module fallback. En route, two
+old-format literals died: `getProposalsForParcel` projected derived ids with a hardcoded `#p-`
+(new `#c-…` slices never inherited their ancestors' proposals) and `hasLiveReplacementSlice`
+matched only `#p-` children — both now strip on any `#`. Verified live on the Borovje plan: a
+five-level chain (recreation → street slice → street network → parcelacija → base 1791/69),
+chain-hopping, and the base-parcel row opening the parcel panel from under applied fabric.
+
+Two modal-helper gotchas locked into comments because they cost a debugging cycle each:
+`showSimpleShareModal` fires `onClose` BEFORE the clicked action's `onClick` (the dismiss-default
+must yield a tick), and it removes the modal DOM before `onClick` runs (checkbox state must be
+cached on change, not read at decision time).
+
+---
+
+## 14. Decisions 2026-08-02 (Simun) — the open questions, answered
+
+1. **Parks/squares/lakes DO form their own parcel** (the A7 open question, leaning yes). The
+   current structure typologies mean "form the parcel, transfer ownership to public" — hence
+   `destination: 'public'` in their ownership flow. The *other* meaning — parcel stays yours but
+   only a (private) park may be built on it — is a legitimate future typology, but it belongs to
+   **urban rules** (a use-restriction content, no formation), not to the structure typologies.
+   When rules grow a vocabulary, "park" joins it there. Invariant #4's rewrite (structures
+   actually consuming in apply) remains deferred with §12 step 5.
+2. **A formation owes the owner their remainders, not a reshape.** A road leaves the owner every
+   fragment it does not take; if the proposer wants the leftovers too, that is ANOTHER proposal
+   against them. So §3.8's fragmentation is a *disclosure* (the dossier's remainder report shows
+   it, amber when the parcel shatters), never an automatic small-reparcellization. This closes
+   §3.8's open question.
+3. **Cross-plan conflicts at apply: ask the user.** "Not all of this plan can be applied — some
+   land is taken by other applied proposals. Unapply the previous? Apply only the non-conflicting?
+   Cancel?" — this IS the conflict tour (§13), which pauses the ordered apply per cross-plan
+   occupation with Replace/Keep (+ blanket), dismissal = non-destructive keep. Already built and
+   browser-verified; no further mechanism needed for now. (Execution-time conflict resolution —
+   first-to-execute wins the frame — stays an open §11 question.)
+4. **The land is assumed FIXED for now.** Reversal, cadastral re-surveys, court annulments and
+   everything upstream of the effective frame are explicitly out of scope until the fixed-state
+   model is complete. Proposals are made against the imported cadastre as-is; the §11 frame
+   machinery (re-based/impacted recompute, reconciliation) stays designed-not-built. Revisit when
+   execution goes on-chain.
+
+---
+
+## 15. Decisions 2026-08-03 (Simun) — the flat record, and what a park is
+
+Prompted by reading the Borovje UPU on clean fabric and finding overlaps nobody had flagged.
+Measured evidence for every claim here is in `formation-depth.js` + its scan of that plan.
+
+1. **The flat-record invariant — three levels, never more.** A record reaches at most
+   `base cadastral parcel → one formation → content`. A road cutting a building proposal must NOT
+   produce two buildings whose ancestor is the road whose ancestor is the original building; and
+   three roads successively cutting a parcel into four pieces must leave each piece traceable to
+   the cadastral parcel below it and **one** operation, not three chained ones.
+   - **Temporally separate operations stay legal.** Drawing is sequential and stays that way; the
+     flattening happens when the thing becomes a shared artifact — at draw/mint time where the cut
+     is computed (the base ids are already known there, so the declaration can be written flat
+     immediately), with **publish as the gate** that verifies it, because imported, healed and
+     older records arrive from outside the drawing path.
+   - **Flat ≠ single-parent.** The invariant is DEPTH. A comasation plot spanning thirty original
+     parcels is one formation at one level with thirty base parents.
+   - **Id parsing cannot compute base ancestry.** Every derived id is minted against ONE root
+     (`_assignSyntheticChildIdentitiesImpl` uses `rootParcelId`), so Borovje's 38 comasation slices
+     are all named `1791/25#…` although 29 base parcels were consumed. Flattening must use the
+     geometric ancestry (`computeBaseAncestry` / the `cadastreParcelIds` stamp); id projection is a
+     last-resort fallback only.
+   - **Roles are behavioural, not goal-based.** What matters is whether a record MINTS ground. A
+     park sitting on a plot a reparcellization already shaped for it mints nothing and is content
+     on that plot — the legal third level. The first cut of this rule flagged 18 of Borovje's 19
+     records; keying it on minting instead leaves exactly one true offender, the road.
+   - **Formation is adoptive/idempotent.** If the ground a formation would create already exists as
+     a parcel matching its footprint, it TAKES that parcel (ownership moves) instead of re-cutting
+     it. This is what keeps plan-style composition at depth 1.
+2. **A road may not silently claim ground it never declared.** Borovje's street network declares 3
+   parcelacija slices, cuts them into 32 pieces — and its footprint covers **3,733 m² (22%) outside
+   that declared ground**, where it cuts nothing and asks nobody. Every "why is this proposal on
+   top of / below the road" oddity in the plan traces to this one fact: the parks each fill their
+   own plot exactly (100%, 0 m² outside), and the buildings sit inside their plots, so the corridor
+   is the only geometry out of place. Geometry must be reconciled with declared ground, not merely
+   drawn over it.
+3. **Content colliding with a formation: unapply, don't cut.** A road crossing an applied BUILDING
+   proposal must not split it into two proposals — half a building is not something its author
+   proposed, and forging two records in their name destroys the authorship. The existing proposal
+   is unapplied first (the conflict tour's Replace/Keep, blanket included). This applies to
+   PROPOSED fabric only: surveyed buildings are facts on the ground and keep the cut/tunnel/
+   demolish impact modes. Today proposed buildings are invisible to corridors entirely — the
+   collision pool holds 123 GDI survey buildings and zero proposed ones, which is why the street
+   network runs through M1-9 (25% of it), M1-4 and M1-11 with `demolishedBuildings: 0`.
+4. **Two kinds of park, and only one is supported.**
+   - *Structure park* — forms/takes its own parcel, ownership → public. **Supported.** For now it
+     must occupy a WHOLE parcel exactly: one parcel, filled completely. Borovje already satisfies
+     this (all six parks fill their plot 100%).
+   - *Urban-rule park* — the parcel stays yours, but only a park may be built on it: a use
+     restriction, no formation, no ownership move. **Not supported yet**; it belongs to the urban
+     rules vocabulary (§14 decision 1 already placed it there).
+
+---
+
+## 16. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes
 - `advanced-readjustment.md` — reparcellization internals
 - Code: `frontend/js/proposals/plan-order.js` (pure: ancestry, ordering, formation, re-parent
-  rewrite), `frontend/js/proposals/cadastre-ancestry.js` (map adapter: live parcels, geometry
-  resolution), `frontend/js/proposals/sharing-routes.js` (`handleSharedPlanRoute`: A6 ordering +
-  ghost re-parenting)
+  rewrite), `frontend/js/proposals/ownership-flow.js` (pure: ownership flow, effect fingerprint,
+  consent validity), `frontend/js/proposals/dossier.js` (pure: §10 triage + remainder report),
+  `frontend/js/proposals/cadastre-ancestry.js` (map adapter: live parcels, geometry resolution,
+  live ownership flow), `frontend/js/proposals/sharing-routes.js` (`handleSharedPlanRoute`: A6
+  ordering + ghost re-parenting; `applySharedProposalsFromPayload`: same, for payload shares;
+  `describeMissingPrereqs`), `frontend/js/proposals/server-sync.js`
+  (`ensureAncestorProposalsUploaded`: A6 prerequisite graph), `frontend/js/parcels/ui/parcel-panel.js`
+  (dossier chips + remainder note)
+- Migrations: `backend/scripts/add-ownership-flow.js`, `backend/scripts/backfill-ownership-flow.js`
+  (both dry-run by default)
 - Tests: `backend/test/plan-order.test.js`, `backend/test/cadastre-ancestry-resolve.test.js`,
-  fixture `backend/test/fixtures/plan-97-104.json`
+  `backend/test/ownership-flow.test.js`, `backend/test/dossier.test.js`,
+  `backend/test/ancestor-upload-gate.test.js`, fixture `backend/test/fixtures/plan-97-104.json`
 - Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate), `70d9f82` (cadastreParcelIds),
   `32a01d0` (backfill + legacy road footprints)

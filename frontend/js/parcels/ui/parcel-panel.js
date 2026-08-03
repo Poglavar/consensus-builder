@@ -317,6 +317,47 @@
                 if (record) parcelProposals.push(record);
             });
         } catch (_) { }
+        // Claims rescue (rethink-proposals.md §13): any proposal whose BASE ancestry — the
+        // published cadastreParcelIds stamp, or the roots of whatever it declares — includes this
+        // parcel's root lists here too, whatever generation its declared ids are from. This is
+        // the dossier: the panel answers "what is claimed on this land", not "who names my id".
+        try {
+            if (global.__claims && global.__planOrder && storage?.getAllProposals) {
+                const claimRoot = global.__planOrder.cadastreRootId(resolveParcelId(feature));
+                if (claimRoot) {
+                    (storage.getAllProposals() || []).forEach(record => {
+                        if (!record || !record.proposalId) return;
+                        if (parcelProposals.some(p => String(p.proposalId) === String(record.proposalId))) return;
+                        if (global.__claims.baseParcelIdsOf(record).indexOf(claimRoot) !== -1) {
+                            parcelProposals.push(record);
+                        }
+                    });
+                }
+            }
+        } catch (_) { }
+
+        // The triaged dossier (rethink-proposals.md §10/§12 step 3): every listed proposal lands in
+        // one consent channel for THIS parcel — acceptance (takes its ground), offer, vote, or
+        // disclosure — plus the remainder report (what the owner keeps once the formations cut).
+        // Read-only annotation over the list the panel already collected; failure costs the chips,
+        // never the list.
+        const parcelDossier = (() => {
+            try {
+                if (!global.__dossier || !parcelProposals.length) return null;
+                return global.__dossier.buildDossier(parcelId, parcelProposals, {
+                    assumeMembership: true,
+                    isVote: (typeof global.isVoteProposal === 'function') ? global.isVoteProposal : undefined,
+                    isApplied: (typeof global.isProposalApplied === 'function') ? global.isProposalApplied : undefined,
+                    parcelFeature: (feature && feature.geometry) ? feature : undefined
+                });
+            } catch (error) {
+                console.warn('[parcel-panel] dossier triage unavailable', error);
+                return null;
+            }
+        })();
+        const dossierEntryByPid = new Map(
+            ((parcelDossier && parcelDossier.entries) || []).map(entry => [String(entry.proposalId), entry])
+        );
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)
@@ -427,6 +468,33 @@
                     ? `<span class="proposal-item-ancestor-pill" data-i18n-key="panel.parcel.proposalsSection.ancestorPill">${tParcel('panel.parcel.proposalsSection.ancestorPill', {}, 'Ancestor')}</span>`
                     : '';
 
+                // The consent channel this proposal lands in for THIS parcel (§10), plus what its
+                // formation takes when it takes anything.
+                const dossierEntry = dossierEntryByPid.get(String(proposal.proposalId)) || null;
+                const channelChip = dossierEntry ? (() => {
+                    const labels = {
+                        acceptance: tParcel('panel.parcel.dossier.channel.acceptance', {}, 'Consent needed'),
+                        offer: tParcel('panel.parcel.dossier.channel.offer', {}, 'Offer to you'),
+                        vote: tParcel('panel.parcel.dossier.channel.vote', {}, 'Vote'),
+                        disclosure: tParcel('panel.parcel.dossier.channel.disclosure', {}, 'Info')
+                    };
+                    const label = labels[dossierEntry.channel];
+                    return label ? `<span class="proposal-item-channel proposal-item-channel-${dossierEntry.channel}">${label}</span>` : '';
+                })() : '';
+                const takesLine = (dossierEntry && dossierEntry.channel === 'acceptance' && dossierEntry.cededM2 > 0) ? (() => {
+                    const destinations = {
+                        'public': tParcel('panel.parcel.dossier.destination.public', {}, 'public'),
+                        'proposer': tParcel('panel.parcel.dossier.destination.proposer', {}, 'the proposer'),
+                        'mapping': tParcel('panel.parcel.dossier.destination.mapping', {}, 'per plan'),
+                        'undecided': tParcel('panel.parcel.dossier.destination.undecided', {}, 'to be decided')
+                    };
+                    const destination = destinations[dossierEntry.destination] || dossierEntry.destination || '';
+                    return `<div class="proposal-item-details proposal-item-takes">${tParcel('panel.parcel.dossier.takes', {
+                        area: dossierEntry.cededM2.toLocaleString(),
+                        destination
+                    }, 'Takes {{area}} m² of this parcel → {{destination}}')}</div>`;
+                })() : '';
+
                 const isActive = (typeof global.getLifecycleStatus !== 'function' || global.getLifecycleStatus(proposal) !== 'Executed') && !mapApplied;
 
                 let actionButtons = '';
@@ -502,10 +570,12 @@
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
                                 ${ancestorPill}
+                                ${channelChip}
                                 <span class="proposal-item-status ${statusClass}">${statusText}</span>
                                 ${mapApplied ? `<span class="proposal-item-map-badge applied">${appliedBadgeLabel}</span>` : ''}
                             </div>
                         </div>
+                        ${takesLine}
                         <div class="proposal-item-details">
                             ${proposalIdText}
                             ${parcelAcceptanceBar}
@@ -532,7 +602,28 @@
                 `;
             }).join('');
 
+            // The remainder report (§3.8 as disclosure, per the 2026-08 decision: remainders stay
+            // with the owner): what this parcel cedes to the listed formations and what is left,
+            // piece by piece — the fragmentation is the fact an owner most needs before consenting.
+            const remainderNote = (parcelDossier && parcelDossier.remainder && parcelDossier.remainder.takenM2 > 0) ? (() => {
+                const r = parcelDossier.remainder;
+                const pieces = r.pieces.map(p => p.areaM2.toLocaleString()).join(' / ');
+                const text = r.pieces.length > 1
+                    ? tParcel('panel.parcel.dossier.remainderSplit', {
+                        taken: r.takenM2.toLocaleString(),
+                        kept: r.remainderM2.toLocaleString(),
+                        count: r.pieces.length,
+                        pieces
+                    }, 'Proposed formations take {{taken}} m²; you keep {{kept}} m² in {{count}} separate pieces ({{pieces}} m²).')
+                    : tParcel('panel.parcel.dossier.remainder', {
+                        taken: r.takenM2.toLocaleString(),
+                        kept: r.remainderM2.toLocaleString()
+                    }, 'Proposed formations take {{taken}} m²; you keep {{kept}} m².');
+                return `<div class="parcel-dossier-remainder${r.pieces.length > 1 ? ' fragmented' : ''}">${text}</div>`;
+            })() : '';
+
             proposalsHtml = `
+            ${remainderNote}
             <div class="parcel-proposals-list">
                 ${proposalItems}
             </div>

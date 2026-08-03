@@ -96,7 +96,7 @@ function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {})
 
 // Does at least one replacement slice of this parent actually exist ON THIS DEVICE?
 //
-// Slice ids are derived from the parent (`<parent>#p-<proposalId>-N`, legacy `<parent>_N`), so a
+// Slice ids are derived from the parent (`<parent>#<proposalId>-N`, legacy `<parent>_N`), so a
 // live child is a key in the parcel-layer index carrying one of those prefixes.
 function hasLiveReplacementSlice(idStr) {
     const layerIndex = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
@@ -105,7 +105,8 @@ function hasLiveReplacementSlice(idStr) {
     // Cannot verify (index not up yet) — keep the pre-guard behaviour and treat it as replaced.
     if (!layerIndex) return true;
 
-    const derivedPrefix = idStr + '#p-';
+    // Any '#'-suffixed key derives from this parent — new-style '#c-…' ids included.
+    const derivedPrefix = idStr + '#';
     const legacyPrefix = idStr + '_';
     for (const key of layerIndex.keys()) {
         if (typeof key === 'string' && (key.startsWith(derivedPrefix) || key.startsWith(legacyPrefix))) {

@@ -875,6 +875,68 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         .map(record => ({ id: String(record.id), geometry: record.geometry }));
     if (typeof mutateDefinition === 'function') mutateDefinition(definition);
 
+    // A save that changed nothing at all (the editor opened and closed on an untouched profile)
+    // must not fork the proposal off its published record — return before the identity detach.
+    // Drag callers are exempt: their `definition` already differs from the dragstart snapshot.
+    if (!options.preEditSnapshot) {
+        try {
+            if (JSON.stringify(definition) === JSON.stringify(definitionSnapshot)) return true;
+        } catch (_) { /* treat as changed */ }
+    }
+
+    // The footprint is DERIVED (centerline × per-segment totals, minus tunnel spans), so whether
+    // this edit moved it is decided by deriving it from both states and comparing — not by
+    // guessing which fields matter. Computed HERE, before the identity detach, so a cancelled
+    // recut below leaves the proposal exactly as it was.
+    const wasAppliedBeforeEdit = (typeof isProposalApplied === 'function') ? isProposalApplied(proposal) : false;
+    const footprintUnchanged = (() => {
+        try {
+            const signatureOf = (def) => JSON.stringify({
+                poly: (typeof buildRoadUnionPolygonForDefinition === 'function')
+                    ? buildRoadUnionPolygonForDefinition(def) : null,
+                tunnels: (Array.isArray(def.tunnels) ? def.tunnels : [])
+                    .map(record => record && record.edgeKey).filter(Boolean).sort(),
+                fill: def.edgeFill || null
+            });
+            return signatureOf(definitionSnapshot) === signatureOf(definition);
+        } catch (_) {
+            return false; // when in doubt, take the full path
+        }
+    })();
+
+    // Recut disclosure (rethink-proposals.md §13): a footprint change on an APPLIED road re-cuts
+    // the ground under it and re-derives everything standing on that ground. When dependent
+    // proposals exist, say so BEFORE doing it — the unapply tour in its recut variant, items
+    // clickable on the map, cancel rolls the definition back untouched. Drags are exempt
+    // (options.preEditSnapshot): the user is watching the road move under their cursor, and a
+    // prompt per drag-end would make the tool unusable.
+    if (!footprintUnchanged && wasAppliedBeforeEdit && !options.preEditSnapshot
+        && typeof window !== 'undefined' && window.__unapplyTour
+        && typeof window.__unapplyTour.showUnapplyDependentsPanel === 'function') {
+        let dependentProposals = [];
+        try {
+            const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+            dependentProposals = (ProposalManager.findDescendantTree(String(key)) || [])
+                .map(node => node && node.proposalId).filter(Boolean);
+        } catch (_) { dependentProposals = []; }
+        if (dependentProposals.length) {
+            const confirmed = await window.__unapplyTour.showUnapplyDependentsPanel({
+                action: 'recut',
+                proposalId: (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId,
+                descendants: dependentProposals,
+                onConfirm: async () => { }
+            });
+            if (confirmed === false) {
+                try {
+                    Object.keys(definition).forEach(field => { delete definition[field]; });
+                    Object.assign(definition, JSON.parse(JSON.stringify(definitionSnapshot)));
+                } catch (_) { }
+                return false;
+            }
+            // `null` means the panel cannot run here (no map/Leaflet) — proceed as before.
+        }
+    }
+
     // A local edit (profile change, node move, reroute…) forks a PUBLISHED road into your own local
     // copy: the uploaded row or minted NFT it points at no longer matches its geometry. Detach every
     // published pointer and record where it came from (sourceProposalId), so the next Share/Upload
@@ -894,6 +956,41 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             delete proposal.chainProposalId;
             delete proposal.tokenId;
         }
+    }
+
+    // A cross-section change that keeps every total (a lane reshuffle, a re-striping) leaves the
+    // ground untouched: no unapply→re-apply, no slice re-mint (each re-mint breeds a new
+    // derived-id generation — the §3.1 ghost factory), no building re-check. The lane list is
+    // persisted, mirrored and re-rendered; the identity was already detached above, because the
+    // CONTENT changed even though the ground did not. (Drawing mode has had this gate all along —
+    // `footprintChanged` in corridor-editor.js; this is the placed-road counterpart. The
+    // comparison itself is computed before the detach, beside the recut disclosure.)
+    if (footprintUnchanged) {
+        try {
+            const copy = JSON.parse(JSON.stringify(definition));
+            proposal.definition = copy;
+            proposal.geometry = { ...(proposal.geometry || {}), roadPlan: JSON.parse(JSON.stringify(definition)) };
+            if (definition.polygon) proposal.geometry.roadGeometry = { polygon: JSON.parse(JSON.stringify(definition.polygon)) };
+        } catch (_) { }
+        try {
+            if (typeof proposalStorage !== 'undefined') {
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                if (typeof proposalStorage.save === 'function') proposalStorage.save();
+            }
+        } catch (_) { }
+        const shortKey = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
+        const shortWasSelected = typeof window.ProposalSelection?.is === 'function' && window.ProposalSelection.is(shortKey);
+        ProposalManager._refreshUIAfterProposalChange?.(proposal);
+        if (shortWasSelected) {
+            try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
+            try {
+                if (typeof selectAndHighlightProposal === 'function') {
+                    window.__openProposalDetailsCollapsed = true;
+                    selectAndHighlightProposal(shortKey, null, false, true);
+                }
+            } catch (_) { }
+        }
+        return true;
     }
 
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
@@ -1404,7 +1501,14 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                     } catch (_) { }
                 }
             }
-            await ProposalManager.applyProposal(key, { applyAnyway: true, suppressMissingParentAlerts: true });
+            // allowOccupation: this is the RE-apply half of a recut whose disclosure already ran
+            // (the tour above listed the dependents and the user confirmed). Re-asking the
+            // occupation question here would block every recut on its own dependents.
+            await ProposalManager.applyProposal(key, {
+                applyAnyway: true,
+                suppressMissingParentAlerts: true,
+                allowOccupation: true
+            });
         }
 
         // Split-on-disconnect (the inverse of merge-on-connect): components the edit severed
@@ -2593,6 +2697,8 @@ function toggleRoadDrawTool() {
         disableMultiSelectForDrawing();
         setRoadPanelLabelsForMode(corridorDrawKind);
         closeProposalDetailsForDrawing();
+        // Show what the corridor will actually collide with (see autoShowBuildingsForRoadDrawing).
+        try { autoShowBuildingsForRoadDrawing(); } catch (_) { }
 
         // Activate corridor drawing mode — the button the user pressed is the one that lights up.
         if (roadDrawButton) {
@@ -2732,6 +2838,9 @@ function toggleRoadDrawTool() {
         // Clear status
         const statusElement = document.getElementById('status');
         if (statusElement) updateStatus('');
+
+        // The reference layer R turned on goes back the way it was.
+        try { restoreBuildingsAfterRoadDrawing(); } catch (_) { }
     }
 }
 
@@ -2831,6 +2940,31 @@ function isAnyModalOpen() {
         }
     } catch (_) { /* ignore */ }
     return false;
+}
+
+// Entering road drawing SHOWS the buildings the cutter collides with. Detection intersects the
+// corridor with the GDI survey pool — footprints the default map never draws — so a segment could
+// LOOK clear of a building the click then reports as hit (the raster basemap draws a different,
+// smaller outline). WYSIWYG: R turns the GDI reference layer on silently (no B dialog, the other
+// surveys untouched); leaving the tool restores the map as it was, unless the user flipped the
+// layer themselves in between.
+let roadDrawingAutoShowedBuildings = false;
+function autoShowBuildingsForRoadDrawing() {
+    const gdiBox = document.getElementById('showBuildings');
+    if (!gdiBox || gdiBox.checked) { roadDrawingAutoShowedBuildings = false; return; }
+    const dguBox = document.getElementById('showBuildingsDgu');
+    const osmBox = document.getElementById('showBuildingsOsm');
+    setBuildingReferenceLayers(true, !!(dguBox && dguBox.checked), !!(osmBox && osmBox.checked));
+    roadDrawingAutoShowedBuildings = true;
+}
+function restoreBuildingsAfterRoadDrawing() {
+    if (!roadDrawingAutoShowedBuildings) return;
+    roadDrawingAutoShowedBuildings = false;
+    const gdiBox = document.getElementById('showBuildings');
+    if (!gdiBox || !gdiBox.checked) return; // the user turned it off themselves — nothing to undo
+    const dguBox = document.getElementById('showBuildingsDgu');
+    const osmBox = document.getElementById('showBuildingsOsm');
+    setBuildingReferenceLayers(false, !!(dguBox && dguBox.checked), !!(osmBox && osmBox.checked));
 }
 
 function setBuildingReferenceLayers(gdi, dgu, osm) {
@@ -3488,6 +3622,8 @@ function exitRoadDrawingMode() {
     // Reset state and UI
     resetRoadDrawing();
     updateGlobalRoadDrawingMode(false);
+    // The reference layer R turned on goes back the way it was.
+    try { restoreBuildingsAfterRoadDrawing(); } catch (_) { }
 
     // Whichever button opened the session is the one that goes dark.
     const roadDrawButton = corridorDrawButton();

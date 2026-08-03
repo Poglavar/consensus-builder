@@ -1,7 +1,8 @@
 {
     "rewrites": [
         { "source": "/proposals/**", "destination": "/index.html" },
-        { "source": "/proposal/**", "destination": "/index.html" }
+        { "source": "/proposal/**", "destination": "/index.html" },
+        { "source": "/parcel/**", "destination": "/index.html" }
     ],
     "headers": [
         {

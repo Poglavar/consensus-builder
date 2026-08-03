@@ -797,6 +797,23 @@
                 "missingIdentifier": "Identificador de parcela no disponible.",
                 "chainSuffix": " ({{chain}})",
                 "tokenSuffix": " • Token {{token}}"
+            },
+            "dossier": {
+                "channel": {
+                    "acceptance": "Consentimiento necesario",
+                    "offer": "Oferta para usted",
+                    "vote": "Votación",
+                    "disclosure": "Info"
+                },
+                "destination": {
+                    "public": "público",
+                    "proposer": "el proponente",
+                    "mapping": "según el plan",
+                    "undecided": "por decidir"
+                },
+                "takes": "Toma {{area}} m² de esta parcela → {{destination}}",
+                "remainder": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m².",
+                "remainderSplit": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m² en {{count}} piezas separadas ({{pieces}} m²)."
             }
         },
         "proposal": {
@@ -1035,6 +1052,12 @@
             "histogramSubtitle": "Longitud total visible agrupada por ancho promedio.",
             "segmentTitle": "Segmentos",
             "segmentSubtitle": "Ordenados por ancho promedio (descendente). Haz clic para enfocar el mapa."
+        },
+        "drill": {
+            "title": "En este punto",
+            "close": "Cerrar",
+            "baseParcel": "Parcela catastral",
+            "slice": "Parcela formada"
         }
     },
     "modal": {
@@ -1649,6 +1672,10 @@
                         "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes)."
                     },
                     "failedCount": "{{count}} fallaron.",
+                    "blockedAncestors": "Bloqueado por antecesores aplicados faltantes:",
+                    "blockedWaitingOn": "esperando a {{titles}}",
+                    "blockedMissingFabric": "el terreno recortado debajo no está presente aquí",
+                    "blockedMissingParcels": "faltan parcelas catastrales: {{list}}",
                     "title": "Propuestas compartidas aplicadas",
                     "unapplyApplied": "Deshacer aplicadas"
                 },
@@ -1766,8 +1793,17 @@
                         "one": "Se aplicó {{count}} propuesta.",
                         "few": "Se aplicaron {{count}} propuestas.",
                         "other": "Se aplicaron {{count}} propuestas."
+                    },
+                    "tour": {
+                        "title": "Conflicto de espacio",
+                        "body": "«{{incoming}}» necesita terreno ocupado actualmente por:",
+                        "replace": "Reemplazar existente",
+                        "keep": "Mantener existente",
+                        "applyToAll": "Aplicar a todos los conflictos restantes",
+                        "keptCountDetailed": "Mantuviste las propuestas existentes — {{count}} propuesta(s) entrante(s) quedan sin aplicar (búscalas en la lista de propuestas):"
                     }
-                }
+                },
+                "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola)."
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -2028,6 +2064,28 @@
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
             }
+        },
+        "unapplyTour": {
+            "titleUnapply": "Desaplicar «{{title}}»",
+            "titleDelete": "Eliminar «{{title}}»",
+            "message": "Esta propuesta tiene elementos dependientes. Lo siguiente se eliminará del mapa y del almacenamiento. Haga clic en un elemento para verlo.",
+            "counts": "{{proposals}} propuesta(s) · {{parcels}} fracción(es) de parcela",
+            "badgeProposal": "propuesta",
+            "badgeParcel": "parcela",
+            "cancel": "Cancelar",
+            "confirmUnapply": "Desaplicar",
+            "confirmDelete": "Eliminar",
+            "working": "Procesando…",
+            "failed": "No se pudo completar: {{reason}}",
+            "titleRecut": "Recortar «{{title}}»",
+            "messageRecut": "Cambiar esta huella vuelve a cortar el terreno debajo. Lo siguiente se asienta en ese terreno y se volverá a derivar. Haga clic en un elemento para verlo.",
+            "confirmRecut": "Recortar",
+            "titleOccupied": "Suelo ocupado por «{{title}}»",
+            "messageOccupied": "Esto ocupa suelo que tienen las siguientes propuestas aplicadas. Una propuesta nunca se parte por la mitad, así que primero hay que desaplicarlas. Haz clic en un elemento para verlo.",
+            "confirmOccupied": "Desaplicar y continuar",
+            "titleReform": "Reformando «{{title}}»",
+            "messageReform": "Guardar este trazado cambia la forma de parcelas sobre las que ya se apoyan otras propuestas. Esas propuestas se desaplicarán; las parcelas que no cambiaste conservan las suyas. Haz clic en un elemento para verlo.",
+            "confirmReform": "Desaplicar y guardar"
         }
     },
     "blockify": {
@@ -2271,7 +2329,11 @@
                 "uploadEmpty": "El archivo subido no contiene polígonos.",
                 "uploadNoOverlap": "Los polígonos subidos no se solapan con las parcelas seleccionadas.",
                 "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
-                "uploadSuccess": "Se cargaron {{count}} polígonos del archivo."
+                "uploadSuccess": "Se cargaron {{count}} polígonos del archivo.",
+                "editBlocked": "Esta edición desplaza propuestas aplicadas y no puede guardarse aquí.",
+                "nodeHint": "Arrastra un vértice para moverlo; los vértices compartidos mueven todas las parcelas que los tocan. Haz clic en un punto tenue para añadir uno, Alt+clic en un vértice para quitarlo.",
+                "nodeKept": "Ese vértice no se puede quitar: una parcela dejaría de ser un polígono.",
+                "undone": "Se deshizo el último cambio."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2316,7 +2378,20 @@
                 "one": "{{count}} propietario",
                 "few": "{{count}} propietarios",
                 "other": "{{count}} propietarios"
-            }
+            },
+            "cancel": "Cancelar",
+            "discardTitle": "¿Descartar estos cambios?",
+            "discardMessage": "Los cambios que hiciste aquí no se han guardado en la propuesta. Si cierras ahora, se descartan.",
+            "discardConfirm": "Descartar cambios",
+            "discardCancel": "Seguir editando",
+            "editNodes": "Editar límites (nodos)",
+            "undoEdit": "Deshacer (Cmd/Ctrl+Z)",
+            "undoNothing": "Nada que deshacer",
+            "nodeShared": "Vértice compartido · {{count}} parcelas",
+            "nodeOwn": "Vértice de una parcela",
+            "nodeSharedHint": "Al arrastrarlo se mueven todas las parcelas que lo tocan.",
+            "nodeOwnHint": "Arrastra para moverlo.",
+            "nodeRemove": "Quitar vértice"
         }
     },
     "status": {
@@ -2917,5 +2992,9 @@
         "cancel": "Cancelar",
         "save": "Listo",
         "saved": "Geometría de estación guardada."
+    },
+    "claims": {
+        "onParcels": "En las parcelas:",
+        "cadastreViewToggle": "Vista catastral: solo parcelas originales"
     }
 }

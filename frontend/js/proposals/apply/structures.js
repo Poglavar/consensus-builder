@@ -144,6 +144,12 @@
                             parentIdsSample: parentIds.slice(0, 5)
                         });
                     } catch (_) { /* ignore logging errors */ }
+                    try {
+                        this._setLastApplyFailure(idLabel, {
+                            code: 'structure-geometry-unresolvable',
+                            message: `The ${kind} has no stored geometry and none could be rebuilt from its ${parentIds.length} parent parcel(s).`
+                        });
+                    } catch (_) { }
                     return false;
                 }
             }
@@ -166,10 +172,24 @@
                     });
                     if (!conflictsCleared) {
                         console.warn('Could not unapply a conflicting structure proposal', { proposalId, blockName });
+                        try {
+                            this._setLastApplyFailure(idLabel, {
+                                code: 'conflict-unapply-failed',
+                                message: `Another structure already occupies block ${blockName} and could not be unapplied.`,
+                                conflictTitles: conflicts.map(p => p && p.title).filter(Boolean),
+                                conflictProposalIds: conflicts.map(p => p && p.proposalId).filter(Boolean)
+                            });
+                        } catch (_) { }
                         return false;
                     }
                 } catch (e) {
                     console.warn('Failed to enforce unique structure proposal constraint', e);
+                    try {
+                        this._setLastApplyFailure(idLabel, {
+                            code: 'conflict-check-failed',
+                            message: `Checking for a conflicting structure on block ${blockName} threw: ${e && e.message ? e.message : e}`
+                        });
+                    } catch (_) { }
                     return false;
                 }
             }
@@ -310,6 +330,12 @@
             return true;
         } catch (e) {
             console.warn('Failed to apply structure proposal', e);
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'structure-apply-threw',
+                    message: `Applying the structure threw: ${e && e.message ? e.message : e}`
+                });
+            } catch (_) { }
             return false;
         }
     },

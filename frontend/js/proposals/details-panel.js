@@ -414,8 +414,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const headerTitle = proposalOwnName
             ? proposalOwnName.trim()
             : tProposal('panel.proposal.title', 'Proposal Details');
-        proposalPanelTitle.textContent = headerTitle;
-        proposalPanelTitle.title = headerTitle; // tooltip when the name is truncated
+        applyProposalTitleMarquee(proposalPanelTitle, headerTitle);
+        proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
     }
     const proposalDisplayTypeRaw = getProposalDisplayTypeLabel(fullProposal, proposal);
     const proposalDisplayType = proposalDisplayTypeRaw
@@ -1144,6 +1144,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const runPostRender = () => {
+        // Claims breadcrumb: the BASE parcels this proposal stands on, always one tap away.
+        try {
+            if (window.__claimsUi && typeof window.__claimsUi.injectProposalBreadcrumb === 'function') {
+                window.__claimsUi.injectProposalBreadcrumb(detailsContent, fullProposal || proposal);
+            }
+        } catch (_) { }
         // Lazy append remaining ancestor parcels
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels
@@ -2258,4 +2264,37 @@ function showProposalInfoHoverOverlay(parcelId) {
     } catch (error) {
         console.warn('showProposalInfoHoverOverlay failed', error);
     }
+}
+
+// A too-long proposal name rotates like text on a cylinder instead of ellipsizing: two copies
+// of the name slide left by exactly one copy-width plus the gap (48px, matching the CSS), so
+// the loop is seamless. Plain text is both the reset and the fallback — no overflow, a hidden
+// panel (clientWidth 0), or reduced motion all keep the ordinary ellipsis.
+function applyProposalTitleMarquee(el, text) {
+    if (!el) return;
+    el.classList.remove('title-marquee');
+    el.textContent = text;
+    requestAnimationFrame(() => {
+        try {
+            if (el.textContent !== text) return; // a newer title landed meanwhile
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (el.clientWidth === 0 || el.scrollWidth <= el.clientWidth) return;
+            const track = document.createElement('span');
+            track.className = 'title-marquee-track';
+            const first = document.createElement('span');
+            first.textContent = text;
+            const second = document.createElement('span');
+            second.textContent = text;
+            second.setAttribute('aria-hidden', 'true');
+            track.appendChild(first);
+            track.appendChild(second);
+            el.textContent = '';
+            el.appendChild(track);
+            el.classList.add('title-marquee');
+            const width = first.getBoundingClientRect().width || el.scrollWidth;
+            const distance = width + 48;
+            track.style.setProperty('--marquee-distance', `${distance}px`);
+            track.style.setProperty('--marquee-duration', `${Math.max(6, Math.round(distance / 30))}s`);
+        } catch (_) { /* the plain text set above stays as the fallback */ }
+    });
 }

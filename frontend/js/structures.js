@@ -22,6 +22,32 @@
     const PARKS_PANE = 'parksPane';
     const LAKES_PANE = 'lakesPane';
 
+    // Claims model (rethink-proposals.md §13): a structure is the TOP claim on its ground, so its
+    // base fill is clickable and opens the proposal; the parcels beneath stay one tap away via
+    // the details panel's "on parcels" breadcrumb. Decorations stay inert. In cadastre view the
+    // structures are dimmed context, so the click routes nowhere.
+    function bindStructureClaimClick(layer, structureFeature) {
+        try {
+            const pid = structureFeature && structureFeature.properties && structureFeature.properties.proposalId;
+            if (!pid || !layer || typeof layer.on !== 'function') return;
+            layer.on('click', (event) => {
+                if (window.cadastreViewActive === true) return;
+                try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
+                // The drill resolves the whole stack at the point (something may stand above
+                // this structure) and shows the chain; without it, select the structure itself.
+                let drillHandled = false;
+                try {
+                    if (window.__drillUi && event && event.latlng) {
+                        drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
+                    }
+                } catch (_) { }
+                if (!drillHandled && typeof window.selectAndHighlightProposal === 'function') {
+                    window.selectAndHighlightProposal(String(pid), null, false, true);
+                }
+            });
+        } catch (_) { /* an unclickable structure is display-only, never an error */ }
+    }
+
     function ensureSquaresPane() {
         if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
         let pane = map.getPane(SQUARES_PANE);
@@ -696,15 +722,16 @@
             try {
                 const renderFeature = cutStructureFeature(parkFeature, parkCutters);
                 if (!renderFeature) return; // fully paved over by applied roads
-                // Base grass polygon
+                // Base grass polygon — the park's claim surface, clickable (claims model).
                 const base = L.geoJSON(renderFeature, {
                     style: {
                         color: '#0d3b1f', weight: 2, opacity: 1,
                         fillColor: '#1b5e20', fillOpacity: 0.65, pane: PARKS_PANE
                     },
-                    interactive: false,
+                    interactive: true,
                     pane: PARKS_PANE
                 });
+                bindStructureClaimClick(base, renderFeature);
                 base.addTo(group);
                 // Decorations
                 drawParkDecorations(group, renderFeature);
@@ -1069,12 +1096,15 @@
         const waterGeom = subtractCorridorsFromGeometry(graphics && graphics.water ? graphics.water : null, cutters);
         const transitionGeom = subtractCorridorsFromGeometry(graphics && graphics.transition ? graphics.transition : null, cutters);
 
+        // Shore + water are the lake's claim surface, clickable (claims model).
         if (shoreGeom) {
-            L.geoJSON(shoreGeom, {
+            const shore = L.geoJSON(shoreGeom, {
                 style: { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9, pane: LAKES_PANE },
-                interactive: false,
+                interactive: true,
                 pane: LAKES_PANE
-            }).addTo(group);
+            });
+            bindStructureClaimClick(shore, lakeFeature);
+            shore.addTo(group);
         }
         if (transitionGeom) {
             L.geoJSON(transitionGeom, {
@@ -1084,11 +1114,13 @@
             }).addTo(group);
         }
         if (waterGeom) {
-            L.geoJSON(waterGeom, {
+            const water = L.geoJSON(waterGeom, {
                 style: { color: '#1b6fa8', weight: 1.2, opacity: 0.95, fillColor: '#3fa7f5', fillOpacity: 0.88, pane: LAKES_PANE },
-                interactive: false,
+                interactive: true,
                 pane: LAKES_PANE
-            }).addTo(group);
+            });
+            bindStructureClaimClick(water, lakeFeature);
+            water.addTo(group);
         }
 
         const fishHome = waterGeom || shoreGeom;
@@ -1157,13 +1189,14 @@
             try {
                 const renderFeature = cutStructureFeature(squareFeature, squareCutters);
                 if (!renderFeature) return; // fully paved over by applied roads
-                // Base cobblestone polygon (plain grey fill)
+                // Base cobblestone polygon (plain grey fill) — the square's claim surface,
+                // clickable (claims model); the ground stays reachable via the breadcrumb.
                 const base = L.geoJSON(renderFeature, {
                     style: { color: '#666666', weight: 2, opacity: 1, fillColor: '#bdbdbd', fillOpacity: 0.7, pane: SQUARES_PANE },
-                    // Keep squares non-interactive so parcel clicks continue to hit underlying parcels
-                    interactive: false,
+                    interactive: true,
                     pane: SQUARES_PANE
                 });
+                bindStructureClaimClick(base, renderFeature);
                 base.addTo(group);
                 // Decorations
                 drawSquareDecorations(group, renderFeature);
