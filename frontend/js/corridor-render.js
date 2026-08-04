@@ -127,16 +127,30 @@ function renderCorridorGradeSeparations(records, group, pane) {
         const isOverpass = record.mode === 'overpass';
         if (!isOverpass && record.mode !== 'underpass') return;
         const color = isOverpass ? '#d97706' : '#1d4ed8';
-        L.polyline([record.from, record.crossing, record.to], {
-            color,
-            weight: Math.max(6, Number(record.width) || 2),
-            opacity: 0.92,
-            dashArray: isOverpass ? null : '8 7',
-            lineCap: 'round',
-            interactive: false,
-            pane: pane || undefined,
-            className: `corridor-grade-separation corridor-grade-separation--${record.mode}`
-        }).addTo(group);
+        // The structure is drawn as a real strip of the road's width, not as a fat polyline.
+        // `weight` is PIXELS while record.width is METRES, so the old `weight: record.width` was
+        // both wrong at every zoom (a 19 m deck drawn 19 px wide, never rescaling — there is no
+        // zoomend re-render here) and round-capped, which bulged it past the ramp ends. A polygon
+        // is in geographic coordinates, so it scales with the map for free and ends square.
+        const width = Number(record.width);
+        const deck = (typeof calculateRoadPolygon === 'function' && Number.isFinite(width) && width > 0)
+            ? calculateRoadPolygon([record.from, record.crossing, record.to], width)
+            : null;
+        if (!deck) {
+            console.warn('[corridor] grade separation has no usable width; skipping deck', record.mode, record.width);
+        } else {
+            L.polygon(deck, {
+                color,
+                weight: 1.5,
+                opacity: 0.92,
+                fillColor: color,
+                fillOpacity: 0.35,
+                dashArray: isOverpass ? null : '8 7',
+                interactive: false,
+                pane: pane || undefined,
+                className: `corridor-grade-separation corridor-grade-separation--${record.mode}`
+            }).addTo(group);
+        }
         [record.from, record.to].forEach(point => L.circleMarker(point, {
             radius: 4.5,
             color,

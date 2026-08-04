@@ -111,6 +111,9 @@ let roadAffectedParcels = [];
 let roadMouseMarker = null;
 let roadHasStarted = false;
 let roadPreviewPolygonLayer = null;
+// The edge whose placement is being decided right now (buildings, crossings, structures). It is
+// drawn at its real width for as long as those dialogs are open — see showPendingRoadSegment.
+let roadPendingSegmentLayer = null;
 let roadCenterlineLayer = null;
 let roadPolygonLayer = null;
 let roadMarkers = [];
@@ -193,14 +196,27 @@ function refreshRoadGradeSeparationLayer() {
     roadGradeSeparations.forEach(record => {
         if (!record?.from || !record?.to || !record?.crossing) return;
         const over = record.mode === 'overpass';
-        L.polyline([record.from, record.crossing, record.to], {
-            color: over ? '#f59e0b' : '#2563eb',
-            weight: Math.max(6, Number(record.width) || 2),
-            opacity: 0.9,
-            dashArray: over ? null : '7 6',
-            pane,
-            interactive: false
-        }).addTo(roadGradeSeparationLayer);
+        // Same as the applied renderer: a strip of the road's real width, not a fat polyline.
+        // `weight` is pixels and record.width is metres, so the old form drew a 19 m deck 19 px
+        // wide and never rescaled on zoom. A polygon is geographic, so it scales for free.
+        const width = Number(record.width);
+        const deck = (typeof calculateRoadPolygon === 'function' && Number.isFinite(width) && width > 0)
+            ? calculateRoadPolygon([record.from, record.crossing, record.to], width)
+            : null;
+        if (!deck) {
+            console.warn('[road-drawing] grade separation has no usable width; skipping deck', record.mode, record.width);
+        } else {
+            L.polygon(deck, {
+                color: over ? '#f59e0b' : '#2563eb',
+                weight: 1.5,
+                opacity: 0.9,
+                fillColor: over ? '#f59e0b' : '#2563eb',
+                fillOpacity: 0.35,
+                dashArray: over ? null : '7 6',
+                pane,
+                interactive: false
+            }).addTo(roadGradeSeparationLayer);
+        }
         [record.from, record.to].forEach(point => L.circleMarker(point, {
             radius: 4,
             color: over ? '#b45309' : '#1d4ed8',
@@ -2569,19 +2585,37 @@ async function updateRoadOwnershipCounts(parcels) {
     }
 }
 
-function closeProposalDetailsForDrawing() {
-    const proposalPanel = document.getElementById('proposal-details-panel');
-    if (proposalPanel && proposalPanel.classList.contains('visible')) {
-        if (typeof hideProposalDetailsPanel === 'function') {
-            hideProposalDetailsPanel(true);
-        } else {
-            proposalPanel.classList.remove('visible');
-            if (typeof clearProposalHighlights === 'function') clearProposalHighlights();
-        }
+// Entering the drawing tool clears the map of whatever you were looking at: an open proposal, a
+// selected parcel, the "At this spot" stack, a multi-selection. None of that is neutral once the
+// tool is up — a selected proposal's highlighted parcels read as ground the road already claims —
+// and their panels compete with the drawing panel for the same corner. Runs whether or not the
+// panels happen to be open: the highlight outlives the panel that produced it.
+function clearMapSelectionsForDrawing() {
+    try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(true); } catch (_) { }
+    try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
+    try { window.ProposalSelection?.clear?.(); } catch (_) { }
+    try { window.__drillUi?.hidePanel?.(); } catch (_) { }
+
+    // The single-parcel selection: its style, the state the rest of the app reads, its panel.
+    try {
+        const byId = (typeof getParcelLayerIdMap === 'function') ? getParcelLayerIdMap() : null;
+        const selectedLayer = (window.currentParcel && window.currentParcel.layer)
+            || (window.selectedParcelId && byId ? byId.get(String(window.selectedParcelId)) : null);
+        if (selectedLayer && typeof restoreParcelLayerStyle === 'function') restoreParcelLayerStyle(selectedLayer);
+    } catch (_) { }
+    window.selectedParcelId = null;
+    window.currentParcel = null;
+    try { if (typeof clearParcelHover === 'function') clearParcelHover(); } catch (_) { }
+
+    ['proposal-details-panel', 'parcel-info-panel', 'block-info-panel'].forEach(id => {
+        try { document.getElementById(id)?.classList.remove('visible'); } catch (_) { }
+    });
+
+    try {
         if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.clearSelection === 'function') {
-            try { multiParcelSelection.clearSelection(); } catch (_) { }
+            multiParcelSelection.clearSelection();
         }
-    }
+    } catch (_) { }
 }
 
 // Ensure multi-parcel selection is turned off when starting road/track drawing
@@ -2700,7 +2734,7 @@ function toggleRoadDrawTool() {
     if (roadDrawingMode) {
         disableMultiSelectForDrawing();
         setRoadPanelLabelsForMode(corridorDrawKind);
-        closeProposalDetailsForDrawing();
+        clearMapSelectionsForDrawing();
         // Show what the corridor will actually collide with (see autoShowBuildingsForRoadDrawing).
         try { autoShowBuildingsForRoadDrawing(); } catch (_) { }
 
@@ -3252,6 +3286,9 @@ async function handleRoadClick(e) {
         const activeSegmentIndex = roadSegments.indexOf(roadPoints);
         const activeSegmentWidth = activeSegmentIndex >= 0 ? roadDrawingWidthForSegmentIndex(activeSegmentIndex) : roadWidth;
         const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth);
+        // Every decision below is about THIS edge, so it stays visible at its real width until one
+        // of them commits it or refuses it.
+        showPendingRoadSegment(segmentPolygon);
         let pendingGradeSeparations = [];
         if (typeof resolvePedestrianRoadCrossings === 'function') {
             const activeProfile = roadDrawingSegmentOverride(activeSegmentIndex) || roadProfile;
@@ -3488,6 +3525,9 @@ async function handleRoadClick(e) {
     updateUndoButtonState();
     } finally {
         roadSegmentPlacementInProgress = false;
+        // Whatever became of this click — committed, refused, or thrown — the edge is no longer
+        // under decision. A commit has already drawn it as road; anything else undrew it.
+        clearPendingRoadSegment();
     }
 }
 
@@ -3568,6 +3608,34 @@ function handleRoadMouseMove(e) {
             weight: 2
         }).addTo(map);
     }
+}
+
+// Keep the edge under decision on the map, at the width it will actually be built at, while the
+// cut/demolish/tunnel tour (or a crossing/structure prompt) is open. Opening a dialog moves the
+// cursor off the map, and mouse-out takes the ordinary preview band with it — which left the
+// question "how much of this building does the road cover?" answerable only from a hairline
+// centreline. Non-interactive, so it cannot swallow a click meant for the map or the dialog.
+function showPendingRoadSegment(polygonLatLngs) {
+    clearPendingRoadSegment();
+    if (!Array.isArray(polygonLatLngs) || polygonLatLngs.length < 3) return;
+    try {
+        roadPendingSegmentLayer = L.polygon(polygonLatLngs, {
+            color: '#ff6600',
+            weight: 2,
+            fillColor: '#ff6600',
+            fillOpacity: 0.25,
+            interactive: false
+        }).addTo(map);
+    } catch (error) {
+        console.error('[road-drawing] Could not draw the pending segment outline', error);
+        roadPendingSegmentLayer = null;
+    }
+}
+
+function clearPendingRoadSegment() {
+    if (!roadPendingSegmentLayer) return;
+    try { roadPendingSegmentLayer.removeFrom(map); } catch (_) { }
+    roadPendingSegmentLayer = null;
 }
 
 // Handle road mouse movement out
@@ -3755,67 +3823,6 @@ function calculateRoadPolygon(points, width) {
     return combined;
 }
 
-// Calculate road polygon by buffering the centerline - this naturally fills all crossings
-function calculateRoadPolygonFromBuffer(points, width) {
-    if (!points || points.length < 2 || !isFinite(width)) {
-        return null;
-    }
-
-    try {
-        // Convert points to GeoJSON LineString coordinates [lng, lat]
-        const lineCoords = points.map(p => [p.lng, p.lat]);
-
-        // Create a Turf LineString from the centerline
-        const centerline = turf.lineString(lineCoords);
-
-        // Buffer the line by half the road width on each side
-        // turf.buffer applies the distance on both sides, so halfWidth gives total width
-        const halfWidth = width / 2;
-        const buffered = turf.buffer(centerline, halfWidth, {
-            units: 'meters',
-            steps: 16  // Number of steps for smoother curves
-        });
-
-        if (!buffered || !buffered.geometry) {
-            return null;
-        }
-
-        // Extract coordinates from the buffered polygon
-        let coords;
-        if (buffered.geometry.type === 'Polygon') {
-            coords = buffered.geometry.coordinates[0];
-        } else if (buffered.geometry.type === 'MultiPolygon') {
-            // Use the largest polygon
-            let maxArea = 0;
-            let largestCoords = null;
-            for (const poly of buffered.geometry.coordinates) {
-                try {
-                    const polyFeature = turf.polygon([poly[0]]);
-                    const area = turf.area(polyFeature);
-                    if (area > maxArea) {
-                        maxArea = area;
-                        largestCoords = poly[0];
-                    }
-                } catch (_) {
-                    // Skip invalid polygons
-                }
-            }
-            coords = largestCoords;
-        } else {
-            return null;
-        }
-
-        if (!coords || coords.length < 4) {
-            return null;
-        }
-
-        // Convert back to Leaflet latLng format
-        return coords.map(coord => L.latLng(coord[1], coord[0]));
-    } catch (error) {
-        console.warn('Failed to calculate road polygon from buffer:', error);
-        return null;
-    }
-}
 
 // --- Geometry helpers: detect centerline self-intersections (planar) ---
 // polylineHasSelfIntersection and segmentsIntersect moved to frontend/js/corridor-geometry.js
@@ -5653,6 +5660,7 @@ function resetRoadDrawing(hidePanel = true) {
     roadDrawingProfileValidationPending = false;
     roadHasStarted = false;
     clearRoadSnapMarker();
+    clearPendingRoadSegment();
     clearRoadStripLayer();
     if (roadGradeSeparationLayer && map.hasLayer(roadGradeSeparationLayer)) map.removeLayer(roadGradeSeparationLayer);
     roadGradeSeparationLayer = null;

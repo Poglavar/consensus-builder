@@ -212,56 +212,6 @@ function _polylineHasSelfIntersection(latLngPoints) {
     return false;
 }
 
-function _calculateRoadPolygonFromBuffer(points, width) {
-    if (!points || points.length < 2 || !isFinite(width)) {
-        return null;
-    }
-
-    if (typeof turf === 'undefined' || !turf || typeof turf.lineString !== 'function' || typeof turf.buffer !== 'function') {
-        return null;
-    }
-
-    try {
-        const lineCoords = points.map(p => [p.lng, p.lat]);
-        const centerline = turf.lineString(lineCoords);
-        const halfWidth = width / 2;
-
-        const buffered = turf.buffer(centerline, halfWidth, {
-            units: 'meters',
-            steps: 16
-        });
-
-        if (!buffered || !buffered.geometry) return null;
-
-        let coords;
-        if (buffered.geometry.type === 'Polygon') {
-            coords = buffered.geometry.coordinates[0];
-        } else if (buffered.geometry.type === 'MultiPolygon') {
-            let maxArea = 0;
-            let largestCoords = null;
-            for (const poly of buffered.geometry.coordinates) {
-                try {
-                    const polyFeature = turf.polygon([poly[0]]);
-                    const area = turf.area(polyFeature);
-                    if (area > maxArea) {
-                        maxArea = area;
-                        largestCoords = poly[0];
-                    }
-                } catch (_) { }
-            }
-            coords = largestCoords;
-        } else {
-            return null;
-        }
-
-        if (!coords || coords.length < 4) return null;
-        return coords.map(coord => L.latLng(coord[1], coord[0]));
-    } catch (error) {
-        console.warn('Failed to calculate road polygon from buffer', error);
-        return null;
-    }
-}
-
 function _calculateRoadPolygon(points, width) {
     const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
 
