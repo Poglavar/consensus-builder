@@ -20,6 +20,25 @@ function tBlock(key, params = {}, fallback = '') {
     return formatBlockText(fallback || key || '', params);
 }
 
+// A block that cannot be formed FAILS LOUDLY: the answer to "why did nothing happen?" belongs in
+// front of the user, not in a status line they were not looking at. Every refusal in the detect
+// path goes through here, so none of them can quietly do nothing. Returns true — the callers all
+// return this as "handled".
+function failBlockDetection(message) {
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : null;
+    if (alertFn) {
+        try { alertFn(message, { title: tBlock('panel.parcel.detectBlock', {}, 'Detect block') }); } catch (_) { }
+    } else if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert(message);
+    }
+    // The status line keeps the message too — the dialog is dismissed, the reason should still be
+    // readable while the user acts on it.
+    if (typeof updateStatus === 'function') updateStatus(message);
+    return true;
+}
+
 function applyBlockTranslations(root) {
     const apply = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function')
         ? window.i18n.applyTranslations
@@ -1886,10 +1905,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
 
     const run = () => {
         if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.selectedParcels) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Multi-select is unavailable.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_multiselect_unavailable', {},
+                'Multi-select is unavailable, and a block is delivered as a multi-parcel selection.'));
         }
 
         if (!multiParcelSelection.isActive) {
@@ -1906,10 +1923,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
         }
 
         if (!multiParcelSelection.isActive) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Turn on multi-select first to select a whole block.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_multiselect_off', {},
+                'Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.'));
         }
 
         // Resolve the seed parcel: prefer the passed layer, else last multi-select parcel, else current parcel layer
@@ -1927,31 +1942,23 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
         }
 
         if (!seedParcel) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Select at least one parcel while multi-select is on, then press Detect.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_needs_a_seed_parcel', {},
+                'Select a parcel first — block detection grows outwards from the parcel you are on.'));
         }
 
         const startParcelId = parcelIdFromLayer(seedParcel);
         if (!startParcelId) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Could not resolve the selected parcel.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_seed_unresolved', {},
+                'Could not read the selected parcel’s id, so there is nothing to grow a block from.'));
         }
         if (isCorridorParcel(startParcelId, seedParcel)) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Block selection for multi-select works on non-corridor parcels only.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
+                'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
         }
 
         if (!parcelLayer || typeof parcelLayer.getLayers !== 'function') {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Parcels are not loaded yet.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_parcels_not_loaded', {},
+                'The parcels have not finished loading yet — wait for the map to settle and try again.'));
         }
 
         const bounds = map.getBounds();
@@ -1965,10 +1972,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
         });
 
         if (nonCorridorParcels.length === 0) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('No visible non-corridor parcels to select.');
-            }
-            return true;
+            return failBlockDetection(tBlock('alerts.messages.block_no_parcels_in_view', {},
+                'There are no ordinary parcels in view to build a block from — only roads and tracks.'));
         }
 
         const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
@@ -1980,50 +1985,23 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
             const invalidParcel = floodResult ? floodResult.invalidParcel : null;
             const invalidParcelId = floodResult ? (floodResult.invalidParcelId || parcelIdFromLayer(invalidParcel)) : null;
             const unknownLabel = tBlock('common.unknown', {}, 'Unknown');
-            const actionLabel = tBlock('panel.parcel.detectBlock', {}, 'Detect block');
             const idLabel = invalidParcelId || unknownLabel;
+            const reason = floodResult ? floodResult.invalidReason : null;
 
-            if (invalidParcel) {
-                // Focus the viewport on the parcel that failed the visibility check,
-                // without zooming in further (zoom-in tends to make the "fully visible" requirement worse).
-                try {
-                    if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function' && typeof map.fitBounds === 'function' && typeof invalidParcel.getBounds === 'function') {
-                        const currentZoom = map.getZoom();
-                        const bounds = invalidParcel.getBounds();
-                        if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
-                            map.fitBounds(bounds, { padding: [60, 60], maxZoom: currentZoom });
-                        }
-                    }
-                } catch (_) { /* ignore */ }
-
-                // Select the offending parcel for inspection (without additional camera moves).
-                try {
-                    if (invalidParcelId && typeof selectParcel === 'function') {
-                        const hadSuppress = (typeof window !== 'undefined') && Object.prototype.hasOwnProperty.call(window, 'suppressCameraMoves');
-                        const prevSuppress = (typeof window !== 'undefined') ? window.suppressCameraMoves : undefined;
-                        if (typeof window !== 'undefined') window.suppressCameraMoves = true;
-                        try {
-                            selectParcel(invalidParcelId, false);
-                        } finally {
-                            if (typeof window !== 'undefined') {
-                                if (hadSuppress) window.suppressCameraMoves = prevSuppress;
-                                else delete window.suppressCameraMoves;
-                            }
-                        }
-                    } else if (typeof invalidParcel.bringToFront === 'function') {
-                        invalidParcel.bringToFront();
-                    }
-                } catch (_) { /* ignore */ }
-            }
-
-            if (typeof updateStatus === 'function') {
-                updateStatus(tBlock(
-                    'status.messages.block_not_fully_visible_zoomed_to_parcel',
-                    { id: idLabel, action: actionLabel },
-                    'Block not fully visible (parcel {{id}} is outside the current view). Centered on it — press {{action}} again.'
-                ));
-            }
-            return true;
+            // The rule is about the VIEWPORT, not about roads: a block is grown only through
+            // parcels that lie entirely inside the current view, so that a partly-loaded neighbour
+            // cannot produce a partial block. Say exactly that, and say which parcel broke it —
+            // "a bunch of parcels fully surrounded by a road" still fails when one of them runs
+            // past the screen edge, which is impossible to guess from a silent no-op.
+            // Deliberately NO camera move and NO selection change: this used to fly the map to the
+            // offending parcel and select it, which threw away both the view and the selection the
+            // user was working with to deliver what is only a message.
+            const message = reason === 'start_not_fully_visible'
+                ? tBlock('alerts.messages.block_seed_not_fully_visible', {},
+                    'Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.')
+                : tBlock('alerts.messages.block_neighbour_not_fully_visible', { id: idLabel },
+                    'Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.');
+            return failBlockDetection(message);
         }
 
         let addedCount = 0;

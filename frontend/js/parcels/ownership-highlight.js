@@ -1,12 +1,16 @@
 (function (global) {
     'use strict';
 
-    // Ownership type highlight colors (light but visible)
+    // Ownership type highlight colors (light but visible). Four hues that must stay apart at 30%
+    // fill over a green basemap — private individual is red rather than green, which read as the
+    // government blue's twin once both were washed over terrain.
+    // THE definition: the sidebar legend swatches and parcel styling both read it from here
+    // (ParcelsOwnershipHighlight.styleFor). Copies drift — styles.js used to hold two of them.
     const OWNERSHIP_HIGHLIGHT_COLORS = {
         'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
         'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
         'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
+        'private individual': { fillColor: '#e74c3c', fillOpacity: 0.3, color: '#a93226', weight: 2 }
     };
 
     const resolveParcelId = (feature) => {
@@ -189,8 +193,10 @@
                 const parcelId = resolveParcelId(layer.feature);
                 if (parcelId) {
                     const parcelIdStr = parcelId.toString();
-                    // If already cached, skip
+                    // Already classified: re-stamp the property, because THIS layer may be a fresh
+                    // ingest of the same ground and the cache is the only place the answer survived.
                     if (ownershipTypeCache.has(parcelIdStr)) {
+                        layer.feature.properties.ownershipType = ownershipTypeCache.get(parcelIdStr);
                         return;
                     }
                     // If ownershipType is already in properties (from backend), cache it and skip calculation
@@ -271,13 +277,13 @@
         updateOwnershipHighlightMapListeners();
     }
 
+    // A pan brings parcels that were never classified, so the answer is to CLASSIFY, not merely to
+    // repaint: restyling alone left every newly loaded parcel plain, and the ones re-ingested over
+    // the same ground lost their tint with the feature object that carried it. Cached ids cost
+    // nothing here — the pass skips them and goes straight to the repaint.
     function refreshOwnershipHighlightsIfActive() {
         if (selectedOwnershipTypes.size === 0) return;
-        if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
-            global.refreshParcelStylesForAppliedProposals();
-        } else {
-            refreshOwnershipHighlights();
-        }
+        calculateOwnershipTypesForAllParcels();
     }
 
     function handleOwnershipHighlightMapChange() {
@@ -302,6 +308,10 @@
         try {
             global.map.on('moveend', handleOwnershipHighlightMapChangeDebounced);
             global.map.on('zoomend', handleOwnershipHighlightMapChangeDebounced);
+            // moveend fires before the parcels it triggered have arrived, so the map settling is
+            // only half the signal — the fetch landing is the other half, and it is the one that
+            // brings unclassified ground.
+            global.addEventListener('parcelDataLoaded', handleOwnershipHighlightMapChangeDebounced);
             ownershipHighlightMapListenersAttached = true;
         } catch (_) { /* ignore */ }
     }
@@ -314,6 +324,7 @@
         try {
             global.map.off('moveend', handleOwnershipHighlightMapChangeDebounced);
             global.map.off('zoomend', handleOwnershipHighlightMapChangeDebounced);
+            global.removeEventListener('parcelDataLoaded', handleOwnershipHighlightMapChangeDebounced);
             // Clear any pending debounced call
             if (ownershipHighlightDebounceTimer) {
                 clearTimeout(ownershipHighlightDebounceTimer);
@@ -358,6 +369,19 @@
         ownershipHighlightHotkeyAttached = true;
     }
 
+    // Each row carries the colour it paints the map with, so the list IS the legend. Painted from
+    // the same constant the highlighting uses — a second copy in CSS is a legend that can lie.
+    function paintOwnershipLegendSwatches() {
+        document.querySelectorAll('.ownership-type-checkbox').forEach(checkbox => {
+            const label = checkbox.closest('label');
+            const swatch = label ? label.querySelector('.ownership-legend-swatch') : null;
+            const style = OWNERSHIP_HIGHLIGHT_COLORS[checkbox.getAttribute('data-ownership-type')];
+            if (!swatch || !style) return;
+            swatch.style.backgroundColor = style.fillColor;
+            swatch.style.borderColor = style.color;
+        });
+    }
+
     /**
      * Initialize ownership type highlighting UI
      */
@@ -369,6 +393,7 @@
                 handleOwnershipTypeCheckboxChange(ownershipType, this.checked);
             });
         });
+        paintOwnershipLegendSwatches();
 
         updateOwnershipHighlightMapListeners();
         attachOwnershipHighlightHotkey();
@@ -389,6 +414,26 @@
         refreshOwnershipHighlights,
         handleOwnershipTypeCheckboxChange,
         getSelectedOwnershipTypes: () => new Set(selectedOwnershipTypes),
+        // The Leaflet style for an ownership type, or null when it has none. Every painter goes
+        // through here so the map, the legend and any future consumer cannot disagree.
+        styleFor: (ownershipType) => {
+            const style = OWNERSHIP_HIGHLIGHT_COLORS[ownershipType];
+            return style ? { ...style } : null;
+        },
+        // What a parcel layer's ownership type IS, for painters. The feature property is only a
+        // copy: it is minted per ingest and dies with the feature, while the cache is keyed by
+        // parcel id and survives. Falling back to it (and re-stamping) is what keeps a parcel
+        // coloured across the re-ingest a pan triggers.
+        typeFor: (layer) => {
+            const feature = layer && layer.feature;
+            if (!feature || !feature.properties) return null;
+            const fromProps = feature.properties.ownershipType;
+            if (fromProps) return fromProps;
+            const parcelId = resolveParcelId(feature);
+            const cached = parcelId !== null ? ownershipTypeCache.get(parcelId.toString()) : null;
+            if (cached) feature.properties.ownershipType = cached;
+            return cached || null;
+        },
         clearCache: () => { ownershipTypeCache.clear(); }
     };
 

@@ -42,6 +42,13 @@ body.sidebar-collapsed {
 
 #mode-2d-toggle.map-mode-toggle { bottom: 48px; }
 #mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+
+/* The scale bar is the bottom of that same stack. The map spans the full window with the sidebar
+   over it, so a bottom-left control at the default 10px would sit behind the sidebar: it rides the
+   same variable, and slides to the window edge when the sidebar collapses. */
+.leaflet-bottom.leaflet-left .leaflet-control-scale {
+    margin-left: var(--map-mode-stack-left);
+}
 /* Top of the lower-left mode stack: 2D 48 / 3D 96 / globe 144 / walk 192. */
 #cadastre-view-toggle.map-mode-toggle { bottom: 240px; }
 #cadastre-view-toggle.map-mode-toggle.active { background: #b91c1c; color: #fff; }

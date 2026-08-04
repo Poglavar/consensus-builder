@@ -259,6 +259,18 @@ body.debug-mode .debug-only-control {
     margin-right: 8px;
 }
 
+/* The colour a checked ownership type paints on the map, shown on its own row — the list is the
+   legend. Colour and border come from ownership-highlight.js, which owns the palette. */
+.ownership-legend-swatch {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    margin-right: 6px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background-color: transparent;
+}
+
 .info-subsection {
     margin-bottom: 15px;
 }

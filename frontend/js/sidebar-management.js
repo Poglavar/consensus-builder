@@ -954,6 +954,15 @@ function updateParcelsCheckboxByZoom(within) {
             }
         }
 
+        // Re-evaluate the section's own gating FIRST, then let zoom have the final say below.
+        // Zoom writes `checked` programmatically, and that fires no change event, so nothing else
+        // ever re-ran this: zooming out greyed the section and disabled its BUTTONS (the loop below
+        // only reaches checkboxes), and zooming back in re-enabled the checkboxes while the grey
+        // and the dead buttons stayed — a section that looked disabled and worked anyway.
+        if (parcelsSection && typeof updateSectionControlsState === 'function') {
+            try { updateSectionControlsState(parcelsSection); } catch (_) { }
+        }
+
         // Enable/disable parcel checkboxes based purely on zoom; keep ad parcels always enabled
         if (parcelsSection) {
             const parcelCheckboxes = parcelsSection.querySelectorAll('input[type="checkbox"]');

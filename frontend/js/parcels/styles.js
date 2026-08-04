@@ -213,22 +213,18 @@
         if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
             const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
             if (selectedTypes.size > 0) {
-                // Try to get ownership type from layer if provided, otherwise from feature properties
-                let ownershipType = null;
-                if (layer && layer.feature && layer.feature.properties) {
-                    ownershipType = layer.feature.properties.ownershipType;
-                }
+                // Ask the module, not the feature: a re-ingested parcel arrives without the
+                // property, and its type lives in the id-keyed cache until something re-stamps it.
+                const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
+                    ? ownershipHighlight.typeFor(layer)
+                    : (layer && layer.feature && layer.feature.properties ? layer.feature.properties.ownershipType : null);
 
                 if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightColors = {
-                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
-                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
-                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
-                    };
-                    const highlightStyle = highlightColors[ownershipType];
+                    const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
+                        ? ownershipHighlight.styleFor(ownershipType)
+                        : null;
                     if (highlightStyle) {
-                        return { ...highlightStyle };
+                        return highlightStyle;
                     }
                 }
             }
@@ -367,15 +363,13 @@
                 }
 
                 const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-                const ownershipType = layer?.feature?.properties?.ownershipType;
+                const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
+                    ? ownershipHighlight.typeFor(layer)
+                    : layer?.feature?.properties?.ownershipType;
                 if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightColors = {
-                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
-                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
-                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
-                    };
-                    const highlightStyle = highlightColors[ownershipType];
+                    const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
+                        ? ownershipHighlight.styleFor(ownershipType)
+                        : null;
                     if (highlightStyle) {
                         layer.setStyle(highlightStyle);
                         return;

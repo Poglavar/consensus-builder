@@ -195,7 +195,13 @@
             const propertyIsRoad = feature?.properties?.isRoad === true || feature?.properties?.isRoad === 'true';
             const storedIsRoad = parcelId && typeof global.isRoad === 'function' ? global.isRoad(parcelId) : false;
             const isRoad = propertyIsRoad || storedIsRoad;
-            return global.getParcelBaseStyle(parcelId, { isRoad: isRoad });
+            // getParcelStyle, NOT getParcelBaseStyle: the base style knows nothing about ownership
+            // highlighting. Ingest is the last painter after any pan, zoom or camera-moving
+            // selection, so painting the base style here quietly undid the highlighting a moment
+            // after every one of them. The feature is wrapped as a pseudo-layer because that is
+            // what the style path reads flags and ownership from.
+            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+            return styleFn(parcelId, { feature: feature }, { isRoad: isRoad });
         };
 
         var attachParcelEvents = function (feature, layer) {

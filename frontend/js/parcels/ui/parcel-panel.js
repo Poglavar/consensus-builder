@@ -1030,6 +1030,8 @@
 
         try { if (typeof global.clearProposalInfoHoverOverlay === 'function') global.clearProposalInfoHoverOverlay(); } catch (_) { }
         try { if (typeof global.clearProposalHighlights === 'function') global.clearProposalHighlights(); } catch (_) { }
+        // The stack panel described THIS selection — run after the state above is cleared.
+        try { global.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
 
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.updateCreateProposalButton) {

@@ -305,6 +305,23 @@
         currentStack = [];
     }
 
+    // The panel describes what is selected at a spot, so it has no business outliving the
+    // selection: closing the parcel or proposal card used to leave the stack standing over an
+    // empty map, offering rows for a thing nothing was pointing at any more.
+    //
+    // A proposal counts as selected only while its card is on screen. ProposalSelection is NOT the
+    // test: closing that panel deliberately leaves the selection object behind (see
+    // hideProposalDetailsPanel), so asking it would keep the stack alive for a proposal the user
+    // just dismissed.
+    function hideIfNothingSelected() {
+        try {
+            if (global.selectedParcelId) return;
+            const proposalPanel = global.document && global.document.getElementById('proposal-details-panel');
+            if (proposalPanel && proposalPanel.classList.contains('visible')) return;
+        } catch (_) { /* cannot tell — closing is the safe answer */ }
+        hidePanel();
+    }
+
     // ── hover ────────────────────────────────────────────────────────────────────────────────
 
     let lastHoverRef = null;
@@ -458,7 +475,7 @@
 
     // notifyHover: for layers that keep bubblingMouseEvents off (corridor hit targets) and so
     // starve the map of mousemove — they forward their own moves here instead.
-    const api = { stackAt, handleParcelClick, handleSurfaceClick, hidePanel, selectEntry, notifyHover: onMapMouseMove, ownsHover };
+    const api = { stackAt, handleParcelClick, handleSurfaceClick, hidePanel, hideIfNothingSelected, selectEntry, notifyHover: onMapMouseMove, ownsHover };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.
