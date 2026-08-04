@@ -2336,9 +2336,11 @@
                 "uploadParseError": "Neuspješno čitanje GeoJSON datoteke.",
                 "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
                 "editBlocked": "Ova izmjena izmješta primijenjene prijedloge i ovdje se ne može spremiti.",
-                "nodeHint": "Povucite čvor da ga pomaknete — zajednički čvorovi pomiču sve čestice koje ih dodiruju. Kliknite blijedu točku za dodavanje, Alt-klik na čvor za uklanjanje.",
+                "nodeHint": "Povucite čvor da ga pomaknete — zajednički čvorovi pomiču sve čestice koje ih dodiruju. Uklanjanjem čvora briše se granica koju određuje. Sam obod obuhvata je nepromjenjiv i nema čvorova.",
                 "nodeKept": "Taj se čvor ne može ukloniti — čestica bi prestala biti poligon.",
-                "undone": "Zadnja promjena je poništena."
+                "undone": "Zadnja promjena je poništena.",
+                "nodeOnPool": "Taj je čvor na obodu obuhvata — pripada susjedima, ne ovom planu.",
+                "assignHint": "Kliknite česticu da odaberete njezine vlasnike. Uređivanje je pauzirano dok dodjeljujete."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -2374,7 +2376,17 @@
             "nodeOwn": "Čvor jedne čestice",
             "nodeSharedHint": "Povlačenjem se pomiču sve čestice koje ga dodiruju.",
             "nodeOwnHint": "Povucite da ga pomaknete.",
-            "nodeRemove": "Ukloni čvor"
+            "nodeRemove": "Ukloni čvor",
+            "nodePoolCorner": "Vrh oboda obuhvata",
+            "nodePoolCornerHint": "Obod pripada susjedima. Da biste ga promijenili, promijenite koje su čestice u obuhvatu.",
+            "nodePoolEdge": "Mjesto gdje rez dodiruje obod",
+            "nodePoolEdgeHint": "Klizi po obodu i mijenja gdje rez dijeli — ne može ga napustiti.",
+            "oldPlots": "Stare čestice",
+            "colParcel": "Čestica",
+            "colArea": "Površina",
+            "unknownParcel": "Čestica",
+            "oldPlotsMissing": "Ulazne čestice nije bilo moguće učitati pa je obod obuhvata izveden iz samog plana.",
+            "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih čestica."
         }
     },
     "status": {
@@ -2386,7 +2398,6 @@
             "block_has_no_parcels": "Blok nema parcele",
             "block_has_no_parcels_with_name": "Blok {{name}} nema parcele",
             "block_not_found_with_name": "Blok {{name}} nije pronađen",
-            "block_not_fully_visible_zoomed_to_parcel": "Blok nije u potpunosti vidljiv (parcela {{id}} je izvan trenutnog prikaza). Fokusirano na nju — pritisni {{action}} ponovno.",
             "blockify_created_proposed_building_block": "Kreiran predloženi blok zgrade za {{block}} (širina: {{width}}m, povlačenje: {{setback}}m)",
             "block_split_by_a_perpendicular_road_through_its_middle": "Blok podijeljen okomitom cestom kroz sredinu",
             "building_design_saved_add_proposal_details_to_submit": "Dizajn zgrade spremljen. Dodaj detalje prijedloga za slanje.",
@@ -2745,7 +2756,16 @@
             "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj prijedlog.",
             "copy_proposal_parcels_unavailable": "Nije moguće učitati čestice ovog prijedloga. Prebacite se na grad u kojem je stvoren i pokušajte ponovno.",
             "road_source_incorporated": "Primijenjena je spojena cesta, a ‘{{name}}’ je uklonjena s karte.",
-            "road_source_included_in_replacement": "Ova cesta uključena je u ‘{{name}}’. Uklonite spojenu cestu s karte prije primjene ove."
+            "road_source_included_in_replacement": "Ova cesta uključena je u ‘{{name}}’. Uklonite spojenu cestu s karte prije primjene ove.",
+            "block_needs_a_seed_parcel": "Prvo odaberi parcelu — blok se traži šireći se od parcele na kojoj jesi.",
+            "block_neighbour_not_fully_visible": "Blok nije moguće složiti: parcela {{id}} pripada bloku, ali izlazi izvan ruba prikaza. Traženje bloka prati samo parcele koje su u cijelosti vidljive — odzumiraj dok cijeli blok ne stane u prikaz pa ponovno pritisni Otkrij blok.",
+            "block_no_parcels_in_view": "U prikazu nema običnih parcela od kojih bi se složio blok — samo ceste i pruge.",
+            "block_parcels_not_loaded": "Parcele se još učitavaju — pričekaj da se karta smiri pa pokušaj ponovno.",
+            "block_seed_is_corridor": "Ovo je parcela ceste ili pruge. Blok je zemljište IZMEĐU koridora — kreni od parcele unutar njega.",
+            "block_seed_not_fully_visible": "Blok nije moguće složiti: sama odabrana parcela izlazi izvan ruba prikaza. Traženje bloka prati samo parcele koje su u cijelosti vidljive, pa odzumiraj dok parcela ne stane u prikaz i onda ponovno pritisni Otkrij blok.",
+            "block_seed_unresolved": "Nije moguće pročitati ID odabrane parcele pa nema iz čega izgraditi blok.",
+            "block_multiselect_unavailable": "Višestruki odabir nije dostupan, a blok se isporučuje kao odabir više čestica.",
+            "block_multiselect_off": "Višestruki odabir nije se mogao uključiti, a blok se isporučuje kao odabir više čestica."
         }
     },
     "gameDialogs": {

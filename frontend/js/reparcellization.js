@@ -50,6 +50,22 @@
         selectedSliceIndex: null,
         ownerAssignmentPopup: null,
         newPlotsListEl: null,
+        // Inputs vs outputs. 'new' edits the plan over a faint underlay of the parcels it replaces;
+        // 'old' shows those parcels alone and read-only — the cadastre is a given here.
+        oldPlotsListEl: null,
+        plotsTabBtns: [],
+        plotsTab: 'new',
+        // Assigning and editing are different jobs on the same map, and they were
+        // fighting: a click meant "give this plot an owner" AND "select this plot to
+        // reshape", so the owner popup interrupted every editing gesture. One mode at a
+        // time — editing by default, assigning when asked for.
+        assignMode: false,
+        inputLayer: null,
+        inputHighlightLayer: null,
+        nodeEditWasActive: false,
+        // True when the input parcels could not all be resolved and the pooled outline had to be
+        // derived from the plan's own plots — a weaker guarantee, disclosed rather than hidden.
+        poolFromOutputs: false,
         // Land-readjustment accounting: contribution is measured by land value
         // (estimatedMarketPrice, area fallback) so owners are entitled to plots
         // of proportional value. contributionRatio reserves land for public uses
@@ -79,7 +95,7 @@
         buildingFootprintLayer: null,
         // Node/edge editing of the plot boundaries (plot-topology.js). `nodes` holds the current
         // topology so a drag knows which plots a handle belongs to.
-        nodeEdit: { active: false, topology: null, layer: null },
+        nodeEdit: { active: false, topology: null, layer: null, boundaryIndex: null },
         // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots and
         // their ownership taken BEFORE a mutating action, so undo restores the state the user
         // last saw rather than an intermediate drag frame.
@@ -292,7 +308,7 @@
             const confirmed = await confirmDiscard();
             if (!confirmed) return false;
         }
-        closeModal({ skipPersist: true });
+        closeModal({ skipPersist: true, discard: true });
         return true;
     }
 
@@ -423,10 +439,29 @@
         state.selectedSliceIndex = null;
         state.openSignature = null;
         clearNodeHandles();
+        clearInputHighlight();
+        if (state.inputLayer) { try { state.inputLayer.remove(); } catch (_) { } state.inputLayer = null; }
+        state.plotsTab = 'new';
+        state.assignMode = false;
+        state.assignBtn = null;
+        state.plotsTabBtns = [];
+        state.oldPlotsListEl = null;
+        state.nodeEditWasActive = false;
+        state.poolFromOutputs = false;
         state.nodeEdit.active = false;
         state.nodeEdit.topology = null;
+        state.nodeEdit.boundaryIndex = null;
         if (state.historyCtl) { state.historyCtl.destroy(); state.historyCtl = null; }
         dismissOwnerPopup();
+        // Discard must DISCARD. finishProposalDraftDesignSession is the COMMIT path — it turns the
+        // seeding draft into the object — so calling it alone meant closing the editor with Cancel
+        // ran the create flow anyway, which then failed validation and reopened the drawing the
+        // user had just thrown away. Abandoning first clears the commit id, exactly as every other
+        // design tool does, leaving the finish call to do the ordinary session teardown.
+        //
+        // Keyed on `discard`, NOT on skipPersist: Done passes skipPersist too, because it has
+        // already persisted by the time it gets here.
+        if (options.discard === true) window.discardProposalDraftDesignSession?.();
         window.finishProposalDraftDesignSession?.();
     }
 
@@ -446,11 +481,10 @@
         const doneLabel = t('reparcellization.modal.done', 'Done');
         const cancelLabel = t('reparcellization.modal.cancel', 'Cancel');
         const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
-        const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
+        const assignOwnersLabel = t('reparcellization.modal.assignOwners', 'Assign owners');
 
         const algorithmControls = `
                     <div class="reparcel-controls" data-reparcel-alg-group>
-                        <p class="reparcel-controls__title" data-i18n-key="reparcellization.modal.algorithmTitle">${algorithmTitle}</p>
                         <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
@@ -463,6 +497,9 @@
                                     &#x1F4C2;
                                     <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload hidden>
                                 </label>
+                                <span class="reparcel-tools-spacer"></span>
+                                <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
+                                <button type="button" class="btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title" title="${assignOwnersLabel}">&#x1F464;</button>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
                                 <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
@@ -472,11 +509,16 @@
                         </div>
                     </div>`;
 
+        // Inputs and outputs are the two halves of a readjustment, so the panel shows both: what
+        // went into the pool, and what the plan makes of it. Old plots is a READ-ONLY view — the
+        // cadastre is the given, not something this editor edits.
         const sidePanel = `<section class="reparcel-legend-panel">
-                            <div class="reparcel-newplots-header">
-                                <h3>${t('reparcellization.modal.newPlots', 'New plots')}</h3>
+                            <div class="reparcel-plots-tabs" role="tablist">
+                                <button type="button" role="tab" class="reparcel-plots-tab is-active" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
+                                <button type="button" role="tab" class="reparcel-plots-tab" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
                             </div>
                             <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
+                            <div class="reparcel-oldplots-list" data-reparcel-oldplots-table hidden></div>
                             <div class="reparcel-legend-header">
                                 <h3>${t('reparcellization.modal.owners', 'Owners')}</h3>
                             </div>
@@ -502,9 +544,7 @@
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
                         </section>
                         ${sidePanel}
-                        <div class="reparcel-actions">
-                            <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
-                            <span class="reparcel-actions-spacer"></span>
+                        <div class="reparcel-actions reparcel-actions--commit">
                             <button type="button" class="btn btn-secondary" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
                             <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
@@ -515,6 +555,13 @@
         state.modal = overlay;
         state.legendListEl = overlay.querySelector('[data-reparcel-owners-table]');
         state.newPlotsListEl = overlay.querySelector('[data-reparcel-newplots-table]');
+        state.oldPlotsListEl = overlay.querySelector('[data-reparcel-oldplots-table]');
+        state.assignBtn = overlay.querySelector('[data-reparcel-assign]');
+        if (state.assignBtn) state.assignBtn.addEventListener('click', () => toggleAssignMode());
+        state.plotsTabBtns = Array.from(overlay.querySelectorAll('[data-reparcel-plots-tab]'));
+        state.plotsTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
+        });
         state.coverageEl = overlay.querySelector('[data-reparcel-coverage]');
         state.cashTotalEl = overlay.querySelector('[data-reparcel-cashtotal]');
         state.nodesBtn = overlay.querySelector('[data-reparcel-nodes]');
@@ -953,7 +1000,120 @@
             state.newPlotsListEl.appendChild(table);
         }
 
+        updateOldPlotsList();
         updateCommitState();
+    }
+
+    // ── Inputs (old plots) ───────────────────────────────────────────────────────────────────────
+    // The cadastral parcels that were pooled. Read-only: this editor divides the pool, it does not
+    // edit the cadastre. Switching to this view drops the plots back to a faint underlay so the
+    // parcels being replaced are what you actually see.
+
+    function inputParcelFeatures() {
+        const layers = (state.selection && Array.isArray(state.selection.layers)) ? state.selection.layers : [];
+        return layers
+            .map(layer => (layer && layer.feature && layer.feature.geometry) ? layer.feature : null)
+            .filter(Boolean);
+    }
+
+    function inputParcelLabel(feature) {
+        const props = feature.properties || {};
+        return props.broj_cesti || props.parcelNumber || props.label
+            || String(props.parcel_id || props.id || '').split('-').slice(2).join('-')
+            || t('reparcellization.modal.unknownParcel', 'Parcel');
+    }
+
+    function setPlotsTab(tab) {
+        const next = tab === 'old' ? 'old' : 'new';
+        if (state.plotsTab === next) return;
+        state.plotsTab = next;
+        (state.plotsTabBtns || []).forEach(btn => {
+            const active = btn.getAttribute('data-reparcel-plots-tab') === next;
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        if (state.newPlotsListEl) state.newPlotsListEl.hidden = next !== 'new';
+        if (state.oldPlotsListEl) state.oldPlotsListEl.hidden = next !== 'old';
+        // Editing belongs to the new-plots view only — there is nothing here to edit in the
+        // cadastre, and leaving handles up over a read-only view invites a drag that means nothing.
+        if (next === 'old') {
+            state.nodeEditWasActive = state.nodeEdit.active;
+            if (state.nodeEdit.active) toggleNodeEditing(false);
+            if (state.drawing.active) cancelDraw();
+        } else if (state.nodeEditWasActive) {
+            state.nodeEditWasActive = false;
+            toggleNodeEditing(true);
+        }
+        (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', next === 'old'));
+        clearInputHighlight();
+        drawPreview();
+    }
+
+    function clearInputHighlight() {
+        if (state.inputHighlightLayer) {
+            try { state.inputHighlightLayer.remove(); } catch (_) { }
+            state.inputHighlightLayer = null;
+        }
+    }
+
+    function highlightInputParcel(feature, on) {
+        clearInputHighlight();
+        if (!on || !state.map || !feature) return;
+        state.inputHighlightLayer = L.geoJSON(feature, {
+            style: { color: '#b45309', weight: 3, fillColor: '#f59e0b', fillOpacity: 0.35 },
+            interactive: false
+        }).addTo(state.map);
+    }
+
+    function updateOldPlotsList() {
+        if (!state.oldPlotsListEl) return;
+        state.oldPlotsListEl.innerHTML = '';
+        const features = inputParcelFeatures();
+        const declared = (state.selection && Array.isArray(state.selection.ids)) ? state.selection.ids.length : 0;
+        if (!features.length) {
+            const empty = document.createElement('p');
+            empty.className = 'reparcel-oldplots-empty';
+            empty.textContent = t('reparcellization.modal.oldPlotsMissing',
+                'The input parcels could not be loaded, so the pooled outline is derived from the plan itself.');
+            state.oldPlotsListEl.appendChild(empty);
+            return;
+        }
+        const table = document.createElement('table');
+        table.className = 'reparcel-newplots-table reparcel-oldplots-table';
+        const thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+            <th>${t('reparcellization.modal.colParcel', 'Parcel')}</th>
+            <th>${t('reparcellization.modal.colArea', 'Area')}</th>
+        </tr>`;
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        features.forEach(feature => {
+            const tr = document.createElement('tr');
+            tr.className = 'reparcel-oldplot-row';
+            const area = computeFeatureArea(feature);
+            tr.innerHTML = `
+                <td class="plot-cell"><strong>${escapeForCell(inputParcelLabel(feature))}</strong></td>
+                <td class="area-cell">${formatArea(area)}</td>`;
+            tr.addEventListener('mouseenter', () => highlightInputParcel(feature, true));
+            tr.addEventListener('mouseleave', () => highlightInputParcel(feature, false));
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        state.oldPlotsListEl.appendChild(table);
+        if (features.length !== declared && declared) {
+            const note = document.createElement('p');
+            note.className = 'reparcel-oldplots-empty';
+            note.textContent = t('reparcellization.modal.oldPlotsPartial',
+                '{{shown}} of {{declared}} input parcels could be loaded.',
+                { shown: features.length, declared });
+            state.oldPlotsListEl.appendChild(note);
+        }
+    }
+
+    function escapeForCell(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, ch => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+        ));
     }
 
     function computeRingCentroidAndAreaXY(ringXY) {
@@ -1807,12 +1967,42 @@
         if (state.nodesBtn) state.nodesBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             setStatus(t('reparcellization.modal.status.nodeHint',
-                'Drag a node to move it — shared nodes move every plot that touches them. Click a faint dot to add one, Alt-click a node to remove it.'),
+                'Drag a node to move it — shared nodes move every plot that touches them. Remove a node to dissolve the boundary it defines. The pooled outline itself is fixed and carries no nodes.'),
                 'info', 'reparcellization.modal.status.nodeHint');
             renderNodeHandles();
         } else {
             clearNodeHandles();
             setStatus('', 'info');
+        }
+    }
+
+    // Assign-owners mode: the map is for choosing who gets which plot, and nothing else.
+    // Node handles come down, the drawing tools stand down, and a click on a plot opens the owner
+    // picker. Leaving it puts the editor back exactly as it was.
+    function toggleAssignMode(force) {
+        const next = typeof force === 'boolean' ? force : !state.assignMode;
+        if (next === state.assignMode) return;
+        state.assignMode = next;
+        if (state.assignBtn) {
+            state.assignBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
+            state.assignBtn.classList.toggle('is-active', next);
+        }
+        if (state.modal) state.modal.classList.toggle('reparcel-assign-mode', next);
+        const allPublicBtn = state.modal && state.modal.querySelector('[data-reparcel-all-public]');
+        if (allPublicBtn) allPublicBtn.hidden = !next;
+        if (next) {
+            state.nodeEditWasActive = state.nodeEdit.active;
+            if (state.nodeEdit.active) toggleNodeEditing(false);
+            if (state.drawing.active) cancelDraw();
+            setStatus(t('reparcellization.modal.status.assignHint',
+                'Click a plot to choose its owners. Editing is paused while you assign.'),
+                'info', 'reparcellization.modal.status.assignHint');
+        } else {
+            dismissOwnerPopup();
+            state.selectedSliceIndex = null;
+            if (state.nodeEditWasActive) { state.nodeEditWasActive = false; toggleNodeEditing(true); }
+            else setStatus('', 'info');
+            drawPreview();
         }
     }
 
@@ -1822,6 +2012,24 @@
             state.nodeEdit.layer = null;
         }
         state.nodeEdit.topology = null;
+    }
+
+    // Does a cut of OURS end at this node? Outline geometry is a given; a cut is a decision, and a
+    // node exists in this editor to let you act on decisions.
+    function anchorsACut(node, topology) {
+        if (!node || !topology || !Array.isArray(topology.edges)) return false;
+        return topology.edges.some(edge => (edge.a === node.id || edge.b === node.id) && !edge.onBoundary);
+    }
+
+    // The pooled outline, indexed for classification. It is fixed for the life of the modal — the
+    // pool changes only by choosing different input parcels — so it is built once and reused.
+    function poolBoundaryIndex() {
+        const topo = window.__plotTopology;
+        if (!topo || !state.superParcel) return null;
+        if (!state.nodeEdit.boundaryIndex) {
+            state.nodeEdit.boundaryIndex = topo.boundaryIndexOf(state.superParcel);
+        }
+        return state.nodeEdit.boundaryIndex;
     }
 
     // Rebuild the handle layer from the current slices. Called on every geometry change, so the
@@ -1835,15 +2043,42 @@
         // The handle layer is shared with the building and road editors; this only supplies the
         // geometry and says what a move/insert/remove means for a plot layout.
         const topo = window.__plotTopology;
+        // What may move: the cuts, not the pool. Classifying against the pooled outline turns the
+        // invariant into something the UI simply cannot express — a corner of the outline has no
+        // drag at all, and a cut endpoint that landed on it slides along its own segment.
+        const boundaryIndex = poolBoundaryIndex();
         state.nodeEdit.layer = factory.create({
             map: state.map,
             leaflet: L,
             getShapes: () => state.slices,
+            topologyOf: list => topo.annotateBoundary(topo.buildTopology(list), boundaryIndex),
             classes: {
                 nodeClass: 'geom-handle geom-handle--vertex reparcel-node-handle',
                 sharedClass: 'geom-handle--shared shared',
                 midClass: 'geom-handle geom-handle--mid reparcel-edge-handle'
             },
+            nodePolicy: (node, topology) => {
+                const kind = node.boundary && node.boundary.kind;
+                if (kind === 'boundary-corner') {
+                    // A corner of the pooled outline that no cut touches is not part of the design:
+                    // it is the shape of the parcels that were pooled. It cannot be dragged (that
+                    // would move the outline) and it cannot be removed (there is no boundary of
+                    // OURS there to dissolve), so showing a handle for it only offers gestures that
+                    // must then be refused. Every node you can see is a node you can act on.
+                    if (!anchorsACut(node, topology)) return { hidden: true };
+                    return { draggable: false, className: 'geom-handle--locked' };
+                }
+                if (kind === 'boundary-edge') {
+                    return {
+                        className: 'geom-handle--slide',
+                        constrain: coord => topo.constrainNodeDrop(node, coord)
+                    };
+                }
+                return {};
+            },
+            // No insertion on the outline: a new node there could only ever slide along a line
+            // that is not ours to reshape.
+            edgePolicy: edge => ({ insertable: !edge.onBoundary }),
             onPreview: (nodeId, coord, topology) => {
                 previewGeometries(topo.moveNode(state.slices, topology, nodeId, coord));
             },
@@ -1854,49 +2089,74 @@
                 applyGeometries(topo.insertNodeOnEdge(state.slices, topology, edgeId, coord));
             },
             onRemove: (nodeId, topology) => {
-                const result = topo.removeNode(state.slices, topology, nodeId);
-                if (!result.removed) {
-                    setStatus(t('reparcellization.modal.status.nodeKept',
-                        'That node cannot be removed — a plot would stop being a polygon.'),
-                        'warning', 'reparcellization.modal.status.nodeKept');
-                    return;
-                }
-                applyGeometries(result.geometries);
+                const node = (topology.nodes || []).find(n => n.id === nodeId);
+                if (node) removeNodeFromLayout(node, topology);
             },
-            onNodeClick: (node, marker, remove) => openNodePopup(node, marker, remove)
+            onNodeClick: (node, marker, remove, topology) => openNodePopup(node, marker, remove, topology)
         });
         state.nodeEdit.topology = state.nodeEdit.layer ? state.nodeEdit.layer.render() : null;
     }
 
-    // Small popup on a node: what it is, and the one action it has.
-    function openNodePopup(node, marker, onRemove) {
+    // A bare message anchored at a node, for a refusal that arrives without a popup already open
+    // (the Alt-click shortcut).
+    function showNodeMessagePopup(node, message) {
+        if (!state.map || !node || !Array.isArray(node.coord)) return;
+        try {
+            L.popup({ className: 'reparcel-node-popup-wrap', closeButton: true, autoPan: true })
+                .setLatLng([node.coord[1], node.coord[0]])
+                .setContent(`<div class="reparcel-node-popup"><div class="reparcel-node-popup__hint">${escapeForCell(message)}</div></div>`)
+                .openOn(state.map);
+        } catch (_) { /* a popup that will not open must not break the handle */ }
+    }
+
+    // Small popup on a node: what it is, and what it is allowed to do. A node on the pooled
+    // outline says so and offers nothing — the popup is where "why can't I drag this?" is answered.
+    function openNodePopup(node, marker, onRemove, topology) {
         const shared = node.plots.length > 1;
+        const kind = node.boundary && node.boundary.kind;
+        const locked = kind === 'boundary-corner';
+        const sliding = kind === 'boundary-edge';
         const container = document.createElement('div');
         container.className = 'reparcel-node-popup';
 
         const title = document.createElement('div');
         title.className = 'reparcel-node-popup__title';
-        title.textContent = shared
-            ? t('reparcellization.modal.nodeShared', 'Shared node · {{count}} plots', { count: node.plots.length })
-            : t('reparcellization.modal.nodeOwn', 'Node of one plot');
+        if (locked) title.textContent = t('reparcellization.modal.nodePoolCorner', 'Corner of the pooled outline');
+        else if (sliding) title.textContent = t('reparcellization.modal.nodePoolEdge', 'Where a cut meets the outline');
+        else if (shared) title.textContent = t('reparcellization.modal.nodeShared', 'Shared node · {{count}} plots', { count: node.plots.length });
+        else title.textContent = t('reparcellization.modal.nodeOwn', 'Node of one plot');
         container.appendChild(title);
 
         const hint = document.createElement('div');
         hint.className = 'reparcel-node-popup__hint';
-        hint.textContent = shared
-            ? t('reparcellization.modal.nodeSharedHint', 'Dragging it moves every plot that touches it.')
-            : t('reparcellization.modal.nodeOwnHint', 'Drag to move it.');
+        if (locked) {
+            hint.textContent = t('reparcellization.modal.nodePoolCornerHint',
+                'The outline belongs to the neighbours. To change it, change which parcels are pooled.');
+        } else if (sliding) {
+            hint.textContent = t('reparcellization.modal.nodePoolEdgeHint',
+                'Slides along the outline to change where the cut divides — it cannot leave it.');
+        } else if (shared) {
+            hint.textContent = t('reparcellization.modal.nodeSharedHint', 'Dragging it moves every plot that touches it.');
+        } else {
+            hint.textContent = t('reparcellization.modal.nodeOwnHint', 'Drag to move it.');
+        }
         container.appendChild(hint);
 
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'btn btn-danger btn-sm';
-        remove.textContent = t('reparcellization.modal.nodeRemove', 'Remove node');
-        remove.addEventListener('click', () => {
-            try { state.map.closePopup(); } catch (_) { }
-            onRemove();
-        });
-        container.appendChild(remove);
+        // Removal is offered on EVERY node, outline included. Removing one dissolves the cut it
+        // anchored and the plots on either side become one — remove the last cut and the pool is a
+        // single parcel. That is a design decision about the cuts, not a change to the outline,
+        // which is why it can sit beside a hint saying the outline is fixed.
+        {
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'btn btn-danger btn-sm';
+            remove.textContent = t('reparcellization.modal.nodeRemove', 'Remove node');
+            remove.addEventListener('click', () => {
+                try { state.map.closePopup(); } catch (_) { }
+                onRemove();
+            });
+            container.appendChild(remove);
+        }
 
         try {
             marker.unbindPopup();
@@ -1922,6 +2182,137 @@
         });
     }
 
+    // Settle a candidate layout back onto the pool: clip anything outside it, resolve overlaps, and
+    // hand every unclaimed scrap to the plot it borders most. This is what lets an edit be allowed
+    // unconditionally — the land always ends up belonging to something.
+    function healLayout(geometries) {
+        const heal = window.__plotHeal;
+        if (!heal || typeof heal.healTiling !== 'function' || !state.superParcel || typeof turf === 'undefined') {
+            return geometries;
+        }
+        try {
+            const result = heal.healTiling(geometries, state.superParcel, { turf });
+            if (result.changed) {
+                console.debug('[reparcellization] layout healed', {
+                    clipped: result.clipped, overlaps: result.overlaps,
+                    gapsFilled: result.gapsFilled, gapArea: Math.round(result.gapArea)
+                });
+            }
+            return result.geometries;
+        } catch (error) {
+            console.warn('[reparcellization] could not heal the layout; keeping the edit as drawn', error);
+            return geometries;
+        }
+    }
+
+    // Removing a node.
+    //
+    //   A node in the MIDDLE of a boundary is a bend: take it away and the boundary straightens but
+    //   stays. A line with several nodes keeps its line when you remove one of them.
+    //
+    //   A node at the END of a boundary is what holds the boundary up. Take it away and the
+    //   boundary stops existing, so the plots it separated become ONE plot — which is what joins an
+    //   appendix back to the land it was cut from.
+    //
+    // Both are done on the plots themselves. Re-deriving every face from the line network instead
+    // was correct in principle and wrong in practice: clipping the derived faces back to the pool
+    // re-nodes the whole plan, so a removal churned vertices everywhere and could land a NEW node
+    // within centimetres of the one just deleted — measured at 318 handles before a removal and 319
+    // after. An edit should touch what it names and nothing else.
+    function removeNodeFromLayout(node, topology) {
+        const topo = window.__plotTopology;
+        if (!topo || !node) return false;
+        const cuts = (topology.edges || []).filter(edge => !edge.onBoundary
+            && (edge.a === node.id || edge.b === node.id));
+
+        // A bend is two cuts meeting: the boundary passes THROUGH this node rather than ending at
+        // it, so removing it straightens the line and the line stays. Whether the node also happens
+        // to sit on the pooled outline is beside the point — a boundary that runs along the outline
+        // has middle nodes classified that way, and treating those as ends destroyed whole lines
+        // that had ordinary nodes on both sides.
+        const isBend = cuts.length === 2;
+        if (isBend) return removeNodePerRing(node, topology);
+
+        if (!cuts.length) {
+            const text = t('reparcellization.modal.status.nodeOnPool',
+                'That node sits on the pooled outline — it belongs to the neighbours, not to this plan.');
+            setStatus(text, 'warning', 'reparcellization.modal.status.nodeOnPool');
+            showNodeMessagePopup(node, text);
+            return false;
+        }
+        return dissolveBoundariesAt(node, topology, cuts);
+    }
+
+    // Straighten a boundary: drop the vertex from every plot that uses it, so both sides lose the
+    // same bend and stay in step. Healing settles anything that frees.
+    function removeNodePerRing(node, topology) {
+        const topo = window.__plotTopology;
+        const result = topo.removeNode(state.slices, topology, node.id, { dissolveDegenerate: true });
+        console.debug('[reparcellization] straighten', {
+            node: node.coord, removed: result.removed, reason: result.reason, slices: state.slices.length
+        });
+        if (!result.removed) {
+            const text = t('reparcellization.modal.status.nodeKept',
+                'That node cannot be removed — a plot would stop being a polygon.');
+            setStatus(text, 'warning', 'reparcellization.modal.status.nodeKept');
+            showNodeMessagePopup(node, text);
+            return false;
+        }
+        return applyGeometries(result.geometries);
+    }
+
+    // Merge the plots a boundary separated. Union rather than re-derive: the surviving outline is
+    // made of the plots' own coordinates, so no vertex moves and none is invented.
+    function dissolveBoundariesAt(node, topology, cuts) {
+        if (typeof turf === 'undefined') return false;
+        const members = new Set();
+        cuts.forEach(edge => (edge.plots || []).forEach(index => members.add(index)));
+        if (members.size < 2) {
+            // The boundary has only one plot on it — nothing to merge into. Removing the vertex is
+            // still the right gesture; healing settles whatever it frees.
+            return removeNodePerRing(node, topology);
+        }
+
+        const indices = Array.from(members).sort((a, b) => a - b);
+        const wrap = geometry => ({ type: 'Feature', properties: {}, geometry });
+        let merged = null;
+        indices.forEach(index => {
+            const geometry = state.slices[index] && state.slices[index].geometry;
+            if (!geometry) return;
+            merged = merged ? (turf.union(wrap(merged), wrap(geometry)) || {}).geometry || merged : geometry;
+        });
+        if (!merged) return false;
+
+        // The merged plot keeps the identity of the biggest contributor — the small side joins the
+        // large one, not the other way round.
+        let keeper = indices[0];
+        let keeperArea = 0;
+        indices.forEach(index => {
+            const area = computeGeometryArea(state.slices[index] && state.slices[index].geometry) || 0;
+            if (area > keeperArea) { keeperArea = area; keeper = index; }
+        });
+
+        pushHistory();
+        state.slices[keeper].geometry = merged;
+        state.slices[keeper].source = 'manual';
+        indices.filter(index => index !== keeper)
+            .sort((a, b) => b - a)
+            .forEach(index => state.slices.splice(index, 1));
+        state.selectedSliceIndex = null;
+        console.debug('[reparcellization] boundary dissolved', {
+            node: node.coord, mergedPlots: indices.length, plotsNow: state.slices.length
+        });
+        recomputeSliceAreas();
+        updateLegend(state.ownerShares);
+        try {
+            drawPreview();
+            updateCommitState();
+        } finally {
+            renderNodeHandles();
+        }
+        return true;
+    }
+
     // Commit a geometry set to the slices and redraw everything that depends on them.
     function applyGeometries(geometries) {
         if (!Array.isArray(geometries)) return false;
@@ -1933,18 +2324,37 @@
             return !!geometry && JSON.stringify(slice.geometry) !== JSON.stringify(geometry);
         });
         if (!changed) return false;
+        // Repair, do not refuse. Any edit can leave the layout momentarily untidy — a removed node
+        // drops a boundary, a drag pushes one plot over another — and the fix is to settle the
+        // land, not to forbid the gesture. Whatever is left unclaimed joins the plot it borders
+        // most; whatever is claimed twice goes to one of them.
+        const settled = healLayout(geometries);
         pushHistory();   // the pre-edit layout, captured before the assignment below
+        const dissolved = [];
         state.slices.forEach((slice, idx) => {
-            const geometry = geometries[idx];
-            if (!geometry) return;
+            const geometry = settled[idx];
+            if (geometry === undefined) return;
+            if (!geometry) { dissolved.push(idx); return; }
             slice.geometry = geometry;
             slice.source = 'manual';
         });
+        // A plot whose land has all gone to its neighbours is no longer a plot. Dropping it keeps
+        // the list honest — a 0 m² row that cannot be seen on the map is not a parcel.
+        if (dissolved.length) {
+            for (let i = dissolved.length - 1; i >= 0; i--) state.slices.splice(dissolved[i], 1);
+            if (state.selectedSliceIndex !== null) state.selectedSliceIndex = null;
+        }
         recomputeSliceAreas();
         updateLegend(state.ownerShares);
-        drawPreview();
-        updateCommitState();
-        renderNodeHandles();
+        // The handles describe the plots. If a redraw throws halfway, the handles must not be left
+        // floating over shapes that are no longer there — that is the "stars orphaned on the map,
+        // node and warning left behind, lines gone" state. Rebuild them whatever happens.
+        try {
+            drawPreview();
+            updateCommitState();
+        } finally {
+            renderNodeHandles();
+        }
         return true;
     }
 
@@ -1983,6 +2393,9 @@
 
     function onSliceClick(sliceIndex, latlng) {
         if (state.drawing.active || state.compare.active) return; // not while drawing/comparing
+        // Only in assign mode. Otherwise a click on a plot while you are reshaping it popped the
+        // owner picker over the geometry you were working on.
+        if (!state.assignMode) return;
         // If a popup is already open, close it (triggers redraw via dismissOwnerPopup)
         if (state.ownerAssignmentPopup) {
             try { state.map.closePopup(state.ownerAssignmentPopup); } catch (_) { }
@@ -2487,6 +2900,30 @@
         }
     }
 
+    function drawInputParcels() {
+        if (state.inputLayer) {
+            try { state.inputLayer.remove(); } catch (_) { }
+            state.inputLayer = null;
+        }
+        if (!state.map) return;
+        const features = inputParcelFeatures();
+        if (!features.length) return;
+        const showing = state.plotsTab === 'old';
+        state.inputLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+            style: showing
+                ? { color: '#92400e', weight: 2, fillColor: '#fde68a', fillOpacity: 0.45 }
+                : { color: '#9ca3af', weight: 1, dashArray: '4,4', fillOpacity: 0.06, fillColor: '#6b7280' },
+            interactive: showing,
+            onEachFeature: showing
+                ? (feature, layer) => {
+                    layer.bindTooltip(inputParcelLabel(feature), { direction: 'center', className: 'reparcel-oldplot-tip' });
+                    layer.on('mouseover', () => layer.setStyle({ weight: 3, fillOpacity: 0.6 }));
+                    layer.on('mouseout', () => layer.setStyle({ weight: 2, fillOpacity: 0.45 }));
+                }
+                : undefined
+        }).addTo(state.map);
+    }
+
     function drawPreview() {
         if (!state.map) return;
         if (state.previewLayer) {
@@ -2498,7 +2935,19 @@
             state.boundaryLayer = null;
         }
 
-        if (state.slices.length) {
+        // The parcels being replaced, under everything. In the new-plots view they are a faint
+        // reference — you are editing the plan, not them — and in the old-plots view they are the
+        // subject, so they carry the labels and the weight.
+        drawInputParcels();
+
+        if (state.slices.length && state.plotsTab === 'old') {
+            // Old-plots view: the plan is context only. Faint, non-interactive, no hover, no
+            // selection — nothing here is editable, and offering the affordance would lie.
+            state.previewLayer = L.geoJSON(
+                { type: 'FeatureCollection', features: state.slices.map(slice => ({ type: 'Feature', properties: {}, geometry: slice.geometry })) },
+                { style: { color: '#6b7280', weight: 1, opacity: 0.5, fillOpacity: 0.05, fillColor: '#6b7280' }, interactive: false }
+            ).addTo(state.map);
+        } else if (state.slices.length) {
             const collection = {
                 type: 'FeatureCollection',
                 features: state.slices.map((slice, idx) => ({
@@ -2569,10 +3018,14 @@
             }).addTo(state.map);
         }
 
+        // The pooled outline, in red and heavy: it is the one line in this editor that cannot be
+        // moved, so it must not look like the plot boundaries that can. Drawn after the plots so it
+        // is never buried under a fill.
         state.boundaryLayer = L.geoJSON(state.superParcel, {
             style: {
-                color: '#111',
-                weight: 2,
+                color: '#dc2626',
+                weight: 4,
+                opacity: 0.95,
                 fillOpacity: 0
             },
             interactive: false
@@ -2947,6 +3400,43 @@
         };
     }
 
+    // The parcels a saved plan says it was made from. The plan's own list is authoritative; the
+    // current map selection is not consulted, because "what happens to be selected" is not an input.
+    function declaredPlanParcelIds(fallbackSelection) {
+        const plan = window.pendingReparcellizationPlan;
+        if (plan && Array.isArray(plan.parcelIds) && plan.parcelIds.length) {
+            return plan.parcelIds.map(String);
+        }
+        return (fallbackSelection && Array.isArray(fallbackSelection.ids))
+            ? fallbackSelection.ids.map(String)
+            : [];
+    }
+
+    // Resolve input parcels to map layers, fetching the ones the map does not currently hold —
+    // a plan's parents are routinely hidden under the applied plan, and a partial pool is worse
+    // than none: it makes a boundary that is missing whole parcels look authoritative.
+    async function resolveInputParcelLayers(parcelIds) {
+        const ids = (parcelIds || []).map(String);
+        const lookup = id => {
+            if (typeof window.resolveParcelLayerById === 'function') {
+                const hit = window.resolveParcelLayerById(id);
+                if (hit) return hit;
+            }
+            return (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(id) || null : null;
+        };
+        let layers = ids.map(lookup);
+        if (layers.some(layer => !layer) && typeof window.fetchParcelsByIds === 'function') {
+            try {
+                await window.fetchParcelsByIds(ids);
+                layers = ids.map(lookup);
+            } catch (error) {
+                console.warn('[reparcellization] fetching the plan\'s input parcels failed', error);
+            }
+        }
+        const missing = ids.filter((id, index) => !layers[index]);
+        return { layers: layers.filter(Boolean), missing };
+    }
+
     // `initialPolygons` (optional) reopens the editor on a saved plan's polygons[] instead of
     // re-running the algorithm — used by "Copy into new proposal" and by reopening a draft.
     async function openReparcellizationModal(options = {}) {
@@ -2955,31 +3445,42 @@
             : null;
         let planPool = null;
 
-        // Reopening a SAVED plan: its own polygons are the pool, so no live selection is needed.
-        // Falls back to the ordinary selection path for a brand-new reparcellization.
+        // Reopening a SAVED plan: the inputs are the parcels the plan DECLARES, full stop.
+        //
+        // Two things used to go wrong here. A live map selection won, so opening the editor with
+        // anything selected pooled *that* instead of the plan's own parents — the subtitle would
+        // read "23 parcels" for a 29-parcel plan and coverage would climb past 100%. And when no
+        // selection existed the pool was unioned from the plan's OUTPUT polygons, which is circular:
+        // the boundary became whatever the outputs currently are, so a plot dragged out into empty
+        // space silently redefined the pool it was supposed to be constrained by.
+        //
+        // The pool is the union of the INPUT parcels. They are only hidden under an applied plan,
+        // never gone, so they can be fetched back.
         const savedPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
             ? options.initialPolygons
             : ((window.pendingReparcellizationPlan && Array.isArray(window.pendingReparcellizationPlan.polygons))
                 ? window.pendingReparcellizationPlan.polygons
                 : null);
-        if (!validateSelection(selection) && savedPolygons && savedPolygons.length) {
-            const planIds = (window.pendingReparcellizationPlan && Array.isArray(window.pendingReparcellizationPlan.parcelIds))
-                ? window.pendingReparcellizationPlan.parcelIds
-                : (selection && Array.isArray(selection.ids) ? selection.ids : []);
-            const built = buildSuperParcelFromPlan(savedPolygons, planIds);
-            if (built) {
-                // Ownership still comes from the PARENT parcels, and they are only hidden, never
-                // removed from the index — resolve them there so shares and owner names survive a
-                // reopen. Geometry decides the pool; these layers only carry the ownership data.
-                const index = (window.parcelLayerById instanceof Map) ? window.parcelLayerById : null;
-                const layers = index
-                    ? planIds.map(id => index.get(String(id))).filter(Boolean)
-                    : [];
-                console.debug('[reparcellization] no live selection — reopening the plan on its own geometry',
-                    { plots: savedPolygons.length, declaredParents: planIds.length, ownerLayers: layers.length });
-                planPool = built;
-                selection = { ids: planIds.slice(), layers };
+        if (savedPolygons && savedPolygons.length) {
+            const planIds = declaredPlanParcelIds(selection);
+            const resolved = planIds.length ? await resolveInputParcelLayers(planIds) : { layers: [], missing: [] };
+            const inputPool = resolved.layers.length && !resolved.missing.length
+                ? buildSuperParcel({ ids: planIds, layers: resolved.layers })
+                : null;
+            if (inputPool) {
+                console.debug('[reparcellization] pooled from the plan\'s declared inputs',
+                    { inputs: planIds.length, plots: savedPolygons.length });
+                planPool = inputPool;
+            } else if (planIds.length) {
+                // Not every input could be resolved. Falling back to the outputs' own outline keeps
+                // the plan editable, but the pool is then only as trustworthy as the outputs — say
+                // so rather than presenting a derived boundary as if it were the cadastre.
+                console.warn('[reparcellization] could not resolve every input parcel — pooling from the plan geometry instead',
+                    { declared: planIds.length, resolved: resolved.layers.length, missing: resolved.missing });
+                planPool = buildSuperParcelFromPlan(savedPolygons, planIds);
+                state.poolFromOutputs = true;
             }
+            if (planPool) selection = { ids: planIds.slice(), layers: resolved.layers };
         }
 
         if (!planPool && !validateSelection(selection)) {

@@ -425,7 +425,10 @@ function buildParcelSelectQuery({
             p.MATICNI_BROJ_KO,
             'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
             ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-            ST_Area(p.geom) AS calculated_area${municipalitySelect},
+            -- Geodesic, not projected: the browser measures with turf on the WGS84 ellipsoid, so a
+            -- projected area here would disagree with it by ~0.02–0.25% and every comparison
+            -- between the two would report a difference that is only the measurement.
+            ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area${municipalitySelect},
             pdx.details AS ownership_details
         FROM parcel p${municipalityJoin}
         ${ownershipJoin}
@@ -663,7 +666,7 @@ export function setupParcelsRoute(app, pool) {
                     p.MATICNI_BROJ_KO,
                     'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
                     ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-                    ST_Area(p.geom) AS calculated_area,
+                    ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (

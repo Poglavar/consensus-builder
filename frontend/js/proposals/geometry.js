@@ -230,41 +230,59 @@ function collectProposalFeatureSets(proposal, options = {}) {
                 }
             }
 
-            // Fallback: buffer the centerline with turf when calculateRoadPolygon is unavailable
-            if (!geometry && typeof turf !== 'undefined' && turf.lineString && turf.buffer) {
+            // Fallback for when calculateRoadPolygon is unavailable: build the strip from the
+            // CENTRELINE with the same shared, square-ended builder the real path uses.
+            //
+            // This used to be `turf.buffer(centreline, width/2)`, which is why every road highlight
+            // had semicircular ends: turf caps a buffered LineString with a round cap of the buffer
+            // radius, so the outline ran half a road-width past each end and bulged sideways. A road
+            // footprint is a strip with square ends — never a capsule.
+            //
+            // It also preferred `definition.latLngPairs`, which is the POLYGON ring (written next to
+            // definition.polygon), not a centreline — buffering that as a line was wrong whatever the
+            // caps did. Only definition.points is a centreline, and it may be a flat point list or an
+            // array of disjoint segments.
+            const makeSegment = (typeof window !== 'undefined' && window.createRectangularRoadSegment)
+                || (typeof createRectangularRoadSegment === 'function' ? createRectangularRoadSegment : null);
+            if (!geometry && makeSegment && typeof turf !== 'undefined' && turf.polygon) {
                 try {
-                    const rawPoints = Array.isArray(definition.latLngPairs) && definition.latLngPairs.length
-                        ? definition.latLngPairs
-                        : Array.isArray(definition.points)
-                            ? definition.points
-                            : null;
+                    const isLatLngPoint = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+                    const rawPoints = Array.isArray(definition.points) ? definition.points : null;
+                    const segments = [];
+                    if (rawPoints && rawPoints.length) {
+                        if (isLatLngPoint(rawPoints[0])) segments.push(rawPoints);
+                        else rawPoints.forEach(seg => {
+                            if (Array.isArray(seg) && seg.length >= 2 && isLatLngPoint(seg[0])) segments.push(seg);
+                        });
+                    }
                     const widthMeters = Number.isFinite(definition.width)
                         ? definition.width
-                        : Number.isFinite(definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road)
-                            ? (definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road)
-                            : parseFloat(definition.width);
-                    if (rawPoints && rawPoints.length >= 2 && Number.isFinite(widthMeters) && widthMeters > 0) {
-                        const toLngLat = (p) => {
-                            if (p && typeof p.lat === 'number' && typeof p.lng === 'number') return [p.lng, p.lat];
-                            if (Array.isArray(p) && p.length >= 2) {
-                                const a = Number(p[0]);
-                                const b = Number(p[1]);
-                                return Math.abs(a) > 90 && Math.abs(b) <= 90 ? [a, b] : [b, a];
-                            }
-                            if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) return [Number(p.lng), Number(p.lat)];
-                            return null;
+                        : (definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road);
+                    if (segments.length && Number.isFinite(widthMeters) && widthMeters > 0) {
+                        const ringToPolygon = (ring) => {
+                            const coords = (Array.isArray(ring) ? ring : []).filter(isLatLngPoint).map(p => [p.lng, p.lat]);
+                            if (coords.length < 3) return null;
+                            const first = coords[0];
+                            const last = coords[coords.length - 1];
+                            if (first[0] !== last[0] || first[1] !== last[1]) coords.push([first[0], first[1]]);
+                            return coords.length >= 4 ? turf.polygon([coords]) : null;
                         };
-                        const linePoints = rawPoints.map(toLngLat).filter(pt => Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1]));
-                        if (linePoints.length >= 2) {
-                            const line = turf.lineString(linePoints);
-                            const buffered = turf.buffer(line, Math.max(widthMeters / 2, 1), { units: 'meters' });
-                            if (buffered && buffered.geometry) {
-                                geometry = buffered.geometry;
+                        let merged = null;
+                        segments.forEach(segment => {
+                            for (let i = 0; i < segment.length - 1; i++) {
+                                const strip = ringToPolygon(makeSegment(segment[i], segment[i + 1], widthMeters));
+                                if (!strip) continue;
+                                if (!merged) { merged = strip; continue; }
+                                // Unioning keeps the joints clean; without turf.union the strips would
+                                // still be square-ended, just seamed, so fall back to the last one only
+                                // when union is genuinely missing.
+                                merged = (typeof turf.union === 'function' && turf.union(merged, strip)) || merged;
                             }
-                        }
+                        });
+                        if (merged && merged.geometry) geometry = merged.geometry;
                     }
                 } catch (e) {
-                    console.warn('turf.buffer fallback for road/track geometry failed', e);
+                    console.warn('square-strip fallback for road/track geometry failed', e);
                 }
             }
 
@@ -1140,6 +1158,13 @@ function calculateProposalGeometryBounds(proposal) {
         }
         if (proposal.decideLaterProposal && proposal.decideLaterProposal.geometry) {
             addGeom(proposal.decideLaterProposal.geometry);
+        }
+        // A readjustment's shape lives in its plot list, not in a single `geometry`. Without this
+        // it had NO geometry fallback: opening its link centred the map only if the plan's child
+        // parcels already happened to be loaded, and on a fresh page load they are not — so the
+        // link applied the plan and then left the camera on the city centre.
+        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
+            proposal.reparcellization.polygons.forEach(polygon => addGeom(polygon && polygon.geometry));
         }
     } catch (_) { /* best-effort */ }
 

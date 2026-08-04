@@ -115,8 +115,8 @@ const CORRIDOR_STATS_SQL = `
     )
     SELECT
         p.maticni_broj_ko::text || '-' || p.broj_cestice AS parcel_id,
-        ST_Area(ST_MakeValid(p.geom)) AS full_area_m2,
-        ST_Area(ST_Intersection(ST_MakeValid(p.geom), c.geom)) AS taken_area_m2,
+        ST_Area(ST_Transform(ST_MakeValid(p.geom), 4326)::geography) AS full_area_m2,
+        ST_Area(ST_Transform(ST_Intersection(ST_MakeValid(p.geom), c.geom), 4326)::geography) AS taken_area_m2,
         pdx.details AS ownership_details
     FROM parcel p
     CROSS JOIN corridor c

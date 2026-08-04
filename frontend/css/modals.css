@@ -902,6 +902,25 @@
     min-width: 120px;
 }
 
+/* Cancel and Done are the only things on this row, and they are a pair of decisions — centring
+   them reads as a choice rather than as one button tucked in a corner. */
+.reparcel-actions--commit {
+    justify-content: center;
+}
+
+/* Ownership tools sit on their own row, above the decisions. Assigning is a MODE, not a one-off
+   action, so it reads as a toggle and its companion shortcut sits beside it — while Cancel and
+   Done keep a row to themselves, where a decision is not competing with a tool. */
+/* Assigning is not editing: the drawing tools stand down so the mode is unmistakable, the same
+   way the old-plots view does it. */
+.reparcel-assign-mode .reparcel-legend-actions > *:not(.reparcel-assign-btn),
+.reparcel-assign-mode .reparcel-draw-toolbar,
+.reparcel-assign-mode .reparcel-alg-options {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+
 /* "All public" is a one-click convenience, not a primary action — it used to be a 240px
    slab competing with Done. */
 .reparcel-actions .reparcel-allpublic-btn {
@@ -1117,6 +1136,57 @@
     border-top: none;
 }
 
+/* Inputs vs outputs, as two tabs at the head of the panel: what was pooled, and what the plan
+   makes of it. Old plots is a reading view — see .reparcel-old-plots-view below. */
+.reparcel-plots-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.reparcel-plots-tab {
+    appearance: none;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 6px 10px;
+    margin-bottom: -1px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.reparcel-plots-tab:hover { color: #374151; }
+
+.reparcel-plots-tab.is-active {
+    color: #111827;
+    border-bottom-color: #1d4ed8;
+}
+
+.reparcel-oldplots-empty {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Reading the cadastre, not editing it: the drawing tools have nothing to act on here, so they
+   stand down rather than offering a gesture that would do nothing. */
+.reparcel-old-plots-view .reparcel-edit-tools,
+.reparcel-old-plots-view .reparcel-alg-options {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.reparcel-oldplot-tip {
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #92400e;
+    color: #7c2d12;
+}
+
 /* Owners section sits below New plots — give it the divider instead. */
 .reparcel-legend-header {
     margin-top: 12px;
@@ -1301,6 +1371,20 @@
 .reparcel-legend-actions .btn-upload-label:hover {
     background: #f3f4f6;
     border-color: #9ca3af;
+}
+
+/* The assign toggle sits apart from the drawing tools: it is a different job, so the spacer
+   carries it and its shortcut to the right end of the row. */
+.reparcel-tools-spacer {
+    flex: 1 1 auto;
+}
+
+.reparcel-legend-actions .reparcel-allpublic-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    min-width: 0;
+    width: auto;
+    white-space: nowrap;
 }
 
 /* Reparcellization: active "Draw plot" toggle */
@@ -5087,6 +5171,19 @@
 /* Corner popup in the node editor: what this corner is, and the one action it has. */
 .reparcel-node-popup__title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
 .reparcel-node-popup__hint { font-size: 11px; color: #555; margin-bottom: 8px; }
+
+/* Why an action is unavailable, said where the click happened rather than in the status line at
+   the foot of the panel — a refusal nobody can see reads as nothing happening. */
+.reparcel-node-popup__refusal {
+    font-size: 11px;
+    line-height: 1.35;
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 6px 8px;
+    max-width: 230px;
+}
 .reparcel-node-popup .btn-sm { font-size: 12px; padding: 4px 10px; }
 .leaflet-popup.reparcel-node-popup-wrap .leaflet-popup-content { margin: 10px 12px; min-width: 150px; }
 
@@ -5118,6 +5215,32 @@
 
 .geom-handle.is-dragging,
 .geom-handle:active { cursor: grabbing; background: #1d4ed8; }
+
+/* A node the host has pinned: it sits on geometry this editor is not allowed to reshape (in a land
+   readjustment, the pooled outline, which belongs to the neighbours). Hollow, grey and explicitly
+   not grabbable, so the boundary reads as given rather than as something you failed to drag. */
+.geom-handle--locked {
+    border-color: #94a3b8;
+    border-style: dashed;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: none;
+    cursor: not-allowed;
+    width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
+}
+
+.geom-handle--locked.is-dragging,
+.geom-handle--locked:active { background: rgba(255, 255, 255, 0.55); cursor: not-allowed; }
+
+/* A node that may only travel along one line — where a cut lands on the outline. The horizontal
+   resize cursor is the affordance: this one slides, it does not roam. */
+.geom-handle--slide {
+    border-color: #0f766e;
+    background: #ccfbf1;
+    cursor: ew-resize;
+}
+
+.geom-handle--slide.is-dragging,
+.geom-handle--slide:active { cursor: ew-resize; background: #0f766e; }
 
 /* Undo control the shared polygon editor adds to its map when the host supplies none — so every
    geometry tool has a visible undo, not just the keyboard shortcut. */

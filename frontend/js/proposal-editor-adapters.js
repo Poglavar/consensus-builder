@@ -1046,8 +1046,24 @@
         async openDesignEditor(draft) {
             const plan = clone(draft.editorPayload?.plan || {});
             const selection = await prepareProposalDraftParcelSelection(draft);
-            if (!selection.layers.length) throw new Error('The source parcels are not available in this city view.');
-            plan.parcelIds = selection.ids;
+            // The plan's OWN parcelIds are the record of what was pooled, and they are not
+            // negotiable. Overwriting them with whatever the map resolves handed the editor the
+            // plan's own CHILD parcels as if they were its inputs — the pool then became the
+            // outline of the outputs, which is circular: a plot dragged outside the plan simply
+            // enlarged the boundary that was supposed to contain it. Only a plan that has no
+            // record of its inputs (a brand-new one) takes them from the selection.
+            const declared = Array.isArray(plan.parcelIds) ? plan.parcelIds.filter(Boolean).map(String) : [];
+            if (!declared.length) {
+                const fromProposal = (draft.fields?.parentParcelIds || []).filter(Boolean).map(String);
+                plan.parcelIds = fromProposal.length ? fromProposal : selection.ids;
+            } else {
+                plan.parcelIds = declared;
+            }
+            // A saved plan can be reopened without its parents on the map: the editor fetches them
+            // by id. Only a plan with nothing to reopen on genuinely needs a live selection.
+            if (!selection.layers.length && !(Array.isArray(plan.polygons) && plan.polygons.length)) {
+                throw new Error('The source parcels are not available in this city view.');
+            }
             global.pendingReparcellizationPlan = plan;
             if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
                 await global.ensureReparcellizationModuleLoaded();

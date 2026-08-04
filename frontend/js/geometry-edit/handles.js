@@ -34,6 +34,12 @@
     //   onNodeClick(node, marker, remove)   -> void   (optional; default: call onRemove on alt-click)
     //   snap(coord)      -> coord (optional, applied at drop)
     //   classes          -> overrides for the class names above
+    //   nodePolicy(node, topology) -> { draggable?, className?, size?, constrain?(coord) }
+    //       Per-node freedom. A host that owns an invariant — a readjustment may not move the pool
+    //       boundary — expresses it here rather than validating after the fact, so the illegal
+    //       gesture is simply not reachable. `constrain` also runs during the live drag preview,
+    //       so the shape follows what the drop will actually do.
+    //   edgePolicy(edge, topology) -> { insertable? }   which edges offer an insert midpoint
     function create(opts) {
         const options = Object.assign({}, DEFAULTS, opts || {}, (opts && opts.classes) || {});
         const L = options.leaflet || (typeof window !== 'undefined' ? window.L : null);
@@ -81,9 +87,19 @@
 
             group = L.layerGroup().addTo(map);   // markers carry the pane, not the group
 
+            const policyFor = node => {
+                if (typeof options.nodePolicy !== 'function') return {};
+                try { return options.nodePolicy(node, topology) || {}; } catch (_) { return {}; }
+            };
+            const edgeInsertable = edge => {
+                if (typeof options.edgePolicy !== 'function') return true;
+                try { return options.edgePolicy(edge, topology)?.insertable !== false; } catch (_) { return true; }
+            };
+            const edgeById = new Map((topology.edges || []).map(e => [e.id, e]));
+
             // Midpoints first so real vertices sit above them and win the click.
             if (options.showMidpoints) {
-                topo.edgeMidpoints(topology).forEach(mid => {
+                topo.edgeMidpoints(topology).filter(mid => edgeInsertable(edgeById.get(mid.edgeId))).forEach(mid => {
                     const marker = L.marker([mid.coord[1], mid.coord[0]], markerOptions({
                         icon: L.divIcon({ className: options.midClass, iconSize: options.midSize }),
                         interactive: true,
@@ -98,14 +114,27 @@
             }
 
             topology.nodes.forEach(node => {
+                const policy = policyFor(node);
+                // A host can say a vertex is not part of the editable design at all. Rendering a
+                // handle that refuses every gesture reads as the editor being broken; leaving it
+                // out says "this line is a given" without a word of explanation.
+                if (policy.hidden === true) return;
+                const draggable = policy.draggable !== false;
                 const shared = node.plots.length > 1;
-                const className = shared
+                let className = shared
                     ? `${options.nodeClass} ${options.sharedClass}`
                     : options.nodeClass;
+                if (policy.className) className += ` ${policy.className}`;
+                const constrain = typeof policy.constrain === 'function'
+                    ? coord => { try { return policy.constrain(coord) || coord; } catch (_) { return coord; } }
+                    : coord => coord;
                 const marker = L.marker([node.coord[1], node.coord[0]], markerOptions({
-                    icon: L.divIcon({ className, iconSize: shared ? options.sharedSize : options.nodeSize }),
-                    draggable: true,
-                    autoPan: true,
+                    icon: L.divIcon({
+                        className,
+                        iconSize: policy.size || (shared ? options.sharedSize : options.nodeSize)
+                    }),
+                    draggable,
+                    autoPan: draggable,
                     keyboard: false
                 }));
 
@@ -114,15 +143,21 @@
                     if (el) el.classList.add('is-dragging');
                 });
                 marker.on('drag', event => {
-                    if (typeof options.onPreview !== 'function') return;
+                    // Pull the marker itself onto the allowed position, so the handle cannot be
+                    // seen somewhere the drop will not put it.
                     const ll = event.target.getLatLng();
-                    options.onPreview(node.id, [ll.lng, ll.lat], topology);
+                    const coord = constrain([ll.lng, ll.lat]);
+                    if (coord[0] !== ll.lng || coord[1] !== ll.lat) {
+                        event.target.setLatLng([coord[1], coord[0]]);
+                    }
+                    if (typeof options.onPreview !== 'function') return;
+                    options.onPreview(node.id, coord, topology);
                 });
                 marker.on('dragend', event => {
                     const el = marker.getElement();
                     if (el) el.classList.remove('is-dragging');
                     const ll = event.target.getLatLng();
-                    let coord = [ll.lng, ll.lat];
+                    let coord = constrain([ll.lng, ll.lat]);
                     if (typeof options.snap === 'function') {
                         try { coord = options.snap(coord) || coord; } catch (_) { }
                     }

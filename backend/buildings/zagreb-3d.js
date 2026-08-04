@@ -59,6 +59,9 @@ export function createZagrebProvider(pool) {
             LEFT JOIN dgu_gdi_building_match m ON m.zgrada_id = b.zgrada_id
             LEFT JOIN gdi_building g ON g.object_id = m.object_id
             WHERE b.current
+              -- Ratio, so the projection cancels: this compares an area with an area in the
+              -- same CRS and never leaves the server as an absolute m². Areas that DO reach a
+              -- client are measured geodesically (WGS84), the same way the browser measures.
               AND ST_Area(ST_Intersection(b.geom, q.g)) >= 0.5 * ST_Area(b.geom)
             ORDER BY b.zgrada_id
             LIMIT 500

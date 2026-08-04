@@ -403,3 +403,80 @@ describe('reparcellization adapter', () => {
         });
     });
 });
+
+// A readjustment's inputs are the parcels it says it pooled. The editor opens on that record, and
+// what the map happens to have loaded or selected must never redefine it — when it did, an applied
+// plan handed the editor its own CHILD parcels as inputs, the pool became the outline of the
+// outputs, and the boundary that is supposed to contain the plan was defined by the plan.
+describe('reparcellization inputs survive the trip into the design editor', () => {
+    const POOLED = ['HR-335550-1791/25', 'HR-335550-1791/30', 'HR-335550-1791/31'];
+    // What the applied plan minted — these are outputs, and must never be mistaken for inputs.
+    const CHILDREN = POOLED.map((id, i) => `${id}#p-plan-${i + 1}`);
+
+    function proposal(planOverrides = {}) {
+        return {
+            proposalId: 'p-plan',
+            city: 'zagreb',
+            goal: 'reparcellization',
+            parentParcelIds: POOLED.slice(),
+            reparcellization: {
+                parcelIds: POOLED.slice(),
+                totalArea: 1000,
+                polygons: [
+                    { ownerKey: 'a', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }
+                ],
+                ...planOverrides
+            }
+        };
+    }
+
+    // Stand in for the browser globals openDesignEditor reaches for.
+    async function openWith(draft, selectionIds) {
+        const saved = {
+            prepare: globalThis.prepareProposalDraftParcelSelection,
+            open: globalThis.openReparcellizationModal,
+            pending: globalThis.pendingReparcellizationPlan
+        };
+        globalThis.prepareProposalDraftParcelSelection = async () => ({
+            ids: selectionIds.slice(),
+            layers: selectionIds.map(id => ({ feature: { properties: { parcel_id: id } } }))
+        });
+        globalThis.openReparcellizationModal = async () => true;
+        try {
+            await reparcellizationAdapter.openDesignEditor(draft);
+            return globalThis.pendingReparcellizationPlan;
+        } finally {
+            globalThis.prepareProposalDraftParcelSelection = saved.prepare;
+            globalThis.openReparcellizationModal = saved.open;
+            globalThis.pendingReparcellizationPlan = saved.pending;
+        }
+    }
+
+    it('keeps the pooled parcels the plan recorded, not the ones the map resolves', async () => {
+        const draft = draftFor(reparcellizationAdapter, proposal());
+        const plan = await openWith(draft, CHILDREN);
+        expect(plan.parcelIds).toEqual(POOLED);
+        expect(plan.parcelIds.some(id => id.includes('#'))).toBe(false);
+    });
+
+    it('falls back to the proposal parents when a plan has no record of its inputs', async () => {
+        const draft = draftFor(reparcellizationAdapter, proposal({ parcelIds: [] }));
+        const plan = await openWith(draft, CHILDREN);
+        expect(plan.parcelIds).toEqual(POOLED);
+    });
+
+    // The remaining branch — no record, no parents, so the live selection IS the input — is not
+    // reachable from here: prepareProposalDraftParcelSelection is module-local, so it cannot be
+    // stubbed and under node it resolves to nothing. Covered by the browser instead.
+
+    it('reopens a saved plan even when none of its parcels are on the map', async () => {
+        const draft = draftFor(reparcellizationAdapter, proposal());
+        const plan = await openWith(draft, []);
+        expect(plan.parcelIds).toEqual(POOLED);
+    });
+
+    it('still refuses a plan that has neither polygons nor parcels to work from', async () => {
+        const draft = draftFor(reparcellizationAdapter, proposal({ polygons: [] }));
+        await expect(openWith(draft, [])).rejects.toThrow(/not available/i);
+    });
+});

@@ -2333,9 +2333,11 @@
                 "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
                 "uploadSuccess": "Se cargaron {{count}} polígonos del archivo.",
                 "editBlocked": "Esta edición desplaza propuestas aplicadas y no puede guardarse aquí.",
-                "nodeHint": "Arrastra un nodo para moverlo; los nodos compartidos mueven todas las parcelas que los tocan. Haz clic en un punto tenue para añadir uno, Alt+clic en un nodo para quitarlo.",
+                "nodeHint": "Arrastra un nodo para moverlo; los nodos compartidos mueven todas las parcelas que los tocan. Quita un nodo para disolver el lindero que define. El contorno agrupado es fijo y no tiene nodos.",
                 "nodeKept": "Ese nodo no se puede quitar: una parcela dejaría de ser un polígono.",
-                "undone": "Se deshizo el último cambio."
+                "undone": "Se deshizo el último cambio.",
+                "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este plan.",
+                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2393,7 +2395,17 @@
             "nodeOwn": "Nodo de una parcela",
             "nodeSharedHint": "Al arrastrarlo se mueven todas las parcelas que lo tocan.",
             "nodeOwnHint": "Arrastra para moverlo.",
-            "nodeRemove": "Quitar nodo"
+            "nodeRemove": "Quitar nodo",
+            "nodePoolCorner": "Vértice del contorno agrupado",
+            "nodePoolCornerHint": "El contorno pertenece a los vecinos. Para cambiarlo, cambia qué parcelas se agrupan.",
+            "nodePoolEdge": "Donde un corte encuentra el contorno",
+            "nodePoolEdgeHint": "Se desliza por el contorno para cambiar dónde divide el corte; no puede abandonarlo.",
+            "oldPlots": "Parcelas antiguas",
+            "colParcel": "Parcela",
+            "colArea": "Superficie",
+            "unknownParcel": "Parcela",
+            "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se deriva del propio plan.",
+            "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada."
         }
     },
     "status": {
@@ -2405,7 +2417,6 @@
             "block_has_no_parcels": "El bloque no tiene parcelas",
             "block_has_no_parcels_with_name": "El bloque {{name}} no tiene parcelas",
             "block_not_found_with_name": "Bloque {{name}} no encontrado",
-            "block_not_fully_visible_zoomed_to_parcel": "El bloque no es totalmente visible (la parcela {{id}} está fuera de la vista actual). Se centró en ella — pulsa {{action}} de nuevo.",
             "blockify_created_proposed_building_block": "Bloque de edificio propuesto creado para {{block}} (ancho: {{width}} m, retiro: {{setback}} m)",
             "block_split_by_a_perpendicular_road_through_its_middle": "El bloque se dividió con una carretera perpendicular por el medio",
             "building_design_saved_add_proposal_details_to_submit": "Diseño del edificio guardado. Agrega los detalles de la propuesta para enviarla.",
@@ -2764,7 +2775,16 @@
             "please_enter_an_author_name": "Ingresa un nombre de autor.",
             "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de esta propuesta. Cambia a la ciudad en la que se creó e inténtalo de nuevo.",
             "road_source_incorporated": "Se aplicó la vía combinada y se retiró ‘{{name}}’ del mapa.",
-            "road_source_included_in_replacement": "Esta vía está incluida en ‘{{name}}’. Retira la vía combinada del mapa antes de aplicar esta."
+            "road_source_included_in_replacement": "Esta vía está incluida en ‘{{name}}’. Retira la vía combinada del mapa antes de aplicar esta.",
+            "block_needs_a_seed_parcel": "Selecciona primero una parcela: la manzana se detecta creciendo desde la parcela en la que estás.",
+            "block_neighbour_not_fully_visible": "No se puede formar la manzana: la parcela {{id}} pertenece a ella pero se sale del borde de la vista. La detección solo sigue parcelas totalmente visibles: aleja el zoom hasta que quepa toda la manzana y pulsa Detectar manzana otra vez.",
+            "block_no_parcels_in_view": "No hay parcelas ordinarias a la vista con las que formar una manzana, solo calles y vías.",
+            "block_parcels_not_loaded": "Las parcelas aún se están cargando: espera a que el mapa se estabilice e inténtalo de nuevo.",
+            "block_seed_is_corridor": "Esta es una parcela de calle o vía. Una manzana es el suelo ENTRE corredores: empieza desde una parcela interior.",
+            "block_seed_not_fully_visible": "No se puede formar la manzana: la parcela seleccionada se sale del borde de la vista. La detección solo sigue parcelas totalmente visibles, así que aleja el zoom hasta que quepa y pulsa Detectar manzana otra vez.",
+            "block_seed_unresolved": "No se pudo leer el identificador de la parcela seleccionada, así que no hay desde dónde formar la manzana.",
+            "block_multiselect_unavailable": "La selección múltiple no está disponible, y una manzana se entrega como una selección de varias parcelas.",
+            "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas."
         }
     },
     "gameDialogs": {

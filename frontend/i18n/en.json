@@ -2318,9 +2318,11 @@
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
                 "uploadSuccess": "Loaded {{count}} polygons from file.",
                 "editBlocked": "This edit displaces applied proposals and cannot be saved here.",
-                "nodeHint": "Drag a node to move it — shared nodes move every plot that touches them. Click a faint dot to add one, Alt-click a node to remove it.",
+                "nodeHint": "Drag a node to move it — shared nodes move every plot that touches them. Remove a node to dissolve the boundary it defines. The pooled outline itself is fixed and carries no nodes.",
                 "nodeKept": "That node cannot be removed — a plot would stop being a polygon.",
-                "undone": "Undid the last change."
+                "undone": "Undid the last change.",
+                "nodeOnPool": "That node sits on the pooled outline — it belongs to the neighbours, not to this plan.",
+                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2344,7 +2346,17 @@
             "nodeOwn": "Node of one plot",
             "nodeSharedHint": "Dragging it moves every plot that touches it.",
             "nodeOwnHint": "Drag to move it.",
-            "nodeRemove": "Remove node"
+            "nodeRemove": "Remove node",
+            "nodePoolCorner": "Corner of the pooled outline",
+            "nodePoolCornerHint": "The outline belongs to the neighbours. To change it, change which parcels are pooled.",
+            "nodePoolEdge": "Where a cut meets the outline",
+            "nodePoolEdgeHint": "Slides along the outline to change where the cut divides — it cannot leave it.",
+            "oldPlots": "Old plots",
+            "colParcel": "Parcel",
+            "colArea": "Area",
+            "unknownParcel": "Parcel",
+            "oldPlotsMissing": "The input parcels could not be loaded, so the pooled outline is derived from the plan itself.",
+            "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded."
         }
     },
     "status": {
@@ -2356,7 +2368,6 @@
             "block_has_no_parcels": "Block has no parcels",
             "block_has_no_parcels_with_name": "Block {{name}} has no parcels",
             "block_not_found_with_name": "Block {{name}} not found",
-            "block_not_fully_visible_zoomed_to_parcel": "Block not fully visible (parcel {{id}} is outside the current view). Centered on it — press {{action}} again.",
             "blockify_created_proposed_building_block": "Created proposed building block for {{block}} (width: {{width}}m, setback: {{setback}}m)",
             "block_split_by_a_perpendicular_road_through_its_middle": "Block split by a perpendicular road through its middle",
             "building_design_saved_add_proposal_details_to_submit": "Building design saved. Add proposal details to submit.",
@@ -2715,7 +2726,16 @@
             "please_enter_an_author_name": "Please enter an author name.",
             "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again.",
             "road_source_incorporated": "Applied the combined road and removed ‘{{name}}’ from the map.",
-            "road_source_included_in_replacement": "This road is included in ‘{{name}}’. Remove the combined road from the map before applying this one."
+            "road_source_included_in_replacement": "This road is included in ‘{{name}}’. Remove the combined road from the map before applying this one.",
+            "block_needs_a_seed_parcel": "Select a parcel first — block detection grows outwards from the parcel you are on.",
+            "block_neighbour_not_fully_visible": "Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.",
+            "block_no_parcels_in_view": "There are no ordinary parcels in view to build a block from — only roads and tracks.",
+            "block_parcels_not_loaded": "The parcels have not finished loading yet — wait for the map to settle and try again.",
+            "block_seed_is_corridor": "This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.",
+            "block_seed_not_fully_visible": "Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.",
+            "block_seed_unresolved": "Could not read the selected parcel’s id, so there is nothing to grow a block from.",
+            "block_multiselect_unavailable": "Multi-select is unavailable, and a block is delivered as a multi-parcel selection.",
+            "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection."
         }
     },
     "gameDialogs": {

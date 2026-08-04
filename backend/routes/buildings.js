@@ -64,10 +64,13 @@ export function setupBuildingsRoute(app, pool) {
                     SELECT
                         bf.*,
                         ST_AsGeoJSON(bf.geom)::json AS geometry,
-                        ST_Area(bf.geom) AS footprint_area,
-                        ST_Area(ST_Intersection(p.geom, bf.geom)) AS intersection_area,
+                        -- Geodesic: footprint_area is returned to the client as an absolute m²,
+                        -- so it must be measured the same way the browser measures (WGS84
+                        -- ellipsoid via turf), not in projected metres.
+                        ST_Area(ST_Transform(bf.geom, 4326)::geography) AS footprint_area,
+                        ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) AS intersection_area,
                         CASE
-                            WHEN ST_Area(bf.geom) > 0 THEN ST_Area(ST_Intersection(p.geom, bf.geom)) / ST_Area(bf.geom)
+                            WHEN ST_Area(bf.geom) > 0 THEN ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) / ST_Area(ST_Transform(bf.geom, 4326)::geography)
                             ELSE 0
                         END AS containment_ratio,
                         p.CESTICA_ID,
@@ -76,7 +79,7 @@ export function setupBuildingsRoute(app, pool) {
                     CROSS JOIN parcel p
                     WHERE p.CESTICA_ID = $1
                     AND ST_Intersects(p.geom, bf.geom)
-                    AND ST_Area(ST_Intersection(p.geom, bf.geom)) / ST_Area(bf.geom) >= 0.9
+                    AND ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) / ST_Area(ST_Transform(bf.geom, 4326)::geography) >= 0.9
                     ORDER BY containment_ratio DESC
                 `;
 

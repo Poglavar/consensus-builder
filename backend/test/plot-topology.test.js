@@ -203,3 +203,205 @@ describe('shape conversion for non-GeoJSON callers', () => {
         expect(back[0].points).toEqual([[0, 0], [10, 0], [10, 10]]);
     });
 });
+
+// ── The pooled outline is not part of the design ─────────────────────────────────────────────
+// A readjustment subdivides a pool of input parcels. The outputs may be reshaped freely inside it,
+// but the pool's own outline belongs to the neighbours: dragging a vertex that sits on it would
+// take or give land outside the plan. These lock that in.
+
+// A 10×10 pool split down the middle by a vertical cut at x=5.
+const POOL = { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]] };
+const SPLIT_PLOTS = [
+    { geometry: { type: 'Polygon', coordinates: [[[0, 0], [5, 0], [5, 10], [0, 10], [0, 0]]] } },
+    { geometry: { type: 'Polygon', coordinates: [[[5, 0], [10, 0], [10, 10], [5, 10], [5, 0]]] } }
+];
+
+// topo is only available inside a test (it is required in beforeAll), so each of these builds what
+// it needs rather than sharing a describe-level constant.
+const poolIndex = () => topo.boundaryIndexOf(POOL);
+const splitTopology = () => topo.annotateBoundary(topo.buildTopology(SPLIT_PLOTS), poolIndex());
+const nodeAt = (topology, x, y) => topology.nodes.find(n => n.coord[0] === x && n.coord[1] === y);
+
+describe('classifying a node against the pooled outline', () => {
+    it('calls a corner of the outline a corner', () => {
+        const index = poolIndex();
+        expect(topo.classifyAgainstBoundary([0, 0], index).kind).toBe('boundary-corner');
+        expect(topo.classifyAgainstBoundary([10, 10], index).kind).toBe('boundary-corner');
+    });
+
+    it('calls a point along an outline edge a boundary edge, and remembers which segment', () => {
+        const hit = topo.classifyAgainstBoundary([5, 0], poolIndex());
+        expect(hit.kind).toBe('boundary-edge');
+        expect(hit.a).toEqual([0, 0]);
+        expect(hit.b).toEqual([10, 0]);
+    });
+
+    it('calls anything inside the pool interior', () => {
+        const index = poolIndex();
+        expect(topo.classifyAgainstBoundary([5, 5], index).kind).toBe('interior');
+        expect(topo.classifyAgainstBoundary([12, 5], index).kind).toBe('interior');
+    });
+
+    it('tolerates the rounding a cut leaves behind', () => {
+        const index = poolIndex();
+        expect(topo.classifyAgainstBoundary([5, 1e-9], index).kind).toBe('boundary-edge');
+        expect(topo.classifyAgainstBoundary([1e-9, 1e-9], index).kind).toBe('boundary-corner');
+    });
+
+    it('treats a hole ring as boundary too — it is equally not ours', () => {
+        const holed = topo.boundaryIndexOf({
+            type: 'Polygon',
+            coordinates: [
+                [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]],
+                [[4, 4], [6, 4], [6, 6], [4, 6], [4, 4]]
+            ]
+        });
+        expect(topo.classifyAgainstBoundary([4, 4], holed).kind).toBe('boundary-corner');
+        expect(topo.classifyAgainstBoundary([5, 4], holed).kind).toBe('boundary-edge');
+    });
+
+    it('says interior for everything when there is no boundary to compare against', () => {
+        expect(topo.classifyAgainstBoundary([0, 0], null).kind).toBe('interior');
+    });
+});
+
+describe('annotating a topology with the outline', () => {
+    it('locks the pool corners', () => {
+        const corner = nodeAt(splitTopology(), 0, 0);
+        expect(corner.boundary.kind).toBe('boundary-corner');
+        expect(topo.nodeIsDraggable(corner)).toBe(false);
+        expect(topo.isOnBoundary(corner)).toBe(true);
+    });
+
+    it('lets the cut endpoints slide — they are the split ratio', () => {
+        const foot = nodeAt(splitTopology(), 5, 0);
+        expect(foot.boundary.kind).toBe('boundary-edge');
+        expect(topo.nodeIsDraggable(foot)).toBe(true);
+    });
+
+    it('marks outline edges but not the cut', () => {
+        const topology = splitTopology();
+        const byId = new Map(topology.nodes.map(n => [n.id, n]));
+        const edgeBetween = (p, q) => topology.edges.find(e => {
+            const a = byId.get(e.a).coord, b = byId.get(e.b).coord;
+            const same = (u, v) => u[0] === v[0] && u[1] === v[1];
+            return (same(a, p) && same(b, q)) || (same(a, q) && same(b, p));
+        });
+        expect(edgeBetween([0, 0], [5, 0]).onBoundary).toBe(true);     // along the pool's south side
+        expect(edgeBetween([5, 0], [5, 10]).onBoundary).toBe(false);   // the cut itself
+    });
+
+    it('does not mark an edge whose ends are both on the outline but which crosses the interior', () => {
+        // A diagonal cut between opposite pool corners: both ends are boundary corners, the edge
+        // between them is not.
+        const diagonal = [
+            { geometry: { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 0]]] } },
+            { geometry: { type: 'Polygon', coordinates: [[[0, 0], [10, 10], [0, 10], [0, 0]]] } }
+        ];
+        const annotated = topo.annotateBoundary(topo.buildTopology(diagonal), poolIndex());
+        const byId = new Map(annotated.nodes.map(n => [n.id, n]));
+        const cut = annotated.edges.find(e => {
+            const ends = [byId.get(e.a).coord, byId.get(e.b).coord].map(c => c.join(',')).sort().join('|');
+            return ends === ['0,0', '10,10'].sort().join('|');
+        });
+        expect(cut.onBoundary).toBe(false);
+    });
+});
+
+describe('where a drag is allowed to land', () => {
+    it('leaves an interior node alone', () => {
+        const interior = { boundary: { kind: 'interior' }, coord: [5, 5] };
+        expect(topo.constrainNodeDrop(interior, [7, 3])).toEqual([7, 3]);
+    });
+
+    it('pins a pool corner to where it already is, wherever the pointer went', () => {
+        expect(topo.constrainNodeDrop(nodeAt(splitTopology(), 0, 0), [-4, 6])).toEqual([0, 0]);
+    });
+
+    it('projects a cut endpoint back onto its own segment', () => {
+        const foot = nodeAt(splitTopology(), 5, 0);
+        expect(topo.constrainNodeDrop(foot, [7, 3])).toEqual([7, 0]);     // slides along the south side
+        expect(topo.constrainNodeDrop(foot, [2, -9])).toEqual([2, 0]);
+    });
+
+    it('refuses to slide past the end of its segment, so a pool corner can never be cut off', () => {
+        const foot = nodeAt(splitTopology(), 5, 0);
+        expect(topo.constrainNodeDrop(foot, [40, 0])).toEqual([10, 0]);
+        expect(topo.constrainNodeDrop(foot, [-40, 0])).toEqual([0, 0]);
+    });
+
+    it('conserves the pooled area no matter where a boundary node is dragged', () => {
+        const topology = splitTopology();
+        const foot = nodeAt(topology, 5, 0);
+        const areaOf = geometries => geometries.reduce((sum, g) => {
+            const ring = g.coordinates[0];
+            let acc = 0;
+            for (let i = 0; i < ring.length - 1; i++) {
+                acc += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+            }
+            return sum + Math.abs(acc / 2);
+        }, 0);
+        const before = areaOf(SPLIT_PLOTS.map(p => p.geometry));
+        for (const target of [[7, 3], [1, -20], [40, 40], [-40, -40]]) {
+            const dropped = topo.constrainNodeDrop(foot, target);
+            const after = areaOf(topo.moveNode(SPLIT_PLOTS, topology, foot.id, dropped));
+            expect(after).toBeCloseTo(before, 9);
+        }
+    });
+
+    it('an unconstrained drag of the same node DOES change the pooled area — the bug this prevents', () => {
+        const topology = splitTopology();
+        const foot = nodeAt(topology, 5, 0);
+        const areaOf = geometries => geometries.reduce((sum, g) => {
+            const ring = g.coordinates[0];
+            let acc = 0;
+            for (let i = 0; i < ring.length - 1; i++) {
+                acc += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+            }
+            return sum + Math.abs(acc / 2);
+        }, 0);
+        const before = areaOf(SPLIT_PLOTS.map(p => p.geometry));
+        const unconstrained = areaOf(topo.moveNode(SPLIT_PLOTS, topology, foot.id, [5, -6]));
+        expect(unconstrained).not.toBeCloseTo(before, 6);
+    });
+});
+
+// A dividing line that follows the pooled outline is still a dividing line. Classifying it as
+// outline made its middle nodes look like the END of a boundary, so removing one destroyed the
+// whole line instead of taking out a bend.
+describe('an internal boundary that runs along the outline', () => {
+    it('is not mistaken for the outline when a plot lies on both sides', () => {
+        // Two plots meeting along y = 0 — the pool's own southern edge — plus the pool above it.
+        const pool = { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]] };
+        const plots = [
+            { geometry: { type: 'Polygon', coordinates: [[[0, 0], [5, 0], [5, 10], [0, 10], [0, 0]]] } },
+            { geometry: { type: 'Polygon', coordinates: [[[5, 0], [10, 0], [10, 10], [5, 10], [5, 0]]] } }
+        ];
+        const topology = topo.annotateBoundary(topo.buildTopology(plots), topo.boundaryIndexOf(pool));
+        const byId = new Map(topology.nodes.map(n => [n.id, n]));
+        const edgeBetween = (p, q) => topology.edges.find(e => {
+            const a = byId.get(e.a).coord, b = byId.get(e.b).coord;
+            const same = (u, v) => u[0] === v[0] && u[1] === v[1];
+            return (same(a, p) && same(b, q)) || (same(a, q) && same(b, p));
+        });
+        // Along the pool's south edge, bounded by one plot each: outline.
+        expect(edgeBetween([0, 0], [5, 0]).plots).toHaveLength(1);
+        expect(edgeBetween([0, 0], [5, 0]).onBoundary).toBe(true);
+        // The cut, bounded by two: internal, and NOT outline.
+        expect(edgeBetween([5, 0], [5, 10]).plots).toHaveLength(2);
+        expect(edgeBetween([5, 0], [5, 10]).onBoundary).toBe(false);
+    });
+
+    it('keeps an edge internal even when it lies exactly on the outline', () => {
+        // A degenerate-but-real case: the two plots share an edge that runs along the pool's edge.
+        const pool = { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]] };
+        const plots = [
+            { geometry: { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 5], [0, 5], [0, 0]]] } },
+            { geometry: { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 2], [0, 2], [0, 0]]] } }
+        ];
+        const topology = topo.annotateBoundary(topo.buildTopology(plots), topo.boundaryIndexOf(pool));
+        const shared = topology.edges.filter(e => (e.plots || []).length > 1);
+        expect(shared.length).toBeGreaterThan(0);
+        shared.forEach(edge => expect(edge.onBoundary).toBe(false));
+    });
+});

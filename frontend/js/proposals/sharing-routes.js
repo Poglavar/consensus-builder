@@ -1859,27 +1859,33 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         // Helper: focus on applied proposals — frame and open them the same way a
         // single-proposal link would (center on visible descendant + details panel).
+        // Move the camera to the plan and open its details. Separate from the 3D advance below so
+        // it can run unconditionally: framing is what a link to a proposal is FOR, and it is not a
+        // decision the user needs to confirm.
+        const frameAppliedProposals = async (proposalIdToFocus) => {
+            if (!proposalIdToFocus || typeof map === 'undefined' || !map) return;
+            try {
+                const visibleId = (typeof findVisibleDescendant === 'function')
+                    ? (findVisibleDescendant(proposalIdToFocus) || proposalIdToFocus)
+                    : proposalIdToFocus;
+                const bounds = calculateBoundsForLastAppliedProposal(visibleId);
+                if (bounds && bounds.isValid && bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                }
+                if (typeof focusProposalDetails === 'function') {
+                    await focusProposalDetails(visibleId, {
+                        centerOnProposal: false,
+                        showDetails: true
+                    });
+                }
+            } catch (err) {
+                console.warn('[handleSharedPlanRoute] Failed to focus on applied proposal:', err);
+            }
+        };
+
         const focusOnAppliedProposals = async (proposalIdToFocus) => {
             hideProposalLoadOverlay();
-            if (proposalIdToFocus && typeof map !== 'undefined' && map) {
-                try {
-                    const visibleId = (typeof findVisibleDescendant === 'function')
-                        ? (findVisibleDescendant(proposalIdToFocus) || proposalIdToFocus)
-                        : proposalIdToFocus;
-                    const bounds = calculateBoundsForLastAppliedProposal(visibleId);
-                    if (bounds && bounds.isValid && bounds.isValid()) {
-                        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-                    }
-                    if (typeof focusProposalDetails === 'function') {
-                        await focusProposalDetails(visibleId, {
-                            centerOnProposal: false,
-                            showDetails: true
-                        });
-                    }
-                } catch (err) {
-                    console.warn('[handleSharedPlanRoute] Failed to focus on applied proposal:', err);
-                }
-            }
+            await frameAppliedProposals(proposalIdToFocus);
             if (urlRequests3D) {
                 try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
             }
@@ -1891,6 +1897,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             hideProposalLoadOverlay();
             const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
+            // Go there FIRST. Reloading a proposal link used to leave the map wherever it opened —
+            // usually the city centre — because the only thing that moved the camera was the
+            // "Show me" button on this dialog. Opening the link is already the request to see it;
+            // the dialog just explains why nothing needed applying.
+            await frameAppliedProposals(focusId);
             // Resolve via onClose so dismissing the modal (×, Escape, overlay click)
             // does not leave this promise — and the whole route handler — hanging.
             await new Promise(resolve => {
@@ -3006,6 +3017,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     { label: t('modal.common.close', 'Close'), primary: true }
                 ],
                 onClose: () => {
+                    // Dismissing the summary takes you to what it just told you about. The camera
+                    // is already framed by the time this dialog opens — but only when the framing
+                    // above found usable bounds, and it can miss (a read-only second tab, parcels
+                    // not yet loaded, a proposal whose children are still materialising). Doing it
+                    // again on Close costs nothing when the view is already right and rescues the
+                    // case where the dialog was dismissed onto the city centre.
+                    try { frameAppliedProposals(lastProposalId); } catch (_) { }
                     // URL-driven 3D mode: only enter after the user dismisses the results dialog.
                     try {
                         if (wants3DFromUrl && !url3DModeHandled) {

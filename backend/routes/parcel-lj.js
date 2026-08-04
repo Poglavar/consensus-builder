@@ -290,7 +290,7 @@ export function setupParcelLjRoute(app, pool) {
                 omejitev,
                 skupni_del_etazna,
                 date_added,
-                ST_Area(geom) AS calculated_area,
+                ST_Area(ST_Transform(geom, 4326)::geography) AS calculated_area,
                 ST_AsGeoJSON(ST_Transform(geom, ${SRID_WGS84}))::json AS geometry
             FROM parcel_lj
             WHERE current = true
