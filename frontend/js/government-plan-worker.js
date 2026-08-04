@@ -1,5 +1,7 @@
 /* global importScripts */
-importScripts('https://unpkg.com/@turf/turf@6/turf.min.js');
+// Resolved relative to this worker's own URL (it is constructed as `new Worker('js/…')`, not from a
+// Blob, so relative paths work). Same vendored turf the main document loads — see frontend/vendor/.
+importScripts('../vendor/turf-6.5.0/turf.min.js');
 
 const MIN_AREA_THRESHOLD = 0.01;
 

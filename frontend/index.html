@@ -30,12 +30,17 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
 
+    <!-- Third-party libraries are vendored under vendor/<name>-<version>/ rather than loaded from a
+         CDN: the app cannot boot without them (no Leaflet means no `L`, which means no `map`, which
+         means every module downstream throws), so a CDN or DNS outage took the whole site down and
+         offline development was impossible. Files are the unmodified npm dist artefacts — re-fetch a
+         version with `npm pack <pkg>@<version>` and diff if you need to verify one. -->
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css" />
 
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
 
     <!-- Build metadata for cache busting -->
     <script>
@@ -127,26 +132,20 @@
     </script>
 
     <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="vendor/leaflet-1.9.4/leaflet.js"></script>
 
     <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
     <script>
         window.writeVersionedLocalScripts(['js/reduced-motion.js']);
     </script>
 
-    <!-- Proj4js for coordinate transformations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
-    <script>
-        if (typeof proj4 === 'undefined') {
-            var fallbackProj4 = document.createElement('script');
-            fallbackProj4.src = 'https://unpkg.com/proj4@2.9.2/dist/proj4.js';
-            document.head.appendChild(fallbackProj4);
-        }
-    </script>
+    <!-- Proj4js for coordinate transformations.
+         The old second-CDN fallback is gone: it only guarded against cdnjs being down, which a local
+         file cannot be. If this 404s the deploy is broken, and it should fail loudly. -->
+    <script src="vendor/proj4-2.21.0/proj4.js"></script>
 
     <!-- Turf.js for geometric calculations -->
-    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="vendor/turf-6.5.0/turf.min.js"></script>
 
     <!-- Viewport-safe layout helpers -->
     <script>
@@ -429,24 +428,30 @@
                         <div class="control-group-title" data-i18n-key="sidebar.parcels.highlightOwnershipTitle">
                             Highlight by ownership type (T)</div>
                         <div class="checkbox-group">
+                            <!-- The swatch is painted by ownership-highlight.js from the same colour
+                                 table the map uses, so the list doubles as the legend. -->
                             <label>
                                 <input type="checkbox" id="highlightOwnershipGovernment" class="ownership-type-checkbox"
                                     data-ownership-type="government">
+                                <span class="ownership-legend-swatch" aria-hidden="true"></span>
                                 <span data-i18n-key="sidebar.parcels.ownershipType.government">Government</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="highlightOwnershipInstitution"
                                     class="ownership-type-checkbox" data-ownership-type="institution">
+                                <span class="ownership-legend-swatch" aria-hidden="true"></span>
                                 <span data-i18n-key="sidebar.parcels.ownershipType.institution">Institution</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="highlightOwnershipCompany" class="ownership-type-checkbox"
                                     data-ownership-type="company">
+                                <span class="ownership-legend-swatch" aria-hidden="true"></span>
                                 <span data-i18n-key="sidebar.parcels.ownershipType.company">Company</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="highlightOwnershipPrivate" class="ownership-type-checkbox"
                                     data-ownership-type="private individual">
+                                <span class="ownership-legend-swatch" aria-hidden="true"></span>
                                 <span data-i18n-key="sidebar.parcels.ownershipType.privateIndividual">Private
                                     Individual</span>
                             </label>
@@ -1320,9 +1325,15 @@
             'js/ens/ens-name.js'
         ]);
     </script>
-    <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+    <!-- pako is DECODE-ONLY legacy support. Share links are short server-side ids now, and nothing
+         calls compressBytes any more — but decodeSharedPayload() in js/proposals/sharing.js still
+         inflates the old `z.`-prefixed (and bare legacy) payloads, and throws without pako. Do not
+         drop it: every compressed link already shared would stop resolving. -->
+    <script src="vendor/pako-2.1.0/pako.min.js"></script>
+    <!-- ethers was pinned only to `@6`, so a CDN minor bump could change wallet-signing behaviour
+         with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to. -->
+    <script src="vendor/ethers-6.17.0/ethers.umd.min.js"></script>
+    <script src="vendor/solana-web3-1.98.4/index.iife.min.js"></script>
     <script>
         if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
     </script>
