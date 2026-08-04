@@ -47,6 +47,19 @@
     }
 }
 
+/* An editing mode owns the map (see map-edit-lock.js). The panels that select things on it stand
+   down for the duration — a left-over card behind the editor invited clicks that either did
+   nothing or, worse, changed the selection out from under the open editor. The editor's own panel
+   and the map controls stay live. */
+body.map-edit-locked #proposal-details-panel,
+body.map-edit-locked #parcel-info-panel,
+body.map-edit-locked #road-info-panel,
+body.map-edit-locked #drill-stack-panel {
+    pointer-events: none;
+    opacity: 0.45;
+    filter: saturate(0.6);
+}
+
 .close-button {
     position: absolute;
     top: 10px;

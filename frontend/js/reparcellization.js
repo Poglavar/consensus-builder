@@ -2,11 +2,18 @@
     const reparcellizationUiState = window.__reparcellizationUiState;
     if (!reparcellizationUiState
         || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
-        || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function') {
+        || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function'
+        || typeof reparcellizationUiState.normalizePlotOwners !== 'function'
+        || typeof reparcellizationUiState.plotIsAssigned !== 'function') {
         console.error('[reparcellization] UI state helpers are unavailable.');
         return;
     }
-    const { resolveDrawShortcut, resolveOwnerDisplayName } = reparcellizationUiState;
+    const {
+        resolveDrawShortcut,
+        resolveOwnerDisplayName,
+        normalizePlotOwners,
+        plotIsAssigned
+    } = reparcellizationUiState;
 
     const COLOR_PALETTE = [
         '#2E86AB', '#F18F01', '#C73E1D', '#137547', '#7A1CAC',
@@ -72,11 +79,11 @@
         buildingFootprintLayer: null,
         // Node/edge editing of the plot boundaries (plot-topology.js). `nodes` holds the current
         // topology so a drag knows which plots a handle belongs to.
-        nodeEdit: { active: false, topology: null, handles: [], midHandles: [], layerGroup: null },
+        nodeEdit: { active: false, topology: null, layer: null },
         // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots and
         // their ownership taken BEFORE a mutating action, so undo restores the state the user
         // last saw rather than an intermediate drag frame.
-        history: []
+        historyCtl: null
     };
 
     // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
@@ -418,6 +425,7 @@
         clearNodeHandles();
         state.nodeEdit.active = false;
         state.nodeEdit.topology = null;
+        if (state.historyCtl) { state.historyCtl.destroy(); state.historyCtl = null; }
         dismissOwnerPopup();
         window.finishProposalDraftDesignSession?.();
     }
@@ -572,17 +580,6 @@
         window.addEventListener('resize', state.resizeHandler);
 
         state.escHandler = (event) => {
-            // Cmd+Z / Ctrl+Z anywhere in the editor (except while typing in a field).
-            if ((event.metaKey || event.ctrlKey) && !event.altKey
-                && String(event.key).toLowerCase() === 'z') {
-                const tagName = (event.target && event.target.tagName) || '';
-                if (/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) || (event.target && event.target.isContentEditable)) return;
-                event.preventDefault();
-                // Shift+Cmd+Z is redo elsewhere; this editor has undo only, so it is a no-op
-                // rather than a surprise.
-                if (!event.shiftKey) undoLastEdit();
-                return;
-            }
             if (event.key === 'Escape') {
                 if (state.drawing.active) {
                     cancelDraw();
@@ -636,8 +633,7 @@
                 // drawing on entry, which made "draw a plot" look like the only manual way to
                 // work and left boundary editing unreachable. Draw-plot and split-with-line are
                 // tools inside this mode; the handles are the mode.
-                state.history = [];
-                updateUndoAffordance();
+                if (state.historyCtl) state.historyCtl.clear();
                 refreshPreview().then(() => {
                     toggleNodeEditing(option.key === 'manual');
                 }).catch(() => { });
@@ -652,8 +648,11 @@
         if (state.nodesBtn) {
             state.nodesBtn.addEventListener('click', () => toggleNodeEditing());
         }
-        if (state.undoEditBtn) {
-            state.undoEditBtn.addEventListener('click', () => undoLastEdit());
+        const history = ensureHistory();
+        if (history) {
+            // One shortcut and one button, both owned by the shared module.
+            history.bindKeyboard(window);
+            if (state.undoEditBtn) history.bindButton(state.undoEditBtn);
         }
         if (state.drawBtn) {
             state.drawBtn.addEventListener('click', () => toggleDrawMode('polygon'));
@@ -816,8 +815,8 @@
             // A REAL owner is required — an owner slot with an empty ownerKey (the "Unassigned"
             // placeholder) does not count, so a plan with any unowned plot cannot be committed. Public
             // land counts (its ownerKey is PUBLIC_LAND_KEY). Use "All public" for a quick break-up.
-            const hasOwner = Array.isArray(slice.owners) && slice.owners.some(o => o && o.ownerKey);
-            if (hasOwner) {
+            // Both owner shapes count: see normalizePlotOwners.
+            if (plotIsAssigned(slice)) {
                 assignedArea += area;
             } else {
                 unassignedArea += area;
@@ -1184,24 +1183,30 @@
     // Rebuild plan slices from a saved plan's polygons[] — the exact inverse of persistResult().
     // Fields are restored verbatim rather than re-derived, so owner assignments, blended colours
     // and hand-drawn plots survive a copy untouched.
+    //
+    // A plot's owner is carried BOTH ways: the singular ownerKey/displayName (one owner) and the
+    // owners[] array (shares between several). Everywhere else in this module the two are kept in
+    // lockstep; hydration used to read only the array, so a single-owner plan — every plan an
+    // importer writes, and the Borovje UPU in particular — came back with all its plots reading
+    // "unassigned". That silently failed the completeness gate, and Done could never enable again.
     function hydrateSlicesFromPolygons(polygons) {
         if (!Array.isArray(polygons)) return [];
         return polygons
             .filter(polygon => polygon && polygon.geometry)
-            .map(polygon => ({
-                ownerKey: polygon.ownerKey || '',
-                displayName: polygon.displayName || t('reparcellization.modal.unassigned', 'Unassigned'),
-                percent: Number.isFinite(Number(polygon.percent)) ? Number(polygon.percent) : 0,
-                color: polygon.color || '#cccccc',
-                geometry: JSON.parse(JSON.stringify(polygon.geometry)),
-                owners: (Array.isArray(polygon.owners) ? polygon.owners : []).map(owner => ({
-                    ownerKey: owner.ownerKey,
-                    displayName: owner.displayName,
-                    color: owner.color,
-                    share: owner.share || 0
-                })),
-                source: polygon.source || 'manual'
-            }));
+            .map(polygon => {
+                const ownerKey = polygon.ownerKey || '';
+                const displayName = polygon.displayName || t('reparcellization.modal.unassigned', 'Unassigned');
+                const color = polygon.color || '#cccccc';
+                return {
+                    ownerKey,
+                    displayName,
+                    percent: Number.isFinite(Number(polygon.percent)) ? Number(polygon.percent) : 0,
+                    color,
+                    geometry: JSON.parse(JSON.stringify(polygon.geometry)),
+                    owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color }),
+                    source: polygon.source || 'manual'
+                };
+            });
     }
 
     // Carve a polygon into the current plan: clip to the pool, subtract it from
@@ -1724,7 +1729,7 @@
     // ── Node / edge editing ──────────────────────────────────────────────
     //
     // The plots form a planar subdivision: neighbours SHARE their boundary. plot-topology.js reads
-    // the plot list as nodes and edges, so dragging a shared corner moves it in every plot that
+    // the plot list as nodes and edges, so dragging a shared node moves it in every plot that
     // touches it and no gap opens between them. Drawing whole plots on top of each other could
     // never express "move this boundary two metres east".
 
@@ -1734,57 +1739,64 @@
     // ownership assignment. Snapshots are taken BEFORE the action, so Cmd/Ctrl+Z restores what
     // the user last saw. Deliberately not per-tool: "undo" means the last thing I did, whichever
     // tool did it.
-    const HISTORY_LIMIT = 50;
+    // The stack itself is GeometryEditHistory — the same module the building, road and structure
+    // editors use. This only says how to capture and restore a layout.
+    function ensureHistory() {
+        if (state.historyCtl) return state.historyCtl;
+        const factory = window.GeometryEditHistory;
+        if (!factory) return null;
+        state.historyCtl = factory.create({
+            capture: () => ({
+                slices: JSON.parse(JSON.stringify(state.slices || [])),
+                ownerShares: JSON.parse(JSON.stringify(state.ownerShares || [])),
+                selectedSliceIndex: state.selectedSliceIndex
+            }),
+            restore: (snapshot) => {
+                state.slices = snapshot.slices;
+                state.ownerShares = snapshot.ownerShares;
+                state.selectedSliceIndex = snapshot.selectedSliceIndex;
+                dismissOwnerPopup();
+                updateLegend(state.ownerShares);
+                drawPreview();
+                updateCommitState();
+                if (state.nodeEdit.active) renderNodeHandles();
+                setStatus(t('reparcellization.modal.status.undone', 'Undid the last change.'),
+                    'info', 'reparcellization.modal.status.undone');
+            },
+            onChange: (canUndo) => {
+                if (!state.undoEditBtn) return;
+                state.undoEditBtn.disabled = !canUndo;
+                state.undoEditBtn.title = canUndo
+                    ? t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')
+                    : t('reparcellization.modal.undoNothing', 'Nothing to undo');
+            }
+        });
+        return state.historyCtl;
+    }
 
-    function snapshotLayout() {
-        return {
-            slices: JSON.parse(JSON.stringify(state.slices || [])),
-            ownerShares: JSON.parse(JSON.stringify(state.ownerShares || [])),
-            selectedSliceIndex: state.selectedSliceIndex
-        };
+    function pushHistory() {
+        const h = ensureHistory();
+        if (h) h.record();
     }
 
     // Drop the newest snapshot — for actions that take one up-front and then fail.
     function discardLastHistory() {
-        state.history.pop();
-        updateUndoAffordance();
-    }
-
-    function pushHistory() {
-        try {
-            state.history.push(snapshotLayout());
-            if (state.history.length > HISTORY_LIMIT) state.history.shift();
-        } catch (_) { /* an unsnapshotable state simply is not undoable */ }
-        updateUndoAffordance();
+        const h = ensureHistory();
+        if (h) h.discardLast();
     }
 
     function undoLastEdit() {
-        if (!state.history.length) return false;
-        const previous = state.history.pop();
-        state.slices = previous.slices;
-        state.ownerShares = previous.ownerShares;
-        state.selectedSliceIndex = previous.selectedSliceIndex;
-        dismissOwnerPopup();
-        updateLegend(state.ownerShares);
-        drawPreview();
-        updateCommitState();
-        if (state.nodeEdit.active) renderNodeHandles();
-        updateUndoAffordance();
-        setStatus(t('reparcellization.modal.status.undone', 'Undid the last change.'),
-            'info', 'reparcellization.modal.status.undone');
-        return true;
+        const h = ensureHistory();
+        return h ? h.undo() : false;
     }
 
     function updateUndoAffordance() {
-        if (!state.undoEditBtn) return;
-        state.undoEditBtn.disabled = !state.history.length;
-        state.undoEditBtn.title = state.history.length
-            ? t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')
-            : t('reparcellization.modal.undoNothing', 'Nothing to undo');
+        const h = ensureHistory();
+        if (state.undoEditBtn && h) state.undoEditBtn.disabled = !h.canUndo();
     }
 
     function nodeEditingAvailable() {
-        return !!(window.__plotTopology && state.map && state.slices.length);
+        return !!(window.__plotTopology && window.GeometryEditHandles && state.map && state.slices.length);
     }
 
     function toggleNodeEditing(force) {
@@ -1795,7 +1807,7 @@
         if (state.nodesBtn) state.nodesBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             setStatus(t('reparcellization.modal.status.nodeHint',
-                'Drag a corner to move it — shared corners move every plot that touches them. Click a faint dot to add one, Alt-click a corner to remove it.'),
+                'Drag a node to move it — shared nodes move every plot that touches them. Click a faint dot to add one, Alt-click a node to remove it.'),
                 'info', 'reparcellization.modal.status.nodeHint');
             renderNodeHandles();
         } else {
@@ -1805,12 +1817,11 @@
     }
 
     function clearNodeHandles() {
-        if (state.nodeEdit.layerGroup) {
-            try { state.nodeEdit.layerGroup.remove(); } catch (_) { }
-            state.nodeEdit.layerGroup = null;
+        if (state.nodeEdit.layer) {
+            try { state.nodeEdit.layer.destroy(); } catch (_) { }
+            state.nodeEdit.layer = null;
         }
-        state.nodeEdit.handles = [];
-        state.nodeEdit.midHandles = [];
+        state.nodeEdit.topology = null;
     }
 
     // Rebuild the handle layer from the current slices. Called on every geometry change, so the
@@ -1818,79 +1829,46 @@
     function renderNodeHandles() {
         clearNodeHandles();
         if (!state.nodeEdit.active || !nodeEditingAvailable()) return;
+        const factory = window.GeometryEditHandles;
+        if (!factory) return;
+
+        // The handle layer is shared with the building and road editors; this only supplies the
+        // geometry and says what a move/insert/remove means for a plot layout.
         const topo = window.__plotTopology;
-        const topology = topo.buildTopology(state.slices);
-        state.nodeEdit.topology = topology;
-
-        const group = L.layerGroup().addTo(state.map);
-        state.nodeEdit.layerGroup = group;
-
-        // Midpoints first, so real node handles sit above them and win the click.
-        topo.edgeMidpoints(topology).forEach(mid => {
-            const marker = L.marker([mid.coord[1], mid.coord[0]], {
-                icon: L.divIcon({ className: 'reparcel-edge-handle', iconSize: [9, 9] }),
-                interactive: true,
-                keyboard: false
-            });
-            marker.on('click', (event) => {
-                L.DomEvent.stop(event);
-                applyGeometries(topo.insertNodeOnEdge(state.slices, topology, mid.edgeId, mid.coord));
-            });
-            marker.addTo(group);
-        });
-
-        topology.nodes.forEach(node => {
-            const shared = node.plots.length > 1;
-            const marker = L.marker([node.coord[1], node.coord[0]], {
-                icon: L.divIcon({
-                    className: 'reparcel-node-handle' + (shared ? ' shared' : ''),
-                    iconSize: shared ? [14, 14] : [12, 12]
-                }),
-                draggable: true,
-                autoPan: true,
-                keyboard: false
-            });
-            marker.on('dragstart', () => {
-                const el = marker.getElement();
-                if (el) el.classList.add('dragging');
-            });
-            // Live preview while dragging: re-cut the plots from the ORIGINAL topology each time,
-            // so intermediate positions never accumulate.
-            marker.on('drag', (event) => {
-                const ll = event.target.getLatLng();
-                previewGeometries(topo.moveNode(state.slices, topology, node.id, [ll.lng, ll.lat]));
-            });
-            marker.on('dragend', (event) => {
-                const el = marker.getElement();
-                if (el) el.classList.remove('dragging');
-                const ll = event.target.getLatLng();
-                applyGeometries(topo.moveNode(state.slices, topology, node.id, [ll.lng, ll.lat]));
-            });
-            const removeThisNode = () => {
-                const result = topo.removeNode(state.slices, topology, node.id);
+        state.nodeEdit.layer = factory.create({
+            map: state.map,
+            leaflet: L,
+            getShapes: () => state.slices,
+            classes: {
+                nodeClass: 'geom-handle geom-handle--vertex reparcel-node-handle',
+                sharedClass: 'geom-handle--shared shared',
+                midClass: 'geom-handle geom-handle--mid reparcel-edge-handle'
+            },
+            onPreview: (nodeId, coord, topology) => {
+                previewGeometries(topo.moveNode(state.slices, topology, nodeId, coord));
+            },
+            onMove: (nodeId, coord, topology) => {
+                applyGeometries(topo.moveNode(state.slices, topology, nodeId, coord));
+            },
+            onInsert: (edgeId, coord, topology) => {
+                applyGeometries(topo.insertNodeOnEdge(state.slices, topology, edgeId, coord));
+            },
+            onRemove: (nodeId, topology) => {
+                const result = topo.removeNode(state.slices, topology, nodeId);
                 if (!result.removed) {
                     setStatus(t('reparcellization.modal.status.nodeKept',
-                        'That corner cannot be removed — a plot would stop being a polygon.'),
+                        'That node cannot be removed — a plot would stop being a polygon.'),
                         'warning', 'reparcellization.modal.status.nodeKept');
                     return;
                 }
                 applyGeometries(result.geometries);
-            };
-            marker.on('click', (event) => {
-                L.DomEvent.stop(event);
-                // Alt-click is the shortcut; a plain click opens a small popup, because a
-                // modifier nobody is told about is not a way to remove anything.
-                if (event.originalEvent && event.originalEvent.altKey) {
-                    removeThisNode();
-                    return;
-                }
-                openNodePopup(node, marker, removeThisNode);
-            });
-            marker.addTo(group);
+            },
+            onNodeClick: (node, marker, remove) => openNodePopup(node, marker, remove)
         });
+        state.nodeEdit.topology = state.nodeEdit.layer ? state.nodeEdit.layer.render() : null;
     }
 
-    // Small popup on a corner: what it is, and the one action it has.
+    // Small popup on a node: what it is, and the one action it has.
     function openNodePopup(node, marker, onRemove) {
         const shared = node.plots.length > 1;
         const container = document.createElement('div');
@@ -1899,8 +1877,8 @@
         const title = document.createElement('div');
         title.className = 'reparcel-node-popup__title';
         title.textContent = shared
-            ? t('reparcellization.modal.nodeShared', 'Shared corner · {{count}} plots', { count: node.plots.length })
-            : t('reparcellization.modal.nodeOwn', 'Corner of one plot');
+            ? t('reparcellization.modal.nodeShared', 'Shared node · {{count}} plots', { count: node.plots.length })
+            : t('reparcellization.modal.nodeOwn', 'Node of one plot');
         container.appendChild(title);
 
         const hint = document.createElement('div');
@@ -1913,7 +1891,7 @@
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'btn btn-danger btn-sm';
-        remove.textContent = t('reparcellization.modal.nodeRemove', 'Remove corner');
+        remove.textContent = t('reparcellization.modal.nodeRemove', 'Remove node');
         remove.addEventListener('click', () => {
             try { state.map.closePopup(); } catch (_) { }
             onRemove();
@@ -3056,7 +3034,7 @@
         // Baseline for "did anything change?" — taken AFTER the opening layout is generated, so
         // simply opening and closing is never treated as unsaved work.
         state.openSignature = layoutSignature();
-        state.history = [];
+        if (state.historyCtl) state.historyCtl.clear();
         updateUndoAffordance();
         return true;
     }

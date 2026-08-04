@@ -192,7 +192,8 @@
     }
 
     function stationClickBelongsToActiveMapTool() {
-        return global.roadDrawingMode === true
+        return global.__mapEditLock?.isHeld() === true
+            || global.roadDrawingMode === true
             || global.transitStationPlacementMode === true
             || (typeof global.isTransitStationPlacementActive === 'function' && global.isTransitStationPlacementActive())
             || (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive())

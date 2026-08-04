@@ -16,8 +16,9 @@
         if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
             return;
         }
-        // The structure geometry editor owns the map while open — clicks place furniture,
-        // never select the parcel under the park/square.
+        // An editing mode owns the map while open — clicks belong to it (placing furniture, moving
+        // a node), never to the parcel underneath.
+        if (global.__mapEditLock?.isHeld()) return;
         if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) {
             return;
         }

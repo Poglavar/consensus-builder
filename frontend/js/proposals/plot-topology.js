@@ -16,7 +16,16 @@
         if (geometry.type === 'MultiPolygon') {
             return (geometry.coordinates || []).reduce((acc, poly) => acc.concat(poly), []);
         }
+        // Open shapes go through the same machinery: a road centreline is a sequence of nodes with
+        // shared junctions, which is the same problem as a plot boundary with shared corners.
+        if (geometry.type === 'LineString') return [geometry.coordinates || []];
+        if (geometry.type === 'MultiLineString') return geometry.coordinates || [];
         return [];
+    }
+
+    function isClosedGeometry(geometry) {
+        const type = geometry && geometry.type;
+        return type === 'Polygon' || type === 'MultiPolygon';
     }
 
     function geometryOf(plot) {
@@ -58,8 +67,11 @@
 
         list.forEach((plot, plotIndex) => {
             const rings = ringsOf(geometryOf(plot));
+            const closed = isClosedGeometry(geometryOf(plot));
             rings.forEach((ring, ringIndex) => {
-                if (!Array.isArray(ring) || ring.length < 4) return;
+                // A closed ring repeats its first coordinate, so a triangle is 4 entries; an open
+                // line needs only two points to have an edge.
+                if (!Array.isArray(ring) || ring.length < (closed ? 4 : 2)) return;
                 // A ring repeats its first coordinate as its last; index them all so every
                 // reference is rewritten on a move, but walk edges over the open sequence.
                 const nodes = ring.map((coord, vertexIndex) => nodeIdFor(coord, plotIndex, ringIndex, vertexIndex));
@@ -106,7 +118,9 @@
             const ring = rings[ref.ring];
             if (!ring || !ring[ref.vertex]) return;
             ring[ref.vertex] = [newCoord[0], newCoord[1]];
-            // Keep the ring closed when the first or last vertex moved.
+            // Keep a CLOSED ring closed when its first or last vertex moved. An open line's ends
+            // are two different places and must stay independent.
+            if (!isClosedGeometry(geometry)) return;
             if (ref.vertex === 0) ring[ring.length - 1] = [newCoord[0], newCoord[1]];
             if (ref.vertex === ring.length - 1) ring[0] = [newCoord[0], newCoord[1]];
         });
@@ -153,9 +167,10 @@
         // A closed ring of a triangle has 4 coordinates; removing one leaves 3 → degenerate.
         const wouldDegenerate = geometries.some(geometry => {
             if (!geometry) return false;
+            const min = isClosedGeometry(geometry) ? 4 : 2;   // triangle+closure, or a two-point line
             return ringsOf(geometry).some(ring => {
                 const hits = ring.filter(c => same(c, node.coord)).length;
-                return hits > 0 && (ring.length - hits) < 4;
+                return hits > 0 && (ring.length - hits) < min;
             });
         });
         if (wouldDegenerate) return { geometries, removed: false, reason: 'would-degenerate' };
@@ -167,7 +182,7 @@
                     if (same(ring[i], node.coord)) ring.splice(i, 1);
                 }
                 // Re-close: splicing may have removed the repeated first/last coordinate.
-                if (ring.length && !same(ring[0], ring[ring.length - 1])) {
+                if (isClosedGeometry(geometry) && ring.length && !same(ring[0], ring[ring.length - 1])) {
                     ring.push([ring[0][0], ring[0][1]]);
                 }
             });
@@ -191,7 +206,35 @@
         }).filter(Boolean);
     }
 
-    const api = { DEFAULT_TOLERANCE, buildTopology, moveNode, insertNodeOnEdge, removeNode, edgeMidpoints };
+    // Shape-level entry points for callers that do not hold GeoJSON — road editing keeps its
+    // centrelines as arrays of {lat, lng}. `shapes` is [{ points: [[lng, lat]…], closed }].
+    function shapesToPlots(shapes) {
+        return (Array.isArray(shapes) ? shapes : []).map(shape => {
+            const points = (shape && Array.isArray(shape.points)) ? shape.points : [];
+            if (shape && shape.closed) {
+                const ring = points.slice();
+                if (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) {
+                    ring.push([ring[0][0], ring[0][1]]);
+                }
+                return { geometry: { type: 'Polygon', coordinates: [ring] } };
+            }
+            return { geometry: { type: 'LineString', coordinates: points.slice() } };
+        });
+    }
+
+    function plotsToShapes(geometries, shapes) {
+        return (Array.isArray(geometries) ? geometries : []).map((geometry, index) => {
+            const closed = !!(shapes && shapes[index] && shapes[index].closed);
+            const ring = ringsOf(geometry)[0] || [];
+            const points = closed && ring.length > 1 ? ring.slice(0, -1) : ring.slice();
+            return { points, closed };
+        });
+    }
+
+    const api = {
+        DEFAULT_TOLERANCE, buildTopology, moveNode, insertNodeOnEdge, removeNode, edgeMidpoints,
+        isClosedGeometry, shapesToPlots, plotsToShapes
+    };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.

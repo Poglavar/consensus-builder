@@ -155,12 +155,14 @@
             "valid": "Ready"
         },
         "errors": {
-            "parcelsUnavailable": "The draft parcels are not available in the current city.",
-            "parcelsNotContiguous": "A lake needs contiguous parcels.",
-            "sourceMissing": "Proposal source not found.",
+            "draftFailed": "Could not open this proposal for editing.",
+            "instantCreateFailed": "Could not save the new object.",
             "noAdapter": "No editor is registered for this proposal type.",
+            "notReshapeable": "This proposal type cannot be reshaped.",
+            "parcelsNotContiguous": "A lake needs contiguous parcels.",
+            "parcelsUnavailable": "The draft parcels are not available in the current city.",
             "readOnly": "This proposal is view-only.",
-            "instantCreateFailed": "Could not save the new object."
+            "sourceMissing": "Proposal source not found."
         },
         "publish": {
             "alreadyCreated": "This draft already created proposal {{id}}.",
@@ -2316,8 +2318,8 @@
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
                 "uploadSuccess": "Loaded {{count}} polygons from file.",
                 "editBlocked": "This edit displaces applied proposals and cannot be saved here.",
-                "nodeHint": "Drag a corner to move it — shared corners move every plot that touches them. Click a faint dot to add one, Alt-click a corner to remove it.",
-                "nodeKept": "That corner cannot be removed — a plot would stop being a polygon.",
+                "nodeHint": "Drag a node to move it — shared nodes move every plot that touches them. Click a faint dot to add one, Alt-click a node to remove it.",
+                "nodeKept": "That node cannot be removed — a plot would stop being a polygon.",
                 "undone": "Undid the last change."
             },
             "parcelCount": {
@@ -2338,11 +2340,11 @@
             "editNodes": "Edit boundaries (nodes)",
             "undoEdit": "Undo (Cmd/Ctrl+Z)",
             "undoNothing": "Nothing to undo",
-            "nodeShared": "Shared corner · {{count}} plots",
-            "nodeOwn": "Corner of one plot",
+            "nodeShared": "Shared node · {{count}} plots",
+            "nodeOwn": "Node of one plot",
             "nodeSharedHint": "Dragging it moves every plot that touches it.",
             "nodeOwnHint": "Drag to move it.",
-            "nodeRemove": "Remove corner"
+            "nodeRemove": "Remove node"
         }
     },
     "status": {

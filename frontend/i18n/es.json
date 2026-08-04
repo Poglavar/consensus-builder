@@ -155,12 +155,14 @@
             "valid": "Lista"
         },
         "errors": {
-            "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
-            "parcelsNotContiguous": "Un lago necesita parcelas contiguas.",
-            "sourceMissing": "No se encontró la propuesta de origen.",
+            "draftFailed": "No se pudo abrir esta propuesta para editarla.",
+            "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
+            "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
+            "parcelsNotContiguous": "Un lago necesita parcelas contiguas.",
+            "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
             "readOnly": "Esta propuesta es de solo lectura.",
-            "instantCreateFailed": "No se pudo guardar el nuevo objeto."
+            "sourceMissing": "No se encontró la propuesta de origen."
         },
         "publish": {
             "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
@@ -2331,8 +2333,8 @@
                 "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
                 "uploadSuccess": "Se cargaron {{count}} polígonos del archivo.",
                 "editBlocked": "Esta edición desplaza propuestas aplicadas y no puede guardarse aquí.",
-                "nodeHint": "Arrastra un vértice para moverlo; los vértices compartidos mueven todas las parcelas que los tocan. Haz clic en un punto tenue para añadir uno, Alt+clic en un vértice para quitarlo.",
-                "nodeKept": "Ese vértice no se puede quitar: una parcela dejaría de ser un polígono.",
+                "nodeHint": "Arrastra un nodo para moverlo; los nodos compartidos mueven todas las parcelas que los tocan. Haz clic en un punto tenue para añadir uno, Alt+clic en un nodo para quitarlo.",
+                "nodeKept": "Ese nodo no se puede quitar: una parcela dejaría de ser un polígono.",
                 "undone": "Se deshizo el último cambio."
             },
             "assignOwners": "Asignar propietarios",
@@ -2387,11 +2389,11 @@
             "editNodes": "Editar límites (nodos)",
             "undoEdit": "Deshacer (Cmd/Ctrl+Z)",
             "undoNothing": "Nada que deshacer",
-            "nodeShared": "Vértice compartido · {{count}} parcelas",
-            "nodeOwn": "Vértice de una parcela",
+            "nodeShared": "Nodo compartido · {{count}} parcelas",
+            "nodeOwn": "Nodo de una parcela",
             "nodeSharedHint": "Al arrastrarlo se mueven todas las parcelas que lo tocan.",
             "nodeOwnHint": "Arrastra para moverlo.",
-            "nodeRemove": "Quitar vértice"
+            "nodeRemove": "Quitar nodo"
         }
     },
     "status": {

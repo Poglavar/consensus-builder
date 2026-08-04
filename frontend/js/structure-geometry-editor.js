@@ -21,6 +21,7 @@
     // surface z=630, icons 632; parks 625/627) — default marker/overlay panes sit BELOW them,
     // which buried the editor's icons under the square's semi-transparent surface.
     const EDITOR_PANE = 'structureGeometryEditorPane';
+    const EDIT_LOCK_OWNER = 'structure-geometry-editor';
     function ensureEditorPane() {
         if (!global.map || typeof global.map.getPane !== 'function') return;
         let pane = global.map.getPane(EDITOR_PANE);
@@ -215,6 +216,7 @@
 
     function startGeometryDrag(event, layer, type, index) {
         if (state.tool === 'erase' || state.geometryDrag) return;
+        recordHistory();   // before the item changes, so undo returns it
         const original = clone(state.decorations?.[type]?.[index]);
         if (!Array.isArray(original) || !event?.latlng) return;
         try {
@@ -327,6 +329,31 @@
         });
         (state.decorations.stalls || []).forEach((coord, index) => addPointMarker(group, 'stalls', coord, index, makeIcon('is-stall', '🍽️')));
         (state.decorations.statues || []).forEach((coord, index) => addPointMarker(group, 'statues', coord, index, makeIcon('is-statue', '🗿')));
+    }
+
+    // Undo for furniture edits, on the shared stack every geometry editor uses.
+    let historyCtl = null;
+
+    function ensureHistory() {
+        if (historyCtl) return historyCtl;
+        const factory = global.GeometryEditHistory;
+        if (!factory) return null;
+        historyCtl = factory.create({
+            capture: () => clone(state.decorations),
+            restore: (snapshot) => {
+                state.decorations = clone(snapshot);
+                render();
+            }
+        });
+        historyCtl.bindKeyboard(global.document || global, {
+            enabled: () => !!state.decorations   // only while the editor owns the map
+        });
+        return historyCtl;
+    }
+
+    function recordHistory() {
+        const h = ensureHistory();
+        if (h) h.record();
     }
 
     function render() {
@@ -528,12 +555,16 @@
         state.kind = null;
         state.boundary = null;
         state.decorations = null;
+        if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.pathPoints = [];
         state.pathCursor = null;
         state.rubberBand = null;
         state.geometryDrag = null;
         state.layer = null;
+        // Hand the map back BEFORE anything below re-selects a proposal — those calls are the
+        // editor's own, and must not be turned away by the lock it just held.
+        global.__mapEditLock?.release(EDIT_LOCK_OWNER);
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
             global.finishProposalDraftDesignSession(draftId);
         }
@@ -590,9 +621,13 @@
         // open (restored on cancel), then close the proposal card and any parcel panel — the
         // editor panel replaces them. Parcel hover/click stays suppressed via
         // isStructureGeometryEditorActive (checked in the parcel handlers).
+        // Exclusive from here on: while this editor is open the map answers to it alone, so no
+        // other proposal, parcel or structure can be selected or hovered behind the panel.
+        global.__mapEditLock?.claim(EDIT_LOCK_OWNER, t('title', 'Structure editor'));
         state.reselectKey = global.ProposalSelection?.getKey?.() || null;
         try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
         try { global.hideParcelInfoPanel?.(); } catch (_) { }
+        try { global.__drillUi?.hidePanel?.(); } catch (_) { }
         // Hide the applied structure's own decoration rendering for the duration — the editor
         // shows the live editable copy, and static duplicates read as "objects I cannot drag".
         global.structureGeometryEditorEditingProposalId = draft?.sourceProposalId

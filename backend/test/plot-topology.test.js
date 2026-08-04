@@ -146,3 +146,60 @@ describe('edgeMidpoints', () => {
         expect(sharedMid.coord[1]).toBeCloseTo(5, 9);
     });
 });
+
+describe('open shapes (road centrelines)', () => {
+    // Two centrelines meeting at a junction (10,0)
+    const legA = { geometry: { type: 'LineString', coordinates: [[0, 0], [10, 0]] } };
+    const legB = { geometry: { type: 'LineString', coordinates: [[10, 0], [20, 5]] } };
+
+    it('shares the junction node between both legs', () => {
+        const t = topo.buildTopology([legA, legB]);
+        const shared = t.nodes.filter(n => n.plots.length > 1);
+        expect(shared).toHaveLength(1);
+        expect(shared[0].coord).toEqual([10, 0]);
+    });
+
+    it('moves the junction in both legs at once', () => {
+        const t = topo.buildTopology([legA, legB]);
+        const junction = t.nodes.find(n => n.plots.length > 1);
+        const out = topo.moveNode([legA, legB], t, junction.id, [12, 2]);
+        expect(out[0].coordinates).toEqual([[0, 0], [12, 2]]);
+        expect(out[1].coordinates).toEqual([[12, 2], [20, 5]]);
+    });
+
+    it('never closes an open line when its first or last vertex moves', () => {
+        const t = topo.buildTopology([legA]);
+        const first = t.nodes.find(n => n.coord[0] === 0);
+        const out = topo.moveNode([legA], t, first.id, [-5, -5]);
+        expect(out[0].coordinates).toEqual([[-5, -5], [10, 0]]);
+    });
+
+    it('lets a line fall to two points but no further', () => {
+        const three = { geometry: { type: 'LineString', coordinates: [[0, 0], [5, 1], [10, 0]] } };
+        const t = topo.buildTopology([three]);
+        const mid = t.nodes.find(n => n.coord[0] === 5);
+        expect(topo.removeNode([three], t, mid.id).removed).toBe(true);
+        const two = { geometry: { type: 'LineString', coordinates: [[0, 0], [10, 0]] } };
+        const t2 = topo.buildTopology([two]);
+        expect(topo.removeNode([two], t2, t2.nodes[0].id).removed).toBe(false);
+    });
+});
+
+describe('shape conversion for non-GeoJSON callers', () => {
+    it('round-trips open shapes', () => {
+        const shapes = [{ points: [[0, 0], [10, 0]], closed: false }];
+        const plots = topo.shapesToPlots(shapes);
+        expect(plots[0].geometry.type).toBe('LineString');
+        const back = topo.plotsToShapes(plots.map(p => p.geometry), shapes);
+        expect(back[0].points).toEqual([[0, 0], [10, 0]]);
+        expect(back[0].closed).toBe(false);
+    });
+
+    it('closes and re-opens closed shapes without duplicating the last point', () => {
+        const shapes = [{ points: [[0, 0], [10, 0], [10, 10]], closed: true }];
+        const plots = topo.shapesToPlots(shapes);
+        expect(plots[0].geometry.coordinates[0]).toHaveLength(4);
+        const back = topo.plotsToShapes(plots.map(p => p.geometry), shapes);
+        expect(back[0].points).toEqual([[0, 0], [10, 0], [10, 10]]);
+    });
+});

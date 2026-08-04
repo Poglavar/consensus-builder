@@ -5089,3 +5089,54 @@
 .reparcel-node-popup__hint { font-size: 11px; color: #555; margin-bottom: 8px; }
 .reparcel-node-popup .btn-sm { font-size: 12px; padding: 4px 10px; }
 .leaflet-popup.reparcel-node-popup-wrap .leaflet-popup-content { margin: 10px 12px; min-width: 150px; }
+
+/* ── Shared geometry-edit handles ────────────────────────────────────────────────────────────
+   One look for every map editor that drags vertices (plots, building rings, road nodes). The
+   per-editor classes below are kept as aliases so existing markup keeps working, but the shape,
+   size and drag affordance are defined once here. */
+.geom-handle {
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #1d4ed8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    cursor: grab;
+}
+
+.geom-handle--vertex { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+
+/* A vertex shared by several shapes is the interesting one — moving it re-shapes all of them. */
+.geom-handle--shared { border-color: #b45309; width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+
+/* Midpoint "insert a vertex here" targets, deliberately fainter than real vertices. */
+.geom-handle--mid {
+    width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1.5px dashed #1d4ed8;
+    cursor: copy;
+}
+
+.geom-handle.is-dragging,
+.geom-handle:active { cursor: grabbing; background: #1d4ed8; }
+
+/* Undo control the shared polygon editor adds to its map when the host supplies none — so every
+   geometry tool has a visible undo, not just the keyboard shortcut. */
+.geom-undo-button {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 17px;
+    line-height: 1;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+}
+
+.geom-undo-button:disabled { opacity: 0.4; cursor: default; }
+.geom-undo-button:not(:disabled):hover { background: #eef3fd; border-color: #9db8e8; }

@@ -32,6 +32,10 @@
             if (!pid || !layer || typeof layer.on !== 'function') return;
             layer.on('click', (event) => {
                 if (window.cadastreViewActive === true) return;
+                // An editing mode owns the map: let the click THROUGH untouched. Stopping it here
+                // is what stopped the park editor receiving its own placement clicks — the fill
+                // swallowed the event to select the proposal that was already being edited.
+                if (window.__mapEditLock?.isHeld()) return;
                 try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
                 // The drill resolves the whole stack at the point (something may stand above
                 // this structure) and shows the chain; without it, select the structure itself.

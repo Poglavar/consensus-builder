@@ -155,12 +155,14 @@
             "valid": "Spremno"
         },
         "errors": {
-            "parcelsUnavailable": "Parcele iz nacrta nisu dostupne u trenutnom gradu.",
-            "parcelsNotContiguous": "Jezero zahteva susedne parcele.",
-            "sourceMissing": "Izvorni predlog nije pronađen.",
+            "draftFailed": "Nije moguće otvoriti ovaj predlog za uređivanje.",
+            "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati.",
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
+            "notReshapeable": "Ovoj vrsti predloga se ne može menjati oblik.",
+            "parcelsNotContiguous": "Jezero zahteva susedne parcele.",
+            "parcelsUnavailable": "Parcele iz nacrta nisu dostupne u trenutnom gradu.",
             "readOnly": "Ovaj predlog se može samo pregledati.",
-            "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati."
+            "sourceMissing": "Izvorni predlog nije pronađen."
         },
         "publish": {
             "alreadyCreated": "Ovaj nacrt je već napravio predlog {{id}}.",
@@ -2334,8 +2336,8 @@
                 "uploadParseError": "Neuspešno čitanje GeoJSON datoteke.",
                 "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
                 "editBlocked": "Ova izmena izmešta primenjene predloge i ovde se ne može sačuvati.",
-                "nodeHint": "Prevucite teme da ga pomerite — zajednička temena pomeraju sve parcele koje ih dodiruju. Kliknite bledu tačku za dodavanje, Alt-klik na teme za uklanjanje.",
-                "nodeKept": "To teme se ne može ukloniti — parcela bi prestala da bude poligon.",
+                "nodeHint": "Prevucite čvor da ga pomerite — zajednički čvorovi pomeraju sve parcele koje ih dodiruju. Kliknite bledu tačku za dodavanje, Alt-klik na čvor za uklanjanje.",
+                "nodeKept": "Taj čvor se ne može ukloniti — parcela bi prestala da bude poligon.",
                 "undone": "Poslednja promena je poništena."
             },
             "algorithmTitle": "Vrsta reparcelacije",
@@ -2368,11 +2370,11 @@
             "editNodes": "Uređivanje granica (čvorovi)",
             "undoEdit": "Poništi (Cmd/Ctrl+Z)",
             "undoNothing": "Nema šta da se poništi",
-            "nodeShared": "Zajedničko teme · {{count}} parcela",
-            "nodeOwn": "Teme jedne parcele",
+            "nodeShared": "Zajednički čvor · {{count}} parcela",
+            "nodeOwn": "Čvor jedne parcele",
             "nodeSharedHint": "Prevlačenjem se pomeraju sve parcele koje ga dodiruju.",
             "nodeOwnHint": "Prevucite da ga pomerite.",
-            "nodeRemove": "Ukloni teme"
+            "nodeRemove": "Ukloni čvor"
         }
     },
     "status": {

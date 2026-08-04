@@ -341,8 +341,12 @@
         showHoverOutline(entry);
     }
 
+    // The full list — an editor holding the map, plus every mode that already meant "do not select
+    // anything" — lives in map-edit-lock.js so the several places that ask this question cannot
+    // drift apart. The local list stays only as the fallback if that script failed to load.
     function interactionBlocked() {
         try {
+            if (global.__mapEditLock) return global.__mapEditLock.blocksSelection();
             if (global.measureMode) return true;
             if (global.roadDrawingMode === true) return true;
             if (global.cadastreViewActive === true) return true;

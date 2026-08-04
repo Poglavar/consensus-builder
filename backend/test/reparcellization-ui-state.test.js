@@ -5,7 +5,12 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
-const { resolveDrawShortcut, resolveOwnerDisplayName } = require('../../frontend/js/reparcellization-ui-state.js');
+const {
+    resolveDrawShortcut,
+    resolveOwnerDisplayName,
+    normalizePlotOwners,
+    plotIsAssigned
+} = require('../../frontend/js/reparcellization-ui-state.js');
 const source = readFileSync(new URL('../../frontend/js/reparcellization.js', import.meta.url), 'utf8');
 
 describe('land-readjustment UI state', () => {
@@ -39,5 +44,49 @@ describe('land-readjustment UI state', () => {
         expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
         expect(source).toContain('const action = resolveDrawShortcut({');
         expect(source).toContain('displayName: resolveOwnerDisplayName(');
+    });
+});
+
+// A plot's owner is stored twice — the singular ownerKey/displayName and owners[]. Reading only
+// one of them is what disabled Done forever on an imported plan.
+describe('plot owner normalisation', () => {
+    it('reads an owners[] array as given', () => {
+        const owners = normalizePlotOwners({
+            ownerKey: 'a',
+            owners: [{ ownerKey: 'a', displayName: 'Ada', share: 0.6 }, { ownerKey: 'b', displayName: 'Bo', share: 0.4 }]
+        });
+        expect(owners.map(o => o.ownerKey)).toEqual(['a', 'b']);
+        expect(owners[0].share).toBeCloseTo(0.6);
+    });
+
+    it('derives the array from a lone ownerKey when owners[] is absent', () => {
+        const owners = normalizePlotOwners({ ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6' });
+        expect(owners).toEqual([{ ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6', share: 1 }]);
+    });
+
+    it('splits shares evenly when none are recorded', () => {
+        const owners = normalizePlotOwners({ owners: [{ ownerKey: 'a' }, { ownerKey: 'b' }] });
+        expect(owners.map(o => o.share)).toEqual([0.5, 0.5]);
+    });
+
+    it('treats a plot with no owner at all as unassigned', () => {
+        expect(normalizePlotOwners({ displayName: 'Unassigned' })).toEqual([]);
+        expect(normalizePlotOwners({ ownerKey: '', owners: [{ share: 1 }] })).toEqual([]);
+        expect(plotIsAssigned({ displayName: 'Unassigned' })).toBe(false);
+    });
+
+    it('counts every plot of a saved plan that carries only ownerKey — the Borovje UPU shape', () => {
+        // Verbatim field set of a stored UPU polygon: ownerKey present, owners absent.
+        const savedPlan = [
+            { ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6', percent: 13.43, area: 13851 },
+            { ownerKey: 'r2-1', displayName: 'Rekreacija R2-1', color: '#5aa469', percent: 5.22, area: 5382 },
+            { ownerKey: 'm1-11', displayName: 'Građevna čestica M1-11', color: '#e8a33d', percent: 5.02, area: 5177 }
+        ];
+        expect(savedPlan.every(plotIsAssigned)).toBe(true);
+        expect(savedPlan.filter(p => !plotIsAssigned(p))).toHaveLength(0);
+    });
+
+    it('keeps public land assigned — it has a real owner key', () => {
+        expect(plotIsAssigned({ ownerKey: '__public__', displayName: 'Public land' })).toBe(true);
     });
 });

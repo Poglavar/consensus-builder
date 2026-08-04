@@ -259,8 +259,63 @@
             this.boundKeydown = event => this.handleKeydown(event);
             this.boundMapClick = () => this.hideDeleteAction({ clearSelection: true });
 
+            // Undo, shared with the plot and road editors. The ring is the whole state, so a
+            // snapshot is just a copy of it — taken before a move/insert/remove commits.
+            const historyFactory = options.history
+                || (typeof window !== 'undefined' ? window.GeometryEditHistory : null);
+            this.history = (historyFactory && options.undo !== false)
+                ? historyFactory.create({
+                    capture: () => openRing(this.ring),
+                    restore: ring => {
+                        this.ring = openRing(ring);
+                        this.hideDeleteAction({ clearSelection: true });
+                        this.emit('onCommit', 'undo', null);
+                        if (!this.destroyed) this.render({ refreshRing: false });
+                    },
+                    onChange: typeof options.onUndoAvailability === 'function'
+                        ? options.onUndoAvailability
+                        : undefined
+                })
+                : null;
+            if (this.history && options.bindUndoKeyboard !== false && this.document) {
+                this.history.bindKeyboard(this.document, {
+                    enabled: () => !this.destroyed
+                });
+            }
+            if (this.history && options.undoButton) this.history.bindButton(options.undoButton);
+            // No host-supplied button? Provide one. Undo that only exists as a shortcut is undo
+            // most people never find, and every host of this editor would otherwise have to build
+            // the same control.
+            if (this.history && !options.undoButton && options.showUndoButton !== false) {
+                this.ownUndoButton = this.createFloatingUndoButton();
+                if (this.ownUndoButton) this.history.bindButton(this.ownUndoButton);
+            }
+
             if (this.document) this.document.addEventListener('keydown', this.boundKeydown);
             if (typeof this.map.on === 'function') this.map.on('click', this.boundMapClick);
+        }
+
+        // A small control in the map corner, styled by .geom-undo-button (modals.css).
+        createFloatingUndoButton() {
+            if (!this.document || !this.map || typeof this.map.getContainer !== 'function') return null;
+            try {
+                const container = this.map.getContainer();
+                if (!container) return null;
+                const button = this.document.createElement('button');
+                button.type = 'button';
+                button.className = 'geom-undo-button';
+                button.title = this.options.undoTitle || 'Undo (Cmd/Ctrl+Z)';
+                button.setAttribute('aria-label', button.title);
+                button.textContent = '\u21B6';
+                button.disabled = true;
+                // Keep map drag/zoom from eating the click.
+                if (this.L && this.L.DomEvent) {
+                    this.L.DomEvent.disableClickPropagation(button);
+                    this.L.DomEvent.disableScrollPropagation(button);
+                }
+                container.appendChild(button);
+                return button;
+            } catch (_) { return null; }
         }
 
         readExternalRing() {
@@ -502,6 +557,7 @@
             const latLng = event && event.target && typeof event.target.getLatLng === 'function'
                 ? event.target.getLatLng()
                 : null;
+            if (this.history) this.history.record();
             const rawCoordinate = latLng
                 ? [latLng.lng, latLng.lat]
                 : this.ring[vertexIndex];
@@ -535,7 +591,8 @@
             if (!latLng || !Number.isFinite(latLng.lng) || !Number.isFinite(latLng.lat)) return;
             const coordinate = coordinateOnEdge(this.ring, edgeIndex, [latLng.lng, latLng.lat], this.turf);
             const inserted = insertVertexAfterEdge(this.ring, edgeIndex, coordinate);
-            if (!inserted) return;
+            if (!inserted) return;   // nothing changed, so no undo step is taken below
+            if (this.history) this.history.record();
             const insertedIndex = edgeIndex + 1;
             this.ring = inserted;
             this.hideDeleteAction({ clearSelection: true });
@@ -546,6 +603,7 @@
         removeSelectedVertex() {
             const removed = removeVertexAt(this.ring, this.selectedVertexIndex);
             if (!removed) return false;
+            if (this.history) this.history.record();
             const removedIndex = this.selectedVertexIndex;
             this.ring = removed;
             const constrainedRing = constrainRingToBoundary(this.ring, this.options.boundary, this.turf);
@@ -568,6 +626,12 @@
             if (this.destroyed) return;
             this.destroyed = true;
             this.clearLayers();
+            // Release the undo binding with the editor, or its shortcut outlives the tool.
+            if (this.history) { this.history.destroy(); this.history = null; }
+            if (this.ownUndoButton) {
+                try { this.ownUndoButton.remove(); } catch (_) { }
+                this.ownUndoButton = null;
+            }
             if (this.document) this.document.removeEventListener('keydown', this.boundKeydown);
             if (typeof this.map.off === 'function') this.map.off('click', this.boundMapClick);
             this.deleteMarker = null;

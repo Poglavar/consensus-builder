@@ -495,8 +495,10 @@ function corridorProfileForRender(proposal, definition) {
 function forwardAppliedCorridorClick(proposal, event) {
     if (!proposal) return;
     // While a corridor tool is drawing, a click on an applied road places a drawing point on it
-    // (that is how connectors reach existing roads and merge), never a selection.
-    if (window.roadDrawingMode === true) {
+    // (that is how connectors reach existing roads and merge), never a selection. An editing mode
+    // holding the map wants the same forwarding: this hit target keeps bubblingMouseEvents off, so
+    // without re-firing, the editor's own map handler would never see a click over a road.
+    if (window.roadDrawingMode === true || window.__mapEditLock?.isHeld()) {
         try {
             if (event && event.latlng && typeof map !== 'undefined' && map) {
                 map.fire('click', {

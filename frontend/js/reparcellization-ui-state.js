@@ -21,7 +21,44 @@
         return !name || reserved.has(name.toLocaleLowerCase()) ? String(fallbackName || 'Owner') : name;
     }
 
-    const api = { resolveDrawShortcut, resolveOwnerDisplayName };
+    // A plot carries its owner two ways: the singular ownerKey/displayName (exactly one owner) and
+    // owners[] (shares split between several). Both are written on save, and the editor keeps them
+    // in lockstep — but a plan authored anywhere else (an imported UPU, an older save) may carry
+    // only the singular pair. Reading just owners[] then makes every plot look ownerless, which
+    // fails the completeness gate and disables Done with no way back. Normalise once, here.
+    function normalizePlotOwners(plot = {}) {
+        const listed = (Array.isArray(plot.owners) ? plot.owners : [])
+            .filter(owner => owner && owner.ownerKey)
+            .map(owner => ({
+                ownerKey: owner.ownerKey,
+                displayName: owner.displayName,
+                color: owner.color,
+                share: Number(owner.share) > 0 ? Number(owner.share) : 0
+            }));
+        if (listed.length) {
+            const missing = listed.filter(owner => !owner.share);
+            if (missing.length === listed.length) {
+                const equal = 1 / listed.length;
+                listed.forEach(owner => { owner.share = equal; });
+            }
+            return listed;
+        }
+        if (!plot.ownerKey) return [];
+        return [{
+            ownerKey: plot.ownerKey,
+            displayName: plot.displayName,
+            color: plot.color,
+            share: 1
+        }];
+    }
+
+    // The completeness invariant: a plot counts as assigned when it names a REAL owner. Public land
+    // counts (it has its own owner key); the "Unassigned" placeholder does not.
+    function plotIsAssigned(plot) {
+        return normalizePlotOwners(plot).length > 0;
+    }
+
+    const api = { resolveDrawShortcut, resolveOwnerDisplayName, normalizePlotOwners, plotIsAssigned };
     if (typeof window !== 'undefined') window.__reparcellizationUiState = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

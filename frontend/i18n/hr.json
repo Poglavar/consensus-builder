@@ -155,12 +155,14 @@
             "valid": "Spremno"
         },
         "errors": {
-            "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
-            "parcelsNotContiguous": "Jezero zahtijeva susjedne parcele.",
-            "sourceMissing": "Izvorni prijedlog nije pronađen.",
+            "draftFailed": "Nije moguće otvoriti ovaj prijedlog za uređivanje.",
+            "instantCreateFailed": "Novi objekt nije bilo moguće spremiti.",
             "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
+            "notReshapeable": "Ovoj se vrsti prijedloga ne može mijenjati oblik.",
+            "parcelsNotContiguous": "Jezero zahtijeva susjedne parcele.",
+            "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
             "readOnly": "Ovaj se prijedlog može samo pregledavati.",
-            "instantCreateFailed": "Novi objekt nije bilo moguće spremiti."
+            "sourceMissing": "Izvorni prijedlog nije pronađen."
         },
         "publish": {
             "alreadyCreated": "Ova je skica već stvorila prijedlog {{id}}.",
@@ -2334,8 +2336,8 @@
                 "uploadParseError": "Neuspješno čitanje GeoJSON datoteke.",
                 "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
                 "editBlocked": "Ova izmjena izmješta primijenjene prijedloge i ovdje se ne može spremiti.",
-                "nodeHint": "Povucite vrh da ga pomaknete — zajednički vrhovi pomiču sve čestice koje ih dodiruju. Kliknite blijedu točku za dodavanje, Alt-klik na vrh za uklanjanje.",
-                "nodeKept": "Taj se vrh ne može ukloniti — čestica bi prestala biti poligon.",
+                "nodeHint": "Povucite čvor da ga pomaknete — zajednički čvorovi pomiču sve čestice koje ih dodiruju. Kliknite blijedu točku za dodavanje, Alt-klik na čvor za uklanjanje.",
+                "nodeKept": "Taj se čvor ne može ukloniti — čestica bi prestala biti poligon.",
                 "undone": "Zadnja promjena je poništena."
             },
             "algorithmTitle": "Vrsta reparcelacije",
@@ -2368,11 +2370,11 @@
             "editNodes": "Uređivanje granica (čvorovi)",
             "undoEdit": "Poništi (Cmd/Ctrl+Z)",
             "undoNothing": "Nema što poništiti",
-            "nodeShared": "Zajednički vrh · {{count}} čestica",
-            "nodeOwn": "Vrh jedne čestice",
+            "nodeShared": "Zajednički čvor · {{count}} čestica",
+            "nodeOwn": "Čvor jedne čestice",
             "nodeSharedHint": "Povlačenjem se pomiču sve čestice koje ga dodiruju.",
             "nodeOwnHint": "Povucite da ga pomaknete.",
-            "nodeRemove": "Ukloni vrh"
+            "nodeRemove": "Ukloni čvor"
         }
     },
     "status": {

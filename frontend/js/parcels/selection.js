@@ -42,7 +42,8 @@
         // Station placement owns every map-surface pointer event. Parcels stay visually inert
         // while the carried station preview and compatible-track overlay respond to the cursor.
         if (isStationPlacementMapInteractionActive()) return;
-        // No parcel hover while the structure geometry editor owns the map.
+        // No parcel hover while an editing mode owns the map.
+        if (global.__mapEditLock?.isHeld()) return;
         if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
         if (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) return;
         const layer = e.target;

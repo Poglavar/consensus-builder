@@ -809,26 +809,63 @@
         return capability === true || capability?.editable === true;
     }
 
+    // Every exit here used to be silent — a bare `return null`, a console.warn, or a status line
+    // that scrolls past. The button is wired as an inline onclick, so the promise is discarded too:
+    // anything thrown inside (createDraftFromProposal rejects a proposal with no stable ID) became
+    // an unhandled rejection and the click simply did nothing, with no way to tell which gate
+    // refused. Report the reason instead — a dead button must always say why.
+    function reportGeometryEditFailure(reason, detail) {
+        console.warn('[ProposalEditor] Geometry editor did not open:', reason, detail || '');
+        if (typeof global.showStyledAlert === 'function') global.showStyledAlert(reason);
+        else if (typeof global.updateStatus === 'function') global.updateStatus(reason);
+        return null;
+    }
+
     async function editProposalGeometry(proposalIdOrHash) {
         const proposal = proposalById(proposalIdOrHash);
-        if (!proposal || !canEditProposalGeometry(proposal)) return null;
-        const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
-        if (!draft) return null;
+        if (!proposal) {
+            return reportGeometryEditFailure(
+                tDraft('proposalDrafts.errors.sourceMissing', 'Proposal source not found.'),
+                proposalIdOrHash
+            );
+        }
+        if (!canEditProposalGeometry(proposal)) {
+            return reportGeometryEditFailure(
+                tDraft('proposalDrafts.errors.notReshapeable', 'This proposal type cannot be reshaped.'),
+                proposal.goal || proposal.type
+            );
+        }
+        let draft = null;
+        try {
+            draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
+        } catch (error) {
+            return reportGeometryEditFailure(
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                error
+            );
+        }
+        if (!draft) {
+            return reportGeometryEditFailure(
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                'createDraftFromProposal returned nothing'
+            );
+        }
         geometryEditCommitDraftId = draft.id;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
         let opened = false;
+        let failure = null;
         try {
             opened = await global.openProposalDraftDesign?.(draft.id);
         } catch (error) {
             opened = false;
-            console.warn('[ProposalEditor] Geometry editor failed to open', error);
+            failure = error;
         }
         if (opened === false) {
             geometryEditCommitDraftId = null;
             global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
-            }
+            const reason = (failure && failure.message)
+                || tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.');
+            return reportGeometryEditFailure(reason, failure);
         }
         return opened;
     }

@@ -110,8 +110,49 @@
         });
     }
 
+    // Every road geometry edit funnels through here — node drag, node delete, bulldoze — so this
+    // is the one place undo has to hook. The stack is the shared GeometryEditHistory, same as the
+    // plot and building editors.
+    let historyCtl = null;
+    let historyKey = null;
+
+    function ensureHistory(proposalKey) {
+        const factory = global.GeometryEditHistory;
+        if (!factory) return null;
+        // A different road is a different stack: undoing into another proposal's geometry would
+        // be nonsense.
+        if (historyCtl && historyKey === String(proposalKey)) return historyCtl;
+        if (historyCtl) historyCtl.destroy();
+        historyKey = String(proposalKey);
+        historyCtl = factory.create({
+            capture: () => {
+                const proposal = global.getProposalByIdOrHash?.(historyKey);
+                const definition = proposal?.roadProposal?.definition;
+                return definition ? JSON.parse(JSON.stringify(definition)) : undefined;
+            },
+            restore: (snapshot) => {
+                if (!snapshot || typeof global.updateLocalCorridorGeometry !== 'function') return;
+                runExclusiveEdit(() => global.updateLocalCorridorGeometry(historyKey, definition => {
+                    // Put the whole captured centreline back; the update path re-cuts from it.
+                    const segments = (typeof global.corridorCenterlineOf === 'function')
+                        ? global.corridorCenterlineOf(snapshot)
+                        : null;
+                    if (segments) writeSegments(definition, segments);
+                }));
+            },
+            onChange: () => { }
+        });
+        historyCtl.bindKeyboard(global.window || global, {
+            // Only while road nodes are actually being edited, so Cmd+Z elsewhere is untouched.
+            enabled: () => !!handleGroup
+        });
+        return historyCtl;
+    }
+
     function mutateGeometry(proposalKey, mutator) {
         if (typeof global.updateLocalCorridorGeometry !== 'function') return;
+        const history = ensureHistory(proposalKey);
+        if (history) history.record();
         runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, mutator));
     }
 
@@ -235,6 +276,15 @@
         }, { preEditSnapshot: preEditSnapshot || null }));
     }
 
+    // Same quantisation the plot topology uses, so a junction and a plot corner agree on what
+    // counts as one node.
+    function nodeKeyFor(lng, lat) {
+        const topo = global.__plotTopology;
+        const tolerance = (topo && topo.DEFAULT_TOLERANCE) || 1e-7;
+        const q = v => Math.round(v / tolerance) * tolerance;
+        return `${q(lng).toFixed(9)},${q(lat).toFixed(9)}`;
+    }
+
     function refresh() {
         const map = global.map;
         if (!map || !global.L) return;
@@ -260,7 +310,9 @@
         const nodesByPosition = new Map();
         segments.forEach((segment, segIndex) => {
             segment.forEach((point, pointIndex) => {
-                const positionKey = `${point.lat.toFixed(7)},${point.lng.toFixed(7)}`;
+                // Node identity comes from the shared topology engine, so "the same corner"
+                // means one thing across every editor (it used to be this file's own toFixed(7)).
+                const positionKey = nodeKeyFor(point.lng, point.lat);
                 if (!nodesByPosition.has(positionKey)) {
                     nodesByPosition.set(positionKey, { lat: point.lat, lng: point.lng, targets: [] });
                 }
