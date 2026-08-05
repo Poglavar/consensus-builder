@@ -43,17 +43,103 @@
         return false;
     },
 
-    // Drop parents the guard above vetoes, with one log line naming them.
+    // Live parcels whose ground overlaps `feature`'s bounds — the fabric a restore must not
+    // double-cover. The unapplying proposal's own children are already off the map by the time
+    // restores run, so the on-map test excludes them naturally.
+    _liveGroundEntriesNear(feature, excludeIds) {
+        const out = [];
+        try {
+            const byId = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map) ? window.parcelLayerById : null;
+            const group = (typeof window !== 'undefined' && window.parcelLayer && typeof window.parcelLayer.hasLayer === 'function')
+                ? window.parcelLayer : null;
+            if (!byId || !group || !feature || !feature.geometry) return out;
+            const exclude = new Set((Array.isArray(excludeIds) ? excludeIds : []).map(String));
+            const bounds = (typeof L !== 'undefined' && L.geoJSON) ? L.geoJSON(feature).getBounds() : null;
+            byId.forEach((layer, id) => {
+                const key = String(id);
+                if (exclude.has(key)) return;
+                if (!group.hasLayer(layer)) return;
+                try {
+                    if (bounds && typeof layer.getBounds === 'function' && !layer.getBounds().intersects(bounds)) return;
+                    const gj = layer.toGeoJSON();
+                    const f = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
+                    if (f && f.geometry && /Polygon/.test(f.geometry.type)) out.push({ id: key, feature: f });
+                } catch (_) { /* a layer that cannot serialise is not fabric */ }
+            });
+        } catch (_) { /* the guard must never block a restore */ }
+        return out;
+    },
+
+    // Drop parents the guard above vetoes, with one log line naming them — and restore the rest
+    // only on ground live fabric does not already own. The structural veto sees only direct
+    // `<parent>#` children; a parent whose ground was re-tiled ACROSS a dead intermediate
+    // generation (road B cut road A's slice, a readjustment then re-tiled B's pieces) passes it,
+    // and restoring the full stale geometry stacked 3,984 m² of it under five live plots. The
+    // geometric residual is the honest test: what live fabric owns stays theirs.
     _filterRestorableParents(parentFeatures, unappliedProposalId) {
         const kept = [];
         const blocked = [];
+        const clipped = [];
+        const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+        const turfRef = (typeof turf !== 'undefined') ? turf : null;
+        const geomCtx = (formationEdit && turfRef && typeof turfRef.difference === 'function') ? {
+            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            intersectionArea: (a, b) => { try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; } },
+            difference: (a, b) => { try { return turfRef.difference(a, b); } catch (_) { return null; } }
+        } : null;
+        // Another formation's MINTED body may only be revived by that formation's own apply.
+        // A restore that resurrects it creates ownerless zombie fabric: a stale parent claim on
+        // a square's parcel made every unapply re-show it, the next derive then consumed the
+        // "live" parcel again, and the claim re-entered the record forever. Applied or not —
+        // the body belongs to the minting proposal's lifecycle. (Adopt bodies are pre-existing
+        // parcels and stay restorable.)
+        const foreignFormedBodies = new Set();
+        try {
+            const selfKey = String(unappliedProposalId || '');
+            proposalStorage.getAllProposals().forEach(p => {
+                if (!p || String(p.proposalId) === selfKey) return;
+                [p.structureProposal, p.buildingProposal].forEach(holder => {
+                    const formation = holder && holder.formation;
+                    if (formation && Array.isArray(formation.childParcelIds)) {
+                        formation.childParcelIds.forEach(id => foreignFormedBodies.add(String(id)));
+                    }
+                });
+            });
+        } catch (_) { /* the guard must never block a restore */ }
         (Array.isArray(parentFeatures) ? parentFeatures : []).forEach(feature => {
             const id = _getParcelIdFromFeature(feature);
-            if (id && this._parentStillConsumedElsewhere(String(id), unappliedProposalId)) blocked.push(String(id));
-            else kept.push(feature);
+            if (id && foreignFormedBodies.has(String(id))) {
+                blocked.push(String(id) + ' (another formation’s minted body)');
+                return;
+            }
+            if (id && this._parentStillConsumedElsewhere(String(id), unappliedProposalId)) {
+                blocked.push(String(id));
+                return;
+            }
+            if (geomCtx && feature && feature.geometry && typeof formationEdit.residualGround === 'function') {
+                const live = this._liveGroundEntriesNear(feature, id ? [String(id)] : []);
+                const res = formationEdit.residualGround(feature, live, geomCtx);
+                if (!res.residual) {
+                    blocked.push(String(id) + ' (ground fully owned by live fabric)');
+                    return;
+                }
+                if (res.coveredShare > 0.01 && res.residual.geometry) {
+                    clipped.push(String(id));
+                    kept.push({
+                        type: 'Feature',
+                        properties: { ...(feature.properties || {}) },
+                        geometry: JSON.parse(JSON.stringify(res.residual.geometry))
+                    });
+                    return;
+                }
+            }
+            kept.push(feature);
         });
         if (blocked.length) {
             console.info('[unapply] Not restoring parent(s) still consumed by another applied proposal', blocked);
+        }
+        if (clipped.length) {
+            console.info('[unapply] Restored parent(s) clipped to the ground live fabric does not own', clipped);
         }
         return kept;
     },
@@ -386,7 +472,25 @@
                 });
             } else if (formation.mode === 'merge' || formation.mode === 'footprint') {
                 const childIds = Array.isArray(formation.childParcelIds) ? formation.childParcelIds.map(String) : [];
-                if (childIds.length) this._removeChildParcels(proposalId, childIds);
+                // The minted parcels leave the MAP first — _removeChildParcels alone is record
+                // bookkeeping, and a still-live minted parcel blocks its own parents' restore
+                // (the residual test reads it as fabric that owns the ground): un-applying a
+                // merged park left the City-owned parcel orphaned on the map and restored none
+                // of its five consumed sources.
+                if (childIds.length) {
+                    const childFeatures = this._resolveParcelFeaturesByIds(childIds,
+                        { preferMap: true, allowStorage: true, allowMissing: true }) || [];
+                    if (childFeatures.length) this._removeFeaturesFromMap(childFeatures);
+                    childIds.forEach(id => {
+                        if (typeof window !== 'undefined' && typeof window.removeParcelLayerById === 'function') {
+                            window.removeParcelLayerById(id);
+                        }
+                        if (typeof clearPersistedParcelRecord === 'function') clearPersistedParcelRecord(id);
+                        this._removeProposalAsAncestor(id, proposalId);
+                        this._unmarkParcelModified(id);
+                    });
+                    this._removeChildParcels(proposalId, childIds);
+                }
                 const parents = this._resolveParcelFeaturesByIds(
                     (Array.isArray(formation.parcelIds) ? formation.parcelIds : []).map(String),
                     { preferMap: false, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];

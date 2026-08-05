@@ -179,3 +179,67 @@ describe('preparePublishRecord (the §15a publish gate)', () => {
         expect(gate.proposal.parentParcelIds).toEqual([BASE]);
     });
 });
+
+describe('stripDerivedRecordData', () => {
+    it('strips children, formations and scan results; keeps definitions and consent', () => {
+        const record = {
+            proposalId: 'c-x', goal: 'park',
+            parentParcelIds: ['HR-1', 'HR-2'],
+            cadastreParcelIds: ['HR-1', 'HR-2'],
+            childParcelIds: ['HR-1#c-x-1'],
+            descendantParcelIds: ['HR-1#c-x-1'],
+            ownerAcceptances: { 'HR-1': { accepted: true } },
+            structureProposal: {
+                kind: 'park', geometry: { type: 'Polygon', coordinates: [] },
+                parentParcelIds: ['HR-1'],
+                formation: { mode: 'merge', parcelIds: ['HR-1'], childParcelIds: ['HR-1#c-x-1'] },
+                demolishedBuildings: [{ id: 1 }], demolitionScanned: true
+            },
+            roadProposal: {
+                definition: { width: 10, points: [], demolishedBuildings: [{ id: 2 }] },
+                parentParcelIds: ['HR-2'], childParcelIds: ['HR-2#c-x-1'], childFeatures: [{}],
+                parentsToRemove: ['HR-2']
+            }
+        };
+        const out = fd.stripDerivedRecordData(record);
+        expect(out.childParcelIds).toBeUndefined();
+        expect(out.descendantParcelIds).toBeUndefined();
+        expect(out.structureProposal.formation).toBeUndefined();
+        expect(out.structureProposal.demolishedBuildings).toBeUndefined();
+        expect(out.structureProposal.demolitionScanned).toBeUndefined();
+        expect(out.roadProposal.childParcelIds).toBeUndefined();
+        expect(out.roadProposal.childFeatures).toBeUndefined();
+        expect(out.roadProposal.parentsToRemove).toBeUndefined();
+        // Authored content and consent survive.
+        expect(out.parentParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(out.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(out.ownerAcceptances).toEqual({ 'HR-1': { accepted: true } });
+        expect(out.structureProposal.geometry).toBeTruthy();
+        expect(out.roadProposal.definition.demolishedBuildings).toEqual([{ id: 2 }]);
+        // The input record is untouched (publish must not mutate the local copy).
+        expect(record.childParcelIds).toEqual(['HR-1#c-x-1']);
+        expect(record.structureProposal.formation).toBeTruthy();
+    });
+
+    it("keeps a government-plan road's child features — they ARE the authored plan", () => {
+        const record = {
+            roadProposal: {
+                definition: { kind: 'government_plan' },
+                childFeatures: [{ id: 'f1' }], childParcelIds: ['HR-1#gov-1']
+            }
+        };
+        const out = fd.stripDerivedRecordData(record);
+        expect(out.roadProposal.childFeatures).toEqual([{ id: 'f1' }]);
+        expect(out.roadProposal.childParcelIds).toBeUndefined();
+    });
+
+    it('publish gate applies the strip after verifying', () => {
+        const gate = fd.preparePublishRecord({
+            goal: 'park', parentParcelIds: ['HR-1'],
+            childParcelIds: ['HR-1#c-x-1'],
+            structureProposal: { kind: 'park', parentParcelIds: ['HR-1'], formation: { mode: 'adopt', parcelIds: ['HR-1'] } }
+        }, {});
+        expect(gate.proposal.childParcelIds).toBeUndefined();
+        expect(gate.proposal.structureProposal.formation).toBeUndefined();
+    });
+});

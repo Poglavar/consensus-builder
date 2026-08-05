@@ -60,14 +60,33 @@
                 ? global.isParcelReplacedByChildren
                 : null;
 
+            // LIVE means ON THE MAP — the same test the availability gate uses. The registry
+            // (parcelLayerById) deliberately RETAINS consumed parcels' layers, and the structural
+            // inference below cannot see cross-token consumption (a readjustment consuming
+            // another road's slice leaves no live id with that slice as a '#'-prefix — measured
+            // on the Cibona square, where hidden road remainders kept resurfacing as candidates).
+            const parcelLayerGroup = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
+                ? global.parcelLayer
+                : null;
+            const isOnMap = (layer) => {
+                if (!parcelLayerGroup) return true;
+                try { return parcelLayerGroup.hasLayer(layer); } catch (_) { return true; }
+            };
+
             // A parent whose derived children are themselves on the map is consumed fabric, even
             // when the bookkeeping flag disagrees (measured on the 97-104 replay: base 824 stayed
             // "ready" and unreplaced next to its own subdivision slices, and resolving onto it
             // handed the apply a parent occupied by the very proposal that cut it). The id
-            // structure is the ground truth: every '#'-prefix of a live derived id is consumed.
+            // structure is the ground truth: every '#'-prefix of a LIVE derived id is consumed.
+            // Only on-map ids cast this shadow: the registry keeps dead layers forever, so an
+            // unapplied road's removed slices would otherwise veto their own freshly RESTORED
+            // base parents — measured as 21% coverage (and a formation-ground-unresolved refusal)
+            // on every road edit, whose unapply is exactly what strands those dead ids.
             const consumedByStructure = new Set();
-            byId.forEach((_, id) => {
+            byId.forEach((layer, id) => {
                 let key = id === undefined || id === null ? '' : String(id);
+                if (key.indexOf('#') === -1) return;
+                if (!isOnMap(layer)) return;
                 let cut = key.lastIndexOf('#');
                 while (cut > 0) {
                     key = key.slice(0, cut);
@@ -75,15 +94,6 @@
                     cut = key.lastIndexOf('#');
                 }
             });
-
-            // LIVE means ON THE MAP — the same test the availability gate uses. The registry
-            // (parcelLayerById) deliberately RETAINS consumed parcels' layers, and the structural
-            // inference above cannot see cross-token consumption (a readjustment consuming
-            // another road's slice leaves no live id with that slice as a '#'-prefix — measured
-            // on the Cibona square, where hidden road remainders kept resurfacing as candidates).
-            const parcelLayerGroup = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
-                ? global.parcelLayer
-                : null;
 
             byId.forEach((layer, id) => {
                 const key = id === undefined || id === null ? '' : String(id);

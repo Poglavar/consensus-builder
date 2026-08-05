@@ -1134,6 +1134,23 @@ function isProposalCurrentlyApplied(proposal) {
         .some(sub => sub && isApplied(proposal, sub));
 }
 
+// After a reload, boot restore rehydrates the plan's END-STATE: a child that a LATER formation
+// consumed is deliberately not re-added, so it is absent from the registry BY DESIGN — its saved
+// feature still carries the descendant marker (the same criterion _reapplyAppliedProposal skips
+// by). That marker is the local witness that the fabric moved PAST this child, as opposed to the
+// child never having materialized here (a cross-session stale applied flag). Without this
+// distinction the plan route re-applied 4 of Cibona's 8 members on EVERY reload — and each
+// needless re-apply ran against the standing downstream members, inverting the plan's structure.
+function _isChildConsumedInSavedFabric(childId) {
+    try {
+        if (typeof _buildFeatureFromPersisted !== 'function' || typeof _shouldSkipChildFeature !== 'function') return false;
+        const saved = _buildFeatureFromPersisted(String(childId));
+        return !!(saved && _shouldSkipChildFeature(saved));
+    } catch (_) {
+        return false;
+    }
+}
+
 function isProposalAppliedAndMaterialized(proposal) {
     if (!isProposalCurrentlyApplied(proposal)) return false;
     try {
@@ -1152,12 +1169,25 @@ function isProposalAppliedAndMaterialized(proposal) {
         push(proposal.roadProposal && proposal.roadProposal.childParcelIds);
         push(proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds);
         if (descendantIds.length === 0) {
-            // No children stored — can't verify materialization. Treat as "needs apply" so the
-            // rebuild-from-definition path runs. Building/structure overlays don't hit this
-            // helper because they are gated on descendant-producing rules elsewhere.
+            // A structure/building that formed by ADOPT mints nothing — its fabric is the parcel
+            // it adopted, named by the formation record. Verify that instead of treating "no
+            // children" as "needs apply" (which re-ran the square's apply on every reload).
+            const formation = (proposal.structureProposal && proposal.structureProposal.formation)
+                || (proposal.buildingProposal && proposal.buildingProposal.formation);
+            if (formation) {
+                const formed = (Array.isArray(formation.childParcelIds) && formation.childParcelIds.length)
+                    ? formation.childParcelIds
+                    : formation.parcelIds;
+                if (Array.isArray(formed) && formed.length) {
+                    return formed.every(id => mapById.has(String(id)));
+                }
+            }
+            // Nothing stored to verify — treat as "needs apply" so the rebuild-from-definition
+            // path runs. Building/urban-rule overlays don't hit this helper because they are
+            // gated on descendant-producing rules elsewhere.
             return false;
         }
-        return descendantIds.every(id => mapById.has(id));
+        return descendantIds.every(id => mapById.has(id) || _isChildConsumedInSavedFabric(id));
     } catch (_) {
         return false;
     }

@@ -1046,6 +1046,16 @@ function sameStringArrays(left, right) {
 function syncCanonicalSharedProposalState(existing, normalized) {
     if (!existing || !normalized) return false;
 
+    // An APPLIED record's parent/child lists are live working state: parents name the pieces the
+    // apply actually consumed (what unapply must restore), children the pieces it minted here.
+    // The canonical payload's lists are the UPLOADER's snapshot — derived data from a different
+    // browser's fabric (§15a: children are derived, apply regenerates). Overwriting live state
+    // with that snapshot desynchronizes the record from its own fabric, and the presence check
+    // then re-applies it on every link open. Sync only records that are not currently applied.
+    if (typeof isProposalCurrentlyApplied === 'function' && isProposalCurrentlyApplied(existing)) {
+        return false;
+    }
+
     let changed = false;
     const syncArrayField = (target, field, value) => {
         const canonical = ensureArrayOfStrings(value);

@@ -130,6 +130,27 @@
                 // Re-based/geometry-only records with no declared parent at the point still sit
                 // on top of whatever ground is here.
                 depth = (maxParentDepth !== null ? maxParentDepth : maxParcelDepth) + 0.5;
+                // A ground-authoring formation authors ground for OTHERS; at a spot whose live
+                // fabric was minted by a DIFFERENT proposal it never outranks that fabric. A
+                // degraded record can declare another road's corridor slice as its parent
+                // (measured: a reparcellization that once re-applied over a standing road), and
+                // without this cap that parent lifts it above the road — so clicking the
+                // corridor selected the subdivision. Base ground (depth 0) is unaffected: a
+                // readjustment still sits above the pool parcels it stands on.
+                if (isGroundAuthoring(entry.proposal)) {
+                    let foreignLiveDepth = null;
+                    parcelsAt.forEach(p => {
+                        if (!p.live || p.depth <= 0) return;
+                        const minter = (p.feature && p.feature.properties && p.feature.properties.ancestorProposal)
+                            ? String(p.feature.properties.ancestorProposal)
+                            : mintingProposalIdOf(p.id);
+                        if (!minter || minter === key) return;
+                        if (foreignLiveDepth === null || p.depth > foreignLiveDepth) foreignLiveDepth = p.depth;
+                    });
+                    if (foreignLiveDepth !== null && depth > foreignLiveDepth - 0.5) {
+                        depth = foreignLiveDepth - 0.5;
+                    }
+                }
             }
 
             proposalsAt.push({ kind: 'proposal', key, proposal: entry.proposal, depth });

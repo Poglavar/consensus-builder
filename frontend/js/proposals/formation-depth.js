@@ -151,22 +151,72 @@
     // ids, then VERIFY the record is flat. The caller refuses to publish when verdict.flat is
     // false — nothing here heals beyond the deterministic flatten; a record that cannot be made
     // flat is an error the author sees, not a repair job for every future reader.
+    // Data a record must never carry ACROSS BROWSERS (§15a: children, formations, demolition
+    // scans are DERIVED — apply regenerates them from the definition against the receiver's live
+    // fabric). Shipping them makes the receiver trust another browser's fabric: an uploaded
+    // formation record made the receiving apply skip forming entirely, and uploaded child lists
+    // merged into locally minted ids and permanently failed the presence check (the reload
+    // re-apply loop through a new door). Applied at PUBLISH and again at IMPORT — old server rows
+    // still carry the fields.
+    //
+    // Government-plan roads are the one exception: their child features ARE the authored plan
+    // (the apply clones them instead of cutting), so they stay.
+    function stripDerivedRecordData(record) {
+        if (!record || typeof record !== 'object') return record;
+        const out = { ...record };
+        const isGovernmentPlan = !!(out.tags && out.tags.governmentPlan === true)
+            || (out.roadProposal && out.roadProposal.definition && out.roadProposal.definition.kind === 'government_plan')
+            || (out.geometry && out.geometry.roadPlan && out.geometry.roadPlan.kind === 'government_plan');
+        delete out.childParcelIds;
+        delete out.descendantParcelIds;
+        delete out.parentFeatures;
+        if (!isGovernmentPlan) delete out.childFeatures;
+        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
+            const sub = out[key];
+            if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
+            const clean = { ...sub };
+            delete clean.childParcelIds;
+            delete clean.parentFeatures;
+            delete clean.parentsToRemove;
+            delete clean.formation;
+            // Structure/building demolition results are apply-time scans, not authored decisions
+            // (a road's cut/demolish/tunnel choices live inside definition, which is untouched).
+            if (key === 'structureProposal' || key === 'buildingProposal') {
+                delete clean.demolishedBuildings;
+                delete clean.demolitionScanned;
+            }
+            if (!(key === 'roadProposal' && isGovernmentPlan)) delete clean.childFeatures;
+            out[key] = clean;
+        });
+        return out;
+    }
+
     function preparePublishRecord(proposal, options) {
         const opts = options || {};
-        const out = { ...(proposal || {}) };
+        let out = { ...(proposal || {}) };
         const flat = flattenedParentsFor(out, opts);
         if (Array.isArray(flat) && flat.length) {
             out.parentParcelIds = flat.slice();
-            // Content sub-payloads (buildingProposal/structureProposal) keep their plot — the
-            // plot IS the legal third level; only forming payloads flatten.
-            ['roadProposal', 'reparcellization', 'decideLaterProposal'].forEach(key => {
+            // flattenedParentsFor returned ids only for a record that MINTED ground — and a
+            // structure/building that minted (merge/footprint formation) flattens like any other
+            // formation. The content-keeps-its-plot exemption belongs to records that mint
+            // nothing (an adopt park standing on a formed plot): those never reach this branch,
+            // because their role is not 'formation'. Without the two content sub-keys here,
+            // publishing an APPLIED merged park threw formation-on-formed-ground on its own
+            // consumed road slices.
+            ['roadProposal', 'reparcellization', 'decideLaterProposal', 'structureProposal', 'buildingProposal'].forEach(key => {
                 const sub = out[key];
                 if (sub && typeof sub === 'object' && !Array.isArray(sub) && Array.isArray(sub.parentParcelIds)) {
                     out[key] = { ...sub, parentParcelIds: flat.slice() };
                 }
             });
         }
-        return { proposal: out, verdict: conformanceOf(out, opts) };
+        // Verify BEFORE stripping: children are part of the conformance verdict (they decide
+        // the record's role and carry depth violations); the strip then removes them from what
+        // actually ships.
+        const verdict = conformanceOf(out, opts);
+        out = stripDerivedRecordData(out);
+        return { proposal: out, verdict };
     }
 
     const api = {
@@ -178,6 +228,7 @@
         roleOf,
         conformanceOf,
         flattenedParentsFor,
+        stripDerivedRecordData,
         preparePublishRecord,
         scanRecords
     };

@@ -221,6 +221,22 @@
                 return false;
             }
             parentFeatures = decision.parentFeatures;
+
+            // The gate may have PARKED occupying conflicts (autoParkConflicts), which changes
+            // the live fabric under the corridor — re-derive so the working set is the
+            // post-park ground, not a stale set naming a parked proposal's dead parcel (that id
+            // would ride the success write-back into the record as a consumed parent).
+            {
+                const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+                const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
+                    ? ancestry.resolveParentsByGeometry(proposalData)
+                    : null;
+                if (resolution && Array.isArray(resolution.ids) && resolution.ids.length && resolution.coverage >= 0.95) {
+                    declaredParentIds = resolution.ids.map(String);
+                    parentFeatures = this._resolveParcelFeaturesByIds(declaredParentIds,
+                        { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
+                }
+            }
         }
 
         // Enrich parent features with any locally-known ownership data BEFORE building children.
@@ -482,8 +498,18 @@
             }
         });
         const uniqueParentParcelIds = Array.from(new Set(parentParcelIds.length ? parentParcelIds : parentIdsForFetch));
-        roadProposal.parentParcelIds = uniqueParentParcelIds.slice();
-        proposalData.parentParcelIds = uniqueParentParcelIds.slice();
+        // Identity carry-over can hand a NEW child the id of the prior piece it replaces (a recut
+        // keeps the corridor strip's name — the §15a partition-edit contract). Such an id was not
+        // CONSUMED, it continued: recording it as a parent makes the record self-inconsistent
+        // (parents ∩ children ≠ ∅), and the boot restore then hides the road's own live corridor
+        // as a "consumed parent". The record keeps only genuinely replaced ground as parents;
+        // the same set also guards the hide/mark passes below.
+        const newChildIds = new Set(childFeatures
+            .map(f => { try { return String(_getParcelIdFromFeature(f)); } catch (_) { return null; } })
+            .filter(Boolean));
+        const recordParentIds = uniqueParentParcelIds.filter(id => !newChildIds.has(String(id)));
+        roadProposal.parentParcelIds = recordParentIds.slice();
+        proposalData.parentParcelIds = recordParentIds.slice();
 
         let parentsToRemoveCandidates;
         if (Array.isArray(roadProposal.parentsToRemove)) {
@@ -583,6 +609,16 @@
             return !parcelId || !parentsToRemoveSet.has(parcelId.toString());
         });
 
+        // Final record parents = ground truly CONSUMED (parentsToRemoveSet after the uncut and
+        // conservation guards; unloaded declared parents stay — they are candidates too). A
+        // spared parent recorded as consumed gets hidden by the next boot's restore, which is
+        // how the park's parcel vanished after a road edit that merely grazed it.
+        {
+            const consumedRecordIds = recordParentIds.filter(id => parentsToRemoveSet.has(String(id)));
+            roadProposal.parentParcelIds = consumedRecordIds.slice();
+            proposalData.parentParcelIds = consumedRecordIds.slice();
+        }
+
         // Debug logging to understand why parentFeaturesToRemove might be incomplete
         console.debug(`[_applyRoadProposal] Parent parcel removal analysis:`, {
             proposalId,
@@ -657,7 +693,11 @@
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
+        // newChildIds (defined at the record write-back): an id carried over onto a NEW child is
+        // the live child now — hiding it as a consumed parent would hide the just-added layer
+        // (the corridor strip vanished from the map this way while the record said applied).
         parentIdSet.forEach(id => {
+            if (newChildIds.has(id)) return;
             if (mapByIdRemove.has(id)) {
                 parentParcelsOnMap.push(id);
             }
@@ -759,7 +799,11 @@
         this._markParcelsModifiedBatch(uniqueParentParcelIds);
         // Spared (uncut) parents keep their ground and stay unmarked: the consumed flag is what
         // routes their click into the consumed-parcel branch (the hover-fine-click-dead parcel).
-        this._setDescendantProposalOnParcels(uniqueParentParcelIds.filter(id => !uncutParents.has(String(id))), proposalId);
+        // An id carried over onto a NEW child (recut identity continuity) is the live child now,
+        // not a consumed parent — marking it would dead-click the road's own corridor strip.
+        this._setDescendantProposalOnParcels(
+            uniqueParentParcelIds.filter(id => !uncutParents.has(String(id)) && !newChildIds.has(String(id))),
+            proposalId);
         console.debug(`[_applyRoadProposal] Step 4: Linked to ${uniqueParentParcelIds.length} ancestors (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         // Remove parents only after ancestor linkage/property updates so map lookups succeed.

@@ -219,4 +219,48 @@ describe('buildDrillStack', () => {
         }));
         expect(called).toBe(0);
     });
+
+    // A degraded record can declare ANOTHER proposal's live slice as its parent (measured on
+    // Cibona: a subdivision that once re-applied over a standing road kept the corridor slice
+    // in parentParcelIds). Without the cap that parent lifted the reparcellization above the
+    // road, so clicking the corridor selected the subdivision.
+    it('a ground-authoring formation never outranks live fabric minted by another proposal', () => {
+        const corridorId = `${BASE_ID}#c-road-1`;
+        const stack = drill.buildDrillStack([5, 5], ctxWith({
+            parcels: [
+                { id: corridorId, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-road', isCorridor: true }), live: true },
+                { id: BASE_ID, feature: rect(0, 0, 10, 10), live: false }
+            ],
+            proposals: [
+                {
+                    key: 'c-road',
+                    proposal: { goal: 'road-track', createdAt: '2026-01-01T00:00:00Z', roadProposal: { parentParcelIds: [BASE_ID] } },
+                    footprint: rect(0, 0, 10, 10)
+                },
+                {
+                    // Newer, and (degraded) declaring the road's corridor slice as its parent —
+                    // both of which used to win it the top of the stack.
+                    key: 'c-rep',
+                    proposal: { goal: 'reparcellization', createdAt: '2026-02-01T00:00:00Z', reparcellization: { parentParcelIds: [corridorId] } },
+                    footprint: rect(0, 0, 10, 10)
+                }
+            ]
+        }));
+        const order = stack.map(e => e.kind === 'proposal' ? e.key : e.id);
+        expect(order[0]).toBe('c-road');
+        expect(order.indexOf('c-rep')).toBeGreaterThan(order.indexOf(corridorId));
+    });
+
+    it('the cap leaves a readjustment above the base pool parcels it stands on', () => {
+        const stack = drill.buildDrillStack([5, 5], ctxWith({
+            parcels: [{ id: BASE_ID, feature: rect(0, 0, 10, 10), live: true }],
+            proposals: [{
+                key: 'c-rep',
+                proposal: { goal: 'reparcellization', reparcellization: { parentParcelIds: [BASE_ID] } },
+                footprint: rect(0, 0, 10, 10)
+            }]
+        }));
+        expect(stack[0].key).toBe('c-rep');
+        expect(stack[0].depth).toBe(0.5);
+    });
 });

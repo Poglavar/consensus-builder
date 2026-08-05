@@ -265,15 +265,21 @@ function _shouldSkipChildFeature(feature) {
     const markers = Array.isArray(marker) ? marker : (marker ? [marker] : []);
     if (!markers.length) return false;
     // Only an APPLIED descendant that REPLACES its parents justifies skipping this child.
-    // Structures (parks/squares/lakes) stamp the marker too but OVERLAY their ground —
-    // treating their marker as "replaced" left a hole under every structure at boot restore
-    // (parcels dead after page reload).
+    // Structures that merely OVERLAY their ground (adopt, or pre-formation records) stamp the
+    // marker too — treating their marker as "replaced" left a hole under every structure at
+    // boot restore. But a MERGE/FOOTPRINT formation (§15a) CONSUMED its sources: its marker is
+    // exactly the witness that the fabric moved past this child. Without that, every reload
+    // re-applied the road and the subdivision whose pieces the park/squares had merge-taken —
+    // their consumed children failed the presence check with the marker refused.
     return markers.some(id => {
         const record = _getProposalRecord(String(id));
         if (!record) return false;
         if (typeof isProposalApplied === 'function' && !isProposalApplied(record)) return false;
         if (record.structureProposal && !record.roadProposal && !record.reparcellization
-            && !record.buildingProposal && !record.decideLaterProposal) return false;
+            && !record.buildingProposal && !record.decideLaterProposal) {
+            const formation = record.structureProposal.formation;
+            return !!(formation && (formation.mode === 'merge' || formation.mode === 'footprint'));
+        }
         return true;
     });
 }
@@ -640,13 +646,21 @@ function _buildAppliedDescendantIndex(excludeProposalId = null) {
         const appliedProposals = proposalStorage.getAllProposals().filter(p => {
             if (!p) return false;
             if (excludeProposalId && p.proposalId && String(p.proposalId) === String(excludeProposalId)) return false;
-            // Structures and buildings OVERLAY their parents (never hide or split them) — an
-            // applied park/lake/square or freeform building must not block its parent slice from
-            // being (re)created, or the ground under it becomes an unclickable hole when the parent
-            // road re-applies after a geometry edit. Only typologies that actually CONSUME their
-            // parents (road, reparcellization, decide-later) may block a slice.
+            // Structures and buildings that merely OVERLAY their parents must not block a parent
+            // slice from being (re)created, or the ground under them becomes an unclickable hole
+            // when the parent road re-applies after a geometry edit. But a MERGE/FOOTPRINT
+            // formation (§15a) CONSUMED its sources — those are exactly the slices a re-applying
+            // minter must NOT resurrect as live fabric (re-applying a subdivision under a standing
+            // square re-minted the plot the square had merge-taken: double fabric). Adopt stays
+            // excluded: the adopted parcel is the structure's living body, and blocking its
+            // re-creation would hole the ground it stands on.
+            const consumingFormation = (p.structureProposal && p.structureProposal.formation)
+                || (p.buildingProposal && p.buildingProposal.formation);
+            const consumes = !!(consumingFormation
+                && (consumingFormation.mode === 'merge' || consumingFormation.mode === 'footprint'));
             const overlaysParentsOnly = (p.structureProposal || p.buildingProposal)
-                && !p.roadProposal && !p.reparcellization && !p.decideLaterProposal;
+                && !p.roadProposal && !p.reparcellization && !p.decideLaterProposal
+                && !consumes;
             if (overlaysParentsOnly) return false;
             const roadStatus = p.roadProposal && appliedOf(p, p.roadProposal);
             const decideLaterStatus = p.decideLaterProposal && appliedOf(p, p.decideLaterProposal);
@@ -667,6 +681,14 @@ function _buildAppliedDescendantIndex(excludeProposalId = null) {
             if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parentParcelIds)) buckets.push(proposal.reparcellization.parentParcelIds);
             if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) buckets.push(proposal.buildingProposal.parentParcelIds);
             if (proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) buckets.push(proposal.structureProposal.parentParcelIds);
+            // A merge/footprint formation's consumed sources block their re-creation (§15a).
+            [proposal.structureProposal, proposal.buildingProposal].forEach(holder => {
+                const formation = holder && holder.formation;
+                if (formation && (formation.mode === 'merge' || formation.mode === 'footprint')
+                    && Array.isArray(formation.parcelIds)) {
+                    buckets.push(formation.parcelIds);
+                }
+            });
             return buckets.flat().filter(id => id !== undefined && id !== null).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean);
         };
 
@@ -1850,8 +1872,16 @@ const ProposalManager = {
             // Flat anchor (rethink-proposals.md, 2026-08-05): the base cadastral parcels this
             // formation consumes — every crossed parent's root, one hop, no reference chain. The
             // corridor id borrows the FIRST root (a naming accident, §9); this records the truth.
+            // A consumed piece's rootParcelId property can itself be a DERIVED id (a recut
+            // consuming another formation's slice inherits whatever "root" that slice carried),
+            // and copying it raw put `823/1#c-…-1` into a corridor's base anchor — shown under
+            // "Cadastral parcel" in the drill. The anchor is BASE ids by definition: flatten.
+            const flattenToBaseId = (id) => {
+                const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                return (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id);
+            };
             const affectedRootParcelIds = Array.from(new Set(
-                affectedParcels.map(p => p.rootParcelId).filter(Boolean).map(String)
+                affectedParcels.map(p => p.rootParcelId).filter(Boolean).map(flattenToBaseId).filter(Boolean)
             ));
             const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
             const isTrack = corridorIsTrack(definition) || definition?.metadata?.type === 'track' || definition?.type === 'track';
@@ -2052,13 +2082,21 @@ const ProposalManager = {
                             try { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; } catch (_) { return 0; }
                         }
                     };
-                    const beforeEntries = priorChildren.map(prior => ({
-                        id: prior.parcelId !== undefined && prior.parcelId !== null ? String(prior.parcelId) : null,
-                        number: prior.parcelNumber !== undefined && prior.parcelNumber !== null ? String(prior.parcelNumber) : null,
-                        baseId: formationEdit.baseIdOf(prior.rootParcelId || prior.parcelId || ''),
-                        isCorridor: prior.isCorridor === true,
-                        feature: prior.feature || null
-                    }));
+                    // A prior another formation CONSUMED (captured hidden: wasVisible === false)
+                    // has its name frozen inside that formation's record — a park's merge sources
+                    // name it, and the park's boot restore hides whatever layer carries it. Carrying
+                    // such an id onto NEW ground made the road's fresh remainder vanish on every
+                    // reload. Consumed priors still seed the allocator below (their index must
+                    // never be re-issued), but they are not carry candidates.
+                    const beforeEntries = priorChildren
+                        .filter(prior => prior.wasVisible !== false)
+                        .map(prior => ({
+                            id: prior.parcelId !== undefined && prior.parcelId !== null ? String(prior.parcelId) : null,
+                            number: prior.parcelNumber !== undefined && prior.parcelNumber !== null ? String(prior.parcelNumber) : null,
+                            baseId: formationEdit.baseIdOf(prior.rootParcelId || prior.parcelId || ''),
+                            isCorridor: prior.isCorridor === true,
+                            feature: prior.feature || null
+                        }));
                     const afterEntries = childFeatures.map(feature => ({
                         baseId: formationEdit.baseIdOf(feature?.properties?.rootParcelId || _getParcelIdFromFeature(feature) || ''),
                         isCorridor: feature?.properties?.isCorridor === true || feature?.properties?.isTrack === true,
@@ -4775,8 +4813,62 @@ const ProposalManager = {
             }
             return a;
         };
-        const analyze = () => dropExemptOccupiers(relaxDriftedDerivedParents(
-            this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel)));
+        // A live parcel that is an applied structure/building's FORMED BODY is occupied fabric:
+        // consuming it un-forms a standing formation (re-applying a subdivision under its square
+        // silently consumed the square's parcel — the square stayed "applied" with its parcel
+        // hidden). The resolver legitimately offers such parcels as ground, so the OCCUPATION
+        // must be raised here, as a named conflict the tour/exemption machinery already handles.
+        const selfProposalKey = String((proposalData && proposalData.proposalId) || '');
+        const addFormedBodyConflicts = (a) => {
+            if (!a || !declared.length) return a;
+            try {
+                const flagged = new Set((a.conflicts || []).flatMap(c => Array.isArray(c.parcelIds) ? c.parcelIds.map(String) : []));
+                const byOwner = new Map();
+                proposalStorage.getAllProposals().forEach(p => {
+                    if (!p || String(p.proposalId) === selfProposalKey) return;
+                    if (typeof isProposalApplied === 'function' && !isProposalApplied(p)) return;
+                    [p.structureProposal, p.buildingProposal].forEach(holder => {
+                        const formation = holder && holder.formation;
+                        if (!formation) return;
+                        const body = (formation.mode === 'adopt')
+                            ? (Array.isArray(formation.parcelIds) ? formation.parcelIds : [])
+                            : (Array.isArray(formation.childParcelIds) ? formation.childParcelIds : []);
+                        const hits = body.map(String).filter(id => declared.includes(id) && !flagged.has(id));
+                        if (hits.length) {
+                            const key = String(p.proposalId);
+                            if (!byOwner.has(key)) {
+                                // Same clean-unapply test as _analyzeParentAvailability's own
+                                // conflicts — autoPark refuses any conflict without it.
+                                let dependents = [];
+                                try {
+                                    dependents = (typeof this._getAllDescendantProposals === 'function')
+                                        ? (this._getAllDescendantProposals(key) || []).map(String).filter(x => x && x !== key)
+                                        : [];
+                                } catch (_) { dependents = []; }
+                                byOwner.set(key, {
+                                    proposalId: key,
+                                    title: p.title || p.name || key,
+                                    parcelIds: [],
+                                    canUnapplyCleanly: dependents.length === 0,
+                                    blockedBy: dependents,
+                                    blockedByTitles: dependents.map(dp => {
+                                        const dr = _getProposalRecord(dp);
+                                        return (dr && (dr.title || dr.name)) || dp;
+                                    })
+                                });
+                            }
+                            byOwner.get(key).parcelIds.push(...hits);
+                        }
+                    });
+                });
+                if (byOwner.size) {
+                    a.conflicts = [...(a.conflicts || []), ...byOwner.values()];
+                }
+            } catch (_) { /* detection must never block the gate */ }
+            return a;
+        };
+        const analyze = () => dropExemptOccupiers(addFormedBodyConflicts(relaxDriftedDerivedParents(
+            this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel))));
         let analysis = analyze();
         if (allowFetch && analysis.notLoaded.length && typeof fetchParcelsForIds === 'function') {
             try {

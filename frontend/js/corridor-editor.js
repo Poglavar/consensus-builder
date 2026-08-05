@@ -80,8 +80,8 @@ function corridorEditorClose() {
     corridorEditorClearClearanceOverlays();
     corridorEditorClearEdgeFillPreview();
     if (window.RoadEditingZoom) window.RoadEditingZoom.exit('cross-section');
-    corridorEditorRestoreBuildingFootprints();
     corridorEditorLockMap(false);
+    try { window.__mapEditLock?.release('corridor-editor'); } catch (_) { }
     const overlay = document.getElementById('corridor-editor-overlay');
     if (overlay) overlay.remove();
     document.removeEventListener('keydown', corridorEditorKeydown);
@@ -332,20 +332,11 @@ function corridorEditorFocusMap() {
 async function corridorEditorShowBuildingFootprints() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal') return;
-    const dialog = window.BuildingLayersDialog;
-    // What the map looked like on the way in; the way out puts it back exactly.
-    const before = dialog ? dialog.currentBuildingLayerState() : { gdi: false, dgu: false, osm: false };
-    state.restoreBuildingLayers = before;
-
-    if (dialog && !before.gdi && !before.dgu && !before.osm) {
-        const picked = await dialog.open();
-        if (corridorEditorState !== state) return; // closed while the dialog was up
-        // Cancelled: fall back to the last answer, or to GDI — the working set the cuts run on.
-        const choice = picked || dialog.remembered() || { gdi: true, dgu: false, osm: false };
-        dialog.remember(choice);
-        if (typeof window.setBuildingReferenceLayers === 'function') {
-            window.setBuildingReferenceLayers(!!choice.gdi, !!choice.dgu, !!choice.osm);
-        }
+    // A road operation shows the buildings IMMEDIATELY — GDI (the survey the cuts run on)
+    // switches on automatically, no dialog, and stays on after the editor closes. A survey
+    // combination the user already chose is left alone.
+    if (typeof ensureRoadOperationBuildings === 'function') {
+        ensureRoadOperationBuildings(corridorEditorRoadBounds());
     }
 
     if (typeof window.rebuildBuildingLayerFromPool === 'function') {
@@ -370,18 +361,6 @@ async function corridorEditorShowBuildingFootprints() {
     }
 }
 
-// Put the map back the way it was found: a survey the editor switched on goes off again. The CHOICE
-// survives in the dialog's memory, so the next road does not ask twice.
-function corridorEditorRestoreBuildingFootprints() {
-    const before = corridorEditorState && corridorEditorState.restoreBuildingLayers;
-    if (!before) return;
-    if (typeof window.setBuildingReferenceLayers === 'function') {
-        window.setBuildingReferenceLayers(!!before.gdi, !!before.dgu, !!before.osm);
-    }
-    if (typeof window.rebuildBuildingLayerFromPool === 'function') {
-        try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
-    }
-}
 
 function corridorEditorUpdateIndicators(hits, hitsBuilding) {
     const buildingsChip = document.querySelector('.corridor-editor-indicator--buildings');
@@ -2147,6 +2126,27 @@ function corridorEditorOpenOverlay() {
     if (!corridorEditorState) return;
     // Editing a cross-section is close work: let the map zoom past the basemap's own ceiling.
     if (window.RoadEditingZoom) window.RoadEditingZoom.enter('cross-section');
+    // The map is CLAIMED before anything renders, and everything below rolls back atomically on
+    // failure — a mid-render exception used to leave a blank half-mounted panel at deep zoom
+    // with no lock at all, so clicks kept selecting parcels under a broken editor.
+    try { window.__mapEditLock?.claim('corridor-editor', 'Cross-section editor'); } catch (_) { }
+    corridorEditorLockMap(true);
+    try {
+        corridorEditorOpenOverlayBody();
+    } catch (error) {
+        console.error('[corridorEditor] overlay failed to open — rolling back', error);
+        try { corridorEditorLockMap(false); } catch (_) { }
+        try { window.__mapEditLock?.release('corridor-editor'); } catch (_) { }
+        try { if (window.RoadEditingZoom) window.RoadEditingZoom.exit('cross-section'); } catch (_) { }
+        try { document.getElementById('corridor-editor-overlay')?.remove(); } catch (_) { }
+        try { document.removeEventListener('keydown', corridorEditorKeydown); } catch (_) { }
+        try { document.removeEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged); } catch (_) { }
+        corridorEditorState = null;
+        try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage('The cross-section editor could not open.', 5000, 'error'); } catch (_) { }
+    }
+}
+
+function corridorEditorOpenOverlayBody() {
     const profile = corridorEditorState.profile;
     const drawing = corridorEditorState.mode === 'drawing';
     const totalWidth = corridorProfileWidth(profile);
@@ -2259,7 +2259,6 @@ function corridorEditorOpenOverlay() {
     // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
     // beside the panel pans the map instead. Escape and the two buttons close the editor.
     document.addEventListener('keydown', corridorEditorKeydown);
-    corridorEditorLockMap(true);
     document.addEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
 
     corridorEditorRender();
@@ -2312,7 +2311,6 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         clearanceCache: null,
         geometryVersion: 0,
         // The building layers as the map had them when the editor opened; closing restores them.
-        restoreBuildingLayers: null,
         selected: 0,
         dragIndex: null,
         notice: null,

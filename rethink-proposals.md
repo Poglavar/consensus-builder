@@ -1296,8 +1296,246 @@ neighbours still referenced the old one.
    highlights (proposal list, drill) keep their labels — there the label answers a click.
    Placed freeform buildings also recolored blue (`#1d4ed8`) — they were the same red as
    selected parcels.
+16. **A reload replays nothing — presence is honest (same day, evening).** Ctrl+R on an applied
+   plan link re-applied 4 of its 8 members every time, and each needless re-apply ran against
+   the STANDING later members with the intra-plan exemption on — the road consumed the park's
+   parcel, the write-back recorded the inversion, and the fabric degraded a little more per
+   reload. Boot restore is snapshot-faithful (it rehydrates the saved end-state and deliberately
+   does not re-add a child a later formation consumed), so any presence check that demands every
+   stored child id in the registry must fail for exactly those records, forever. Five rules fix
+   it at the source:
+   - *Presence* (`isProposalAppliedAndMaterialized`, now the single predicate for both routes):
+     a stored child missing from the registry still counts as materialized when its SAVED
+     feature carries the descendant marker — the same criterion restore skips by — and an
+     adopt-mode structure verifies `formation.parcelIds` instead of failing on "no children".
+   - *The restore barrier is unconditional*: the routes wait for `_initialReapplyDone` whenever
+     anything is applied. "Re-opening applies nothing" is only true after the check can SEE the
+     restored fabric — unbarriered, the same reload skipped 8 or re-applied 6 by race.
+   - *Canonical sync never rewrites an applied record's lists* — parents name what this
+     browser's apply actually consumed (what unapply must restore), children what it minted;
+     the uploader's snapshot is derived data from a different fabric.
+   - *The consumed-by-structure shadow comes from ON-MAP ids only* (`loadedLiveParcels`): the
+     registry keeps dead layers forever, so an unapplied road's removed slices were vetoing
+     their own freshly restored base parents (coverage 21% → refusal on every edit).
+   - *The intra-plan exemption covers members under construction in THIS pass*, not members
+     already applied and standing; a re-applier overlapping standing fabric goes to the
+     conflict tour. Queue-excluded members count as skipped in the summary.
+17. **A road edit re-partitions its own ground (same evening).** Extending an applied road past
+   a park/building FORMED from its remainders died with `formation-ground-unresolved` (55%
+   coverage): the edit's unapply restores a consumed parent only while no other formation's
+   children live on it, so where the park stood the corridor ground became a HOLE the resolver
+   rightly refused to form over. Mid-edit that ground still belongs to the road:
+   - after the unapply, prior pieces whose parent did not come back are RE-SHOWN (captured with
+     `wasVisible`/`parentParcelId`; pieces hidden at capture stay hidden — their ground belongs
+     to the formation that consumed them), so the re-apply consumes them like live fabric;
+   - an id carried onto a NEW child (identity continuity) is never hidden, marked, or recorded
+     as a consumed parent — one apply hid its own corridor strip that way;
+   - the record's parents keep only ground TRULY consumed (post uncut/conservation guards) —
+     a spared parent recorded as consumed gets hidden by the next boot's restore (the park's
+     parcel vanished that way);
+   - a prior another formation consumed is not a carry candidate: its name is frozen inside the
+     consumer's record (a park's merge sources), and carrying it onto new ground made that
+     ground vanish on every reload. Consumed priors still seed the allocator so their index is
+     never re-issued.
+   Verified end-to-end on fresh profiles: apply 8/8 → reload skips all 8 (no re-applies, three
+   times) → extend the road through 8 buildings, cut all → road re-applies with the extension →
+   reload again: everything skipped, corridor live.
+18. **Ground-authoring never outranks foreign live fabric (same evening — "clicking the road
+   selects a subdivision").** In a profile that had lived through the pre-item-16 reload
+   cycles, the subdivision's record claims road ground (its degraded write-backs recorded the
+   corridor slice as a parent and its footprint covers it), and the drill ranked it ABOVE the
+   road at a corridor point — parent-depth plus the newer-first tiebreak — so clicking the
+   corridor selected the subdivision. The claims model now says it outright
+   (`drill-stack.js`): a ground-authoring formation (reparcellization/decide-later) that did
+   not mint the live parcel at the point never places above live fabric minted by a different
+   proposal; base ground is unaffected, so a readjustment still sits above the pool parcels it
+   stands on. Clean records were already ordered correctly — the cap makes degraded ones
+   read sanely too.
+19. **A restore returns only the ground live fabric does not own (same evening — "the sliver
+   is gone").** Extending the road buried Subdivide 2048's 213 m² plot under a 3,610 m² road
+   remainder. Lineage (traced on clean fabric): the edit's unapply RESTORED Road 2045's
+   long-dead slice `823/1#c-w3dzvsn5qx0w-1` at full stale geometry — its direct children
+   (2043's pieces) were dead, so the structural restorable test passed, but its GRANDCHILDREN
+   (2048's plots, minted across a dead intermediate generation) were live on that ground; the
+   recut then baked the stale geometry into a 3,984 m² remainder overlapping five live plots.
+   The structural `<parent>#` prefix test cannot see cross-token consumption, so the honest
+   test is geometric: `formation-edit.residualGround(feature, liveEntries, ctx)` (pure,
+   tested) returns the part of a parcel's ground live fabric does not already own.
+   `_filterRestorableParents` now restores a parent clipped to that residual (refusing
+   entirely when live fabric owns ~all of it; keeping geometry verbatim under 1% overlap so
+   micro-slivers cannot churn stored geometry), and the edit path's prior re-show applies the
+   same rule. Verified: the same extend-edit now produces ZERO >2 m² overlaps between road
+   children and 2048's plots (was 3,980 m² across five), both restore sites log their clips,
+   and the state survives reload (Skipped 8, corridor live, plots intact).
+20. **Full apply/unapply audit (same evening, on request).** Every type × apply / unapply /
+   shared-apply / conflict, code-read against the §15a invariants plus an empirical battery on
+   fresh profiles. FIXED: the merge/footprint formation reversal removed children from the
+   RECORD but never from the MAP — un-applying the merged park left its City-owned parcel
+   orphaned on the map, which (under item 19's residual test) blocked all five consumed
+   sources from restoring, and the re-apply then silently ADOPTED the orphan, so the original
+   owners never got their ground back; buildings leaked all four minted parcels the same way.
+   `_reverseFormationRecord` now takes the minted parcels off the map (and out of persistence)
+   before restoring parents; park-merge and building-footprint round-trips verified (minted
+   gone, sources restored, re-apply re-forms under the same ids). Verified sound: adopt
+   reversal (ownership snapshot restores), reparcellization unapply ordering and its
+   round-trip under a standing square (plots keep ids; square-owned bases correctly refused
+   restoration), delete-applied (unapplies per type first), undo (re-enters the partition
+   engine), urban rules / votes (no fabric), payload-route sanitize (whitelist, no formation).
+   OPEN findings, recorded not fixed:
+   - *Upload keeps `formation`* (`buildUploadReadyProposal` strips only applied/appliedAt from
+     nested payloads): a structure/building uploaded AFTER being applied ships its formation
+     record, and the receiver's apply guard (structures.js/buildings.js "already formed —
+     skip") then never forms, while unapply would restore the UPLOADER's ownership snapshots.
+     Not yet triggered — every server row predates formations. Fix: strip `formation` (and
+     nested child lists, next item) at upload or import.
+   - *Imported child lists poison presence*: nested childParcelIds/childFeatures survive
+     upload+import, and the apply's `_addChildParcels` MERGES minted ids into them — a future
+     import whose canonical children differ from local minting re-enters the item-16 re-apply
+     loop through a new door. Children are derived data (§15a): strip them on import.
+   - *Re-apply under a standing dependent re-mints consumed ground*: unapply Subdivide 2048 →
+     re-apply (also what an edit does) re-minted plot -2 UNDER the still-applied square that
+     had merge-consumed it — double fabric. The plot derivation needs the same residual
+     exclusion against standing content-formation parcels.
+   - *Residual restores persist clipped geometry into BASE parcel records* — locally
+     self-consistent, but the cadastral shape shrinks in storage and "Refresh Parcel Data"
+     resurrects the full shape over live plots. Needs a decision: clip visibility vs record.
+   - *Fast-reload persistence race*: IndexedDB puts are async fire-and-forget; a reload within
+     ~100 ms of the last mutation can lose it. Accepted risk (no sync flush exists for IDB).
+21. **Records travel light; dependents follow the rules (same night — closing the audit's open
+   items).** Four changes, each verified end-to-end on fresh profiles:
+   - *`stripDerivedRecordData` (formation-depth.js, pure, tested)*: children, child features,
+     formation records, demolition scans and parent snapshots are DERIVED — apply regenerates
+     them against the receiver's fabric — so the publish gate strips them from every upload and
+     `prepareProposalForImport` strips them again on the way in (old server rows still carry
+     them). Government-plan roads keep their child features: those ARE the authored plan. The
+     gate verifies conformance BEFORE stripping (children decide the record's role), and a
+     formation-role structure/building now flattens its sub-payload parents like any other
+     formation — publishing an applied merged park used to throw formation-on-formed-ground on
+     its own consumed slices.
+   - *A formed body is occupied fabric*: the availability gate raises a named conflict when a
+     working-set parcel is an applied structure/building's minted body (adopt bodies excluded —
+     they ARE the live fabric), with the same clean-unapply metadata the conflict machinery
+     expects. A plain re-apply of a subdivision under its standing square now refuses loudly;
+     the edit path's autoParkConflicts parks the square instead, and the square re-applies
+     cleanly afterwards. The applied-descendant index likewise learned that merge/footprint
+     formations CONSUME their sources (the old "structures only overlay" rule pre-dated
+     formations), so a re-applying minter never resurrects a consumed plot as live fabric.
+   - *Only a formation's own apply revives its minted body*: `_filterRestorableParents` vetoes
+     restoring another proposal's formation children — a stale parent claim used to make every
+     unapply resurrect the square's dead parcel as ownerless fabric, which the next derive then
+     honestly consumed again, forever.
+   - *The write-back records only ground consumed LIVE*: after the gate (which may have just
+     parked a conflict), the working set re-derives, and the recorded parents are filtered to
+     parcels actually on the map at cut time — the registry keeps dead layers, so feature
+     resolution alone let a parked parcel's id ride the success write-back into the record.
+22. **Reload replay closed for merge-consumed children; two building items OPEN (same night).**
+   The witness (`_shouldSkipChildFeature`) now accepts a merge/footprint structure's marker as
+   proof a child was consumed — the old "structures only overlay" rule made every reload
+   re-apply Road 2043 and Subdivide 2048 (their pieces live inside the park/squares; the new
+   descendant index rightly stopped re-adding them, and the witness then refused to vouch).
+   Verified: wipe → apply 8/8 → two reloads, no modal, nothing re-applied. OPEN, found while
+   verifying, not yet diagnosed to root:
+   - *The freeform building record degrades across a reload*: after a clean apply the boot
+     ends with 2053 unapplied, childless and formationless — the route stays silent (nothing
+     re-applied), and the likely mechanism is a building-overlay/record reconciliation pass
+     un-applying it post-route. Needs its own investigation (symptom to look for: the blue
+     building missing after a reload).
+   - *Buildings lack the geometric derive-or-refuse*: `_applyBuildingProposal` walks straight
+     from DECLARED parents into the availability gate, so a manual re-apply with flattened
+     (base-id) parents refuses on the roads that consumed those bases — the plan route only
+     succeeds because member exemptions mask it. Buildings should resolve hosts from the
+     footprint first, exactly as roads and reparcellizations do.
+23. **The cross-section editor owns the map, and road operations show the buildings (same
+   night).** Two reports from live use:
+   - *Clicks leaked during a profile edit and the panel blew up blank.* The editor's open path
+     could throw mid-render AFTER entering deep zoom but BEFORE its click-lock engaged —
+     leaving a half-mounted blank panel over an unlocked map where clicks kept selecting
+     parcels. The open is now atomic: the map is claimed FIRST (both the editor's own lock and
+     the shared `__mapEditLock`, so the drill and parcel selection are refused uniformly), the
+     render runs inside a rollback (zoom, locks, partial DOM, listeners all undone on failure,
+     with a loud toast naming the failure). Close releases both locks. Verified: editor open →
+     lock held by `corridor-editor`, `blocksSelection` true, close → released.
+   - *Buildings appear automatically on every road operation.* `ensureRoadOperationBuildings`
+     (road-drawing.js): if no building survey is on, GDI — the survey detection and cutting
+     run on — switches on with NO dialog and the choice is remembered; an existing survey
+     combination is left alone. Wired into drawing-mode enter, node-handle mount (drag
+     sessions), and the cross-section editor (whose pick-a-survey dialog and restore-on-close
+     are gone — buildings stay on after the editor closes). Verified: editor open → GDI on, no
+     dialog; drawing mode → GDI on.
+24. **The cadastral anchor is base ids, everywhere (same night).** A corridor minted by a recut
+   copied each consumed parent's `rootParcelId` property raw into `baseParcelIds` — and a piece
+   cut from another formation's slice inherits whatever "root" that slice carried, so a DERIVED
+   id (`823/1#c-…-1`) surfaced under "Cadastral parcel" in the drill. The stamp now flattens
+   every id through `baseIdOf`, and the drill's cadastral row flattens defensively too (fabric
+   stamped before the fix still carries the wart). The stack the drill was showing is otherwise
+   correct by design: Road above → Subdivide below → cadastre at the bottom is the TIME view
+   (the road's edit consumed ground the readjustment had authored); the RECORD view — what the
+   road depends on for consent — is only the cadastral row, per the publish-time flattening.
+   Formations stack in time locally; records never stack.
 
 ---
+
+## 15b. Decision 2026-08-06 (Simun) — one partition, latest wins: no time view
+
+The 2026-08-05 marathon proved a structural point: most of that day's bugs — the presence
+witnesses, the blocked-children filter, the residual restores, the formed-body conflicts, the
+zombie-parcel veto, the drill ranking cap — exist to arbitrate between STALE AUTHORED CLAIMS and
+the live fabric. A record kept claiming ground a later formation had taken, and every subsystem
+needed logic to reconcile the two. Simun's call: stop preserving the competing claim at all.
+
+1. **The invariant: applied formations' plans TESSELLATE.** At every moment the applied fabric is
+   ONE partition of the ground. No applied record claims ground another applied record holds.
+   The drill at any spot shows at most `content → formed parcel → its formation → cadastre` —
+   never two formations stacked. There is no time view; there is only the current partition.
+
+2. **Flatten with each edit: the taker amends the taken.** When an action takes ground that
+   another applied formation's plan holds, that formation's LOCAL plan is amended immediately —
+   clipped by the taken footprint — and its fabric re-derived (identity carry via matchPieces, so
+   surviving pieces keep their names). Latest action wins; the previous holder loses that ground,
+   permanently: un-applying the taker later frees the strip to base remainders — the amended plan
+   does NOT auto-expand back (the fixed-land doctrine, and exactly how an annulled expropriation
+   works). Amendment per type:
+   - *reparcellization*: `plan.polygons` and the §14.2 pool clipped; sub-floor slivers dropped; a
+     fully-taken plot leaves the plan; owner assignments carry onto the clipped plots.
+   - *road/track*: the corridor definition itself is trimmed (segments clipped by the taken
+     footprint) — the recut machinery already knows this geometry.
+   - *content (buildings/structures standing on taken ground)*: NOT silently clipped — content
+     keeps the existing disclosure flow (cut / demolish / unapply tour); a formation's geometry is
+     bookkeeping, content is somebody's object.
+   Every amendment is LOUD: one toast naming taker, taken and area ("Road X took 213 m² from
+   Subdivide Y — plot 3 reduced"), and the amended record's details reflect the current plan.
+
+3. **Why amending someone else's proposal is fine (Simun, explicit):** local records are COPIES.
+   Nothing edits a published record in place — any change becomes a NEW proposal on save/publish,
+   and consent attaches to what was published. So the local plan IS the working plan, and
+   amending it is bookkeeping, not consent violation. Share-import applies the published plan and
+   then the same rule governs local edits on top.
+
+4. **Determinism: `editSeq`.** Each record carries a monotonic edit sequence, bumped by any
+   geometry-affecting action. Amendments are applied eagerly, so the fabric is always current;
+   the sequence exists so a rebuild-from-records is a deterministic fold (A6 for cross-record
+   order on import, editSeq for local precedence) — reload cannot drift, ever.
+
+5. **What this deletes** (the payoff, all shipped 2026-08-05 as reconciliation and retired by
+   this decision once implemented): the saved-feature presence witness; the
+   blocked-by-descendants filter and the consuming-formation index semantics; the residual
+   restore CLIP (it remains as an assertion — under tessellation a restore can never overlap);
+   the foreign-formed-body veto; the drill's ground-authoring cap (no second formation to rank);
+   most of the intra-plan exemption choreography (in-plan takings become sequential amendments).
+   Presence becomes "are my current-plan pieces on the map"; restore becomes order-free
+   re-derivation of current plans.
+
+6. **Implementation plan (own session):**
+   1. Pure amend engine in formation-edit.js — `amendPlanByTaking(plan, takenFootprint, ctx)`
+      per type (plot/pool clip, corridor segment trim), headless tests first.
+   2. Apply/recut pipeline: after a successful formation apply, run the amend pass over
+      intersecting applied formations (bbox-pruned), re-derive their children with carry,
+      persist, toast the summary.
+   3. Retire the reconciliation machinery from (5), converting the safety-critical ones into
+      loud assertions.
+   4. Simplify restore + presence to the current-plan form.
+   5. One-off migration flattening existing local records against the applied fabric; full
+      Cibona/Borovje battery incl. edits and reload cycles as the verdict.
 
 ## 16. Related notes
 

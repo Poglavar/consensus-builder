@@ -288,3 +288,40 @@ describe('wholeParcelTakePlan', () => {
         expect(plan.parcelIds).toEqual(['HR-A']);
     });
 });
+
+describe('residualGround', () => {
+    // ~78 m × 111 m block near Zagreb; live plots re-tiled its right half.
+    const parent = rect(15.9600, 45.8000, 15.9610, 45.8010);
+    const rightHalf = rect(15.9605, 45.8000, 15.9610, 45.8010);
+    const farAway = rect(15.9700, 45.8000, 15.9710, 45.8010);
+
+    it('clips a restore to the ground live fabric does not own', () => {
+        const res = fe.residualGround(parent, [{ feature: rightHalf }], ctx);
+        expect(res.residual).toBeTruthy();
+        expect(res.coveredShare).toBeGreaterThan(0.45);
+        expect(res.coveredShare).toBeLessThan(0.55);
+        // The residual is (about) the left half, and no longer overlaps the live plot.
+        expect(turf.area(res.residual)).toBeLessThan(turf.area(parent) * 0.55);
+        const overlap = turf.intersect(res.residual, rightHalf);
+        expect(overlap ? turf.area(overlap) : 0).toBeLessThan(1);
+    });
+
+    it('refuses the restore when live fabric owns (almost) all of the ground', () => {
+        const res = fe.residualGround(parent, [{ feature: parent }], ctx);
+        expect(res.residual).toBeNull();
+        expect(res.coveredShare).toBe(1);
+    });
+
+    it('keeps the original geometry verbatim when the overlap is a micro-sliver', () => {
+        const sliver = rect(15.9600, 45.8000, 15.96000005, 45.8010); // < keepWholeShare of the block
+        const res = fe.residualGround(parent, [{ feature: sliver }], ctx);
+        expect(res.residual).toBeTruthy();
+        expect(res.residual.geometry).toEqual(parent.geometry);
+    });
+
+    it('is untouched by live parcels elsewhere', () => {
+        const res = fe.residualGround(parent, [{ feature: farAway }], ctx);
+        expect(res.coveredShare).toBe(0);
+        expect(res.residual.geometry).toEqual(parent.geometry);
+    });
+});

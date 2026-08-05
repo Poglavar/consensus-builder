@@ -801,7 +801,13 @@ function prepareProposalForImport(sharedProposal) {
         }
     }
 
-    return parkProposalForImport(base);
+    // Derived-at-apply data never crosses browsers (§15a) — children/formations regenerate
+    // from the definition against THIS browser's fabric. Old server rows still carry them.
+    const depthApi = (typeof window !== 'undefined' && window.__formationDepth) ? window.__formationDepth : null;
+    const stripped = (depthApi && typeof depthApi.stripDerivedRecordData === 'function')
+        ? depthApi.stripDerivedRecordData(base)
+        : base;
+    return parkProposalForImport(stripped);
 }
 
 async function ensureParentParcelsFetched(sharedProposal, normalized) {

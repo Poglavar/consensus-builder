@@ -812,6 +812,26 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
 
         // No global ancestor pre-check; proceed proposal by proposal
 
+        // Same restore barrier as handleSharedPlanRoute: the per-member presence check and the
+        // construction-scoped exemption both judge MATERIALIZATION, which is arbitrary while the
+        // boot restore is still rehydrating. Bounded (2×10 s), no-op once restore has run.
+        try {
+            if (typeof ProposalManager !== 'undefined'
+                && typeof ProposalManager.reapplyAppliedProposals === 'function'
+                && typeof proposalStorage !== 'undefined' && proposalStorage
+                && (proposalStorage.getAllProposals() || []).some(p => p && isProposalCurrentlyApplied(p))) {
+                await Promise.race([
+                    Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
+                    new Promise(resolve => setTimeout(resolve, 10000))
+                ]);
+                let waitedForReapply = 0;
+                while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    waitedForReapply += 100;
+                }
+            }
+        } catch (_) { }
+
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
 
@@ -890,8 +910,19 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         // Every payload-member id, for the intra-plan occupancy rule (§3.3): proposals that
         // coexisted applied in the sharer's browser cannot genuinely conflict, so a member
         // occupying a sibling's ground is composition, not a consent stop.
+        //
+        // The exemption covers members UNDER CONSTRUCTION in this pass only. A member that was
+        // already applied and materialized BEFORE the pass is standing fabric: a re-applying
+        // sibling that overlaps it must surface the conflict, not silently consume it — the
+        // exemption once let a re-applied road cut the standing park's parcel, inverting the
+        // plan's structure and baking the inversion into the record's parents.
         const payloadMemberIds = new Set();
         sorted.forEach(p => {
+            const local = (p && p.proposalId && typeof proposalStorage !== 'undefined' && proposalStorage)
+                ? proposalStorage.getProposal(p.proposalId)
+                : null;
+            if (local && typeof isProposalAppliedAndMaterialized === 'function'
+                && isProposalAppliedAndMaterialized(local)) return;
             [getProposalKey(p), p.proposalId, p.serverProposalId].forEach(k => { if (k) payloadMemberIds.add(String(k)); });
         });
 
@@ -1131,31 +1162,14 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     if (existing) {
         const alreadyApplied = isProposalCurrentlyApplied(existing);
         if (alreadyApplied) {
-            const descendantsMaterialized = (() => {
-                try {
-                    const mapById = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
-                        ? window.parcelLayerById
-                        : null;
-                    if (!mapById) return false;
-                    const descendantIds = [];
-                    const push = (arr) => {
-                        if (!Array.isArray(arr)) return;
-                        for (const id of arr) {
-                            if (id != null) descendantIds.push(String(id));
-                        }
-                    };
-                    push(existing.childParcelIds);
-                    push(existing.roadProposal && existing.roadProposal.childParcelIds);
-                    push(existing.decideLaterProposal && existing.decideLaterProposal.childParcelIds);
-                    if (descendantIds.length === 0) {
-                        // Nothing stored to verify; treat as "needs apply" so we re-derive from definition.
-                        return false;
-                    }
-                    return descendantIds.every(id => mapById.has(id));
-                } catch (_) {
-                    return false;
-                }
-            })();
+            // One presence predicate for every route (execution.js): children live on the map,
+            // consumed children witnessed by their saved feature's descendant marker, adopt-mode
+            // formations verified via the formation record. This used to be an inline copy that
+            // demanded every stored child id in the registry — a child a later formation consumed
+            // failed it on every reload, and the needless re-apply degraded the fabric.
+            const descendantsMaterialized = (typeof isProposalAppliedAndMaterialized === 'function')
+                ? isProposalAppliedAndMaterialized(existing)
+                : false;
             if (descendantsMaterialized) {
                 try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
                 return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
@@ -1605,40 +1619,23 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
         // to a whole-block building proposal). Waiting here makes that detection deterministic.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            // The barrier only matters when we are about to APPLY a proposal that could conflict with
-            // a DIFFERENT already-applied one — it waits for the background reapply to re-materialize
-            // everything so that conflict is detectable. It is pure cost, freezing the loader at
-            // "0 / 1" for up to 10 s, in two cases where nothing new gets applied:
-            //   - nothing else is applied at all, or
-            //   - every incoming proposal is ALREADY applied (re-opening a link). Re-opening applies
-            //     nothing, so there is no conflict to resolve — and with a stack of test proposals on
-            //     the map this was the usual reason for the stall.
-            // The reapply still runs in the background either way (materialization is not skipped),
-            // we just do not block on it. Keep the barrier only for a genuine plan switch: a NEW
-            // proposal arriving while others are applied.
-            const incomingIdSet = new Set(queue.map(normalizeId).filter(Boolean));
-            let hasOtherApplied = false;
-            let allIncomingAlreadyApplied = false;
+            // The barrier must hold whenever ANYTHING is applied: the presence analysis below
+            // gates on MATERIALIZATION (isProposalAppliedAndMaterialized), and mid-restore the
+            // fabric is arbitrarily incomplete — the same reload skipped 8 members or re-applied
+            // 6 of them depending on which side of the boot restore the analysis raced to. A
+            // re-opened link is not exempt: "re-opening applies nothing" is only true AFTER the
+            // check can see the restored fabric. Bounded below (2×10 s caps), and a warm profile
+            // rehydrates in well under a second.
+            let anythingApplied = false;
             try {
                 if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-                    const appliedIdSet = new Set();
-                    (proposalStorage.getAllProposals() || []).forEach(p => {
-                        if (!p || !isProposalCurrentlyApplied(p)) return;
-                        [
-                            p.serverProposalId,
-                            p.proposalId,
-                            (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null)
-                        ].filter(Boolean).forEach(id => appliedIdSet.add(String(id)));
-                    });
-                    hasOtherApplied = [...appliedIdSet].some(id => !incomingIdSet.has(id));
-                    allIncomingAlreadyApplied = incomingIdSet.size > 0
-                        && [...incomingIdSet].every(id => appliedIdSet.has(id));
+                    anythingApplied = (proposalStorage.getAllProposals() || [])
+                        .some(p => p && isProposalCurrentlyApplied(p));
                 }
             } catch (_) {
-                hasOtherApplied = true; // unsure → keep the safe barrier
-                allIncomingAlreadyApplied = false;
+                anythingApplied = true; // unsure → keep the safe barrier
             }
-            if (hasOtherApplied && !allIncomingAlreadyApplied) {
+            if (anythingApplied) {
                 // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
                 // stall the whole route.
                 await Promise.race([
@@ -1864,11 +1861,17 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (extracted) alreadyAppliedServerIds.add(String(extracted));
         });
 
-        // Queue only proposals that are NOT already applied (deduplicated)
+        // Queue only proposals that are NOT already applied (deduplicated). The excluded ones
+        // still count as skipped-duplicates in the summary — otherwise a reload that skips the
+        // whole plan reports "Skipped 7" with the eighth member silently unaccounted for.
         queue = Array.from(new Set(idParts.map(normalizeId).filter(id => {
             if (!id) return false;
             if (alreadyAppliedServerIds.has(id)) {
                 console.log('[handleSharedPlanRoute] Skipping already-applied proposal:', id);
+                const local = incomingAlreadyApplied.find(p => p && (
+                    (p.serverProposalId && String(p.serverProposalId) === id)
+                    || (typeof getServerProposalId === 'function' && String(getServerProposalId(p) || '') === id)));
+                skipped.push({ id, label: formatSharedProposalLabel(local, (local && local.proposalId) || id) });
                 return false;
             }
             return true;
@@ -2147,6 +2150,29 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return choice.action;
         };
 
+        // Intra-plan occupancy exemption (§3.3), scoped to members UNDER CONSTRUCTION in this
+        // pass. Members already applied and materialized before the pass are standing fabric —
+        // a re-applying sibling overlapping one must surface the conflict (tour below), not
+        // silently consume it: the blanket exemption once let a re-applied road cut the standing
+        // park's parcel, inverting the plan's structure on every reload. Snapshot ONCE before
+        // the loop: members applied earlier in this same pass stay exempt for later members.
+        const constructionExemptKeys = (() => {
+            const ids = planMemberLocalIds();
+            try {
+                incomingAlreadyApplied.forEach(p => {
+                    if (!p || typeof isProposalAppliedAndMaterialized !== 'function') return;
+                    if (!isProposalAppliedAndMaterialized(p)) return;
+                    if (p.proposalId) ids.delete(String(p.proposalId));
+                    if (p.serverProposalId) ids.delete(String(p.serverProposalId));
+                    try {
+                        const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
+                        if (extracted) ids.delete(String(extracted));
+                    } catch (_) { }
+                });
+            } catch (_) { }
+            return ids;
+        })();
+
         while (queue.length > 0) {
             const id = queue.shift();
             try { attemptedSinceProgress.add(normalizeId(id)); } catch (_) { }
@@ -2305,7 +2331,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         // member overlapping a sibling is a geometry question for the author, not
                         // a consent question at replay time — same intra/cross split the parcel
                         // conflict tour already makes. Cross-plan occupiers still block and ask.
-                        occupationExemptKeys: Array.from(planMemberLocalIds())
+                        occupationExemptKeys: Array.from(constructionExemptKeys)
                     });
                 } catch (err) {
                     // Convert thrown dependency errors into retryable results.
@@ -2362,8 +2388,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const failureInfo = (result && result.failureInfo) ? result.failureInfo : null;
                 if (failureInfo && String(failureInfo.code || '') === 'parcel-conflict') {
                     const conflictIds = ensureArrayOfStrings(failureInfo.conflictProposalIds || []);
-                    const members = planMemberLocalIds();
-                    const intraPlan = conflictIds.length > 0 && conflictIds.every(cid => members.has(String(cid)));
+                    // Same scope as the exemption: only a conflict with a member under
+                    // construction is "intra-plan" composition. A standing member's occupation
+                    // goes to the tour like any other applied proposal's would.
+                    const intraPlan = conflictIds.length > 0 && conflictIds.every(cid => constructionExemptKeys.has(String(cid)));
                     console.log('[handleSharedPlanRoute] Parcel conflict while applying plan member', {
                         id: normalizeId(id),
                         occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],

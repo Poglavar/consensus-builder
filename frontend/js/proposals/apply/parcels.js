@@ -71,6 +71,22 @@
             parentFeatures = decision.parentFeatures;
         }
 
+        // The gate may have PARKED occupying conflicts (autoParkConflicts), which changes the
+        // live fabric this pool consumes — re-derive so the working set is the post-park ground.
+        // Without this, the pre-gate resolution kept naming the parked square's now-dead parcel,
+        // the success write-back recorded it as a consumed parent, and that stale claim then
+        // blocked the square's own re-mint through the descendant index.
+        {
+            const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+            const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
+                ? ancestry.resolveParentsByGeometry(proposalData)
+                : null;
+            if (resolution && Array.isArray(resolution.ids) && resolution.ids.length && resolution.coverage >= 0.95) {
+                parentIds = resolution.ids.map(String);
+                parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
+            }
+        }
+
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
         const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : (parentIds[0] || null);
         const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
@@ -249,11 +265,25 @@
         }
 
         this._assignSyntheticChildIdentities(proposalId, childFeatures, identityOptions);
-        this._addFeaturesToMap(childFeatures, true, proposalData);
+
+        // A plot a standing dependent CONSUMED is not re-minted as live fabric: re-applying (or
+        // editing) this readjustment under an applied square that merge-took a plot re-created
+        // that plot UNDER the square — double fabric. Same rule the road applies to its slices
+        // (§15a: dependents on unchanged ground are untouched). Identities were assigned on the
+        // FULL set above so the blocked plot's index stays allocated and nothing else can take
+        // its id.
+        const mintableChildFeatures = (typeof _filterChildFeaturesBlockedByDescendants === 'function')
+            ? _filterChildFeaturesBlockedByDescendants(childFeatures, proposalId)
+            : childFeatures;
+        const blockedCount = childFeatures.length - mintableChildFeatures.length;
+        if (blockedCount > 0) {
+            console.debug(`[_applyReparcellizationProposal] Skipping ${blockedCount} plot(s) consumed by applied dependent proposals`);
+        }
+        this._addFeaturesToMap(mintableChildFeatures, true, proposalData);
 
         const childParcelIds = [];
         const touchedAgentIds = new Set();
-        childFeatures.forEach(feature => {
+        mintableChildFeatures.forEach(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             _ensureParcelIdOnProperties(feature.properties, parcelId);
             feature.properties.ancestorProposal = proposalId;
@@ -300,20 +330,32 @@
             }
         }
 
-        this._setDescendantProposalOnParcels(parentIds, proposalId);
-        this._linkProposalToAncestors(proposalId, parentIds);
+        // The record keeps only ground ACTUALLY consumed: ids whose parcels were LIVE on the
+        // map at this moment (the hide below is what consumes them). Feature resolution alone
+        // is not the test — the registry keeps dead layers forever, so a conflict the gate just
+        // PARKED still resolves a feature; recording its id as a parent made it a standing
+        // claim that blocked the parked structure's own re-mint and was resurrected by every
+        // later unapply.
+        const consumedParentIds = Array.from(new Set(parentFeatures
+            .map(f => { const id = _getParcelIdFromFeature(f); return id ? String(id) : null; })
+            .filter(Boolean)))
+            .filter(id => {
+                try {
+                    const layer = window.parcelLayerById.get(String(id));
+                    return !!(layer && window.parcelLayer && window.parcelLayer.hasLayer(layer));
+                } catch (_) { return true; }
+            });
+        this._setDescendantProposalOnParcels(consumedParentIds, proposalId);
+        this._linkProposalToAncestors(proposalId, consumedParentIds);
         this._hideFeaturesFromMap(parentFeatures);
-        if ((!parentFeatures || parentFeatures.length === 0) && Array.isArray(parentIds) && parentIds.length && typeof window.hideParcelLayerById === 'function') {
-            parentIds.forEach(pid => window.hideParcelLayerById(pid));
-        }
-        this._markParcelsModifiedBatch([...parentIds, ...childParcelIds]);
+        this._markParcelsModifiedBatch([...consumedParentIds, ...childParcelIds]);
         if (childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
 
-        plan.parentParcelIds = parentIds;
+        plan.parentParcelIds = consumedParentIds;
         plan.childParcelIds = childParcelIds;
-        proposalData.parentParcelIds = parentIds;
+        proposalData.parentParcelIds = consumedParentIds;
         proposalData.childParcelIds = childParcelIds;
         proposalData.reparcellization = plan;
 

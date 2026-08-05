@@ -303,6 +303,8 @@
         handleGroup = global.L.layerGroup().addTo(map);
         activeKey = String(key);
         global.RoadEditingZoom?.enter('nodes');
+        // Dragging nodes is a road operation: the buildings it could hit appear immediately.
+        try { global.ensureRoadOperationBuildings?.(); } catch (_) { }
         const isTrack = global.corridorIsTrack(proposal.roadProposal.definition);
 
         // ONE handle per unique position: a junction's coincident vertices (one per crossing

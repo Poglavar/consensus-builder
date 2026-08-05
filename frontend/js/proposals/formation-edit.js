@@ -264,6 +264,42 @@
     // children are gone from the loaded-id map precisely because the unapply removed them, so
     // without the ownChildIds exclusion every recut re-declared its own dead generation as
     // "unloaded parents" — the ghost chain this module exists to end.
+    // The part of a parcel's ground that live fabric does NOT already own — what a restore may
+    // honestly put back on the map. The restorable-parents test is structural (id prefixes) and
+    // cannot see cross-token consumption across a dead intermediate generation: un-applying road
+    // B restored road A's slice at FULL stale geometry under a readjustment's plots minted two
+    // generations later, and the recut baked the overlap into a 3,984 m² remainder covering five
+    // live plots. liveEntries: [{ feature }] live parcels near the candidate (bbox-prefiltered is
+    // fine; the candidate itself and pieces being removed must not be in the list).
+    // Returns { residual, coveredShare } — residual is a bare geometry Feature (callers re-attach
+    // their own properties); null when live fabric owns (almost) all of the ground. A candidate
+    // covered below `keepWholeShare` keeps its original geometry verbatim, so micro-sliver
+    // overlaps cannot churn stored geometry on every restore cycle.
+    function residualGround(feature, liveEntries, ctx, options) {
+        const opts = options || {};
+        const minResidualM2 = Number.isFinite(opts.minResidualM2) ? opts.minResidualM2 : 0.5;
+        const keepWholeShare = Number.isFinite(opts.keepWholeShare) ? opts.keepWholeShare : 0.01;
+        const candidate = asFeature(feature && feature.geometry ? feature.geometry : feature);
+        if (!candidate || !ctx || typeof ctx.difference !== 'function') {
+            return { residual: candidate, coveredShare: 0 };
+        }
+        const total = safeArea(ctx, candidate);
+        if (!(total > 0)) return { residual: null, coveredShare: 1 };
+        let residual = candidate;
+        (Array.isArray(liveEntries) ? liveEntries : []).forEach(entry => {
+            if (!residual) return;
+            const other = entry && entry.feature ? entry.feature : entry;
+            if (!other || !other.geometry) return;
+            if (safeIntersectionArea(ctx, residual, other) <= 0) return;
+            try { residual = asFeature(ctx.difference(residual, other)); } catch (_) { /* keep as-is */ }
+        });
+        const left = safeArea(ctx, residual);
+        const coveredShare = Math.min(1, Math.max(0, (total - left) / total));
+        if (!residual || left < minResidualM2) return { residual: null, coveredShare: 1 };
+        if (coveredShare <= keepWholeShare) return { residual: candidate, coveredShare };
+        return { residual, coveredShare };
+    }
+
     function retainedUnloadedParents(declaredIds, options) {
         const opts = options || {};
         const touched = new Set((Array.isArray(opts.touchedIds) ? opts.touchedIds : []).map(String));
@@ -383,6 +419,7 @@
         matchPieces,
         applyCarriedIdentity,
         footprintDelta,
+        residualGround,
         proposalsOnChangedGround,
         retainedUnloadedParents,
         wholeParcelTakePlan

@@ -42,6 +42,8 @@ function announceCorridorDrawingModeChange() {
 // Make roadDrawingMode globally accessible so other modules can check it
 function updateGlobalRoadDrawingMode(value) {
     roadDrawingMode = value;
+    // Drawing a road is a road operation: the buildings it could hit appear immediately.
+    if (value) { try { ensureRoadOperationBuildings(); } catch (_) { } }
     if (typeof window !== 'undefined') {
         window.roadDrawingMode = value;
     }
@@ -1103,10 +1105,20 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 const childId = (typeof _getParcelIdFromFeature === 'function' ? _getParcelIdFromFeature(feature) : null)
                     || props.parcelId || null;
                 if (!childId) return;
+                // Visibility at capture time tells consumed pieces apart: a slice a later
+                // formation merged away is hidden here, and its ground belongs to that
+                // formation — the re-show after the unapply must never resurrect it.
+                let wasVisible = false;
+                try {
+                    const layer = (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(String(childId)) : null;
+                    wasVisible = !!(layer && window.parcelLayer && window.parcelLayer.hasLayer(layer));
+                } catch (_) { }
                 priorChildren.push({
                     parcelId: String(childId),
                     parcelNumber: props.BROJ_CESTICE || props.parcelNumber || null,
                     rootParcelId: props.rootParcelId || null,
+                    parentParcelId: props.parentParcelId ? String(props.parentParcelId) : null,
+                    wasVisible,
                     isCorridor: props.isCorridor === true || props.isTrack === true,
                     feature: { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(feature.geometry)) }
                 });
@@ -1600,6 +1612,59 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             // skipRestoreSource: this unapply is half of an unapply→re-apply of the SAME proposal;
             // restoring its replaced ancestor here would leave that ancestor applied underneath.
             await ProposalManager.unapplyProposal(key, { skipConfirm: true, skipRestoreSource: true });
+            // The unapply restores a consumed parent only while no other proposal's children
+            // live on its ground — a park or building FORMED from this road's remainders keeps
+            // its parcel, so that parent stays hidden. Where no parent came back, the corridor
+            // ground would now be a HOLE in the live fabric, and the re-apply's derive-or-refuse
+            // (§15a) rightly refuses to form over ground it cannot see ("coverage 55% … nothing
+            // was cut" — every extend-past-a-formed-structure edit died this way). Mid-edit the
+            // ground still belongs to THIS road: re-show exactly those prior pieces whose parent
+            // did not return, so the re-apply consumes them like any live fabric and identity
+            // carry-over keeps their names. Pieces hidden at capture time stay hidden — their
+            // ground belongs to the formation that consumed them.
+            const reshownPriorIds = [];
+            const formationEditReshow = (typeof window !== 'undefined') ? window.__formationEdit : null;
+            const turfReshow = (typeof turf !== 'undefined') ? turf : null;
+            const reshowCtx = (formationEditReshow && turfReshow && typeof turfReshow.difference === 'function') ? {
+                area: f => { try { return turfReshow.area(f) || 0; } catch (_) { return 0; } },
+                intersectionArea: (a, b) => { try { const hit = turfReshow.intersect(a, b); return hit ? turfReshow.area(hit) : 0; } catch (_) { return 0; } },
+                difference: (a, b) => { try { return turfReshow.difference(a, b); } catch (_) { return null; } }
+            } : null;
+            priorChildren.forEach(prior => {
+                try {
+                    if (!prior || prior.wasVisible !== true) return;
+                    const parentId = prior.parentParcelId || prior.rootParcelId || null;
+                    const parentLayer = (parentId && window.parcelLayerById instanceof Map)
+                        ? window.parcelLayerById.get(String(parentId))
+                        : null;
+                    if (parentLayer && window.parcelLayer && window.parcelLayer.hasLayer(parentLayer)) return;
+                    // Same rule as the unapply's restore: resurrect only the ground live fabric
+                    // does not already own — a prior's stored geometry can predate a later
+                    // formation's re-tiling of part of it.
+                    if (reshowCtx && prior.feature && typeof formationEditReshow.residualGround === 'function'
+                        && typeof ProposalManager._liveGroundEntriesNear === 'function') {
+                        const live = ProposalManager._liveGroundEntriesNear(prior.feature, [String(prior.parcelId)]);
+                        const res = formationEditReshow.residualGround(prior.feature, live, reshowCtx);
+                        if (!res.residual) return; // fully owned by live fabric — nothing to resurrect
+                        if (res.coveredShare > 0.01 && res.residual.geometry) {
+                            const clone = {
+                                type: 'Feature',
+                                properties: { parcelId: String(prior.parcelId) },
+                                geometry: JSON.parse(JSON.stringify(res.residual.geometry))
+                            };
+                            ProposalManager._addFeaturesToMap([clone], true);
+                            reshownPriorIds.push(String(prior.parcelId) + ' (clipped)');
+                            return;
+                        }
+                    }
+                    if (typeof window.showParcelLayerById === 'function' && window.showParcelLayerById(prior.parcelId)) {
+                        reshownPriorIds.push(String(prior.parcelId));
+                    }
+                } catch (_) { }
+            });
+            if (reshownPriorIds.length) {
+                console.log(`[updateLocalCorridorGeometry] Re-showed ${reshownPriorIds.length} prior piece(s) whose parents could not be restored:`, reshownPriorIds);
+            }
             // With the old cuts undone, the original parcel fabric is back — re-derive which
             // parcels the moved/widened corridor actually touches now, so the re-apply cuts
             // every parcel under the new footprint (not just the ones declared at draw time).
@@ -3132,6 +3197,34 @@ function restoreBuildingsAfterRoadDrawing() {
     const dguBox = document.getElementById('showBuildingsDgu');
     const osmBox = document.getElementById('showBuildingsOsm');
     setBuildingReferenceLayers(false, !!(dguBox && dguBox.checked), !!(osmBox && osmBox.checked));
+}
+
+// Any road operation needs the buildings on the map IMMEDIATELY — a corridor decision is a
+// decision about buildings. GDI (the survey detection and cutting run on) switches on
+// automatically, no dialog; a survey combination the user already chose is left alone.
+function ensureRoadOperationBuildings(bounds) {
+    try {
+        const dialog = window.BuildingLayersDialog;
+        const current = (dialog && typeof dialog.currentBuildingLayerState === 'function')
+            ? dialog.currentBuildingLayerState()
+            : null;
+        if (!current || (!current.gdi && !current.dgu && !current.osm)) {
+            if (dialog && typeof dialog.remember === 'function') {
+                try { dialog.remember({ gdi: true, dgu: false, osm: false }); } catch (_) { }
+            }
+            setBuildingReferenceLayers(true, false, false);
+        }
+        if (typeof window.rebuildBuildingLayerFromPool === 'function') {
+            try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
+        }
+        const area = bounds || ((typeof map !== 'undefined' && map && typeof map.getBounds === 'function') ? map.getBounds() : null);
+        if (area && typeof window.ensureBuildingFootprintsForBounds === 'function') {
+            return window.ensureBuildingFootprintsForBounds(area).catch(() => { });
+        }
+    } catch (error) {
+        console.warn('[ensureRoadOperationBuildings] could not prepare buildings', error);
+    }
+    return Promise.resolve();
 }
 
 function setBuildingReferenceLayers(gdi, dgu, osm) {

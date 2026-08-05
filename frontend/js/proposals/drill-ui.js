@@ -279,8 +279,14 @@
             }
         }
         if (!groupIds || groupIds.length < 2) return null;
+        // The row is CADASTRAL by definition: fabric stamped before the anchor-flatten fix can
+        // still carry a derived id in baseParcelIds — flatten every pill to its base id here so
+        // "Cadastral parcel" never shows a `#`-suffixed name whatever the stored data holds.
+        const fe = global.__formationEdit;
+        const toBase = id => (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id);
+        groupIds = groupIds.map(toBase).filter(Boolean);
         // The clicked base parcel leads the list so it is never scrolled out of sight.
-        const ordered = [String(entry.id), ...groupIds.filter(id => id !== String(entry.id))];
+        const ordered = [toBase(entry.id), ...groupIds.filter(id => id !== toBase(entry.id))];
         return Array.from(new Set(ordered));
     }
 
