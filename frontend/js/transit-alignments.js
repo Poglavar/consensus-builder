@@ -247,6 +247,31 @@
         return Object.freeze({ status: state.status, error: state.error });
     }
 
+    // An alignment is elevated when it renders as a viaduct — its deck stands `elevationM` above
+    // the street rather than lying in it.
+    function isElevatedSource(source) {
+        if (!source) return false;
+        if (String(source.render3d || '').trim().toLowerCase() === 'elevated') return true;
+        return Number(source.elevationM) > 0;
+    }
+
+    // May this applied corridor delete the stretch of alignment it covers in plan?
+    //
+    // A SURFACE alignment shares the ground, so anything built over it replaces it — otherwise the
+    // old tram pokes through the new road.
+    //
+    // An ELEVATED alignment is crossed, not covered: a corridor at grade passes underneath the deck
+    // and takes nothing away from it. Only a TRACK corridor clips one, because laying rails along an
+    // existing line is the single edit that means "this replaces it" — and without that exception a
+    // redrawn line would render twice, once as the proposal and once as the original.
+    //
+    // Same vertical rule as corridor-elevation.md's level-aware crossings, for the one pair whose
+    // levels are already known: the viaduct's height is configuration, so nothing has to be asked.
+    function corridorClipsSource(source, corridor) {
+        if (!isElevatedSource(source)) return true;
+        return !!(corridor && corridor.isTrack === true);
+    }
+
     if (typeof global.addEventListener === 'function') {
         global.addEventListener('cityChanged', () => {
             reset();
@@ -268,6 +293,8 @@
         getLoadedSources,
         queryNearby,
         getStatus,
-        reset
+        reset,
+        isElevatedSource,
+        corridorClipsSource
     });
 });

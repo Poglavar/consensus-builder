@@ -1894,14 +1894,24 @@
         return T.featureCollection(kept);
     }
 
-    // Applied road/track proposal footprints (polygons), for clipping the existing tram under them.
-    function collectAppliedCorridorFootprints() {
+    // Footprints of the applied corridors that may delete a stretch of this alignment. A road at
+    // grade does NOT clip an elevated one — it passes under the deck (TransitAlignments
+    // .corridorClipsSource owns that rule and says why); a surface alignment is replaced by
+    // anything built over it.
+    function clipFootprintsForSource(source) {
         const footprints = [];
+        const registry = window.TransitAlignments;
+        const clips = registry && typeof registry.corridorClipsSource === 'function'
+            ? registry.corridorClipsSource
+            : () => true;
         try {
             if (typeof proposalStorage === 'undefined' || typeof collectProposalFeatureSets !== 'function'
                 || typeof isApplied !== 'function') return footprints;
             (proposalStorage.getAllProposals() || []).forEach(p => {
                 if (!p || !p.roadProposal || !isApplied(p, p.roadProposal)) return;
+                const isTrack = typeof corridorIsTrack === 'function'
+                    && corridorIsTrack(p.roadProposal.definition);
+                if (!clips(source, { isTrack })) return;
                 const sets = collectProposalFeatureSets(p) || {};
                 (sets.primaryFeatures || []).forEach(f => {
                     if (f && f.geometry && /Polygon/.test(f.geometry.type)) footprints.push(f);
@@ -1925,10 +1935,11 @@
             const maxRadius = Math.min(7000, Math.max(2000, diagonal * 1.5));
             const root = new THREE.Group();
             root.name = 'ExistingTransitAlignments';
-            // The applied road/track proposals win: clip the existing tram out from under them.
-            const proposalFootprints = collectAppliedCorridorFootprints();
+            // Applied corridors win over an alignment they REPLACE — but not over one they merely
+            // pass under, so the clip mask is chosen per source (clipFootprintsForSource).
             for (const source of loadedSources || []) {
-                const featureCollection = clipTransitLinesOutsideProposals(source.featureCollection, proposalFootprints);
+                const featureCollection = clipTransitLinesOutsideProposals(
+                    source.featureCollection, clipFootprintsForSource(source));
                 let child = null;
                 if (source.render3d === 'elevated' && typeof window.buildElevatedRail3D === 'function') {
                     child = window.buildElevatedRail3D(featureCollection, coordsToXY, { maxRadius });
