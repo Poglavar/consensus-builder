@@ -9,11 +9,12 @@ body.realistic-mode-active #mode-walk-toggle {
     display: none !important;
 }
 
-/* Realistic (real-world) button — top of the 2D / 3D / globe mode stack, always visible. */
+/* Realistic (real-world) button — slot 4 of the lower-left mode stack, always visible. The slot
+   ladder, and the rule that a button is hidden rather than moved, live at the top of map.css. */
 #mode-realistic-toggle.map-mode-realistic-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    bottom: 144px;
+    bottom: var(--map-mode-slot-4);
     z-index: 1001;
     display: inline-flex;
     background: white;

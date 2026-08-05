@@ -1,16 +1,46 @@
 /* ========== Map ========== */
 
-/* Map 2D / 3D mode buttons.
-   Stacked, always-visible radio-style controls (bottom → top): 2D, 3D, then the
-   realistic globe (styled in photoreal-mode.css). The active mode's button gets the
-   .active "pressed" look (see sidebar.css).
+/* Map view buttons — the lower-left mode stack.
+   Stacked controls, bottom → top: cadastre view, then the 2D / model / photo radio group
+   (the globe is styled in photoreal-mode.css), then the mode-scoped tools. The active view's
+   button gets the .active "pressed" look (see sidebar.css).
 
    They live at the bottom-LEFT: the parcel and proposal detail panels are anchored
    bottom-right and used to bury them. The stack sits just clear of the sidebar, and
    slides to the window edge when the sidebar collapses — the same `body.sidebar-collapsed`
-   signal #toggle-sidebar uses. One variable so all four buttons move together. */
+   signal #toggle-sidebar uses. One variable so all the buttons move together. */
 :root {
     --map-mode-stack-left: 330px; /* sidebar (320px) + gutter */
+
+    /* ONE SLOT PER BUTTON, and a button never changes slot. Two rules follow from that:
+       an icon means the same thing in the same place in every mode (nothing to re-learn when
+       you switch view), and no two buttons can occupy one slot. They are all absolutely
+       positioned at the same `left`, so sharing a slot is not a layout squeeze — the later
+       one in index.html silently PAINTS OVER the other and the covered button becomes
+       unreachable. That is what the cadastre grid did to the walk button when both sat at 240,
+       and what walk did to the AI wand before that when both sat at 192.
+
+       A button whose mode is off is HIDDEN, never moved, so the stack never shuffles under the
+       cursor. Slots are ordered by how often the button is present, which keeps the visible run
+       contiguous — the empty slots land at the TOP, not as holes in the middle. Cadastre view
+       takes the bottom: it is the first rung of the frame ladder (rethink-proposals.md §11,
+       official / effective / plan), so the ground truth sits under the views built on it.
+
+         slot 1  #cadastre-view-toggle    cadastre view   always
+         slot 2  #mode-2d-toggle          2D              always
+         slot 3  #mode-3d-toggle          model (3D)      always
+         slot 4  #mode-realistic-toggle   photo (globe)   always            [photoreal-mode.css]
+         slot 5  #mode-ai-toggle          AI wand         3D only, inert in model view [ai-scene.css]
+         slot 6  #mode-walk-toggle        walk-through    model view, walk-configured cities
+
+       48px apart: 36px min-height + 12px gap. Adding a button means adding a slot here, not
+       picking a bottom by eye — backend/test/map-mode-stack.test.js fails on a duplicate. */
+    --map-mode-slot-1: 48px;
+    --map-mode-slot-2: 96px;
+    --map-mode-slot-3: 144px;
+    --map-mode-slot-4: 192px;
+    --map-mode-slot-5: 240px;
+    --map-mode-slot-6: 288px;
 }
 
 body.sidebar-collapsed {
@@ -40,8 +70,8 @@ body.sidebar-collapsed {
     cursor: pointer;
 }
 
-#mode-2d-toggle.map-mode-toggle { bottom: 48px; }
-#mode-3d-toggle.map-mode-toggle { bottom: 96px; }
+#mode-2d-toggle.map-mode-toggle { bottom: var(--map-mode-slot-2); }
+#mode-3d-toggle.map-mode-toggle { bottom: var(--map-mode-slot-3); }
 
 /* The scale bar is the bottom of that same stack. The map spans the full window with the sidebar
    over it, so a bottom-left control at the default 10px would sit behind the sidebar: it rides the
@@ -49,8 +79,10 @@ body.sidebar-collapsed {
 .leaflet-bottom.leaflet-left .leaflet-control-scale {
     margin-left: var(--map-mode-stack-left);
 }
-/* Top of the lower-left mode stack: 2D 48 / 3D 96 / globe 144 / walk 192. */
-#cadastre-view-toggle.map-mode-toggle { bottom: 240px; }
+/* Slot 1 — the bottom of the lower-left mode stack (see the ladder at the top of this file). It
+   used to sit at 240 and drew over the walk button; the official cadastre is the frame the other
+   views are read against, so it anchors the stack rather than floating above them. */
+#cadastre-view-toggle.map-mode-toggle { bottom: var(--map-mode-slot-1); }
 #cadastre-view-toggle.map-mode-toggle.active { background: #b91c1c; color: #fff; }
 
 /* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
@@ -120,16 +152,15 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 }
 @keyframes map-mode-spin { to { transform: rotate(360deg); } }
 
-/* Walk-through button — top of the mode stack, only visible while in 3D (model) mode.
+/* Walk-through button — slot 6, the top of the mode stack, only visible while in 3D (model) mode
+   and only in cities that configure a walk overlay (three-mode.js, city-config `walk.url`).
    Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
-   Yellow fill so it stands out from the mode buttons. Sits at 240 (above the AI wand at 192): the
-   two used to share 192 and drew ON TOP of each other, so the purple wand read as yellow. The wand
-   is hidden of the two in model view, walk in photo view — keeping the wand at 192 leaves no gap in
-   photo view, where it is the button that matters. */
+   Yellow fill so it stands out from the mode buttons. It is the rarest button in the stack, hence
+   the highest slot: when it is absent the gap is above everything else rather than inside. */
 #mode-walk-toggle.map-mode-walk-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    bottom: 240px;
+    bottom: var(--map-mode-slot-6);
     z-index: 1000;
     background: #fdd835;
     border: 1px solid rgba(0, 0, 0, 0.2);
