@@ -1292,10 +1292,13 @@ function updateProposedBuildingsLayer() {
         list.forEach((building, index) => {
             try {
                 L.geoJSON(building, {
+                    // Deep blue, matching the 3D proposed-building material (0x1e3a8a body /
+                    // 0x1d4ed8 roof) — it used to be the EXACT #ff3300 of selectedParcelStyle,
+                    // so every placed building read as a permanently selected parcel.
                     style: {
-                        fillColor: '#ff3300',
-                        fillOpacity: 0.4,
-                        color: '#ff3300',
+                        fillColor: '#1d4ed8',
+                        fillOpacity: 0.45,
+                        color: '#1e3a8a',
                         weight: 2
                     },
                     // Buildings are an overlay on top of parcels; keep parcels clickable.

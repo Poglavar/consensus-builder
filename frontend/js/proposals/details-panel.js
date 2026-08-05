@@ -2263,7 +2263,11 @@ function showProposalInfoHoverOverlay(parcelId) {
             color: '#FFEB3B',
             weight: 6,
             dashArray: '10 8',
-            showLabels: true
+            // No number label on plain MAP hover: it only appeared over proposal-owned parcels,
+            // and that inconsistency read as meaning something. Labels for everything live behind
+            // the "Show parcel numbers" checkbox; panel-driven hovers (list rows, drill rows)
+            // still label, because there the label answers "which shape just lit up".
+            showLabels: false
         });
     } catch (error) {
         console.warn('showProposalInfoHoverOverlay failed', error);

@@ -235,12 +235,19 @@
                 <span>${tParcel(tool.labelKey, {}, tool.fallback)}</span>
             </button>
         `;
-        // Block, Row and Detached are all RULES-based tools (form follows parameters); one
-        // thin frame groups them so the seam against the free-design tools reads at a glance.
+        // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
+        // Land readjustment stands alone first — the formation primitive; Block/Row/Detached are
+        // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
+        // Square and Lake all TAKE their parcel (→ Structures). The urban-rule park (use
+        // restriction, no taking) joins the rules group when rules grow that vocabulary.
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
+        const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
+        const readjustmentButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'reparcellization').map(buttonHtml).join('');
         const ruleButtons = PARCEL_BUILD_TOOLS.filter(tool => RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
-        const otherButtons = PARCEL_BUILD_TOOLS.filter(tool => !RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
+        const structureButtons = PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(buttonHtml).join('');
+        const rulesTitle = tParcel('panel.parcel.build.rulesCategory', {}, 'Urban rules');
+        const structuresTitle = tParcel('panel.parcel.build.structuresCategory', {}, 'Structures');
         const transportButtons = PARCEL_TRANSPORT_TOOLS
             .filter(tool => tool.stationType || roadToolsEnabled())
             .map(tool => {
@@ -261,8 +268,15 @@
         return `
             <div class="parcel-build-palette">
                 <div class="parcel-build-grid">
-                    <div class="parcel-build-rules-group">${ruleButtons}</div>
-                    ${otherButtons}
+                    ${readjustmentButton}
+                    <fieldset class="parcel-rules-group">
+                        <legend>${rulesTitle}</legend>
+                        <div class="parcel-rules-grid">${ruleButtons}</div>
+                    </fieldset>
+                    <fieldset class="parcel-structures-group">
+                        <legend>${structuresTitle}</legend>
+                        <div class="parcel-structures-grid">${structureButtons}</div>
+                    </fieldset>
                     <fieldset class="parcel-transport-group">
                         <legend>${transportTitle}</legend>
                         <div class="parcel-transport-grid">${transportButtons}</div>

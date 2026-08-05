@@ -764,6 +764,12 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
 
     const token = _buildSyntheticToken(proposalId, 'proposal');
     const counters = new Map();
+    // Identity carry-over (formation-edit.js): a piece the partition diff matched to the previous
+    // apply keeps that identity — the ground survived the edit, so its name must too. Consumed
+    // HERE so every mint path stays funneled through identity assignment. `carriedIds` guards
+    // against a contiguity split cloning one stamp onto several parts.
+    const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+    const carriedIds = new Set();
 
     childFeatures.forEach(feature => {
         if (!feature || !feature.properties) {
@@ -773,6 +779,21 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
         const props = feature.properties;
         const rootNumber = _resolveRootParcelNumberFromProperties(props) || 'parcel';
         const rootId = _resolveRootParcelIdFromProperties(props) || 'parcel';
+
+        // Flat anchor: every minted piece records the base cadastral parcel(s) under it, one hop —
+        // `cadastral parcel(s) → one formation → content`, never a reference chain. The corridor
+        // feature arrives with its full multi-root list already stamped; leave that richer truth.
+        if ((!Array.isArray(props.baseParcelIds) || !props.baseParcelIds.length) && rootId && rootId !== 'parcel') {
+            props.baseParcelIds = [rootId];
+        }
+
+        const carried = props.__carryIdentity;
+        if (carried !== undefined) delete props.__carryIdentity;
+        if (carried && formationEdit && formationEdit.applyCarriedIdentity(props, carried, carriedIds)) {
+            props.rootParcelId = rootId;
+            props.rootParcelNumber = rootNumber;
+            return;
+        }
 
         const key = `${rootNumber || ''}__${rootId || ''}`;
         let state = counters.get(key);
@@ -1706,7 +1727,7 @@ const ProposalManager = {
         return { parentFeatures: [], childFeatures };
     },
 
-    _buildChildFeaturesFromDefinition(proposalId, proposalData, parentFeatures = []) {
+    _buildChildFeaturesFromDefinition(proposalId, proposalData, parentFeatures = [], buildOptions = {}) {
         if (!proposalData || !proposalData.roadProposal || !proposalData.roadProposal.definition) {
             return [];
         }
@@ -1826,6 +1847,12 @@ const ProposalManager = {
             const primaryAffectedParcelNumber = affectedParcels[0]?.number;
             const primaryRootNumber = affectedParcels[0]?.rootNumber;
             const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
+            // Flat anchor (rethink-proposals.md, 2026-08-05): the base cadastral parcels this
+            // formation consumes — every crossed parent's root, one hop, no reference chain. The
+            // corridor id borrows the FIRST root (a naming accident, §9); this records the truth.
+            const affectedRootParcelIds = Array.from(new Set(
+                affectedParcels.map(p => p.rootParcelId).filter(Boolean).map(String)
+            ));
             const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
             const isTrack = corridorIsTrack(definition) || definition?.metadata?.type === 'track' || definition?.type === 'track';
             console.debug('[_buildChildFeaturesFromDefinition] Creating corridor feature', {
@@ -1877,6 +1904,7 @@ const ProposalManager = {
                 parentParcelNumbers: affectedParcels.map(p => p.number),
                 rootParcelNumber: primaryRootNumber,
                 rootParcelId: primaryRootParcelId,
+                baseParcelIds: affectedRootParcelIds.slice(),
                 ownershipDetails: {
                     owners: [{
                         name: proposalData.author || 'User',
@@ -1953,6 +1981,12 @@ const ProposalManager = {
                             // when the remainder area is effectively unchanged within a tiny tolerance.
                             if (_shouldSkipUncutRemainder(parentParcelArea, piece.area)) {
                                 console.debug(`[_buildChildFeaturesFromDefinition] Skipping uncut remainder for ${parcelId} — road polygon did not intersect this parcel`);
+                                // An UNCUT parent must stay a live, untouched parcel: hiding or
+                                // consumption-marking it orphans its ground (§2.1) and leaves a
+                                // hoverable-but-dead parcel behind (the 6804/5 sliver).
+                                if (buildOptions && Array.isArray(buildOptions.uncutParentIds) && parcelId) {
+                                    buildOptions.uncutParentIds.push(String(parcelId));
+                                }
                                 return;
                             }
                             const hash = _geometryHash(piece.coords);
@@ -1997,7 +2031,69 @@ const ProposalManager = {
                 });
             }
 
-            this._assignSyntheticChildIdentities(safeId, childFeatures);
+            // A formation edit passes the previous partition's pieces (buildOptions.priorChildren)
+            // so surviving ground keeps its parcel identity instead of minting a new generation —
+            // the partition-diff rule (formation-edit.js; rethink-proposals.md §12 step 5). New
+            // pieces continue the numbering PAST every prior index, so a freed id never comes back
+            // naming different ground.
+            let identityOptions = {};
+            const priorChildren = Array.isArray(buildOptions?.priorChildren) ? buildOptions.priorChildren : null;
+            const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+            if (priorChildren && priorChildren.length && !formationEdit) {
+                // Wiring bug, not a runtime condition: the edit captured priors but the matcher is
+                // absent, so every identity re-mints. Loud, per the errors-over-healing rule.
+                console.error('[_buildChildFeaturesFromDefinition] formation-edit module missing — identities will re-mint');
+            }
+            if (priorChildren && priorChildren.length && formationEdit && typeof turf !== 'undefined' && typeof turf.intersect === 'function') {
+                try {
+                    const matchCtx = {
+                        area: f => { try { return turf.area(f) || 0; } catch (_) { return 0; } },
+                        intersectionArea: (a, b) => {
+                            try { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; } catch (_) { return 0; }
+                        }
+                    };
+                    const beforeEntries = priorChildren.map(prior => ({
+                        id: prior.parcelId !== undefined && prior.parcelId !== null ? String(prior.parcelId) : null,
+                        number: prior.parcelNumber !== undefined && prior.parcelNumber !== null ? String(prior.parcelNumber) : null,
+                        baseId: formationEdit.baseIdOf(prior.rootParcelId || prior.parcelId || ''),
+                        isCorridor: prior.isCorridor === true,
+                        feature: prior.feature || null
+                    }));
+                    const afterEntries = childFeatures.map(feature => ({
+                        baseId: formationEdit.baseIdOf(feature?.properties?.rootParcelId || _getParcelIdFromFeature(feature) || ''),
+                        isCorridor: feature?.properties?.isCorridor === true || feature?.properties?.isTrack === true,
+                        feature
+                    }));
+                    const match = formationEdit.matchPieces(beforeEntries, afterEntries, matchCtx);
+                    match.assignments.forEach((beforeIndex, afterIndex) => {
+                        if (beforeIndex === null || !beforeEntries[beforeIndex].id) return;
+                        childFeatures[afterIndex].properties.__carryIdentity = {
+                            parcelId: beforeEntries[beforeIndex].id,
+                            parcelNumber: beforeEntries[beforeIndex].number
+                        };
+                    });
+                    const grow = (typeof window !== 'undefined' && window.__corridorGrow) ? window.__corridorGrow : null;
+                    if (grow && typeof grow.nextSyntheticIndexByRoot === 'function') {
+                        identityOptions = {
+                            startIndexByRootId: grow.nextSyntheticIndexByRoot(
+                                priorChildren.map(prior => prior.parcelId),
+                                _buildSyntheticToken(safeId, 'proposal')
+                            )
+                        };
+                    }
+                } catch (error) {
+                    console.warn('[_buildChildFeaturesFromDefinition] identity carry-over skipped', error);
+                }
+            }
+
+            // Flat declaration, written where the cut is computed (§15.1): the base cadastral
+            // parcels under this formation's footprint — one hop deep whatever generation the
+            // consumed parents belonged to.
+            if (affectedRootParcelIds.length) {
+                proposalData.cadastreParcelIds = affectedRootParcelIds.slice();
+            }
+
+            this._assignSyntheticChildIdentities(safeId, childFeatures, identityOptions);
             return childFeatures;
         }
 
@@ -4659,7 +4755,29 @@ const ProposalManager = {
             a.notLoaded = a.notLoaded.filter(id => !this._missingDerivedParentHasLiveFabric(id));
             return a;
         };
-        let analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
+        // The §3.3 rule, first-class (2026-08-05): occupation by an EXEMPT proposal — a member of
+        // the same plan/payload being applied together — is chaining, not conflict. The sibling's
+        // fabric is exactly the ground this proposal takes next (formations re-derive it
+        // geometrically; structures adopt it), so those occupiers drop out of the conflict set on
+        // the FIRST attempt. This is what the removed intra-plan retry ladder used to paper over:
+        // the exemption was only wired into the road-content check, never into this gate.
+        const exemptKeys = (options && Array.isArray(options.occupationExemptKeys) && options.occupationExemptKeys.length)
+            ? new Set(options.occupationExemptKeys.map(id => String(id)))
+            : null;
+        const dropExemptOccupiers = (a) => {
+            if (!exemptKeys || !a || !Array.isArray(a.conflicts) || !a.conflicts.length) return a;
+            const kept = a.conflicts.filter(conflict => !exemptKeys.has(String(conflict.proposalId)));
+            if (kept.length !== a.conflicts.length) {
+                console.debug(`[${idLabel}] Intra-plan occupancy exempted`, {
+                    exempted: a.conflicts.filter(c => exemptKeys.has(String(c.proposalId))).map(c => c.proposalId)
+                });
+                a.conflicts = kept;
+            }
+            return a;
+        };
+        const analyze = () => dropExemptOccupiers(relaxDriftedDerivedParents(
+            this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel)));
+        let analysis = analyze();
         if (allowFetch && analysis.notLoaded.length && typeof fetchParcelsForIds === 'function') {
             try {
                 await fetchParcelsForIds(analysis.notLoaded, { forceRefresh: true });
@@ -4667,7 +4785,7 @@ const ProposalManager = {
                 if (Array.isArray(reloaded) && reloaded.length >= features.length) {
                     features = reloaded;
                 }
-                analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
+                analysis = analyze();
             } catch (err) {
                 console.warn(`[${idLabel}] Failed to fetch not-loaded parent parcels before apply`, err);
             }
@@ -4694,7 +4812,7 @@ const ProposalManager = {
                 });
                 if (done !== false && String(conflict.proposalId) !== absorbSourceId) parked.push(conflict.title);
             }
-            analysis = relaxDriftedDerivedParents(this._analyzeParentAvailability(declared, computeUnresolvable(), idLabel));
+            analysis = analyze();
             if (parked.length && typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(`Unapplied ${parked.map(title => `“${title}”`).join(', ')} — still in your proposals list.`, 5000, 'info');
             }
@@ -4718,7 +4836,15 @@ const ProposalManager = {
                         missingIds: []
                     });
                 } else {
-                    this._setLastApplyFailure(idLabel, { code: 'dependency-missing', message: 'Prerequisite parcels unavailable or in conflict', missingIds: analysis.notLoaded });
+                    // Refusals explain themselves (invariant #6): name the parcels, or the next
+                    // person diagnoses "unavailable" blind.
+                    const missingList = analysis.notLoaded.slice(0, 12).join(', ')
+                        + (analysis.notLoaded.length > 12 ? `, … (${analysis.notLoaded.length} total)` : '');
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'dependency-missing',
+                        message: `Prerequisite parcels unavailable or in conflict: ${missingList}`,
+                        missingIds: analysis.notLoaded
+                    });
                 }
             } catch (_) { }
             if (!suppress) {

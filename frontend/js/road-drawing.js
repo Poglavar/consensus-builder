@@ -724,7 +724,7 @@ function corridorSurfaceFootprintGeoJSON(segments, width, tunnels) {
 // A component that disconnects from a road becomes its own proposal: same cross-section and
 // facets, fresh auto-name, applied immediately. Tunnels stay with the main body — their edge
 // pairing does not survive a split.
-async function createRoadProposalFromComponent(baseProposal, component) {
+async function createRoadProposalFromComponent(baseProposal, component, priorChildren = null) {
     const baseDefinition = baseProposal.roadProposal.definition;
     const width = Number(baseDefinition.width) || 10;
     const componentIds = new Set((component.segmentIds || []).filter(Boolean).map(String));
@@ -800,8 +800,23 @@ async function createRoadProposalFromComponent(baseProposal, component) {
     const newId = (typeof proposalStorage !== 'undefined') ? proposalStorage.addProposal(clone) : null;
     if (!newId) return null;
     try { ProposalManager._linkProposalToAncestors?.(newId, parents); } catch (_) { }
+    // Ground that migrated onto this split piece keeps its parcel names (formation-edit.js). The
+    // corridor prior stays with the ORIGINAL road — a split piece is a new road object — and only
+    // priors under this piece's own footprint can match, so nothing is carried twice.
+    const componentPriors = (Array.isArray(priorChildren) && priorChildren.length && definition.polygon)
+        ? priorChildren.filter(prior => {
+            if (!prior || prior.isCorridor || !prior.feature) return false;
+            try {
+                return turf.booleanIntersects(prior.feature, { type: 'Feature', properties: {}, geometry: definition.polygon });
+            } catch (_) { return false; }
+        })
+        : [];
     try {
-        await ProposalManager.applyProposal(newId, { applyAnyway: true, suppressMissingParentAlerts: true });
+        await ProposalManager.applyProposal(newId, {
+            applyAnyway: true,
+            suppressMissingParentAlerts: true,
+            ...(componentPriors.length ? { priorChildren: componentPriors } : {})
+        });
     } catch (error) {
         console.warn('[createRoadProposalFromComponent] Apply of split-off road failed', error);
     }
@@ -943,20 +958,70 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     })();
 
     // Recut disclosure (rethink-proposals.md §13): a footprint change on an APPLIED road re-cuts
-    // the ground under it and re-derives everything standing on that ground. When dependent
-    // proposals exist, say so BEFORE doing it — the unapply tour in its recut variant, items
-    // clickable on the map, cancel rolls the definition back untouched. Drags are exempt
-    // (options.preEditSnapshot): the user is watching the road move under their cursor, and a
-    // prompt per drag-end would make the tool unusable.
+    // the ground under it. Disclosure is scoped to the ground that actually CHANGED (the old△new
+    // footprint delta, formation-edit.js): content standing on unchanged ground keeps its parcels
+    // — identity carries over below — so it is not disclosed and not touched. Geometry decides,
+    // not the reference genealogy; the descendant tree remains only as the conservative fallback
+    // when the delta cannot be computed. Drags are exempt (options.preEditSnapshot): the user is
+    // watching the road move under their cursor, and a prompt per drag-end would make the tool
+    // unusable.
     if (!footprintUnchanged && wasAppliedBeforeEdit && !options.preEditSnapshot
         && typeof window !== 'undefined' && window.__unapplyTour
         && typeof window.__unapplyTour.showUnapplyDependentsPanel === 'function') {
-        let dependentProposals = [];
+        let dependentProposals = null;
         try {
-            const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
-            dependentProposals = (ProposalManager.findDescendantTree(String(key)) || [])
-                .map(node => node && node.proposalId).filter(Boolean);
-        } catch (_) { dependentProposals = []; }
+            const formationEdit = window.__formationEdit;
+            const planOrder = window.__planOrder;
+            const selfKey = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
+            if (formationEdit && planOrder && typeof planOrder.footprintOf === 'function'
+                && typeof turf !== 'undefined' && typeof turf.difference === 'function') {
+                const deriveFootprint = def => {
+                    try {
+                        const union = buildRoadUnionPolygonForDefinition(def);
+                        return union ? convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(union)) : null;
+                    } catch (_) { return null; }
+                };
+                const deltaCtx = {
+                    area: f => { try { return turf.area(f) || 0; } catch (_) { return 0; } },
+                    intersectionArea: (a, b) => {
+                        try { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; } catch (_) { return 0; }
+                    },
+                    difference: (a, b) => turf.difference(a, b)
+                };
+                const delta = formationEdit.footprintDelta(
+                    definitionSnapshot.polygon || deriveFootprint(definitionSnapshot),
+                    deriveFootprint(definition),
+                    deltaCtx
+                );
+                if (delta && !delta.changed) {
+                    dependentProposals = [];
+                } else if (delta) {
+                    const candidates = [];
+                    try {
+                        (proposalStorage?.getAllProposals?.() || []).forEach(other => {
+                            if (!other || typeof isProposalApplied !== 'function' || !isProposalApplied(other)) return;
+                            const otherKey = String((typeof getProposalKey === 'function' ? getProposalKey(other) : null) || other.proposalId || '');
+                            if (!otherKey || otherKey === selfKey) return;
+                            const footprint = planOrder.footprintOf(other);
+                            if (footprint) candidates.push({ key: otherKey, footprint });
+                        });
+                    } catch (_) { }
+                    dependentProposals = formationEdit.proposalsOnChangedGround(delta.pieces, candidates, deltaCtx)
+                        .map(entry => entry.key);
+                }
+            }
+        } catch (_) { dependentProposals = null; }
+        if (dependentProposals === null && typeof window !== 'undefined' && (!window.__formationEdit || !window.__planOrder)) {
+            // Module missing is a WIRING bug, not a runtime condition — say so loudly. The
+            // descendant-tree fallback below over-discloses (safe direction), never heals.
+            console.error('[updateLocalCorridorGeometry] formation-edit/plan-order missing — recut disclosure falling back to the descendant tree');
+        }
+        if (dependentProposals === null) {
+            try {
+                dependentProposals = (ProposalManager.findDescendantTree(String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId)) || [])
+                    .map(node => node && node.proposalId).filter(Boolean);
+            } catch (_) { dependentProposals = []; }
+        }
         if (dependentProposals.length) {
             const confirmed = await window.__unapplyTour.showUnapplyDependentsPanel({
                 action: 'recut',
@@ -1012,6 +1077,45 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
         return true;
     }
+
+    // The previous partition's pieces, captured BEFORE any unapply destroys their layers: the
+    // re-apply's child builder matches the new partition against these so surviving ground keeps
+    // its parcel identity (formation-edit.js — an edit is a partition edit, not a new generation),
+    // and the parent re-derivation below can tell an off-screen parent from a just-destroyed
+    // child. Merge-absorbed roads are captured too (in the merge loop, before their unapply), so
+    // the ground a merge swallows keeps its parcel names in the combined road.
+    const priorChildIds = [];
+    const priorChildren = [];
+    const captureCorridorPriorChildren = (proposalLike) => {
+        const ids = Array.from(new Set([
+            ...(Array.isArray(proposalLike?.childParcelIds) ? proposalLike.childParcelIds : []),
+            ...(Array.isArray(proposalLike?.roadProposal?.childParcelIds) ? proposalLike.roadProposal.childParcelIds : [])
+        ].map(id => String(id)).filter(Boolean))).filter(id => !priorChildIds.includes(id));
+        if (!ids.length) return;
+        priorChildIds.push(...ids);
+        if (typeof ProposalManager._resolveParcelFeaturesByIds !== 'function') return;
+        try {
+            const priorFeatures = ProposalManager._resolveParcelFeaturesByIds(ids,
+                { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+            priorFeatures.forEach(feature => {
+                if (!feature || !feature.geometry) return;
+                const props = feature.properties || {};
+                const childId = (typeof _getParcelIdFromFeature === 'function' ? _getParcelIdFromFeature(feature) : null)
+                    || props.parcelId || null;
+                if (!childId) return;
+                priorChildren.push({
+                    parcelId: String(childId),
+                    parcelNumber: props.BROJ_CESTICE || props.parcelNumber || null,
+                    rootParcelId: props.rootParcelId || null,
+                    isCorridor: props.isCorridor === true || props.isTrack === true,
+                    feature: { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(feature.geometry)) }
+                });
+            });
+        } catch (error) {
+            console.warn('[updateLocalCorridorGeometry] prior-children capture failed — identities will re-mint', error);
+        }
+    };
+    captureCorridorPriorChildren(proposal);
 
     // Normalize the (possibly mutated) centerline, make crossings real nodes, then check
     // whether the edit disconnected the body.
@@ -1367,6 +1471,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 definition.demolishedBuildings.push(JSON.parse(JSON.stringify(record)));
             });
             const targetKey = (typeof getProposalKey === 'function' ? getProposalKey(target) : null) || target.proposalId;
+            // The absorbed road's ground keeps its parcel names inside the combined road.
+            captureCorridorPriorChildren(target);
             clearSelectionVisualsForRemovedProposal(target);
             try { await ProposalManager.unapplyProposal(targetKey, { skipConfirm: true, skipRestoreSource: true }); } catch (_) { }
             try { proposalStorage.removeProposal(targetKey); } catch (_) { }
@@ -1505,10 +1611,16 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 : definition.polygon;
             if (acquisitionPolygon) {
                 const touched = new Set(collectParcelsIntersectingFootprint(acquisitionPolygon));
-                const keptUnloaded = (proposal.roadProposal.parentParcelIds || proposal.parentParcelIds || [])
-                    .map(String)
-                    .filter(id => !touched.has(id)
-                        && !(window.parcelLayerById instanceof Map && window.parcelLayerById.has(id)));
+                // Never re-declare this road's own just-destroyed children as "unloaded parents":
+                // the unapply removed them from the loaded-id map, so without the ownChildIds
+                // exclusion every recut chained its previous generation back into the parent list
+                // (the self-ghost bug; retainedUnloadedParents documents the rule).
+                const declaredParents = (proposal.roadProposal.parentParcelIds || proposal.parentParcelIds || []).map(String);
+                const loadedIdSet = (window.parcelLayerById instanceof Map) ? new Set(window.parcelLayerById.keys()) : new Set();
+                const keptUnloaded = (typeof window !== 'undefined' && window.__formationEdit)
+                    ? window.__formationEdit.retainedUnloadedParents(declaredParents,
+                        { touchedIds: [...touched], loadedIds: loadedIdSet, ownChildIds: priorChildIds })
+                    : declaredParents.filter(id => !touched.has(id) && !loadedIdSet.has(id) && !priorChildIds.includes(id));
                 const touchedIds = [...touched, ...keptUnloaded];
                 if (touchedIds.length) {
                     proposal.parentParcelIds = touchedIds.slice();
@@ -1527,14 +1639,31 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             await ProposalManager.applyProposal(key, {
                 applyAnyway: true,
                 suppressMissingParentAlerts: true,
-                allowOccupation: true
+                allowOccupation: true,
+                // Surviving pieces of the previous partition keep their parcel identity.
+                priorChildren
             });
         }
 
         // Split-on-disconnect (the inverse of merge-on-connect): components the edit severed
-        // become their own proposals, each applied in place.
+        // become their own proposals, each applied in place. Priors the main body's re-apply
+        // already carried are excluded, so no parcel id can land on two proposals.
+        const mainChildIds = new Set([
+            ...(Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []),
+            ...(Array.isArray(proposal.roadProposal?.childParcelIds) ? proposal.roadProposal.childParcelIds : [])
+        ].map(id => String(id)));
+        let remainingPriors = priorChildren.filter(prior => !mainChildIds.has(String(prior.parcelId)));
         for (const component of splitOff) {
-            await createRoadProposalFromComponent(proposal, component);
+            const componentId = await createRoadProposalFromComponent(proposal, component, remainingPriors);
+            // A prior straddling the split point can intersect two components — drop what this
+            // component actually carried so the next one cannot mint the same id again.
+            if (componentId && remainingPriors.length) {
+                try {
+                    const componentRecord = proposalStorage.getProposal(componentId);
+                    const taken = new Set((componentRecord?.childParcelIds || []).map(id => String(id)));
+                    if (taken.size) remainingPriors = remainingPriors.filter(prior => !taken.has(String(prior.parcelId)));
+                } catch (_) { }
+            }
         }
         if (splitOff.length && typeof updateStatus === 'function') {
             updateStatus(translateRoadText('panel.road.splitStatus', 'The road came apart — now {{count}} separate roads.', {

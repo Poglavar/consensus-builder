@@ -1070,7 +1070,11 @@ async function createProposal() {
                 parameters: safeClone(pendingBuildingContext.parameters) || {},
                 buildingFeature: primaryBuildingFeature,
                 buildings: buildingFeatures,
-                ancestorKey
+                ancestorKey,
+                // §15a: how a FREEFORM building forms its parcel — footprint parcel by default,
+                // whole host parcels when the author chose so in the design modal.
+                ...(selectedTool === 'single' && pendingBuildingContext.takeWholeParcels === true
+                    ? { takeWholeParcels: true } : {})
             };
 
             // Clear the pending context so it isn't reused accidentally
@@ -2099,6 +2103,24 @@ function buildUploadReadyProposal(proposal) {
         uploadProposal.proposalId = fingerprint;
         uploadProposal.hash = fingerprint;
     }
+
+    // The §15a publish gate: a PUBLISHED record is flat — `base cadastral parcel(s) → one
+    // formation → content`. A formation's parent declarations flatten to base ids here (the
+    // cadastral truth is the cadastreParcelIds stamp above); content keeps its plot. A record
+    // that still is not flat is REFUSED, loudly — publish is the gate, never a healer.
+    if (typeof window !== 'undefined' && window.__formationDepth) {
+        const gate = window.__formationDepth.preparePublishRecord(uploadProposal, {
+            geometricBaseIds: Array.isArray(uploadProposal.cadastreParcelIds) ? uploadProposal.cadastreParcelIds : []
+        });
+        if (!gate.verdict.flat) {
+            const detail = gate.verdict.violations
+                .map(v => v.code + (v.id ? ` (${v.id})` : (Array.isArray(v.ids) ? ` (${v.ids.join(', ')})` : '')))
+                .join('; ');
+            throw new Error(`This proposal's record is not flat and cannot be published: ${detail}`);
+        }
+        return gate.proposal;
+    }
+    console.error('[buildUploadReadyProposal] formation-depth module missing — publish gate skipped');
     return uploadProposal;
 }
 

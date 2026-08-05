@@ -682,7 +682,7 @@
                 "rowNeedsTwo": "Las casas en hilera necesitan al menos dos parcelas.",
                 "row": "Casas en hilera",
                 "parcelBased": "Aislada",
-                "single": "Forma libre",
+                "single": "Edificio libre",
                 "reparcel": "Reparcelación",
                 "park": "Parque",
                 "square": "Plaza",
@@ -700,7 +700,9 @@
                 "useMainCreateButton": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
                 "enableMultiSelect": "Activa la selección de varias parcelas para usar esta acción.",
                 "selectAtLeastOne": "Selecciona al menos una parcela para crear una propuesta.",
-                "selectParcelFirst": "Selecciona una parcela primero."
+                "selectParcelFirst": "Selecciona una parcela primero.",
+                "rulesCategory": "Normas urbanas",
+                "structuresCategory": "Estructuras"
             },
             "nftStatusDefault": "Estado NFT: todavía no verificado.",
             "mintAndClaimButton": "Acuñar",
@@ -1059,7 +1061,8 @@
             "title": "En este punto",
             "close": "Cerrar",
             "baseParcel": "Parcela catastral",
-            "slice": "Parcela formada"
+            "slice": "Parcela formada",
+            "baseParcelCount": "Parcela catastral ({{count}})"
         }
     },
     "modal": {
@@ -1172,7 +1175,11 @@
             "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
-            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir un vértice o selecciona uno y usa la papelera o Supr/Retroceso para eliminarlo. El edificio debe permanecer completamente dentro del bloque."
+            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir un vértice o selecciona uno y usa la papelera o Supr/Retroceso para eliminarlo. El edificio debe permanecer completamente dentro del bloque.",
+            "parcelLabel": "Parcela del edificio",
+            "parcelFootprint": "Parcela según la huella",
+            "parcelWhole": "Tomar las parcelas enteras",
+            "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -1803,7 +1810,9 @@
                         "keep": "Mantener existente",
                         "applyToAll": "Aplicar a todos los conflictos restantes",
                         "keptCountDetailed": "Mantuviste las propuestas existentes — {{count}} propuesta(s) entrante(s) quedan sin aplicar (búscalas en la lista de propuestas):"
-                    }
+                    },
+                    "copyResult": "Copiar",
+                    "copiedResult": "Resultado copiado."
                 },
                 "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola)."
             },

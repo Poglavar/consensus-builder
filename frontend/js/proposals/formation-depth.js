@@ -147,6 +147,28 @@
         return { total: list.length, offending: records.length, byCode, records };
     }
 
+    // The publish gate (§15a): mechanically flatten a formation's parent declarations to base
+    // ids, then VERIFY the record is flat. The caller refuses to publish when verdict.flat is
+    // false — nothing here heals beyond the deterministic flatten; a record that cannot be made
+    // flat is an error the author sees, not a repair job for every future reader.
+    function preparePublishRecord(proposal, options) {
+        const opts = options || {};
+        const out = { ...(proposal || {}) };
+        const flat = flattenedParentsFor(out, opts);
+        if (Array.isArray(flat) && flat.length) {
+            out.parentParcelIds = flat.slice();
+            // Content sub-payloads (buildingProposal/structureProposal) keep their plot — the
+            // plot IS the legal third level; only forming payloads flatten.
+            ['roadProposal', 'reparcellization', 'decideLaterProposal'].forEach(key => {
+                const sub = out[key];
+                if (sub && typeof sub === 'object' && !Array.isArray(sub) && Array.isArray(sub.parentParcelIds)) {
+                    out[key] = { ...sub, parentParcelIds: flat.slice() };
+                }
+            });
+        }
+        return { proposal: out, verdict: conformanceOf(out, opts) };
+    }
+
     const api = {
         FORMATION_GOALS,
         parcelIdDepth,
@@ -156,6 +178,7 @@
         roleOf,
         conformanceOf,
         flattenedParentsFor,
+        preparePublishRecord,
         scanRecords
     };
 

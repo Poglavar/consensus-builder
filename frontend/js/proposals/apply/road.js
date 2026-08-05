@@ -180,7 +180,41 @@
         // enrichment and child-building so the settled parent set feeds those steps. See
         // _resolveParentAvailabilityOrDefer for the full rationale.
         if (!isRestoring) {
-            const declaredParentIds = Array.from(new Set(this._collectParentParcelIds(roadProposal, proposalData).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+            let declaredParentIds = Array.from(new Set(this._collectParentParcelIds(roadProposal, proposalData).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+            // A7, receiving side (rethink-proposals.md §15a): the stored declaration is the flat
+            // consent anchor (base ids); the ground actually CONSUMED is derived from the
+            // footprint against the LIVE fabric — geometry is authoritative, in both directions:
+            //   coverage ≥ 95% → the working set IS the live fabric under the footprint;
+            //   coverage < 95% → REFUSE. A formation consumes the ground under its footprint or
+            //   does not apply; proceeding on the declaration when the live fabric cannot be seen
+            //   is how a formation minted itself ON TOP of un-consumed pieces (double fabric).
+            {
+                const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+                const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
+                    ? ancestry.resolveParentsByGeometry(proposalData)
+                    : null;
+                if (resolution) {
+                    if (Array.isArray(resolution.ids) && resolution.ids.length && resolution.coverage >= 0.95) {
+                        // Attempt-local: the record's parents are written downstream from the
+                        // parents actually consumed on success, so a failed attempt never
+                        // poisons the declaration.
+                        declaredParentIds = resolution.ids.map(String);
+                        // The features must FOLLOW the ids: the availability gate reads declared
+                        // ids against resolved features, and step 1 resolved the record's
+                        // declaration — without this re-resolve a sibling road's minutes-old
+                        // slice counts as "absent" and fails as a phantom prerequisite.
+                        parentFeatures = this._resolveParcelFeaturesByIds(declaredParentIds,
+                            { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
+                    } else {
+                        const coveragePct = Math.round((resolution.coverage || 0) * 100);
+                        const message = `The live fabric covers only ${coveragePct}% of this road's footprint here — the ground is not loaded or not present, so nothing was cut.`;
+                        if (typeof updateStatus === 'function') updateStatus(message);
+                        try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-unresolved', message }); } catch (_) { }
+                        if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+                        return false;
+                    }
+                }
+            }
             const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds, parentFeatures, options });
             if (decision.defer) {
                 if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
@@ -236,7 +270,16 @@
             if (isGovernmentPlan) {
                 childFeatures = this._cloneFeatures(providedChildFeatures);
             } else {
-                childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
+                // priorChildren: a formation edit (road-drawing) passes the previous partition's
+                // pieces so surviving ground keeps its parcel identity across the recut.
+                // uncutParentIds comes back filled with parents the corridor did not actually
+                // cut — they stay live, unhidden and unmarked below.
+                const buildOptions = Array.isArray(options.priorChildren) && options.priorChildren.length
+                    ? { priorChildren: options.priorChildren }
+                    : {};
+                buildOptions.uncutParentIds = [];
+                childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures, buildOptions);
+                options._uncutParentIds = buildOptions.uncutParentIds;
             }
         } else if (
             !isGovernmentPlan
@@ -472,6 +515,64 @@
 
         (parentsToRemoveCandidates || []).forEach(addParentIdCandidate);
 
+        // A parent the corridor never cut keeps its ground: it is not consumed, so it must not
+        // be hidden (that orphans its uncut area) nor consumption-marked (that makes it a
+        // hoverable parcel whose click falls into the consumed-parcel branch).
+        const uncutParents = new Set((Array.isArray(options._uncutParentIds) ? options._uncutParentIds : []).map(String));
+        uncutParents.forEach(id => parentsToRemoveSet.delete(id));
+
+        // Conservation guard (§2.1): whatever branch dropped the child — the uncut-skip, the
+        // sliver filters, a degenerate difference — a parent that produced NO remainder child may
+        // only be hidden when the corridor truly swallowed it (≥98% covered). Anything else stays
+        // live, or its uncut ground becomes a hole (the 6804/5 case: a 1 m² corner clip hid a
+        // 38 m² parcel with nothing minted in its place).
+        try {
+            const corridorPolygon = roadProposal?.definition?.polygon || proposalData?.geometry?.roadGeometry?.polygon || null;
+            const turfGuard = (typeof turf !== 'undefined') ? turf : null;
+            if (corridorPolygon && turfGuard && typeof turfGuard.intersect === 'function') {
+                const corridorFeature = { type: 'Feature', properties: {}, geometry: corridorPolygon };
+                const remainderParents = new Set();
+                childFeatures.forEach(feature => {
+                    const props = feature && feature.properties;
+                    if (!props || props.isCorridor === true || props.isTrack === true) return;
+                    if (props.parentParcelId) remainderParents.add(String(props.parentParcelId));
+                });
+                Array.from(parentsToRemoveSet).forEach(pid => {
+                    if (remainderParents.has(pid)) return; // it left a remainder — a real cut
+                    let parentFeature = parentFeatures.find(f => {
+                        const id = _getParcelIdFromFeature(f);
+                        return id && String(id) === pid;
+                    });
+                    if (!parentFeature || !parentFeature.geometry) {
+                        // Not among the resolved working features — pull it from the registry.
+                        try {
+                            const resolved = this._resolveParcelFeaturesByIds([pid],
+                                { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+                            parentFeature = resolved[0] || null;
+                        } catch (_) { parentFeature = null; }
+                    }
+                    // Conservative by construction: with no geometry to prove full consumption,
+                    // the parent is NOT hidden. Hiding on unknown evidence is how ground orphans.
+                    let share = 0;
+                    if (parentFeature && parentFeature.geometry) {
+                        try {
+                            const pf = { type: 'Feature', properties: {}, geometry: parentFeature.geometry };
+                            const total = turfGuard.area(pf) || 0;
+                            const hit = turfGuard.intersect(pf, corridorFeature);
+                            share = total > 0 ? ((hit ? turfGuard.area(hit) : 0) / total) : 0;
+                        } catch (_) { share = 0; }
+                    }
+                    if (share < 0.98) {
+                        console.warn(`[_applyRoadProposal] Sparing parent ${pid} — no remainder child and ${Math.round(share * 100)}% under the corridor; hiding it would orphan its ground.`);
+                        parentsToRemoveSet.delete(pid);
+                        uncutParents.add(pid);
+                    }
+                });
+            }
+        } catch (guardError) {
+            console.warn('[_applyRoadProposal] conservation guard failed', guardError);
+        }
+
         const parentFeaturesToRemove = parentFeatures.filter(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             return parcelId && parentsToRemoveSet.has(parcelId.toString());
@@ -656,7 +757,9 @@
         this._linkProposalToAncestors(proposalId, uniqueParentParcelIds);
         // PERFORMANCE: Use batched version instead of per-parcel calls
         this._markParcelsModifiedBatch(uniqueParentParcelIds);
-        this._setDescendantProposalOnParcels(uniqueParentParcelIds, proposalId);
+        // Spared (uncut) parents keep their ground and stay unmarked: the consumed flag is what
+        // routes their click into the consumed-parcel branch (the hover-fine-click-dead parcel).
+        this._setDescendantProposalOnParcels(uniqueParentParcelIds.filter(id => !uncutParents.has(String(id))), proposalId);
         console.debug(`[_applyRoadProposal] Step 4: Linked to ${uniqueParentParcelIds.length} ancestors (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         // Remove parents only after ancestor linkage/property updates so map lookups succeed.

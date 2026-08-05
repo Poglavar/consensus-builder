@@ -1466,7 +1466,9 @@ function showSimpleShareModal(options = {}) {
                 e.stopPropagation();
                 return;
             }
-            if (autoCloseActions) {
+            // keepOpen: an action that works ON the modal (copy its text, toggle a detail)
+            // must not dismiss it.
+            if (autoCloseActions && action.keepOpen !== true) {
                 closeModal();
             }
             if (typeof action.onClick === 'function') {

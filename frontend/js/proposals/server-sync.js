@@ -313,7 +313,14 @@ function syncProposalWithServerId(proposal, serverProposalId) {
 }
 
 async function uploadProposalToServer(proposal) {
-    const uploadProposal = buildUploadReadyProposal(proposal);
+    let uploadProposal;
+    try {
+        uploadProposal = buildUploadReadyProposal(proposal);
+    } catch (gateError) {
+        // The §15a publish gate refused — a non-flat record is the author's error to see, not
+        // something to heal into shape.
+        return { ok: false, message: gateError.message || 'This proposal cannot be published.' };
+    }
     if (!uploadProposal) {
         return { ok: false, message: 'Invalid proposal.' };
     }

@@ -133,3 +133,49 @@ describe('scanRecords', () => {
         expect(scan.records.map(r => r.proposalId)).toEqual(['bad-road', 'deep']);
     });
 });
+
+describe('preparePublishRecord (the §15a publish gate)', () => {
+    const BASE = 'HR-339270-823/1';
+    const SLICE = `${BASE}#p-road-2`;
+
+    it('flattens a formation onto its base ids and passes the gate', () => {
+        const gate = fd.preparePublishRecord({
+            goal: 'road-track',
+            parentParcelIds: [SLICE, 'HR-339270-824'],
+            roadProposal: { parentParcelIds: [SLICE], childParcelIds: [`${BASE}#c-me-1`] }
+        }, { geometricBaseIds: [BASE, 'HR-339270-824'] });
+
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal.parentParcelIds).toEqual([BASE, 'HR-339270-824']);
+        expect(gate.proposal.roadProposal.parentParcelIds).toEqual([BASE, 'HR-339270-824']);
+    });
+
+    it('lets content keep its plot — the plot IS the third level', () => {
+        const record = {
+            goal: 'park',
+            parentParcelIds: [SLICE],
+            structureProposal: { parentParcelIds: [SLICE] }
+        };
+        const gate = fd.preparePublishRecord(record, {});
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal.parentParcelIds).toEqual([SLICE]); // untouched
+    });
+
+    it('refuses a record that cannot be made flat, loudly not silently', () => {
+        const nested = `${BASE}#a-1#b-2`;
+        const gate = fd.preparePublishRecord({
+            goal: 'road-track',
+            parentParcelIds: [nested],
+            roadProposal: { childParcelIds: [nested] }
+        }, {});
+        expect(gate.verdict.flat).toBe(false);
+        expect(gate.verdict.violations.some(v => v.code === 'parcel-id-too-deep')).toBe(true);
+    });
+
+    it('is idempotent — a flat record passes unchanged', () => {
+        const record = { goal: 'road-track', parentParcelIds: [BASE], roadProposal: { childParcelIds: [`${BASE}#c-me-1`] } };
+        const gate = fd.preparePublishRecord(record, { geometricBaseIds: [BASE] });
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal.parentParcelIds).toEqual([BASE]);
+    });
+});

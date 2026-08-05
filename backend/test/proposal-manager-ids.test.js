@@ -4,7 +4,7 @@
 // These used to live in e2e/tests/proposal-synthetic-regressions.spec.ts and
 // e2e/tests/proposals-dependency-failures.spec.ts, which booted Chromium to concatenate strings.
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -227,5 +227,95 @@ describe('ProposalManager apply-failure metadata', () => {
         ProposalManager._clearLastApplyFailure(proposalId);
         expect(ProposalManager.getLastApplyFailure(proposalId)).toBeNull();
         expect(ProposalManager.getLastApplyFailureInfo(proposalId)).toBeNull();
+    });
+});
+
+describe('identity carry-over through _assignSyntheticChildIdentities (formation edits)', () => {
+    // The flat-record rule (rethink-proposals.md, decision 2026-08-05): an edit to a formation is
+    // a PARTITION edit, not a new generation. Pieces the partition diff matched to the previous
+    // apply arrive stamped with `__carryIdentity` and keep that identity; fresh pieces continue
+    // the numbering past every prior index; and every piece carries its base cadastral anchor.
+    const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
+    let savedWindow;
+
+    beforeEach(() => {
+        savedWindow = globalThis.window;
+        globalThis.window = { __formationEdit: formationEdit };
+    });
+    afterEach(() => {
+        if (savedWindow === undefined) delete globalThis.window; else globalThis.window = savedWindow;
+    });
+
+    const pieceOf = (rootId, rootNumber, carried) => ({
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]] },
+        properties: {
+            rootParcelId: rootId,
+            rootParcelNumber: rootNumber,
+            ...(carried ? { __carryIdentity: carried } : {})
+        }
+    });
+
+    it('keeps a carried identity verbatim and consumes the stamp', () => {
+        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' });
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
+
+        expect(feature.properties.parcelId).toBe('HR-1#p-tok-2');
+        expect(feature.properties.BROJ_CESTICE).toBe('1#p-tok-2');
+        expect(feature.properties.syntheticToken).toBe('p-tok');
+        expect(feature.properties.syntheticIndex).toBe(2);
+        expect(feature.properties.rootParcelId).toBe('HR-1');
+        expect(feature.properties.baseParcelIds).toEqual(['HR-1']);
+        expect(feature.properties.__carryIdentity).toBeUndefined();
+    });
+
+    it('mints fresh siblings past the seeded prior indices, so a freed id never comes back', () => {
+        const carried = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' });
+        const fresh = pieceOf('HR-1', '1', null);
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [carried, fresh], {
+            startIndexByRootId: { 'HR-1': 3 }
+        });
+
+        expect(carried.properties.parcelId).toBe('HR-1#p-tok-2');
+        expect(fresh.properties.parcelId).toBe('HR-1#p-tok-3');
+        expect(fresh.properties.baseParcelIds).toEqual(['HR-1']);
+    });
+
+    it('carries an old-token identity from before a proposal was forked or absorbed', () => {
+        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-old-5', parcelNumber: '1#p-old-5' });
+        ProposalManager._assignSyntheticChildIdentities('p-new', [feature]);
+
+        expect(feature.properties.parcelId).toBe('HR-1#p-old-5');
+        expect(feature.properties.syntheticToken).toBe('p-old');
+        expect(feature.properties.syntheticIndex).toBe(5);
+    });
+
+    it('gives a duplicated stamp (contiguity clone) the id once — the clone falls back to minting', () => {
+        const stamp = { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' };
+        const first = pieceOf('HR-1', '1', { ...stamp });
+        const clone = pieceOf('HR-1', '1', { ...stamp });
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [first, clone], {
+            startIndexByRootId: { 'HR-1': 3 }
+        });
+
+        expect(first.properties.parcelId).toBe('HR-1#p-tok-2');
+        expect(clone.properties.parcelId).toBe('HR-1#p-tok-3');
+    });
+
+    it('preserves a richer multi-root anchor already stamped (the corridor)', () => {
+        const feature = pieceOf('HR-1', '1', null);
+        feature.properties.baseParcelIds = ['HR-1', 'HR-2'];
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
+
+        expect(feature.properties.baseParcelIds).toEqual(['HR-1', 'HR-2']);
+    });
+
+    it('falls back to plain minting when the formation-edit module is unavailable', () => {
+        delete globalThis.window;
+        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-9', parcelNumber: '1#p-tok-9' });
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
+
+        expect(feature.properties.parcelId).toBe('HR-1#p-tok-1');
+        expect(feature.properties.__carryIdentity).toBeUndefined();
     });
 });

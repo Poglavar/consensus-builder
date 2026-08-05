@@ -1089,6 +1089,216 @@ Measured evidence for every claim here is in `formation-depth.js` + its scan of 
 
 ---
 
+## 15a. Decisions 2026-08-05 (Simun) — one readjustment deep, and edits are partition edits
+
+Prompted by the Tehnički muzej plan (97–104): hovering a sliver between a narrowed road and a park
+resolved to the base ancestor because the road's recut had minted a new slice generation while its
+neighbours still referenced the old one.
+
+1. **The flat fabric rule, restated as the invariant:** `cadastral parcel(s) → one readjustment →
+   proposal on top`. When land is cut, recut and readjusted, the record flattens along the way into
+   ONE formation per piece — never a chain of operations. Genealogy (which formation a sliver came
+   from) stays recorded but is *not crucial*: base anchors + geometry are what everything durable
+   reads.
+2. **Terminology unified: land readjustment ≡ reparcellation ≡ (a bundle of) formations.**
+   *Formation* is the mechanical atom — "the land under this footprint becomes a parcel of exactly
+   this shape", realised as merge ∪ cut against current fabric, with derived remainders (§14.2) and
+   one ownership word. *Land readjustment / reparcellization* is a PLAN of formations over a pool
+   with an explicit mapping and value balance. Same engine, two levels; UI may pick the friendlier
+   word per surface, code and docs say *formation* for the atom.
+3. **Plots of a readjustment are independently formable at apply time.** A proposal standing on one
+   output plot depends on THAT plot's formation being realisable on current fabric (A7's
+   precondition, adoptive/idempotent per §15.1) — never on the whole readjustment having happened
+   somewhere remote or in the future. What stays joint at the readjustment level is consent
+   fairness and execution (severability, holdouts, the value ledger) — a readjustment is the
+   decentralised composition of its formations plus those joint terms, not an indivisible geometry
+   operation.
+4. **An edit to a formation is a PARTITION edit, never a new generation** — §12 step 5 declared
+   "hurting" and built for the road edit path (width change, node drag, reroute — all funnel
+   through `runLocalCorridorGeometryUpdate`):
+   - *Identity carry-over*: the new partition is diffed against the previous one
+     (`formation-edit.js: matchPieces` — tier 1 same-ground, tier 2 reshaped-but-same ≥50%
+     overlap, corridor by role); surviving pieces keep their parcel id through the recut
+     (`__carryIdentity`, consumed in `_assignSyntheticChildIdentitiesImpl`); fresh mints continue
+     numbering PAST every prior index so a freed id never renames different ground.
+   - *Scoped disclosure*: the recut tour lists applied proposals standing on the old△new footprint
+     delta (`footprintDelta` + `proposalsOnChangedGround`), not the whole descendant tree —
+     content on unchanged ground is left alone. Geometry decides; the reference tree is only the
+     fallback.
+   - *Self-ghost fix*: parent re-derivation no longer re-declares the road's own just-destroyed
+     children as "unloaded parents" (`retainedUnloadedParents`).
+   - *Flat anchors written at the cut*: every minted piece gets `baseParcelIds` (one hop to the
+     cadastre; the corridor records ALL crossed roots, fixing §9's single-root naming accident),
+     and the proposal gets `cadastreParcelIds` stamped at build time, not only at upload (§15.1).
+   Code: `frontend/js/proposals/formation-edit.js` (pure) + wiring in `proposal-manager.js`
+   (`_buildChildFeaturesFromDefinition`, `_assignSyntheticChildIdentitiesImpl`),
+   `proposals/apply/road.js` (`options.priorChildren`), `road-drawing.js`. Tests:
+   `backend/test/formation-edit.test.js`, carry-over block in
+   `backend/test/proposal-manager-ids.test.js`.
+5. **Implemented throughout (same day, second pass).** The partition-edit rule now covers every
+   path that mints or re-mints parcels:
+   - *Reparcellization edits*: `commitGeometryEditInPlace` captures the previous plots before the
+     unapply; `_applyReparcellizationProposal` matches, carries surviving plot identities, seeds
+     numbering past the priors, stamps per-plot `baseParcelIds` from the ground actually under
+     each plot (`overlappingBaseIds` — a multi-parent comasation plot anchors to every base it
+     covers, not the primary-root naming accident) and writes `cadastreParcelIds` at apply.
+   - *Merge-on-connect (edit path)*: an absorbed road's children are captured before its unapply,
+     so the ground a merge swallows keeps its parcel names inside the combined road (the draw
+     path already adopted fabric — §15.1; the edit path now matches it in effect).
+   - *Split-on-disconnect*: each split-off piece carries the priors under its own footprint
+     (corridor prior excluded — a split piece is a new road object), with straddling priors
+     consumed sequentially so no id lands on two proposals.
+   - *Content anchors*: buildings and structures stamp `cadastreParcelIds` from their parents'
+     base ids at apply — content is positioned against the cadastre whatever generation it
+     overlays.
+   Tests: `backend/test/apply-parcels.characterization.test.js` (carry-over + flat anchors
+   through the REAL identity funnel), helper blocks in `formation-edit.test.js`.
+   *Still open from §12 step 5:* structures actually FORMING their parcel (invariant #4 rewrite —
+   behavioural redesign, deferred); the legacy no-polygon road path and government-roads splits
+   (anchors stamp via the funnel, no matching); read-side consumers switching from geometric
+   resolution to the stamped `baseParcelIds` (works today, stamps make it cheaper later); and
+   re-anchoring existing stored records (the Tehnički muzej plan's ghosts predate this change —
+   replay heals them via re-parenting; new edits stop making more of them).
+6. **Errors over healing (Simun, 2026-08-05, same day): the stored records were MIGRATED flat and
+   the healing machinery removed.**
+   - *Migration*: `backend/scripts/migrate-flat-records.js` (dry-run default) flattens every
+     parent declaration to base ids — top-level `ancestor_parcel_ids` plus the lists inside
+     road/building/structure/reparcellization payloads and `proposal_data` — leaving consent
+     fields, child bookkeeping and government-roads underscore ids untouched. Run + verified
+     locally (146/342 rows changed, re-run idempotent, zero derived ids left in declarations);
+     `backfill-cadastre-parcel-ids.js --force` re-stamped `cadastre_parcel_ids` on all 300 rows
+     with usable geometry. **Prod not yet run.**
+   - *Geometric resolution promoted from healer to mechanism*: `_applyRoadProposal` and
+     `_applyReparcellizationProposal` now derive the ground they consume from the footprint
+     against the LIVE fabric first-pass (`resolveParentsByGeometry`, ≥95% coverage guard, kept
+     unloaded declared parents), so a formation applies onto whatever generation stands here —
+     the declaration is the flat consent anchor, never a resolution chain.
+   - *Removed*: the ghost re-parent retry ladder + pre-attempt heal in both share routes
+     (`tryReparentGhostPrereqs`, `reparentSharedProposalByGeometry`), the payload route's 8-pass
+     requeue carousel (now ONE A6-ordered pass with intra-payload occupancy exemption — §3.3 as a
+     first-class rule on both routes), the plan route's intra-plan conflict RETRY (first-pass
+     exemption is the rule; a conflict that still surfaces parks visibly as overlapped), the
+     mixed/derived prerequisite waiting ladder, the catch-path requeue, and decide-later's
+     PersistentStorage scan-recovery. Base-parcel prefetch stays (loading, not healing) with one
+     bounded fetch-then-retry per missing base id.
+   - *The gate that replaces healing*: `formation-depth.js: preparePublishRecord` — mechanical
+     flatten of a formation's declarations, then `conformanceOf` verification — wired into
+     `buildUploadReadyProposal`; a non-flat record REFUSES to publish with the violations named
+     (surfaced through `uploadProposalToServer` and the upload dialog). formation-depth's first
+     callers. Module-missing fallbacks (formation-edit/plan-order absent) now log errors: a
+     wiring bug is loud, never silently degraded.
+   - Old pre-migration `?proposalShare=` payload links carrying ghost ids now fail loudly with
+     named prerequisites instead of being healed — accepted deliberately (there is no legacy to
+     support). Tests: `migrate-flat-records.test.js`, publish-gate block in
+     `formation-depth.test.js`; suite 2016.
+7. **Structures FORM (invariant #4 rewritten for park/square/lake — same day).** The §14.1
+   decision is now behaviour: a park/square/lake TAKES whole parcels at apply, ownership → City
+   (the reparcellization pattern), via `formation-edit.js: wholeParcelTakePlan` +
+   `apply/structures.js: _formStructureParcel`:
+   - *Adopt* — the footprint matches ONE live parcel (sameGround tolerance): the parcel is taken
+     as-is — ownership snapshot recorded, owner → City, nothing cut or minted. §15.1's
+     adoptive rule as code; Borovje's six parks are the acceptance case.
+   - *Merge-take* — the footprint is a union of WHOLE parcels: they are consumed and ONE parcel
+     minted with the authored footprint, `baseParcelIds` = every base underneath (one hop),
+     ownership → City. No cuts, so no remainder/sliver/hole is possible and the §2.1 guarantee
+     survives untouched.
+   - *Refuse* — partial coverage of any parcel fails loudly naming the offenders and their
+     covered share: "cut the ground first with a road or a land readjustment"
+     (`structure-partial-parcels`). The no-partial-cut rule is a hard validation, per Simun's
+     directive that structures are never drawn over parts of parcels.
+   - *Station forms nothing* — content on its corridor/attachment, unchanged.
+   - *Unapply reverses the formation*: adopted parcels get their ownership snapshot back;
+     merge-takes remove the minted parcel and restore the consumed parents; the City agent's
+     owned-parcels index re-derives in one pass.
+   Candidates come from the live fabric geometrically (`resolveParentsByGeometry`), declared
+   parents only as fallback. Tests: take-plan block in `formation-edit.test.js`, adopt path in
+   the per-kind characterization + merge/refuse blocks in
+   `apply-structures.characterization.test.js`; suite 2024. *Urban-rule park* (use restriction,
+   no taking) remains a future rules-vocabulary entry — deliberately NOT a checkbox on the
+   structure (§15.4).
+8. **Buildings form (same day): footprint parcel by default, whole parcels as an option.** A
+   FREEFORM building (goal `single`, one footprint) forms its own parcel at apply
+   (`apply/buildings.js: _formBuildingParcel`) — one building, one parcel:
+   - *Footprint mode (default)*: the building's parcel is minted from its footprint (flat
+     anchors via `overlappingBaseIds`, ownership → proposer via `getOrCreateAgentForRecipient`);
+     each host parcel's remainder is cut back to ITS owner (§14.2 — minimal taking), cloned from
+     the host so owner and numbering inherit; the identity funnel splits multi-part remainders
+     into one parcel per piece. A footprint hanging off the live fabric refuses loudly.
+   - *Whole-parcel option*: `buildingProposal.takeWholeParcels` → adopt/merge the whole hosts as
+     the building's parcel (the family-house-with-yard case); merge unions the HOST ground, not
+     the building outline. Chosen in the freeform design modal ("Building parcel" select:
+     Footprint parcel / Take the whole parcels), carried through drafts and edit-reopen.
+   - Blocks/row/detached stay content on existing parcels (§9 table). Unapply reversal is shared
+     with structures (`_reverseFormationRecord` in unapply.js — adopt snapshots restored, minted
+     parcels removed + parents restored, touched agents' owned-parcels re-derived).
+   Tests: `backend/test/form-building-parcel.test.js` (real turf + the real identity funnel).
+9. **Palette regrouped (same day).** The Build palette now draws the taxonomy: **Land
+   readjustment** stands alone first (the formation primitive), the **Urban rules** fieldset
+   holds Block/Row/Detached (rules-based), and the **Structures** fieldset holds Freeform
+   Building/Park/Square/Lake (they take their parcel) — labelled legends like the existing
+   Transport/Ownership groups (`proposal-actions.js`, `panels.css`). "Freeform" renamed
+   **"Freeform Building"** (hr/sr: Slobodna zgrada, es: Edificio libre). Suite 2029.
+10. **Exemption moved to the gate (same day, found by the first Cibona replay).** The teardown in
+   item 6 removed the intra-plan conflict retry believing `occupationExemptKeys` covered it —
+   but the exemption was only wired into the road-content check, never into
+   `_resolveParentAvailabilityOrDefer`, where `parcel-conflict` is actually raised; the retry
+   had been silently load-bearing (replay parked 3 members as overlapped and cascaded a park
+   refusal). Fixed at the source: the availability gate now DROPS conflicts whose occupier is in
+   `options.occupationExemptKeys` on the first attempt — §3.3 as a rule where the decision is
+   made, for every apply type. A park refusing because its shaping formation is a server-dead
+   ghost generation remains an HONEST failure: the plan predates the model, and the in-plan
+   formations must recreate its ground or the refusal stands.
+11. **Drill panel: the base row shows every base parcel (same day).** A formed parcel minted from
+   several bases (a merged park, a corridor) renders its "Cadastral parcel (N)" row as a count
+   chip plus a horizontally scrollable strip of clickable parcel numbers (`drill-ui.js:
+   baseGroupIdsFor`/`renderBaseGroupRow`, reading the §15a `baseParcelIds` anchor; clicked
+   parcel listed first). Pre-§15a fabric without the anchor keeps the single row.
+12. **Geometry made authoritative — derive-or-refuse (same day, from the incognito replays).**
+   Three rules, each earned by a real failure driving the browser against Cibona 97-104:
+   - *Features follow the ids.* When first-pass geometry resolution (≥95% coverage) swaps the
+     declared parents for the live working set, `parentFeatures` is RE-RESOLVED for those ids —
+     the availability gate had been comparing the new ids against step-1's stale features, so a
+     sibling's minutes-old slice read as "absent" (the phantom "prerequisite parcels
+     unavailable" on Road 2043).
+   - *Derive or refuse.* When a resolver is present and coverage falls below 95%, the formation
+     REFUSES (`formation-ground-unresolved`) instead of proceeding on declared ids — the old
+     decline path let formations consume nothing and mint on top of live pieces (double fabric).
+   - *LIVE means on the map.* `loadedLiveParcels` requires `parcelLayer.hasLayer` — the same
+     test the gate uses — because the `#`-prefix structural inference cannot see cross-token
+     consumption (a readjustment consuming another road's slice), so hidden pieces kept
+     resurfacing as resolver candidates.
+   Also fixed on the way: the apply layer no longer persists its per-attempt working set into
+   the stored record (a failed attempt used to poison the next one), and dead-generation child
+   snapshots were migrated out (`migrate-flat-records.js dropForeignChildIds` — a child id whose
+   `#token` isn't the record's own is a dead predecessor's snapshot; children are derived data).
+   Three stored Cibona records also got one-off geometry surgery in the DB (plots clipped by the
+   road corridors they double-claimed; the square rebuilt deterministically from its take-set;
+   the park snapped to whole parcels) rather than apply-time healing. Verified by fresh-profile
+   browser runs: Cibona 8/8 applied, Borovje 19/19, twice each.
+13. **§14.2 completed on the reparcellization path (same day — the Cibona sliver).** The
+   geometric pool can consume more ground than the authored plots tile; the apply used to mint
+   ONLY the plots, leaving consumed-but-unminted holes (hover fell through to the hidden
+   ancestor's ownership highlight). After minting plots, the pool−plots leftover is now minted
+   back per-parent as remainder parcels — cloned from the parent so the owner keeps them, ≥0.5 m²,
+   multipart pieces split. Side effect: a structure standing on such a plot now merge-takes plot
+   + remainder instead of silently adopting the oversized plot.
+14. **Conservation guard on road parent-hiding (same day — the 6804/5 case).** A road that
+   grazed ~1 m² off a 38 m² parcel minted no remainder yet hid and consumption-marked the whole
+   parent. Two rules in `apply/road.js`: the child builder reports parents whose cut was skipped
+   (`uncutParentIds`) and those are never removed or marked; and a parent in the removal set
+   with NO remainder child may be hidden only when ≥98% of it lies under the corridor — unknown
+   or unresolvable geometry means DON'T hide. Ground is conserved: every m² consumed is either a
+   minted child or still a visible parent.
+15. **Map-surface hover shows no parcel-number label (same day).** The hover label only ever
+   appeared for parcels belonging to a non-executed proposal (the proposal-hover overlay), which
+   read as inconsistency, not information. Map hover now highlights geometry only; labels come
+   from the explicit "Show parcel numbers" toggle, which shows all of them. Panel-driven
+   highlights (proposal list, drill) keep their labels — there the label answers a click.
+   Placed freeform buildings also recolored blue (`#1d4ed8`) — they were the same red as
+   selected parcels.
+
+---
+
 ## 16. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies
@@ -1102,11 +1312,20 @@ Measured evidence for every claim here is in `formation-depth.js` + its scan of 
   ordering + ghost re-parenting; `applySharedProposalsFromPayload`: same, for payload shares;
   `describeMissingPrereqs`), `frontend/js/proposals/server-sync.js`
   (`ensureAncestorProposalsUploaded`: A6 prerequisite graph), `frontend/js/parcels/ui/parcel-panel.js`
-  (dossier chips + remainder note)
-- Migrations: `backend/scripts/add-ownership-flow.js`, `backend/scripts/backfill-ownership-flow.js`
-  (both dry-run by default)
+  (dossier chips + remainder note), `frontend/js/proposals/formation-edit.js` (pure §15a engine:
+  matchPieces identity carry-over, footprintDelta, wholeParcelTakePlan, overlappingBaseIds),
+  `frontend/js/proposals/formation-depth.js` (pure: flat-record conformance + the
+  `preparePublishRecord` publish gate), `frontend/js/proposals/apply/road.js` /
+  `parcels.js` / `structures.js` / `buildings.js` / `unapply.js` (apply-layer formation per type +
+  shared `_reverseFormationRecord`)
+- Migrations: `backend/scripts/add-ownership-flow.js`, `backend/scripts/backfill-ownership-flow.js`,
+  `backend/scripts/migrate-flat-records.js` (§15a items 6/12: flatten parents to base ids + drop
+  dead-generation child snapshots), `backend/scripts/backfill-cadastre-parcel-ids.js`
+  (all dry-run by default)
 - Tests: `backend/test/plan-order.test.js`, `backend/test/cadastre-ancestry-resolve.test.js`,
   `backend/test/ownership-flow.test.js`, `backend/test/dossier.test.js`,
-  `backend/test/ancestor-upload-gate.test.js`, fixture `backend/test/fixtures/plan-97-104.json`
+  `backend/test/ancestor-upload-gate.test.js`, `backend/test/formation-edit.test.js`,
+  `backend/test/migrate-flat-records.test.js`, `backend/test/form-building-parcel.test.js`,
+  `backend/test/apply-parcels.characterization.test.js`, fixture `backend/test/fixtures/plan-97-104.json`
 - Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate), `70d9f82` (cadastreParcelIds),
   `32a01d0` (backfill + legacy road footprints)

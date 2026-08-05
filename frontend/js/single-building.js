@@ -29,7 +29,11 @@
     // Surroundings: one treatment per proposal for the whole merged parcel area around the
     // buildings — left as it is, paved like a square, or grassed like a park. See building-ground.js.
     let currentGroundTreatment = 'none';
+    // §15a: how the freeform building forms its parcel — footprint parcel (default) or taking
+    // the whole host parcels. Carried on the draft context into buildingProposal.takeWholeParcels.
+    let currentTakeWholeParcels = false;
     let singleBuildingSeedGroundTreatment = null;
+    let singleBuildingSeedTakeWholeParcels = null;
 
     function buildingGroundApi() {
         return (typeof window !== 'undefined' && window.BuildingGround) ? window.BuildingGround : null;
@@ -1072,7 +1076,8 @@
             },
             buildingFeature: buildings[0] || null,
             buildings,
-            groundSurface: currentGroundSurface()
+            groundSurface: currentGroundSurface(),
+            takeWholeParcels: currentTakeWholeParcels
         }, { coalesceKey: 'single-building-live' });
     }
 
@@ -1495,6 +1500,7 @@
         singleRectFeature = null;
         currentRotationDeg = 0;
         currentGroundTreatment = 'none';
+        currentTakeWholeParcels = false;
         if (!preservePending) {
             clearSingleBuildingPendingState();
         }
@@ -1624,7 +1630,8 @@
             },
             buildingFeature: buildingFeatures[0] || null,
             buildings: buildingFeatures,
-            groundSurface: currentGroundSurface()
+            groundSurface: currentGroundSurface(),
+            takeWholeParcels: currentTakeWholeParcels
         };
         if (typeof setPendingBuildingProposalContext === 'function') {
             setPendingBuildingProposalContext(singleContext);
@@ -1989,6 +1996,13 @@
             surroundingsNone: translateSingleBuildingText('modal.singleBuilding.surroundingsNone', 'Leave as they are'),
             surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paved'),
             surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),
+            parcelLabel: translateSingleBuildingText('modal.singleBuilding.parcelLabel', 'Building parcel'),
+            parcelFootprint: translateSingleBuildingText('modal.singleBuilding.parcelFootprint', 'Footprint parcel'),
+            parcelWhole: translateSingleBuildingText('modal.singleBuilding.parcelWhole', 'Take the whole parcels'),
+            parcelInfo: translateSingleBuildingText(
+                'modal.singleBuilding.parcelInfo',
+                'By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building\u2019s parcel as they are.'
+            ),
             surroundingsInfo: translateSingleBuildingText(
                 'modal.singleBuilding.surroundingsInfo',
                 'One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.'
@@ -2065,6 +2079,14 @@
                         <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
                     </div>
                     <div class="parameter-group">
+                        <label for="single-parcel-mode">${modalText.parcelLabel}</label>
+                        <select id="single-parcel-mode" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #ccc;">
+                            <option value="footprint">${modalText.parcelFootprint}</option>
+                            <option value="whole">${modalText.parcelWhole}</option>
+                        </select>
+                        <p class="parameter-info-text">${modalText.parcelInfo}</p>
+                    </div>
+                    <div class="parameter-group">
                         <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;">${modalText.uploadGeojsonLabel}</button>
                         <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
@@ -2107,6 +2129,14 @@
                 groundSelect.addEventListener('change', (e) => {
                     currentGroundTreatment = normalizeGroundTreatment(e.target.value);
                     updateGroundPreview();
+                    autosaveSingleBuildingDraft();
+                });
+            }
+
+            const parcelModeSelect = document.getElementById('single-parcel-mode');
+            if (parcelModeSelect) {
+                parcelModeSelect.addEventListener('change', (e) => {
+                    currentTakeWholeParcels = e.target.value === 'whole';
                     autosaveSingleBuildingDraft();
                 });
             }
@@ -2229,8 +2259,12 @@
 
         currentGroundTreatment = normalizeGroundTreatment(singleBuildingSeedGroundTreatment);
         singleBuildingSeedGroundTreatment = null;
+        currentTakeWholeParcels = singleBuildingSeedTakeWholeParcels === true;
+        singleBuildingSeedTakeWholeParcels = null;
         const groundSelectEl = document.getElementById('single-ground-treatment');
         if (groundSelectEl) groundSelectEl.value = currentGroundTreatment;
+        const parcelModeEl = document.getElementById('single-parcel-mode');
+        if (parcelModeEl) parcelModeEl.value = currentTakeWholeParcels ? 'whole' : 'footprint';
         try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
         const initialPlacement = computeInitialPlacement(singleBlockFeature);
         const startCenter = initialPlacement.center || getBlockCentroid(singleBlockFeature);
@@ -2287,7 +2321,7 @@
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
     // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null, initialGroundTreatment = null }) {
+    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
@@ -2295,6 +2329,7 @@
         }
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         singleBuildingSeedGroundTreatment = initialGroundTreatment;
+        singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
         const ids = rawParcels.map(layer => {
             try {
                 return resolveParcelId(layer?.feature);

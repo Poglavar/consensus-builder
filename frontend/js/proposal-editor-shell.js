@@ -1267,6 +1267,41 @@
         const wasApplied = typeof global.isProposalApplied === 'function' && global.isProposalApplied(source);
         const wasSelected = typeof global.ProposalSelection?.is === 'function' && global.ProposalSelection.is(id);
 
+        // A reparcellization edit is a PARTITION edit (formation-edit.js; rethink-proposals.md
+        // §15a): capture the previous plots BEFORE the unapply destroys their layers, so the
+        // re-apply keeps the identity of every plot that survives the edit. Buildings and
+        // structures mint no parcels, so there is nothing to carry for them.
+        let priorChildren = null;
+        if (wasApplied && built.reparcellization && typeof manager._resolveParcelFeaturesByIds === 'function') {
+            const priorChildIds = Array.from(new Set([
+                ...(Array.isArray(source.childParcelIds) ? source.childParcelIds : []),
+                ...(Array.isArray(source.reparcellization?.childParcelIds) ? source.reparcellization.childParcelIds : [])
+            ].map(cid => String(cid)).filter(Boolean)));
+            if (priorChildIds.length) {
+                try {
+                    const priorFeatures = manager._resolveParcelFeaturesByIds(priorChildIds,
+                        { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+                    priorChildren = priorFeatures.map(feature => {
+                        if (!feature || !feature.geometry) return null;
+                        const props = feature.properties || {};
+                        const childId = (typeof global._getParcelIdFromFeature === 'function'
+                            ? global._getParcelIdFromFeature(feature) : null) || props.parcelId || null;
+                        if (!childId) return null;
+                        return {
+                            parcelId: String(childId),
+                            parcelNumber: props.BROJ_CESTICE || props.parcelNumber || null,
+                            rootParcelId: props.rootParcelId || null,
+                            isCorridor: false,
+                            feature: { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(feature.geometry)) }
+                        };
+                    }).filter(Boolean);
+                } catch (error) {
+                    console.warn('[ProposalEditor] prior-plot capture failed — identities will re-mint', error);
+                    priorChildren = null;
+                }
+            }
+        }
+
         // 1. Tear down the OLD geometry's applied state (rendered features + carved child parcels).
         //    apply() is a no-op on an already-applied building/structure, so the unapply is mandatory.
         if (wasApplied && typeof manager.unapplyProposal === 'function') {
@@ -1305,6 +1340,8 @@
         const applyOptions = (source.goal === 'road-track' || source.goal === 'station')
             ? { applyAnyway: true, suppressMissingParentAlerts: true }
             : { autoParkConflicts: true };
+        // Surviving plots of the previous partition keep their parcel identity.
+        if (Array.isArray(priorChildren) && priorChildren.length) applyOptions.priorChildren = priorChildren;
         try {
             try { manager._linkProposalToAncestors?.(id, source.parentParcelIds || []); } catch (_) { }
             await manager.applyProposal(id, applyOptions);

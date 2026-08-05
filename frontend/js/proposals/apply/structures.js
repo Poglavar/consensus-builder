@@ -104,7 +104,7 @@
                 return false;
             }
             const blockName = sp.blockName || null;
-            const parentIds = Array.from(new Set([
+            let parentIds = Array.from(new Set([
                 ...(Array.isArray(sp.parentParcelIds) ? sp.parentParcelIds : []),
                 ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
             ].map(x => x && x.toString ? x.toString() : (x !== undefined && x !== null ? String(x) : null)).filter(Boolean)));
@@ -205,6 +205,24 @@
                 if (decision.defer) {
                     return false;
                 }
+                // Flat anchor (rethink-proposals.md §15a): content is positioned against the base
+                // cadastral parcels, whatever generation the parcels it overlays belong to.
+                try {
+                    const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                    const cadastreIds = formationEdit ? formationEdit.baseIdsOfFeatures(decision.parentFeatures || parentFeatures) : [];
+                    if (cadastreIds.length) proposalData.cadastreParcelIds = cadastreIds;
+                } catch (_) { }
+            }
+
+            // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
+            // ground — adopt the one parcel matching the footprint, or merge whole parcels into
+            // one minted parcel — with ownership → City at apply. Partial coverage of any parcel
+            // refuses with the offenders named. A station stays content on its corridor and
+            // forms nothing.
+            if (kind !== 'station') {
+                const formation = await this._formStructureParcel(proposalId, proposalData, sp, geometry, parentIds, idLabel);
+                if (!formation.ok) return false;
+                parentIds = formation.parentIds;
             }
 
             const step4Time = performance.now();
@@ -306,7 +324,8 @@
             console.debug(`[_applyStructureProposal] Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
             const step5Time = performance.now();
-            // Link to ancestors without hiding parent parcels; keep parcels clickable beneath the square overlay
+            // Link to ancestors. An ADOPTED parcel stays on the map (owner changed, ground identical);
+            // a merge-take has already hidden its consumed parents and minted the structure's parcel.
             const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
 
             this._setDescendantProposalOnParcels(uniqueParentIds, proposalId);
@@ -338,6 +357,155 @@
             } catch (_) { }
             return false;
         }
+    },
+
+    // §15a structure formation (decision 2026-08-05). A park/square/lake takes WHOLE parcels
+    // only: adopt the one parcel matching its footprint (formation is adoptive, §15.1 — ownership
+    // moves, nothing is cut or minted), or merge-take a union of whole parcels into ONE minted
+    // parcel anchored flat to every base underneath. Partial coverage of any parcel REFUSES with
+    // the offenders named — if only part of a parcel is wanted, a road or a land readjustment
+    // cuts it first. Ownership goes to the City agent at apply, the reparcellization pattern.
+    async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel) {
+        // Idempotent on restore: an already-formed structure keeps its record — unapply deletes
+        // it, so only a fresh apply re-takes from the live fabric.
+        if (sp.formation && Array.isArray(sp.formation.parcelIds) && sp.formation.parcelIds.length) {
+            return { ok: true, parentIds: sp.formation.parcelIds.map(String) };
+        }
+        const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+        const turfRef = (typeof turf !== 'undefined') ? turf : null;
+        if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
+            console.error('[_formStructureParcel] formation-edit/turf missing — the structure cannot take its parcel');
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'structure-formation-unavailable',
+                    message: 'The formation engine is unavailable in this session; the structure cannot take its parcel.'
+                });
+            } catch (_) { }
+            return { ok: false };
+        }
+        const takeCtx = {
+            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            intersectionArea: (a, b) => {
+                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
+            }
+        };
+        const footprint = { type: 'Feature', properties: {}, geometry };
+
+        // Candidates: the live parcels under the footprint — geometry decides (§15a); the
+        // declared parents are only the fallback when the resolver cannot see the fabric.
+        let candidateIds = declaredParentIds.slice();
+        try {
+            const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+            const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
+                ? ancestry.resolveParentsByGeometry(proposalData)
+                : null;
+            if (resolution && Array.isArray(resolution.ids) && resolution.ids.length) {
+                candidateIds = resolution.ids.map(String);
+            }
+        } catch (_) { }
+        const candidateFeatures = this._resolveParcelFeaturesByIds(candidateIds,
+            { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+        const candidates = candidateFeatures
+            .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
+            .filter(entry => entry.id !== undefined && entry.id !== null);
+
+        const plan = formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx);
+        if (plan.mode === 'refuse') {
+            const partialText = plan.partials
+                .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
+                .join(', ');
+            const message = plan.reason === 'partial-parcels'
+                ? `A ${sp.kind} must take whole parcels, but this footprint covers only part of: ${partialText}. Cut the ground first with a road or a land readjustment.`
+                : (plan.reason === 'uncovered-ground'
+                    ? `Part of the ${sp.kind} footprint lies on no live parcel here (${Math.round(plan.uncoveredShare * 100)}% uncovered).`
+                    : `No parcels found under the ${sp.kind} footprint.`);
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'structure-partial-parcels',
+                    message,
+                    partials: plan.partials
+                });
+            } catch (_) { }
+            return { ok: false };
+        }
+
+        const takenIds = plan.parcelIds.map(String);
+        const takenFeatures = candidates
+            .filter(entry => takenIds.includes(String(entry.id)))
+            .map(entry => entry.feature);
+        const cityAgentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
+        const cityOwnership = { owners: [{ name: 'City', ownerLabel: 'City', percentageShare: 100, actualShareText: '100%' }] };
+
+        if (plan.mode === 'adopt') {
+            sp.formation = {
+                mode: 'adopt',
+                parcelIds: takenIds.slice(),
+                // The snapshot unapply restores — recorded BEFORE ownership moves.
+                prior: takenFeatures.map(feature => ({
+                    parcelId: String(_getParcelIdFromFeature(feature)),
+                    ownershipDetails: feature.properties && feature.properties.ownershipDetails
+                        ? JSON.parse(JSON.stringify(feature.properties.ownershipDetails)) : null,
+                    ownershipType: (feature.properties && feature.properties.ownershipType) || null
+                }))
+            };
+            takenFeatures.forEach(feature => {
+                if (!feature.properties) feature.properties = {};
+                feature.properties.ownershipDetails = JSON.parse(JSON.stringify(cityOwnership));
+                feature.properties.ownershipType = 'city';
+                try { this._persistParcelFeature(feature); } catch (_) { }
+            });
+        } else {
+            const primary = takenFeatures[0];
+            const childFeature = {
+                type: 'Feature',
+                geometry: JSON.parse(JSON.stringify(geometry)),
+                properties: {
+                    proposalId,
+                    structureType: sp.kind,
+                    parentParcelIds: takenIds.slice(),
+                    parentParcelId: takenIds[0],
+                    rootParcelId: _resolveRootParcelIdFromProperties(primary ? primary.properties : null, takenIds[0]) || takenIds[0],
+                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null, takenIds[0]) || null,
+                    baseParcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
+                    calculatedArea: Math.round(_calculateGeoJsonArea(geometry)),
+                    isProposed: true,
+                    ownershipDetails: JSON.parse(JSON.stringify(cityOwnership)),
+                    ownershipType: 'city'
+                }
+            };
+            this._assignSyntheticChildIdentities(proposalId, [childFeature]);
+            const childId = _getParcelIdFromFeature(childFeature);
+            this._addFeaturesToMap([childFeature], true, proposalData);
+            try { this._persistParcelFeature(childFeature); } catch (_) { }
+            try { if (childId) this._addProposalAsAncestor(childId, proposalId); } catch (_) { }
+            this._hideFeaturesFromMap(takenFeatures);
+            sp.childParcelIds = childId ? [String(childId)] : [];
+            proposalData.childParcelIds = sp.childParcelIds.slice();
+            try { this._addChildParcels(proposalId, sp.childParcelIds, proposalData); } catch (_) { }
+            sp.formation = { mode: 'merge', parcelIds: takenIds.slice(), childParcelIds: sp.childParcelIds.slice() };
+        }
+
+        if (cityAgentId && typeof transferParcelOwnership === 'function') {
+            sp.formation.ownerAgentId = cityAgentId;
+            const ownedNow = plan.mode === 'adopt' ? takenIds : sp.formation.childParcelIds;
+            ownedNow.forEach(pid => {
+                try { transferParcelOwnership(String(pid), null, cityAgentId, { skipAgentSync: true }); } catch (_) { }
+            });
+            if (typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {
+                try {
+                    agentStorage.beginBatch();
+                    const ownerIndex = buildAgentOwnedParcelIndex();
+                    agentStorage.updateAgent(cityAgentId, { ownedParcels: ownerIndex.get(cityAgentId) || [] });
+                } finally {
+                    agentStorage.endBatch();
+                }
+            }
+        }
+
+        sp.parentParcelIds = takenIds.slice();
+        proposalData.parentParcelIds = takenIds.slice();
+        return { ok: true, parentIds: takenIds.slice() };
     },
     };
 });

@@ -361,6 +361,66 @@
         return true;
     },
 
+    // Reverse a §15a formation record (structures and freeform buildings share the shape):
+    //   adopt              → restore each parcel's ownership snapshot;
+    //   merge / footprint  → remove the minted child parcels, restore the consumed parents.
+    // The touched agents' owned-parcels lists re-derive from the restored props in one index
+    // pass. Returns how many minted parcels were removed. Deletes the formation record — a fresh
+    // apply re-forms from the live fabric.
+    _reverseFormationRecord(proposalId, proposalData, holder) {
+        let removed = 0;
+        try {
+            const formation = holder && holder.formation;
+            if (!formation) return 0;
+            if (formation.mode === 'adopt') {
+                (Array.isArray(formation.prior) ? formation.prior : []).forEach(prior => {
+                    const layer = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+                        ? window.parcelLayerById.get(String(prior.parcelId)) : null;
+                    const feature = layer && layer.feature ? layer.feature : null;
+                    if (!feature || !feature.properties) return;
+                    if (prior.ownershipDetails) feature.properties.ownershipDetails = JSON.parse(JSON.stringify(prior.ownershipDetails));
+                    else delete feature.properties.ownershipDetails;
+                    if (prior.ownershipType) feature.properties.ownershipType = prior.ownershipType;
+                    else delete feature.properties.ownershipType;
+                    try { this._persistParcelFeature(feature); } catch (_) { }
+                });
+            } else if (formation.mode === 'merge' || formation.mode === 'footprint') {
+                const childIds = Array.isArray(formation.childParcelIds) ? formation.childParcelIds.map(String) : [];
+                if (childIds.length) this._removeChildParcels(proposalId, childIds);
+                const parents = this._resolveParcelFeaturesByIds(
+                    (Array.isArray(formation.parcelIds) ? formation.parcelIds : []).map(String),
+                    { preferMap: false, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+                const restorable = this._filterRestorableParents(parents, proposalId);
+                this._showFeaturesOnMap(restorable);
+                this._addFeaturesToMap(restorable, true, proposalData);
+                removed += childIds.length;
+            }
+            // Owned-parcels lists re-derive from the restored props for every agent the
+            // formation touched (City for structures, the proposer for buildings).
+            const touchedAgentIds = new Set();
+            if (formation.ownerAgentId) touchedAgentIds.add(String(formation.ownerAgentId));
+            if (typeof getOrCreateCityAgent === 'function') {
+                const cityAgentId = getOrCreateCityAgent();
+                if (cityAgentId) touchedAgentIds.add(String(cityAgentId));
+            }
+            if (touchedAgentIds.size && typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {
+                try {
+                    agentStorage.beginBatch();
+                    const ownerIndex = buildAgentOwnedParcelIndex();
+                    touchedAgentIds.forEach(agentId => agentStorage.updateAgent(agentId, { ownedParcels: ownerIndex.get(agentId) || [] }));
+                } finally {
+                    agentStorage.endBatch();
+                }
+            }
+            delete holder.formation;
+            if (Array.isArray(holder.childParcelIds)) holder.childParcelIds = [];
+            if (Array.isArray(proposalData.childParcelIds)) proposalData.childParcelIds = [];
+        } catch (formationError) {
+            console.error('[_reverseFormationRecord] formation reversal failed', formationError);
+        }
+        return removed;
+    },
+
     _unapplyBuildingProposalConfirmed(proposalId) {
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData) return false;
@@ -372,6 +432,9 @@
         const parentIds = Array.from(new Set((Array.isArray(parentIdsSource) ? parentIdsSource : []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
 
         this._clearDescendantProposalOnParcels(parentIds, proposalId);
+
+        // §15a: a freeform building that FORMED its parcel gives the ground back on unapply.
+        const removedFormationParcels = this._reverseFormationRecord(proposalId, proposalData, buildingProposal);
 
         if (typeof removeProposedBuildingFeature === 'function') {
             removeProposedBuildingFeature(proposalId, { updateLayer: true, save: true });
@@ -409,7 +472,7 @@
 
         console.info('[ProposalManager] Unapplied building proposal', {
             proposalId,
-            removedParcels: 0,
+            removedParcels: removedFormationParcels,
             restoredParcels: 0,
             type: 'building'
         });
@@ -508,6 +571,11 @@
 
             this._clearDescendantProposalOnParcels(uniqueParents, proposalId);
             uniqueParents.forEach(id => this._unmarkParcelModified(id));
+
+            // §15a formation reversal (shared with buildings): adopted parcels get their
+            // ownership snapshot back; merge/footprint takes remove the minted parcels and
+            // restore the consumed parents.
+            removedParcels += this._reverseFormationRecord(proposalId, proposalData, sp);
 
             // The structure leaves the map (application axis only).
             proposalData.structureProposal = sp;

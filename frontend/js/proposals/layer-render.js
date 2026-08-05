@@ -355,7 +355,9 @@ function highlightParcelHover(parcelId, options = {}) {
             color: '#FFEB3B',
             weight: 6,
             dashArray: '10 8',
-            showLabels: true,
+            // Labels are opt-in per surface: panel-driven hovers pass true (the label answers
+            // "which shape lit up"); the map-surface hover deliberately does not.
+            showLabels: false,
             ...options
         });
     }

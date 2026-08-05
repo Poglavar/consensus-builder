@@ -240,6 +240,96 @@
         return String(entry.id);
     }
 
+    // ── multi-parcel base row ────────────────────────────────────────────────────────────────
+
+    // A formed parcel minted from SEVERAL base parcels (a merged park, a corridor) anchors them
+    // all in properties.baseParcelIds (§15a). The base row then shows the whole set — count first,
+    // every id clickable, horizontally scrollable — instead of only the one under the click.
+    // When no formed level carries the anchor (an adopted structure, pre-§15a fabric), the
+    // PROPOSAL above still knows what it took: its formation record / parent lists.
+    function parcelSetOfProposal(proposal) {
+        const lists = [
+            proposal?.structureProposal?.formation?.parcelIds,
+            proposal?.buildingProposal?.formation?.parcelIds,
+            proposal?.parentParcelIds,
+            proposal?.structureProposal?.parentParcelIds,
+            proposal?.buildingProposal?.parentParcelIds,
+            proposal?.roadProposal?.parentParcelIds,
+            proposal?.cadastreParcelIds
+        ];
+        for (const list of lists) {
+            if (Array.isArray(list) && list.length > 1) return list.map(String).filter(Boolean);
+        }
+        return null;
+    }
+
+    function baseGroupIdsFor(stack, index, entry) {
+        if (!entry || entry.kind !== 'parcel' || entry.depth > 0) return null;
+        let groupIds = null;
+        for (let i = index - 1; i >= 0 && !groupIds; i -= 1) {
+            const above = stack[i];
+            if (!above) continue;
+            if (above.kind === 'parcel' && above.depth > 0) {
+                const baseIds = above.feature && above.feature.properties && Array.isArray(above.feature.properties.baseParcelIds)
+                    ? above.feature.properties.baseParcelIds.map(String).filter(Boolean)
+                    : [];
+                if (baseIds.length > 1) groupIds = baseIds;
+            } else if (above.kind === 'proposal') {
+                groupIds = parcelSetOfProposal(above.proposal);
+            }
+        }
+        if (!groupIds || groupIds.length < 2) return null;
+        // The clicked base parcel leads the list so it is never scrolled out of sight.
+        const ordered = [String(entry.id), ...groupIds.filter(id => id !== String(entry.id))];
+        return Array.from(new Set(ordered));
+    }
+
+    function baseFeatureById(id) {
+        try {
+            const layer = (global.parcelLayerById instanceof Map) ? global.parcelLayerById.get(String(id)) : null;
+            return layer && layer.feature ? layer.feature : null;
+        } catch (_) { return null; }
+    }
+
+    function baseParcelButtonLabel(id, feature) {
+        try {
+            if (feature && typeof global.getParcelDisplayNumberFromFeature === 'function') {
+                const broj = global.getParcelDisplayNumberFromFeature(feature, '');
+                if (broj && broj.indexOf('#') === -1) return String(broj);
+            }
+        } catch (_) { }
+        return String(id).replace(/^HR-\d+-/, '');
+    }
+
+    function renderBaseGroupRow(groupIds, currentEntry, selectedRef) {
+        const row = document.createElement('div');
+        row.className = 'drill-stack-row drill-stack-row--multi';
+        const chipEl = document.createElement('span');
+        chipEl.className = 'drill-stack-chip drill-chip-base';
+        chipEl.textContent = t('panel.drill.baseParcelCount', 'Cadastral parcel ({{count}})', { count: groupIds.length });
+        row.appendChild(chipEl);
+        const strip = document.createElement('div');
+        strip.className = 'drill-stack-parcel-strip';
+        groupIds.forEach(id => {
+            const feature = String(id) === String(currentEntry.id) ? (currentEntry.feature || baseFeatureById(id)) : baseFeatureById(id);
+            const parcelEntry = { kind: 'parcel', id: String(id), feature, depth: 0 };
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'drill-stack-parcel-btn';
+            btn.dataset.ref = entryRef(parcelEntry);
+            btn.textContent = baseParcelButtonLabel(id, feature);
+            if (selectedRef && entryRef(parcelEntry) === selectedRef) btn.classList.add('selected');
+            btn.addEventListener('click', () => selectEntry(parcelEntry));
+            if (feature) {
+                btn.addEventListener('mouseenter', () => hoverEntry(parcelEntry));
+                btn.addEventListener('mouseleave', clearHoverOutline);
+            }
+            strip.appendChild(btn);
+        });
+        row.appendChild(strip);
+        return row;
+    }
+
     function renderPanel(stack, selectedRef) {
         const el = ensurePanel();
         el.innerHTML = '';
@@ -266,6 +356,11 @@
                 link.className = 'drill-stack-link';
                 link.textContent = '↑';
                 el.appendChild(link);
+            }
+            const groupIds = baseGroupIdsFor(stack, i, entry);
+            if (groupIds && groupIds.length > 1) {
+                el.appendChild(renderBaseGroupRow(groupIds, entry, selectedRef));
+                return;
             }
             const row = document.createElement('button');
             row.type = 'button';
@@ -295,7 +390,7 @@
     function markSelected(entry) {
         if (!panelEl) return;
         const ref = entryRef(entry);
-        panelEl.querySelectorAll('.drill-stack-row').forEach(row => {
+        panelEl.querySelectorAll('.drill-stack-row, .drill-stack-parcel-btn').forEach(row => {
             row.classList.toggle('selected', row.dataset.ref === ref);
         });
     }

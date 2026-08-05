@@ -234,7 +234,9 @@
             buildingFeature: clone(primary),
             buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
             // Freeform proposals may pave or green the parcel area around their buildings.
-            groundSurface: clone(proposal?.geometry?.groundSurface || null)
+            groundSurface: clone(proposal?.geometry?.groundSurface || null),
+            // §15a: footprint parcel (default) vs taking the whole host parcels.
+            takeWholeParcels: bp.takeWholeParcels === true
         };
     }
 
@@ -916,7 +918,8 @@
                         blockName: context.blockName,
                         parcels: selection.layers,
                         initialBuildings: features,
-                        initialGroundTreatment: context.groundSurface?.treatment || null
+                        initialGroundTreatment: context.groundSurface?.treatment || null,
+                        initialTakeWholeParcels: context.takeWholeParcels === true
                     });
                     return true;
                 }
@@ -962,6 +965,7 @@
                     applied: false,
                     typologyType: typology,
                     parentParcelIds: clone(draft.fields?.parentParcelIds || []),
+                    ...(typology === 'single' && context.takeWholeParcels === true ? { takeWholeParcels: true } : {}),
                     parameters: clone(context.parameters || {}),
                     buildingFeature: clone(features[0] || null),
                     buildings: clone(features),

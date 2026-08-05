@@ -76,12 +76,24 @@
                 }
             });
 
+            // LIVE means ON THE MAP — the same test the availability gate uses. The registry
+            // (parcelLayerById) deliberately RETAINS consumed parcels' layers, and the structural
+            // inference above cannot see cross-token consumption (a readjustment consuming
+            // another road's slice leaves no live id with that slice as a '#'-prefix — measured
+            // on the Cibona square, where hidden road remainders kept resurfacing as candidates).
+            const parcelLayerGroup = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
+                ? global.parcelLayer
+                : null;
+
             byId.forEach((layer, id) => {
                 const key = id === undefined || id === null ? '' : String(id);
                 if (!key) return;
                 if (consumedByStructure.has(key)) return;
                 if (replaced) {
                     try { if (replaced(key)) return; } catch (_) { /* treat as live */ }
+                }
+                if (parcelLayerGroup) {
+                    try { if (!parcelLayerGroup.hasLayer(layer)) return; } catch (_) { /* treat as live */ }
                 }
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
                 try {

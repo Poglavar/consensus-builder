@@ -717,8 +717,8 @@ function handleSharedProposalsFromUrl(attempt = 0) {
 
 // §7.5: failure text for missing prerequisites. A derived id (…#p-…) is another proposal's
 // OUTPUT, so the useful message names that proposal — the raw ids belong in the console beside
-// it, not in the user's face. And since the ghost case self-heals (re-parenting), a SURVIVING
-// miss means the land genuinely could not be re-formed here. `members` are the other proposals
+// it, not in the user's face. Nothing is healed any more (§15a): the ground a formation consumes
+// resolves geometrically at apply, so a surviving miss means the land genuinely is not here. `members` are the other proposals
 // in the same plan/payload, used to name the provider.
 function describeMissingPrereqs(missingIds, members, self, tShare) {
     const escape = typeof escapeHtml === 'function' ? escapeHtml : (v => v);
@@ -777,45 +777,6 @@ function collectRebasedSharedProposals(appliedIds) {
     } catch (error) {
         console.warn('[shared-apply] replay-fidelity check failed', error);
         return [];
-    }
-}
-
-// Ghost prerequisites in a shared PAYLOAD, healed the same way handleSharedPlanRoute heals them
-// (§12 step 1, extended to this route per next step 6): when every missing prerequisite is a
-// derived id (…#p-…) minted in the sender's browser, resolve the stored proposal's parents from
-// its geometry against the live fabric and rewrite the parent lists. The ≥95% coverage guard
-// keeps genuinely absent land a visible failure, never a silent rename.
-function reparentSharedProposalByGeometry(proposalId, missingIds) {
-    try {
-        const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        if (!ancestry || typeof ancestry.resolveParentsByGeometry !== 'function') return false;
-        if (!planOrderApi || typeof planOrderApi.rewriteParentParcelIds !== 'function') return false;
-        const missing = ensureArrayOfStrings(missingIds);
-        if (!missing.length || !missing.every(id => id.includes('#p-'))) return false;
-        const stored = (typeof proposalStorage !== 'undefined' && proposalStorage && proposalId)
-            ? proposalStorage.getProposal(proposalId)
-            : null;
-        if (!stored) return false;
-        const resolution = ancestry.resolveParentsByGeometry(stored);
-        if (!resolution || !Array.isArray(resolution.ids) || !resolution.ids.length) return false;
-        if (!(resolution.coverage >= 0.95)) {
-            console.warn('[applySharedProposalsFromPayload] Ghost prerequisites, but live fabric covers only '
-                + `${Math.round((resolution.coverage || 0) * 100)}% of the footprint — not re-parenting`,
-                { id: proposalId, missing });
-            return false;
-        }
-        planOrderApi.rewriteParentParcelIds(stored, resolution.ids);
-        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(stored);
-        if (typeof proposalStorage.save === 'function') proposalStorage.save();
-        console.log('[applySharedProposalsFromPayload] Re-parented by geometry', {
-            id: proposalId, ghosts: missing, resolved: resolution.ids,
-            coverage: Math.round(resolution.coverage * 1000) / 1000
-        });
-        return true;
-    } catch (err) {
-        console.warn('[applySharedProposalsFromPayload] Geometry re-parent failed', err);
-        return false;
     }
 }
 
@@ -924,99 +885,61 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         const skipped = [];
         const failures = [];
         const blockedAncestors = new Map();
-        const reparentedOnce = new Set();
         let lastLoadedProposalIdFor3D = null;
 
-        let pending = sorted.slice();
-        const maxPasses = 8;
-        let pass = 0;
-
-        while (pending.length && pass < maxPasses) {
-            pass += 1;
-            let progress = false;
-            const nextPending = [];
-
-            for (const proposal of pending) {
-                try {
-                    if (typeof updateStatus === 'function') {
-                        const displayId = proposal.proposalId ? String(proposal.proposalId) : '?';
-                        updateStatus(t('status.messages.applying_specific_shared_proposal', `Applying shared proposal ${proposal.title || ''} #${displayId}...`, {
-                            title: proposal.title || '',
-                            id: displayId
-                        }));
-                    }
-                } catch (_) { }
-
-                // Geometry-first for records already in storage (an earlier pass or a prior
-                // share): heal ghost parents BEFORE the attempt instead of after another failure.
-                try {
-                    const existingKey = getProposalKey(proposal) || proposal.proposalId;
-                    if (existingKey && !reparentedOnce.has(String(existingKey))
-                        && typeof proposalStorage !== 'undefined' && proposalStorage.getProposal(existingKey)
-                        && typeof ProposalManager !== 'undefined' && typeof ProposalManager.canApplyProposal === 'function') {
-                        const check = ProposalManager.canApplyProposal(existingKey);
-                        if (check && check.ok === false && Array.isArray(check.missing) && check.missing.length
-                            && reparentSharedProposalByGeometry(existingKey, check.missing)) {
-                            reparentedOnce.add(String(existingKey));
-                        }
-                    }
-                } catch (_) { }
-
-                const result = await importAndApplySharedProposal(proposal);
-                const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
-
-                if (result && result.skipped) {
-                    skipped.push(proposalId);
-                    if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                    blockedAncestors.delete(proposalId);
-                    progress = true;
-                    continue;
-                }
-
-                if (result && result.applied) {
-                    actuallyApplied.push(proposalId);
-                    if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                    blockedAncestors.delete(proposalId);
-                    progress = true;
-                    await new Promise(res => setTimeout(res, 3000));
-                    continue;
-                }
-
-                const ancestryCheck = (proposalId && typeof ProposalManager !== 'undefined' && typeof ProposalManager.canApplyProposal === 'function')
-                    ? ProposalManager.canApplyProposal(proposalId)
-                    : { ok: true, missing: [] };
-
-                if (!ancestryCheck.ok && ancestryCheck.missing.length) {
-                    // Ghost-derived misses never resolve by requeueing — the ids exist only in the
-                    // sender's browser. Re-parent from geometry once and let the next pass retry
-                    // on the healed parents; counting it as progress keeps the loop alive.
-                    if (!reparentedOnce.has(String(proposalId))
-                        && reparentSharedProposalByGeometry(proposalId, ancestryCheck.missing)) {
-                        reparentedOnce.add(String(proposalId));
-                        progress = true;
-                    }
-                    blockedAncestors.set(proposalId || proposal.title || `pending-${pass}-${nextPending.length}`, {
-                        missing: ancestryCheck.missing.slice(),
-                        proposal
-                    });
-                    nextPending.push(proposal);
-                    continue;
-                }
-
-                failures.push(proposalId || proposal.proposalId || '');
-                progress = true;
-            }
-
-            pending = nextPending;
-            if (!progress) break;
-        }
-
-        pending.forEach(proposal => {
-            const hash = getProposalKey(proposal) || proposal.proposalId || proposal.title || 'unknown';
-            if (!blockedAncestors.has(hash)) {
-                blockedAncestors.set(hash, { missing: [], proposal });
-            }
+        // Every payload-member id, for the intra-plan occupancy rule (§3.3): proposals that
+        // coexisted applied in the sharer's browser cannot genuinely conflict, so a member
+        // occupying a sibling's ground is composition, not a consent stop.
+        const payloadMemberIds = new Set();
+        sorted.forEach(p => {
+            [getProposalKey(p), p.proposalId, p.serverProposalId].forEach(k => { if (k) payloadMemberIds.add(String(k)); });
         });
+
+        // ONE ordered pass (A6). Records are flat and the ground a formation consumes resolves
+        // geometrically at apply time (§15a), so there is nothing a requeue lap could discover:
+        // a member that cannot apply is a loud failure with its reason, never healed.
+        for (const proposal of sorted) {
+            try {
+                if (typeof updateStatus === 'function') {
+                    const displayId = proposal.proposalId ? String(proposal.proposalId) : '?';
+                    updateStatus(t('status.messages.applying_specific_shared_proposal', `Applying shared proposal ${proposal.title || ''} #${displayId}...`, {
+                        title: proposal.title || '',
+                        id: displayId
+                    }));
+                }
+            } catch (_) { }
+
+            const result = await importAndApplySharedProposal(proposal, {
+                occupationExemptKeys: Array.from(payloadMemberIds)
+            });
+            const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
+
+            if (result && result.skipped) {
+                skipped.push(proposalId);
+                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
+                continue;
+            }
+
+            if (result && result.applied) {
+                actuallyApplied.push(proposalId);
+                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
+                continue;
+            }
+
+            // Failed. Classify for the report: missing prerequisites get the named-provider
+            // message (describeMissingPrereqs), everything else lands in the failure list.
+            const ancestryCheck = (proposalId && typeof ProposalManager !== 'undefined' && typeof ProposalManager.canApplyProposal === 'function')
+                ? ProposalManager.canApplyProposal(proposalId)
+                : { ok: true, missing: [] };
+            if (!ancestryCheck.ok && Array.isArray(ancestryCheck.missing) && ancestryCheck.missing.length) {
+                blockedAncestors.set(proposalId || proposal.title || `blocked-${failures.length}`, {
+                    missing: ancestryCheck.missing.slice(),
+                    proposal
+                });
+            } else {
+                failures.push(proposalId || proposal.proposalId || '');
+            }
+        }
 
         if (actuallyApplied.length > 0 || skipped.length > 0 || failures.length > 0 || blockedAncestors.size > 0) {
             if (typeof updateProposalLayer === 'function') {
@@ -2088,70 +2011,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return { attempted: toFetch, missingAfter };
         };
 
-        // Ghost prerequisites: a payload can name derived parents (…#p-…) minted in the CREATOR'S
-        // browser that this one will never mint (§3.1 of rethink-proposals.md: 3/14 references in
-        // one live plan were already dead on the server). No amount of requeueing conjures them.
-        // But when the plan's ancestors HAVE applied here, the land those ids named exists under
-        // different local names — so resolve this proposal's parents from its geometry against the
-        // live fabric, rewrite the parent lists, and retry once. Low footprint coverage means an
-        // ancestor genuinely is missing; that stays a visible failure, never a silent rename.
-        const reparentAttempted = new Set();
-        const tryReparentGhostPrereqs = (queueId, proposal) => {
-            try {
-                const key = normalizeId(queueId);
-                if (!proposal || !key || reparentAttempted.has(key)) return false;
-                const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-                const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-                if (!ancestry || typeof ancestry.resolveParentsByGeometry !== 'function') return false;
-                if (!planOrderApi || typeof planOrderApi.rewriteParentParcelIds !== 'function') return false;
-
-                const stillMissing = (pid) => {
-                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
-                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
-                    return true;
-                };
-                const missing = getPrerequisiteParcelIdsForProposal(proposal).filter(stillMissing);
-                // Missing BASE parcels are a fetch problem the loop already solves; rewriting
-                // parents would only mask it. Only pure ghost-derived misses qualify.
-                if (!missing.length || !missing.every(isDerivedParcelId)) return false;
-
-                const resolution = ancestry.resolveParentsByGeometry(proposal);
-                if (!resolution || !Array.isArray(resolution.ids) || !resolution.ids.length) return false;
-                if (!(resolution.coverage >= 0.95)) {
-                    console.warn('[handleSharedPlanRoute] Ghost prerequisites, but live fabric covers only '
-                        + `${Math.round((resolution.coverage || 0) * 100)}% of the footprint — not re-parenting`, { id: key, missing });
-                    return false;
-                }
-
-                reparentAttempted.add(key);
-                const touched = planOrderApi.rewriteParentParcelIds(proposal, resolution.ids);
-                // applyProposal reads the STORED copy once the payload has been imported, so the
-                // rewrite must land there too or the retry re-reads the ghosts.
-                try {
-                    const stored = (typeof proposalStorage !== 'undefined' && proposalStorage && proposal.proposalId)
-                        ? proposalStorage.getProposal(proposal.proposalId)
-                        : null;
-                    if (stored) {
-                        planOrderApi.rewriteParentParcelIds(stored, resolution.ids);
-                        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(stored);
-                        if (typeof proposalStorage.save === 'function') proposalStorage.save();
-                    }
-                } catch (_) { /* stored copy may not exist yet — the payload rewrite still counts */ }
-
-                console.log('[handleSharedPlanRoute] Re-parented by geometry', {
-                    id: key,
-                    ghosts: missing,
-                    resolved: resolution.ids,
-                    coverage: Math.round(resolution.coverage * 1000) / 1000,
-                    touched
-                });
-                return true;
-            } catch (err) {
-                console.warn('[handleSharedPlanRoute] Geometry re-parent failed', err);
-                return false;
-            }
-        };
-
         // Every LOCAL proposal id belonging to this plan. A parcel-conflict whose occupiers all
         // sit in this set is not a real conflict: these proposals coexisted APPLIED in the
         // sharer's browser (§3.3 — coexisting fabric never geometrically conflicts), so the
@@ -2170,9 +2029,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             });
             return ids;
         };
-        // Ids whose next apply attempt may proceed over intra-plan occupancy.
-        const applyAnywayIds = new Set();
-        const conflictRetryAttempted = new Set();
 
         // --- Conflict tour: CROSS-plan occupations ask the user, one conflict at a time --------
         // (rethink-proposals.md §12). Intra-plan occupancy stays automatic above; this only runs
@@ -2332,9 +2188,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
                 const reasonParts = [];
                 if (fallbackReason) reasonParts.push(fallbackReason);
-                // §7.5: the ghost case self-heals, so a surviving miss means the land genuinely
-                // could not be re-formed here — say that, naming the provider proposal; the raw
-                // ids go to the console.warn just below.
+                // §7.5 under §15a: ground resolves geometrically at apply and nothing heals,
+                // so a surviving miss means the land genuinely could not be re-formed here — say
+                // that, naming the provider proposal; the raw ids go to the console.warn below.
                 if (missingPrereqs.length) {
                     reasonParts.push(describeMissingPrereqs(missingPrereqs, Array.from(loadedById.values()), cachedProposal, tShare)
                         || `Missing prerequisite parcels: ${missingPrereqs.join(', ')}`);
@@ -2392,12 +2248,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
                 markFetchProgress(id);
 
-                // Decide whether to fetch base parcels before applying.
-                // - only base prerequisites: fetch and wait, then apply now
-                // - mixed base+derived: kick off base fetch, then requeue without applying
-                // - only derived: do not fetch; attempt apply
+                // Prefetch every BASE prerequisite before the attempt — loading, not healing.
+                // Derived ids in old payloads are no longer waited on or requeued (§15a): the
+                // ground a formation consumes resolves geometrically at apply, and a genuine miss
+                // fails loudly below with the named prerequisites.
                 const prereqIds = getPrerequisiteParcelIdsForProposal(proposal);
-                const { baseIds, derivedIds } = splitBaseAndDerivedIds(prereqIds);
+                const { baseIds } = splitBaseAndDerivedIds(prereqIds);
                 try {
                     const queueKey = String(id);
                     const payloadKey = (proposal && proposal.proposalId) ? String(proposal.proposalId) : '';
@@ -2410,20 +2266,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     }
                 } catch (_) { }
 
-                const computeMissingParentsNow = () => {
-                    try {
-                        const unique = Array.from(new Set(ensureArrayOfStrings(prereqIds)));
-                        return unique.filter(pid => {
-                            if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
-                            // Consumed by an earlier applied proposal — off the map by design, not missing.
-                            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
-                            return true;
-                        });
-                    } catch (_) {
-                        return [];
-                    }
-                };
-
                 const parseMissingFromString = (text) => {
                     try {
                         if (!text || typeof text !== 'string') return [];
@@ -2435,65 +2277,21 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { return []; }
                 };
 
-                if (baseIds.length > 0 && derivedIds.length > 0) {
-                    // Mixed: fetch base parents and wait once before deciding whether to apply or requeue.
+                if (baseIds.length > 0) {
                     const fetchResult = await startFetchBaseParcels(baseIds, { await: true });
                     try {
                         lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingAfter);
                         if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingAfter);
-                    } catch (_) { }
-
-                    try {
-                        const missingNow = computeMissingParentsNow();
-                        lastMissingPrereqsById.set(String(id), missingNow);
-                        if (proposal && proposal.proposalId) lastMissingPrereqsById.set(String(proposal.proposalId), missingNow);
-
-                        const baseMissingNow = baseIds.filter(pid => {
+                        const missingNow = Array.from(new Set(ensureArrayOfStrings(prereqIds))).filter(pid => {
                             if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
-                            // Parcel consumed by an earlier applied proposal — not missing, just off-map by design.
+                            // Consumed by an earlier applied proposal — off the map by design, not missing.
                             if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
                             return true;
                         });
-                        const derivedMissingNow = derivedIds.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                        const hint = baseMissingNow.length
-                            ? `Waiting for base prerequisites (${baseMissingNow.slice(0, 6).join(', ')}${baseMissingNow.length > 6 ? ', …' : ''})`
-                            : (derivedMissingNow.length
-                                ? `Waiting for derived prerequisites (${derivedMissingNow.slice(0, 6).join(', ')}${derivedMissingNow.length > 6 ? ', …' : ''})`
-                                : 'Waiting for prerequisites (mixed base + derived).');
-                        lastReasonById.set(String(id), hint);
-                        if (proposal && proposal.proposalId) lastReasonById.set(String(proposal.proposalId), hint);
-
-                        // If base parents are still missing, requeue (do not apply yet).
-                        if (baseMissingNow.length > 0) {
-                            queue.push(id);
-                            stepsSinceProgress += 1;
-                            continue;
-                        }
-                        // Base parents are present; proceed to apply now (derived can still cause requeue on failure).
-                    } catch (_) {
-                        queue.push(id);
-                        stepsSinceProgress += 1;
-                        continue;
-                    }
-                }
-                if (baseIds.length > 0 && derivedIds.length === 0) {
-                    // Base-only: fetch before attempting apply.
-                    const fetchResult = await startFetchBaseParcels(baseIds, { await: true });
-                    try {
-                        lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingAfter);
-                        if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingAfter);
-                        const missingNow = computeMissingParentsNow();
                         lastMissingPrereqsById.set(String(id), missingNow);
                         if (proposal && proposal.proposalId) lastMissingPrereqsById.set(String(proposal.proposalId), missingNow);
                     } catch (_) { }
                 }
-
-                // Geometry-first (the wire-format demotion, receiving side): declared DERIVED
-                // parents are hints, not prerequisites. When any of them has no live layer here,
-                // re-resolve this proposal's parents from its geometry NOW instead of burning an
-                // apply→fail→heal→retry round-trip. The hook is idempotent and keeps its ≥95%
-                // coverage guard, so genuinely missing land still fails loudly just below.
-                try { tryReparentGhostPrereqs(id, proposal); } catch (_) { }
 
                 updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying proposal #{{id}}…', { id }) });
                 let result;
@@ -2502,7 +2300,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     // Missing parcels are expected to be created by earlier applies.
                     result = await importAndApplySharedProposal(proposal, {
                         skipDependencyFetch: true,
-                        applyAnyway: applyAnywayIds.has(normalizeId(id)),
                         // Occupation (§15 decision 3) protects OTHER people's applied proposals.
                         // Inside one plan the author composed these together deliberately, so a
                         // member overlapping a sibling is a geometry question for the author, not
@@ -2573,16 +2370,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         conflictIds,
                         intraPlan
                     });
-                    if (intraPlan && !conflictRetryAttempted.has(normalizeId(id))) {
-                        // Chaining misread as occupation: rewrite any ghost parents from geometry,
-                        // then retry once accepting the intra-plan occupancy.
-                        conflictRetryAttempted.add(normalizeId(id));
-                        tryReparentGhostPrereqs(id, proposal);
-                        applyAnywayIds.add(normalizeId(id));
-                        queue.unshift(id);
-                        stepsSinceProgress = 0;
-                        continue;
-                    }
                     if (!intraPlan && conflictIds.length > 0) {
                         // Cross-plan occupation: the user decides, one conflict at a time.
                         const decision = await runCrossPlanConflictStop(
@@ -2621,17 +2408,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                                         if (draggedQueueId) {
                                             console.log('[handleSharedPlanRoute] Replace dragged down an applied plan member — requeueing', draggedQueueId);
                                             applied.splice(i, 1);
-                                            reparentAttempted.delete(draggedQueueId);
-                                            conflictRetryAttempted.delete(draggedQueueId);
-                                            applyAnywayIds.delete(draggedQueueId);
                                             if (queue.indexOf(draggedQueueId) === -1) queue.push(draggedQueueId);
                                         }
                                     }
                                 }
                             } catch (_) { }
-                            // The freed ground may still carry different local names than the
-                            // payload declares — let geometry re-resolve before the retry.
-                            tryReparentGhostPrereqs(id, proposal);
+                            // The freed ground resolves geometrically at apply (§15a), so the
+                            // retry needs no id rewriting.
                             queue.unshift(id);
                             stepsSinceProgress = 0;
                             continue;
@@ -2666,7 +2449,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         lastMissingPrereqsById.set(String(id), combinedMissing);
                         if (proposalId) lastMissingPrereqsById.set(String(proposalId), combinedMissing);
                     }
-                    // If the dependency is a *base* parcel (no #p- suffix), try fetching it once.
+                    // A missing BASE parcel is a LOADING problem, not a healing one: fetch it
+                    // once, then re-attempt immediately on the freshly loaded fabric (bounded by
+                    // fetchedBaseParcels — each base id is fetched at most once).
                     const missingParcelId = extractMissingParcelId(dependencyFailure);
                     if (missingParcelId && !isDerivedParcelId(missingParcelId) && !fetchedBaseParcels.has(missingParcelId)) {
                         fetchedBaseParcels.add(missingParcelId);
@@ -2680,32 +2465,32 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                                 lastUnfetchedBasePrereqIdsById.set(key, missingNow);
                             } catch (_) { }
                         } catch (fetchErr) {
-                            // Best-effort only; still requeue.
                             console.warn('[handleSharedPlanRoute] Failed to fetch missing base parcel for apply plan', { missingParcelId, fetchErr });
                         }
-                    }
-
-                    // Bump to end of queue and try others; a later proposal may load required parcels.
-                    try {
-                        const missingNow = (() => {
-                            try {
-                                const full = prereqIdsById.get(String(id)) || prereqIdsById.get(String(proposalId)) || [];
-                                const unique = Array.from(new Set(ensureArrayOfStrings(full)));
-                                return unique.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                            } catch (_) { return []; }
-                        })();
-                        lastMissingPrereqsById.set(String(id), missingNow);
-                        if (proposalId) lastMissingPrereqsById.set(String(proposalId), missingNow);
-                    } catch (_) { }
-                    if (tryReparentGhostPrereqs(id, proposal)) {
-                        // Retry immediately with the rewritten parents — this is real progress,
-                        // not another lap of the requeue carousel.
                         queue.unshift(id);
                         stepsSinceProgress = 0;
-                    } else {
-                        queue.push(id);
-                        stepsSinceProgress += 1;
+                        continue;
                     }
+
+                    // Nothing left to load and nothing is healed any more (§15a): the miss is
+                    // real — fail loudly with the named prerequisites.
+                    failed.push({
+                        id: proposalId,
+                        label,
+                        type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
+                        missingPrereqs: (() => {
+                            try {
+                                const key = String(proposalId || id);
+                                const explicitMissing = lastMissingPrereqsById.get(key) || lastUnfetchedBasePrereqIdsById.get(key);
+                                if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                                return ensureArrayOfStrings(dependencyFailure.missingIds || []);
+                            } catch (_) {
+                                return [];
+                            }
+                        })(),
+                        reason
+                    });
+                    stepsSinceProgress += 1;
                 } else {
                     failed.push({
                         id: proposalId,
@@ -2736,14 +2521,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 console.error('apply plan item failed', id, error);
                 const reason = (error && error.message) ? error.message : 'Unexpected error';
                 try { lastReasonById.set(String(id), String(reason || '')); } catch (_) { }
-                if (isDependencyFailure(error) || isDependencyFailure(reason)) {
-                    if (tryReparentGhostPrereqs(id, loadedById.get(id))) {
-                        queue.unshift(id);
-                        stepsSinceProgress = 0;
-                    } else {
-                        queue.push(id);
-                    }
-                } else {
+                // No requeue and no healing (§15a): a thrown apply is a loud failure with its
+                // reason and named prerequisites.
+                {
                     const cachedProposal = loadedById.get(id) || null;
                     failed.push({
                         id,
@@ -3014,6 +2794,36 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 title: tShare('plan.summary', 'Shared Plan Result'),
                 body: bodyLines.join(''),
                 actions: [
+                    {
+                        label: tShare('plan.copyResult', 'Copy'),
+                        keepOpen: true,
+                        onClick: (api) => {
+                            try {
+                                const text = `${tShare('plan.summary', 'Shared Plan Result')}\n\n`
+                                    + String(api && api.body ? api.body.innerText : '').trim();
+                                const copied = () => {
+                                    if (typeof showEphemeralMessage === 'function') {
+                                        showEphemeralMessage(tShare('plan.copiedResult', 'Result copied.'), 2500, 'success');
+                                    }
+                                };
+                                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                                    navigator.clipboard.writeText(text).then(copied, err => {
+                                        console.warn('[handleSharedPlanRoute] copy failed', err);
+                                    });
+                                } else {
+                                    const scratch = document.createElement('textarea');
+                                    scratch.value = text;
+                                    document.body.appendChild(scratch);
+                                    scratch.select();
+                                    document.execCommand('copy');
+                                    scratch.remove();
+                                    copied();
+                                }
+                            } catch (err) {
+                                console.warn('[handleSharedPlanRoute] copy failed', err);
+                            }
+                        }
+                    },
                     { label: t('modal.common.close', 'Close'), primary: true }
                 ],
                 onClose: () => {

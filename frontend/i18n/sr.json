@@ -659,7 +659,7 @@
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
-                "single": "Slobodna forma",
+                "single": "Slobodna zgrada",
                 "reparcel": "Reparcelacija",
                 "park": "Park",
                 "square": "Trg",
@@ -677,7 +677,9 @@
                 "useMainCreateButton": "Kada je izabrano više parcela, koristi glavno dugme \"Napravi predlog\".",
                 "enableMultiSelect": "Uključi izbor više parcela za ovu radnju.",
                 "selectAtLeastOne": "Izaberi bar jednu parcelu da napraviš predlog.",
-                "selectParcelFirst": "Prvo izaberi parcelu."
+                "selectParcelFirst": "Prvo izaberi parcelu.",
+                "rulesCategory": "Urbana pravila",
+                "structuresCategory": "Objekti"
             },
             "nftStatusDefault": "NFT status: Još nije provereno.",
             "mintAndClaimButton": "Iskovaј",
@@ -1037,7 +1039,8 @@
             "title": "Na ovom mestu",
             "close": "Zatvori",
             "baseParcel": "Katastarska parcela",
-            "slice": "Formirana parcela"
+            "slice": "Formirana parcela",
+            "baseParcelCount": "Katastarska parcela ({{count}})"
         }
     },
     "modal": {
@@ -1124,7 +1127,11 @@
             "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
-            "infoText": "Prevuci tlocrt za promenu položaja. Prevuci teme za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante ili tasterom Delete/Backspace. Zgrada mora ostati unutar bloka."
+            "infoText": "Prevuci tlocrt za promenu položaja. Prevuci teme za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante ili tasterom Delete/Backspace. Zgrada mora ostati unutar bloka.",
+            "parcelLabel": "Parcela zgrade",
+            "parcelFootprint": "Parcela po osnovi",
+            "parcelWhole": "Uzmi cele parcele",
+            "parcelInfo": "Zgrada podrazumevano formira sopstvenu parcelu prema osnovi, a ostatak zemljišta ostaje vlasniku. Uzimanjem celih parcela one postaju parcela zgrade kakve jesu."
         },
         "buildingUpload": {
             "title": "Učitaj 3D model zgrade",
@@ -1756,7 +1763,9 @@
                         "keep": "Zadrži postojeće",
                         "applyToAll": "Primeni na sve preostale sukobe",
                         "keptCountDetailed": "Zadržali ste postojeće predloge — {{count}} dolazni predlog(a) ostaje neprimenjen (pronađite ih na listi predloga):"
-                    }
+                    },
+                    "copyResult": "Kopiraj",
+                    "copiedResult": "Rezultat kopiran."
                 },
                 "processingImageForUpload": "Obrada slike za otpremanje...",
                 "walletConnectedStatus": "Novčanik povezan. Možete nastaviti sa kovanjem predloga",

@@ -243,15 +243,37 @@ above the scroll fold.
     gap: 6px;
 }
 
-/* Blok / Niz / Slobodnostojeće are all rules-based: one thin frame signals the family. */
-.parcel-build-rules-group {
+/* The §15a taxonomy: Land readjustment stands alone (the formation primitive) beside the
+   Urban rules group (Blok / Niz / Slobodnostojeće — rules-based), with the Structures group
+   (Freeform Building / Park / Square / Lake — they TAKE their parcel) on the next row. */
+.parcel-rules-group {
     grid-column: span 3;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    padding: 2px;
+    min-width: 0;
+    margin: 0;
+    padding: 0 2px 2px;
     border: 1px solid #b6c2d1;
     border-radius: 10px;
+}
+
+.parcel-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.parcel-structures-group {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 0;
+    padding: 0 2px 2px;
+    border: 1px solid #b6c2d1;
+    border-radius: 10px;
+}
+
+.parcel-structures-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
 }
 
 .parcel-transport-group,
@@ -264,6 +286,8 @@ above the scroll fold.
     border-radius: 10px;
 }
 
+.parcel-rules-group legend,
+.parcel-structures-group legend,
 .parcel-transport-group legend,
 .parcel-ownership-group legend {
     padding: 0 5px;

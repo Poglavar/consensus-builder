@@ -635,7 +635,7 @@
                 "rowNeedsTwo": "Row houses need at least two parcels.",
                 "row": "Row houses",
                 "parcelBased": "Detached",
-                "single": "Freeform",
+                "single": "Freeform Building",
                 "reparcel": "Land readjustment",
                 "park": "Park",
                 "square": "Square",
@@ -653,7 +653,9 @@
                 "useMainCreateButton": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
                 "enableMultiSelect": "Enable multi-parcel selection to use this action.",
                 "selectAtLeastOne": "Select at least one parcel to create a proposal.",
-                "selectParcelFirst": "Select a parcel first."
+                "selectParcelFirst": "Select a parcel first.",
+                "rulesCategory": "Urban rules",
+                "structuresCategory": "Structures"
             },
             "nftStatusDefault": "NFT status: Not checked yet.",
             "mintAndClaimButton": "Mint",
@@ -1012,7 +1014,8 @@
             "title": "At this spot",
             "close": "Close",
             "baseParcel": "Cadastral parcel",
-            "slice": "Formed parcel"
+            "slice": "Formed parcel",
+            "baseParcelCount": "Cadastral parcel ({{count}})"
         }
     },
     "modal": {
@@ -1123,7 +1126,11 @@
             "uploadNoPolygon": "No usable polygon found in that file.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
-            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block."
+            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.",
+            "parcelLabel": "Building parcel",
+            "parcelFootprint": "Footprint parcel",
+            "parcelWhole": "Take the whole parcels",
+            "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -1783,7 +1790,9 @@
                         "keep": "Keep existing",
                         "applyToAll": "Do this for all remaining conflicts",
                         "keptCountDetailed": "You kept the existing proposals — {{count}} incoming proposal(s) stay unapplied (find them in the proposals list):"
-                    }
+                    },
+                    "copyResult": "Copy",
+                    "copiedResult": "Result copied."
                 },
                 "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console)."
             },

@@ -968,6 +968,8 @@ body.three-mode-active #agent-bubbles-container {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     z-index: 11900; /* under the proposal card (12000) so an expanded card wins the corner */
     overflow-y: auto;
+    /* Wide content scrolls inside its own row (the parcel strip below) — never the panel. */
+    overflow-x: hidden;
 }
 
 #drill-stack-panel.visible {
@@ -1012,6 +1014,47 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 #drill-stack-panel .drill-stack-row.selected {
+    border-color: #2563EB;
+    box-shadow: inset 0 0 0 1px #2563EB;
+    background: #eef3fd;
+}
+
+/* A formed parcel minted from several base parcels shows them ALL (§15a): count chip first,
+   then a horizontally scrollable strip of clickable parcel numbers. */
+#drill-stack-panel .drill-stack-row--multi {
+    cursor: default;
+    min-width: 0;
+}
+
+#drill-stack-panel .drill-stack-parcel-strip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+}
+
+#drill-stack-panel .drill-stack-parcel-btn {
+    flex: 0 0 auto;
+    padding: 2px 7px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+#drill-stack-panel .drill-stack-parcel-btn:hover {
+    background: #f2f6ff;
+    border-color: #9db8e8;
+}
+
+#drill-stack-panel .drill-stack-parcel-btn.selected {
     border-color: #2563EB;
     box-shadow: inset 0 0 0 1px #2563EB;
     background: #eef3fd;
