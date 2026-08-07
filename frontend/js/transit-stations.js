@@ -429,7 +429,7 @@
         const entries = [];
         for (const proposal of proposals || []) {
             if (!proposal?.roadProposal || !isAppliedProposal(proposal)) continue;
-            const definition = proposal.roadProposal.definition || proposal.definition;
+            const definition = proposal.roadProposal.definition;
             for (const entry of corridorEntryRecords(definition)) {
                 if (!corridorEntrySupportsStation(definition, entry, type)) continue;
                 entries.push({
@@ -458,7 +458,7 @@
         let best = null;
         for (const proposal of records || []) {
             if (!proposal?.roadProposal || !isAppliedProposal(proposal)) continue;
-            const definition = proposal.roadProposal.definition || proposal.definition;
+            const definition = proposal.roadProposal.definition;
             for (const entry of corridorEntryRecords(definition)) {
                 if (!corridorEntrySupportsStation(definition, entry, type)) continue;
                 const coordinates = entry.points;
@@ -726,7 +726,6 @@
         const bearing = normalizeBearing(changes.bearing ?? current.bearing);
         const geometry = createStationFootprint(center, bearing, type, turfApi);
         if (!geometry) return null;
-        const geometryChanged = JSON.stringify(current.geometry || null) !== JSON.stringify(geometry);
         const next = {
             ...current,
             kind: 'station',
@@ -736,16 +735,15 @@
             geometry: clone(geometry),
             modelVersion: models()?.MODEL_VERSION || current.modelVersion || 1
         };
+        // Building impacts are derived by the replay that applies this immutable replacement.
+        delete next.demolishedBuildings;
+        delete next.demolitionScanned;
+        delete next.formation;
+        delete next.childParcelIds;
         if (type === 'elevated') {
             next.platformHeightM = normalizePlatformHeight(changes.platformHeightM ?? current.platformHeightM, type);
         } else {
             delete next.platformHeightM;
-        }
-        if (geometryChanged) {
-            // A rotated footprint may hit a different building. Never carry the old impact scan
-            // into the replacement proposal as though it still described the new geometry.
-            next.demolishedBuildings = null;
-            next.demolitionScanned = false;
         }
         const parentParcelIds = findStationParentParcelIds(geometry, turfApi, parcelEntries);
         if (parentParcelIds.length) next.parentParcelIds = parentParcelIds;
@@ -1189,8 +1187,7 @@
                     modelVersion: models()?.MODEL_VERSION || 1,
                     geometry: clone(geometry),
                     parentParcelIds: parentParcelIds.slice(),
-                    blockName: null,
-                    demolishedBuildings: null
+                    blockName: null
                 }
             },
             previewGeometry: clone(geometry)

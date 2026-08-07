@@ -128,7 +128,7 @@ describe('proposal-owned building impact preflight', () => {
         }
     });
 
-    it('deduplicates proposal owners and names every one in the cutting/tunnelling dialog', () => {
+    it('deduplicates proposal owners and names every one in the surface/tunnel dialog', () => {
         const hits = [proposalHit('p-1', 0), proposalHit('p-1', 1), proposalHit('p-2', 0), { id: 'gdi-1' }];
         const proposals = new Map([
             ['p-1', { proposalId: 'p-1', title: 'Central Block' }],
@@ -144,25 +144,13 @@ describe('proposal-owned building impact preflight', () => {
         expect(prompt.message).toContain('Central Block');
         expect(prompt.message).toContain('Station Offices');
         expect(prompt.message.match(/Central Block/g)).toHaveLength(1);
-        expect(prompt.message).toContain('unapply these proposals');
-        expect(prompt.message).toContain('Tunnelling keeps these proposals applied.');
-        expect(prompt.choices.find(choice => choice.value === 'cut')?.label).toContain('unapply 2');
-        expect(prompt.choices.find(choice => choice.value === 'destroy')?.label).toContain('unapply 2');
+        expect(prompt.message).toContain('takes their ground during replay');
+        expect(prompt.message).toContain('not the parcel-taking footprint');
+        expect(prompt.choices.map(choice => choice.value)).toEqual(['surface', 'tunnel', 'cancel']);
+        expect(prompt.message).toContain('same cadastral ground');
     });
 
-    it('lists road proposals whose separate records will be removed by merge-on-connect', () => {
-        const mergeProposalImpacts = [
-            { proposalId: 'road-2', title: 'Station Approach' },
-            { proposalId: 'road-3', title: 'Market Street' }
-        ];
-        const prompt = buildBuildingObstaclePrompt([], 'road', [], { mergeProposalImpacts });
-        expect(prompt.message).toContain('Station Approach');
-        expect(prompt.message).toContain('Market Street');
-        expect(prompt.message).toContain('remove their separate proposal entries');
-        expect(prompt.choices.map(choice => choice.value)).toEqual(['merge', 'cancel']);
-    });
-
-    it('shows the complete impact before mutation; cut unapplies proposals while tunnel preserves them', async () => {
+    it('collects the choice without mutating either proposal record', async () => {
         const keys = ['getProposalByIdOrHash', 'getProposalDisplayTitle', 'showStyledChoice', 'ProposalManager', 'i18n'];
         const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
         const proposals = new Map([
@@ -175,24 +163,19 @@ describe('proposal-owned building impact preflight', () => {
             globalThis.i18n = null;
             globalThis.getProposalByIdOrHash = id => proposals.get(id) || null;
             globalThis.getProposalDisplayTitle = proposal => proposal.title;
-            globalThis.ProposalManager = {
-                unapplyProposal: async id => {
-                    events.push(`unapply:${id}`);
-                    return true;
-                }
-            };
+            globalThis.ProposalManager = { unapplyProposal: async id => events.push(`unapply:${id}`) };
             globalThis.showStyledChoice = async (message) => {
                 expect(events).toEqual([]);
                 expect(message).toContain('Central Block');
                 expect(message).toContain('Station Offices');
                 events.push('prompt');
-                return 'cut';
+                return 'surface';
             };
 
-            const cut = await resolveBuildingObstacles(hits, 'road');
-            expect(events).toEqual(['prompt', 'unapply:p-1', 'unapply:p-2']);
-            expect(cut.removedProposalIds).toEqual(['p-1', 'p-2']);
-            expect(cut.cutHits.map(hit => hit.id)).toEqual(['gdi-1']);
+            const surface = await resolveBuildingObstacles(hits, 'road');
+            expect(events).toEqual(['prompt']);
+            expect(surface.surfaceHits.map(hit => hit.id)).toEqual(hits.map(hit => hit.id));
+            expect(surface.tunnelHits).toEqual([]);
 
             events.length = 0;
             globalThis.showStyledChoice = async (message) => {
@@ -202,20 +185,8 @@ describe('proposal-owned building impact preflight', () => {
             };
             const tunnel = await resolveBuildingObstacles(hits, 'road');
             expect(events).toEqual(['prompt']);
-            expect(tunnel.removedProposalIds).toEqual([]);
-
-            events.length = 0;
-            globalThis.showStyledChoice = async (message) => {
-                expect(message).toContain('Station Approach');
-                events.push('prompt');
-                return 'merge';
-            };
-            const merge = await resolveBuildingObstacles([], 'road', {
-                mergeProposalImpacts: [{ proposalId: 'road-2', title: 'Station Approach' }]
-            });
-            expect(events).toEqual(['prompt']);
-            expect(merge.action).toBe('merge');
-            expect(merge.removedProposalIds).toEqual([]);
+            expect(tunnel.surfaceHits).toEqual([]);
+            expect(tunnel.tunnelHits.map(hit => hit.id)).toEqual(hits.map(hit => hit.id));
         } finally {
             keys.forEach(key => {
                 const descriptor = descriptors.get(key);

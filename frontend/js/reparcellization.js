@@ -329,83 +329,6 @@
         return window.confirm(`${title}\n\n${message}`);
     }
 
-    // The proposal this editor was opened ON, when it is an existing applied reparcellization.
-    // A brand-new plan has nothing standing on it yet, so there is nothing to disclose.
-    function editedSourceProposal() {
-        try {
-            const draft = window.getActiveProposalDesignDraft?.();
-            const snapshot = draft && draft.sourceSnapshot;
-            const id = snapshot && (snapshot.proposalId || snapshot.id);
-            if (!id) return null;
-            const record = window.proposalStorage?.getProposal?.(String(id)) || snapshot;
-            if (!record || String(record.goal) !== 'reparcellization') return null;
-            if (typeof window.isProposalApplied === 'function' && !window.isProposalApplied(record)) return null;
-            return record;
-        } catch (_) { return null; }
-    }
-
-    // Disclose and clear what the edit displaces. Returns true when saving may proceed: either
-    // nothing is affected, or the user accepted and the affected proposals were un-applied.
-    async function resolveEditImpact() {
-        const impact = window.__reparcelEditImpact;
-        const source = editedSourceProposal();
-        if (!impact || !source) return true;
-
-        const before = (source.reparcellization && Array.isArray(source.reparcellization.polygons))
-            ? source.reparcellization.polygons : [];
-        if (!before.length) return true;
-
-        const t2 = (typeof turf !== 'undefined') ? turf : null;
-        if (!t2) return true;
-        const ctx = {
-            area: f => { try { return t2.area(f); } catch (_) { return 0; } },
-            intersectionArea: (a, b) => {
-                try { const hit = t2.intersect(a, b); return hit ? t2.area(hit) : 0; } catch (_) { return 0; }
-            }
-        };
-
-        const changed = impact.changedPlotIndices(before, state.slices, ctx);
-        if (!changed.length) return true;
-
-        const childIds = impact.childIdsForPlots(changed, source.childParcelIds
-            || (source.reparcellization && source.reparcellization.childParcelIds) || []);
-        if (!childIds.length) return true;
-
-        const applied = (window.proposalStorage?.getAllProposals?.() || [])
-            .filter(p => typeof window.isProposalApplied === 'function' && window.isProposalApplied(p))
-            .map(p => ({
-                key: String((typeof getProposalKey === 'function' ? getProposalKey(p) : null) || p.proposalId || ''),
-                proposal: p
-            }))
-            .filter(entry => entry.key);
-        const sourceKey = String((typeof getProposalKey === 'function' ? getProposalKey(source) : null)
-            || source.proposalId || '');
-        const affected = impact.proposalsOnPlots(childIds, applied, { selfKey: sourceKey });
-        if (!affected.length) return true;
-
-        console.debug('[reparcellization] edit displaces applied proposals',
-            { changedPlots: changed.length, childIds, affected: affected.map(a => a.key) });
-
-        const tour = window.__unapplyTour;
-        if (!tour || typeof tour.showUnapplyDependentsPanel !== 'function') {
-            // No tour available: refuse rather than silently destroy someone's applied proposal.
-            setStatus(t('reparcellization.modal.status.editBlocked',
-                'This edit displaces applied proposals and cannot be saved here.'), 'error');
-            return false;
-        }
-        const confirmed = await tour.showUnapplyDependentsPanel({
-            action: 'reform',
-            proposalId: sourceKey,
-            descendants: affected.map(a => a.key),
-            onConfirm: async () => {
-                for (const entry of affected) {
-                    await window.ProposalManager.unapplyProposal(entry.key, { skipConfirm: true });
-                }
-            }
-        });
-        return confirmed !== false;
-    }
-
     function closeModal(options = {}) {
         if (options.skipPersist !== true && state.slices.length
             && window.getActiveProposalDesignDraft?.()?.goal === 'reparcellization') {
@@ -586,12 +509,8 @@
         const cancelBtn = overlay.querySelector('[data-reparcel-cancel]');
         if (cancelBtn) cancelBtn.addEventListener('click', () => { cancelModal(); });
         commitBtns.forEach((btn) => {
-            btn.addEventListener('click', async () => {
+            btn.addEventListener('click', () => {
                 if (btn.disabled) return;
-                // Saving re-forms the ground: anything applied on a plot whose shape CHANGED must
-                // go first, and the user has to accept that before the layout is written.
-                const accepted = await resolveEditImpact();
-                if (!accepted) return;
                 persistResult();
                 ensureProposalDefaults();
                 closeModal({ skipPersist: true });
@@ -3481,6 +3400,28 @@
                 state.poolFromOutputs = true;
             }
             if (planPool) selection = { ids: planIds.slice(), layers: resolved.layers };
+        }
+
+        // Ruling 2026-08-07: a land readjustment stands on the CADASTRE — its inputs are whole
+        // cadastral parcels, never another proposal's derived fabric. Blocked at authoring:
+        // plots designed against derived geometry mint a plan that can never apply (the
+        // holder's fabric is gone the moment it unapplies). Reopening a saved plan stays
+        // possible so a non-conforming one can still be edited; the apply gate is authoritative.
+        if (!planPool) {
+            const inputIds = (selection && Array.isArray(selection.ids)) ? selection.ids.map(String) : [];
+            const derivedInputs = inputIds.filter(id => id.includes('#'));
+            if (derivedInputs.length) {
+                const message = t('reparcellization.modal.derivedGroundBlocked',
+                    'A land readjustment must stand on cadastral parcels. Unapply the proposal holding this ground first.');
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try {
+                    if (typeof window.showEphemeralMessage === 'function') {
+                        window.showEphemeralMessage(message, 8000, 'warning');
+                    }
+                } catch (_) { }
+                console.warn('[reparcellization] derived parcels in the selection —', derivedInputs);
+                return false;
+            }
         }
 
         if (!planPool && !validateSelection(selection)) {

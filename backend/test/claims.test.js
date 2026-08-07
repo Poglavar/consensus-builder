@@ -24,8 +24,9 @@ describe('claim kinds and ranks', () => {
         expect(claims.claimKindForGoal('road-track')).toBe('fabric');
         expect(claims.claimKindForGoal('reparcellization')).toBe('fabric');
         expect(claims.claimKindForGoal('decide-later')).toBe('fabric');
-        expect(claims.claimKindForGoal('park')).toBe('content');
-        expect(claims.claimKindForGoal('single')).toBe('content');
+        expect(claims.claimKindForGoal('park')).toBe('fabric');
+        expect(claims.claimKindForGoal('single')).toBe('fabric');
+        expect(claims.claimKindForGoal('urban-rule')).toBe('content');
         expect(claims.claimKindForGoal('')).toBe('ground');
         expect(claims.claimKindForGoal(null)).toBe('ground');
     });
@@ -63,21 +64,47 @@ describe('dossierFor', () => {
         { proposalId: 'p-far', title: 'Elsewhere', goal: 'park', applied: true, cadastreParcelIds: ['HR-1-999'] }
     ];
 
-    it('collects every proposal whose base ancestry touches the parcel, content first', () => {
+    it('collects every proposal whose base ancestry touches the parcel, applied first within one claim rank', () => {
         const dossier = claims.dossierFor('HR-1-100', proposals);
-        expect(dossier.map(e => e.proposalId)).toEqual(['p-lake', 'p-road']);
-        expect(dossier[0].kind).toBe('content');
+        expect(dossier.map(e => e.proposalId)).toEqual(['p-road', 'p-lake']);
+        expect(dossier[0].kind).toBe('fabric');
         expect(dossier[1].kind).toBe('fabric');
     });
 
     it('projects a derived parcel id to its root before matching', () => {
         const dossier = claims.dossierFor('HR-1-100#p-road-7#p-sub-2', proposals);
-        expect(dossier.map(e => e.proposalId)).toEqual(['p-lake', 'p-road']);
+        expect(dossier.map(e => e.proposalId)).toEqual(['p-road', 'p-lake']);
     });
 
     it('honours a caller-supplied applied-state accessor', () => {
         const dossier = claims.dossierFor('HR-1-100', proposals, { isApplied: () => true });
         expect(dossier.every(e => e.applied)).toBe(true);
+    });
+});
+
+describe('formationReplacesCadastreParcel', () => {
+    it('hides every consumed root even when the single corridor child is named after another root', () => {
+        const road = {
+            proposalId: 'road',
+            applied: true,
+            cadastreParcelIds: ['HR-1', 'HR-2'],
+            childParcelIds: ['HR-1#road-1']
+        };
+        expect(claims.formationReplacesCadastreParcel(road, 'HR-1')).toBe(true);
+        expect(claims.formationReplacesCadastreParcel(road, 'HR-2')).toBe(true);
+    });
+
+    it('requires both a standing record and children derived in this replay', () => {
+        expect(claims.formationReplacesCadastreParcel({
+            applied: false,
+            cadastreParcelIds: ['HR-1'],
+            childParcelIds: ['HR-1#road-1']
+        }, 'HR-1')).toBe(false);
+        expect(claims.formationReplacesCadastreParcel({
+            applied: true,
+            cadastreParcelIds: ['HR-1'],
+            childParcelIds: []
+        }, 'HR-1')).toBe(false);
     });
 });
 

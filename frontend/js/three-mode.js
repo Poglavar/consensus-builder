@@ -1179,14 +1179,13 @@
             if (value.type === 'FeatureCollection') { (value.features || []).forEach(push); return; }
             if (value.type && Array.isArray(value.coordinates)) features.push({ type: 'Feature', properties: {}, geometry: value });
         };
-        const definition = proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition;
+        const definition = proposal?.roadProposal?.definition;
         push(definition?.polygon);
         (proposal?.buildingProposal?.buildings || proposal?.geometry?.buildings || []).forEach(push);
         push(proposal?.buildingProposal?.buildingFeature);
         if (!features.length && proposal?.buildingGeometry) push({ type: 'Feature', properties: proposal.buildingProperties || {}, geometry: proposal.buildingGeometry });
         (proposal?.reparcellization?.polygons || []).forEach(polygon => push(polygon.geometry || polygon));
         push(proposal?.structureProposal?.geometry);
-        push(proposal?.geometry?.roadGeometry?.polygon);
         return features;
     }
 
@@ -1980,11 +1979,17 @@
         try {
             const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
             if (!storage || typeof storage.getAllProposals !== 'function') return [];
+            // Ruling 2026-08-07: an unapplied readjustment renders like any other parked
+            // proposal — ONLY while selected, as a preview of where it would land. It used to
+            // render persistently, which (after §15d made severance and refusals permanent)
+            // kept set-aside plans painted over ground other formations legitimately hold.
+            const selectedKey = window.ProposalSelection?.getKey?.() || null;
+            if (!selectedKey) return [];
             return storage.getAllProposals().filter(p => {
                 if (!p || !p.reparcellization) return false;
                 if (!Array.isArray(p.reparcellization.polygons) || !p.reparcellization.polygons.length) return false;
                 if (isApplied(p, p.reparcellization)) return false;
-                return true;
+                return proposalKey3D(p) === String(selectedKey);
             });
         } catch (error) {
             console.warn('[3D] Failed to enumerate planned reparcellization proposals:', error);
@@ -2020,16 +2025,31 @@
                         polygonOffsetFactor: -2,
                         polygonOffsetUnits: -2
                     });
-                    const meshes = polygonFeatureToMeshes(feature, fillMat, 0.08, 0);
-                    meshes.forEach(m => { m.userData.isPlannedReparcelPlot = true; targetGroup.add(m); });
+                    // A set-aside plan's slices can overlap ground OTHER formations hold now
+                    // (that overlap is often exactly why it refuses to apply), so the preview
+                    // must float clearly above the parcel/road/paving stack (z ≤ ~0.1) —
+                    // at 0.08 it sat coplanar with road surfaces and shimmered.
+                    const meshes = polygonFeatureToMeshes(feature, fillMat, 0.35, 0);
+                    meshes.forEach(m => { m.userData.isPlannedReparcelPlot = true; m.renderOrder = 30; targetGroup.add(m); });
 
-                    const borders = polygonFeatureToBorderLines(feature, materials.sliceEdges, 0.12);
-                    borders.forEach(line => { line.userData.isPlannedReparcelPlot = true; targetGroup.add(line); });
+                    const borders = polygonFeatureToBorderLines(feature, materials.sliceEdges, 0.45);
+                    borders.forEach(line => { line.userData.isPlannedReparcelPlot = true; line.renderOrder = 31; targetGroup.add(line); });
                 } catch (error) {
                     console.warn('[3D] Failed to draw a planned reparcellization plot:', error);
                 }
             });
         });
+    }
+
+    // Selection drives the preview: clear the previous selection's slabs and draw the current
+    // one's (same pattern as rebuildParcelGround3D).
+    function rebuildPlannedReparcellization3D() {
+        if (!isActive || !plannedFlatGroup) return;
+        for (let index = plannedFlatGroup.children.length - 1; index >= 0; index--) {
+            const child = plannedFlatGroup.children[index];
+            if (child?.userData?.isPlannedReparcelPlot) plannedFlatGroup.remove(child);
+        }
+        buildPlannedReparcellization3D(plannedFlatGroup);
     }
 
     // Recessed lakes and underground station entrances need openings in the otherwise opaque
@@ -5215,7 +5235,10 @@
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
         if (!proposalSelectionUnsubscribe && window.ProposalSelection?.subscribe) {
-            proposalSelectionUnsubscribe = window.ProposalSelection.subscribe(() => rebuildProposalInteraction3D());
+            proposalSelectionUnsubscribe = window.ProposalSelection.subscribe(() => {
+                rebuildProposalInteraction3D();
+                rebuildPlannedReparcellization3D();
+            });
         }
 
         // Checkbox listeners (sync 3D buildings with sidebar state)
@@ -5791,7 +5814,7 @@
             buildLakes: () => buildLakes3D(plannedFlatGroup, lakeGroup),
             buildStations: () => buildTransitStations3D(stationGroup),
             buildProposalGrounds: () => buildProposalGrounds3D(plannedFlatGroup),
-            buildReparcellization: () => buildPlannedReparcellization3D(plannedFlatGroup),
+            buildReparcellization: () => rebuildPlannedReparcellization3D(),
             applyDisplay: applyModeVisibility,
             rebuildBuildings: rebuild3DBuildingsOnly,
             rebuildInteraction: rebuildProposalInteraction3D,

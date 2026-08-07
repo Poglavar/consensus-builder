@@ -52,7 +52,7 @@
                 if (value) return normalizeGoal(value);
             }
         } catch (_) { }
-        if (proposal?.roadProposal || proposal?.geometry?.roadPlan) return 'road-track';
+        if (proposal?.roadProposal) return 'road-track';
         if (proposal?.reparcellization) return 'reparcellization';
         if (proposal?.buildingProposal || proposal?.geometry?.buildings || proposal?.buildingGeometry) {
             return normalizeGoal(proposal.typologyType || proposal.buildingProposal?.typologyType || proposal.goal || 'buildings');
@@ -148,7 +148,7 @@
     }
 
     function corridorDefinition(proposal) {
-        return proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition || null;
+        return proposal?.roadProposal?.definition || null;
     }
 
     function corridorSegments(definition) {
@@ -170,7 +170,6 @@
             sidewalkWidth: definition?.sidewalkWidth,
             tunnels: clone(definition?.tunnels || []),
             gradeSeparations: clone(definition?.gradeSeparations || []),
-            demolishedBuildings: clone(definition?.demolishedBuildings || []),
             segmentProfiles: clone(definition?.segmentProfiles || {}),
             trackSpeed: definition?.metadata?.trackSpeed,
             trackMinRadius: definition?.metadata?.trackMinRadius,
@@ -191,7 +190,6 @@
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: clone(seed?.tunnels || []),
             gradeSeparations: clone(seed?.gradeSeparations || sourceDefinition?.gradeSeparations || []),
-            demolishedBuildings: clone(seed?.demolishedBuildings || sourceDefinition?.demolishedBuildings || []),
             segmentProfiles: clone(seed?.segmentProfiles || sourceDefinition?.segmentProfiles || {}),
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
             latLngPairs: clone(seed?.latLngPairs !== undefined ? seed.latLngPairs : sourceDefinition?.latLngPairs || null),
@@ -204,16 +202,7 @@
                 trackMinRadius: seed?.trackMinRadius
             }
         };
-        // Every editor-built corridor definition passes through here on its way to the draft and,
-        // from there, to the API. Re-derive the surface footprint from the payload's OWN tunnels
-        // and centerline: the spread above would otherwise carry a stale one over from the source
-        // definition. It is the ground the corridor actually clears and actually buys, and only the
-        // browser can compute it (city projection) — see attachCorridorSurfaceFootprint.
-        if (typeof global.attachCorridorSurfaceFootprint === 'function') {
-            global.attachCorridorSurfaceFootprint(payload);
-        } else {
-            payload.surfaceFootprint = null;
-        }
+        delete payload.surfaceFootprint;
         return payload;
     }
 
@@ -814,9 +803,6 @@
             output.goal = 'road-track';
             output.primaryType = kind === 'track' ? 'Track' : 'Road';
             output.isCorridor = true;
-            output.definition = definition;
-            output.geometry = { ...(output.geometry || {}), roadPlan: clone(definition) };
-            if (definition.polygon) output.geometry.roadGeometry = { polygon: clone(definition.polygon) };
             output.roadProposal = {
                 ...(clone(output.roadProposal || {})),
                 definition: clone(definition),

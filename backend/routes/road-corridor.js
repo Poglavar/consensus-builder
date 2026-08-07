@@ -8,7 +8,6 @@
 // endpoint simply finds no parcels), and POST /proposals leaves their client value alone.
 
 import { createRequire } from 'node:module';
-import * as turf from '@turf/turf';
 import { buildOwnershipType } from './parcels.js';
 
 const require = createRequire(import.meta.url);
@@ -63,39 +62,10 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
     };
 }
 
-// Pick the corridor FOOTPRINT polygon (WGS84 GeoJSON) from a proposal, mirroring the thumbnail's
-// candidate order. Falls back to buffering the centerline by half the road width.
+// The authored road definition carries the one canonical cut/taking footprint.
 export function resolveRoadFootprintGeometry(proposal) {
     if (!proposal) return null;
-    const rp = proposal.roadProposal || {};
-    const def = rp.definition || proposal.definition || {};
-    const candidates = [
-        rp.polygon, rp.superGeometry, rp.geometry, def.polygon,
-        proposal.geometry && proposal.geometry.roadGeometry && proposal.geometry.roadGeometry.polygon
-    ];
-    for (const candidate of candidates) {
-        const g = asGeometry(candidate);
-        if (g) return g;
-    }
-    // Last resort: buffer the centerline.
-    const points = Array.isArray(def.points) ? def.points : [];
-    const width = Number(def.width);
-    if (points.length >= 2 && Number.isFinite(width) && width > 0) {
-        const coords = points
-            .map(p => {
-                const lng = Number(p && (p.lng ?? p.lon ?? p.longitude ?? p[0]));
-                const lat = Number(p && (p.lat ?? p.latitude ?? p[1]));
-                return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : null;
-            })
-            .filter(Boolean);
-        if (coords.length >= 2) {
-            try {
-                const buffered = turf.buffer(turf.lineString(coords), width / 2, { units: 'meters' });
-                return buffered && buffered.geometry ? buffered.geometry : null;
-            } catch (_) { return null; }
-        }
-    }
-    return null;
+    return asGeometry(proposal.roadProposal?.definition?.polygon);
 }
 
 function asGeometry(candidate) {

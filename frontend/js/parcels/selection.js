@@ -66,7 +66,7 @@
         // Only use proposal hover overlay when Proposal UI is active
         try {
             if (proposalUIActive && typeof global.proposalStorage !== 'undefined') {
-                const proposals = global.proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => getLifecycleStatus(p) !== 'Executed');
+                const proposals = global.proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
                 if (proposals && proposals.length > 0) {
                     // When a proposal is already open, only highlight its parcels on hover
                     const allowProposalHover = !restrictHoverToActiveProposal || parcelInActiveProposal;

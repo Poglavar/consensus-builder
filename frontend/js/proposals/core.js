@@ -94,55 +94,26 @@ function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {})
     return message;
 }
 
-// Does at least one replacement slice of this parent actually exist ON THIS DEVICE?
-//
-// Slice ids are derived from the parent (`<parent>#<proposalId>-N`, legacy `<parent>_N`), so a
-// live child is a key in the parcel-layer index carrying one of those prefixes.
-function hasLiveReplacementSlice(idStr) {
-    const layerIndex = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
-        ? window.parcelLayerById
-        : null;
-    // Cannot verify (index not up yet) — keep the pre-guard behaviour and treat it as replaced.
-    if (!layerIndex) return true;
-
-    // Any '#'-suffixed key derives from this parent — new-style '#c-…' ids included.
-    const derivedPrefix = idStr + '#';
-    const legacyPrefix = idStr + '_';
-    for (const key of layerIndex.keys()) {
-        if (typeof key === 'string' && (key.startsWith(derivedPrefix) || key.startsWith(legacyPrefix))) {
-            return true;
-        }
-    }
-    return false;
-}
-
 function isParcelReplacedByChildren(parcelId) {
     if (!parcelId) return false;
     const idStr = String(parcelId);
+    if (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(idStr)) return false;
+    if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return false;
 
-    // Descendant parcels (carrying ancestorProposal) are themselves never hidden — they
-    // are the result of a previous apply and must remain visible.
-    const record = readPersistedParcelRecord(idStr);
-    if (record && record.properties && record.properties.ancestorProposal) {
-        return false;
-    }
-
-    if (typeof proposalStorage === 'undefined') return false;
-    if (!proposalStorage.isParcelAncestorOfAppliedProposal(idStr)) return false;
-
-    // A parent is only really replaced once a replacement slice actually exists here. Slice ids
-    // drift between devices, and a shared proposal arrives already marked applied with the
-    // SENDER's childParcelIds — so on a receiving browser this predicate would otherwise report
-    // "replaced" for a parent whose children were never (re)generated locally. Every consumer
-    // then drops that parent: the shared-link fetcher skips fetching it, the recovery paths
-    // refuse to rebuild it, ingest leaves it off the map. The proposal still draws (its visuals
-    // are interactive:false and come from proposal data), leaving a parcel-shaped hole with
-    // nothing to click — "visible but not clickable".
-    //
-    // This check used to live in ingest.js alone, which desynchronised the call sites: ingest kept
-    // the parent while every other consumer still dropped it. It belongs in the predicate, so all
-    // of them agree on one answer.
-    return hasLiveReplacementSlice(idStr);
+    // A cadastral parent is absent whenever a standing formation minted ANY tessellation on that
+    // base parcel. Child-id prefixes cannot answer this: a multi-parcel corridor has one corridor
+    // id anchored to only one root, so a fully consumed second root has no `<root>#…` child even
+    // though the road owns all of it. Flat cadastre anchors plus the current derived child list are
+    // the complete statement of this replay.
+    const claims = (typeof window !== 'undefined') ? window.__claims : null;
+    return proposalStorage.getAllProposals().some(proposal => {
+        if (claims && typeof claims.formationReplacesCadastreParcel === 'function') {
+            return claims.formationReplacesCadastreParcel(proposal, idStr, { isApplied });
+        }
+        return !!(proposal && isApplied(proposal)
+            && Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length
+            && Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.map(String).includes(idStr));
+    });
 }
 
 function getProposalAreaMap(proposal) {
@@ -251,25 +222,6 @@ function buildProposalFeatureCache(proposal) {
     }
 
     const parcelsById = new Map();
-    const parentFeatures = [];
-
-    const addFeaturesToCache = (features, targetList, defaultSource) => {
-        if (!Array.isArray(features)) return;
-        features.forEach(feature => {
-            const normalised = normaliseToFeature(feature, defaultSource ? { source: defaultSource } : {});
-            if (!normalised || !normalised.geometry) return;
-            const parcelId = getParcelIdFromFeature(normalised);
-            if (parcelId) {
-                parcelsById.set(parcelId.toString(), normalised);
-            }
-            targetList.push(normalised);
-        });
-    };
-
-    // Prefer proposal-provided road assets (parent features)
-    const roadAssets = loadRoadAssetsForCache(proposal);
-    addFeaturesToCache(roadAssets.parentFeatures, parentFeatures, 'road-parent');
-
     // Cache any other parcels listed on the proposal (e.g., building proposals)
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
     parcelIds.forEach(parcelId => {
@@ -281,7 +233,7 @@ function buildProposalFeatureCache(proposal) {
         parcelsById.set(key, parcelsById.get(key) || null);
     });
 
-    const cacheValue = { parcelsById, parentFeatures, childFeatures: [] };
+    const cacheValue = { parcelsById };
     if (cacheKey) {
         proposalFeatureCache.set(cacheKey, cacheValue);
     }
@@ -1033,63 +985,6 @@ function ensureRoadParentParcelIds(sharedProposal, normalized, parentIds) {
     return true;
 }
 
-function sameStringArrays(left, right) {
-    const a = ensureArrayOfStrings(left);
-    const b = ensureArrayOfStrings(right);
-    if (a.length !== b.length) return false;
-    for (let index = 0; index < a.length; index += 1) {
-        if (a[index] !== b[index]) return false;
-    }
-    return true;
-}
-
-function syncCanonicalSharedProposalState(existing, normalized) {
-    if (!existing || !normalized) return false;
-
-    // An APPLIED record's parent/child lists are live working state: parents name the pieces the
-    // apply actually consumed (what unapply must restore), children the pieces it minted here.
-    // The canonical payload's lists are the UPLOADER's snapshot — derived data from a different
-    // browser's fabric (§15a: children are derived, apply regenerates). Overwriting live state
-    // with that snapshot desynchronizes the record from its own fabric, and the presence check
-    // then re-applies it on every link open. Sync only records that are not currently applied.
-    if (typeof isProposalCurrentlyApplied === 'function' && isProposalCurrentlyApplied(existing)) {
-        return false;
-    }
-
-    let changed = false;
-    const syncArrayField = (target, field, value) => {
-        const canonical = ensureArrayOfStrings(value);
-        if (!canonical.length) return;
-        if (!sameStringArrays(target[field], canonical)) {
-            target[field] = canonical.slice();
-            changed = true;
-        }
-    };
-
-    syncArrayField(existing, 'parentParcelIds', normalized.parentParcelIds);
-    syncArrayField(existing, 'childParcelIds', normalized.childParcelIds);
-
-    if (normalized.roadProposal) {
-        existing.roadProposal = existing.roadProposal || {};
-        syncArrayField(existing.roadProposal, 'parentParcelIds', normalized.roadProposal.parentParcelIds);
-        syncArrayField(existing.roadProposal, 'childParcelIds', normalized.roadProposal.childParcelIds);
-    }
-
-    if (normalized.decideLaterProposal) {
-        existing.decideLaterProposal = existing.decideLaterProposal || {};
-        syncArrayField(existing.decideLaterProposal, 'parentParcelIds', normalized.decideLaterProposal.parentParcelIds);
-        syncArrayField(existing.decideLaterProposal, 'childParcelIds', normalized.decideLaterProposal.childParcelIds);
-    }
-
-    if (normalized.reparcellization) {
-        existing.reparcellization = existing.reparcellization || {};
-        syncArrayField(existing.reparcellization, 'parcelIds', normalized.reparcellization.parcelIds);
-        syncArrayField(existing.reparcellization, 'childParcelIds', normalized.reparcellization.childParcelIds);
-    }
-
-    return changed;
-}
-
 function ensureProposalLoadOverlay() {
     if (proposalLoadOverlay) return proposalLoadOverlay;
 
@@ -1207,6 +1102,9 @@ function showProposalLoadOverlay(status, options = {}) {
 
 function updateProposalLoadOverlay(options = {}) {
     if (!proposalLoadOverlay) return;
+    if (options.title && proposalLoadTitleEl) {
+        proposalLoadTitleEl.textContent = options.title;
+    }
     if (options.status && proposalLoadStatusEl) {
         proposalLoadStatusEl.textContent = options.status;
     }

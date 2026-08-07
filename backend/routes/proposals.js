@@ -5,7 +5,12 @@
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
-import { serializeProposalRow, stripLocalProposalState } from '../proposals/serializer.js';
+import {
+    findNonCadastralParentDeclaration,
+    isDerivedParcelDeclaration,
+    serializeProposalRow,
+    stripLocalProposalState
+} from '../proposals/serializer.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 
@@ -135,6 +140,9 @@ function ownershipFlowValidator(value) {
         if (!parcelId || /\p{C}/u.test(parcelId)) {
             return { ok: false, error: `ownershipFlow[${i}].parcelId must be a non-empty string.` };
         }
+        if (isDerivedParcelDeclaration(parcelId)) {
+            return { ok: false, error: `ownershipFlow[${i}].parcelId must be a base cadastral id.` };
+        }
         const cededM2 = Number(entry.cededM2);
         if (!Number.isFinite(cededM2) || cededM2 < 0) {
             return { ok: false, error: `ownershipFlow[${i}].cededM2 must be a non-negative number.` };
@@ -215,7 +223,6 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         type: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TYPE_LENGTH, label: 'type', disallowControlChars: true })) },
         status: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'status', disallowControlChars: true })) },
         lifecycleStatus: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'lifecycleStatus', disallowControlChars: true })) },
-        applied: { required: false, validate: validators.optional(validators.boolean({ label: 'applied' })) },
         offer: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'offer' })) },
         offerCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offerCurrency', disallowControlChars: true })) },
         offer_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offer_currency', disallowControlChars: true })) },
@@ -232,8 +239,8 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
         parentParcelIds: { required: false, validate: validators.optional(stringArrayValidator('parentParcelIds'), { nullValue: [] }) },
-        // Cadastral (base) parcels the geometry covers — stable across machines, unlike the derived
-        // ids parentParcelIds may hold. See rethink-proposals.md.
+        // Cadastral (base) parcels the geometry covers. Every parent declaration is flat too;
+        // this separate stamp is the geometry-authoritative effect/consent frame.
         cadastreParcelIds: { required: false, validate: validators.optional(stringArrayValidator('cadastreParcelIds'), { nullValue: [] }) },
         // Per crossed base parcel: ceded area + ownership destination, stamped at publish (§9/§12).
         ownershipFlow: { required: false, validate: validators.optional(ownershipFlowValidator, { nullValue: [] }) },
@@ -241,15 +248,12 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         cadastreFrame: { required: false, validate: validators.optional(validators.plainObject({ label: 'cadastreFrame' })) },
         // Hash of the published EFFECT (footprint + per-parcel cession); acceptances bind to it.
         effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 64, label: 'effectHash', disallowControlChars: true })) },
-        childParcelIds: { required: false, validate: validators.optional(stringArrayValidator('childParcelIds'), { nullValue: [] }) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
         roadProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'roadProposal' })) },
         buildingProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'buildingProposal' })) },
         structureProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'structureProposal' })) },
         reparcellization: { required: false, validate: validators.optional(validators.plainObject({ label: 'reparcellization' })) },
-        parentProposals: { required: false, validate: validators.optional(stringArrayValidator('parentProposals'), { nullValue: [] }) },
-        childProposals: { required: false, validate: validators.optional(stringArrayValidator('childProposals'), { nullValue: [] }) },
         lens: { required: false, validate: lensArrayValidator },
         bounds: { required: false, validate: boundsValidator },
         onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
@@ -399,8 +403,16 @@ export function setupProposalsRoute(app, pool) {
 
     app.post('/proposals', proposalCreateBodyValidator, async (req, res) => {
         try {
-            const proposal = req.body;
-            const validated = req.validatedBody;
+            const nonCadastralParent = findNonCadastralParentDeclaration(req.body);
+            if (nonCadastralParent) {
+                return res.status(400).json({
+                    error: `${nonCadastralParent.path} must contain only base cadastral ids; found ${nonCadastralParent.id}. Run migrate-tessellation.js for stored records.`
+                });
+            }
+            // The server enforces the flat transport contract even if an older client sends
+            // cached children, formation data, demolition scans or proposal ancestry.
+            const proposal = stripLocalProposalState(req.body);
+            const validated = stripLocalProposalState(req.validatedBody);
 
             const city = normalizeCityCode(validated.city) || null;
             const proposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? `local-${Date.now()}`;
@@ -432,7 +444,6 @@ export function setupProposalsRoute(app, pool) {
             const cadastreParcelIds = validated.cadastreParcelIds ?? [];
             const ownershipFlow = validated.ownershipFlow ?? [];
             const cadastreFrame = validated.cadastreFrame ?? null;
-            const childParcelIds = validated.childParcelIds ?? [];
             const acceptedParcelIds = validated.acceptedParcelIds ?? [];
             const ownerAcceptances = validated.ownerAcceptances ?? {};
 
@@ -440,12 +451,6 @@ export function setupProposalsRoute(app, pool) {
             const buildingProposal = validated.buildingProposal ?? null;
             const structureProposal = validated.structureProposal ?? null;
             let reparcellization = validated.reparcellization ?? null;
-
-            const parentFeatures = null;
-            const childFeatures = null;
-
-            const parentProposalIds = validated.parentProposals ?? [];
-            const childProposalIds = validated.childProposals ?? [];
 
             const lens = validated.lens ?? null;
             const bounds = validated.bounds ?? null;
@@ -492,10 +497,8 @@ export function setupProposalsRoute(app, pool) {
                     decay_enabled, decay_percent, decay_duration_ms,
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    ancestor_parcel_ids, cadastre_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
-                    parent_features, child_features,
-                    parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
                     ownership_flow, cadastre_frame
                 ) VALUES (
@@ -506,12 +509,10 @@ export function setupProposalsRoute(app, pool) {
                     $15, $16, $17,
                     $18, $19,
                     $20, $21,
-                    $22, $23, $24, $25, $26,
-                    $27, $28, $29, $30,
-                    $31, $32,
-                    $33, $34,
-                    $35, $36, $37, $38, $39,
-                    $40, $41
+                    $22, $23, $24, $25,
+                    $26, $27, $28, $29,
+                    $30, $31, $32, $33, $34,
+                    $35, $36
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -526,17 +527,12 @@ export function setupProposalsRoute(app, pool) {
                 isConditional, disbursementMode,
                 parentParcelIds.length ? JSON.stringify(parentParcelIds) : null,
                 cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
-                childParcelIds.length ? JSON.stringify(childParcelIds) : null,
                 acceptedParcelIds.length ? JSON.stringify(acceptedParcelIds) : null,
                 Object.keys(ownerAcceptances).length ? JSON.stringify(ownerAcceptances) : null,
                 storedRoadProposal ? JSON.stringify(storedRoadProposal) : null,
                 storedBuildingProposal ? JSON.stringify(storedBuildingProposal) : null,
                 storedStructureProposal ? JSON.stringify(storedStructureProposal) : null,
                 storedReparcellization ? JSON.stringify(storedReparcellization) : null,
-                parentFeatures,
-                childFeatures,
-                parentProposalIds.length ? JSON.stringify(parentProposalIds) : null,
-                childProposalIds.length ? JSON.stringify(childProposalIds) : null,
                 lens ? JSON.stringify(lens) : null,
                 bounds ? JSON.stringify(bounds) : null,
                 onchainData ? JSON.stringify(onchainData) : null,
@@ -671,9 +667,8 @@ export function setupProposalsRoute(app, pool) {
     });
 
     // Per-parcel proposal counts for the map badges. The client passes the parcel ids it can see
-    // (?parcel_ids=a,b,c) and gets { counts: { a: 2, c: 1 } } back — one query over the ancestor +
-    // descendant id arrays, so every user sees the same badge instead of a count of only what their
-    // browser happens to have downloaded. Ids with no proposals are simply absent (treat as 0).
+    // (?parcel_ids=a,b,c) and gets { counts: { a: 2, c: 1 } } back from flat cadastral declarations.
+    // Ids with no proposals are simply absent (treat as 0).
     app.get('/proposals/counts', async (req, res) => {
         try {
             const raw = typeof req.query.parcel_ids === 'string' ? req.query.parcel_ids : '';
@@ -688,10 +683,8 @@ export function setupProposalsRoute(app, pool) {
             const params = [parcelIds];
             const cityClause = city ? `AND p.city = $${params.push(city)}` : '';
 
-            // Pre-filter with ?| (GIN-indexed) so only proposals touching a requested id are scanned,
-            // then unnest each proposal's ancestor+descendant+cadastre ids and count per requested id.
-            // cadastre_parcel_ids is what makes the badge true for BASE parcels: a proposal whose
-            // declared parents are all derived ids is invisible to the other two columns (§3.4).
+            // Pre-filter with ?| (GIN-indexed), then dedupe the two flat base declarations. The
+            // legacy descendant column is intentionally absent: it is derived replay output.
             const sql = `
                 SELECT ids.pid AS parcel_id, COUNT(DISTINCT p.id)::int AS n
                 FROM proposal p
@@ -699,11 +692,10 @@ export function setupProposalsRoute(app, pool) {
                     SELECT DISTINCT e AS pid
                     FROM jsonb_array_elements_text(
                         COALESCE(p.ancestor_parcel_ids, '[]'::jsonb)
-                        || COALESCE(p.descendant_parcel_ids, '[]'::jsonb)
                         || COALESCE(p.cadastre_parcel_ids, '[]'::jsonb)
                     ) AS e
                 ) ids
-                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.descendant_parcel_ids ?| $1::text[] OR p.cadastre_parcel_ids ?| $1::text[])
+                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.cadastre_parcel_ids ?| $1::text[])
                   AND ids.pid = ANY($1::text[])
                   ${cityClause}
                 GROUP BY ids.pid
@@ -837,10 +829,8 @@ export function setupProposalsRoute(app, pool) {
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
                     ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, cadastre_frame,
-                    descendant_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
-                    parent_features, child_features,
-                    parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, screenshot_url, proposal_data
                 FROM proposal
                 WHERE proposal_id = $1 OR id::text = $1
@@ -884,10 +874,8 @@ export function setupProposalsRoute(app, pool) {
                 params.push(filters.lifecycle);
             }
 
-            // Membership by BASE ancestry too (cadastre_parcel_ids, GIN-indexed): a proposal whose
-            // declared parents are all derived ids would otherwise never list against the base
-            // parcel a user actually clicks — three of eight in the measured plan (§3.4).
-            clauses.push(`(ancestor_parcel_ids @> $${params.length + 1}::jsonb OR descendant_parcel_ids @> $${params.length + 1}::jsonb OR cadastre_parcel_ids @> $${params.length + 1}::jsonb)`);
+            // Both stored declarations contain base cadastral ids; either can answer membership.
+            clauses.push(`(ancestor_parcel_ids @> $${params.length + 1}::jsonb OR cadastre_parcel_ids @> $${params.length + 1}::jsonb)`);
             params.push(JSON.stringify([String(parcelId)]));
 
             const sql = `
@@ -896,7 +884,7 @@ export function setupProposalsRoute(app, pool) {
                     lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
-                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, descendant_parcel_ids,
+                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow,
                     onchain_data, screenshot_url, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}

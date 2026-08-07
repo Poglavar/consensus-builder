@@ -11,14 +11,17 @@
     const planOrder = () => (global && global.__planOrder)
         ? global.__planOrder
         : (typeof require === 'function' ? require('./plan-order.js') : null);
+    const formationDepth = () => (global && global.__formationDepth)
+        ? global.__formationDepth
+        : (typeof require === 'function' ? require('./formation-depth.js') : null);
 
     // Z-order of claims at one spot: content sits on fabric, fabric sits on the ground.
     const CLAIM_RANKS = Object.freeze({ content: 3, fabric: 2, ground: 1 });
 
     function claimKindForGoal(goal) {
-        const api = planOrder();
-        if (api && api.isFabricGoal(goal)) return 'fabric';
         if (goal === undefined || goal === null || String(goal).trim() === '') return 'ground';
+        const api = formationDepth();
+        if (api && api.isFormationGoal(goal)) return 'fabric';
         return 'content';
     }
 
@@ -47,6 +50,20 @@
         if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.parentParcelIds);
         if (proposal.reparcellization) push(proposal.reparcellization.parentParcelIds);
         return api.cadastreIdsFromDeclared(declared);
+    }
+
+    // Whether this replay's formation replaces the cadastral layer for one base parcel. The
+    // formation's child ids are intentionally irrelevant to the match: a corridor spanning many
+    // roots can name its single body after only the first root.
+    function formationReplacesCadastreParcel(proposal, parcelId, options) {
+        if (!proposal || parcelId === undefined || parcelId === null) return false;
+        const opts = options || {};
+        const isApplied = typeof opts.isApplied === 'function'
+            ? opts.isApplied
+            : (item => item?.applied === true);
+        if (!isApplied(proposal)) return false;
+        if (!Array.isArray(proposal.childParcelIds) || proposal.childParcelIds.length === 0) return false;
+        return baseParcelIdsOf(proposal).includes(String(parcelId));
     }
 
     // Every proposal claiming ground on this base parcel — the dossier a click in cadastre view
@@ -89,7 +106,15 @@
         return match ? match[1] : s;
     }
 
-    const api = { CLAIM_RANKS, claimKindForGoal, claimRank, baseParcelIdsOf, dossierFor, shortParcelLabel };
+    const api = {
+        CLAIM_RANKS,
+        claimKindForGoal,
+        claimRank,
+        baseParcelIdsOf,
+        formationReplacesCadastreParcel,
+        dossierFor,
+        shortParcelLabel
+    };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.

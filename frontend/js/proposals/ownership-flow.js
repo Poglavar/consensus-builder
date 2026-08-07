@@ -94,34 +94,22 @@
         return node;
     }
 
-    // The corridor's per-building verdicts are part of the EFFECT: cutting a building, demolishing
-    // it outright, or tunnelling under it are materially different takings over the same footprint,
-    // so a mind-change (cut → tunnel) must move the hash and lapse acceptances. Read from the
-    // STORED records (definition.demolishedBuildings — a record with a `remainder` is a partial
-    // cut, one without is a full demolition — and definition.tunnels). Returns null when there are
-    // no records at all, so proposals without building impacts keep their existing hashes.
+    // Authored tunnel choices are part of the effect. Demolition is derived from the footprint at
+    // apply time and must never make consent hashes browser-dependent.
     function collectImpactModes(proposal) {
-        const demolished = [];
         const tunnelled = [];
         ['roadProposal', 'structureProposal', 'buildingProposal'].forEach(key => {
             const sub = proposal && proposal[key];
             if (!sub || typeof sub !== 'object') return;
             const definition = sub.definition && typeof sub.definition === 'object' ? sub.definition : null;
-            const records = (definition && definition.demolishedBuildings) || sub.demolishedBuildings;
-            (Array.isArray(records) ? records : []).forEach(record => {
-                if (record && record.id !== undefined && record.id !== null) {
-                    demolished.push({ id: String(record.id), cut: !!record.remainder });
-                }
-            });
             const tunnels = definition && definition.tunnels;
             (Array.isArray(tunnels) ? tunnels : []).forEach(record => {
                 (record && Array.isArray(record.buildingIds) ? record.buildingIds : [])
                     .forEach(buildingId => tunnelled.push(String(buildingId)));
             });
         });
-        if (!demolished.length && !tunnelled.length) return null;
-        demolished.sort((a, b) => a.id.localeCompare(b.id));
-        return { demolished, tunnelled: Array.from(new Set(tunnelled)).sort() };
+        if (!tunnelled.length) return null;
+        return { tunnelled: Array.from(new Set(tunnelled)).sort() };
     }
 
     // The hash of the proposal's EFFECT: footprint + per-parcel cession + where ownership goes.

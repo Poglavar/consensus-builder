@@ -178,7 +178,7 @@ Deliberately deferred until the new drafting/editing lifecycle is proven in dail
 The corridor interaction model was rebuilt and now provides most of the substrate slices 1–2 assumed would need building:
 
 - corridors are edited **in place** as graphs: per-vertex node handles (`js/road-node-edit.js`), unified junction nodes (coincident vertices move together), per-edge bulldozing, ⌥-click vertex deletion;
-- crossings insert **shared vertices into both segments** (`insertCorridorCrossingNodes`), merges weld end-to-end connections (`weldCorridorSegments`), and disconnected bodies **split into separate proposals** (`corridorConnectedComponents` + `createRoadProposalFromComponent`);
+- crossings insert **shared vertices into both segments** (`insertCorridorCrossingNodes`); a road formation may retain several disconnected authored stretches after a cut or edge removal, and all of them stay in its one immutable replacement record;
 - every geometry edit re-derives touched parcels against the restored fabric and re-applies (`updateLocalCorridorGeometry`) — the natural hook for a future surface-vs-spatial footprint distinction;
 - the draft editor dialog is retired; drawing instantly creates applied objects, so the level UI belongs in the drawing panel and node-edit mode, not in any editor dialog.
 

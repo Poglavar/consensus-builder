@@ -1,15 +1,18 @@
 // The flat-record invariant: a PUBLISHED record is at most three levels deep —
-// base cadastral parcel → one formation → content. Locally, operations may stack in time
-// (draw a road, then another road cutting its remainder); at share/mint/upload the
-// declarations flatten so nothing in the record ever chains formation onto formation.
+// base cadastral parcel → one formation → content. The live fabric has no historical stack;
+// applied records are replayed in order and all declarations flatten to cadastral ids.
 // Pure: id strings and plain records in, verdicts out.
 (function (global) {
     'use strict';
 
+    const LEGACY_DERIVED_PARCEL = /^(HR-\d+-.+?)_[a-z0-9]+_\d+$/i;
+
     // Derivation generations encoded in an id: 'HR-1-2' → 0, 'HR-1-2#c-abc-1' → 1, nested → 2…
     function parcelIdDepth(parcelId) {
         if (parcelId === undefined || parcelId === null) return 0;
-        return String(parcelId).split('#').length - 1;
+        const id = String(parcelId);
+        const modernDepth = id.split('#').length - 1;
+        return modernDepth || (LEGACY_DERIVED_PARCEL.test(id) ? 1 : 0);
     }
 
     function isBaseParcelId(parcelId) {
@@ -20,7 +23,9 @@
     function baseParcelIdOf(parcelId) {
         const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
         const hashAt = id.indexOf('#');
-        return hashAt > 0 ? id.slice(0, hashAt) : id;
+        const modernBase = hashAt > 0 ? id.slice(0, hashAt) : id;
+        const legacy = modernBase.match(LEGACY_DERIVED_PARCEL);
+        return legacy ? legacy[1] : modernBase;
     }
 
     // Goals whose typology forms ground (they mint parcels and move ownership). Mirrors
@@ -48,7 +53,19 @@
         return out;
     }
 
-    function parentIdsOf(proposal) { return collectIds(proposal, 'parentParcelIds'); }
+    function parentIdsOf(proposal) {
+        const out = collectIds(proposal, 'parentParcelIds');
+        const push = list => {
+            if (!Array.isArray(list)) return;
+            list.forEach(id => {
+                if (id !== undefined && id !== null && String(id)) out.push(String(id));
+            });
+        };
+        push(proposal && proposal.parcelIds);
+        push(proposal && proposal.cadastreParcelIds);
+        push(proposal && proposal.reparcellization && proposal.reparcellization.parcelIds);
+        return out;
+    }
     function childIdsOf(proposal) { return collectIds(proposal, 'childParcelIds'); }
 
     // What a record DOES, not merely what its goal implies: a building that fits a plot someone
@@ -60,10 +77,8 @@
         return isFormationGoal(proposal.goal) ? 'potential-formation' : 'content';
     }
 
-    // Verdict for one record. What matters is whether the record MINTS ground, not what its goal
-    // implies: a park sitting on a plot shaped for it by an earlier reparcellization mints nothing
-    // and is content on that plot — the legal third level. Callers that can predict minting before
-    // apply (the publish gate, the draw path) pass `mintsGround` explicitly.
+    // Verdict for one record. Roles remain useful for reporting, but every published parent
+    // declaration names cadastral ground. A derived parcel id is replay output, never input data.
     function conformanceOf(proposal, options) {
         const opts = options || {};
         const role = opts.mintsGround === true ? 'formation'
@@ -79,16 +94,11 @@
             }
         });
 
-        parents.forEach(id => {
-            if (parcelIdDepth(id) > 1) {
-                violations.push({ code: 'parent-id-too-deep', id, depth: parcelIdDepth(id) });
+        Array.from(new Set(parents)).forEach(id => {
+            if (parcelIdDepth(id) > 0) {
+                violations.push({ code: 'non-cadastral-parent', id, depth: parcelIdDepth(id) });
             }
         });
-
-        const formsOnDerived = parents.filter(id => parcelIdDepth(id) === 1);
-        if (formsOnDerived.length && role === 'formation') {
-            violations.push({ code: 'formation-on-formed-ground', ids: formsOnDerived.slice() });
-        }
 
         return {
             role,
@@ -98,37 +108,32 @@
         };
     }
 
-    // The parents a FORMATION should declare once flattened. Content keeps its plot — the plot IS
-    // the third level, so flattening it away would erase which ground the content stands on.
+    // The cadastral parents every record should declare once flattened. Derived parcel ids are
+    // local replay output and must never cross the publish boundary as parent declarations.
     //
-    // `opts.geometricBaseIds` is AUTHORITATIVE when supplied, and callers should supply it: a
+    // `opts.geometricBaseIds` is AUTHORITATIVE and required: a
     // slice id names only the root it was minted against, and a comasation mints every slice
     // against ONE root even when it consumed dozens of base parcels (Borovje: 38 slices all named
     // `1791/25#…`, 29 real base parents). Parsing ids would therefore under-declare the ground.
-    // The id projection below is the last-resort fallback when no geometry is available.
     function flattenedParentsFor(proposal, options) {
         const opts = options || {};
-        const verdict = conformanceOf(proposal, opts);
-        if (verdict.role !== 'formation') return null;
         const parents = parentIdsOf(proposal);
-        if (!parents.some(id => parcelIdDepth(id) > 0)) return null;
 
-        if (Array.isArray(opts.geometricBaseIds) && opts.geometricBaseIds.length) {
-            const out = [];
-            const taken = new Set();
-            opts.geometricBaseIds.forEach(id => {
-                const key = String(id);
-                if (key && !taken.has(key)) { taken.add(key); out.push(key); }
-            });
-            return out;
-        }
-        const seen = new Set();
-        const flat = [];
-        parents.forEach(id => {
-            const base = baseParcelIdOf(id);
-            if (base && !seen.has(base)) { seen.add(base); flat.push(base); }
+        if (!Array.isArray(opts.geometricBaseIds) || opts.geometricBaseIds.length === 0) return null;
+        const out = [];
+        const taken = new Set();
+        opts.geometricBaseIds.forEach(id => {
+            const key = baseParcelIdOf(id);
+            if (key && !taken.has(key)) { taken.add(key); out.push(key); }
         });
-        return flat;
+        const declared = [];
+        const declaredSet = new Set();
+        parents.forEach(id => {
+            const key = String(id);
+            if (key && !declaredSet.has(key)) { declaredSet.add(key); declared.push(key); }
+        });
+        const unchanged = declared.length === out.length && declared.every((id, index) => id === out[index]);
+        return unchanged ? null : out;
     }
 
     // Scan a set of records — the publish gate and the fabric conformance report use the same call.
@@ -147,7 +152,7 @@
         return { total: list.length, offending: records.length, byCode, records };
     }
 
-    // The publish gate (§15a): mechanically flatten a formation's parent declarations to base
+    // The publish gate (§15a): mechanically flatten every parent declaration to base cadastral
     // ids, then VERIFY the record is flat. The caller refuses to publish when verdict.flat is
     // false — nothing here heals beyond the deterministic flatten; a record that cannot be made
     // flat is an error the author sees, not a repair job for every future reader.
@@ -165,11 +170,13 @@
         if (!record || typeof record !== 'object') return record;
         const out = { ...record };
         const isGovernmentPlan = !!(out.tags && out.tags.governmentPlan === true)
-            || (out.roadProposal && out.roadProposal.definition && out.roadProposal.definition.kind === 'government_plan')
-            || (out.geometry && out.geometry.roadPlan && out.geometry.roadPlan.kind === 'government_plan');
+            || (out.roadProposal && out.roadProposal.definition && out.roadProposal.definition.kind === 'government_plan');
         delete out.childParcelIds;
         delete out.descendantParcelIds;
         delete out.parentFeatures;
+        delete out.localEditAt;
+        delete out.editSeq;
+        delete out.revertSnapshot;
         if (!isGovernmentPlan) delete out.childFeatures;
         ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
             const sub = out[key];
@@ -179,15 +186,29 @@
             delete clean.parentFeatures;
             delete clean.parentsToRemove;
             delete clean.formation;
-            // Structure/building demolition results are apply-time scans, not authored decisions
-            // (a road's cut/demolish/tunnel choices live inside definition, which is untouched).
+            // Demolition results are apply-time scans for every formation.
             if (key === 'structureProposal' || key === 'buildingProposal') {
                 delete clean.demolishedBuildings;
                 delete clean.demolitionScanned;
             }
+            if (key === 'roadProposal' && clean.definition && typeof clean.definition === 'object') {
+                clean.definition = { ...clean.definition };
+                delete clean.definition.surfaceFootprint;
+                delete clean.definition.demolishedBuildings;
+                delete clean.definition.demolitionScanned;
+            }
             if (!(key === 'roadProposal' && isGovernmentPlan)) delete clean.childFeatures;
             out[key] = clean;
         });
+        if (out.roadProposal) {
+            delete out.definition;
+            if (out.geometry && typeof out.geometry === 'object' && !Array.isArray(out.geometry)) {
+                out.geometry = { ...out.geometry };
+                delete out.geometry.roadPlan;
+                delete out.geometry.roadGeometry;
+                if (Object.keys(out.geometry).length === 0) delete out.geometry;
+            }
+        }
         return out;
     }
 
@@ -195,26 +216,32 @@
         const opts = options || {};
         let out = { ...(proposal || {}) };
         const flat = flattenedParentsFor(out, opts);
-        if (Array.isArray(flat) && flat.length) {
+        if (Array.isArray(flat)) {
             out.parentParcelIds = flat.slice();
-            // flattenedParentsFor returned ids only for a record that MINTED ground — and a
-            // structure/building that minted (merge/footprint formation) flattens like any other
-            // formation. The content-keeps-its-plot exemption belongs to records that mint
-            // nothing (an adopt park standing on a formed plot): those never reach this branch,
-            // because their role is not 'formation'. Without the two content sub-keys here,
-            // publishing an APPLIED merged park threw formation-on-formed-ground on its own
-            // consumed road slices.
+            if (Array.isArray(out.parcelIds)) out.parcelIds = flat.slice();
+            if (Array.isArray(out.cadastreParcelIds)) out.cadastreParcelIds = flat.slice();
+            // Keep duplicate declarations in typology sub-records consistent with the root.
             ['roadProposal', 'reparcellization', 'decideLaterProposal', 'structureProposal', 'buildingProposal'].forEach(key => {
                 const sub = out[key];
                 if (sub && typeof sub === 'object' && !Array.isArray(sub) && Array.isArray(sub.parentParcelIds)) {
                     out[key] = { ...sub, parentParcelIds: flat.slice() };
                 }
             });
+            if (out.reparcellization && Array.isArray(out.reparcellization.parcelIds)) {
+                out.reparcellization = { ...out.reparcellization, parcelIds: flat.slice() };
+            }
         }
         // Verify BEFORE stripping: children are part of the conformance verdict (they decide
         // the record's role and carry depth violations); the strip then removes them from what
         // actually ships.
-        const verdict = conformanceOf(out, opts);
+        let verdict = conformanceOf(out, opts);
+        if (!Array.isArray(opts.geometricBaseIds) || opts.geometricBaseIds.length === 0) {
+            verdict = {
+                ...verdict,
+                flat: false,
+                violations: [...verdict.violations, { code: 'geometric-parent-resolution-required' }]
+            };
+        }
         out = stripDerivedRecordData(out);
         return { proposal: out, verdict };
     }

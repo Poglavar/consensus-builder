@@ -1,6 +1,6 @@
 // The canonical two-axis status accessors. getLifecycleStatus reads the marketplace/on-chain axis;
-// isApplied reads the map-application axis. Both must honour the new fields when present and derive
-// sanely from the legacy overloaded `status` for rows the split has not upgraded yet.
+// isApplied reads the map-application axis. Both read canonical fields only; legacy conversion is
+// owned by the one-time tessellation migration.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -20,18 +20,9 @@ describe('getLifecycleStatus', () => {
         expect(getLifecycleStatus({ lifecycleStatus: 'Executed', status: 'Applied' })).toBe('Executed');
     });
 
-    it('collapses leaked application words in the legacy status to Active', () => {
+    it('does not infer lifecycle from the legacy status field', () => {
         expect(getLifecycleStatus({ status: 'Applied' })).toBe('Active');
-        expect(getLifecycleStatus({ status: 'applied' })).toBe('Active');
-        expect(getLifecycleStatus({ status: 'unapplied' })).toBe('Active');
-    });
-
-    it('canonicalises the real lifecycle values from legacy status', () => {
-        expect(getLifecycleStatus({ status: 'Active' })).toBe('Active');
-        expect(getLifecycleStatus({ status: 'executed' })).toBe('Executed');
-        expect(getLifecycleStatus({ status: 'Cancelled' })).toBe('Cancelled');
-        expect(getLifecycleStatus({ status: 'expired' })).toBe('Expired');
-        expect(getLifecycleStatus({ status: 'draft' })).toBe('draft');
+        expect(getLifecycleStatus({ status: 'executed' })).toBe('Active');
     });
 
     it('defaults to Active for empty/unknown/missing', () => {
@@ -47,9 +38,9 @@ describe('isApplied', () => {
         expect(isApplied({ applied: false, status: 'applied' })).toBe(false);
     });
 
-    it('uses a nested boolean only as a fallback for an unnormalised legacy row', () => {
+    it('ignores nested and legacy application state', () => {
         const p = { status: 'Active' };
-        expect(isApplied(p, { applied: true, status: 'unapplied' })).toBe(true);
+        expect(isApplied(p, { applied: true, status: 'unapplied' })).toBe(false);
         expect(isApplied(p, { applied: false, status: 'applied' })).toBe(false);
     });
 
@@ -58,36 +49,21 @@ describe('isApplied', () => {
         expect(isApplied({ applied: false }, { applied: true })).toBe(false);
     });
 
-    it('legacy fallback: applied/executed status means on-the-map', () => {
-        expect(isApplied({ status: 'applied' })).toBe(true);
-        expect(isApplied({ status: 'executed' })).toBe(true);
-        expect(isApplied({ status: 'Active' }, { status: 'applied' })).toBe(true);
-    });
-
-    it('legacy fallback: unapplied / Active is NOT applied — the 474-style stuck road is left to the backfill', () => {
-        // Pre-split shape of proposal 474: top-level Active, road sub unapplied, no boolean yet.
-        const p474 = { status: 'Active', roadProposal: { status: 'unapplied', definition: { demolishedBuildings: [{ id: '1' }] } } };
-        expect(isApplied(p474, p474.roadProposal)).toBe(false);
-        // Once the backfill sets the boolean, it is applied.
-        p474.applied = true;
-        expect(isApplied(p474, p474.roadProposal)).toBe(true);
-    });
-
-    it('legacy fallback: superseded or terminated is never applied', () => {
-        expect(isApplied({ status: 'applied', supersededByProposalId: 'p-x' })).toBe(false);
+    it('does not interpret any legacy status as map application', () => {
+        expect(isApplied({ status: 'applied' })).toBe(false);
+        expect(isApplied({ status: 'executed' })).toBe(false);
         expect(isApplied({ status: 'cancelled', roadProposal: { status: 'applied' } })).toBe(false);
-        expect(isApplied({ status: 'expired', roadProposal: { status: 'applied' } })).toBe(false);
     });
 });
 
 describe('proposal status-axis normalisation', () => {
-    it('migrates legacy state once to a root applied boolean and removes nested copies', () => {
+    it('canonicalises current fields without healing legacy state', () => {
         const proposal = {
             status: 'Executed',
             roadProposal: { status: 'applied', applied: true, appliedAt: 'old' }
         };
         normalizeProposalStatusAxes(proposal);
-        expect(proposal).toMatchObject({ lifecycleStatus: 'Executed', applied: true });
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Active', applied: false });
         expect(proposal.status).toBeUndefined();
         expect(proposal.roadProposal).not.toHaveProperty('status');
         expect(proposal.roadProposal).not.toHaveProperty('applied');

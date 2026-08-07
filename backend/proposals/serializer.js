@@ -14,20 +14,84 @@ const iso = (value, fallback) => present(value)
     ? (value instanceof Date ? value.toISOString() : new Date(value).toISOString())
     : fallback;
 
+const LEGACY_DERIVED_PARCEL = /^HR-\d+-.+?_[a-z0-9]+_\d+$/i;
+
+export function isDerivedParcelDeclaration(value) {
+    const id = String(value ?? '');
+    return id.includes('#') || LEGACY_DERIVED_PARCEL.test(id);
+}
+
+export function findNonCadastralParentDeclaration(proposal) {
+    if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return null;
+    const lists = [
+        ['parentParcelIds', proposal.parentParcelIds],
+        ['parcelIds', proposal.parcelIds],
+        ['cadastreParcelIds', proposal.cadastreParcelIds]
+    ];
+    LOCAL_STATE_SUB_KEYS.forEach(key => {
+        const sub = proposal[key];
+        if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
+        lists.push([`${key}.parentParcelIds`, sub.parentParcelIds]);
+        if (key === 'reparcellization') lists.push([`${key}.parcelIds`, sub.parcelIds]);
+    });
+    for (const [path, values] of lists) {
+        if (!Array.isArray(values)) continue;
+        const id = values.find(isDerivedParcelDeclaration);
+        if (id !== undefined) return { path, id: String(id) };
+    }
+    return null;
+}
+
+const clearRoadDemolition = definition => {
+    if (!definition || typeof definition !== 'object' || Array.isArray(definition)) return;
+    delete definition.surfaceFootprint;
+    delete definition.demolishedBuildings;
+    delete definition.demolitionScanned;
+};
+
 export function stripLocalProposalState(proposal) {
     if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return proposal;
-    const sanitized = { ...proposal };
-    delete sanitized.applied;
-    delete sanitized.appliedAt;
-    delete sanitized.status;
+    const sanitized = JSON.parse(JSON.stringify(proposal));
+    const governmentPlan = sanitized.tags?.governmentPlan === true
+        || sanitized.roadProposal?.definition?.kind === 'government_plan';
+
+    [
+        'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
+        'childParcelIds', 'descendantParcelIds', 'parentFeatures',
+        'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
+        'formation', 'demolishedBuildings', 'demolitionScanned'
+    ].forEach(key => delete sanitized[key]);
+    if (!governmentPlan) delete sanitized.childFeatures;
+
+    if (sanitized.geometry && typeof sanitized.geometry === 'object') {
+        delete sanitized.geometry.parentFeatures;
+        delete sanitized.geometry.childFeatures;
+        if (sanitized.roadProposal) {
+            delete sanitized.geometry.roadPlan;
+            delete sanitized.geometry.roadGeometry;
+            if (Object.keys(sanitized.geometry).length === 0) delete sanitized.geometry;
+        }
+    }
+
     LOCAL_STATE_SUB_KEYS.forEach(key => {
         const sub = sanitized[key];
         if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-        sanitized[key] = { ...sub };
-        delete sanitized[key].applied;
-        delete sanitized[key].appliedAt;
-        delete sanitized[key].status;
+        delete sub.applied;
+        delete sub.appliedAt;
+        delete sub.status;
+        delete sub.childParcelIds;
+        delete sub.parentFeatures;
+        delete sub.parentsToRemove;
+        delete sub.formation;
+        delete sub.demolishedBuildings;
+        delete sub.demolitionScanned;
+        if (!(key === 'roadProposal' && governmentPlan)) delete sub.childFeatures;
+        clearRoadDemolition(sub.definition);
     });
+    if (sanitized.roadProposal) {
+        delete sanitized.definition;
+        delete sanitized.roadProposal.roadGeometry;
+    }
     return sanitized;
 }
 
@@ -68,15 +132,12 @@ export function serializeProposalRow(row, options = {}) {
     // against (rethink-proposals.md §9/§12 step 2, D5).
     proposal.ownershipFlow = choose(row.ownership_flow, proposal.ownershipFlow ?? null);
     proposal.cadastreFrame = choose(row.cadastre_frame, proposal.cadastreFrame ?? null);
-    proposal.childParcelIds = choose(row.descendant_parcel_ids, proposal.childParcelIds ?? null);
     proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
     proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);
     proposal.buildingProposal = choose(row.building_proposal, proposal.buildingProposal);
     proposal.structureProposal = choose(row.structure_proposal, proposal.structureProposal);
     proposal.reparcellization = choose(row.reparcellization, proposal.reparcellization);
-    proposal.parentProposals = choose(row.parent_proposal_ids, proposal.parentProposals);
-    proposal.childProposals = choose(row.child_proposal_ids, proposal.childProposals);
     proposal.lens = choose(row.lens, proposal.lens);
     proposal.bounds = choose(row.bounds, proposal.bounds);
     proposal.onchain = choose(row.onchain_data, proposal.onchain);
@@ -85,10 +146,6 @@ export function serializeProposalRow(row, options = {}) {
         ?? row.onchain_data?.imageUrl
         ?? proposal.screenshotUrl
         ?? null;
-
-    // Geometry blobs are deliberately not part of the proposal transport contract.
-    if ('parent_features' in row) proposal.parentFeatures = null;
-    if ('child_features' in row) proposal.childFeatures = null;
 
     return stripLocalProposalState(proposal);
 }

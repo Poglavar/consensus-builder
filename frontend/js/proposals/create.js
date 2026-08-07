@@ -14,23 +14,6 @@ function getProposalCityId() {
     return null;
 }
 
-// True when the open dialog is editing a proposal already on the map that will be SAVED IN PLACE:
-// a non-minted local source keeps its id (see createProposal's editInPlace branch). A minted source
-// forks instead, so it is NOT edit-in-place. Drives the submit label ("Save") from every writer.
-function isEditingExistingProposalInPlace() {
-    try {
-        const srcId = (typeof window !== 'undefined' && window.pendingProposalReplacementSource)
-            ? window.pendingProposalReplacementSource.proposalId : null;
-        if (!srcId) return false;
-        const src = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
-            ? proposalStorage.getProposal(srcId) : null;
-        if (!src) return false;
-        return !(typeof isProposalMinted === 'function' && isProposalMinted(src));
-    } catch (_) {
-        return false;
-    }
-}
-
 function updateCreateProposalSubmitState() {
     const btn = document.getElementById('createProposalSubmitButton');
     const hint = document.getElementById('proposalGeometryRequirementHint');
@@ -45,9 +28,10 @@ function updateCreateProposalSubmitState() {
         const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
         const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-        // Editing an existing proposal saves in place — that label wins over the create/vote labels.
-        btn.textContent = isEditingExistingProposalInPlace()
-            ? (t ? t('modal.createProposal.submitEdit', 'Save') : 'Save')
+        const createsReplacement = !!(typeof window !== 'undefined'
+            && window.pendingProposalReplacementSource?.proposalId);
+        btn.textContent = createsReplacement
+            ? (t ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : 'Create replacement proposal')
             : (isVote
                 ? (t ? t('panel.proposal.voting.submit', 'Submit for voting') : 'Submit for voting')
                 : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal'));
@@ -299,16 +283,9 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
             geometry: structureGeometry,
             parentParcelIds,
             blockName: blockName || null,
-            lakeGraphics: lakeGraphics || null,
-            // Structures clear their ground by default — no prompt.
-            demolishedBuildings: (typeof demolishBuildingsUnderFootprint === 'function')
-                ? (typeof ensureCorridorBuildingFootprintsLoaded === 'function'
-                    ? await ensureCorridorBuildingFootprintsLoaded().then(() => demolishBuildingsUnderFootprint(structureGeometry))
-                    : await demolishBuildingsUnderFootprint(structureGeometry))
-                : []
+            lakeGraphics: lakeGraphics || null
         },
-        // The structure draft is already materialised on this browser's map.
-        applied: true,
+        applied: false,
         termsConfirmed: true,
         createdAt: new Date().toISOString(),
         expiresAt: expiresAt,
@@ -330,19 +307,19 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         return;
     }
     const primaryParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
-    // Link proposal to ancestors
-    try { if (typeof ProposalManager !== 'undefined' && ProposalManager._linkProposalToAncestors) ProposalManager._linkProposalToAncestors(proposalId, parentParcelIds); } catch (_) { }
-
     // Close and update UI
     closeProposalDialog();
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-    try { if (typeof enableShowProposalsMode === 'function') enableShowProposalsMode(); } catch (_) { }
 
     // Open the details panel collapsed on first appearance (see showProposalInfo).
     if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
 
-    // No auto-apply on creation: the structure geometry is already on the map as an applied draft
-    // before the proposal exists (we switched to auto-applying drafts). Just focus the details.
+    const applied = await ProposalManager.applyProposal(proposalId);
+    if (!applied) {
+        showProposalAlertMessage('failed_to_apply_proposal', 'The proposal was saved but could not be applied to the cadastral fabric.');
+    }
+
+    // Focus the stored snapshot after the canonical replay has materialized it.
     if (typeof focusProposalDetails === 'function') {
         focusProposalDetails(proposalId, { parcelId: primaryParcelId, centerOnProposal: true });
     }
@@ -669,8 +646,7 @@ async function createProposal() {
             goal: selectedTool,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
             ownerAcceptances: {},
-            // Proposal creation consumes an already-materialised local design draft.
-            applied: true,
+            applied: false,
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString(), // Add creation timestamp
             expiresAt: expiresAt, // Expiry timestamp (null if no expiry)
@@ -785,13 +761,7 @@ async function createProposal() {
                 kind,
                 geometry: structureGeometry || null,
                 parentParcelIds: normalizedParentParcelIds,
-                blockName: formatParcelSelectionLabel(normalizedParentParcelIds),
-                // Structures clear their ground by default — no prompt.
-                demolishedBuildings: (structureGeometry && typeof demolishBuildingsUnderFootprint === 'function')
-                    ? (typeof ensureCorridorBuildingFootprintsLoaded === 'function'
-                        ? await ensureCorridorBuildingFootprintsLoaded().then(() => demolishBuildingsUnderFootprint(structureGeometry))
-                        : await demolishBuildingsUnderFootprint(structureGeometry))
-                    : []
+                blockName: formatParcelSelectionLabel(normalizedParentParcelIds)
             };
         }
 
@@ -853,7 +823,6 @@ async function createProposal() {
                     sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
                     tunnels: safeClone(roadDrawingContext.tunnels) || [],
                     gradeSeparations: safeClone(roadDrawingContext.gradeSeparations) || [],
-                    demolishedBuildings: safeClone(roadDrawingContext.demolishedBuildings) || [],
                     segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
                     metadata: resolvedMetadata
@@ -873,14 +842,7 @@ async function createProposal() {
                 proposal.primaryType = isTrackContext ? 'Track' : 'Road';
                 proposal.goal = 'road-track';
                 proposal.isCorridor = true;
-                proposal.definition = roadDefinition;
                 proposal.parentParcelIds = parentIds;
-
-                if (!proposal.geometry) proposal.geometry = {};
-                proposal.geometry.roadPlan = safeClone(roadDefinition);
-                if (roadDrawingContext.polygon) {
-                    proposal.geometry.roadGeometry = { polygon: safeClone(roadDrawingContext.polygon) };
-                }
 
                 proposal.roadProposal = {
                     definition: safeClone(roadDefinition),
@@ -929,14 +891,7 @@ async function createProposal() {
                 proposal.primaryType = corridor.type === 'track' ? 'Track' : 'Road';
                 proposal.goal = 'road-track';
                 proposal.isCorridor = true;
-                proposal.definition = roadDefinition;
                 proposal.parentParcelIds = corridorParents;
-
-                if (!proposal.geometry) proposal.geometry = {};
-                proposal.geometry.roadPlan = safeClone(roadDefinition);
-                if (polygonGeometry && polygonGeometry.type) {
-                    proposal.geometry.roadGeometry = { polygon: safeClone(polygonGeometry) };
-                }
 
                 proposal.roadProposal = {
                     definition: safeClone(roadDefinition),
@@ -1785,36 +1740,9 @@ async function createProposal() {
             waitingPopupVisible = true;
             setProposalModalDimmed(true);
         }
-        // Editing an existing LOCAL proposal (opened through the "Details" dialog) updates it IN
-        // PLACE: keep its id and its already-applied geometry, overwrite only the editable
-        // properties, and drop any server id so re-sharing re-fingerprints (a fresh URL only when
-        // the content actually changed). A MINTED source is immutable and instead forks — it falls
-        // through to the add-new + parked-original path below, exactly like before.
-        const inPlaceSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
-        const inPlaceSource = inPlaceSourceId ? proposalStorage.getProposal(inPlaceSourceId) : null;
-        const editInPlace = !!(inPlaceSource && !(typeof isProposalMinted === 'function' && isProposalMinted(inPlaceSource)));
-        let proposalId;
-        if (editInPlace) {
-            // Only non-geometric, dialog-editable fields — the geometry payload and applied state
-            // stay untouched, so the map (which already shows this proposal) never desyncs.
-            const EDITABLE_KEYS = ['author', 'title', 'name', 'proposalName', 'description', 'offer',
-                'offerCurrency', 'budget', 'budgetCurrency', 'acquisitionMode', 'boundaryAdjustment',
-                'primaryType', 'goal', 'expiresAt', 'decayEnabled', 'decayPercent', 'decayDurationMs',
-                'depositEnabled', 'depositPercent', 'isConditional', 'disbursementMode', 'isVote',
-                'voteExpiryDays', 'facets', 'proposalFacets'];
-            EDITABLE_KEYS.forEach(k => { if (k in proposal) inPlaceSource[k] = proposal[k]; });
-            inPlaceSource.termsConfirmed = true; // Saving through the dialog confirms terms.
-            // Re-sharing decides new-vs-same URL from the content fingerprint, so drop the old server id.
-            ['serverProposalId', 'hash', 'replacementLifecycle', 'supersedesProposalIds'].forEach(k => delete inPlaceSource[k]);
-            if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(inPlaceSource);
-            if (typeof proposalStorage.save === 'function') proposalStorage.save();
-            proposalId = inPlaceSource.proposalId;
-            // The source IS the edited record now — nothing to absorb further down.
-            delete proposal.sourceProposalId;
-            delete proposal.replacementOfProposalId;
-        } else {
-            proposalId = proposalStorage.addProposal(proposal);
-        }
+        // A save always mints a new local snapshot. The source record is never rewritten; if this
+        // is an edit, replacement supersession parks that source before the canonical replay.
+        const proposalId = proposalStorage.addProposal(proposal);
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();
@@ -1879,10 +1807,6 @@ async function createProposal() {
             }
         }
 
-        // Enable show proposals mode and clear multi-selection
-        console.debug('[createProposal] Enabling show proposals mode and cleaning up UI');
-        enableShowProposalsMode();
-
         // Hide parcel info panel if needed
         if (typeof hideParcelInfoPanel === 'function') {
             hideParcelInfoPanel();
@@ -1915,48 +1839,14 @@ async function createProposal() {
             }
         }
 
-        // No auto-apply on creation: the geometry is already on the map as an applied draft before
-        // the proposal exists (we switched to auto-applying drafts). Re-applying the proposal here
-        // was redundant and caused conflict toasts/modals against the very draft it was made from.
-
-        // Proposing an existing LOCAL object absorbs it: the record it was created from is
-        // removed, so exactly one thing remains on the map and in the list. A minted source is
-        // immutable — it stays behind, parked as superseded by the replacement.
+        // Records are the only source of live fabric. The canonical apply path flips the snapshot,
+        // handles replacement supersession, and derives the entire tessellation once.
         try {
-            const absorbedSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
-            const sourceRecord = absorbedSourceId ? proposalStorage.getProposal(absorbedSourceId) : null;
-            if (sourceRecord && !(typeof isProposalMinted === 'function' && isProposalMinted(sourceRecord))) {
-                if (typeof isProposalApplied === 'function' && isProposalApplied(sourceRecord)) {
-                    await ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true, skipRestoreSource: true });
-                }
-                proposalStorage.removeProposal(absorbedSourceId);
-                // The stored replacement no longer supersedes anything — its source is gone.
-                const storedReplacement = proposalStorage.getProposal(proposalId);
-                if (storedReplacement) {
-                    delete storedReplacement.replacementLifecycle;
-                    delete storedReplacement.supersedesProposalIds;
-                    // Carry the one-jump undo through proposing too: the original object the edit
-                    // chain started from stays restorable from the Delete prompt.
-                    try {
-                        const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
-                        ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
-                        snapshot.applied = false;
-                        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
-                            if (snapshot[kind] && typeof snapshot[kind] === 'object') {
-                                delete snapshot[kind].applied;
-                                delete snapshot[kind].appliedAt;
-                                if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
-                            }
-                        });
-                        storedReplacement.revertSnapshot = snapshot;
-                    } catch (_) { }
-                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(storedReplacement);
-                    if (typeof proposalStorage.save === 'function') proposalStorage.save();
-                }
-                try { ProposalManager._refreshUIAfterProposalChange?.(storedReplacement); } catch (_) { }
-            }
-        } catch (absorbError) {
-            console.warn('[createProposal] Could not absorb the local source object', absorbError);
+            const applied = await ProposalManager.applyProposal(proposalId);
+            if (!applied) throw new Error('The saved proposal could not be derived from the cadastral fabric.');
+        } catch (replayError) {
+            console.warn('[createProposal] Could not replay the saved proposal', replayError);
+            updateStatus('Proposal saved, but it could not be applied to the cadastral fabric.');
         }
 
         const focusParcelId = proposal.parentParcelIds[0] || null;
@@ -2020,13 +1910,11 @@ function buildUploadReadyProposal(proposal) {
     // stale on the first node drag. Computed on the upload copy, so the user's local record is not
     // disturbed, and it is absent from proposalContentFingerprint's allowlist, so adding it can
     // never change a share id. See rethink-proposals.md.
-    try {
-        uploadProposal.cadastreParcelIds = window.__cadastreAncestry
-            ? window.__cadastreAncestry.computeCadastreParcelIds(proposal)
-            : [];
-    } catch (error) {
-        console.warn('[createProposal] cadastral ancestry unavailable for upload', error);
+    if (!window.__cadastreAncestry
+        || typeof window.__cadastreAncestry.computeCadastreParcelIds !== 'function') {
+        throw new Error('Cannot publish: cadastral geometry resolution is unavailable.');
     }
+    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.computeCadastreParcelIds(proposal);
 
     // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
     // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the
@@ -2105,13 +1993,16 @@ function buildUploadReadyProposal(proposal) {
     }
 
     // The §15a publish gate: a PUBLISHED record is flat — `base cadastral parcel(s) → one
-    // formation → content`. A formation's parent declarations flatten to base ids here (the
-    // cadastral truth is the cadastreParcelIds stamp above); content keeps its plot. A record
-    // that still is not flat is REFUSED, loudly — publish is the gate, never a healer.
+    // formation → content`. Every parent declaration flattens to base ids here; derived parcel
+    // ids are replay output, never published input. A record that still is not flat is refused.
     if (typeof window !== 'undefined' && window.__formationDepth) {
-        const gate = window.__formationDepth.preparePublishRecord(uploadProposal, {
-            geometricBaseIds: Array.isArray(uploadProposal.cadastreParcelIds) ? uploadProposal.cadastreParcelIds : []
-        });
+        const geometricBaseIds = Array.isArray(uploadProposal.cadastreParcelIds)
+            ? uploadProposal.cadastreParcelIds.filter(Boolean)
+            : [];
+        const gate = window.__formationDepth.preparePublishRecord(
+            uploadProposal,
+            geometricBaseIds.length ? { geometricBaseIds } : {}
+        );
         if (!gate.verdict.flat) {
             const detail = gate.verdict.violations
                 .map(v => v.code + (v.id ? ` (${v.id})` : (Array.isArray(v.ids) ? ` (${v.ids.join(', ')})` : '')))

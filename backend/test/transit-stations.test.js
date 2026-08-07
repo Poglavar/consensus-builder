@@ -318,8 +318,8 @@ describe('station geometry editing', () => {
         expect(edited.bearing).toBe(90);
         expect(edited.platformHeightM).toBe(17.5);
         expect(edited.geometry).not.toEqual(original.geometry);
-        expect(edited.demolishedBuildings).toBeNull();
-        expect(edited.demolitionScanned).toBe(false);
+        expect(edited.demolishedBuildings).toBeUndefined();
+        expect(edited.demolitionScanned).toBeUndefined();
         expect(edited.parentParcelIds).toEqual(['original-parent']);
         expect(original.bearing).toBe(0);
     });

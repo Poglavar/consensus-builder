@@ -61,7 +61,7 @@ describe('parcelDepth / mintingProposalIdOf', () => {
 });
 
 describe('buildDrillStack', () => {
-    it('orders the full chain: building over slice over formation over base', () => {
+    it('orders the visible chain without resurrecting its consumed cadastral base', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
                 { id: BASE_ID, feature: rect(0, 0, 10, 10), live: false },
@@ -81,12 +81,11 @@ describe('buildDrillStack', () => {
             ]
         }));
         expect(stack.map(e => e.kind === 'proposal' ? e.key : e.id)).toEqual([
-            'c-bldg', SLICE_ID, 'c-rep', BASE_ID
+            'c-bldg', SLICE_ID, 'c-rep'
         ]);
         expect(stack[0].depth).toBe(1.5);
         expect(stack[1].depth).toBe(1);
         expect(stack[2].depth).toBe(0.5);
-        expect(stack[3].depth).toBe(0);
     });
 
     it('includes roads: a road over base ground sits above the base parcel', () => {
@@ -142,15 +141,14 @@ describe('buildDrillStack', () => {
         expect(stack[1].depth).toBe(0.5);
     });
 
-    it('keeps consumed base parcels but drops dead derived slices', () => {
+    it('drops every parcel outside the live partition, including consumed cadastre', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
                 { id: BASE_ID, feature: rect(0, 0, 10, 10), live: false },
                 { id: `${BASE_ID}#c-old-1`, feature: rect(0, 0, 10, 10), live: false }
             ]
         }));
-        expect(stack.map(e => e.id)).toEqual([BASE_ID]);
-        expect(stack[0].live).toBe(false);
+        expect(stack).toEqual([]);
     });
 
     it('breaks same-depth proposal ties by creation time, later on top', () => {

@@ -46,7 +46,7 @@
             let browseProposal = appliedRoadProposal;
             if (!browseProposal) {
                 try {
-                    const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
+                    const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId) || [];
                     browseProposal = parcelProposals.find(p => !p.roadProposal
                         && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
                     if (!browseProposal && typeof global.structureProposalsCoveringFeature === 'function') {
@@ -233,7 +233,7 @@
         let appliedProposal = drillHandled ? null : appliedRoadProposal;
         if (!appliedProposal && !drillHandled) {
             try {
-                const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId, { hydrateRoadAssets: false }) || [];
+                const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId) || [];
                 // Roads are excluded here: every slice a road cut lists that road, so an ordinary
                 // parcel next to a corridor would otherwise select the road (node handles and
                 // all). Roads open through their own corridor click surface only.

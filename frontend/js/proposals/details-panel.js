@@ -1,68 +1,5 @@
 // proposals/details-panel.js — extracted from proposals.js (behavior-preserving relocation).
 
-function showRoadProposalInfo(proposal) {
-    // Clear any existing highlights
-    clearProposalHighlights();
-
-    // Show road proposal info in the parcel info panel (reusing existing UI)
-    const roadGeometry = proposal.roadGeometry;
-    const displayId = proposal.proposalId || '';
-    const safeDisplayId = typeof escapeHtml === 'function'
-        ? escapeHtml(String(displayId))
-        : (displayId || '');
-    const infoHTML = `
-        <div class="proposal-info">
-            <h4>Road Proposal</h4>
-            <div class="proposal-hash">ID: ${safeDisplayId}</div>
-            <div class="metric-group">
-                <div class="metric-label">Type:</div>
-                <div class="metric-value">${(typeof escapeHtml === 'function' ? escapeHtml(String(resolveProposalGoalKey(proposal) || '')) : String(resolveProposalGoalKey(proposal) || ''))}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Road Name:</div>
-                <div class="metric-value">${roadGeometry.name}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Road Width:</div>
-                <div class="metric-value">${roadGeometry.width}m</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>
-                <div class="metric-value">${proposal.username}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Date:</div>
-                <div class="metric-value">${new Date(proposal.timestamp).toLocaleDateString()}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Description:</div>
-                <div class="metric-value">${proposal.description}</div>
-            </div>
-            ${proposal.offer ? `
-                <div class="metric-group">
-                    <div class="metric-label">Offer:</div>
-                    <div class="metric-value">${proposal.offer}</div>
-                </div>
-            ` : ''}
-        </div>
-    `;
-
-    // Show in parcel info panel (Info tab)
-    const parcelInfoPanel = document.getElementById('parcel-info-panel');
-    const infoContent = document.getElementById('info-content');
-
-    if (parcelInfoPanel && infoContent) {
-        infoContent.innerHTML = infoHTML;
-        parcelInfoPanel.classList.add('visible');
-
-        // Update the panel title
-        const panelTitle = parcelInfoPanel.querySelector('h3');
-        if (panelTitle) {
-            panelTitle.textContent = 'Road Proposal Info';
-        }
-    }
-}
-
 async function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (typeof proposalStorage === 'undefined') return false;
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
@@ -388,8 +325,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </div>`;
     };
 
-    const descendantKeys = (typeof ProposalManager !== 'undefined')
-        ? (ProposalManager._getProposalDescendants(proposal.proposalId) || [])
+    const descendantKeys = Array.isArray(proposal.childParcelIds)
+        ? Array.from(new Set(proposal.childParcelIds.map(String)))
         : [];
     const descendantItemsInitial = descendantKeys.slice(0, MAX_LIST_INITIAL).map(renderDescendantItem).join('');
     const descendantItemsRemaining = descendantKeys.slice(MAX_LIST_INITIAL);
@@ -455,23 +392,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const applyDisabledForType = isRoadProposal ? false : APPLY_DISABLED_TYPE_KEYS.has(normalizedTypeForActions);
 
     const appliedState = isProposalApplied(fullProposal);
-    const activeRoadReplacement = (isRoadProposal && typeof activeRoadSuperseder === 'function')
-        ? activeRoadSuperseder(fullProposal, id => (typeof getProposalByIdOrHash === 'function' ? getProposalByIdOrHash(id) : null))
-        : null;
-    const activeRoadReplacementName = activeRoadReplacement
-        ? (activeRoadReplacement.title || activeRoadReplacement.name || activeRoadReplacement.proposalName || activeRoadReplacement.proposalId || 'combined road')
-        : null;
     // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
     const isMinted = isProposalMinted(fullProposal);
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
     const mapStatusBadgeClass = appliedState ? 'applied' : 'not-applied';
-    const mapStatusBadgeLabel = activeRoadReplacement
-        ? tProposal('panel.proposal.mapStatus.includedIn', 'Included in {{name}}', { name: activeRoadReplacementName })
-        : (appliedState
-            ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
-            : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied'));
+    const mapStatusBadgeLabel = appliedState
+        ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
+        : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied');
     const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
     const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
     const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
@@ -503,13 +432,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     let mapActionButtonHtml = '';
     if (canShowMapActions) {
         const isApplyAction = !appliedState;
-        const buttonLabel = activeRoadReplacement
-            ? tProposal('panel.proposal.actions.includedInRoad', 'Included in combined road')
-            : (appliedState
-                ? tProposal('panel.proposal.actions.remove', 'Stash')
-                : tProposal('panel.proposal.actions.apply', 'Apply to map'));
+        const buttonLabel = appliedState
+            ? tProposal('panel.proposal.actions.remove', 'Stash')
+            : tProposal('panel.proposal.actions.apply', 'Apply to map');
         const iconClass = appliedState ? 'fa-box-archive' : 'fa-check';
-        const isDisabled = isApplyAction && (applyDisabledForType || !!activeRoadReplacement);
+        const isDisabled = isApplyAction && applyDisabledForType;
         const buttonClass = appliedState
             ? 'btn btn-warning'
             : (isDisabled ? 'btn btn-secondary disabled' : 'btn btn-success');
@@ -522,12 +449,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : (isDisabled ? null : `applyProposalToMap('${proposalKey}')`);
         const disabledStyle = 'cursor: not-allowed; opacity: 0.55; pointer-events: none; background-color: #d1d5db; border-color: #cbd5e1; color: #555;';
         const enabledStyle = '';
-        const replacementTitle = activeRoadReplacement
-            ? tProposal('panel.proposal.actions.includedInRoadHint', 'Remove {{name}} from the map to restore this road.', { name: activeRoadReplacementName })
-            : '';
-        const safeReplacementTitle = replacementTitle && typeof escapeHtml === 'function' ? escapeHtml(replacementTitle) : replacementTitle;
         const disabledAttrs = isDisabled
-            ? `disabled aria-disabled="true" ${safeReplacementTitle ? `title="${safeReplacementTitle}"` : ''} style="${disabledStyle}"`
+            ? `disabled aria-disabled="true" style="${disabledStyle}"`
             : (enabledStyle ? `style="${enabledStyle}"` : '');
         const buttonId = `proposal-action-btn-${proposalKey}`;
         mapActionButtonHtml = `
@@ -545,11 +468,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Geometry is direct manipulation (corridors: node handles + cross-section); everything else —
     // terms, offer, name, expiry, decay, deposit — is edited through one "Details" action that opens
-    // the full create dialog prefilled from the object. For a non-minted local proposal that dialog
-    // saves IN PLACE (same id, only a re-share under a changed fingerprint mints a fresh URL), so it
-    // is the single editing surface whether or not terms were already confirmed. A MINTED proposal is
-    // immutable, so its slot is the read-only "Proposal details" panel expand instead (editing a
-    // minted proposal forks it, which happens by editing its geometry, not from here).
+    // the full create dialog prefilled from the object. Saving creates an immutable replacement
+    // snapshot; the source remains untouched. Minted proposals use the same fork semantics.
     const editButtonHtml = (proposalKey && !isMinted)
         ? `
         <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
@@ -580,9 +500,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const driveSerialId = (typeof window !== 'undefined' && typeof window.getSerialProposalId === 'function')
         ? window.getSerialProposalId(driveProposal)
         : null;
-    // The drawn plan lives at geometry.roadPlan on newer proposals and only at
-    // roadProposal.definition on older ones — both shapes exist in stored data.
-    const drivePlan = driveProposal?.geometry?.roadPlan || driveProposal?.roadProposal?.definition;
+    const drivePlan = driveProposal?.roadProposal?.definition;
     const isDrivableTrack = corridorIsTrack(drivePlan);
     const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
         ? `

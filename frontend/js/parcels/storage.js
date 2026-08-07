@@ -218,28 +218,6 @@
         bumpLayerIndexVersion();
     }
 
-    /**
-     * Clean up any attached overlay layers (like road centerlines) before removing a parcel layer.
-     * This is necessary because the 'remove' event only fires when removing from the map directly,
-     * not when removing from a LayerGroup.
-     * @param {L.Layer} layer - The parcel layer being removed
-     */
-    function cleanupAttachedLayers(layer) {
-        if (!layer) return;
-        // Remove road centerline overlay if present
-        if (layer._roadCenterlineLayer) {
-            try {
-                if (global.map && global.map.hasLayer(layer._roadCenterlineLayer)) {
-                    global.map.removeLayer(layer._roadCenterlineLayer);
-                    console.log('[cleanupAttachedLayers] Removed road centerline layer');
-                }
-            } catch (e) {
-                console.warn('[cleanupAttachedLayers] Error removing road centerline:', e);
-            }
-            layer._roadCenterlineLayer = null;
-        }
-    }
-
     function clearParcelLayerIndex() {
         const index = getLayerIndex();
         if (index) {
@@ -323,37 +301,17 @@
             return 0;
         }
 
-        const seenParcelIds = new Map(); // Map of parcelId -> preferred layer
+        const seenParcelIds = new Map();
         const duplicatesToRemove = [];
 
-        // Helper: check if layer has attached overlays (like centerlines)
-        const hasAttachedOverlays = (layer) => {
-            return !!(layer && layer._roadCenterlineLayer);
-        };
-
-        // First pass: identify duplicates
-        // Prefer to keep layers that have attached overlays (like centerlines)
         global.parcelLayer.eachLayer(layer => {
             const parcelId = getLayerParcelId(layer);
             if (parcelId === undefined || parcelId === null) return;
             const normalizedId = parcelId.toString();
 
             if (seenParcelIds.has(normalizedId)) {
-                const existingLayer = seenParcelIds.get(normalizedId);
-                const existingHasOverlays = hasAttachedOverlays(existingLayer);
-                const currentHasOverlays = hasAttachedOverlays(layer);
-
-                if (currentHasOverlays && !existingHasOverlays) {
-                    // Current layer has overlays but existing doesn't - prefer current
-                    duplicatesToRemove.push(existingLayer);
-                    seenParcelIds.set(normalizedId, layer);
-                    console.log(`[deduplicateParcelLayer] Preferring layer with overlays for parcel ${normalizedId}`);
-                } else {
-                    // Keep existing, mark current as duplicate
-                    duplicatesToRemove.push(layer);
-                }
+                duplicatesToRemove.push(layer);
             } else {
-                // First occurrence - keep it
                 seenParcelIds.set(normalizedId, layer);
             }
         });
@@ -365,8 +323,6 @@
             const normalizedId = parcelId ? parcelId.toString() : null;
 
             if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
-                // Clean up attached overlay layers before removing
-                cleanupAttachedLayers(layer);
                 global.parcelLayer.removeLayer(layer);
                 // Unindex the duplicate layer
                 if (typeof global.unindexParcelLayer === 'function') {
@@ -416,8 +372,6 @@
 
         unindexParcelLayer(mappedLayer);
         if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
-            // Clean up attached overlay layers before removing
-            cleanupAttachedLayers(mappedLayer);
             global.parcelLayer.removeLayer(mappedLayer);
         }
 
@@ -451,8 +405,7 @@
     }
 
     /**
-     * Show a parcel that is in parcelLayerById but hidden from parcelLayer.
-     * Use this when restoring parent parcels after unapplying a proposal.
+     * Show an indexed cadastral parcel during the reset phase of a full fabric replay.
      * @param {string|number} parcelId
      * @returns {boolean} true if the parcel was shown, false if not found or already visible
      */
@@ -491,8 +444,6 @@
             // Remove from parcelLayer
             if (global.parcelLayer && typeof global.parcelLayer.removeLayer === 'function') {
                 if (global.parcelLayer.hasLayer(layer)) {
-                    // Clean up attached overlay layers before removing
-                    cleanupAttachedLayers(layer);
                     global.parcelLayer.removeLayer(layer);
                 }
             }
@@ -567,7 +518,6 @@
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
     global.resolveParcelLayerById = resolveParcelLayerById;
     global.fastRemoveParcelLayersByIds = fastRemoveParcelLayersByIds;
-    global.cleanupAttachedLayers = cleanupAttachedLayers;
     // Debug function to check for duplicate parcels
     function debugParcelCount(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
@@ -1166,4 +1116,3 @@
     global.getParcelsInBounds = getParcelsInBounds;
     global.eachVisibleParcel = eachVisibleParcel;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -86,7 +86,7 @@
 
         try {
             // Get all proposals for this parcel
-            const proposals = global.proposalStorage.getProposalsForParcel(normalizedId, { hydrateRoadAssets: false });
+            const proposals = global.proposalStorage.getProposalsForParcel(normalizedId);
 
             // Exclude Canton proposals — they're surfaced by the separate purple
             // Canton badge (from the ledger), so counting their local copy here too

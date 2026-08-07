@@ -21,7 +21,6 @@ const proposalAreaCache = new Map();
 
 const proposalStorage = {
     proposals: new Map(),
-    proposalIndexByHash: new Map(),
     nextProposalId: 0,
     // Save-batching, same shape as agentStorage. Code paths that mutate proposals
     // call save() freely; if a batch is open save() just flags a pending write
@@ -45,145 +44,9 @@ const proposalStorage = {
             this._persist();
         }
     },
-    // Cached map: parcelId -> Set<proposalId> for applied proposals whose rule replaces
-    // their parents (road, decideLater, reparcellization). Built lazily on first read
-    // after invalidation. Lets isParcelReplacedByChildren stay O(1) per pan/ingest.
-    _ancestorIndex: null,
-    _ancestorIndexDirty: true,
-    // Cached map: parcelId -> Set<proposalId> for ALL applied proposals that claim the parcel as a
-    // parent, INCLUDING overlays (building, park/square/lake/station) that don't hide it. Used for apply-time
-    // conflict detection ("is anything already applied on this parcel?"), which must catch overlays
-    // that the ancestor index deliberately excludes.
-    _occupancyIndex: null,
-    _occupancyIndexDirty: true,
-    _roadAssetSuffixes: {
-        parents: 'roadParents',
-        children: 'roadChildren',
-        metadata: 'roadParentsKeep'
-    },
-
-    _invalidateAncestorIndex() {
-        this._ancestorIndexDirty = true;
-        this._occupancyIndexDirty = true;
-    },
-
-    /**
-     * True if applying this proposal removes its parent parcels from the map. Building
-     * and structure overlays draw on top of parents (parcelBased, single-building,
-     * park, square, lake, station) and must NOT hide them.
-     */
-    _proposalRuleReplacesParents(proposal) {
-        if (!proposal) return false;
-        if (proposal.buildingProposal || proposal.structureProposal) return false;
-        const goalKey = (typeof normalizeProposalGoalKey === 'function')
-            ? (normalizeProposalGoalKey(proposal.goal) || '')
-            : String(proposal.goal || '');
-        if (['buildings', 'building(s)', 'single-building', 'parcelBased', 'park', 'square', 'lake', 'station'].includes(goalKey)) {
-            return false;
-        }
-        return true;
-    },
-
-    /** Union of every parent-id list a proposal might carry across its sub-objects. */
-    _collectProposalAncestorIds(proposal) {
-        const ids = new Set();
-        const push = (arr) => {
-            if (!Array.isArray(arr)) return;
-            for (const id of arr) {
-                if (id == null) continue;
-                const s = String(id);
-                if (s) ids.add(s);
-            }
-        };
-        push(proposal.parentParcelIds);
-        if (proposal.roadProposal) push(proposal.roadProposal.parentParcelIds);
-        if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.parentParcelIds);
-        if (proposal.reparcellization) push(proposal.reparcellization.parentParcelIds);
-        if (proposal.buildingProposal) push(proposal.buildingProposal.parentParcelIds);
-        if (proposal.structureProposal) push(proposal.structureProposal.parentParcelIds);
-        return ids;
-    },
-
-    _rebuildAncestorIndex() {
-        const idx = new Map();
-        for (const proposal of this.proposals.values()) {
-            if (!proposal) continue;
-            if (typeof isProposalApplied !== 'function' || !isProposalApplied(proposal)) continue;
-            if (!this._proposalRuleReplacesParents(proposal)) continue;
-            const proposalKey = String(proposal.proposalId || '');
-            if (!proposalKey) continue;
-            const ancestorIds = this._collectProposalAncestorIds(proposal);
-            for (const ancestorId of ancestorIds) {
-                let bucket = idx.get(ancestorId);
-                if (!bucket) {
-                    bucket = new Set();
-                    idx.set(ancestorId, bucket);
-                }
-                bucket.add(proposalKey);
-            }
-        }
-        this._ancestorIndex = idx;
-        this._ancestorIndexDirty = false;
-    },
-
-    /**
-     * O(1) ancestor-membership lookup. True if any APPLIED proposal whose rule replaces
-     * parents lists this parcel as an ancestor. Used by isParcelReplacedByChildren.
-     */
-    isParcelAncestorOfAppliedProposal(parcelId) {
-        if (!parcelId) return false;
-        if (this._ancestorIndexDirty || !this._ancestorIndex) {
-            this._rebuildAncestorIndex();
-        }
-        const bucket = this._ancestorIndex.get(String(parcelId));
-        return !!(bucket && bucket.size > 0);
-    },
-
-    // Same as _rebuildAncestorIndex but WITHOUT the "replaces parents" filter, so overlays
-    // (building, park/square/lake/station) are included. This is the occupancy view: every applied
-    // proposal that claims a parcel, whether it consumes or overlays it.
-    _rebuildOccupancyIndex() {
-        const idx = new Map();
-        for (const proposal of this.proposals.values()) {
-            if (!proposal) continue;
-            if (typeof isProposalApplied !== 'function' || !isProposalApplied(proposal)) continue;
-            const proposalKey = String(proposal.proposalId || '');
-            if (!proposalKey) continue;
-            const ancestorIds = this._collectProposalAncestorIds(proposal);
-            for (const ancestorId of ancestorIds) {
-                let bucket = idx.get(ancestorId);
-                if (!bucket) {
-                    bucket = new Set();
-                    idx.set(ancestorId, bucket);
-                }
-                bucket.add(proposalKey);
-            }
-        }
-        this._occupancyIndex = idx;
-        this._occupancyIndexDirty = false;
-    },
-
-    /**
-     * Which already-applied proposals currently occupy this parcel — INCLUDING overlays. Returns an
-     * array of proposalId strings (empty if none). Used by the apply flow to detect geography
-     * conflicts: a new proposal wanting a parcel that another applied proposal (of any kind) already
-     * consumed or sits on.
-     */
-    getAppliedProposalsOccupyingParcel(parcelId) {
-        if (!parcelId) return [];
-        if (this._occupancyIndexDirty || !this._occupancyIndex) {
-            this._rebuildOccupancyIndex();
-        }
-        const bucket = this._occupancyIndex.get(String(parcelId));
-        return bucket ? Array.from(bucket) : [];
-    },
-
     _ensureIndexes() {
         if (!this.proposals || typeof this.proposals.clear !== 'function') {
             this.proposals = new Map();
-        }
-        if (!this.proposalIndexByHash || typeof this.proposalIndexByHash.clear !== 'function') {
-            this.proposalIndexByHash = new Map();
         }
     },
 
@@ -214,11 +77,7 @@ const proposalStorage = {
         );
         if (!id) return null;
         this.proposals.set(id, proposal);
-        this._invalidateAncestorIndex();
         return id;
-    },
-
-    _removeIndexForProposal(proposal) {
     },
 
     _resolveProposalId(idOrHash) {
@@ -613,7 +472,6 @@ const proposalStorage = {
             const raw = PersistentStorage.getItem(PROPOSALS_STORAGE_KEY);
             if (!raw) {
                 this.proposals.clear();
-                this.proposalIndexByHash.clear();
                 const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
                 this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
                 return;
@@ -621,7 +479,6 @@ const proposalStorage = {
 
             const parsed = JSON.parse(raw);
             this.proposals.clear();
-            this.proposalIndexByHash.clear();
             if (!Array.isArray(parsed)) return;
 
             parsed.forEach(entry => {
@@ -654,16 +511,12 @@ const proposalStorage = {
             console.error('proposalStorage.load: Failed to parse proposals from storage', error);
             this._ensureIndexes();
             this.proposals.clear();
-            this.proposalIndexByHash.clear();
             const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
             this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
         }
     },
 
     save() {
-        // Always invalidate the in-memory ancestor index — callers rely on
-        // this happening synchronously even when persistence is deferred.
-        this._invalidateAncestorIndex();
         if (this._suspendSaveCount > 0) {
             this._hasPendingSave = true;
             return;
@@ -764,38 +617,6 @@ const proposalStorage = {
         try { PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY); } catch (_) { }
     },
 
-    _roadAssetKey(proposalId, suffix) {
-        if (!proposalId || !suffix) return null;
-        return `proposal_${proposalId}_${suffix}`;
-    },
-
-    _resolveRoadAssetKey(idOrHash) {
-        const resolved = this._resolveProposalId(idOrHash);
-        return resolved ? String(resolved) : null;
-    },
-
-    persistRoadAssets(proposalIdOrHash) {
-        // Road assets now live on-demand; clear any legacy sidecars when touched.
-        this.clearRoadAssets(proposalIdOrHash);
-    },
-
-    loadRoadAssets() {
-        // Sidecars removed; keep signature for backward compatibility.
-        return { parentFeatures: [], parentsKeepDetails: null };
-    },
-
-    clearRoadAssets(proposalIdOrHash) {
-        if (typeof PersistentStorage === 'undefined') return;
-        const key = this._resolveRoadAssetKey(proposalIdOrHash);
-        if (!key) return;
-        const parentKey = this._roadAssetKey(key, this._roadAssetSuffixes.parents);
-        const childKey = this._roadAssetKey(key, this._roadAssetSuffixes.children);
-        const metaKey = this._roadAssetKey(key, this._roadAssetSuffixes.metadata);
-        try { if (parentKey) PersistentStorage.removeItem(parentKey); } catch (_) { }
-        try { if (childKey) PersistentStorage.removeItem(childKey); } catch (_) { }
-        try { if (metaKey) PersistentStorage.removeItem(metaKey); } catch (_) { }
-    },
-
     getAllProposals() {
         return Array.from(this.proposals.values());
     },
@@ -835,58 +656,30 @@ const proposalStorage = {
         return resolvedId ? this.proposals.get(resolvedId) || null : null;
     },
 
-    getProposalsForParcel(parcelId, options = {}) {
+    getProposalsForParcel(parcelId) {
         const id = normalizeParcelId(parcelId);
         if (!id) {
             return [];
         }
-        // A synthetic descendant (e.g. 605#p-xxx-1 or 605#c-xxx-1, possibly nested) inherits its
-        // ancestors' proposals: an urban rule applied to the original parcel still concerns the
-        // slices a later road cut out of it, so it must appear on those slices too. Strip on any
-        // '#' so new-style c-/c2- slice ids project the same way the old p- tokens did.
+        // A derived parcel also shows proposals declared on its one cadastral root. Flat records
+        // keep the authoritative parent and child lists at the proposal root; sub-record mirrors
+        // never participate in lookup.
         const matchIds = new Set([id]);
-        {
-            let cursor = id;
-            while (true) {
-                const cut = cursor.lastIndexOf('#');
-                if (cut <= 0) break;
-                cursor = cursor.slice(0, cut);
-                matchIds.add(cursor);
-            }
-        }
+        const hashAt = id.indexOf('#');
+        if (hashAt > 0) matchIds.add(id.slice(0, hashAt));
         const matchesId = value => {
             const normalized = normalizeParcelId(value);
             return normalized !== null && matchIds.has(normalized);
         };
         const results = [];
-        const hydrateRoadAssets = options && Object.prototype.hasOwnProperty.call(options, 'hydrateRoadAssets')
-            ? !!options.hydrateRoadAssets
-            : true;
         for (const proposal of this.proposals.values()) {
             const parentIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
             const parcelMatch = parentIds.some(matchesId);
 
             const childIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
-            const decideLaterChildIds = Array.isArray(proposal.decideLaterProposal?.childParcelIds) ? proposal.decideLaterProposal.childParcelIds : [];
-            const allChildIds = childIds.concat(decideLaterChildIds);
-            const childMatch = allChildIds.some(matchesId);
+            const childMatch = childIds.some(matchesId);
 
-            let roadMatch = false;
-            if (!parcelMatch && proposal.roadProposal) {
-                const road = proposal.roadProposal;
-                const roadParentIds = Array.isArray(road.parentParcelIds) ? road.parentParcelIds : [];
-                const roadChildIds = Array.isArray(road.childParcelIds) ? road.childParcelIds : [];
-                const combinedIds = roadParentIds.concat(roadChildIds);
-                roadMatch = combinedIds.some(matchesId);
-
-                if (!roadMatch && hydrateRoadAssets) {
-                    // With road assets stored in-proposal, only ids are available; rely on parent/child id lists
-                    roadMatch = roadParentIds.some(matchesId)
-                        || roadChildIds.some(matchesId);
-                }
-            }
-
-            if (parcelMatch || childMatch || roadMatch) {
+            if (parcelMatch || childMatch) {
                 results.push(proposal);
             }
         }
@@ -996,9 +789,6 @@ const proposalStorage = {
         const existing = resolvedId ? this.proposals.get(resolvedId) : null;
         const deleted = resolvedId ? this.proposals.delete(resolvedId) : false;
         if (deleted) {
-            this._removeIndexForProposal(existing);
-            this._invalidateAncestorIndex();
-            this.clearRoadAssets(resolvedId || idOrHash);
             this.save();
             if (typeof removeExecutedBuildingByProposalId === 'function') {
                 try {
@@ -1013,17 +803,9 @@ const proposalStorage = {
 
     clear() {
         this.proposals.clear();
-        this._invalidateAncestorIndex();
         if (typeof PersistentStorage !== 'undefined') {
             PersistentStorage.removeItem(PROPOSALS_STORAGE_KEY);
         }
-    },
-
-    // Deprecated compatibility entry point. Status tokens now mutate lifecycle only; map
-    // visibility must go through setProposalApplied so a server/chain transition cannot draw or
-    // remove geometry in this browser.
-    updateProposalStatus(proposalId, status) {
-        return this.setProposalLifecycleStatus(proposalId, status);
     },
 
     // Lifecycle-only mutation. It deliberately does not infer or change local map visibility.
@@ -1062,8 +844,7 @@ const proposalStorage = {
         // descendant road geometry cannot be re-derived — it lives solely in childFeatures.
         // Preserve it, otherwise apply reads back an empty child set and returns false.
         const isGovernmentPlan = proposal?.tags?.governmentPlan === true
-            || proposal?.roadProposal?.definition?.kind === 'government_plan'
-            || proposal?.geometry?.roadPlan?.kind === 'government_plan';
+            || proposal?.roadProposal?.definition?.kind === 'government_plan';
         const preservedChildFeatures = isGovernmentPlan
             ? (Array.isArray(proposal.childFeatures) && proposal.childFeatures.length
                 ? proposal.childFeatures
@@ -1075,6 +856,15 @@ const proposalStorage = {
         if (proposal.geometry && typeof proposal.geometry === 'object') {
             delete proposal.geometry.parentFeatures;
             delete proposal.geometry.childFeatures;
+            if (proposal.roadProposal) {
+                delete proposal.geometry.roadPlan;
+                delete proposal.geometry.roadGeometry;
+                if (Object.keys(proposal.geometry).length === 0) delete proposal.geometry;
+            }
+        }
+        if (proposal.roadProposal) {
+            delete proposal.definition;
+            delete proposal.roadProposal.roadGeometry;
         }
         if (preservedChildFeatures && preservedChildFeatures.length) {
             proposal.childFeatures = preservedChildFeatures;
@@ -1088,8 +878,8 @@ const proposalStorage = {
         }
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
-        // Upgrade legacy rows once. Steady-state visibility lives only on proposal.applied; nested
-        // copies are removed so contradictory flags cannot be created again.
+        // Canonical current-record shape. Missing application state means locally unapplied;
+        // legacy interpretation belongs exclusively to migrate-tessellation.js.
         normalizeProposalStatusAxes(proposal);
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
         proposal.lens = normalizeLensEntries(
@@ -1238,16 +1028,12 @@ const proposalStorage = {
         parts.push(`parents:${parentIds.join(',')}`);
 
         // Road / track
-        const roadDef = proposal.roadProposal?.definition || proposal.definition || null;
+        const roadDef = proposal.roadProposal?.definition || null;
         if (roadDef) {
             parts.push(`roadDef:${serialiseRoadDefinition(roadDef)}`);
         }
         if (proposal.roadProposal?.mode) {
             parts.push(`roadMode:${proposal.roadProposal.mode}`);
-        }
-        const roadGeom = proposal.roadGeometry?.polygon?.coordinates?.[0];
-        if (roadGeom) {
-            parts.push(`roadGeom:${serialiseRoadCoordinates(roadGeom)}`);
         }
 
         // Building proposals
@@ -1662,15 +1448,6 @@ const multiParcelSelection = {
             }
         }
 
-        // Try to recover from proposal data (unapplied descendants)
-        if (!foundParcel) {
-            foundParcel = this.recoverParcelFromProposals(targetId);
-            if (foundParcel) {
-                this.parcelIdIndex.set(targetId, foundParcel);
-                this.parcelIdIndexSize = this.parcelIdIndex.size;
-            }
-        }
-
         if (!foundParcel) {
             // Only escalate when there is no known way to recover the parcel.
             const hasFetchers = typeof fetchSingleParcelById === 'function' || typeof fetchParcelsForIds === 'function';
@@ -1759,84 +1536,6 @@ const multiParcelSelection = {
             }
         }
         return null;
-    },
-
-    recoverParcelFromProposals(parcelId) {
-        // Guard against infinite recursion
-        if (this._recoveringParcels && this._recoveringParcels.has(parcelId.toString())) {
-            return null;
-        }
-        if (!this._recoveringParcels) {
-            this._recoveringParcels = new Set();
-        }
-        this._recoveringParcels.add(parcelId.toString());
-
-        try {
-            // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
-                return null;
-            }
-
-            if (typeof proposalStorage === 'undefined' || !proposalStorage.getAllProposals) {
-                return null;
-            }
-
-            const proposals = proposalStorage.getAllProposals();
-            if (!Array.isArray(proposals) || proposals.length === 0) {
-                return null;
-            }
-
-            const targetId = parcelId.toString();
-
-            for (const proposal of proposals) {
-                if (!proposal || normalizeProposalGoalKey(proposal.goal) !== 'road-track') continue;
-                const roadProposal = proposal.roadProposal;
-                if (!roadProposal) continue;
-
-                const parentIds = ensureArrayOfStrings(roadProposal.parentParcelIds || proposal.parentParcelIds || proposal.parentParcelIds || []);
-                const childIds = ensureArrayOfStrings(roadProposal.childParcelIds || []);
-
-                const isParent = parentIds.includes(targetId);
-                const isChild = childIds.includes(targetId);
-
-                if (!isParent && !isChild) continue;
-
-                // Skip recovery to prevent infinite recursion (we're already in recoverParcelFromProposals)
-                const candidateFeature = getParcelFeatureForHighlight(targetId, proposal, { skipRecovery: true });
-                if (!candidateFeature) continue;
-
-                try {
-                    const featureClone = JSON.parse(JSON.stringify(candidateFeature));
-                    const layer = this.createParcelLayerFromFeature(featureClone, {
-                        addToParcelLayer: false,
-                        makeInteractive: false
-                    });
-
-                    if (!layer) {
-                        continue;
-                    }
-
-                    layer._isSynthetic = true;
-                    const group = this.getSyntheticLayerGroup();
-                    if (group) {
-                        group.addLayer(layer);
-                    } else if (typeof map !== 'undefined' && map) {
-                        layer.addTo(map);
-                    }
-                    this.syntheticParcelLayers.set(targetId, layer);
-                    return layer;
-                } catch (error) {
-                    console.error('recoverParcelFromProposals: unable to instantiate feature', error);
-                }
-            }
-
-            return null;
-        } finally {
-            // Always remove from recovering set, even if we return early
-            if (this._recoveringParcels) {
-                this._recoveringParcels.delete(parcelId.toString());
-            }
-        }
     },
 
     // Create a Leaflet layer from a feature and add it to parcelLayer

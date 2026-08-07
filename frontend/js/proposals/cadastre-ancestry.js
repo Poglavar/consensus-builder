@@ -2,19 +2,17 @@
 // base-ancestry work — the logic lives in the pure plan-order.js; this file just reads the live
 // parcel index and hands it over.
 //
-// Why a second list next to parentParcelIds (see rethink-proposals.md): parentParcelIds may name
-// DERIVED parcels (HR-339270-823/1#p-road-2) that are re-minted on every apply and therefore exist in
-// exactly one browser. Cadastral ids are the same on every machine, so they survive sharing, replay
-// and re-cutting. Written alongside, never instead of — nothing reads it yet.
+// A formation stores only flat cadastral anchors. Geometry resolves the current live pieces at
+// replay time; derived ids are local tessellation output and never become prerequisites.
 //
 // WHEN this is computed matters more than it looks. A road can be dragged around all afternoon, so
-// there is no useful "the parcels of this proposal" while it is still local and mutable. The moment
-// that counts is PUBLICATION — upload or mint — because that snapshot is what other people replay and
-// what owners consent to. So the only caller is buildUploadReadyProposal(), and the value describes
-// the published version, not whatever the local copy has drifted to since.
+// there is no useful "the parcels of this proposal" while it is still being drawn. The published
+// immutable snapshot carries the cadastral anchors used for consent and transport.
 
 (function (global) {
     'use strict';
+
+    const MIN_CADASTRE_COVERAGE = 0.95;
 
     const planOrder = () => (global && global.__planOrder)
         ? global.__planOrder
@@ -31,7 +29,7 @@
             if (!byId || typeof byId.forEach !== 'function') return out;
             byId.forEach((layer, id) => {
                 const key = id === undefined || id === null ? '' : String(id);
-                if (!key || key.indexOf('#') !== -1) return; // derived — not a cadastral parcel
+                if (!key || (typeof global.isSyntheticParcelId === 'function' && global.isSyntheticParcelId(key))) return;
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
                 try {
                     const gj = layer.toGeoJSON();
@@ -47,63 +45,22 @@
         return out;
     }
 
-    // Every parcel currently LIVE on the map — base or derived — that a footprint could resolve
-    // onto. Unlike loadedCadastreParcels this keeps derived slices (a shared building may sit on a
-    // road remainder) but drops parents already consumed by children: re-parenting onto one of
-    // those would target fabric that no longer exists.
+    // Every parcel currently LIVE in the sole visible parcel layer. Hidden registry entries are
+    // ancestry/cache only and never participate in a cut.
     function loadedLiveParcels() {
         const out = [];
         try {
             const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
             if (!byId || typeof byId.forEach !== 'function') return out;
-            const replaced = (typeof global.isParcelReplacedByChildren === 'function')
-                ? global.isParcelReplacedByChildren
-                : null;
-
-            // LIVE means ON THE MAP — the same test the availability gate uses. The registry
-            // (parcelLayerById) deliberately RETAINS consumed parcels' layers, and the structural
-            // inference below cannot see cross-token consumption (a readjustment consuming
-            // another road's slice leaves no live id with that slice as a '#'-prefix — measured
-            // on the Cibona square, where hidden road remainders kept resurfacing as candidates).
             const parcelLayerGroup = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
                 ? global.parcelLayer
                 : null;
-            const isOnMap = (layer) => {
-                if (!parcelLayerGroup) return true;
-                try { return parcelLayerGroup.hasLayer(layer); } catch (_) { return true; }
-            };
-
-            // A parent whose derived children are themselves on the map is consumed fabric, even
-            // when the bookkeeping flag disagrees (measured on the 97-104 replay: base 824 stayed
-            // "ready" and unreplaced next to its own subdivision slices, and resolving onto it
-            // handed the apply a parent occupied by the very proposal that cut it). The id
-            // structure is the ground truth: every '#'-prefix of a LIVE derived id is consumed.
-            // Only on-map ids cast this shadow: the registry keeps dead layers forever, so an
-            // unapplied road's removed slices would otherwise veto their own freshly RESTORED
-            // base parents — measured as 21% coverage (and a formation-ground-unresolved refusal)
-            // on every road edit, whose unapply is exactly what strands those dead ids.
-            const consumedByStructure = new Set();
-            byId.forEach((layer, id) => {
-                let key = id === undefined || id === null ? '' : String(id);
-                if (key.indexOf('#') === -1) return;
-                if (!isOnMap(layer)) return;
-                let cut = key.lastIndexOf('#');
-                while (cut > 0) {
-                    key = key.slice(0, cut);
-                    consumedByStructure.add(key);
-                    cut = key.lastIndexOf('#');
-                }
-            });
 
             byId.forEach((layer, id) => {
                 const key = id === undefined || id === null ? '' : String(id);
                 if (!key) return;
-                if (consumedByStructure.has(key)) return;
-                if (replaced) {
-                    try { if (replaced(key)) return; } catch (_) { /* treat as live */ }
-                }
                 if (parcelLayerGroup) {
-                    try { if (!parcelLayerGroup.hasLayer(layer)) return; } catch (_) { /* treat as live */ }
+                    try { if (!parcelLayerGroup.hasLayer(layer)) return; } catch (_) { return; }
                 }
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
                 try {
@@ -142,23 +99,46 @@
                 coverage: Math.min(1, coveredM2 / footprintM2)
             };
         } catch (error) {
-            console.warn('[cadastre-ancestry] geometry re-parent resolution failed', error);
+            console.warn('[cadastre-ancestry] live geometry resolution failed', error);
             return { ids: [], coverage: 0 };
         }
     }
 
-    // Never throws and never blocks a save: this is additive bookkeeping, so a failure here must cost
-    // the field, not the proposal.
-    function computeCadastreParcelIds(proposal) {
+    // Resolve the publish-time cadastral declaration from geometry alone. A partial viewport must
+    // refuse publication; falling back to stale declared ids is exactly how unrelated parcels became
+    // occupied after reload. The caller may load more ground and try again.
+    function computeCadastreParcelIds(proposal, options) {
         const api = planOrder();
-        if (!api || !proposal) return [];
-        let ids;
-        try {
-            ids = api.computeCadastreParcelIds(proposal, loadedCadastreParcels());
-        } catch (error) {
-            console.warn('[cadastre-ancestry] falling back to declared roots', error);
-            try { ids = api.cadastreIdsFromDeclared(proposal.parentParcelIds); } catch (_) { ids = []; }
+        const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
+        if (!api || !t || !proposal) {
+            const error = new Error('Cannot publish: cadastral geometry resolution is unavailable.');
+            error.code = 'cadastre-resolver-unavailable';
+            throw error;
         }
+        const footprint = api.footprintOf(proposal);
+        if (!footprint || !(t.area(footprint) > 0)) {
+            const error = new Error('Cannot publish: the proposal has no usable authored footprint.');
+            error.code = 'proposal-footprint-missing';
+            throw error;
+        }
+        const candidates = loadedCadastreParcels();
+        const hits = api.computeBaseAncestry(footprint, candidates);
+        const hitIds = new Set(hits.map(hit => String(hit.id)));
+        const coveredM2 = candidates.reduce((total, entry) => {
+            if (!hitIds.has(String(entry.id))) return total;
+            return total + api.intersectionArea(footprint, entry.feature);
+        }, 0);
+        const coverage = Math.min(1, coveredM2 / t.area(footprint));
+        const minimum = Number.isFinite(Number(options?.minCoverage))
+            ? Number(options.minCoverage)
+            : MIN_CADASTRE_COVERAGE;
+        if (!hits.length || coverage < minimum) {
+            const error = new Error(`Cannot publish: loaded cadastral parcels cover only ${Math.round(coverage * 100)}% of the proposal footprint (95% required).`);
+            error.code = 'cadastre-coverage-insufficient';
+            error.coverage = coverage;
+            throw error;
+        }
+        const ids = hits.map(hit => String(hit.id));
         const declared = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds.length : 0;
         console.debug(`[cadastre-ancestry] ${ids.length} cadastral parcel(s) for `
             + `${proposal.proposalId || proposal.title || 'proposal'} (declared ${declared} parent(s))`, ids);
@@ -181,7 +161,14 @@
         }
     }
 
-    const api = { loadedCadastreParcels, loadedLiveParcels, computeCadastreParcelIds, computeOwnershipFlow, resolveParentsByGeometry };
+    const api = {
+        MIN_CADASTRE_COVERAGE,
+        loadedCadastreParcels,
+        loadedLiveParcels,
+        computeCadastreParcelIds,
+        computeOwnershipFlow,
+        resolveParentsByGeometry
+    };
 
     if (typeof window !== 'undefined') window.__cadastreAncestry = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

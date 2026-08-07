@@ -380,6 +380,14 @@ if (typeof window !== 'undefined') {
 }
 
 function ensureProposedBuildingsState() {
+    // Other proposal modules clear/rebuild this derived collection through the shared window
+    // binding. Adopt that replacement instead of immediately publishing the stale lexical array
+    // back onto window; doing the latter resurrected the just-cleared building during boot replay.
+    if (typeof window !== 'undefined'
+        && Array.isArray(window.proposedBuildings)
+        && window.proposedBuildings !== proposedBuildings) {
+        proposedBuildings = window.proposedBuildings;
+    }
     if (!Array.isArray(proposedBuildings)) {
         proposedBuildings = [];
     }

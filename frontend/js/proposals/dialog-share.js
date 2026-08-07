@@ -607,101 +607,6 @@ function getSharedInspectorI18nHelper() {
     return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
-function showNonOriginalParcelShareBlockedModal(proposal, parcelList) {
-    const t = getProposalI18nHelper();
-    const tShare = getShareI18nHelper();
-
-    const pairs = collectParcelProposalPairs(parcelList);
-
-    const container = document.createElement('div');
-    const message = document.createElement('p');
-    message.setAttribute('data-i18n-key', 'modal.roadWidth.share.ancestorNote');
-    message.textContent = tShare('ancestorNote', 'Note: this proposal includes parcels created by other proposals. For it to be applied on a target map the ancestor proposals will have to be applied first. Instead of sharing this one proposal you might want to share the entire plan using "Share entire plan" button in the Proposals section of the sidebar. The parcel list:');
-    container.appendChild(message);
-
-    const listWrapper = document.createElement('div');
-    listWrapper.style.maxHeight = '240px';
-    listWrapper.style.overflowY = 'auto';
-    listWrapper.style.border = '1px solid #d8ddf0';
-    listWrapper.style.borderRadius = '8px';
-    listWrapper.style.padding = '8px';
-    listWrapper.style.background = '#f9fafb';
-
-    // Create table with two columns
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-    table.style.margin = '0';
-
-    // Table header
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    headerRow.style.borderBottom = '1px solid #d8ddf0';
-
-    const headerParcel = document.createElement('th');
-    headerParcel.setAttribute('data-i18n-key', 'modal.roadWidth.share.parcelIdHeader');
-    headerParcel.textContent = tShare('parcelIdHeader', 'Parcel ID');
-    headerParcel.style.padding = '6px 8px';
-    headerParcel.style.textAlign = 'left';
-    headerParcel.style.fontWeight = '600';
-    headerRow.appendChild(headerParcel);
-
-    const headerProposal = document.createElement('th');
-    headerProposal.setAttribute('data-i18n-key', 'modal.roadWidth.share.proposalIdHeader');
-    headerProposal.textContent = tShare('proposalIdHeader', 'Proposal ID');
-    headerProposal.style.padding = '6px 8px';
-    headerProposal.style.textAlign = 'left';
-    headerProposal.style.fontWeight = '600';
-    headerRow.appendChild(headerProposal);
-
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    // Table body
-    const tbody = document.createElement('tbody');
-    pairs.forEach(pair => {
-        const row = document.createElement('tr');
-        row.style.borderBottom = '1px solid #f0f0f0';
-
-        const cellParcel = document.createElement('td');
-        cellParcel.textContent = pair.parcelId;
-        cellParcel.style.padding = '6px 8px';
-        row.appendChild(cellParcel);
-
-        const cellProposal = document.createElement('td');
-        cellProposal.textContent = pair.proposalId || '?';
-        cellProposal.style.padding = '6px 8px';
-        row.appendChild(cellProposal);
-
-        tbody.appendChild(row);
-    });
-    table.appendChild(tbody);
-
-    listWrapper.appendChild(table);
-    container.appendChild(listWrapper);
-
-    // Apply translations
-    if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        window.i18n.applyTranslations(container);
-    }
-
-    const modal = showSimpleShareModal({
-        title: tShare('title', 'Share Proposal'),
-        body: container,
-        actions: [
-            {
-                label: tShare('ancestorUploadButton', 'Upload'),
-                primary: true,
-                onClick: () => {
-                    if (proposal) {
-                        showUploadProposalModal(proposal);
-                    }
-                }
-            }
-        ]
-    });
-}
-
 function showSharePlanModal() {
     try {
         const t = getProposalI18nHelper();
@@ -938,18 +843,6 @@ function showSharePlanModal() {
             statusLine.textContent = message || '';
         };
 
-        const getDescendantsInPlan = (hash) => {
-            if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findDescendantTree !== 'function') return [];
-            const nodes = ProposalManager.findDescendantTree(hash, { depthLimit: 64 }) || [];
-            return nodes.map(n => n.proposalId).filter(h => proposalsByHash.has(h));
-        };
-
-        const getAncestorsInPlan = (hash) => {
-            if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function') return [];
-            const nodes = ProposalManager.findAncestorTree(hash, { depthLimit: 64 }) || [];
-            return nodes.map(n => n.proposalId).filter(h => proposalsByHash.has(h));
-        };
-
         const updateShareUrl = () => {
             const hasSelection = selected.size > 0;
             if (!hasSelection) {
@@ -1030,44 +923,10 @@ function showSharePlanModal() {
         };
 
         const onCheckboxChange = (key, checked) => {
-            if (checked) {
-                const ancestors = getAncestorsInPlan(key);
-                const added = [];
-                selected.add(key);
-                ancestors.forEach(hash => {
-                    if (!selected.has(hash)) added.push(hash);
-                    selected.add(hash);
-                });
-                selected.forEach(hash => toggleCheckbox(hash, true));
-                if (added.length > 0) {
-                    const summary = added.slice(0, 5).join(', ');
-                    setStatus(tShare('plan.addedAncestors', 'Also added {{count}} ancestor proposals: {{list}}', {
-                        count: added.length,
-                        list: summary
-                    }));
-                } else {
-                    setStatus('');
-                }
-            } else {
-                const descendants = getDescendantsInPlan(key);
-                const removed = [];
-                selected.delete(key);
-                descendants.forEach(hash => {
-                    if (selected.delete(hash)) removed.push(hash);
-                });
-                selected.forEach(hash => toggleCheckbox(hash, selected.has(hash)));
-                toggleCheckbox(key, false);
-                descendants.forEach(hash => toggleCheckbox(hash, false));
-                if (removed.length > 0) {
-                    const summary = removed.slice(0, 5).join(', ');
-                    setStatus(tShare('plan.removedDescendants', 'Also removed {{count}} descendant proposals: {{list}}', {
-                        count: removed.length,
-                        list: summary
-                    }));
-                } else {
-                    setStatus('');
-                }
-            }
+            if (checked) selected.add(key);
+            else selected.delete(key);
+            toggleCheckbox(key, checked);
+            setStatus('');
             updateShareUrl();
         };
 
@@ -1126,19 +985,6 @@ function showSharePlanModal() {
             uploadedLabel.style.display = 'none';
 
             uploadBtn.addEventListener('click', async () => {
-                // Everything currently selected is being shared as one plan, so an ancestor inside
-                // the selection needs no upload of its own first — only an ancestor the user has
-                // unchecked (and which is not already on the server) is a real gap. Order-free, so a
-                // cyclic ancestry between two selected proposals can no longer deadlock the plan.
-                const gate = await ensureAncestorProposalsUploaded(proposal, { satisfiedBy: selected });
-                if (!gate.ok) {
-                    const missingList = gate.missing.map(entry => entry.id || (entry.hash ? entry.hash.slice(0, 8) : '?')).filter(Boolean);
-                    setStatus(tShare('plan.uploadAncestorsMissing', 'Include these ancestor proposals in the plan: {{list}}', {
-                        list: missingList.join(', ')
-                    }));
-                    return;
-                }
-
                 uploadState.set(key, { uploaded: false, uploading: true, serverId: getServerProposalId(proposal) });
                 updateRowState(key);
                 try {

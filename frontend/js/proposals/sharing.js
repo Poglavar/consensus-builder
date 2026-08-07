@@ -81,25 +81,6 @@ function shareLangParam() {
     return '';
 }
 
-function collectProposalParentParcelIdsForShare(proposal) {
-    const ids = new Set();
-    const addMany = (values) => {
-        if (values === undefined || values === null) return;
-        (Array.isArray(values) ? values : [values]).forEach(value => {
-            const normalized = String(value == null ? '' : value).trim();
-            if (normalized) ids.add(normalized);
-        });
-    };
-
-    if (!proposal) return [];
-    addMany(proposal.parentParcelIds);
-    addMany(proposal.roadProposal && proposal.roadProposal.parentParcelIds);
-    addMany(proposal.buildingProposal && proposal.buildingProposal.parentParcelIds);
-    addMany(proposal.structureProposal && proposal.structureProposal.parentParcelIds);
-    addMany(proposal.reparcellization && proposal.reparcellization.parcelIds);
-    return Array.from(ids);
-}
-
 function getSerialProposalId(proposal) {
     if (!proposal) return null;
     for (const candidate of [proposal.serverProposalId, proposal.proposalId, proposal.id]) {
@@ -123,22 +104,16 @@ function proposalContentHash(str) {
 
 // A stable fingerprint of a proposal's IMPORTANT content — the geometry payload + the terms that
 // define what it IS — excluding view/identity/lifecycle state (applied, ids, timestamps, carved
-// children). Used as the dedup id when uploading: the server mints a NEW record only when this
-// changes, and a re-upload of unchanged content reuses the existing serial. So the local proposalId
-// stays stable across edits, and a new server id (new share url) is minted only at SAVE, only when
-// the content actually changed — a no-op edit reuses the old url.
+// children). Used as the dedup id when publishing: each edited local snapshot has its own local
+// record, while byte-identical snapshots may share the same immutable server artifact.
 //
 // TWO VERSIONS, deliberately (rethink-proposals.md — the wire-format demotion):
 //
 //   v2 `c2-…` — the UPLOAD identity. Excludes parentParcelIds everywhere (top level AND inside the
-//   typology payloads): those lists carry DERIVED parcel names, which are re-minted local
-//   bookkeeping — hashing them meant a slice-id churn (a re-apply, a heal) could mint a new share
-//   url for byte-identical content. The geometry is already in the hash and is the actual truth.
+//   typology payloads): geometry is authoritative and the cadastral lists are resolution hints.
 //
-//   v1 `c-…` (legacy) — byte-identical to the historical fingerprint, WITH the parent lists. Kept
-//   for two jobs: upload ADOPTION (content already on the server under its v1 id keeps that id, so
-//   old share urls never break) and CONSENT binding for content-only proposals (an offer's parcel
-//   targets are part of its terms — an offer silently retargeted to other parcels must lapse).
+//   Consent `c-…` — includes the flat cadastral target lists. A content-only offer retargeted to
+//   other ground must lapse even when its other terms are unchanged.
 function proposalContentPayload(proposal, includeParentIds) {
     const cleanPayload = (payload) => {
         if (!payload || typeof payload !== 'object') return null;
@@ -175,7 +150,7 @@ function proposalContentFingerprint(proposal) {
     return 'c2-' + proposalContentHash(str);
 }
 
-function proposalContentFingerprintLegacy(proposal) {
+function proposalConsentFingerprint(proposal) {
     if (!proposal || typeof proposal !== 'object') return null;
     const content = proposalContentPayload(proposal, true);
     const str = (typeof stableStringify === 'function') ? stableStringify(content) : JSON.stringify(content);
@@ -220,13 +195,12 @@ function decodeSharedPayload(encoded) {
 if (typeof window !== 'undefined') {
     window.getSerialProposalId = getSerialProposalId;
     window.proposalContentFingerprint = proposalContentFingerprint;
-    window.proposalContentFingerprintLegacy = proposalContentFingerprintLegacy;
+    window.proposalConsentFingerprint = proposalConsentFingerprint;
     window.decodeSharedPayload = decodeSharedPayload;
     window.base64UrlEncodeBytes = base64UrlEncodeBytes;
     window.base64UrlDecodeToBytes = base64UrlDecodeToBytes;
     window.compressBytes = compressBytes;
     window.inflateBytes = inflateBytes;
-    window.collectProposalParentParcelIdsForShare = collectProposalParentParcelIdsForShare;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -237,9 +211,8 @@ if (typeof module !== 'undefined' && module.exports) {
         inflateBytes,
         decodeBytesToJson,
         decodeSharedPayload,
-        collectProposalParentParcelIdsForShare,
         getSerialProposalId,
         proposalContentFingerprint,
-        proposalContentFingerprintLegacy
+        proposalConsentFingerprint
     };
 }

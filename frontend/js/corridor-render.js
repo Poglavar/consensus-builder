@@ -494,7 +494,7 @@ if (typeof window !== 'undefined') {
 }
 
 function corridorProposalDefinition(proposal) {
-    return (proposal && ((proposal.roadProposal && proposal.roadProposal.definition) || proposal.definition)) || null;
+    return proposal?.roadProposal?.definition || null;
 }
 
 // The profile to draw for a proposal: the editor's working copy when it is the one being edited.

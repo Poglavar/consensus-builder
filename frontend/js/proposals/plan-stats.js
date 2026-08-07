@@ -104,8 +104,6 @@
 
         const candidates = [
             proposal.childParcelIds,
-            proposal.descendantParcelIds,
-            proposal.childIds,
             proposal.roadProposal && proposal.roadProposal.childParcelIds,
             proposal.reparcellization && proposal.reparcellization.childParcelIds,
             proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds,

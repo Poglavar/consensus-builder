@@ -122,7 +122,7 @@
                 if (resolved) return resolved;
             }
         } catch (_) { }
-        if (proposal.roadProposal || proposal.definition?.metadata?.isCorridor) return 'road-track';
+        if (proposal.roadProposal) return 'road-track';
         if (proposal.reparcellization) return 'reparcellization';
         if (proposal.buildingProposal || proposal.buildingGeometry) {
             const typology = proposal.typologyType || proposal.buildingProposal?.typologyType;
@@ -180,7 +180,7 @@
 
     function basePayloadFromProposal(proposal, goal) {
         if (goal === 'road-track') {
-            const definition = proposal?.roadProposal?.definition || proposal?.geometry?.roadPlan || proposal?.definition || null;
+            const definition = proposal?.roadProposal?.definition || null;
             if (!definition) return { kind: proposal?.primaryType === 'Track' ? 'track' : 'road', definition: null };
             return {
                 kind: global.corridorIsTrack(definition) || proposal?.primaryType === 'Track' ? 'track' : 'road',

@@ -7,14 +7,6 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    const unapplyConflictsSequentially = (
-        typeof ProposalApplyConflicts !== 'undefined'
-        && ProposalApplyConflicts
-        && typeof ProposalApplyConflicts.unapplyConflictsSequentially === 'function'
-    )
-        ? ProposalApplyConflicts.unapplyConflictsSequentially
-        : require('./conflicts.js').unapplyConflictsSequentially;
-
     return {
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
@@ -31,10 +23,6 @@
             if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
                 geometry = canonicalGeometry;
             }
-            if ((!geometry || !geometry.type || !Array.isArray(geometry.coordinates))
-                && typeof this._rebuildStructureGeometry === 'function') {
-                geometry = this._rebuildStructureGeometry(sp, proposalData);
-            }
             if (geometry && geometry.type && Array.isArray(geometry.coordinates)) {
                 try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
             }
@@ -49,28 +37,19 @@
                     updateSquaresLayer();
                 }
             };
-            let repairedEmptyDemolitionScan = false;
-
-            // Structures clear their ground by default. A structure with NO demolition list
-            // (created before the feature, or after an earlier footprint fetch failed) computes
-            // it now, after making sure footprints are available. An EMPTY scan is deliberately
-            // retried on reapply/load: `demolitionScanned=true` used to make a transient empty
-            // pool permanent, so covered buildings survived forever after one failed request.
-            if (!Array.isArray(sp.demolishedBuildings) || !sp.demolishedBuildings.length) {
-                try {
-                    if (typeof window.ensureCorridorBuildingFootprintsLoaded === 'function') {
-                        await window.ensureCorridorBuildingFootprintsLoaded();
-                    }
-                    if (geometry && typeof window.demolishBuildingsUnderFootprint === 'function') {
-                        const previousCount = Array.isArray(sp.demolishedBuildings) ? sp.demolishedBuildings.length : 0;
-                        sp.demolishedBuildings = await window.demolishBuildingsUnderFootprint(geometry);
-                        sp.demolitionScanned = true;
-                        repairedEmptyDemolitionScan = previousCount === 0 && sp.demolishedBuildings.length > 0;
-                        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.save === 'function') proposalStorage.save();
-                    }
-                } catch (error) {
-                    console.error('[_applyStructureProposal] demolition scan failed', idLabel, error);
+            // Demolition is derived from the authored body on every apply. A cached scan once
+            // turned a transient empty footprint fetch into permanent surviving buildings.
+            sp.demolishedBuildings = [];
+            delete sp.demolitionScanned;
+            try {
+                if (geometry && typeof this._deriveDemolishedBuildings === 'function') {
+                    sp.demolishedBuildings = await this._deriveDemolishedBuildings(geometry, {
+                        ...options,
+                        proposalId: idLabel
+                    });
                 }
+            } catch (error) {
+                console.error('[_applyStructureProposal] demolition scan failed', idLabel, error);
             }
             console.debug(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
@@ -82,13 +61,9 @@
             const alreadyInLayer = Array.isArray(collection)
                 ? collection.some(feature => feature && feature.properties && feature.properties.proposalId === proposalId)
                 : false;
-            const alreadyAppliedStatus = appliedOf(proposalData, sp) || lifecycleOf(proposalData) === 'Executed';
-            if (alreadyAppliedStatus && alreadyInLayer) {
-                if (repairedEmptyDemolitionScan) {
-                    try { refreshStructureLayer(); } catch (error) {
-                        console.error(`[_applyStructureProposal] Failed to refresh repaired ${kind} presentation`, error);
-                    }
-                }
+            const alreadyAppliedStatus = appliedOf(proposalData);
+            const rebuilding = !!(this && this._rebuildInProgress === true);
+            if (alreadyAppliedStatus && alreadyInLayer && !rebuilding) {
                 return true;
             }
             const step2Time = performance.now();
@@ -104,115 +79,16 @@
                 return false;
             }
             const blockName = sp.blockName || null;
-            let parentIds = Array.from(new Set([
-                ...(Array.isArray(sp.parentParcelIds) ? sp.parentParcelIds : []),
-                ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
-            ].map(x => x && x.toString ? x.toString() : (x !== undefined && x !== null ? String(x) : null)).filter(Boolean)));
 
             // Persist canonical geometry/parents onto the structureProposal for downstream consumers
             if (geometry) {
                 try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
             }
-            sp.parentParcelIds = parentIds;
-
-            if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
-                // Fallback: attempt to resolve parent parcel features directly and rebuild geometry
-                let resolvedGeometry = null;
-                try {
-                    const parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
-                    if (Array.isArray(parentFeatures) && parentFeatures.length > 0) {
-                        const pseudoLayers = parentFeatures.map(feature => ({ feature }));
-                        resolvedGeometry = buildGeometryFromParcels(pseudoLayers);
-                    }
-                } catch (fallbackErr) {
-                    console.warn('[_applyStructureProposal] Fallback geometry rebuild failed', fallbackErr);
-                }
-
-                if (resolvedGeometry && resolvedGeometry.type && Array.isArray(resolvedGeometry.coordinates)) {
-                    geometry = resolvedGeometry;
-                } else {
-                    if (typeof updateStatus === 'function') updateStatus('Cannot apply structure proposal: missing geometry.');
-                    try {
-                        const cityId = typeof window !== 'undefined' && window.cityConfigManager && typeof window.cityConfigManager.getCurrentCityId === 'function'
-                            ? window.cityConfigManager.getCurrentCityId()
-                            : null;
-                        console.warn('[_applyStructureProposal] Missing geometry after rebuild', {
-                            cityId,
-                            parentIdsCount: parentIds.length,
-                            kind,
-                            hasStoredGeometry: !!sp.geometry,
-                            parentIdsSample: parentIds.slice(0, 5)
-                        });
-                    } catch (_) { /* ignore logging errors */ }
-                    try {
-                        this._setLastApplyFailure(idLabel, {
-                            code: 'structure-geometry-unresolvable',
-                            message: `The ${kind} has no stored geometry and none could be rebuilt from its ${parentIds.length} parent parcel(s).`
-                        });
-                    } catch (_) { }
-                    return false;
-                }
-            }
-            console.debug(`[_applyStructureProposal] Step 2: Prepared geometry and parent IDs (${(performance.now() - step2Time).toFixed(2)}ms) - ${parentIds.length} parents`);
-
-            const step3Time = performance.now();
-            // Enforce only one structure per block: unapply other applied structure proposals on same block
-            if (blockName) {
-                try {
-                    const all = proposalStorage.getAllProposals();
-                    const conflicts = all.filter(p => (
-                        p.proposalId !== proposalId
-                        && p.structureProposal
-                        && p.structureProposal.blockName === blockName
-                        && appliedOf(p, p.structureProposal)
-                    ));
-                    const conflictsCleared = await unapplyConflictsSequentially(this, conflicts, {
-                        skipRestoreSource: true,
-                        _mutationTransaction: options._mutationTransaction
-                    });
-                    if (!conflictsCleared) {
-                        console.warn('Could not unapply a conflicting structure proposal', { proposalId, blockName });
-                        try {
-                            this._setLastApplyFailure(idLabel, {
-                                code: 'conflict-unapply-failed',
-                                message: `Another structure already occupies block ${blockName} and could not be unapplied.`,
-                                conflictTitles: conflicts.map(p => p && p.title).filter(Boolean),
-                                conflictProposalIds: conflicts.map(p => p && p.proposalId).filter(Boolean)
-                            });
-                        } catch (_) { }
-                        return false;
-                    }
-                } catch (e) {
-                    console.warn('Failed to enforce unique structure proposal constraint', e);
-                    try {
-                        this._setLastApplyFailure(idLabel, {
-                            code: 'conflict-check-failed',
-                            message: `Checking for a conflicting structure on block ${blockName} threw: ${e && e.message ? e.message : e}`
-                        });
-                    } catch (_) { }
-                    return false;
-                }
-            }
-            console.debug(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
-
-            // Cross-type conflict / availability check. A structure OVERLAYS its parents (never hides
-            // them), so "apply anyway" just renders it. Same-block structures were already
-            // auto-unapplied above; this catches parcels occupied by OTHER proposal types
-            // (road/building/reparcellization) and offers unapply-or-apply-anyway.
-            {
-                const parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true });
-                const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds: parentIds, parentFeatures, options });
-                if (decision.defer) {
-                    return false;
-                }
-                // Flat anchor (rethink-proposals.md §15a): content is positioned against the base
-                // cadastral parcels, whatever generation the parcels it overlays belong to.
-                try {
-                    const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                    const cadastreIds = formationEdit ? formationEdit.baseIdsOfFeatures(decision.parentFeatures || parentFeatures) : [];
-                    if (cadastreIds.length) proposalData.cadastreParcelIds = cadastreIds;
-                } catch (_) { }
-            }
+            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
+            if (!liveParents.ok) return false;
+            let parentIds = liveParents.ids;
+            const flatParentIds = liveParents.cadastreIds.slice();
+            console.debug(`[_applyStructureProposal] Step 2: Resolved ${parentIds.length} live parcel(s) from geometry (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
             // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
             // ground — adopt the one parcel matching the footprint, or merge whole parcels into
@@ -220,7 +96,8 @@
             // refuses with the offenders named. A station stays content on its corridor and
             // forms nothing.
             if (kind !== 'station') {
-                const formation = await this._formStructureParcel(proposalId, proposalData, sp, geometry, parentIds, idLabel);
+                const formation = await this._formStructureParcel(
+                    proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParents.features);
                 if (!formation.ok) return false;
                 parentIds = formation.parentIds;
             }
@@ -235,8 +112,6 @@
                     parkGraphics: kind === 'park' ? geometry : null,
                     squareGraphics: kind === 'square' ? geometry : null,
                     stationGraphics: kind === 'station' ? geometry : null,
-                    roadGeometry: null,
-                    roadPlan: null,
                     buildings: null,
                     reparcellizationPolygons: null
                 };
@@ -324,19 +199,17 @@
             console.debug(`[_applyStructureProposal] Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
             const step5Time = performance.now();
-            // Link to ancestors. An ADOPTED parcel stays on the map (owner changed, ground identical);
-            // a merge-take has already hidden its consumed parents and minted the structure's parcel.
+            // Link the exact live pieces consumed in this derivation for local selection only.
             const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
 
-            this._setDescendantProposalOnParcels(uniqueParentIds, proposalId);
-            this._linkProposalToAncestors(proposalId, uniqueParentIds);
-            uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
-            console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
+            console.debug(`[_applyStructureProposal] Step 5: Formed from ${uniqueParentIds.length} live parcel(s) (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
             // The structure is now on the map. persistAppliedProposal moves only the root-local
             // application axis; the lifecycle (Active/Executed) is left as-is. Persist the model
             // BEFORE refreshing its views: both 2D and 3D building filters read the canonical
             // application flag when the structure-layer update event fires.
+            sp.parentParcelIds = flatParentIds.slice();
+            proposalData.parentParcelIds = flatParentIds.slice();
             proposalData.structureProposal = sp;
             persistAppliedProposal(proposalData, proposalId);
             try { refreshStructureLayer(); } catch (error) {
@@ -365,12 +238,7 @@
     // parcel anchored flat to every base underneath. Partial coverage of any parcel REFUSES with
     // the offenders named — if only part of a parcel is wanted, a road or a land readjustment
     // cuts it first. Ownership goes to the City agent at apply, the reparcellization pattern.
-    async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel) {
-        // Idempotent on restore: an already-formed structure keeps its record — unapply deletes
-        // it, so only a fresh apply re-takes from the live fabric.
-        if (sp.formation && Array.isArray(sp.formation.parcelIds) && sp.formation.parcelIds.length) {
-            return { ok: true, parentIds: sp.formation.parcelIds.map(String) };
-        }
+    async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel, resolvedParentFeatures = null) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
         if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
@@ -391,25 +259,82 @@
         };
         const footprint = { type: 'Feature', properties: {}, geometry };
 
-        // Candidates: the live parcels under the footprint — geometry decides (§15a); the
-        // declared parents are only the fallback when the resolver cannot see the fabric.
-        let candidateIds = declaredParentIds.slice();
-        try {
-            const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-            const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
-                ? ancestry.resolveParentsByGeometry(proposalData)
-                : null;
-            if (resolution && Array.isArray(resolution.ids) && resolution.ids.length) {
-                candidateIds = resolution.ids.map(String);
-            }
-        } catch (_) { }
-        const candidateFeatures = this._resolveParcelFeaturesByIds(candidateIds,
-            { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
+        const candidateIds = declaredParentIds.slice();
+        const candidateFeatures = Array.isArray(resolvedParentFeatures)
+            ? resolvedParentFeatures
+            : (this._resolveParcelFeaturesByIds(candidateIds,
+                { preferMap: true, allowStorage: false, fallbackToMap: false, allowMissing: true }) || []);
         const candidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
 
-        const plan = formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx);
+        let plan = formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx);
+        // §15c REBUILD: this structure's claim already stands (latest wins) — the replay just
+        // re-derived the fabric beneath it (a road edit reshapes the remainders), so its
+        // authored footprint may no longer align to whole parcels. "Whole parcels" is the
+        // AUTHORING gate; a rebuild CUTS the partials at the body's edge instead: the inside
+        // is consumed with the take, and each outside piece is re-minted so identity flows
+        // with the ground — a derived parent's pieces stay ITS proposal's children (the same
+        // carry the road cut uses), a base parent's leftovers become this structure's §14.2
+        // remainders (the formation owes the owner their remainders).
+        const rebuildingTake = !!(this && this._rebuildInProgress === true);
+        let partialCuts = null;
+        if (rebuildingTake && plan.mode === 'refuse' && plan.reason === 'partial-parcels'
+            && typeof turfRef.difference === 'function') {
+            const footprintArea = takeCtx.area(footprint);
+            const uncoveredM2 = Math.max(0, Number(plan.uncoveredShare) || 0) * footprintArea;
+            const uncoveredTolerance = Math.max(
+                Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1,
+                footprintArea * (Number(formationEdit.DEFAULT_TOLERANCE_PCT) || 1) / 100
+            );
+            const takenIdSet = new Set(plan.parcelIds.map(String));
+            partialCuts = [];
+            let cutsOk = uncoveredM2 <= uncoveredTolerance;
+            plan.partials.forEach(partial => {
+                const entry = candidates.find(c => String(c.id) === String(partial.id));
+                if (!entry || !entry.feature || !entry.feature.geometry) { cutsOk = false; return; }
+                // A PARTIAL parcel by definition has ground outside the body, so a null
+                // difference here is a failed computation, never "fully consumed" — swallowing
+                // it used to take the parcel whole with no outside piece minted (dead ground).
+                // Degenerate rings make turf's sweep-line throw; truncated coordinates usually
+                // heal it; if not, the cut fails loudly via the authoring refusal below.
+                let outside = null;
+                try {
+                    outside = turfRef.difference(
+                        { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint);
+                } catch (_) { outside = null; }
+                if ((!outside || !outside.geometry) && typeof turfRef.truncate === 'function') {
+                    try {
+                        const at = turfRef.truncate(
+                            { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(entry.feature.geometry)) },
+                            { precision: 7, mutate: true });
+                        const bt = turfRef.truncate(JSON.parse(JSON.stringify(footprint)), { precision: 7, mutate: true });
+                        outside = turfRef.difference(at, bt);
+                    } catch (_) { outside = null; }
+                }
+                if (!outside || !outside.geometry) { cutsOk = false; return; }
+                const parts = [];
+                if (outside && outside.geometry) {
+                    const polys = outside.geometry.type === 'MultiPolygon'
+                        ? outside.geometry.coordinates.map(coords => ({ type: 'Polygon', coordinates: coords }))
+                        : [outside.geometry];
+                    polys.forEach(geometry => {
+                        let area = 0;
+                        try { area = turfRef.area({ type: 'Feature', properties: {}, geometry }) || 0; } catch (_) { }
+                        if (area >= 0.5) parts.push({ geometry, area });
+                    });
+                }
+                parts.sort((x, y) => y.area - x.area);
+                partialCuts.push({ entry, parts });
+                takenIdSet.add(String(partial.id));
+            });
+            if (cutsOk) {
+                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare: plan.uncoveredShare };
+                console.info('[§15c] rebuild take cut', partialCuts.length, 'partial parcel(s) at the', sp.kind, 'edge');
+            } else {
+                partialCuts = null;
+            }
+        }
         if (plan.mode === 'refuse') {
             const partialText = plan.partials
                 .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
@@ -434,29 +359,47 @@
         const takenFeatures = candidates
             .filter(entry => takenIds.includes(String(entry.id)))
             .map(entry => entry.feature);
+        // Ruling 2026-08-07: no take may DISCONNECT an applied road — no structure-editing
+        // gesture legitimately severs one, so a footprint that would is an authoring error and
+        // the apply refuses BEFORE any mutation. Tested against the actual taken ground (whole
+        // parcels can reach far past the drawn body); an end-take that leaves the road one
+        // connected piece is a legal trim, amended by the pass below.
+        try {
+            const severTestPolys = takenFeatures
+                .map(feature => feature && feature.geometry)
+                .filter(g => g && /Polygon/.test(String(g.type || '')));
+            const severTestGround = rebuildingTake ? geometry
+                : (severTestPolys.length === 0 ? geometry
+                    : (severTestPolys.length === 1 ? severTestPolys[0] : {
+                        type: 'MultiPolygon',
+                        coordinates: severTestPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
+                    }));
+            const severedRoad = (typeof this._appliedRoadSeveredByTaking === 'function')
+                ? this._appliedRoadSeveredByTaking(severTestGround, idLabel) : null;
+            if (severedRoad) {
+                const roadName = severedRoad.title || severedRoad.name || severedRoad.proposalId;
+                const message = `Cannot apply the ${sp.kind}: it would cut the applied road "${roadName}" apart. Unapply or edit that road first.`;
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'structure-severs-road',
+                        message,
+                        roadProposalId: String(severedRoad.proposalId || '')
+                    });
+                } catch (_) { }
+                return { ok: false };
+            }
+        } catch (severError) {
+            console.warn('[_formStructureParcel] road-severance pre-check failed', severError);
+        }
         const cityAgentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
         const cityOwnership = { owners: [{ name: 'City', ownerLabel: 'City', percentageShare: 100, actualShareText: '100%' }] };
 
-        if (plan.mode === 'adopt') {
-            sp.formation = {
-                mode: 'adopt',
-                parcelIds: takenIds.slice(),
-                // The snapshot unapply restores — recorded BEFORE ownership moves.
-                prior: takenFeatures.map(feature => ({
-                    parcelId: String(_getParcelIdFromFeature(feature)),
-                    ownershipDetails: feature.properties && feature.properties.ownershipDetails
-                        ? JSON.parse(JSON.stringify(feature.properties.ownershipDetails)) : null,
-                    ownershipType: (feature.properties && feature.properties.ownershipType) || null
-                }))
-            };
-            takenFeatures.forEach(feature => {
-                if (!feature.properties) feature.properties = {};
-                feature.properties.ownershipDetails = JSON.parse(JSON.stringify(cityOwnership));
-                feature.properties.ownershipType = 'city';
-                try { this._persistParcelFeature(feature); } catch (_) { }
-            });
-        } else {
-            const primary = takenFeatures[0];
+        // An adopt is still a stamp: mint the structure parcel and hide the matching live parcel.
+        // Mutating the cadastral feature in place made the square a visual overlay with the old
+        // parcel still underneath and required ownership snapshots on unapply.
+        const primary = takenFeatures[0];
             const childFeature = {
                 type: 'Feature',
                 geometry: JSON.parse(JSON.stringify(geometry)),
@@ -474,21 +417,142 @@
                     ownershipType: 'city'
                 }
             };
-            this._assignSyntheticChildIdentities(proposalId, [childFeature]);
-            const childId = _getParcelIdFromFeature(childFeature);
-            this._addFeaturesToMap([childFeature], true, proposalData);
-            try { this._persistParcelFeature(childFeature); } catch (_) { }
-            try { if (childId) this._addProposalAsAncestor(childId, proposalId); } catch (_) { }
+            // Keep the ARRAY passed to identity assignment: a multipart body is exploded there
+            // into one parcel per connected piece. Passing a throwaway `[childFeature]` and then
+            // adding the original object lost those assigned identities entirely.
+            const bodyFeatures = [childFeature];
+            this._assignSyntheticChildIdentities(proposalId, bodyFeatures);
+            const bodyParcelIds = bodyFeatures
+                .map(feature => _getParcelIdFromFeature(feature))
+                .filter(id => id !== undefined && id !== null)
+                .map(String);
+            this._addFeaturesToMap(bodyFeatures, true, proposalData);
+            bodyFeatures.forEach(feature => {
+                const bodyId = _getParcelIdFromFeature(feature);
+                try { this._persistParcelFeature(feature); } catch (_) { }
+                try { if (bodyId) this._addProposalAsAncestor(bodyId, proposalId); } catch (_) { }
+            });
             this._hideFeaturesFromMap(takenFeatures);
-            sp.childParcelIds = childId ? [String(childId)] : [];
+            // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
+            // identity (largest piece carries the parcel's own id; splits continue the OWNER's
+            // numbering); base parents' leftovers mint as this structure's remainder children.
+            const structureRemainderIds = [];
+            if (partialCuts && partialCuts.length) {
+                const feCarry = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                const allocForeign = (typeof _createForeignIndexAllocator === 'function') ? _createForeignIndexAllocator() : null;
+                const structureRemainders = [];
+                const foreignPieces = [];
+                partialCuts.forEach(({ entry, parts }) => {
+                    const parentId = String(entry.id);
+                    const parentProps = entry.feature.properties || {};
+                    const idParts = feCarry && typeof feCarry.derivedIdParts === 'function' ? feCarry.derivedIdParts(parentId) : null;
+                    parts.forEach((part, partIndex) => {
+                        const clone = JSON.parse(JSON.stringify(entry.feature));
+                        clone.geometry = part.geometry;
+                        clone.properties = clone.properties || {};
+                        clone.properties.calculatedArea = Math.round(part.area);
+                        if (idParts && idParts.token && allocForeign) {
+                            const carriedId = partIndex === 0
+                                ? parentId
+                                : `${idParts.base}#${idParts.token}-${allocForeign(idParts.base, idParts.token)}`;
+                            clone.properties.parcelId = carriedId;
+                            clone.properties.id = carriedId;
+                            _ensureParcelIdOnProperties(clone.properties, carriedId);
+                            foreignPieces.push({ feature: clone, proposalId: String(parentProps.proposalId || '') });
+                        } else {
+                            // Base parent: the leftover is a §14.2 remainder of this structure.
+                            clone.properties.proposalId = proposalId;
+                            clone.properties.parentParcelId = parentId;
+                            clone.properties.isProposed = true;
+                            delete clone.properties.color;
+                            structureRemainders.push(clone);
+                        }
+                    });
+                });
+                if (structureRemainders.length) {
+                    // Body and base remainders share this formation's token. Continue each root's
+                    // allocator after body ids; restarting at 1 here let a remainder overwrite the
+                    // square body under the same `…#proposal-1` id.
+                    const startIndexByRootId = {};
+                    bodyParcelIds.forEach(id => {
+                        const parts = feCarry && typeof feCarry.derivedIdParts === 'function'
+                            ? feCarry.derivedIdParts(id) : null;
+                        if (!parts || !parts.base || !Number.isFinite(parts.index)) return;
+                        startIndexByRootId[parts.base] = Math.max(
+                            Number(startIndexByRootId[parts.base]) || 1,
+                            parts.index + 1
+                        );
+                    });
+                    this._assignSyntheticChildIdentities(proposalId, structureRemainders, { startIndexByRootId });
+                }
+                const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
+                if (minted.length) {
+                    this._addFeaturesToMap(minted, true, proposalData);
+                    minted.forEach(feature => { try { this._persistParcelFeature(feature); } catch (_) { } });
+                }
+                foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
+                    const pid = _getParcelIdFromFeature(feature);
+                    try { if (pid && ownerProposalId) this._addProposalAsAncestor(pid, ownerProposalId); } catch (_) { }
+                });
+                structureRemainders.forEach(feature => {
+                    const pid = _getParcelIdFromFeature(feature);
+                    try {
+                        if (pid) {
+                            structureRemainderIds.push(String(pid));
+                            this._addProposalAsAncestor(pid, proposalId);
+                        }
+                    } catch (_) { }
+                });
+            }
+            sp.childParcelIds = Array.from(new Set([...bodyParcelIds, ...structureRemainderIds]));
             proposalData.childParcelIds = sp.childParcelIds.slice();
             try { this._addChildParcels(proposalId, sp.childParcelIds, proposalData); } catch (_) { }
-            sp.formation = { mode: 'merge', parcelIds: takenIds.slice(), childParcelIds: sp.childParcelIds.slice() };
-        }
-
+            sp.formation = {
+                mode: plan.mode,
+                parcelIds: takenIds.slice(),
+                childParcelIds: sp.childParcelIds.slice(),
+                bodyParcelIds,
+                remainderParcelIds: structureRemainderIds.slice()
+            };
+            // §15b: the structure CONSUMED its source parcel(s), so amend every earlier applied
+            // plan that still claims this ground. The taking is the WHOLE PARCELS taken, not the drawn footprint — a structure grabs
+            // entire pieces its footprint merely touches (a 1 m² graze took a whole remainder,
+            // and clipping only the graze left the victim's pool still claiming the rest).
+            try {
+                const takenPolys = takenFeatures
+                    .map(feature => feature && feature.geometry)
+                    .filter(g => g && /Polygon/.test(String(g.type || '')));
+                // Initial authoring merge-takes whole parcels. A REBUILD of a standing body is
+                // different by rule 12: partial parents are cut at the BODY EDGE, so its taking
+                // and amendment geometry is exactly the authored body. Passing the whole partial
+                // parent here destroyed the legitimate outside sliver we had just re-minted.
+                const takenGround = rebuildingTake ? geometry
+                    : (takenPolys.length === 0 ? geometry
+                        : (takenPolys.length === 1 ? takenPolys[0] : {
+                            type: 'MultiPolygon',
+                            coordinates: takenPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
+                        }));
+                this._amendAppliedPlansByTaking(proposalData, takenGround);
+            } catch (amendError) {
+                console.warn('[_formStructureParcel] §15b amend pass failed', amendError);
+            }
+            // Corridor pieces among the taken ground: the amend pass above trimmed the owning
+            // road's centerline (§15b, _trimRoadDefinitionByTaking) — this is a breadcrumb, not
+            // a gap warning.
+            try {
+                takenFeatures.forEach(feature => {
+                    if (feature && feature.properties && feature.properties.isCorridor === true) {
+                        console.info('[§15b] structure consumed corridor ground —',
+                            String(_getParcelIdFromFeature(feature)),
+                            '— the owning road was trimmed by the amend pass');
+                    }
+                });
+            } catch (_) { }
         if (cityAgentId && typeof transferParcelOwnership === 'function') {
             sp.formation.ownerAgentId = cityAgentId;
-            const ownedNow = plan.mode === 'adopt' ? takenIds : sp.formation.childParcelIds;
+            const ownedNow = Array.isArray(sp.formation.bodyParcelIds)
+                ? sp.formation.bodyParcelIds
+                : sp.formation.childParcelIds;
             ownedNow.forEach(pid => {
                 try { transferParcelOwnership(String(pid), null, cityAgentId, { skipAgentSync: true }); } catch (_) { }
             });
@@ -503,8 +567,6 @@
             }
         }
 
-        sp.parentParcelIds = takenIds.slice();
-        proposalData.parentParcelIds = takenIds.slice();
         return { ok: true, parentIds: takenIds.slice() };
     },
     };

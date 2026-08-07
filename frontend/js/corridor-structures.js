@@ -1,6 +1,5 @@
-// Detects when a corridor being drawn crosses an applied park/square/lake and walks the user
-// through it: unapply the structure, build through it (the road visually cuts the structure,
-// which stays ONE proposal), or reroute. Approvals are remembered per drawing session.
+// Detects when a corridor being drawn crosses an applied park/square/lake. The drawing may continue
+// or reroute; it never changes proposal state. The eventual road snapshot wins through replay.
 (function attachCorridorStructures(global) {
     let promptActive = false;
 
@@ -62,57 +61,35 @@
         });
     }
 
-    // Three-way decision for the detected crossings. Returns true when drawing may continue
-    // (structures unapplied or approved for build-through), false to reroute.
+    // Returns true when drawing may continue, false to reroute.
     async function resolveStructureCrossings(hits, corridorKind = 'road') {
         if (!Array.isArray(hits) || !hits.length) return true;
         if (promptActive) return false;
         promptActive = true;
         try {
-            let remaining = hits.slice();
-            while (remaining.length) {
-                const unappliable = remaining.filter(entry => entry.proposalId);
-                const names = remaining.map(structureDisplayName).map(name => `“${name}”`).join(', ');
-                const kind = corridorKind === 'track'
-                    ? structureText('modal.corridorTunnel.track', 'track')
-                    : structureText('modal.corridorTunnel.road', 'road');
-                const message = structureText(
-                    'modal.corridorStructure.offer',
-                    'This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.',
-                    { kind, names }
-                );
-                const choices = [];
-                if (unappliable.length) {
-                    choices.push({ value: 'unapply', label: structureText('modal.corridorTunnel.unapply', 'Unapply existing proposal') });
-                }
-                choices.push({ value: 'build', label: structureText('modal.corridorStructure.buildThrough', 'Build through'), primary: true });
-                choices.push({ value: 'cancel', label: structureText('modal.corridorTunnel.cancel', 'Choose another route') });
-
-                let answer = 'cancel';
-                if (typeof global.showStyledChoice === 'function') {
-                    answer = (await global.showStyledChoice(message, choices)) || 'cancel';
-                } else if (typeof global.showStyledConfirm === 'function') {
-                    answer = (await global.showStyledConfirm(message, {
-                        okText: structureText('modal.corridorStructure.buildThrough', 'Build through'),
-                        cancelText: structureText('modal.corridorTunnel.cancel', 'Choose another route')
-                    })) ? 'build' : 'cancel';
-                }
-
-                if (answer === 'build') {
-                    remaining.forEach(entry => approvedStructureIds.add(entry.id));
-                    return true;
-                }
-                if (answer !== 'unapply') return false;
-                for (const entry of unappliable) {
-                    try {
-                        await global.ProposalManager?.unapplyProposal?.(entry.proposalId, { skipConfirm: true });
-                    } catch (error) {
-                        console.warn('[corridor-structures] could not unapply structure proposal', entry.proposalId, error);
-                    }
-                }
-                remaining = remaining.filter(entry => !entry.proposalId);
+            const names = hits.map(structureDisplayName).map(name => `“${name}”`).join(', ');
+            const kind = corridorKind === 'track'
+                ? structureText('modal.corridorTunnel.track', 'track')
+                : structureText('modal.corridorTunnel.road', 'road');
+            const message = structureText(
+                'modal.corridorStructure.offer',
+                'This {{kind}} would cross {{names}}. Build through it? The later {{kind}} takes the crossing ground during replay.',
+                { kind, names }
+            );
+            let accepted = false;
+            if (typeof global.showStyledChoice === 'function') {
+                accepted = (await global.showStyledChoice(message, [
+                    { value: 'build', label: structureText('modal.corridorStructure.buildThrough', 'Build through'), primary: true },
+                    { value: 'cancel', label: structureText('modal.corridorTunnel.cancel', 'Choose another route') }
+                ])) === 'build';
+            } else if (typeof global.showStyledConfirm === 'function') {
+                accepted = await global.showStyledConfirm(message, {
+                    okText: structureText('modal.corridorStructure.buildThrough', 'Build through'),
+                    cancelText: structureText('modal.corridorTunnel.cancel', 'Choose another route')
+                });
             }
-            return true;
+            if (accepted) hits.forEach(entry => approvedStructureIds.add(entry.id));
+            return accepted;
         } finally {
             promptActive = false;
         }
@@ -120,17 +97,6 @@
 
     function resetApprovedStructureCrossings() {
         approvedStructureIds.clear();
-    }
-
-    // Persist/seed the build-through approvals so continuing an applied road does not re-ask about a
-    // structure it already runs through. The approval was session-only; the road definition now carries
-    // the approved structure ids (serialiseRoadDefinition) and seedRoadDrawing feeds them back here —
-    // the same reuse buildings/tunnels get. Only proposalId-based ids survive a reload meaningfully.
-    function getApprovedStructureIds() {
-        return [...approvedStructureIds];
-    }
-    function seedApprovedStructureCrossings(ids) {
-        (Array.isArray(ids) ? ids : []).forEach(id => { if (id) approvedStructureIds.add(String(id)); });
     }
 
     // Applied structure proposals whose geometry covers the given parcel (centroid test).
@@ -178,8 +144,6 @@
         detectStructureCrossings,
         resolveStructureCrossings,
         resetApprovedStructureCrossings,
-        getApprovedStructureIds,
-        seedApprovedStructureCrossings,
         structureProposalsCoveringFeature,
         roadProposalsCoveringFeature
     });

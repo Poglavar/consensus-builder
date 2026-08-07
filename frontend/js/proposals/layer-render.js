@@ -277,7 +277,8 @@ function getParcelFeatureForHighlight(parcelId, proposalContext = null, options 
     }
 
     try {
-        // If skipRecovery is true, don't trigger recoverParcelFromProposals (prevents infinite recursion)
+        // Draft highlights inspect only the current layer index; they must not materialize a
+        // hidden parcel from a cache while the replay owns the live fabric.
         const layer = skipRecovery
             ? (multiParcelSelection.parcelIdIndex && multiParcelSelection.parcelIdIndex.get(parcelId.toString()))
             : multiParcelSelection.findParcelById(parcelId);
@@ -789,10 +790,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
-            // Prefer descendant parcels (not child proposal ids) — _getProposalDescendants mixes both.
-            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getAllDescendantParcelIds === 'function') {
-                const descParcels = ProposalManager._getAllDescendantParcelIds(proposalKey);
-                if (Array.isArray(descParcels) && descParcels.length > 0) return descParcels;
+            // Use only this formation's current derived parcels; records have no proposal family.
+            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalChildParcels === 'function') {
+                const children = ProposalManager._getProposalChildParcels(proposalKey);
+                if (Array.isArray(children) && children.length > 0) return children;
             }
             const childIds = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds))
                 ? proposal.roadProposal.childParcelIds
@@ -937,7 +938,6 @@ async function removeProposalFromMap(proposalId, options = {}) {
         console.log('[removeProposalFromMap] Current proposal status', {
             lifecycleStatus: getLifecycleStatus(proposalSnapshot),
             applied: isApplied(proposalSnapshot),
-            roadApplied: isApplied(proposalSnapshot, proposalSnapshot.roadProposal),
             childIds: Array.isArray(proposalSnapshot.childParcelIds) ? proposalSnapshot.childParcelIds.slice() : [],
             parentIds: Array.isArray(proposalSnapshot.parentParcelIds) ? proposalSnapshot.parentParcelIds.slice() : []
         });
@@ -955,11 +955,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
     }
 
     try {
-        // ProposalManager.unapplyProposal handles everything:
-        // - Restores ancestor parcels, removes descendants
-        // - Updates proposal status
-        // - Refreshes UI indicators
-        // - Re-highlights the proposal if it's currently highlighted (via selectAndHighlightProposal)
+        // Unapply flips only the root record and invokes the same cadastre-first replay.
         const unapplied = await ProposalManager.unapplyProposal(proposalId);
         if (unapplied === false) {
             return false;
@@ -996,30 +992,7 @@ function focusOnRemovedParcelLocation(parcelId, parcelItem) {
         } catch (_) { }
     }
 
-    // If not found, try to get from parentFeatures in the current proposal
-    if (!geometry && !feature) {
-        try {
-            const proposalDetailsContent = document.getElementById('proposal-details-content');
-            if (proposalDetailsContent) {
-                // Try to find proposal id from any element with data-proposal-id attribute
-                const proposalIdElement = proposalDetailsContent.querySelector('[data-proposal-id]');
-                if (proposalIdElement) {
-                    const proposalId = proposalIdElement.getAttribute('data-proposal-id');
-                    if (proposalId && typeof proposalStorage !== 'undefined') {
-                        const proposal = proposalStorage.getProposal(proposalId);
-                        if (proposal) {
-                            // Fetch by ID - no parentFeatures cache
-                            // Parent parcels are fetched by ID when needed
-                            // Building proposals typically don't store parentFeatures, but we can still try PersistentStorage
-                            // which is already handled below
-                        }
-                    }
-                }
-            }
-        } catch (_) { }
-    }
-
-    // If still not found, try PersistentStorage
+    // Fall back to the immutable/derived parcel store.
     if (!geometry && !feature) {
         try {
             const record = readPersistedParcelRecord(parcelId);
@@ -1102,10 +1075,6 @@ function rerenderProposalListIfOpen() {
             renderProposalListModal();
         }
     } catch (_) { }
-}
-
-function enableShowProposalsMode() {
-    // No-op retained for backward compatibility
 }
 
 function findParcelLayerById(parcelId) {
@@ -1217,33 +1186,6 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
         addParcelLayerToMapIfAppropriate();
     }
 
-    // Try to rehydrate missing parcels from storage BEFORE polling
-    // This prevents stalls when parcels exist in storage but not in the layer index
-    const missingFromIndex = scopedIds.filter(id => !isParcelLayerReady(id));
-    if (missingFromIndex.length > 0) {
-        const rehydrated = [];
-        for (const id of missingFromIndex) {
-            if (typeof readPersistedParcelRecord === 'function') {
-                const record = readPersistedParcelRecord(id);
-                if (record && record.geometry && record.properties) {
-                    rehydrated.push({
-                        type: 'Feature',
-                        geometry: record.geometry,
-                        properties: Object.assign({}, record.properties, { parcelId: id })
-                    });
-                }
-            }
-        }
-        if (rehydrated.length > 0 && typeof ingestParcelFeatures === 'function') {
-            try {
-                await ingestParcelFeatures(rehydrated, { replaceExisting: false });
-                console.debug(`[waitForParcelLayersReady] Rehydrated ${rehydrated.length} parcels from storage`);
-            } catch (e) {
-                console.warn('[waitForParcelLayersReady] Failed to ingest rehydrated parcels:', e);
-            }
-        }
-    }
-
     const pending = new Set(scopedIds);
     const start = Date.now();
     while (pending.size && (Date.now() - start) < timeoutMs) {
@@ -1251,10 +1193,6 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
             if (isParcelLayerReady(id)) {
                 pending.delete(id);
                 continue;
-            }
-            // Parcel consumed by an earlier proposal — deliberately off-map, not actually missing.
-            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) {
-                pending.delete(id);
             }
         }
         if (!pending.size) {

@@ -55,7 +55,6 @@ function normalizeServerProposalSummary(raw, cityCode) {
         // The BASE-ancestry stamp — what the claims/dossier surfaces match on. Dropping it here
         // would silently blind every "does this server proposal touch my parcel" check.
         cadastreParcelIds: Array.isArray(raw.cadastreParcelIds) ? raw.cadastreParcelIds : [],
-        childParcelIds: Array.isArray(raw.childParcelIds) ? raw.childParcelIds : [],
         acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],
         isMinted: false
     };
@@ -299,8 +298,6 @@ function syncProposalWithServerId(proposal, serverProposalId) {
         }
     }
 
-    migrateRoadAssetsToNewId(oldProposalId, serverProposalId);
-
     if (typeof proposalStorage._indexProposal === 'function') {
         proposalStorage._indexProposal(storedProposal);
     }
@@ -323,21 +320,6 @@ async function uploadProposalToServer(proposal) {
     }
     if (!uploadProposal) {
         return { ok: false, message: 'Invalid proposal.' };
-    }
-
-    // Identity migration (fingerprint v1 → v2): content the server already holds under its LEGACY
-    // id (which hashed the parent lists) keeps that id, so an old share url never goes stale and
-    // no duplicate row is minted. Content the server has never seen uploads under the v2 id,
-    // which derived-name churn can no longer move.
-    if (String(uploadProposal.proposalId || '').startsWith('c2-')
-        && typeof proposalContentFingerprintLegacy === 'function') {
-        try {
-            const legacyId = proposalContentFingerprintLegacy(proposal);
-            if (legacyId && await headProposalExists(legacyId)) {
-                uploadProposal.proposalId = legacyId;
-                uploadProposal.hash = legacyId;
-            }
-        } catch (_) { /* adoption is best-effort; the v2 id stands */ }
     }
 
     const backendBase = resolveBackendBaseUrl();
@@ -403,112 +385,6 @@ async function headProposalExists(proposalId, _city, proposalForSync) {
         console.warn('headProposalExists failed', error);
     }
     return false;
-}
-
-// The old ancestry walk, kept only as the fallback when plan-order.js cannot see a footprint:
-// live parcel state (findAncestorTree -> _getParcelAncestors -> most recent creator). This is the
-// walk that manufactured cycles — see the comment on ensureAncestorProposalsUploaded.
-function computeAncestorHashesLegacy(proposalKey) {
-    if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function') return [];
-    try {
-        const nodes = ProposalManager.findAncestorTree(String(proposalKey), { depthLimit: 32 }) || [];
-        return Array.from(new Set(nodes.map(n => n.proposalId).filter(Boolean)));
-    } catch (error) {
-        console.warn('ensureAncestorProposalsUploaded: failed to compute ancestor tree', error);
-        return [];
-    }
-}
-
-// Which prerequisites of `proposal` are not going to reach the server.
-//
-// This used to gate on upload ORDER — every ancestor had to already be on the server before its
-// descendant could be POSTed. Nothing depends on that order: proposals are POSTed independently, the
-// server stores ancestor ids as an opaque column with no foreign key, and the order a recipient
-// APPLIES a plan in is decided at apply time. Worse, the order was not always satisfiable. Ancestry
-// used to be derived from live parcel state (findAncestorTree -> _getParcelAncestors -> most recent
-// creator), so two proposals that each re-cut the other's children were each genuinely downstream of
-// the other: a real cycle, and an unbreakable deadlock for an ordering gate. One plan on prod had
-// `Road 2107-2043 <-> Subdivide 2107-2048`, which left five proposals permanently unuploadable.
-//
-// Now the prerequisite set itself comes from the A6 constraint graph (older intersecting applied
-// fabric-changers — acyclic by construction), and callers that know the whole set being shared pass
-// it as `options.satisfiedBy`: any prerequisite in that set is fine no matter what order things
-// upload in, since presence — completeness — is what a recipient actually needs.
-async function ensureAncestorProposalsUploaded(proposal, options = {}) {
-    const missing = [];
-    if (!proposal || typeof proposalStorage === 'undefined') {
-        return { ok: true, missing };
-    }
-
-    const rawSatisfied = options && options.satisfiedBy;
-    const satisfiedBy = rawSatisfied instanceof Set
-        ? rawSatisfied
-        : (Array.isArray(rawSatisfied) ? new Set(rawSatisfied.map(id => String(id))) : null);
-
-    const proposalKey = getProposalKey(proposal) || proposal.proposalId;
-    if (!proposalKey) {
-        return { ok: true, missing };
-    }
-
-    // The prerequisite set comes from the A6 constraint graph (plan-order.js), NOT from walking
-    // live parcel state: two fabric-changers are related only when their footprints intersect,
-    // and the earlier-created one is the prerequisite. Strictly-older is antisymmetric, so the
-    // mutual-ancestor deadlock this gate used to manufacture (§2.2: `Road 2043 <-> Subdivide
-    // 2048`, five rows stuck) is unrepresentable. Overlays need no prerequisites at all — a
-    // recipient re-parents them onto whatever fabric it has (geometry resolution in the shared
-    // routes), so only fabric-changers can genuinely require another proposal first.
-    const ancestorHashes = (() => {
-        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        if (!planOrderApi) return computeAncestorHashesLegacy(proposalKey);
-        try {
-            if (!planOrderApi.isFabricGoal(proposal.goal)) return [];
-            const footprint = planOrderApi.footprintOf(proposal);
-            if (!footprint) return computeAncestorHashesLegacy(proposalKey);
-            const isAppliedFn = (typeof isProposalCurrentlyApplied === 'function')
-                ? isProposalCurrentlyApplied
-                : (p => p && p.applied === true);
-            const items = [{ id: String(proposalKey), goal: proposal.goal, footprint, createdAt: proposal.createdAt || null }];
-            const all = (typeof proposalStorage.getAllProposals === 'function' ? proposalStorage.getAllProposals() : []) || [];
-            all.forEach(other => {
-                const key = getProposalKey(other) || (other && other.proposalId);
-                if (!key || String(key) === String(proposalKey)) return;
-                if (!planOrderApi.isFabricGoal(other.goal)) return;
-                // Only fabric that is actually part of this browser's map constrains: an unapplied
-                // road never cut anything this proposal could stand on.
-                if (!isAppliedFn(other)) return;
-                let otherFootprint = null;
-                try { otherFootprint = planOrderApi.footprintOf(other); } catch (_) { }
-                if (!otherFootprint) return;
-                items.push({ id: String(key), goal: other.goal, footprint: otherFootprint, createdAt: other.createdAt || null });
-            });
-            const graph = planOrderApi.buildConstraintGraph(items);
-            return graph.edges.filter(e => e.to === String(proposalKey)).map(e => e.from);
-        } catch (error) {
-            console.warn('ensureAncestorProposalsUploaded: constraint-graph ancestry failed', error);
-            return computeAncestorHashesLegacy(proposalKey);
-        }
-    })();
-    if (!ancestorHashes.length) {
-        return { ok: true, missing };
-    }
-
-    const checks = await Promise.all(ancestorHashes.map(async hash => {
-        // Shipping alongside this proposal — presence is what matters, not who was POSTed first.
-        if (satisfiedBy && satisfiedBy.has(String(hash))) return null;
-        const ancestor = proposalStorage.getProposal(hash);
-        if (!ancestor) {
-            return { hash, reason: 'missing-local', id: null };
-        }
-        const serverId = getServerProposalId(ancestor);
-        if (!serverId) {
-            return { hash, reason: 'local-only', id: null };
-        }
-        const exists = await headProposalExists(serverId, ancestor.city || proposal.city, ancestor);
-        return exists ? null : { hash, reason: 'not-found', id: serverId };
-    }));
-
-    checks.filter(Boolean).forEach(entry => missing.push(entry));
-    return { ok: missing.length === 0, missing };
 }
 
 async function ensureParentParcelsLoaded(parcelIds, options = {}) {
@@ -657,7 +533,6 @@ function prepareProposalForImport(sharedProposal) {
         serverProposalId,
         title: sharedProposal.title || sharedProposal.name || null,
         goal: inferredGoal,
-        childParcelIds: ensureArrayOfStrings(sharedProposal.childParcelIds),
         acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
         author: sharedProposal.author || sharedProposal.createdBy || sharedProposal.owner || null,
         description: typeof sharedProposal.description === 'string' ? sharedProposal.description : '',
@@ -691,25 +566,20 @@ function prepareProposalForImport(sharedProposal) {
             ? sharedProposal.decideLaterProposal
             : {};
         const parentParcelIds = ensureArrayOfStrings(raw.parentParcelIds && raw.parentParcelIds.length ? raw.parentParcelIds : base.parentParcelIds);
-        const childParcelIds = ensureArrayOfStrings(raw.childParcelIds || sharedProposal.childParcelIds || []);
         base.decideLaterProposal = {
             ...deepClone(raw),
-            parentParcelIds,
-            childParcelIds
+            parentParcelIds
         };
+        delete base.decideLaterProposal.childParcelIds;
         if (base.parentParcelIds.length === 0 && parentParcelIds.length > 0) {
             base.parentParcelIds = parentParcelIds.slice();
         }
     }
 
     if (sharedProposal.roadProposal) {
-        const childParcelIds = ensureArrayOfStrings(sharedProposal.roadProposal.childParcelIds || base.childParcelIds || []);
         base.roadProposal = {
             definition: deepClone(sharedProposal.roadProposal.definition),
-            childParcelIds,
-            roadGeometry: deepClone(sharedProposal.roadProposal.roadGeometry),
             metadata: deepClone(sharedProposal.roadProposal.metadata),
-            parentFeatures: [],
             parentParcelIds: ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
         };
     }
@@ -776,7 +646,6 @@ function prepareProposalForImport(sharedProposal) {
         const reparcelParcelIds = (sharedProposal.reparcellization.parcelIds && sharedProposal.reparcellization.parcelIds.length > 0)
             ? ensureArrayOfStrings(sharedProposal.reparcellization.parcelIds)
             : (base.parentParcelIds.length > 0 ? base.parentParcelIds.slice() : []);
-        const childParcelIds = ensureArrayOfStrings(sharedProposal.reparcellization.childParcelIds || base.childParcelIds || []);
         const ownerShares = deepCloneArray(sharedProposal.reparcellization.ownerShares);
         const polygons = deepCloneArray(sharedProposal.reparcellization.polygons);
 
@@ -789,24 +658,29 @@ function prepareProposalForImport(sharedProposal) {
                 ? Number(sharedProposal.reparcellization.totalArea)
                 : null,
             ownerShares,
-            polygons,
-            childParcelIds
+            polygons
         };
 
         if (base.parentParcelIds.length === 0 && reparcelParcelIds.length > 0) {
             base.parentParcelIds = reparcelParcelIds.slice();
         }
-        if (base.childParcelIds.length === 0 && childParcelIds.length > 0) {
-            base.childParcelIds = childParcelIds.slice();
-        }
     }
 
     // Derived-at-apply data never crosses browsers (§15a) — children/formations regenerate
     // from the definition against THIS browser's fabric. Old server rows still carry them.
-    const depthApi = (typeof window !== 'undefined' && window.__formationDepth) ? window.__formationDepth : null;
-    const stripped = (depthApi && typeof depthApi.stripDerivedRecordData === 'function')
-        ? depthApi.stripDerivedRecordData(base)
-        : base;
+    const depthApi = (typeof window !== 'undefined' && window.__formationDepth)
+        ? window.__formationDepth
+        : (typeof require === 'function' ? require('./formation-depth.js') : null);
+    if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function'
+        || typeof depthApi.conformanceOf !== 'function') {
+        throw new Error('Cannot import proposal: the flat-record gate is unavailable.');
+    }
+    const stripped = depthApi.stripDerivedRecordData(base);
+    const verdict = depthApi.conformanceOf(stripped);
+    if (!verdict.flat) {
+        const detail = verdict.violations.map(item => item.code + (item.id ? ` (${item.id})` : '')).join('; ');
+        throw new Error(`Cannot import non-conforming proposal; run migrate-tessellation.js first: ${detail}`);
+    }
     return parkProposalForImport(stripped);
 }
 
@@ -844,7 +718,6 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         buildCityQueryParam,
         normalizeServerProposalSummary,
-        prepareProposalForImport,
-        ensureAncestorProposalsUploaded
+        prepareProposalForImport
     };
 }

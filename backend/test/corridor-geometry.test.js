@@ -13,13 +13,10 @@ const {
     splitCorridorSelfJunctions,
     normalizeCorridorGraph,
     normalizeCorridorDefinitionTopology,
-    healNearMissJunctions,
-    weldNearbyVertices,
-    corridorConnectedComponents,
-    centerlinesTouch,
+    removeCorridorEdge,
+    removeCorridorNodes,
     segmentsIntersect,
     polylineHasSelfIntersection,
-    weldCorridorSegments,
     convertRoadPolygonToLatLngPairs,
     convertLatLngPairsToGeoJSON,
     isValidPolygonLatLngPairs,
@@ -266,130 +263,60 @@ describe('normalizeCorridorGraph', () => {
     });
 });
 
-describe('corridorConnectedComponents', () => {
-    it('groups segments sharing a vertex and splits disjoint ones', () => {
-        // Two touching segments (share (0,0)) + one disjoint far away.
-        const segs = [[P(0, 0), P(0, 1)], [P(0, 0), P(1, 0)], [P(9, 9), P(9, 10)]];
-        const comps = corridorConnectedComponents(segs, ['a', 'b', 'c']);
-        expect(comps).toHaveLength(2);
-        const sizes = comps.map(c => c.segments.length).sort();
-        expect(sizes).toEqual([1, 2]);
+describe('authored corridor edits', () => {
+    it('removes only the selected edge and keeps every disconnected remainder in one result', () => {
+        const segments = [
+            [P(0, 0), P(0, 1), P(0, 2), P(0, 3)],
+            [P(10, 0), P(10, 1)]
+        ];
+        const profiles = {
+            main: { strips: [{ type: 'driving', width: 6 }] },
+            east: { strips: [{ type: 'driving', width: 4 }] }
+        };
+        const result = removeCorridorEdge(segments, ['main', 'east'], profiles, 0, 1);
+
+        expect(result.changed).toBe(true);
+        expect(result.segments).toEqual([
+            [P(0, 0), P(0, 1)],
+            [P(0, 2), P(0, 3)],
+            [P(10, 0), P(10, 1)]
+        ]);
+        expect(result.segmentIds).toEqual(['main', 'main~2', 'east']);
+        expect(result.segmentProfiles['main~2']).toEqual(profiles.main);
+        expect(result.segmentProfiles.east).toEqual(profiles.east);
+        expect(segments[0]).toHaveLength(4);
     });
 
-    it('carries each body its own segmentIds', () => {
-        const segs = [[P(0, 0), P(0, 1)], [P(5, 5), P(5, 6)]];
-        const comps = corridorConnectedComponents(segs, ['x', 'y']);
-        const idSets = comps.map(c => c.segmentIds.join(''));
-        expect(idSets.sort()).toEqual(['x', 'y']);
-    });
-});
+    it('does not shift an untouched segment id when the selected polyline disappears', () => {
+        const result = removeCorridorEdge(
+            [[P(0, 0), P(0, 1)], [P(8, 0), P(8, 1)]],
+            ['removed', 'untouched'],
+            { removed: { width: 9 }, untouched: { width: 3 } },
+            0,
+            0
+        );
 
-describe('centerlinesTouch', () => {
-    it('is true when centerlines share a vertex or cross, false when merely parallel', () => {
-        expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(0, 5), P(5, 5)]])).toBe(true); // shared vertex
-        expect(centerlinesTouch([[P(0, -5), P(0, 5)]], [[P(-5, 0), P(5, 0)]])).toBe(true); // crossing
-        expect(centerlinesTouch([[P(0, 0), P(0, 5)]], [[P(1, 0), P(1, 5)]])).toBe(false); // parallel
-    });
-
-    describe('near-miss T-junctions are OPT-IN (allowNearMiss)', () => {
-        beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
-        afterEach(() => { delete global.wgs84ToHTRS96; });
-
-        // A: horizontal centerline along lat=0. B: an endpoint that stops 1 metre short of A's mid-span.
-        const A = () => [P(0, 0), P(0, 10)];
-        const nearMissB = () => [P(5, 5), P(1, 5)]; // endpoint P(1,5) is 1 m from A's point P(0,5)
-
-        it('does NOT treat a near-miss as touching by default (drawing/absorbing must not auto-join)', () => {
-            expect(centerlinesTouch([A()], [nearMissB()])).toBe(false);
-        });
-
-        it('treats an endpoint that stops just short of the other mid-span as touching WHEN opted in', () => {
-            expect(centerlinesTouch([A()], [nearMissB()], true)).toBe(true);
-        });
-
-        it('still rejects two parallel roads whose ends merely align, even opted in', () => {
-            // Endpoints land at the OTHER road's endpoints (t=0/1), not its mid-span — not a junction.
-            expect(centerlinesTouch([[P(0, 0), P(5, 0)]], [[P(0, 1), P(5, 1)]], true)).toBe(false);
-        });
-
-        it('does not merge an endpoint that is too far short, even opted in', () => {
-            const farB = [P(5, 5), P(3, 5)]; // 3 m short, beyond the 2.5 m tolerance
-            expect(centerlinesTouch([A()], [farB], true)).toBe(false);
-        });
-    });
-});
-
-describe('weldNearbyVertices', () => {
-    beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
-    afterEach(() => { delete global.wgs84ToHTRS96; });
-
-    it('fuses two vertices of different legs that sit within tolerance into one shared node', () => {
-        const s1 = [P(0, 0), P(0, 10)];
-        const s2 = [P(5, 10), P(0, 10.5)]; // its endpoint is 0.5 m from s1's endpoint P(0,10)
-        weldNearbyVertices([s1, s2], 2.5);
-        // s2's endpoint snaps exactly onto the first-seen representative (s1's P(0,10)).
-        expect(s2[1]).toEqual({ lat: 0, lng: 10 });
-        // Which means the two legs now share a vertex — one connected road, a real junction.
-        expect(corridorConnectedComponents([s1, s2], [1, 2]).length).toBe(1);
+        expect(result.segments).toEqual([[P(8, 0), P(8, 1)]]);
+        expect(result.segmentIds).toEqual(['untouched']);
+        expect(result.segmentProfiles).toEqual({ untouched: { width: 3 } });
     });
 
-    it('preserves a short consecutive edge (curve/bend detail is not collapsed)', () => {
-        const seg = [P(0, 0), P(0, 1), P(0, 10)]; // 1 m first edge — within tolerance but ADJACENT
-        weldNearbyVertices([seg], 2.5);
-        expect(seg).toEqual([P(0, 0), P(0, 1), P(0, 10)]); // untouched — an edge is not a duplicate
-    });
+    it('removes repeated node occurrences from the end and keeps ids aligned after filtering', () => {
+        const result = removeCorridorNodes(
+            [
+                [P(0, 0), P(1, 1), P(2, 2), P(1, 1)],
+                [P(9, 0), P(9, 1)]
+            ],
+            ['loop', 'other'],
+            { loop: { width: 8 }, other: { width: 4 } },
+            [{ segIndex: 0, pointIndex: 1 }, { segIndex: 0, pointIndex: 3 }]
+        );
 
-    it('drops an exact zero-length edge (a true duplicate vertex)', () => {
-        const seg = [P(0, 0), P(0, 0), P(0, 10)];
-        weldNearbyVertices([seg], 2.5);
-        expect(seg).toEqual([P(0, 0), P(0, 10)]);
-    });
-
-    it('welds a leg that loops back onto a NON-adjacent part of itself (self-junction)', () => {
-        // Last vertex lands 0.5 m from the first (a closed-ish loop) — non-adjacent, so it fuses.
-        const seg = [P(0, 0), P(0, 5), P(5, 5), P(5, 0), P(0, 0.4)];
-        weldNearbyVertices([seg], 2.5);
-        expect(seg[seg.length - 1]).toEqual({ lat: 0, lng: 0 });
-    });
-
-    it('leaves vertices that are farther apart than the tolerance untouched', () => {
-        const s1 = [P(0, 0), P(0, 10)];
-        const s2 = [P(9, 10), P(0, 20)];
-        weldNearbyVertices([s1, s2], 2.5);
-        expect(s2).toEqual([P(9, 10), P(0, 20)]);
-        expect(corridorConnectedComponents([s1, s2], [1, 2]).length).toBe(2);
-    });
-});
-
-describe('healNearMissJunctions', () => {
-    beforeEach(() => { global.wgs84ToHTRS96 = (lat, lng) => [lng, lat]; });
-    afterEach(() => { delete global.wgs84ToHTRS96; });
-
-    it('snaps a near-miss endpoint onto the span and inserts the shared node, joining the graph', () => {
-        const segments = [[P(0, 0), P(0, 10)], [P(5, 5), P(1, 5)]];
-        healNearMissJunctions(segments, 2.5);
-        // The dangling endpoint is snapped exactly onto the horizontal centerline (lat 0).
-        expect(segments[1][segments[1].length - 1]).toEqual({ lat: 0, lng: 5 });
-        // The target segment gains a matching vertex there, so the two now share a node.
-        expect(segments[0]).toEqual([P(0, 0), P(0, 5), P(0, 10)]);
-        // Which means union-find now sees ONE connected road, not two.
-        expect(corridorConnectedComponents(segments, [1, 2]).length).toBe(1);
-    });
-
-    it('leaves an endpoint that is too far short untouched (no spurious node)', () => {
-        const segments = [[P(0, 0), P(0, 10)], [P(5, 5), P(3, 5)]];
-        healNearMissJunctions(segments, 2.5);
-        expect(segments[1][segments[1].length - 1]).toEqual({ lat: 3, lng: 5 });
-        expect(segments[0]).toEqual([P(0, 0), P(0, 10)]);
-        expect(corridorConnectedComponents(segments, [1, 2]).length).toBe(2);
-    });
-
-    it('does not disturb an endpoint that already shares a vertex with the other road', () => {
-        // B ends exactly at A's vertex P(0,0): already a shared node, so nothing is snapped or inserted.
-        const segments = [[P(0, 0), P(0, 10)], [P(5, 0), P(0, 0)]];
-        healNearMissJunctions(segments, 2.5);
-        expect(segments[0]).toEqual([P(0, 0), P(0, 10)]);
-        expect(segments[1]).toEqual([P(5, 0), P(0, 0)]);
+        expect(result.segments).toEqual([
+            [P(0, 0), P(2, 2)],
+            [P(9, 0), P(9, 1)]
+        ]);
+        expect(result.segmentIds).toEqual(['loop', 'other']);
     });
 });
 
@@ -412,46 +339,6 @@ describe('polylineHasSelfIntersection', () => {
         const simple = [P(0, 0), P(0, 1), P(0, 2), P(0, 3)];
         expect(polylineHasSelfIntersection(simple)).toBe(false);
         delete global.wgs84ToHTRS96;
-    });
-});
-
-describe('weldCorridorSegments', () => {
-    it('welds two segments sharing an endpoint into one and keeps counts aligned', () => {
-        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
-        const out = weldCorridorSegments(segs, ['a', 'b']);
-        expect(out.segments).toHaveLength(1);
-        expect(out.segmentIds).toHaveLength(1); // length invariant
-        expect(out.segments[0]).toHaveLength(3); // shared vertex not duplicated
-    });
-
-    it('keeps segments with DIFFERENT profiles separate', () => {
-        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
-        const profiles = { a: { width: 4 }, b: { width: 8 } };
-        const out = weldCorridorSegments(segs, ['a', 'b'], profiles);
-        expect(out.segments).toHaveLength(2); // different cross-sections don't weld
-    });
-
-    it('preserves a profile override carried by the SECOND segment', () => {
-        const segs = [[P(0, 0), P(0, 1)], [P(0, 1), P(0, 2)]];
-        // Only the second segment carries a profile; both must share the same key to weld, so give
-        // both the same override and confirm the surviving id is the one that carries it.
-        const profiles = { b: { width: 6 }, a: { width: 6 } };
-        const out = weldCorridorSegments(segs, ['a', 'b'], profiles);
-        expect(out.segments).toHaveLength(1);
-        expect(out.segmentIds[0]).toBeTruthy(); // an id carrying the override survives, not null
-    });
-
-    it('keeps endpoint-connected strokes separate when welding would create a self-crossing path', () => {
-        const segs = [
-            [P(-5, -5), P(5, 5), P(-5, 5)],
-            [P(-5, 5), P(5, -5)]
-        ];
-        const out = weldCorridorSegments(segs, ['a', 'b']);
-
-        expect(out.segments).toHaveLength(2);
-        insertCorridorCrossingNodes(out.segments, out.segmentIds);
-        expect(out.segments[0].some(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9)).toBe(true);
-        expect(out.segments[1].some(point => Math.abs(point.lat) < 1e-9 && Math.abs(point.lng) < 1e-9)).toBe(true);
     });
 });
 

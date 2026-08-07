@@ -61,10 +61,14 @@
         if (index && leafletMap) {
             index.forEach((layer, id) => {
                 if (!layer || !layer.feature || typeof layer.getBounds !== 'function') return;
+                // parcelLayerById is an ancestry/index cache: consumed cadastre and older
+                // derived pieces deliberately remain in it. They are not ground in the one
+                // live partition and must never be hover/click candidates.
+                try { if (!leafletMap.hasLayer(layer)) return; } catch (_) { return; }
                 try {
                     const bounds = layer.getBounds();
                     if (!bounds || !bounds.isValid || !bounds.isValid() || !bounds.contains(latlng)) return;
-                    parcels.push({ id: String(id), feature: layer.feature, live: leafletMap.hasLayer(layer) });
+                    parcels.push({ id: String(id), feature: layer.feature, live: true });
                 } catch (_) { }
             });
         }

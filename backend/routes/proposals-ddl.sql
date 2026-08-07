@@ -38,17 +38,16 @@ CREATE TABLE IF NOT EXISTS proposal (
     is_conditional BOOLEAN DEFAULT FALSE,
     disbursement_mode VARCHAR(50) DEFAULT 'partial', -- 'conditional' or 'partial'
     
-    -- Parcel relationships
-    ancestor_parcel_ids JSONB, -- Array of parcel IDs that are ancestors (parent parcels)
-    cadastre_parcel_ids JSONB, -- Array of BASE cadastral parcel IDs the geometry covers (never derived ids)
-    descendant_parcel_ids JSONB, -- Array of parcel IDs that are descendants (child parcels created by proposal)
+    -- Flat cadastral declarations and consent
+    ancestor_parcel_ids JSONB, -- Base cadastral parent IDs; never live/derived parcel IDs
+    cadastre_parcel_ids JSONB, -- Geometry-authoritative base cadastral IDs
     accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
     ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
     cadastre_frame JSONB, -- Which cadastre frame the publish-time stamps were computed against ({ capturedAt })
 
     -- Proposal-specific data (stored as JSONB for flexibility)
-    -- For road proposals: definition (points, width), parentFeatures, childFeatures, metadata
+    -- For road proposals: authored definition (points, cross-sections, metadata)
     -- For building proposals: buildingGeometry, parameters, parentParcelIds
     -- For structure proposals: kind, geometry, parentParcelIds, blockName
     -- For reparcellization: polygons with ownerKey, displayName, color, percent
@@ -56,14 +55,6 @@ CREATE TABLE IF NOT EXISTS proposal (
     building_proposal JSONB,
     structure_proposal JSONB,
     reparcellization JSONB,
-    
-    -- Feature collections (GeoJSON)
-    parent_features JSONB, -- Deep copy of original GeoJSON features before changes
-    child_features JSONB, -- GeoJSON features of new/modified objects created by proposal
-    
-    -- Dependency tracking
-    parent_proposal_ids JSONB, -- Array of parent proposal IDs
-    child_proposal_ids JSONB, -- Array of child proposal IDs
     
     -- Additional metadata
     lens JSONB, -- Array of lens entries
@@ -88,21 +79,15 @@ CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_ancestor_parcel_ids ON proposal USING GIN(ancestor_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_cadastre_parcel_ids ON proposal USING GIN(cadastre_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposal_descendant_parcel_ids ON proposal USING GIN(descendant_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposal_parent_proposal_ids ON proposal USING GIN(parent_proposal_ids);
-CREATE INDEX IF NOT EXISTS idx_proposal_child_proposal_ids ON proposal USING GIN(child_proposal_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(proposal_data);
 
 -- Comments for documentation
 COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
 COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
-COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
-COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Base cadastral parcel IDs the proposal geometry covers. Stable across machines, unlike ancestor_parcel_ids which may name derived (re-minted) parcels.';
+COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Flat base cadastral parent declaration; live/derived parcel IDs never travel.';
+COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Geometry-authoritative base cadastral parcel IDs the proposal covers.';
 COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
 COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
-COMMENT ON COLUMN proposal.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
-COMMENT ON COLUMN proposal.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
-COMMENT ON COLUMN proposal.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
 COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
 COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
 

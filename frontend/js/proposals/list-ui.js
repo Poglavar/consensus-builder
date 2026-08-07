@@ -158,7 +158,7 @@ function handleProposalParcelClick(parcelId, event) {
             multiParcelSelection.clearSingleParcelSelection();
         }
 
-        let proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => getLifecycleStatus(p) !== 'Executed');
+        let proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
         if (proposals.length === 0) {
             proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
         }
@@ -1146,10 +1146,6 @@ function handleMultiSelectChange(checked, source) {
             multiParcelSelection.toggle();
         }
     }
-}
-
-function handleShowProposalsChange() {
-    // No-op: proposal mode removed
 }
 
 function cancelMultiParcelSelection() {

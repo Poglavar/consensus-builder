@@ -286,7 +286,7 @@
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         const allParcelProposals = storage && typeof storage.getProposalsForParcel === 'function'
-            ? storage.getProposalsForParcel(parcelKey, { hydrateRoadAssets: false })
+            ? storage.getProposalsForParcel(parcelKey)
             : [];
         // Canton proposals are shown in the dedicated "Canton proposals" section, not
         // the EVM list — exclude their local copies here to avoid duplication.

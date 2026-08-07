@@ -28,17 +28,12 @@
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
             profile: cloneDraftValue(profileOverride || definition.profile) || null,
             tunnels: cloneDraftValue(definition.tunnels) || [],
-            gradeSeparations: cloneDraftValue(definition.gradeSeparations) || [],
-            // Carry the build-through park/lake/square approvals so continuing the road reuses them
-            // (seedRoadDrawing → seedApprovedStructureCrossings) instead of re-prompting.
-            approvedStructures: cloneDraftValue(definition.approvedStructures) || []
+            gradeSeparations: cloneDraftValue(definition.gradeSeparations) || []
         };
     }
 
     function resolveCorridorScreenshotGeometry(proposal, fallbackPolygon) {
-        const corridor = proposal?.roadProposal?.definition?.polygon
-            || proposal?.definition?.polygon
-            || null;
+        const corridor = proposal?.roadProposal?.definition?.polygon || null;
         if (corridor && Array.isArray(corridor.coordinates) && corridor.coordinates.length) {
             return { polygon: corridor.coordinates, polygonOrder: 'lnglat', fitToPolygonOnly: true };
         }
@@ -67,7 +62,6 @@
             sidewalkWidth: seed?.sidewalkWidth,
             tunnels: cloneDraftValue(seed?.tunnels || []),
             gradeSeparations: cloneDraftValue(seed?.gradeSeparations || previousDefinition?.gradeSeparations || []),
-            demolishedBuildings: cloneDraftValue(seed?.demolishedBuildings || []),
             segmentProfiles: cloneDraftValue(seed?.segmentProfiles || previousDefinition?.segmentProfiles || {}),
             polygon: cloneDraftValue(seed?.polygon !== undefined ? seed.polygon : previousDefinition?.polygon || null),
             latLngPairs: cloneDraftValue(seed?.latLngPairs !== undefined ? seed.latLngPairs : previousDefinition?.latLngPairs || null),
@@ -105,7 +99,6 @@
                 sidewalkWidth: definition.sidewalkWidth,
                 tunnels: cloneDraftValue(definition.tunnels || []),
                 gradeSeparations: cloneDraftValue(definition.gradeSeparations || []),
-                demolishedBuildings: cloneDraftValue(definition.demolishedBuildings || []),
                 segmentProfiles: cloneDraftValue(definition.segmentProfiles || {}),
                 trackSpeed: definition.metadata?.trackSpeed,
                 trackMinRadius: definition.metadata?.trackMinRadius

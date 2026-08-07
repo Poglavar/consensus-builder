@@ -13,18 +13,8 @@
 // The presets row stamps a whole standard cross-section (the same road classes the drawing width
 // picker offers), which is the fast path: take a correct section, then tweak it.
 //
-// For a placed road the resulting footprint is checked live: hitting a NEW building blocks Apply —
-// tunnels are only made while drawing — while crossing an applied park/square/lake merely lights an
-// indicator (the structure is cut at render time). A building this road already PARTIALLY demolished
-// is different again: its remainder still stands, and widening into it is shown (amber, its own
-// indicator) but does not block — the demolition was already consented, and Apply re-carves the cut
-// at the new width (road-drawing's runLocalCorridorGeometryUpdate).
-//
-// A placed road takes the change in place (footprint + parcel cuts rebuild on Apply). A road that
-// carries a published identity (uploaded or minted) forks into your local copy as it is edited —
-// its server/chain pointers are detached, so the next Share/Upload re-mints — and the on-chain
-// original is never touched. Reopening as a drawing is only a fallback when the road cannot be
-// edited in place here (its parcels are not loaded in the current city).
+// Clearance and obstacle overlays are design information only. Apply mints an immutable replacement
+// proposal and one canonical replay derives parcel cuts and building impacts from its footprint.
 
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
@@ -166,26 +156,9 @@ function corridorEditorFlashRefusal() {
     );
 }
 
-// Pure: how this road's own demolition records partition for width-hit detection. A record
-// WITHOUT a remainder is a full demolition — nothing is standing, so a width change cannot hit
-// it and it is excluded like a tunnelled building. A record WITH a remainder left the building
-// standing: widening into that remainder is a real, reportable hit, but a RE-CUT of an already
-// consented demolition, not a new obstacle — shown, never blocking.
-function corridorEditorPartitionDemolitions(records) {
-    const excluded = new Set();
-    const recut = new Set();
-    (records || []).forEach(record => {
-        if (!record || record.id === undefined || record.id === null) return;
-        (record.remainder ? recut : excluded).add(String(record.id));
-    });
-    return { excluded, recut };
-}
-
 // Everything the corridor's footprint would collide with at the given total width: buildings the
 // road is not already tunnelled through (from the base map AND applied building proposals), and
-// applied parks/squares/lakes. Checked per edge, like drawing-time segment validation. Hits on
-// buildings this road already partially demolished carry `recut: true` (the detection pool holds
-// their REMAINDER footprint, so the hit is against what is actually still standing).
+// applied parks/squares/lakes. Demolition scans from the current derivation are deliberately ignored.
 // The centerline segments the editor is scoped to: the clicked segment when the edit is
 // segment-scoped, otherwise every segment of the road network.
 function corridorEditorScopedSegments() {
@@ -210,8 +183,6 @@ function corridorEditorCollectWidthHits(width) {
         (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
         if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
     });
-    const demolitions = corridorEditorPartitionDemolitions(state.definition.demolishedBuildings);
-    demolitions.excluded.forEach(id => tunnelled.add(id));
     const seenBuildings = new Set();
     const seenStructures = new Set();
     segments.forEach(segment => {
@@ -226,7 +197,7 @@ function corridorEditorCollectWidthHits(width) {
                     const id = String(hit.id);
                     if (tunnelled.has(id) || seenBuildings.has(id)) return;
                     seenBuildings.add(id);
-                    result.buildings.push(demolitions.recut.has(id) ? { ...hit, recut: true } : hit);
+                    result.buildings.push(hit);
                 });
             }
             if (typeof detectStructureCrossings === 'function') {
@@ -244,9 +215,7 @@ function corridorEditorCollectWidthHits(width) {
 // Paint the hit buildings' footprints on the map, replacing the previous paint. A widening
 // that starts cutting into a building shows exactly WHERE, live, while the seam is still being
 // dragged — the chip alone said only that it happened. Red = a new building (blocks Apply);
-// amber = re-cutting deeper into a building this road already partially demolished (allowed —
-// what is painted is its still-standing remainder). Buildings the road tunnels through or fully
-// demolished are not hits (corridorEditorCollectWidthHits excludes them).
+// dragged. Buildings the road tunnels through are not hits.
 function corridorEditorRenderBuildingHits(buildingHits) {
     if (typeof map === 'undefined' || !map || typeof L === 'undefined') return;
     if (corridorEditorHitBuildingsLayer) {
@@ -256,7 +225,7 @@ function corridorEditorRenderBuildingHits(buildingHits) {
     const features = (buildingHits || [])
         .map(hit => {
             const geometry = hit && ((hit.feature && hit.feature.geometry) || hit.originalGeometry);
-            return geometry ? { type: 'Feature', properties: { recut: hit.recut === true }, geometry } : null;
+            return geometry ? { type: 'Feature', properties: {}, geometry } : null;
         })
         .filter(Boolean);
     if (!features.length) return;
@@ -264,21 +233,13 @@ function corridorEditorRenderBuildingHits(buildingHits) {
     corridorEditorHitBuildingsLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
         interactive: false,
         pane: (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined,
-        style: feature => (feature.properties.recut
-            ? {
-                color: '#9a5b13',
-                weight: 2,
-                fillColor: '#d97706',
-                fillOpacity: 0.35,
-                className: 'corridor-editor-building-hit corridor-editor-building-hit--recut'
-            }
-            : {
-                color: '#b3261e',
-                weight: 2,
-                fillColor: '#dc2626',
-                fillOpacity: 0.4,
-                className: 'corridor-editor-building-hit'
-            })
+        style: () => ({
+            color: '#b3261e',
+            weight: 2,
+            fillColor: '#dc2626',
+            fillOpacity: 0.4,
+            className: 'corridor-editor-building-hit'
+        })
     }).addTo(map);
 }
 
@@ -365,8 +326,6 @@ async function corridorEditorShowBuildingFootprints() {
 function corridorEditorUpdateIndicators(hits, hitsBuilding) {
     const buildingsChip = document.querySelector('.corridor-editor-indicator--buildings');
     if (buildingsChip) buildingsChip.hidden = !hitsBuilding;
-    const recutChip = document.querySelector('.corridor-editor-indicator--recut');
-    if (recutChip) recutChip.hidden = !(hits && hits.buildings.some(hit => hit.recut));
     const structuresChip = document.querySelector('.corridor-editor-indicator--structures');
     if (structuresChip) structuresChip.hidden = !(hits && hits.structures.length);
     // A widening that would cut a building is exactly when moving the road might avoid it — point at
@@ -378,9 +337,7 @@ function corridorEditorUpdateIndicators(hits, hitsBuilding) {
 }
 
 // `widthHitsBuilding` flags a widening that reaches a building the road did not already touch at its
-// opening width. It no longer BLOCKS — applying resolves it (cut/tunnel/demolish) on the spot — it
-// just drives the indicator chip. Re-cut hits (deepening this road's own consented partial
-// demolition) are silent, and never counted here.
+// opening width. It is informational; the replacement record and canonical replay own the effect.
 function corridorEditorRunObstacleCheck() {
     const current = corridorEditorState;
     if (!current || current.mode !== 'proposal') return;
@@ -391,12 +348,10 @@ function corridorEditorRunObstacleCheck() {
         );
     }
     const hits = corridorEditorCollectWidthHits(corridorProfileWidth(current.profile));
-    current.widthHitsBuilding = hits.buildings.some(hit => !hit.recut && !current.baselineBuildingHitIds.has(String(hit.id)));
+    current.widthHitsBuilding = hits.buildings.some(hit => !current.baselineBuildingHitIds.has(String(hit.id)));
     corridorEditorRenderBuildingHits(hits.buildings);
     corridorEditorUpdateIndicators(hits, current.widthHitsBuilding);
-    // Hitting a new building no longer blocks Apply: applying resolves it on the spot (the same
-    // cut/tunnel/demolish dialog the drawing tool uses), so the button only tracks whether there is
-    // a change to apply.
+    // The button only tracks whether there is a change to save.
     const saveButton = document.querySelector('.corridor-editor-save');
     if (saveButton) saveButton.disabled = !current.dirty;
 }
@@ -486,15 +441,6 @@ function corridorEditorConstraintFeatures() {
     (state.definition.tunnels || []).forEach(record => {
         (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
     });
-    // A building this road already fully demolished (`excluded`) OR already partially cut
-    // (`recut`) is a consented demolition, not a wall: widening deeper into it is free, so it must
-    // NOT constrain the buildable-width measurement — otherwise the corridor tab reports "too wide /
-    // doesn't fit" for a widening that the editor happily allows (it only extends an existing cut).
-    // The cross-section's amber "cuts deeper into an already-cut building" indicator still flags it.
-    const demolitions = corridorEditorPartitionDemolitions(state.definition.demolishedBuildings);
-    demolitions.excluded.forEach(id => tunnelled.add(id));
-    demolitions.recut.forEach(id => tunnelled.add(id));
-
     // The two limits are EXCLUSIVE. Going for the buildings means ignoring the road parcel — that
     // is the whole point of the mode, since the road parcel is the thing that does not match the
     // street. Respecting the road parcels means the parcel edge is the limit and a building behind
@@ -1169,8 +1115,8 @@ function corridorEditorRenderEdgeFillPreview() {
 
 // Bake a lateral shift into the scoped segment's stored centerline. The shift goes through
 // updateLocalCorridorGeometry like any other geometry edit (a node drag, a reroute), so the
-// footprint, parcel cuts, demolition re-carves and collision prompts all replay on the moved
-// alignment. Endpoints welded to other roads (or to the rest of this network) are held: the
+// footprint and parcel cuts are derived by one replay on the moved alignment. Endpoints welded to
+// other roads (or to the rest of this network) are held: the
 // shift tapers to zero toward them, the shape of a real realignment.
 async function corridorEditorApplyFitShift(shiftMeters) {
     const state = corridorEditorState;
@@ -2014,8 +1960,8 @@ function corridorEditorBindBody(body) {
     }
 }
 
-// Apply returns a placed road to the normal drawing tool with its edited profile. No proposal exists
-// until the user explicitly presses Create there; cancelling the drawing leaves the source untouched.
+// Drawing-mode Apply commits the edited profile to the active authored core. Finishing the drawing
+// later mints its immutable proposal snapshot.
 async function corridorEditorSave() {
     if (!corridorEditorState) return;
     if (corridorEditorState.mode === 'drawing') {
@@ -2024,27 +1970,8 @@ async function corridorEditorSave() {
         const openingWidth = corridorProfileWidth(state.originalProfile || state.profile);
         const editedWidth = corridorProfileWidth(state.profile);
         const footprintChanged = Math.abs(editedWidth - openingWidth) > 1e-6;
-        if (footprintChanged) {
-            state.saving = true;
-            corridorEditorRender();
-            let accepted = false;
-            try {
-                accepted = typeof window.validateRoadDrawingProfileImpacts === 'function'
-                    && await window.validateRoadDrawingProfileImpacts();
-            } finally {
-                if (corridorEditorState === state) state.saving = false;
-            }
-            if (!accepted) {
-                if (corridorEditorState === state) {
-                    state.notice = corridorEditorI18n(
-                        'modal.corridor.unresolvedDrawingImpact',
-                        'The cross-section was not applied. Adjust it or resolve its building impacts.'
-                    );
-                    corridorEditorRender();
-                    corridorEditorFlashRefusal();
-                }
-                return;
-            }
+        if (footprintChanged && typeof window.validateRoadDrawingProfileImpacts === 'function') {
+            await window.validateRoadDrawingProfileImpacts();
         }
         corridorEditorClose();
         if (typeof updateStatus === 'function') {
@@ -2052,10 +1979,7 @@ async function corridorEditorSave() {
         }
         return;
     }
-    // A widening that newly hits a building is no longer refused: applying it runs the same
-    // cut/tunnel/demolish resolver the drawing tool uses, in place (updateLocalCorridorGeometry
-    // re-checks a widened segment's footprint and prompts). Settle any pending debounced check first
-    // so the indicators reflect the final width before we apply.
+    // Settle the informational collision indicator before minting the replacement snapshot.
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
         corridorEditorObstacleTimer = null;
@@ -2077,12 +2001,7 @@ async function corridorEditorSave() {
     const sourceName = source.title || source.name || sourceKey;
     corridorEditorClose();
 
-    // SimCity object editing: a placed road takes the new cross-section IN PLACE — the footprint
-    // rebuilds and the road re-applies. A road carrying a published identity (uploaded or minted)
-    // forks into your local copy as part of that edit — updateLocalCorridorGeometry detaches its
-    // server/chain pointers — so touching a minted road no longer bars the edit, it just makes it
-    // yours. The redraw-as-a-drawing path below is only a fallback for when the in-place update
-    // cannot run (e.g. the source's parcels are not loaded in this city).
+    // Editing creates a new local snapshot and parks the source; one replay applies the new order.
     if (typeof window.updateLocalCorridorGeometry === 'function') {
         const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
             definition.edgeFill = { limit: edgeFillLimit, survey: edgeFillSurvey };
@@ -2165,8 +2084,7 @@ function corridorEditorOpenOverlayBody() {
             </div>` : '';
     const indicatorsHtml = drawing ? '' : `
             <div class="corridor-editor-indicators">
-                <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'This width cuts into new buildings — you choose cut / tunnel / demolish when you apply')}</span>
-                <span class="corridor-editor-indicator corridor-editor-indicator--recut" hidden>${corridorEditorI18n('modal.corridor.extendsCut', 'Cuts deeper into an already-cut building (amber on the map)')}</span>
+                <span class="corridor-editor-indicator corridor-editor-indicator--buildings" hidden>${corridorEditorI18n('modal.corridor.hitsBuildings', 'This footprint intersects buildings; replay derives the resulting impact')}</span>
                 <span class="corridor-editor-indicator corridor-editor-indicator--structures" hidden>${corridorEditorI18n('modal.corridor.cutsStructures', 'Cuts applied parks/squares/lakes')}</span>
                 <button type="button" class="corridor-editor-indicator corridor-editor-indicator--fit" hidden>${corridorEditorI18n('modal.corridor.fitHint', 'Can it fit if moved? Open the Corridor tab')}</button>
             </div>`;
@@ -2550,7 +2468,6 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         corridorEditorFitPadding,
-        corridorEditorPartitionDemolitions,
         corridorEditorWriteScopedSegmentPoints
     };
 }

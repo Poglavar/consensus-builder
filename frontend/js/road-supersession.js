@@ -1,5 +1,4 @@
-// Replacement-state helpers for roads copied and extended into a new proposal.
-// They mutate proposal records only; ProposalManager remains responsible for map geometry and storage.
+// Resolve a clicked corridor parcel back to its applied road proposal.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -7,88 +6,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    // Legacy fallback only: pre-split in-memory records that never carried the `applied` boolean.
-    const appliedLike = status => {
-        const normalized = String(status || '').toLowerCase();
-        return normalized === 'applied' || normalized === 'executed';
-    };
+    const appliedOf = (typeof isApplied === 'function')
+        ? isApplied
+        : require('./proposals/status.js').isApplied;
 
-    // Map-application axis. The root boolean is authoritative; nested state is legacy-only.
     function roadProposalIsApplied(proposal) {
-        if (!proposal || !proposal.roadProposal) return false;
-        const rp = proposal.roadProposal;
-        if (typeof proposal.applied === 'boolean') return proposal.applied;
-        if (typeof rp.applied === 'boolean') return rp.applied;
-        return appliedLike(rp.status) || appliedLike(proposal.status);
-    }
-
-    function roadProposalKey(proposal, fallback = null) {
-        if (!proposal) return fallback;
-        return proposal.proposalId || proposal.id || proposal.hash || fallback;
-    }
-
-    function supersedeCopiedRoadSource(replacement, replacementId, findProposal) {
-        if (!replacement || !replacement.roadProposal || typeof findProposal !== 'function') return null;
-        const copiedFrom = replacement.sourceProposalId
-            || replacement.replacementOfProposalId
-            || replacement.copiedFromProposalId;
-        if (!copiedFrom) return null;
-        const source = findProposal(String(copiedFrom));
-        if (!source || !source.roadProposal || source === replacement || !roadProposalIsApplied(source)) return null;
-
-        const resolvedReplacementId = String(roadProposalKey(replacement, replacementId) || replacementId || '');
-        const sourceId = String(roadProposalKey(source, copiedFrom) || copiedFrom);
-        if (!resolvedReplacementId || sourceId === resolvedReplacementId) return null;
-
-        source.appliedBeforeSuperseded = typeof source.applied === 'boolean' ? source.applied : true;
-        // Superseding is application-axis-only: park the source without rewriting its lifecycle.
-        delete source.roadProposal.applied;
-        source.applied = false; // superseded roads leave the map until restored
-        source.roadProposal.supersededByProposalId = resolvedReplacementId;
-        source.supersededByProposalId = resolvedReplacementId;
-
-        const existing = Array.isArray(replacement.roadProposal.supersedesProposalIds)
-            ? replacement.roadProposal.supersedesProposalIds.map(String)
-            : [];
-        replacement.roadProposal.supersedesProposalIds = Array.from(new Set([...existing, sourceId]));
-        replacement.supersedesProposalIds = replacement.roadProposal.supersedesProposalIds.slice();
-        return source;
-    }
-
-    function restoreSupersededRoadSources(replacement, replacementId, findProposal) {
-        if (!replacement || !replacement.roadProposal || typeof findProposal !== 'function') return [];
-        const resolvedReplacementId = String(roadProposalKey(replacement, replacementId) || replacementId || '');
-        const sourceIds = Array.from(new Set([
-            ...(Array.isArray(replacement.roadProposal.supersedesProposalIds) ? replacement.roadProposal.supersedesProposalIds : []),
-            ...(Array.isArray(replacement.supersedesProposalIds) ? replacement.supersedesProposalIds : [])
-        ].map(String).filter(Boolean)));
-        const restored = [];
-
-        sourceIds.forEach(sourceId => {
-            const source = findProposal(sourceId);
-            if (!source || !source.roadProposal) return;
-            const marker = source.roadProposal.supersededByProposalId || source.supersededByProposalId;
-            if (String(marker || '') !== resolvedReplacementId) return;
-            const restoredApplied = typeof source.appliedBeforeSuperseded === 'boolean' ? source.appliedBeforeSuperseded : true;
-            source.applied = restoredApplied;
-            delete source.roadProposal.applied;
-            delete source.appliedBeforeSuperseded;
-            delete source.roadProposal.supersededByProposalId;
-            delete source.supersededByProposalId;
-            restored.push(source);
-        });
-
-        delete replacement.roadProposal.supersedesProposalIds;
-        delete replacement.supersedesProposalIds;
-        return restored;
-    }
-
-    function activeRoadSuperseder(proposal, findProposal) {
-        if (!proposal || !proposal.roadProposal || typeof findProposal !== 'function') return null;
-        const targetId = proposal.roadProposal.supersededByProposalId || proposal.supersededByProposalId;
-        if (!targetId) return null;
-        const target = findProposal(String(targetId));
-        return roadProposalIsApplied(target) ? target : null;
+        return !!(proposal && proposal.roadProposal && appliedOf(proposal, proposal.roadProposal));
     }
 
     function appliedRoadProposalForFeature(feature, findProposal) {
@@ -108,9 +31,6 @@
 
     return {
         roadProposalIsApplied,
-        supersedeCopiedRoadSource,
-        restoreSupersededRoadSources,
-        activeRoadSuperseder,
         appliedRoadProposalForFeature
     };
 });

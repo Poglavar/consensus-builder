@@ -1,15 +1,7 @@
-// A formation edit (a road narrowed or widened, a node dragged, a readjustment boundary moved) is
-// an edit to the PARTITION that formation stamps on the ground — never a new generation of it.
-// This module holds the pure decisions that make that true (rethink-proposals.md §12 step 5,
-// decision 2026-08-05: `cadastral parcel(s) → one formation → content`, flattened along the way):
-//
-//   - matchPieces:       which output pieces of the new partition ARE pieces of the old one, so
-//                        they keep their parcel identity instead of minting a fresh generation.
-//   - footprintDelta:    which ground actually changed, so only content standing on it is
-//                        disclosed and unapplied (content on unchanged ground is left alone).
-//   - retainedUnloadedParents: which declared parents an edit may keep as "off-screen" — never the
-//                        editing road's own just-destroyed children (the self-ghost bug).
-//   - applyCarriedIdentity / baseIdOf: the flat-anchor bookkeeping.
+// Pure geometry and identity rules for stamping one flat formation over the live fabric.
+// Edits mint a replacement proposal and the fabric is replayed from immutable cadastre, so this
+// module deliberately contains no restore, previous-generation matching, or unloaded-parent
+// recovery machinery.
 //
 // Pure: plain records in, verdicts out; the caller injects the geometry primitives (turf).
 (function (global, factory) {
@@ -22,16 +14,9 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    // Same tolerances as reparcel-edit-impact.js: two pieces are "the same ground" when their
-    // areas agree and they overlap almost completely — vertex noise and re-serialisation must not
-    // read as a change.
     const DEFAULT_TOLERANCE_PCT = 1;
     const DEFAULT_TOLERANCE_M2 = 1;
-    // A reshaped piece still IS its predecessor when they share at least this fraction of the
-    // smaller of the two — a remainder that grew a few metres wider keeps its parcel number, the
-    // way a cadastral boundary adjustment keeps the parcel it adjusts.
-    const DEFAULT_RESHAPE_MIN_SHARE = 0.5;
-    // Slivers below this are rounding, not land (plot-heal.js uses the same floor).
+    // Slivers below this are rounding, not land.
     const MIN_DELTA_PIECE_M2 = 0.5;
 
     function asFeature(geometry) {
@@ -50,6 +35,17 @@
         try { return ctx.intersectionArea(a, b) || 0; } catch (_) { return 0; }
     }
 
+    // The formation token and index a derived id carries: 'HR-1-824#c-tok-3' →
+    // { base: 'HR-1-824', token: 'c-tok', index: 3 }. Null for base ids. The base keeps any
+    // deeper derivation intact ('x#c-a-1#c-b-2' → base 'x#c-a-1', token 'c-b') — callers that
+    // need the cadastral root flatten with baseIdOf.
+    function derivedIdParts(parcelId) {
+        const id = (parcelId === undefined || parcelId === null) ? '' : String(parcelId).trim();
+        const match = id.match(/^(.+)#([A-Za-z0-9_-]+)-(\d+)$/);
+        if (!match) return null;
+        return { base: match[1], token: match[2], index: Number(match[3]) };
+    }
+
     // The base cadastral id a derived id descends from, however many generations deep — the same
     // repeated-suffix strip _stripSyntheticSuffix performs (`X#a-1#b-2` → `X`). Plain base ids
     // pass through unchanged.
@@ -62,127 +58,6 @@
             current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
         }
         return current;
-    }
-
-    // Two features cover the same ground within tolerance: same area, near-total overlap.
-    function sameGround(aFeature, bFeature, ctx, options) {
-        const opts = options || {};
-        const tolPct = Number.isFinite(opts.tolerancePct) ? opts.tolerancePct : DEFAULT_TOLERANCE_PCT;
-        const tolM2 = Number.isFinite(opts.toleranceM2) ? opts.toleranceM2 : DEFAULT_TOLERANCE_M2;
-        const a = asFeature(aFeature);
-        const b = asFeature(bFeature);
-        if (!a || !b) return false;
-        const areaA = safeArea(ctx, a);
-        const areaB = safeArea(ctx, b);
-        if (areaA <= 0 || areaB <= 0) return false;
-        const tolerance = Math.max(tolM2, areaA * tolPct / 100);
-        if (Math.abs(areaA - areaB) > tolerance) return false;
-        const shared = safeIntersectionArea(ctx, a, b);
-        return (areaA - shared) <= tolerance;
-    }
-
-    // Match the pieces of a formation's previous output partition (`before`) against its freshly
-    // recomputed one (`after`), so identity can carry over.
-    //
-    //   before: [{ id, number, baseId, feature, isCorridor }]   — the applied children of the last
-    //           apply (feature = their geometry as GeoJSON Feature/geometry)
-    //   after:  [{ baseId, feature, isCorridor }]               — the new pieces, pre-identity
-    //
-    // Corridor pieces match by ROLE, not geometry: the corridor parcel IS the road object, and it
-    // keeps its identity through any reshape, exactly as the proposal id itself does. Remainder
-    // pieces match per base parcel in two tiers: tier 1 same-ground (unchanged), tier 2 best
-    // mutual overlap ≥ reshapeMinShare × the smaller piece (reshaped-but-same). Everything else is
-    // added or removed ground.
-    //
-    // Returns { assignments, unchangedAfterIndices, reshapedAfterIndices,
-    //           addedAfterIndices, removedBeforeIndices }
-    // where assignments[i] = index into `before` (or null) for after piece i.
-    function matchPieces(before, after, ctx, options) {
-        const opts = options || {};
-        const reshapeMinShare = Number.isFinite(opts.reshapeMinShare) ? opts.reshapeMinShare : DEFAULT_RESHAPE_MIN_SHARE;
-        const beforeList = Array.isArray(before) ? before : [];
-        const afterList = Array.isArray(after) ? after : [];
-        const assignments = afterList.map(() => null);
-        const beforeTaken = beforeList.map(() => false);
-        const unchanged = new Set();
-        const reshaped = new Set();
-
-        // Corridor role match, in order (there is normally exactly one on each side).
-        const beforeCorridors = [];
-        beforeList.forEach((entry, index) => { if (entry && entry.isCorridor) beforeCorridors.push(index); });
-        const afterCorridors = [];
-        afterList.forEach((entry, index) => { if (entry && entry.isCorridor) afterCorridors.push(index); });
-        for (let k = 0; k < Math.min(beforeCorridors.length, afterCorridors.length); k += 1) {
-            const bi = beforeCorridors[k];
-            const ai = afterCorridors[k];
-            assignments[ai] = bi;
-            beforeTaken[bi] = true;
-            if (sameGround(beforeList[bi].feature, afterList[ai].feature, ctx, opts)) unchanged.add(ai);
-            else reshaped.add(ai);
-        }
-
-        // Remainder pieces: per base parcel, best-overlap-first, tier 1 then tier 2.
-        const groups = new Map();
-        const groupKey = value => (value === undefined || value === null ? '' : String(value));
-        afterList.forEach((entry, index) => {
-            if (!entry || entry.isCorridor || assignments[index] !== null) return;
-            const key = groupKey(entry.baseId);
-            if (!groups.has(key)) groups.set(key, { before: [], after: [] });
-            groups.get(key).after.push(index);
-        });
-        beforeList.forEach((entry, index) => {
-            if (!entry || entry.isCorridor || beforeTaken[index]) return;
-            const key = groupKey(entry.baseId);
-            if (!groups.has(key)) return; // no new piece shares this base parcel — the id dies
-            groups.get(key).before.push(index);
-        });
-
-        groups.forEach(group => {
-            if (!group.before.length || !group.after.length) return;
-            const pairs = [];
-            group.after.forEach(ai => {
-                const afterFeature = asFeature(afterList[ai].feature);
-                const afterArea = safeArea(ctx, afterFeature);
-                if (!afterFeature || afterArea <= 0) return;
-                group.before.forEach(bi => {
-                    const beforeFeature = asFeature(beforeList[bi].feature);
-                    const beforeArea = safeArea(ctx, beforeFeature);
-                    if (!beforeFeature || beforeArea <= 0) return;
-                    const overlap = safeIntersectionArea(ctx, afterFeature, beforeFeature);
-                    if (overlap <= 0) return;
-                    pairs.push({ ai, bi, overlap, minArea: Math.min(afterArea, beforeArea), afterFeature, beforeFeature });
-                });
-            });
-            pairs.sort((a, b) => b.overlap - a.overlap);
-            // Tier 1: same ground — identity carries, piece counts as unchanged.
-            pairs.forEach(pair => {
-                if (assignments[pair.ai] !== null || beforeTaken[pair.bi]) return;
-                if (!sameGround(pair.beforeFeature, pair.afterFeature, ctx, opts)) return;
-                assignments[pair.ai] = pair.bi;
-                beforeTaken[pair.bi] = true;
-                unchanged.add(pair.ai);
-            });
-            // Tier 2: reshaped-but-same — identity carries, piece counts as changed ground.
-            pairs.forEach(pair => {
-                if (assignments[pair.ai] !== null || beforeTaken[pair.bi]) return;
-                if (pair.overlap < reshapeMinShare * pair.minArea) return;
-                assignments[pair.ai] = pair.bi;
-                beforeTaken[pair.bi] = true;
-                reshaped.add(pair.ai);
-            });
-        });
-
-        const addedAfterIndices = [];
-        assignments.forEach((value, index) => { if (value === null) addedAfterIndices.push(index); });
-        const removedBeforeIndices = [];
-        beforeTaken.forEach((taken, index) => { if (!taken) removedBeforeIndices.push(index); });
-        return {
-            assignments,
-            unchangedAfterIndices: Array.from(unchanged).sort((a, b) => a - b),
-            reshapedAfterIndices: Array.from(reshaped).sort((a, b) => a - b),
-            addedAfterIndices,
-            removedBeforeIndices
-        };
     }
 
     // Write a carried identity onto a freshly minted child's properties. Contiguity splits can
@@ -206,119 +81,293 @@
         return true;
     }
 
-    // The ground an edit actually changed: pieces of the old footprint the new one no longer
-    // covers, plus pieces of the new footprint the old one did not cover. Content is disclosed
-    // and unapplied only when it stands on one of these pieces. Returns
-    // { changed, pieces: Feature[] }, or null when the geometry cannot be computed — callers fall
-    // back to their conservative path.
-    function footprintDelta(beforeGeometry, afterGeometry, ctx, options) {
+    // §15b (decision 2026-08-06): the taker AMENDS the taken — one partition, latest wins.
+    // Clip a formation's authored pieces by the ground a newer action took. Carry fields survive
+    // on every output piece; a piece the taking SPLITS becomes several pieces (a parcel is ONE
+    // connected piece of ground); a residual sliver below the floor is dropped as rounding, and
+    // a fully-taken piece leaves the list. Pieces the taking does not touch are returned by
+    // REFERENCE, so callers can cheaply tell churn from change.
+    //
+    //   pieces:  [{ geometry, ...carry }]   (each entry's non-geometry fields ride along)
+    //   returns { changed, pieces, takenAreaM2, removedCount, splitCount }
+    function clipPiecesByTaking(pieces, takenFootprint, ctx, options) {
         const opts = options || {};
         const minPieceM2 = Number.isFinite(opts.minPieceM2) ? opts.minPieceM2 : MIN_DELTA_PIECE_M2;
-        const beforeFeature = asFeature(beforeGeometry);
-        const afterFeature = asFeature(afterGeometry);
-        if (!beforeFeature || !afterFeature || !ctx || typeof ctx.difference !== 'function') return null;
-        const pieces = [];
-        const collect = diff => {
-            const feature = asFeature(diff);
-            if (!feature) return;
-            const geom = feature.geometry;
-            const polys = geom.type === 'MultiPolygon'
-                ? (geom.coordinates || []).map(coordinates => ({ type: 'Polygon', coordinates }))
-                : (geom.type === 'Polygon' ? [geom] : []);
-            polys.forEach(poly => {
-                const pieceFeature = asFeature(poly);
-                if (safeArea(ctx, pieceFeature) >= minPieceM2) pieces.push(pieceFeature);
-            });
-        };
-        try {
-            collect(ctx.difference(beforeFeature, afterFeature));
-            collect(ctx.difference(afterFeature, beforeFeature));
-        } catch (_) {
-            return null;
+        const taken = asFeature(takenFootprint);
+        const list = Array.isArray(pieces) ? pieces : [];
+        if (!taken || !ctx || typeof ctx.difference !== 'function') {
+            return { changed: false, pieces: list.slice(), takenAreaM2: 0, removedCount: 0, splitCount: 0 };
         }
-        return { changed: pieces.length > 0, pieces };
+        const out = [];
+        let changed = false;
+        let takenAreaM2 = 0;
+        let removedCount = 0;
+        let splitCount = 0;
+        list.forEach(piece => {
+            const feature = piece ? asFeature(piece.geometry || piece) : null;
+            if (!feature) { out.push(piece); return; }
+            const overlap = safeIntersectionArea(ctx, feature, taken);
+            if (overlap <= minPieceM2) { out.push(piece); return; } // untouched (or rounding)
+            let residual = null;
+            try { residual = asFeature(ctx.difference(feature, taken)); } catch (_) { residual = null; }
+            const before = safeArea(ctx, feature);
+            const left = safeArea(ctx, residual);
+            if (!residual || left < minPieceM2) {
+                // Fully taken: the piece leaves the plan.
+                changed = true;
+                removedCount += 1;
+                takenAreaM2 += before;
+                return;
+            }
+            changed = true;
+            takenAreaM2 += Math.max(0, before - left);
+            const geom = residual.geometry;
+            const parts = geom.type === 'MultiPolygon'
+                ? (geom.coordinates || []).map(coordinates => ({ type: 'Polygon', coordinates }))
+                : [geom];
+            const kept = parts
+                .map(poly => ({ ...piece, geometry: poly }))
+                .filter(candidate => safeArea(ctx, asFeature(candidate.geometry)) >= minPieceM2);
+            if (kept.length === 0) { removedCount += 1; return; }
+            if (kept.length > 1) splitCount += kept.length - 1;
+            out.push(...kept);
+        });
+        return { changed, pieces: out, takenAreaM2, removedCount, splitCount };
     }
 
-    // Applied proposals standing on changed ground: candidates whose footprint genuinely overlaps
-    // a delta piece (a shared boundary line is not standing on it — hence the small area floor).
-    // candidates: [{ key, footprint, ... }] — entries pass through untouched.
-    function proposalsOnChangedGround(deltaPieces, candidates, ctx, options) {
+    // The ROAD form of the §15b amendment: trim a corridor centerline by the ground a newer
+    // action took. Each segment is split where it crosses the taken polygon; pieces whose
+    // midpoint lies INSIDE are the taken stretch and leave the definition; pieces shorter than
+    // `minPieceM` are endpoint slivers, dropped as rounding. A crossing segment therefore
+    // becomes two segments (the road may disconnect — the caller's split machinery owns that).
+    //
+    //   segments: [[{lat,lng},…], …]      ctx: { lineSplit, pointInPolygon, lengthM }
+    //   returns  { changed, segments: [{ points, sourceIndex }], removedCount, splitCount }
+    //
+    // sourceIndex maps every surviving piece to the segment it came from, so the caller can
+    // carry per-segment metadata (ids, profiles) across the trim.
+    function trimCenterlineByTaking(segments, takenFootprint, ctx, options) {
         const opts = options || {};
-        const minM2 = Number.isFinite(opts.minM2) ? opts.minM2 : MIN_DELTA_PIECE_M2;
-        const pieces = (Array.isArray(deltaPieces) ? deltaPieces : []).map(asFeature).filter(Boolean);
-        if (!pieces.length) return [];
+        const minPieceM = Number.isFinite(opts.minPieceM) ? opts.minPieceM : 1;
+        const taken = asFeature(takenFootprint);
+        const list = Array.isArray(segments) ? segments : [];
         const out = [];
-        (Array.isArray(candidates) ? candidates : []).forEach(entry => {
-            if (!entry) return;
-            const footprint = asFeature(entry.footprint);
-            if (!footprint) return;
-            const hit = pieces.some(piece => safeIntersectionArea(ctx, footprint, piece) >= minM2);
-            if (hit) out.push(entry);
+        let changed = false;
+        let removedCount = 0;
+        let splitCount = 0;
+        if (!taken || !ctx || typeof ctx.lineSplit !== 'function' || typeof ctx.pointInPolygon !== 'function') {
+            return {
+                changed: false,
+                segments: list.map((points, sourceIndex) => ({ points, sourceIndex })),
+                removedCount: 0,
+                splitCount: 0
+            };
+        }
+        const midpointInside = coords => {
+            if (!Array.isArray(coords) || coords.length < 2) return false;
+            const mid = Math.floor((coords.length - 1) / 2);
+            const a = coords[mid];
+            const b = coords[mid + 1] || a;
+            const point = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+            try { return ctx.pointInPolygon(point, taken) === true; } catch (_) { return false; }
+        };
+        list.forEach((points, sourceIndex) => {
+            const coords = (Array.isArray(points) ? points : [])
+                .filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+                .map(p => [p.lng, p.lat]);
+            if (coords.length < 2) { out.push({ points, sourceIndex }); return; }
+            const line = { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } };
+            let pieces = null;
+            try {
+                const split = ctx.lineSplit(line, taken);
+                pieces = (split && Array.isArray(split.features) && split.features.length) ? split.features : [line];
+            } catch (_) { pieces = [line]; }
+            // A segment changes ONLY when part of it lies INSIDE the taking. A boundary graze —
+            // lineSplit firing at a junction where the centerline touches the taken ground's
+            // edge — is not a taking, and dropping its sub-metre kerf would churn the victim's
+            // record (editSeq, persist, redraw) on every such taker. Untouched segments return
+            // by REFERENCE (same contract as clipPiecesByTaking).
+            const anyInside = pieces.some(piece => {
+                const pc = piece && piece.geometry && piece.geometry.coordinates;
+                return Array.isArray(pc) && pc.length >= 2 && midpointInside(pc);
+            });
+            if (!anyInside) {
+                out.push({ points, sourceIndex });
+                return;
+            }
+            const kept = [];
+            pieces.forEach(piece => {
+                const pc = piece && piece.geometry && piece.geometry.coordinates;
+                if (!Array.isArray(pc) || pc.length < 2) return;
+                if (midpointInside(pc)) { changed = true; return; } // the taken stretch
+                let lengthM = Infinity;
+                if (typeof ctx.lengthM === 'function') {
+                    try { lengthM = ctx.lengthM(piece); } catch (_) { lengthM = Infinity; }
+                }
+                if (lengthM < minPieceM) { changed = true; return; } // sliver beside the taken stretch
+                kept.push(pc.map(([lng, lat]) => ({ lat, lng })));
+            });
+            if (kept.length === 0) {
+                changed = true;
+                removedCount += 1;
+                return;
+            }
+            if (kept.length > 1) splitCount += kept.length - 1;
+            kept.forEach(pieceCoords => out.push({ points: pieceCoords, sourceIndex }));
         });
+        return { changed, segments: out, removedCount, splitCount };
+    }
+
+    // Connected components of a corridor graph — the contiguity test behind the 2026-08-07
+    // ruling (a road proposal is ONE contiguous stretch; disconnected stretches are separate
+    // proposals). Two segments connect when an ENDPOINT of one coincides with any VERTEX of
+    // the other: normalizeCorridorGraph gives a T-branch and its through-segment a shared
+    // node without splitting the through polyline, so the junction lives mid-polyline.
+    // segments: [[{lat,lng},…], …] → arrays of segment indices, largest component first.
+    function corridorComponents(segments, options) {
+        const opts = options || {};
+        const tolM = Number.isFinite(opts.toleranceM) ? opts.toleranceM : 0.05;
+        const list = Array.isArray(segments) ? segments : [];
+        const verts = list.map(points => (Array.isArray(points) ? points : [])
+            .filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lng)));
+        const ends = verts.map(pts => (pts.length ? [pts[0], pts[pts.length - 1]] : []));
+        const parent = list.map((_, i) => i);
+        const find = i => { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+        const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[rb] = ra; };
+        const closeM = (a, b) => {
+            const latRad = ((a.lat + b.lat) / 2) * Math.PI / 180;
+            const dx = (a.lng - b.lng) * 111320 * Math.cos(latRad);
+            const dy = (a.lat - b.lat) * 111320;
+            return Math.sqrt(dx * dx + dy * dy) <= tolM;
+        };
+        const touches = (i, j) => ends[i].some(e => verts[j].some(v => closeM(e, v)))
+            || ends[j].some(e => verts[i].some(v => closeM(e, v)));
+        for (let i = 0; i < list.length; i += 1) {
+            for (let j = i + 1; j < list.length; j += 1) {
+                if (find(i) !== find(j) && touches(i, j)) union(i, j);
+            }
+        }
+        const groups = new Map();
+        list.forEach((_, i) => {
+            const root = find(i);
+            if (!groups.has(root)) groups.set(root, []);
+            groups.get(root).push(i);
+        });
+        return Array.from(groups.values()).sort((a, b) => b.length - a.length);
+    }
+
+    function corridorWidthMeters(definition) {
+        const widths = [];
+        const add = value => {
+            const width = Number(value);
+            if (Number.isFinite(width) && width > 0) widths.push(width);
+        };
+        const profileWidth = profile => {
+            if (!profile || !Array.isArray(profile.strips)) return 0;
+            return profile.strips.reduce((sum, strip) => sum + (Number(strip && strip.width) || 0), 0);
+        };
+        add(definition && definition.width);
+        add(profileWidth(definition && definition.profile));
+        Object.values((definition && definition.segmentProfiles) || {}).forEach(profile => add(profileWidth(profile)));
+        return widths.length ? Math.max(...widths) : 0;
+    }
+
+    // A road victim is represented by its centreline and a centred cross-section. Cutting that
+    // centreline at the taker's exact boundary leaves the road's half-width protruding back into
+    // the taking; replay then trims it again, moving the endpoint on every reload. Expand the taking
+    // by the victim's half-width before trimming so the re-derived footprint is disjoint in one pass.
+    function roadCenterlineTaking(definition, takenFootprint, ctx, options) {
+        const taken = asFeature(takenFootprint);
+        if (!taken || !ctx || typeof ctx.buffer !== 'function') return taken;
+        const opts = options || {};
+        const width = corridorWidthMeters(definition);
+        if (!(width > 0)) return taken;
+        const clearanceM = width / 2 + (Number.isFinite(opts.paddingM) ? opts.paddingM : 0.05);
+        try {
+            return ctx.buffer(taken, clearanceM) || taken;
+        } catch (_) {
+            return taken;
+        }
+    }
+
+    // §15c severance test (drawing-board rules 2/3; footprint ruling 2026-08-07): a proposal's
+    // footprint must stay ONE connected piece through any amendment. A taking that fully
+    // consumes the pool, or leaves it in more than one meaningful part, SEVERS the
+    // readjustment — it is destroyed and the taker applies against the cadastre beneath.
+    // Anything less is rule 3: the cut REDUCES output parcels, SPLITS one into two output
+    // parcels, or destroys those fully under it, without touching the readjustment's life.
+    // Sub-sliver crumbs below minPartM2 never count as parts.
+    // Returns { verdict: 'unaffected' | 'reduced' | 'severed', touchedPlots, destroyedPlots }.
+    function severanceVerdict(plan, poolGeometry, takenFootprint, ctx, options) {
+        const opts = options || {};
+        const minPartM2 = Number.isFinite(opts.minPartM2) ? opts.minPartM2 : 1;
+        const taken = asFeature(takenFootprint);
+        const out = { verdict: 'unaffected', touchedPlots: 0, destroyedPlots: 0, splitPlots: 0 };
+        if (!taken || !ctx || typeof ctx.difference !== 'function') return out;
+
+        const meaningfulParts = geometry => {
+            if (!geometry) return 0;
+            const polys = geometry.type === 'MultiPolygon'
+                ? geometry.coordinates.map(coords => ({ type: 'Polygon', coordinates: coords }))
+                : [geometry];
+            return polys.filter(poly => safeArea(ctx, { type: 'Feature', properties: {}, geometry: poly }) >= minPartM2).length;
+        };
+        const clipParts = geometry => {
+            const feature = asFeature(geometry);
+            if (!feature) return null;
+            const overlap = safeIntersectionArea(ctx, feature, taken);
+            if (overlap < MIN_DELTA_PIECE_M2) return { touched: false, parts: meaningfulParts(feature.geometry) };
+            let diff = null;
+            try { diff = ctx.difference(feature, taken); } catch (_) { diff = null; }
+            return { touched: true, parts: diff && diff.geometry ? meaningfulParts(diff.geometry) : 0 };
+        };
+
+        let touched = false;
+        let poolFragmented = false;
+        let poolConsumed = false;
+
+        const pool = clipParts(poolGeometry);
+        if (pool && pool.touched) {
+            touched = true;
+            if (pool.parts > 1) poolFragmented = true;
+            if (pool.parts === 0) poolConsumed = true; // the whole domain taken
+        }
+
+        const polygons = plan && Array.isArray(plan.polygons) ? plan.polygons : [];
+        polygons.forEach(slice => {
+            const result = clipParts(slice && slice.geometry);
+            if (!result || !result.touched) return;
+            touched = true;
+            out.touchedPlots += 1;
+            if (result.parts === 0) out.destroyedPlots += 1;      // fully under the cut — rule 3
+            else if (result.parts > 1) out.splitPlots += 1;        // an output parcel cut in two
+        });
+
+        // Severance is purely geometric (ruling 2026-08-07): the footprint may shrink but never
+        // disconnect. A fragmented or consumed pool severs regardless of what happened to
+        // individual plots; a plot split while the domain holds together stays rule 3 (the plot
+        // becomes two contiguous output parcels).
+        const severed = poolConsumed || poolFragmented;
+        out.verdict = severed ? 'severed' : (touched ? 'reduced' : 'unaffected');
         return out;
     }
 
-    // Which declared parents a corridor edit keeps as "off-screen, still consumed". A declared
-    // parent survives re-derivation only when the new footprint could not check it (its layer is
-    // not loaded) AND it is not something this very edit destroyed: the road's own previous
-    // children are gone from the loaded-id map precisely because the unapply removed them, so
-    // without the ownChildIds exclusion every recut re-declared its own dead generation as
-    // "unloaded parents" — the ghost chain this module exists to end.
-    // The part of a parcel's ground that live fabric does NOT already own — what a restore may
-    // honestly put back on the map. The restorable-parents test is structural (id prefixes) and
-    // cannot see cross-token consumption across a dead intermediate generation: un-applying road
-    // B restored road A's slice at FULL stale geometry under a readjustment's plots minted two
-    // generations later, and the recut baked the overlap into a 3,984 m² remainder covering five
-    // live plots. liveEntries: [{ feature }] live parcels near the candidate (bbox-prefiltered is
-    // fine; the candidate itself and pieces being removed must not be in the list).
-    // Returns { residual, coveredShare } — residual is a bare geometry Feature (callers re-attach
-    // their own properties); null when live fabric owns (almost) all of the ground. A candidate
-    // covered below `keepWholeShare` keeps its original geometry verbatim, so micro-sliver
-    // overlaps cannot churn stored geometry on every restore cycle.
-    function residualGround(feature, liveEntries, ctx, options) {
-        const opts = options || {};
-        const minResidualM2 = Number.isFinite(opts.minResidualM2) ? opts.minResidualM2 : 0.5;
-        const keepWholeShare = Number.isFinite(opts.keepWholeShare) ? opts.keepWholeShare : 0.01;
-        const candidate = asFeature(feature && feature.geometry ? feature.geometry : feature);
-        if (!candidate || !ctx || typeof ctx.difference !== 'function') {
-            return { residual: candidate, coveredShare: 0 };
+    // The reparcellization form of the §15b amendment: the plan's authored plots lose the taken
+    // ground. The plots ARE the plan (the §14.2 pool and remainders re-derive from them at
+    // apply), so amending the polygons amends the readjustment.
+    function amendReparcellizationPlanByTaking(plan, takenFootprint, ctx, options) {
+        const polygons = plan && Array.isArray(plan.polygons) ? plan.polygons : null;
+        if (!polygons || !polygons.length) {
+            return { changed: false, polygons: polygons || [], takenAreaM2: 0, removedCount: 0, splitCount: 0 };
         }
-        const total = safeArea(ctx, candidate);
-        if (!(total > 0)) return { residual: null, coveredShare: 1 };
-        let residual = candidate;
-        (Array.isArray(liveEntries) ? liveEntries : []).forEach(entry => {
-            if (!residual) return;
-            const other = entry && entry.feature ? entry.feature : entry;
-            if (!other || !other.geometry) return;
-            if (safeIntersectionArea(ctx, residual, other) <= 0) return;
-            try { residual = asFeature(ctx.difference(residual, other)); } catch (_) { /* keep as-is */ }
-        });
-        const left = safeArea(ctx, residual);
-        const coveredShare = Math.min(1, Math.max(0, (total - left) / total));
-        if (!residual || left < minResidualM2) return { residual: null, coveredShare: 1 };
-        if (coveredShare <= keepWholeShare) return { residual: candidate, coveredShare };
-        return { residual, coveredShare };
-    }
-
-    function retainedUnloadedParents(declaredIds, options) {
-        const opts = options || {};
-        const touched = new Set((Array.isArray(opts.touchedIds) ? opts.touchedIds : []).map(String));
-        const loaded = opts.loadedIds instanceof Set
-            ? opts.loadedIds
-            : new Set((Array.isArray(opts.loadedIds) ? opts.loadedIds : []).map(String));
-        const ownChildren = new Set((Array.isArray(opts.ownChildIds) ? opts.ownChildIds : []).map(String));
-        const seen = new Set();
-        const kept = [];
-        (Array.isArray(declaredIds) ? declaredIds : []).forEach(raw => {
-            const id = raw === undefined || raw === null ? '' : String(raw);
-            if (!id || seen.has(id)) return;
-            seen.add(id);
-            if (touched.has(id)) return;
-            if (loaded.has(id)) return;
-            if (ownChildren.has(id)) return;
-            kept.push(id);
-        });
-        return kept;
+        const result = clipPiecesByTaking(polygons, takenFootprint, ctx, options);
+        return {
+            changed: result.changed,
+            polygons: result.pieces,
+            takenAreaM2: result.takenAreaM2,
+            removedCount: result.removedCount,
+            splitCount: result.splitCount
+        };
     }
 
     // Unique base cadastral ids under a set of features — the flat declaration a formation writes
@@ -410,18 +459,19 @@
     return {
         DEFAULT_TOLERANCE_PCT,
         DEFAULT_TOLERANCE_M2,
-        DEFAULT_RESHAPE_MIN_SHARE,
         MIN_DELTA_PIECE_M2,
         baseIdOf,
+        derivedIdParts,
         baseIdsOfFeatures,
         overlappingBaseIds,
-        sameGround,
-        matchPieces,
         applyCarriedIdentity,
-        footprintDelta,
-        residualGround,
-        proposalsOnChangedGround,
-        retainedUnloadedParents,
+        clipPiecesByTaking,
+        amendReparcellizationPlanByTaking,
+        severanceVerdict,
+        trimCenterlineByTaking,
+        corridorComponents,
+        corridorWidthMeters,
+        roadCenterlineTaking,
         wholeParcelTakePlan
     };
 });

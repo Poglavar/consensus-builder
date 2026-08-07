@@ -1,9 +1,6 @@
-// Characterization of _applyReparcellizationProposal's partition semantics (formation-edit.js;
-// rethink-proposals.md §15a): an EDIT that passes the previous plots as options.priorChildren
-// keeps the identity of every plot that survives, mints fresh plots PAST the prior numbering, and
-// stamps the flat anchors — per-plot baseParcelIds (the base parcels actually under each plot,
-// multi-parent plots included) and the proposal's cadastreParcelIds. Collaborators are spies;
-// identity assignment is the REAL ProposalManager funnel, so the carry path is exercised end to end.
+// Characterization of _applyReparcellizationProposal's canonical replay semantics: authored plots
+// stamp flat cadastral anchors and derive deterministic child identities. Stored prior children are
+// never an input.
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -13,7 +10,6 @@ const { _applyReparcellizationProposal } = require('../../frontend/js/proposals/
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 require('../../frontend/js/proposal-parcel-identity.js'); // installs _getParcelIdFromFeature etc. on globalThis
 const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
-const corridorGrow = require('../../frontend/js/proposals/corridor-grow.js');
 
 const GLOBAL_KEYS = [
     '_normalizeProposalId', 'updateStatus', 'turf', 'window',
@@ -47,7 +43,7 @@ beforeEach(() => {
     globalThis._normalizeProposalId = v => (v == null ? '' : String(v));
     globalThis.updateStatus = spy();
     globalThis.turf = turf;
-    globalThis.window = { __formationEdit: formationEdit, __corridorGrow: corridorGrow };
+    globalThis.window = { __formationEdit: formationEdit };
     globalThis._resolveRootParcelIdFromProperties = (props, fallback) =>
         (props && props.rootParcelId) || (fallback ? String(fallback).split('#')[0] : null);
     globalThis._resolveRootParcelNumberFromProperties = (props) => (props && props.rootParcelNumber) || null;
@@ -82,8 +78,12 @@ function makeManager() {
         added: [],
         persisted: [],
         _setLastApplyFailure: spy(),
-        _resolveParcelFeaturesByIds: () => parents,
-        _resolveParentAvailabilityOrDefer: async ({ parentFeatures }) => ({ defer: false, parentFeatures }),
+        _resolveLiveFormationParents: () => ({
+            ok: true,
+            ids: ['HR-A', 'HR-B'],
+            cadastreIds: ['HR-A', 'HR-B'],
+            features: parents
+        }),
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
         _persistParcelFeature(feature) { this.persisted.push(feature); },
@@ -93,6 +93,7 @@ function makeManager() {
         _hideFeaturesFromMap(features) { this.hidden.push(...(features || [])); },
         _markParcelsModifiedBatch: spy(),
         _addChildParcels: spy(),
+        _adoptForeignPlotPieces: spy(),
         _applyReparcellizationProposal
     };
 }
@@ -129,41 +130,21 @@ describe('_applyReparcellizationProposal — flat anchors', () => {
     });
 });
 
-describe('_applyReparcellizationProposal — identity carry-over on edit', () => {
-    it('keeps surviving plot identities and mints the new plot past the prior numbering', async () => {
-        const manager = makeManager();
-        // Previous partition: plot 1 as today, plot 2 covered x 1..4 as ONE plot (ids -1, -2).
-        // The edit splits old plot 2 into two: x 1..3 (reshaped survivor) and x 3..4 (new plot).
-        const priorChildren = [
-            { parcelId: 'HR-A#p-rep-1', parcelNumber: 'A#p-rep-1', rootParcelId: 'HR-A', isCorridor: false,
-              feature: { type: 'Feature', properties: {}, geometry: rect(0, 0, 1, 2) } },
-            { parcelId: 'HR-A#p-rep-2', parcelNumber: 'A#p-rep-2', rootParcelId: 'HR-A', isCorridor: false,
-              feature: { type: 'Feature', properties: {}, geometry: rect(1, 0, 4, 2) } }
-        ];
-        const data = {
-            parentParcelIds: ['HR-A', 'HR-B'],
-            reparcellization: {
-                polygons: [
-                    { geometry: rect(0, 0, 1, 2) },   // unchanged → keeps -1
-                    { geometry: rect(1, 0, 3, 2) },   // reshaped survivor → keeps -2
-                    { geometry: rect(3, 0, 4, 2) }    // new → minted PAST the priors: -3
-                ]
-            }
-        };
+describe('_applyReparcellizationProposal — deterministic derivation', () => {
+    it('ignores stored derived children and stamps the same ids on every replay', async () => {
+        const firstManager = makeManager();
+        const first = proposalData();
+        first.childParcelIds = ['stale#child-99'];
+        first.reparcellization.childParcelIds = ['stale#child-99'];
+        await firstManager._applyReparcellizationProposal('p-rep', first, {});
 
-        const ok = await manager._applyReparcellizationProposal('p-rep', data, { priorChildren });
-        expect(ok).toBe(true);
-        expect(data.childParcelIds).toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2', 'HR-A#p-rep-3']);
+        const secondManager = makeManager();
+        const second = proposalData();
+        await secondManager._applyReparcellizationProposal('p-rep', second, {});
 
-        const numbers = manager.added.map(f => f.properties.BROJ_CESTICE);
-        expect(numbers[0]).toBe('A#p-rep-1'); // carried verbatim, prior number preserved
-        expect(numbers[1]).toBe('A#p-rep-2');
-    });
-
-    it('re-mints everything without priors (fresh apply and deep-link restore stay deterministic)', async () => {
-        const manager = makeManager();
-        const data = proposalData();
-        await manager._applyReparcellizationProposal('p-rep', data, {});
-        expect(data.childParcelIds).toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
+        expect(first.childParcelIds).toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
+        expect(second.childParcelIds).toEqual(first.childParcelIds);
+        expect(secondManager.added.map(feature => feature.geometry))
+            .toEqual(firstManager.added.map(feature => feature.geometry));
     });
 });

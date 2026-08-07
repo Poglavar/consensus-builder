@@ -1,7 +1,4 @@
-// formation-edit.js — the pure engine that makes a formation edit a PARTITION edit instead of a
-// new generation: piece matching (identity carry-over), changed-ground delta (scoped disclosure),
-// carried-identity application, and the retained-unloaded-parents rule (the self-ghost fix).
-// Real turf drives the injected ctx, so the tolerances are exercised on real geodesic areas.
+// Pure formation stamping rules. Real turf drives the injected geometry context.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -41,83 +38,6 @@ describe('baseIdOf', () => {
     });
 });
 
-describe('sameGround', () => {
-    it('accepts identical ground and rejects a clearly different shape', () => {
-        const a = block(0, 0, 1, 1);
-        expect(fe.sameGround(a, block(0, 0, 1, 1), ctx)).toBe(true);
-        expect(fe.sameGround(a, block(0.5, 0, 1.5, 1), ctx)).toBe(false);
-    });
-
-    it('tolerates vertex noise but not a real reshape', () => {
-        const a = block(0, 0, 1, 1);
-        const noisy = block(0.000005, 0, 1.000005, 1); // ~0.4 m shift on a ~78 m side
-        expect(fe.sameGround(a, noisy, ctx)).toBe(true);
-    });
-});
-
-describe('matchPieces', () => {
-    const P = 'HR-339270-823/1';
-
-    it('carries identity for untouched pieces, classifies grown remainders as reshaped, mints the rest', () => {
-        // Before: corridor strip + two remainders (north, south). After: the road narrowed — the
-        // corridor thins, the north remainder grows, the south remainder is untouched, and a new
-        // pocket appears on a second base parcel.
-        const before = [
-            { id: `${P}#c-r-1`, number: '823/1#c-r-1', baseId: P, isCorridor: true, feature: block(0, 1, 4, 1.4) },
-            { id: `${P}#c-r-2`, number: '823/1#c-r-2', baseId: P, isCorridor: false, feature: block(0, 1.4, 4, 3) },
-            { id: `${P}#c-r-3`, number: '823/1#c-r-3', baseId: P, isCorridor: false, feature: block(0, 0, 4, 1) }
-        ];
-        const after = [
-            { baseId: P, isCorridor: true, feature: block(0, 1, 4, 1.2) },          // thinner corridor
-            { baseId: P, isCorridor: false, feature: block(0, 1.2, 4, 3) },         // north grew
-            { baseId: P, isCorridor: false, feature: block(0, 0, 4, 1) },           // south untouched
-            { baseId: 'HR-339270-824', isCorridor: false, feature: block(5, 0, 6, 1) } // new ground
-        ];
-        const result = fe.matchPieces(before, after, ctx);
-        expect(result.assignments).toEqual([0, 1, 2, null]);
-        expect(result.unchangedAfterIndices).toEqual([2]);
-        expect(result.reshapedAfterIndices).toEqual([0, 1]);
-        expect(result.addedAfterIndices).toEqual([3]);
-        expect(result.removedBeforeIndices).toEqual([]);
-    });
-
-    it('matches the corridor by role even when its geometry changed completely', () => {
-        const before = [{ id: `${P}#c-r-1`, baseId: P, isCorridor: true, feature: block(0, 0, 1, 4) }];
-        const after = [{ baseId: 'HR-339270-999', isCorridor: true, feature: block(3, 0, 4, 4) }];
-        const result = fe.matchPieces(before, after, ctx);
-        expect(result.assignments).toEqual([0]);
-        expect(result.reshapedAfterIndices).toEqual([0]);
-    });
-
-    it('never matches across base parcels', () => {
-        const before = [{ id: `${P}#c-r-2`, baseId: P, isCorridor: false, feature: block(0, 0, 1, 1) }];
-        const after = [{ baseId: 'HR-339270-824', isCorridor: false, feature: block(0, 0, 1, 1) }];
-        const result = fe.matchPieces(before, after, ctx);
-        expect(result.assignments).toEqual([null]);
-        expect(result.removedBeforeIndices).toEqual([0]);
-    });
-
-    it('drops identity when the road leaves a parcel and lets two prior slices merge into one id', () => {
-        const before = [
-            { id: `${P}#c-r-2`, baseId: P, isCorridor: false, feature: block(0, 0, 4, 1) },
-            { id: `${P}#c-r-3`, baseId: P, isCorridor: false, feature: block(0, 1.4, 4, 3) }
-        ];
-        // The road left this parcel entirely: one whole-parcel piece now stands where two slices were.
-        const after = [{ baseId: P, isCorridor: false, feature: block(0, 0, 4, 3) }];
-        const result = fe.matchPieces(before, after, ctx);
-        // Best-overlap prior wins (the bigger northern slice), the other id dies.
-        expect(result.assignments).toEqual([1]);
-        expect(result.removedBeforeIndices).toEqual([0]);
-    });
-
-    it('refuses a tier-2 match below the overlap share', () => {
-        const before = [{ id: `${P}#c-r-2`, baseId: P, isCorridor: false, feature: block(0, 0, 1, 1) }];
-        const after = [{ baseId: P, isCorridor: false, feature: block(0.8, 0, 4, 1) }]; // ~6% of the new piece
-        const result = fe.matchPieces(before, after, ctx);
-        expect(result.assignments).toEqual([null]);
-    });
-});
-
 describe('applyCarriedIdentity', () => {
     it('writes id, number and parsed synthetic fields, once per id', () => {
         const used = new Set();
@@ -135,75 +55,6 @@ describe('applyCarriedIdentity', () => {
     it('rejects empty identities', () => {
         expect(fe.applyCarriedIdentity({}, null, new Set())).toBe(false);
         expect(fe.applyCarriedIdentity({}, {}, new Set())).toBe(false);
-    });
-});
-
-describe('footprintDelta', () => {
-    it('reports no change for identical footprints', () => {
-        const result = fe.footprintDelta(block(0, 0, 4, 1), block(0, 0, 4, 1), ctx);
-        expect(result).not.toBeNull();
-        expect(result.changed).toBe(false);
-        expect(result.pieces).toEqual([]);
-    });
-
-    it('returns the freed strip when a road narrows', () => {
-        const wide = block(0, 0, 4, 1);
-        const narrow = block(0, 0, 4, 0.8);
-        const result = fe.footprintDelta(wide, narrow, ctx);
-        expect(result.changed).toBe(true);
-        expect(result.pieces.length).toBe(1);
-        const freed = turf.area(result.pieces[0]);
-        const expected = turf.area(wide) - turf.area(narrow);
-        expect(Math.abs(freed - expected)).toBeLessThan(1);
-    });
-
-    it('returns both sides of a move', () => {
-        const result = fe.footprintDelta(block(0, 0, 4, 1), block(0, 0.5, 4, 1.5), ctx);
-        expect(result.changed).toBe(true);
-        expect(result.pieces.length).toBe(2);
-    });
-
-    it('returns null when geometry is missing', () => {
-        expect(fe.footprintDelta(null, block(0, 0, 1, 1), ctx)).toBeNull();
-    });
-});
-
-describe('proposalsOnChangedGround', () => {
-    it('keeps proposals standing on the delta and leaves the rest alone', () => {
-        const delta = [block(0, 0.8, 4, 1)]; // the freed strip
-        const onStrip = { key: 'a', footprint: block(1, 0.7, 2, 1.2) };
-        const elsewhere = { key: 'b', footprint: block(1, 2, 2, 3) };
-        const touchingLine = { key: 'c', footprint: block(0, 1, 4, 2) }; // shares only the boundary
-        const hits = fe.proposalsOnChangedGround(delta, [onStrip, elsewhere, touchingLine], ctx);
-        expect(hits.map(entry => entry.key)).toEqual(['a']);
-    });
-
-    it('returns nothing for an empty delta', () => {
-        expect(fe.proposalsOnChangedGround([], [{ key: 'a', footprint: block(0, 0, 1, 1) }], ctx)).toEqual([]);
-    });
-});
-
-describe('retainedUnloadedParents', () => {
-    it('keeps genuinely off-screen parents and drops touched, loaded and own-child ids', () => {
-        const kept = fe.retainedUnloadedParents(
-            ['HR-1', 'HR-2', 'HR-3#c-r-1', 'HR-4', 'HR-4'],
-            {
-                touchedIds: ['HR-1'],
-                loadedIds: new Set(['HR-2']),
-                ownChildIds: ['HR-3#c-r-1']
-            }
-        );
-        expect(kept).toEqual(['HR-4']);
-    });
-
-    it('is the regression guard for the self-ghost bug: a recut must not re-declare its own dead children', () => {
-        // The unapply removed the road's own children from the loaded-id map, so before the fix
-        // they looked exactly like off-screen parents and were re-declared every edit.
-        const kept = fe.retainedUnloadedParents(
-            ['HR-339270-823/1#c-road-1', 'HR-339270-823/1#c-road-2'],
-            { touchedIds: [], loadedIds: new Set(), ownChildIds: ['HR-339270-823/1#c-road-1', 'HR-339270-823/1#c-road-2'] }
-        );
-        expect(kept).toEqual([]);
     });
 });
 
@@ -289,39 +140,246 @@ describe('wholeParcelTakePlan', () => {
     });
 });
 
-describe('residualGround', () => {
-    // ~78 m × 111 m block near Zagreb; live plots re-tiled its right half.
-    const parent = rect(15.9600, 45.8000, 15.9610, 45.8010);
-    const rightHalf = rect(15.9605, 45.8000, 15.9610, 45.8010);
-    const farAway = rect(15.9700, 45.8000, 15.9710, 45.8010);
+describe('clipPiecesByTaking / amendReparcellizationPlanByTaking (§15b: the taker amends the taken)', () => {
+    // ~78 m × 111 m block; a ~16 m-wide "road" strip crosses its middle horizontally.
+    const plot = (lonMin, latMin, lonMax, latMax, owner) =>
+        ({ geometry: rect(lonMin, latMin, lonMax, latMax).geometry, ownerKey: owner, displayName: owner });
+    const strip = rect(15.9599, 45.80045, 15.9611, 45.80059); // spans full width, middle
 
-    it('clips a restore to the ground live fabric does not own', () => {
-        const res = fe.residualGround(parent, [{ feature: rightHalf }], ctx);
-        expect(res.residual).toBeTruthy();
-        expect(res.coveredShare).toBeGreaterThan(0.45);
-        expect(res.coveredShare).toBeLessThan(0.55);
-        // The residual is (about) the left half, and no longer overlaps the live plot.
-        expect(turf.area(res.residual)).toBeLessThan(turf.area(parent) * 0.55);
-        const overlap = turf.intersect(res.residual, rightHalf);
-        expect(overlap ? turf.area(overlap) : 0).toBeLessThan(1);
+    it('splits a crossed plot into two pieces that keep their carry fields', () => {
+        const res = fe.clipPiecesByTaking([plot(15.9600, 45.8000, 15.9610, 45.8010, 'ana')], strip, ctx);
+        expect(res.changed).toBe(true);
+        expect(res.pieces.length).toBe(2);
+        expect(res.splitCount).toBe(1);
+        res.pieces.forEach(p => expect(p.ownerKey).toBe('ana'));
+        const total = res.pieces.reduce((s2, p) => s2 + turf.area({ type: 'Feature', properties: {}, geometry: p.geometry }), 0);
+        const before = turf.area(rect(15.9600, 45.8000, 15.9610, 45.8010));
+        expect(total).toBeLessThan(before);
+        expect(Math.abs(before - total - res.takenAreaM2)).toBeLessThan(2);
     });
 
-    it('refuses the restore when live fabric owns (almost) all of the ground', () => {
-        const res = fe.residualGround(parent, [{ feature: parent }], ctx);
-        expect(res.residual).toBeNull();
-        expect(res.coveredShare).toBe(1);
+    it('removes a fully-taken plot from the plan', () => {
+        const inside = plot(15.96005, 45.80047, 15.96015, 45.80057, 'ivo'); // fully inside the strip
+        const res = fe.clipPiecesByTaking([inside], strip, ctx);
+        expect(res.changed).toBe(true);
+        expect(res.pieces.length).toBe(0);
+        expect(res.removedCount).toBe(1);
     });
 
-    it('keeps the original geometry verbatim when the overlap is a micro-sliver', () => {
-        const sliver = rect(15.9600, 45.8000, 15.96000005, 45.8010); // < keepWholeShare of the block
-        const res = fe.residualGround(parent, [{ feature: sliver }], ctx);
-        expect(res.residual).toBeTruthy();
-        expect(res.residual.geometry).toEqual(parent.geometry);
+    it('returns untouched pieces by reference (no churn)', () => {
+        const far = plot(15.9700, 45.8000, 15.9710, 45.8010, 'far');
+        const res = fe.clipPiecesByTaking([far], strip, ctx);
+        expect(res.changed).toBe(false);
+        expect(res.pieces[0]).toBe(far);
+        expect(res.takenAreaM2).toBe(0);
     });
 
-    it('is untouched by live parcels elsewhere', () => {
-        const res = fe.residualGround(parent, [{ feature: farAway }], ctx);
-        expect(res.coveredShare).toBe(0);
-        expect(res.residual.geometry).toEqual(parent.geometry);
+    it('treats a sub-floor graze as rounding, not a taking', () => {
+        // Overlaps the strip by a hair along one edge (< 0.5 m²).
+        const grazing = plot(15.9600, 45.800590037, 15.9610, 45.8010, 'g');
+        const res = fe.clipPiecesByTaking([grazing], strip, ctx);
+        expect(res.changed).toBe(false);
+        expect(res.pieces[0]).toBe(grazing);
+    });
+
+    it('amends a whole readjustment plan: one plot split, one removed, one untouched', () => {
+        const plan = { polygons: [
+            plot(15.9600, 45.8000, 15.9610, 45.8010, 'split-me'),
+            plot(15.96005, 45.80047, 15.96015, 45.80057, 'take-me'),
+            plot(15.9700, 45.8000, 15.9710, 45.8010, 'leave-me')
+        ] };
+        const res = fe.amendReparcellizationPlanByTaking(plan, strip, ctx);
+        expect(res.changed).toBe(true);
+        expect(res.removedCount).toBe(1);
+        expect(res.splitCount).toBe(1);
+        expect(res.polygons.length).toBe(3); // 2 halves + the untouched one
+        expect(res.polygons.filter(p => p.ownerKey === 'split-me').length).toBe(2);
+        expect(res.polygons.filter(p => p.ownerKey === 'leave-me').length).toBe(1);
+        // The input plan object is untouched (pure).
+        expect(plan.polygons.length).toBe(3);
+        expect(plan.polygons[0].geometry.coordinates[0].length).toBe(5);
+    });
+});
+
+describe('trimCenterlineByTaking (§15b: roads as victims)', () => {
+    const trimCtx = {
+        lineSplit: (line, poly) => turf.lineSplit(line, poly),
+        pointInPolygon: (pt, poly) => turf.booleanPointInPolygon(pt, poly),
+        lengthM: line => turf.length(line, { units: 'kilometers' }) * 1000
+    };
+    // A ~780 m west-east centerline; a block sits over its middle third.
+    const seg = [{ lat: 45.8005, lng: 15.9600 }, { lat: 45.8005, lng: 15.9700 }];
+    const block = rect(15.9635, 45.8000, 15.9665, 45.8010);
+
+    it('splits a crossing segment into two outside pieces mapped to their source', () => {
+        const res = fe.trimCenterlineByTaking([seg], block, trimCtx);
+        expect(res.changed).toBe(true);
+        expect(res.segments.length).toBe(2);
+        expect(res.splitCount).toBe(1);
+        res.segments.forEach(piece => {
+            expect(piece.sourceIndex).toBe(0);
+            expect(piece.points.length).toBeGreaterThanOrEqual(2);
+            // Every kept piece's BETWEEN-vertices midpoint is outside the taken block (a piece
+            // boundary VERTEX legitimately sits on the block edge — the split point).
+            const i = Math.floor((piece.points.length - 1) / 2);
+            const a3 = piece.points[i], b3 = piece.points[i + 1] || a3;
+            expect(turf.booleanPointInPolygon([(a3.lng + b3.lng) / 2, (a3.lat + b3.lat) / 2], block)).toBe(false);
+        });
+    });
+
+    it('removes a segment fully inside the taken ground', () => {
+        const inside = [{ lat: 45.8005, lng: 15.9640 }, { lat: 45.8005, lng: 15.9660 }];
+        const res = fe.trimCenterlineByTaking([inside], block, trimCtx);
+        expect(res.changed).toBe(true);
+        expect(res.segments.length).toBe(0);
+        expect(res.removedCount).toBe(1);
+    });
+
+    it('leaves a segment that never enters the ground untouched', () => {
+        const far = [{ lat: 45.8050, lng: 15.9600 }, { lat: 45.8050, lng: 15.9700 }];
+        const res = fe.trimCenterlineByTaking([far], block, trimCtx);
+        expect(res.changed).toBe(false);
+        expect(res.segments.length).toBe(1);
+        expect(res.segments[0].points).toBe(far);
+    });
+
+    it('drops endpoint slivers below the metre floor', () => {
+        // The block covers all but the last ~40 cm of the segment.
+        const sliver = [{ lat: 45.8005, lng: 15.9640 }, { lat: 45.8005, lng: 15.96650005 }];
+        const res = fe.trimCenterlineByTaking([sliver], block, trimCtx);
+        expect(res.changed).toBe(true);
+        expect(res.segments.length).toBe(0);
+    });
+
+    it('clears a road half-width once so replay does not walk its endpoints backwards', () => {
+        const definition = {
+            width: 8,
+            segmentProfiles: {
+                wide: { strips: [{ width: 4 }, { width: 8 }] }
+            }
+        };
+        expect(fe.corridorWidthMeters(definition)).toBe(12);
+        const expanded = fe.roadCenterlineTaking(definition, block, {
+            buffer: (feature, meters) => turf.buffer(feature, meters, { units: 'meters' })
+        });
+        const first = fe.trimCenterlineByTaking([seg], expanded, trimCtx);
+        expect(first.changed).toBe(true);
+        expect(first.segments).toHaveLength(2);
+
+        const second = fe.trimCenterlineByTaking(first.segments.map(piece => piece.points), expanded, trimCtx);
+        expect(second.changed).toBe(false);
+        expect(second.segments).toHaveLength(2);
+    });
+});
+
+describe('derivedIdParts', () => {
+    it('parses a derived id into base, token and index', () => {
+        expect(fe.derivedIdParts('HR-339270-824#c-942ac24kurky-1'))
+            .toEqual({ base: 'HR-339270-824', token: 'c-942ac24kurky', index: 1 });
+    });
+
+    it('returns null for base ids and empty input', () => {
+        expect(fe.derivedIdParts('HR-339270-824')).toBeNull();
+        expect(fe.derivedIdParts('823/1')).toBeNull();
+        expect(fe.derivedIdParts(null)).toBeNull();
+        expect(fe.derivedIdParts('')).toBeNull();
+    });
+
+    it('keeps deeper derivation in the base (flatten separately via baseIdOf)', () => {
+        expect(fe.derivedIdParts('x#c-a-1#c-b-2')).toEqual({ base: 'x#c-a-1', token: 'c-b', index: 2 });
+        expect(fe.baseIdOf('x#c-a-1#c-b-2')).toBe('x');
+    });
+});
+
+describe('severanceVerdict (§15c)', () => {
+    // ctx with real turf, as the amend pass wires it.
+    const svCtx = {
+        area: f => turf.area(f),
+        intersectionArea: (a, b) => { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; },
+        difference: (a, b) => turf.difference(a, b)
+    };
+    // Pool: 100 m × 40 m block; three plots side by side inside it.
+    const pool = rect(16.0, 45.0, 16.0012, 45.00036).geometry;
+    const plots = { polygons: [
+        { geometry: rect(16.0, 45.0, 16.0004, 45.00036).geometry },
+        { geometry: rect(16.0004, 45.0, 16.0008, 45.00036).geometry },
+        { geometry: rect(16.0008, 45.0, 16.0012, 45.00036).geometry }
+    ] };
+
+    it('a taking that misses is unaffected', () => {
+        const taking = rect(16.002, 45.0, 16.003, 45.00036);
+        expect(fe.severanceVerdict(plots, pool, taking, svCtx).verdict).toBe('unaffected');
+    });
+
+    it('a strip across the middle severs (the POOL fragments)', () => {
+        // Vertical strip through the middle plot, full height — pool splits into two.
+        const taking = rect(16.00055, 44.9999, 16.00065, 45.0004);
+        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
+        expect(res.verdict).toBe('severed');
+    });
+
+    it('a plot split with the pool still connected is a legal cut, not severance', () => {
+        // Pool extends a band north of the plots. A strip through the middle plot's FULL
+        // height splits that plot into two output parcels, while the pool stays one
+        // connected part (its northern band bridges the strip). Rule 3: reduced, one split.
+        const tallPool = rect(16.0, 45.0, 16.0012, 45.0005).geometry;
+        const taking = rect(16.00055, 44.9999, 16.00065, 45.00038);
+        const res = fe.severanceVerdict(plots, tallPool, taking, svCtx);
+        expect(res.verdict).toBe('reduced');
+        expect(res.splitPlots).toBe(1);
+    });
+
+    it('an edge trim only reduces', () => {
+        // Shave the northern 10 m off the whole block: every plot shrinks, nothing fragments.
+        const taking = rect(15.9999, 45.00027, 16.0013, 45.0005);
+        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
+        expect(res.verdict).toBe('reduced');
+        expect(res.touchedPlots).toBe(3);
+        expect(res.destroyedPlots).toBe(0);
+    });
+
+    it('a whole-plot take that disconnects the pool severs (footprints stay contiguous)', () => {
+        // Swallow the whole middle plot: the pool comes apart into west and east islands.
+        // Ruling 2026-08-07: a readjustment never survives with a disconnected footprint —
+        // severed even though no individual output parcel fragments.
+        const taking = rect(16.00039, 44.9999, 16.00081, 45.0004);
+        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
+        expect(res.verdict).toBe('severed');
+        expect(res.destroyedPlots).toBe(1);
+    });
+
+    it('a plot fully consumed while the pool stays connected is reduced, with the plot destroyed', () => {
+        // Swallow the WHOLE first plot (and nothing else meaningful): pool keeps one part
+        // (the remaining two plots' span), plot 1 is destroyed individually.
+        const taking = rect(15.9999, 44.9999, 16.0004, 45.0004);
+        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
+        expect(res.verdict).toBe('reduced');
+        expect(res.destroyedPlots).toBe(1);
+    });
+
+    it('corridorComponents: a chain is one component, a gap makes two', () => {
+        const a = [{ lat: 45.0, lng: 16.0 }, { lat: 45.0, lng: 16.001 }];
+        const b = [{ lat: 45.0, lng: 16.001 }, { lat: 45.0, lng: 16.002 }];
+        const far = [{ lat: 45.01, lng: 16.0 }, { lat: 45.01, lng: 16.001 }];
+        expect(fe.corridorComponents([a, b]).length).toBe(1);
+        const split = fe.corridorComponents([a, b, far]);
+        expect(split.length).toBe(2);
+        expect(split[0].length).toBe(2); // largest component first
+    });
+
+    it('corridorComponents: a T-branch landing mid-polyline connects', () => {
+        // The through segment keeps its polyline; the branch endpoint sits on its middle vertex.
+        const through = [{ lat: 45.0, lng: 16.0 }, { lat: 45.0, lng: 16.001 }, { lat: 45.0, lng: 16.002 }];
+        const branch = [{ lat: 45.0, lng: 16.001 }, { lat: 45.0005, lng: 16.001 }];
+        expect(fe.corridorComponents([through, branch]).length).toBe(1);
+    });
+
+    it('a disconnected crumb below the part floor does not count as severance', () => {
+        // Strip across the middle stopping ~10 cm from the northern edge: the band left
+        // north of it is ~0.8 m² — under the 1 m² part floor, so pool and middle plot
+        // still count one meaningful part each. Reduced, not severed.
+        const taking = rect(16.00055, 44.9999, 16.00065, 45.0003591);
+        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
+        expect(res.verdict).toBe('reduced');
     });
 });

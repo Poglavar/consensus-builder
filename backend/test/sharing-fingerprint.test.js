@@ -1,8 +1,4 @@
-// The two proposal-content fingerprints (sharing.js): v2 `c2-` is the upload identity and must be
-// blind to parent-parcel lists everywhere (top level AND inside typology payloads) — derived-name
-// churn must not move a share id; v1 `c-` (legacy) still hashes them, byte-compatible with every
-// id already on the server, and is what content-only consent binds to (an offer's parcel targets
-// are part of its terms).
+// Upload identity is geometry/content based; consent additionally binds flat cadastral targets.
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createRequire } from 'node:module';
@@ -48,17 +44,17 @@ describe('proposalContentFingerprint (v2, upload identity)', () => {
     });
 });
 
-describe('proposalContentFingerprintLegacy (v1)', () => {
+describe('proposalConsentFingerprint', () => {
     it('is c-prefixed and DOES move with the parent lists (the consent-binding semantics)', () => {
-        const a = sharing.proposalContentFingerprintLegacy(base());
+        const a = sharing.proposalConsentFingerprint(base());
         expect(a).toMatch(/^c-/);
         const churned = base();
         churned.parentParcelIds = ['HR-1-999'];
-        expect(sharing.proposalContentFingerprintLegacy(churned)).not.toBe(a);
+        expect(sharing.proposalConsentFingerprint(churned)).not.toBe(a);
     });
 
     it('the two versions never collide in prefix space', () => {
         expect(sharing.proposalContentFingerprint(base()).startsWith('c2-')).toBe(true);
-        expect(sharing.proposalContentFingerprintLegacy(base()).startsWith('c2-')).toBe(false);
+        expect(sharing.proposalConsentFingerprint(base()).startsWith('c2-')).toBe(false);
     });
 });
