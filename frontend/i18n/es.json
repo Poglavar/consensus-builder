@@ -2103,7 +2103,14 @@
                 "gaps": "Número de huecos:",
                 "gapWidth": "Ancho de hueco (m):",
                 "wings": "Número de alas:",
-                "wingLength": "Longitud de ala (m):"
+                "wingLength": "Longitud de ala (m):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeExact": "Exactamente esta altura",
+                "ruleTypeMax": "Como máximo esta altura",
+                "ruleTypeRange": "Entre un mínimo y esta altura",
+                "minHeight": "Altura mínima del edificio (m):",
+                "minPlotArea": "Superficie mínima de parcela (m²):",
+                "minDepth": "Profundidad obligatoria desde la calle (m):"
             },
             "helper": {
                 "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma del edificio.",
@@ -2123,7 +2130,12 @@
                 "defaultProposalDescription": "Propuesta de edificio para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedSliver": "Solo cae una astilla de la manzana en esta parcela — demasiado pequeña para ser un edificio.",
+                "rangeExact": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida",
+                "rangeBetween": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
+                "rangeMax": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida"
             },
             "handles": {
                 "gap": "Arrastra para mover el hueco",
@@ -2161,7 +2173,8 @@
                 "uploadGeojson": "Subir GeoJSON",
                 "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
                 "uploadError": "No se pudo leer el archivo."
-            }
+            },
+            "regenerate": "Regenerar"
         }
     },
     "rowHouses": {
@@ -2179,7 +2192,13 @@
                 "rotation": "Girar huella",
                 "circumference": "Perímetro (m):",
                 "area": "Área (m²):",
-                "volume": "Volumen (m³):"
+                "volume": "Volumen (m³):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeExact": "Exactamente esta altura",
+                "ruleTypeMax": "Como máximo esta altura",
+                "ruleTypeRange": "Entre un mínimo y esta altura",
+                "minHeight": "Altura mínima (m):",
+                "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
                 "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo.",
@@ -2203,13 +2222,16 @@
                 "defaultProposalDescription": "Propuesta de viviendas en hilera para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedSliver": "Solo cae una astilla de la hilera en esta parcela — demasiado pequeña para ser una casa."
             },
             "warnings": {
                 "dissimilarParcels": "Las casas en hilera se pueden definir sobre cualquier parcela, pero las {{count}} parcelas seleccionadas varían mucho en tamaño y forma. Funcionará igual, pero las casas en hilera suelen ir sobre parcelas de tamaño y forma similares. ¿Quieres continuar?",
                 "proceed": "Continuar de todos modos",
                 "cancel": "Volver"
-            }
+            },
+            "regenerate": "Regenerar"
         }
     },
     "parcelBased": {
@@ -2225,14 +2247,23 @@
                 "maxFloors": "Pisos máximos:",
                 "minDistance": "Distancia mín. de los bordes (m):",
                 "buildingCount": "Edificios:",
-                "totalArea": "Huella total (m²):",
-                "totalVolume": "Volumen total (m³):",
-                "avgFloors": "Pisos promedio:"
+                "totalArea": "Huella permitida (m²):",
+                "totalVolume": "Volumen permitido (m³):",
+                "avgFloors": "Pisos del ejemplo (prom.):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeMax": "Como máximo esto",
+                "ruleTypeRange": "Entre un mínimo y esto",
+                "ruleTypeExact": "Exactamente esto",
+                "minFloors": "Pisos mínimos:",
+                "minFootprint": "Planta baja mínima (m²):",
+                "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "maxFloors": "Pisos máximos: cada edificio recibe un número aleatorio de pisos entre 1 y este valor.",
+                "maxFloors": "Pisos máximos: el techo permitido. El ejemplo de edificación varía desde 1 piso hasta ese valor.",
                 "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
-                "regenerate": "Haz clic en Regenerar para una nueva variación aleatoria — pisos, tamaño y posición de la planta dentro de los retiros."
+                "regenerate": "Haz clic en Regenerar para otro ejemplo de edificación — pisos, tamaño y posición de la planta dentro de los retiros. Las cifras permitidas de arriba nunca cambian.",
+                "ruleType": "Qué obliga la norma: como máximo esto (nadie está obligado a construir), entre un mínimo y esto, o exactamente esto (todos construyen el volumen completo).",
+                "minPlotArea": "Superficie mínima de parcela: en parcelas menores que esta no se puede construir bajo esta norma, y se muestran rayadas. Primero hay que fusionarlas."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
@@ -2242,7 +2273,11 @@
                 "defaultProposalDescription": "Propuesta por parcela para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
+                "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
             }
         }
     },
@@ -2885,7 +2920,16 @@
             "solid": "Sólido:",
             "neither": "Ninguno",
             "showAllParcels": "Mostrar todas las parcelas",
-            "trees": "Árboles"
+            "trees": "Árboles",
+            "plannedAs": "Planificado como",
+            "plannedAsTooltip": "Planificado como — dibuja el volumen que permite la norma, un ejemplo de lo que podría construirse, o ambos",
+            "representationMassing": "Volumen",
+            "representationMassingTooltip": "Volumen — el volumen que permite la norma, que es lo que la propuesta establece",
+            "representationBuildOut": "Edificación",
+            "representationBuildOutTooltip": "Edificación — un ejemplo de lo que realmente podría construirse bajo la norma",
+            "representationBoth": "Ambos",
+            "representationBothTooltip": "Ambos — el ejemplo de edificación dentro del volumen permitido",
+            "reroll": "Aleatoriza cada ejemplo de edificación. No cambia nada en las propuestas."
         },
         "overlay": {
             "rendering": "Renderizando…",

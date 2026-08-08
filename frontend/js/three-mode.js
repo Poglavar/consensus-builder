@@ -264,7 +264,10 @@
         // Buildings an applied proposal demolishes stay reddish in inclusive Built modes; Removed
         // also uses the solid variant so the isolated demolition footprint reads clearly.
         demolishedSolid: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }),
-        demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3)
+        demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3),
+        // The permitted envelope behind an example build-out: a cool translucent hull, distinct
+        // from `ghost` (which means built context) so the two never read as the same thing.
+        massing: makeBuildingMaterial({ color: 0x7f95b3, specular: 0x223344, shininess: 8 }, 0.22)
     };
 
     function demolishedMaterialFor(buildingMaterial) {
@@ -286,7 +289,25 @@
     // the proposal pop against a translucent context.
     let builtDisplay = 'ghost';
     let plannedDisplay = 'solid';
+    // How a planned urban rule is drawn — orthogonal to solid/transparent/off above:
+    //   massing  — the permitted volume, which is what the proposal actually asserts
+    //   buildout — one example of a legal build-out under it
+    //   both     — the example inside a translucent envelope (the classic planning drawing)
+    // A proposal that stores no rule (an imported shape, a single building) has no variation to
+    // derive and draws identically in all three.
+    const PLANNED_REPRESENTATIONS = ['massing', 'buildout', 'both'];
+    const PLANNED_REPRESENTATION_KEY = 'cb_3d_planned_representation';
+    let plannedRepresentation = 'both';
+    // Re-rolls every example build-out WITHOUT touching a single stored proposal: the salt only
+    // reaches the derivation, so Randomize is a view control and not a data mutation. The counter
+    // starts somewhere random so the first roll of a session isn't the same city every time, and
+    // only ever increments — two clicks can never land on the same salt.
+    let buildOutDisplaySalt = '';
+    let buildOutDisplayRoll = Math.floor(Math.random() * 1e9);
     let buildingModeControlsEl = null;
+    let representationSelect = null;
+    let rerollBtn = null;
+    let rerollBusy = false;
     let displayStateSelects = { built: null, planned: null };
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
@@ -355,6 +376,64 @@
             { ghostOpacity: 0.38 }
         );
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
+    }
+
+    function loadPlannedRepresentation() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const stored = PersistentStorage.getItem(PLANNED_REPRESENTATION_KEY);
+                if (PLANNED_REPRESENTATIONS.includes(stored)) return stored;
+            }
+        } catch (_) { }
+        return 'both';
+    }
+
+    function setPlannedRepresentation(mode) {
+        if (!PLANNED_REPRESENTATIONS.includes(mode) || mode === plannedRepresentation) return;
+        plannedRepresentation = mode;
+        try { PersistentStorage.setItem(PLANNED_REPRESENTATION_KEY, mode); } catch (_) { }
+        updateRepresentationControls();
+        rebuild3DBuildingsOnly();
+    }
+
+    function setRerollBusy(busy) {
+        rerollBusy = !!busy;
+        if (!rerollBtn) return;
+        rerollBtn.disabled = rerollBusy;
+        rerollBtn.classList.toggle('is-busy', rerollBusy);
+        rerollBtn.setAttribute('aria-busy', rerollBusy ? 'true' : 'false');
+    }
+
+    // Shuffle every example build-out in view. Nothing is written: the salt feeds the derivation,
+    // so a reload comes back to each proposal's own stored variation.
+    //
+    // Re-deriving and re-extruding every proposal blocks the main thread, and it all happens in one
+    // synchronous task — so the spinning state has to be given an actual painted frame first, or the
+    // button would go straight from idle to done with nothing visible in between. Two frames: the
+    // first commits the class, the second guarantees it reached the screen.
+    function rerollBuildOutDisplay() {
+        if (rerollBusy) return;
+        setRerollBusy(true);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            try {
+                buildOutDisplaySalt = String(++buildOutDisplayRoll);
+                // From Massing there is nothing varied on screen to shuffle, so a roll means
+                // "show me a variation" — switch to Both, which rebuilds on its own.
+                if (plannedRepresentation === 'massing') setPlannedRepresentation('both');
+                else rebuild3DBuildingsOnly();
+            } finally {
+                setRerollBusy(false);
+            }
+        }));
+    }
+
+    function updateRepresentationControls() {
+        if (!representationSelect) return;
+        try {
+            representationSelect.value = plannedRepresentation;
+            const option = representationSelect.options[representationSelect.selectedIndex];
+            representationSelect.title = option?.dataset?.tooltip || option?.textContent || '';
+        } catch (_) { }
     }
 
     function setBuildingDisplay(kind, state) {
@@ -863,6 +942,52 @@
         };
         buildingModeControlsEl.appendChild(makeDisplayRow('built', threeI18n('threeMode.controls.built', 'Built')));
         buildingModeControlsEl.appendChild(makeDisplayRow('planned', threeI18n('threeMode.controls.planned', 'Planned')));
+
+        // Massing vs example build-out, plus the dice that re-rolls every example at once.
+        const representationRow = document.createElement('div');
+        representationRow.className = 'three-mode-emphasis-row three-mode-representation-row';
+        const representationLabel = document.createElement('label');
+        representationLabel.className = 'three-mode-emphasis-label';
+        representationLabel.textContent = threeI18n('threeMode.controls.plannedAs', 'Planned as');
+        representationLabel.title = threeI18n('threeMode.controls.plannedAsTooltip',
+            'Draw the permitted volume, one example of what could be built under it, or both');
+        representationLabel.htmlFor = 'three-mode-planned-representation';
+        representationRow.appendChild(representationLabel);
+
+        representationSelect = document.createElement('select');
+        representationSelect.id = 'three-mode-planned-representation';
+        representationSelect.className = 'three-mode-display-select';
+        [
+            ['massing', threeI18n('threeMode.controls.representationMassing', 'Massing'),
+                threeI18n('threeMode.controls.representationMassingTooltip', 'The volume the rule permits')],
+            ['buildout', threeI18n('threeMode.controls.representationBuildOut', 'Build-out'),
+                threeI18n('threeMode.controls.representationBuildOutTooltip', 'One example of what could be built under the rule')],
+            ['both', threeI18n('threeMode.controls.representationBoth', 'Both'),
+                threeI18n('threeMode.controls.representationBothTooltip', 'The example inside the permitted volume')]
+        ].forEach(([value, label, tooltip]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            option.dataset.tooltip = tooltip;
+            representationSelect.appendChild(option);
+        });
+        representationSelect.addEventListener('change', () => setPlannedRepresentation(representationSelect.value));
+        representationRow.appendChild(representationSelect);
+
+        rerollBtn = document.createElement('button');
+        rerollBtn.type = 'button';
+        rerollBtn.className = 'three-mode-reroll-btn';
+        // The die sits in its own span so only the glyph spins, not the button's border.
+        rerollBtn.innerHTML = '<span class="three-mode-reroll-die" aria-hidden="true">🎲</span>';
+        rerollBtn.title = threeI18n('threeMode.controls.reroll',
+            'Randomize every example build-out (changes nothing in the proposals)');
+        rerollBtn.setAttribute('aria-label', rerollBtn.title);
+        rerollBtn.addEventListener('click', () => rerollBuildOutDisplay());
+        representationRow.appendChild(rerollBtn);
+        setRerollBusy(false);
+
+        buildingModeControlsEl.appendChild(representationRow);
+        updateRepresentationControls();
 
         // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
         // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
@@ -4344,6 +4469,7 @@
     function buildProposedBuildings3D(targetGroup, buildingMaterial) {
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return;
+        const variationDeps = { turf };
         for (let i = 0; i < arr.length; i++) {
             const feat = arr[i];
             if (!feat || !feat.geometry) continue;
@@ -4353,8 +4479,17 @@
                     placeUploadedModel(feat, targetGroup, buildingMaterial);
                     continue;
                 }
-                const height = estimateBuildingHeightMeters(feat);
-                createBuildingSlices(feat, height, buildingMaterial, targetGroup);
+                // Massing, example build-out, or the example inside its envelope — the choice
+                // itself lives in urban-rule-variation.js, where it is unit-tested.
+                const plan = window.UrbanRuleVariation.plannedDrawPlan(
+                    feat, plannedRepresentation, variationDeps, buildOutDisplaySalt);
+                if (plan.buildOut) {
+                    createBuildingSlices(plan.buildOut, estimateBuildingHeightMeters(plan.buildOut), buildingMaterial, targetGroup);
+                }
+                if (plan.massing) {
+                    const material = plan.massingStyle === 'envelope' ? buildingMaterials.massing : buildingMaterial;
+                    createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), material, targetGroup);
+                }
             } catch (_) { }
         }
     }
@@ -5116,6 +5251,7 @@
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
+        plannedRepresentation = loadPlannedRepresentation();
         treesGroup.visible = treesEnabled && !realisticLayerActive;
         scene.add(flatGroup);
         scene.add(corridorGroup);
@@ -5525,6 +5661,9 @@
         isolationResetEl = null;
         parcelInfoPanelEl = null;
         displayStateSelects = { built: null, planned: null };
+        representationSelect = null;
+        rerollBtn = null;
+        rerollBusy = false;
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }

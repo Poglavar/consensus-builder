@@ -16,6 +16,8 @@ let selectedBlockName = window.selectedBlockName;
 let blockifyMap = null;
 let blockifyParcelLayer = null;
 let blockifyBuildingLayer = null;
+let blockifyPieceLayers = [];      // one per constituent parcel
+let blockifyExcludedLayers = [];   // parcels the rule leaves out, drawn hatched
 let generatedBuildingFeature = null;
 let blockifyBlockNameOverride = null;
 // Default parameter values
@@ -27,6 +29,24 @@ const DEFAULT_SIMPLIFY_M = 0; // meters (0 = follow parcels exactly; higher smoo
 // Chamfer every convex corner up to this internal angle. High enough to catch obtuse corners on
 // irregular blocks, low enough to skip near-straight arc segments (~174° from the negative buffer).
 const CHAMFER_MAX_INTERNAL_ANGLE_DEG = 165;
+// A block's massing is one ring, but the buildings under it belong to individual owners. The ring
+// is cut into one building per constituent parcel, in distinct shades, so a block reads as a street
+// — and so the gain lands on the parcel that earned it. See urban-rule-massing.md.
+//
+// The default is "exactly this height": the block editor has always drawn one specific form that
+// everyone builds, and that is a real kind of rule (C). Choosing "at most" or "between" turns the
+// same envelope into a ceiling and lets the buildings under it vary.
+const DEFAULT_BLOCK_RULE_KIND = 'exact';
+const DEFAULT_BLOCK_MIN_PLOT_AREA_M2 = 50;
+let blockRuleKind = DEFAULT_BLOCK_RULE_KIND;
+let blockMinHeightM = 0;
+let blockMinDepthM = 0;          // obvezni građevni pravac: compelled depth from the street
+let blockMinPlotAreaM2 = DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
+let blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+let blockMassingPieces = [];      // per-parcel permitted massing — what the proposal saves
+let blockBuildOut = [];           // one example built under it — presentation only
+let blockExcludedParcels = [];
+
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
@@ -986,16 +1006,36 @@ function updateBlockify3DScene(buildingFeatureOrFeatures) {
         side: THREE.DoubleSide
     });
 
+    // Each parcel's building gets its own shade, so a block reads as a street of separately owned
+    // buildings rather than one extruded ring. Materials are cached per colour, not per building.
+    const shadeMaterials = new Map();
+    const materialsFor = (color) => {
+        if (!color) return [mat, roofMat];
+        if (!shadeMaterials.has(color)) {
+            const base = new THREE.Color(color);
+            const wall = new THREE.MeshPhongMaterial({
+                color: base, emissive: 0x111111, depthTest: true, depthWrite: true, side: THREE.DoubleSide
+            });
+            const roof = new THREE.MeshPhongMaterial({
+                color: base.clone().multiplyScalar(0.85), emissive: 0x111111, depthTest: true, depthWrite: true, side: THREE.DoubleSide
+            });
+            shadeMaterials.set(color, [wall, roof]);
+        }
+        return shadeMaterials.get(color);
+    };
+
     const meshes = [];
     features.forEach(feature => {
-        // Per-building heights only apply in existing-buildings mode. In freeform mode the height
-        // slider updates currentBuildingHeight without regenerating the feature, so its
-        // properties.height can be stale — the fallback keeps the slider live there.
-        const propH = Number(feature.properties && feature.properties.height);
-        const heightMeters = (feature.properties && feature.properties.basedOnExisting && Number.isFinite(propH) && propH > 0)
-            ? Math.min(propH, 400)
-            : fallbackHeightMeters;
-        meshes.push(...buildExtrudedMeshes(feature.geometry, heightMeters, mat, roofMat, anchor));
+        const props = feature.properties || {};
+        // A feature carries its own height when it is a raised existing building or a per-parcel
+        // piece of a block. A plain freeform outline does not: its height slider moves
+        // currentBuildingHeight without regenerating the feature, so properties.height goes stale
+        // and the fallback is what keeps the slider live.
+        const propH = Number(props.height);
+        const ownHeight = (props.basedOnExisting || props.parcelId) && Number.isFinite(propH) && propH > 0;
+        const heightMeters = ownHeight ? Math.min(propH, 400) : fallbackHeightMeters;
+        const [wallMat, roofMatForPiece] = materialsFor(props.color);
+        meshes.push(...buildExtrudedMeshes(feature.geometry, heightMeters, wallMat, roofMatForPiece, anchor));
     });
     if (!meshes.length) {
         console.warn('[3D] No meshes built for building features');
@@ -1385,6 +1425,7 @@ function showBlockifyModal() {
                 <div id="blockify-controls">
                     <div id="blockify-info" data-i18n-attr="text"></div>
                     <div id="blockify-buttons">
+                        <button class="btn btn-secondary" id="btn-blockify-regenerate" style="display: none;" data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                         <button class="btn btn-proposal" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
@@ -1463,6 +1504,35 @@ function showBlockifyModal() {
                         <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(1)}</span>
                     </label>
                     <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="0.5">
+                </div>
+                <div class="parameter-group blockify-freeform-only">
+                    <label for="blockify-ruletype-select" data-i18n-key="blockify.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
+                    <select id="blockify-ruletype-select">
+                        <option value="exact" data-i18n-key="blockify.modal.labels.ruleTypeExact" data-i18n-attr="text">Exactly this height</option>
+                        <option value="max" data-i18n-key="blockify.modal.labels.ruleTypeMax" data-i18n-attr="text">At most this height</option>
+                        <option value="range" data-i18n-key="blockify.modal.labels.ruleTypeRange" data-i18n-attr="text">Between a minimum and this</option>
+                    </select>
+                </div>
+                <div class="parameter-group blockify-freeform-only" id="blockify-minheight-group" style="display: none;">
+                    <label for="blockify-minheight-slider">
+                        <span data-i18n-key="blockify.modal.labels.minHeight" data-i18n-attr="text">Min Building Height (m):</span>
+                        <span id="blockify-minheight-value">0.0</span>
+                    </label>
+                    <input type="range" id="blockify-minheight-slider" min="0" max="80" value="0" step="0.5">
+                </div>
+                <div class="parameter-group blockify-freeform-only" id="blockify-mindepth-group" style="display: none;">
+                    <label for="blockify-mindepth-slider">
+                        <span data-i18n-key="blockify.modal.labels.minDepth" data-i18n-attr="text">Must build from street (m):</span>
+                        <span id="blockify-mindepth-value">0.0</span>
+                    </label>
+                    <input type="range" id="blockify-mindepth-slider" min="0" max="100" value="0" step="0.5">
+                </div>
+                <div class="parameter-group blockify-freeform-only">
+                    <label for="blockify-minplot-slider">
+                        <span data-i18n-key="blockify.modal.labels.minPlotArea" data-i18n-attr="text">Min Plot Size (m²):</span>
+                        <span id="blockify-minplot-value">${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}</span>
+                    </label>
+                    <input type="range" id="blockify-minplot-slider" min="0" max="10000" value="${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}" step="10">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="gaps-slider">
@@ -1575,12 +1645,61 @@ function showBlockifyModal() {
                     if (generatedBuildingFeature.properties) {
                         generatedBuildingFeature.properties.height = currentBuildingHeight;
                     }
-                    updateBlockify3DScene(generatedBuildingFeature);
+                    refreshBlockPieceHeights();
+                    syncBlockMinHeightSlider();
+                    updateBlockify3DScene(blockBuildOut.length ? blockBuildOut : generatedBuildingFeature);
                     // The draft carries its own copy of the feature and it is what gets published
                     // (serializeProposal reads editorPayload.context.buildings). Nothing regenerates
                     // the footprint here, so without this autosave a height-only edit was dropped.
                     autosaveBlockifyDraft();
                 }
+            });
+        }
+
+        const blockRuleTypeSelect = document.getElementById('blockify-ruletype-select');
+        if (blockRuleTypeSelect) {
+            blockRuleTypeSelect.value = blockRuleKind;
+            blockRuleTypeSelect.addEventListener('change', function (e) {
+                blockRuleKind = e.target.value;
+                syncBlockMinHeightSlider();
+                if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
+            });
+        }
+
+        const blockRegenerate = document.getElementById('btn-blockify-regenerate');
+        if (blockRegenerate) {
+            // Only the seed moves: the massing, and every number read off it, stay put.
+            blockRegenerate.addEventListener('click', function () {
+                blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+                if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
+            });
+        }
+
+        const blockMinHeightSlider = document.getElementById('blockify-minheight-slider');
+        if (blockMinHeightSlider) {
+            blockMinHeightSlider.addEventListener('input', function (e) {
+                blockMinHeightM = parseFloat(e.target.value);
+                document.getElementById('blockify-minheight-value').textContent = blockMinHeightM.toFixed(1);
+                refreshBlockPieceHeights();
+                if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
+            });
+        }
+
+        const blockMinDepthSlider = document.getElementById('blockify-mindepth-slider');
+        if (blockMinDepthSlider) {
+            blockMinDepthSlider.addEventListener('input', function (e) {
+                blockMinDepthM = parseFloat(e.target.value);
+                document.getElementById('blockify-mindepth-value').textContent = blockMinDepthM.toFixed(1);
+                if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
+            });
+        }
+
+        const blockMinPlotSlider = document.getElementById('blockify-minplot-slider');
+        if (blockMinPlotSlider) {
+            blockMinPlotSlider.addEventListener('input', function (e) {
+                blockMinPlotAreaM2 = parseFloat(e.target.value);
+                document.getElementById('blockify-minplot-value').textContent = blockMinPlotAreaM2.toString();
+                if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
             });
         }
 
@@ -1725,6 +1844,14 @@ function showBlockifyModal() {
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
     currentChamferM = DEFAULT_CHAMFER_M;
     currentSimplifyM = DEFAULT_SIMPLIFY_M;
+    blockRuleKind = DEFAULT_BLOCK_RULE_KIND;
+    blockMinHeightM = 0;
+    blockMinDepthM = 0;
+    blockMinPlotAreaM2 = DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
+    blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+    blockMassingPieces = [];
+    blockBuildOut = [];
+    blockExcludedParcels = [];
     gapPositions = [];
     wingPositions = [];
     blockifyMode = 'parametric';
@@ -1785,6 +1912,21 @@ function applyBlockifySeedState(seed) {
     if (Array.isArray(seed.gaps)) gapPositions = JSON.parse(JSON.stringify(seed.gaps));
     if (Array.isArray(seed.wings)) wingPositions = JSON.parse(JSON.stringify(seed.wings));
 
+    // What the rule compels, and the variation it was saved with. Restoring the seed is what makes
+    // a reopened design redraw the SAME street rather than a fresh one under the same name.
+    const savedRule = (seed.rule && typeof seed.rule === 'object') ? seed.rule : null;
+    if (savedRule) {
+        if (window.UrbanRuleVariation.RULE_KINDS.includes(savedRule.kind)) blockRuleKind = savedRule.kind;
+        const minHeight = num(savedRule.minHeightM);
+        if (minHeight !== null) blockMinHeightM = minHeight;
+        const minDepth = num(savedRule.minDepthM);
+        if (minDepth !== null) blockMinDepthM = minDepth;
+        const minPlot = num(savedRule.minPlotAreaM2);
+        if (minPlot !== null) blockMinPlotAreaM2 = minPlot;
+    }
+    const savedSeed = num(seed.seed);
+    if (savedSeed !== null) blockVariationSeed = savedSeed >>> 0;
+
     if (seed.mode === 'manual' && Array.isArray(seed.manualOuterRing) && seed.manualOuterRing.length >= 3) {
         blockifyMode = 'manual';
         manualOuterRing = seed.manualOuterRing.map(c => [c[0], c[1]]);
@@ -1831,6 +1973,11 @@ function syncBlockifyControlsFromState() {
     setSlider('additional-floors-slider', 'additional-floors-value', currentAdditionalFloors, 0);
     setSlider('floor-height-slider', 'floor-height-value', currentFloorHeightM);
     if (typeof updateExistingValueLabels === 'function') updateExistingValueLabels();
+
+    const ruleTypeSelect = document.getElementById('blockify-ruletype-select');
+    if (ruleTypeSelect) ruleTypeSelect.value = blockRuleKind;
+    setSlider('blockify-minplot-slider', 'blockify-minplot-value', blockMinPlotAreaM2, 0);
+    syncBlockMinHeightSlider();
 }
 
 // Is there a generated design in the editor right now?
@@ -2783,24 +2930,181 @@ function autosaveBlockifyDraft(featuresOverride = null) {
 }
 
 // Function to display the building in the modal map
-function displayBuildingInModal(buildingFeature) {
-    if (blockifyBuildingLayer) {
-        blockifyMap.removeLayer(blockifyBuildingLayer);
-        blockifyBuildingLayer = null;
+// The rule the block sliders currently describe. Heights are metres — the block editor's own
+// parameter — and the build-out varies in whole storeys within them.
+function currentBlockRule() {
+    const params = {
+        typology: 'block',
+        kind: blockRuleKind,
+        maxHeightM: Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
+        minHeightM: blockMinHeightM,
+        minDepthM: blockMinDepthM,
+        floorHeightM: DEFAULT_FLOOR_HEIGHT_M,
+        minPlotAreaM2: blockMinPlotAreaM2
+    };
+    return window.UrbanRuleVariation.normalizeBlockRule(params);
+}
+
+function blockParcelsForSplit() {
+    const block = getActiveBlockifyBlock();
+    if (!block || !Array.isArray(block.parcels)) return [];
+    return block.parcels.map((parcel, index) => {
+        const props = parcel?.feature?.properties;
+        const parcelId = typeof ensureParcelId === 'function'
+            ? ensureParcelId(parcel?.feature)
+            : (props?.parcelId ?? props?.parcel_id ?? props?.id ?? `parcel-${index}`);
+        return { feature: parcel?.feature, parcelId };
+    }).filter(entry => entry.feature && entry.feature.geometry);
+}
+
+// Cut the finished massing into per-parcel buildings and derive the example built under it. Every
+// mode funnels through here, so gaps, wings, chamfer, manual outlines and imported shapes are all
+// split the same way without the generator upstream knowing anything about it.
+function rebuildBlockPieces(massingFeature) {
+    const parcels = blockParcelsForSplit();
+    if (!massingFeature || !parcels.length) {
+        blockMassingPieces = [];
+        blockBuildOut = [];
+        blockExcludedParcels = [];
+        return;
     }
+    const deps = { turf, largestPolygon: toSingleLargestPolygon };
+    const split = window.UrbanRuleVariation.splitMassingByParcels(
+        massingFeature, parcels, currentBlockRule(), blockVariationSeed, deps);
+    blockMassingPieces = split.pieces;
+    blockExcludedParcels = split.excluded;
+    blockBuildOut = blockMassingPieces.map(piece => window.UrbanRuleVariation.realizeFeature(piece, deps));
+}
+
+// Height-only edits move a slider, not the footprint, so re-cutting every parcel would be wasted
+// geometry on every input event. Restamp the height and re-derive instead.
+function refreshBlockPieceHeights() {
+    const rule = currentBlockRule();
+    const deps = { turf };
+    blockMassingPieces.forEach(piece => {
+        piece.properties.height = rule.maxHeightM;
+        piece.properties.urbanRule = rule;
+    });
+    blockBuildOut = blockMassingPieces.map(piece => window.UrbanRuleVariation.realizeFeature(piece, deps));
+}
+
+function displayBuildingInModal(buildingFeature) {
+    [blockifyBuildingLayer, blockifyPieceLayers, blockifyExcludedLayers].forEach(entry => {
+        (Array.isArray(entry) ? entry : [entry]).forEach(layer => {
+            if (layer && blockifyMap) { try { blockifyMap.removeLayer(layer); } catch (_) { } }
+        });
+    });
+    blockifyBuildingLayer = null;
+    blockifyPieceLayers = [];
+    blockifyExcludedLayers = [];
+
     if (!buildingFeature) return;
     if (buildingFeature.geometry.type === 'MultiLineString' || buildingFeature.geometry.type === 'MultiPolygon' || buildingFeature.geometry.type === 'Polygon') {
+        rebuildBlockPieces(buildingFeature);
+
+        // The massing outline stays as the block's overall shape; the per-parcel buildings are
+        // drawn inside it so the ownership fabric is visible while the outline is being edited.
         blockifyBuildingLayer = L.geoJSON(buildingFeature, {
-            style: {
-                color: '#007bff',
-                weight: 4,
-                opacity: 1,
-                fillOpacity: 0.2
-            }
+            style: { color: '#007bff', weight: 4, opacity: 1, fillOpacity: blockMassingPieces.length ? 0 : 0.2 }
         }).addTo(blockifyMap);
-        try { updateBlockify3DScene(buildingFeature); } catch (e) { console.warn('3D update failed', e); }
-        autosaveBlockifyDraft(buildingFeature);
+
+        blockMassingPieces.forEach(piece => {
+            const color = piece.properties?.color || '#8899aa';
+            const compelled = piece.properties?.minFootprint;
+            // What the rule COMPELS is drawn solid; what it merely permits is drawn lighter. Two
+            // tones, so the mandatory building line is visible as a line and not just a number.
+            const layer = L.geoJSON(piece, {
+                style: { fillColor: color, fillOpacity: compelled ? 0.35 : 0.75, color: '#33465c', weight: 1 }
+            }).addTo(blockifyMap);
+            const height = piece.properties?.height || 0;
+            layer.bindTooltip(`${piece.properties?.parcelId}: ${height.toFixed(1)} m`, { direction: 'center' });
+            blockifyPieceLayers.push(layer);
+
+            if (compelled) {
+                blockifyPieceLayers.push(L.geoJSON({ type: 'Feature', properties: {}, geometry: compelled }, {
+                    style: { fillColor: color, fillOpacity: 0.85, color: '#1b2a3a', weight: 1.5 }
+                }).addTo(blockifyMap));
+            }
+        });
+
+        blockExcludedParcels.forEach(entry => {
+            if (!entry || !entry.feature || entry.status === 'no-massing-here') return;
+            const layer = L.geoJSON(entry.feature, {
+                style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
+            }).addTo(blockifyMap);
+            layer.bindTooltip(blockExclusionReason(entry.status), { direction: 'center' });
+            blockifyExcludedLayers.push(layer);
+        });
+
+        try {
+            updateBlockify3DScene(blockBuildOut.length ? blockBuildOut : buildingFeature);
+        } catch (e) { console.warn('3D update failed', e); }
+        reportBlockRuleRange();
+        autosaveBlockifyDraft(blockMassingPieces.length ? blockMassingPieces : buildingFeature);
     }
+
+// The rule type made legible in the one number people vote on: what it permits, and what — if
+// anything — it guarantees. "At most" guarantees nothing; "exactly" delivers what it permits.
+function reportBlockRuleRange() {
+    if (!blockMassingPieces.length) return;
+    const range = window.UrbanRuleVariation.summariseBlockRule(blockMassingPieces, currentBlockRule(), { turf });
+    const permitted = Math.round(range.permittedFloorAreaM2).toLocaleString('en-US');
+    const guaranteed = Math.round(range.guaranteedFloorAreaM2).toLocaleString('en-US');
+    const excluded = blockExcludedParcels.filter(entry => entry.status !== 'no-massing-here').length;
+    const params = { buildings: blockMassingPieces.length, permitted, guaranteed, excluded };
+
+    if (range.kind === 'exact') {
+        setBlockifyInfo('blockify.modal.messages.rangeExact',
+            '{{buildings}} buildings · delivers {{permitted}} m² of floor area', params);
+    } else if (range.kind === 'range') {
+        setBlockifyInfo('blockify.modal.messages.rangeBetween',
+            '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
+    } else {
+        setBlockifyInfo('blockify.modal.messages.rangeMax',
+            '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area', params);
+    }
+}
+}
+
+// A minimum only exists for the between-a-minimum-and-this rule, and it can never outrun the
+// ceiling it sits under.
+function syncBlockMinHeightSlider() {
+    const group = document.getElementById('blockify-minheight-group');
+    if (group) group.style.display = blockRuleKind === 'range' ? '' : 'none';
+    // Under "exactly this height" every building is the full envelope, so there is no variation to
+    // roll — hide the button rather than leave a control that provably does nothing.
+    const regenerate = document.getElementById('btn-blockify-regenerate');
+    if (regenerate) regenerate.style.display = blockRuleKind === 'exact' ? 'none' : '';
+    const depthGroup = document.getElementById('blockify-mindepth-group');
+    if (depthGroup) depthGroup.style.display = blockRuleKind === 'range' ? '' : 'none';
+    const depthSlider = document.getElementById('blockify-mindepth-slider');
+    if (depthSlider) {
+        // Compelling more depth than the block is deep would just compel the whole block, so the
+        // slider stops at the building's own depth.
+        const deepest = Number(currentBuildingWidth) || DEFAULT_BUILDING_WIDTH;
+        depthSlider.max = String(deepest);
+        if (blockMinDepthM > deepest) blockMinDepthM = deepest;
+        depthSlider.value = String(blockMinDepthM);
+        const depthLabel = document.getElementById('blockify-mindepth-value');
+        if (depthLabel) depthLabel.textContent = blockMinDepthM.toFixed(1);
+    }
+    const slider = document.getElementById('blockify-minheight-slider');
+    if (!slider) return;
+    const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
+    slider.max = String(ceiling);
+    if (blockMinHeightM > ceiling) blockMinHeightM = ceiling;
+    slider.value = String(blockMinHeightM);
+    const label = document.getElementById('blockify-minheight-value');
+    if (label) label.textContent = blockMinHeightM.toFixed(1);
+}
+
+function blockExclusionReason(status) {
+    if (status === 'below-min-plot') {
+        return translateBuildingText('blockify.modal.messages.excludedBelowMinPlot',
+            'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+    }
+    return translateBuildingText('blockify.modal.messages.excludedSliver',
+        'Only a splinter of the block falls on this plot — too small to be a building.');
 }
 
 // Draw a draggable handle on the modal map at each gap/wing position. Dragging one snaps it back onto
@@ -3003,6 +3307,16 @@ function updateBlockifyModeUI() {
         el.style.display = existing ? '' : 'none';
     });
     updateAdditionalFloorsAvailability();
+    if (existing) {
+        // Raised existing buildings are keyed to buildings, not parcels, so there is nothing to
+        // cut. Clearing the pieces stops a parametric design's leftovers being saved under them.
+        blockMassingPieces = [];
+        blockBuildOut = [];
+        blockExcludedParcels = [];
+    } else {
+        // The blanket un-hide above would also reveal the minimum, which belongs to one rule type.
+        syncBlockMinHeightSlider();
+    }
 }
 
 // "Additional floors" only means something when the source data knows current heights (or floor
@@ -3481,9 +3795,13 @@ async function confirmBlockSizeIfOversized(block) {
 }
 
 async function saveBlockifyDesignForProposal() {
-    const existingModeFeatures = (blockifyMode === 'existing' && Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length)
-        ? generatedBuildingFeatures
-        : null;
+    // Existing-buildings mode saves one feature per raised building; every other mode saves the
+    // block's massing already cut into one building per parcel. Both are just `buildings` arrays
+    // downstream, which is why the ring is not stored on its own — one feature covering four
+    // parcels would put all four parcels' gain on whichever one it happened to be keyed to.
+    const existingModeFeatures = blockifyMode === 'existing'
+        ? ((Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length) ? generatedBuildingFeatures : null)
+        : (blockMassingPieces.length ? blockMassingPieces : null);
     if (!generatedBuildingFeature && !existingModeFeatures) {
         const info = document.getElementById('blockify-info');
         if (info) setBlockifyInfo('blockify.modal.messages.generateBeforeFinishing', 'Generate a building before finishing.');
@@ -3550,7 +3868,9 @@ async function saveBlockifyDesignForProposal() {
     // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
     // setback/chamfer/algorithm alone are lossy: a manual outline isn't slider-derived at all, and
     // gaps/wings/simplify silently disappear on regeneration. Copies would otherwise change shape.
-    const parameters = clonedBuildings
+    // Keyed on the MODE, not on whether buildings came out as an array: every mode saves an array
+    // now, and writing mode:'existing' for a parametric design would lose its whole shape on re-edit.
+    const parameters = blockifyMode === 'existing'
         ? {
             mode: 'existing',
             rule: existingRule,
@@ -3571,7 +3891,11 @@ async function saveBlockifyDesignForProposal() {
             height: Number.isFinite(Number(currentBuildingHeight)) ? Number(currentBuildingHeight) : null,
             setback: Number.isFinite(Number(currentSetback)) ? Number(currentSetback) : null,
             chamfer: Number.isFinite(Number(currentChamferM)) ? Number(currentChamferM) : null,
-            algorithm: algorithmSelect ? algorithmSelect.value : null
+            algorithm: algorithmSelect ? algorithmSelect.value : null,
+            // What the rule compels and which example build-out it was saved with, so reopening
+            // reproduces the same street rather than a different one under the same name.
+            rule: currentBlockRule(),
+            seed: blockVariationSeed
         };
 
     const context = {

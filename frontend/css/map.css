@@ -599,6 +599,65 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     outline: none;
 }
 
+/* Massing / Build-out / Both, with the re-roll dice beside it. The select gives up the width the
+   button takes so the row still lines up with the Built and Planned rows above it. */
+#three-container .three-mode-representation-row .three-mode-display-select {
+    flex: 0 0 126px;
+    width: 126px;
+}
+
+#three-container .three-mode-reroll-btn {
+    appearance: none;
+    flex: 0 0 34px;
+    height: 30px;
+    border: 1px solid #c8cdd5;
+    border-radius: 8px;
+    background: #f5f7fa;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+#three-container .three-mode-reroll-btn:hover:not(:disabled) {
+    border-color: #8f99a7;
+    background: #fff;
+}
+
+#three-container .three-mode-reroll-die {
+    display: inline-block;
+}
+
+/* Re-deriving and re-extruding every proposal blocks the main thread, so the die spins and the
+   button locks for the duration — otherwise a slow roll looks like a click that did nothing. */
+#three-container .three-mode-reroll-btn:disabled {
+    cursor: progress;
+    background: #eceff3;
+    border-color: #d7dbe1;
+}
+
+#three-container .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
+    animation: three-mode-reroll-spin 600ms linear infinite;
+}
+
+@keyframes three-mode-reroll-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reduced motion keeps the busy state legible without the spin: the button still locks and dims. */
+@media (prefers-reduced-motion: reduce) {
+    #three-container .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
+        animation: none;
+        opacity: 0.45;
+    }
+}
+
+#three-container .three-mode-reroll-btn:focus-visible {
+    border-color: #2c6cb0;
+    box-shadow: 0 0 0 3px rgba(44, 108, 176, 0.2);
+    outline: none;
+}
+
 #three-container .three-mode-reset-btn {
     appearance: none;
     flex: 1;

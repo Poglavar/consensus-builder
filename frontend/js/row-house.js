@@ -14,6 +14,21 @@
     let rowHouseMap = null;
     let rowHouseParcelLayer = null;
     let rowHouseBuildingLayer = null;
+    // A row is one bar, but the houses under it belong to individual owners: the bar is cut into one
+    // house per constituent parcel, in distinct shades, so a row reads as a terrace rather than one
+    // extruded slab — and the gain lands on the parcel that earned it. See urban-rule-massing.md.
+    // Default "exactly this height" preserves what the row editor has always drawn.
+    const DEFAULT_ROW_RULE_KIND = 'exact';
+    const DEFAULT_ROW_MIN_PLOT_AREA_M2 = 50;
+    let rowUnitLayers = [];
+    let rowExcludedLayers = [];
+    let rowRuleKind = DEFAULT_ROW_RULE_KIND;
+    let rowMinHeightM = 0;
+    let rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
+    let rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+    let rowUnits = [];        // per-parcel permitted massing — what the proposal saves
+    let rowBuildOut = [];     // one example built under it — presentation only
+    let rowExcluded = [];
     let rowHousePolygonEditor = null;
     let rowHousePendingVertexActionIndex = null;
     let generatedRowHouseFeature = null;
@@ -1055,6 +1070,70 @@
     }
 
     // Display building on the modal map
+    function currentRowRule() {
+        return window.UrbanRuleVariation.normalizeBlockRule({
+            typology: 'row',
+            kind: rowRuleKind,
+            maxHeightM: Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
+            minHeightM: rowMinHeightM,
+            minPlotAreaM2: rowMinPlotAreaM2
+        });
+    }
+
+    function rowParcelsForSplit() {
+        const block = getActiveRowHouseBlock();
+        if (!block || !Array.isArray(block.parcels)) return [];
+        return block.parcels.map((parcel, index) => {
+            const props = parcel?.feature?.properties;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(parcel?.feature)
+                : (props?.parcelId ?? props?.parcel_id ?? props?.id ?? `parcel-${index}`);
+            return { feature: parcel?.feature, parcelId };
+        }).filter(entry => entry.feature && entry.feature.geometry);
+    }
+
+    // Cut the bar into one house per parcel and derive the example built under it. The bar itself
+    // stays the draggable, vertex-editable outline — only what is drawn inside it changes.
+    function rebuildRowUnits(barFeature) {
+        const parcels = rowParcelsForSplit();
+        if (!barFeature || !parcels.length) {
+            rowUnits = []; rowBuildOut = []; rowExcluded = [];
+            return;
+        }
+        const deps = { turf };
+        const split = window.UrbanRuleVariation.splitMassingByParcels(
+            barFeature, parcels, currentRowRule(), rowVariationSeed, deps);
+        rowUnits = split.pieces;
+        rowExcluded = split.excluded;
+        rowBuildOut = rowUnits.map(unit => window.UrbanRuleVariation.realizeFeature(unit, deps));
+    }
+
+    // A minimum belongs to one rule type, and under "exactly this height" there is no variation to
+    // roll — so the button is hidden rather than left doing provably nothing.
+    function syncRowRuleControls() {
+        const group = document.getElementById('rowhouse-minheight-group');
+        if (group) group.style.display = rowRuleKind === 'range' ? '' : 'none';
+        const regenerate = document.getElementById('btn-rowhouse-regenerate');
+        if (regenerate) regenerate.style.display = rowRuleKind === 'exact' ? 'none' : '';
+        const slider = document.getElementById('rowhouse-minheight-slider');
+        if (!slider) return;
+        const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
+        slider.max = String(ceiling);
+        if (rowMinHeightM > ceiling) rowMinHeightM = ceiling;
+        slider.value = String(rowMinHeightM);
+        const label = document.getElementById('rowhouse-minheight-value');
+        if (label) label.textContent = rowMinHeightM.toFixed(1);
+    }
+
+    function rowExclusionReason(status) {
+        if (status === 'below-min-plot') {
+            return translateRowHouseText('rowHouses.modal.messages.excludedBelowMinPlot',
+                'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+        }
+        return translateRowHouseText('rowHouses.modal.messages.excludedSliver',
+            'Only a splinter of the row falls on this plot — too small to be a house.');
+    }
+
     function displayRowHouseBuildingInModal(feature) {
         if (!rowHouseMap) return;
 
@@ -1063,13 +1142,38 @@
             rowHouseMap.removeLayer(rowHouseBuildingLayer);
             rowHouseBuildingLayer = null;
         }
+        [rowUnitLayers, rowExcludedLayers].forEach(layers => {
+            layers.forEach(layer => { if (layer) { try { rowHouseMap.removeLayer(layer); } catch (_) { } } });
+        });
+        rowUnitLayers = [];
+        rowExcludedLayers = [];
 
         if (!feature || !feature.geometry) return;
+
+        rebuildRowUnits(feature);
+
+        // Houses go down first so the bar stays on top and keeps its drag and vertex handles; the
+        // bar's fill is nearly clear so the shades read through it.
+        rowExcluded.forEach(entry => {
+            if (!entry || !entry.feature || entry.status === 'no-massing-here') return;
+            const layer = L.geoJSON(entry.feature, {
+                style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
+            }).addTo(rowHouseMap);
+            layer.bindTooltip(rowExclusionReason(entry.status), { direction: 'center' });
+            rowExcludedLayers.push(layer);
+        });
+        rowUnits.forEach(unit => {
+            const color = unit.properties?.color || '#8899aa';
+            const layer = L.geoJSON(unit, {
+                style: { fillColor: color, fillOpacity: 0.75, color: '#33465c', weight: 1 }
+            }).addTo(rowHouseMap);
+            rowUnitLayers.push(layer);
+        });
 
         rowHouseBuildingLayer = L.geoJSON(feature, {
             style: {
                 fillColor: '#0d6efd',
-                fillOpacity: 0.5,
+                fillOpacity: rowUnits.length ? 0.05 : 0.5,
                 color: '#0d6efd',
                 weight: 2,
                 cursor: 'move'
@@ -1090,7 +1194,7 @@
         updateBuildingMetrics(feature);
 
         // Update 3D view
-        try { updateRowHouse3DScene(feature); } catch (_) { }
+        try { updateRowHouse3DScene(rowBuildOut.length ? rowBuildOut : feature); } catch (_) { }
     }
 
     // Calculate and display building metrics
@@ -1162,10 +1266,14 @@
                 offsetX: Number(currentOffsetX) || 0,
                 offsetY: Number(currentOffsetY) || 0,
                 rotation: Number(currentRotation) || 0,
-                typology: 'row'
+                typology: 'row',
+                rule: currentRowRule(),
+                seed: rowVariationSeed
             },
-            buildingFeature: feature,
-            buildings: [feature]
+            // The per-parcel houses, not the bar: one feature spanning four parcels would put all
+            // four parcels' gain on whichever one it happened to be keyed to.
+            buildingFeature: rowUnits[0] || feature,
+            buildings: rowUnits.length ? JSON.parse(JSON.stringify(rowUnits)) : [feature]
         }, { coalesceKey: 'row-house-live' });
     }
 
@@ -1367,45 +1475,51 @@
         }
     }
 
-    function updateRowHouse3DScene(feature) {
-        if (!rowHouse3D.modelGroup || typeof THREE === 'undefined' || !feature || !feature.geometry) return;
+    // Accepts the whole bar, or the per-parcel houses cut from it (each with its own height and
+    // shade), so a terrace of separately owned houses reads as one.
+    function updateRowHouse3DScene(featureOrFeatures) {
+        if (!rowHouse3D.modelGroup || typeof THREE === 'undefined') return;
+        const features = (Array.isArray(featureOrFeatures) ? featureOrFeatures : [featureOrFeatures])
+            .filter(f => f && f.geometry && f.geometry.type === 'Polygon');
+        if (!features.length) return;
 
         clearThreeGroup(rowHouse3D.modelGroup);
 
         const projector = getRowHouseProjector();
-        const origin = computeRowHouseOrigin(feature, projector);
+        const origin = computeRowHouseOrigin(features[0], projector);
         rowHouse3D.originHTRS = origin;
-        loadRowHouseContextBuildings(feature, origin);
+        loadRowHouseContextBuildings(features[0], origin);
 
-        const geom = feature.geometry;
-        if (geom.type !== 'Polygon') return;
+        let tallest = 0;
+        features.forEach(feature => {
+            const height = feature.properties?.height || currentBuildingHeight || DEFAULT_BUILDING_HEIGHT;
+            const ring = feature.geometry.coordinates[0];
+            if (!Array.isArray(ring) || ring.length < 4) return;
+            tallest = Math.max(tallest, height);
 
-        const height = feature.properties?.height || currentBuildingHeight || DEFAULT_BUILDING_HEIGHT;
-        const ring = geom.coordinates[0];
+            const shape = new THREE.Shape();
+            ring.forEach(([lng, lat], idx) => {
+                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
+                const px = x - origin[0];
+                const py = y - origin[1];
+                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            });
 
-        if (!Array.isArray(ring) || ring.length < 4) return;
+            const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
+            const material = new THREE.MeshLambertMaterial({
+                color: new THREE.Color(feature.properties?.color || 0x0d6efd),
+                transparent: true,
+                opacity: 0.8
+            });
+            rowHouse3D.modelGroup.add(new THREE.Mesh(extrudeGeom, material));
 
-        const shape = new THREE.Shape();
-        ring.forEach(([lng, lat], idx) => {
-            const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
-            const px = x - origin[0];
-            const py = y - origin[1];
-            if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
+            const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
+            rowHouse3D.modelGroup.add(new THREE.LineSegments(edgeGeom, edgeMaterial));
         });
 
-        const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
-        const material = new THREE.MeshLambertMaterial({ color: 0x0d6efd, transparent: true, opacity: 0.8 });
-        const mesh = new THREE.Mesh(extrudeGeom, material);
-        rowHouse3D.modelGroup.add(mesh);
-
-        // Add edges
-        const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
-        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-        const edges = new THREE.LineSegments(edgeGeom, edgeMaterial);
-        rowHouse3D.modelGroup.add(edges);
-
         // Fit camera
-        fitRowHouseCamera(height);
+        fitRowHouseCamera(tallest || DEFAULT_BUILDING_HEIGHT);
     }
 
     function fitRowHouseCamera(height = 20) {
@@ -1464,12 +1578,35 @@
                     <div id="rowhouse-controls">
                         <div id="rowhouse-info" data-i18n-attr="text"></div>
                         <div id="rowhouse-buttons" style="display: flex; justify-content: center;">
+                            <button class="btn btn-secondary" id="btn-rowhouse-regenerate" style="width: auto; padding: 8px 24px; display: none; margin-right: 10px;" data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                             <button class="btn btn-proposal" id="btn-rowhouse-done" style="width: auto; padding: 8px 24px;" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                         </div>
                     </div>
                 </div>
                 <div id="rowhouse-sidebar">
                     <h3 data-i18n-key="rowHouses.modal.parametersTitle">Parameters</h3>
+                    <div class="parameter-group">
+                        <label for="rowhouse-ruletype-select" data-i18n-key="rowHouses.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
+                        <select id="rowhouse-ruletype-select">
+                            <option value="exact" data-i18n-key="rowHouses.modal.labels.ruleTypeExact" data-i18n-attr="text">Exactly this height</option>
+                            <option value="max" data-i18n-key="rowHouses.modal.labels.ruleTypeMax" data-i18n-attr="text">At most this height</option>
+                            <option value="range" data-i18n-key="rowHouses.modal.labels.ruleTypeRange" data-i18n-attr="text">Between a minimum and this</option>
+                        </select>
+                    </div>
+                    <div class="parameter-group" id="rowhouse-minheight-group" style="display: none;">
+                        <label for="rowhouse-minheight-slider">
+                            <span data-i18n-key="rowHouses.modal.labels.minHeight" data-i18n-attr="text">Min Height (m):</span>
+                            <span id="rowhouse-minheight-value">0.0</span>
+                        </label>
+                        <input type="range" id="rowhouse-minheight-slider" min="0" max="80" value="0" step="0.5">
+                    </div>
+                    <div class="parameter-group">
+                        <label for="rowhouse-minplot-slider">
+                            <span data-i18n-key="rowHouses.modal.labels.minPlotArea" data-i18n-attr="text">Min Plot Size (m²):</span>
+                            <span id="rowhouse-minplot-value">${DEFAULT_ROW_MIN_PLOT_AREA_M2}</span>
+                        </label>
+                        <input type="range" id="rowhouse-minplot-slider" min="0" max="10000" value="${DEFAULT_ROW_MIN_PLOT_AREA_M2}" step="10">
+                    </div>
                     <div class="parameter-group">
                         <label for="rowhouse-length-slider">
                             <span data-i18n-key="rowHouses.modal.labels.length" data-i18n-attr="text">Length (m):</span>
@@ -1616,11 +1753,48 @@
                 // Height affects 3D extrusion and volume metric
                 if (generatedRowHouseFeature) {
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
-                    updateRowHouse3DScene(generatedRowHouseFeature);
-                    updateBuildingMetrics(generatedRowHouseFeature);
+                    syncRowRuleControls(); // the minimum rides on the ceiling
+                    displayRowHouseBuildingInModal(generatedRowHouseFeature);
                     autosaveRowHouseDraft();
                 }
             });
+
+            const rowRuleSelect = document.getElementById('rowhouse-ruletype-select');
+            if (rowRuleSelect) {
+                rowRuleSelect.value = rowRuleKind;
+                rowRuleSelect.addEventListener('change', function (e) {
+                    rowRuleKind = e.target.value;
+                    syncRowRuleControls();
+                    if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                });
+            }
+
+            const rowMinHeightSlider = document.getElementById('rowhouse-minheight-slider');
+            if (rowMinHeightSlider) {
+                rowMinHeightSlider.addEventListener('input', function (e) {
+                    rowMinHeightM = parseFloat(e.target.value);
+                    document.getElementById('rowhouse-minheight-value').textContent = rowMinHeightM.toFixed(1);
+                    if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                });
+            }
+
+            const rowMinPlotSlider = document.getElementById('rowhouse-minplot-slider');
+            if (rowMinPlotSlider) {
+                rowMinPlotSlider.addEventListener('input', function (e) {
+                    rowMinPlotAreaM2 = parseFloat(e.target.value);
+                    document.getElementById('rowhouse-minplot-value').textContent = rowMinPlotAreaM2.toString();
+                    if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                });
+            }
+
+            const rowRegenerate = document.getElementById('btn-rowhouse-regenerate');
+            if (rowRegenerate) {
+                // Only the seed moves: the massing, and every number read off it, stay put.
+                rowRegenerate.addEventListener('click', function () {
+                    rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+                    if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                });
+            }
 
             document.getElementById('rowhouse-rotate-counterclockwise')
                 .addEventListener('click', () => rotateRowHouseFootprint(5));
@@ -1682,6 +1856,13 @@
         currentBuildingLength = maxLength;
         currentBuildingWidth = maxLength / 2; // Start with 2:1 aspect ratio
         currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
+        rowRuleKind = DEFAULT_ROW_RULE_KIND;
+        rowMinHeightM = 0;
+        rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
+        rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+        rowUnits = [];
+        rowBuildOut = [];
+        rowExcluded = [];
         currentChamfer = DEFAULT_CHAMFER;
 
         // Reset position and rotation (baseRotation is set by calculateMaxBuildingDimensions)
@@ -1704,6 +1885,15 @@
             if (num(seed.offsetX) !== null) currentOffsetX = num(seed.offsetX);
             if (num(seed.offsetY) !== null) currentOffsetY = num(seed.offsetY);
             if (num(seed.rotation) !== null) currentRotation = num(seed.rotation);
+            // What the rule compels, and the variation it was saved with — restoring the seed is
+            // what makes a reopened design redraw the SAME terrace.
+            const savedRule = (seed.rule && typeof seed.rule === 'object') ? seed.rule : null;
+            if (savedRule) {
+                if (window.UrbanRuleVariation.RULE_KINDS.includes(savedRule.kind)) rowRuleKind = savedRule.kind;
+                if (num(savedRule.minHeightM) !== null) rowMinHeightM = num(savedRule.minHeightM);
+                if (num(savedRule.minPlotAreaM2) !== null) rowMinPlotAreaM2 = num(savedRule.minPlotAreaM2);
+            }
+            if (num(seed.seed) !== null) rowVariationSeed = num(seed.seed) >>> 0;
         }
         // Note: baseRotation is intentionally NOT reset here - it's set by calculateMaxBuildingDimensions
         // based on the longest side of the superparcel for consistent boundary checking
@@ -1734,6 +1924,14 @@
             chamferSlider.value = currentChamfer;
             document.getElementById('rowhouse-chamfer-value').textContent = currentChamfer.toFixed(1);
         }
+        const rowRuleSelectEl = document.getElementById('rowhouse-ruletype-select');
+        if (rowRuleSelectEl) rowRuleSelectEl.value = rowRuleKind;
+        const rowMinPlotEl = document.getElementById('rowhouse-minplot-slider');
+        if (rowMinPlotEl) {
+            rowMinPlotEl.value = rowMinPlotAreaM2;
+            document.getElementById('rowhouse-minplot-value').textContent = String(rowMinPlotAreaM2);
+        }
+        syncRowRuleControls();
 
         // Generate row house immediately
         setTimeout(() => {
@@ -1979,6 +2177,7 @@
         }
 
         const clonedFeature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
+        const clonedUnits = rowUnits.length ? JSON.parse(JSON.stringify(rowUnits)) : null;
         const context = {
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
@@ -1991,9 +2190,14 @@
                 offsetX: Number.isFinite(Number(currentOffsetX)) ? Number(currentOffsetX) : 0,
                 offsetY: Number.isFinite(Number(currentOffsetY)) ? Number(currentOffsetY) : 0,
                 rotation: Number.isFinite(Number(currentRotation)) ? Number(currentRotation) : 0,
-                typology: 'row'
+                typology: 'row',
+                // What the rule compels and the variation it was saved with, so reopening redraws
+                // the same terrace rather than a different one under the same name.
+                rule: currentRowRule(),
+                seed: rowVariationSeed
             },
-            buildingFeature: clonedFeature
+            buildingFeature: clonedUnits ? clonedUnits[0] : clonedFeature,
+            buildings: clonedUnits || [clonedFeature]
         };
 
         window.pendingRowHouseFromModal = clonedFeature;

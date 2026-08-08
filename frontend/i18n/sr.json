@@ -2084,7 +2084,14 @@
                 "gaps": "Broj otvora:",
                 "gapWidth": "Širina otvora (m):",
                 "wings": "Broj krila:",
-                "wingLength": "Dužina krila (m):"
+                "wingLength": "Dužina krila (m):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeExact": "Tačno ovu visinu",
+                "ruleTypeMax": "Najviše ovu visinu",
+                "ruleTypeRange": "Između minimuma i ove visine",
+                "minHeight": "Min. visina zgrade (m):",
+                "minPlotArea": "Najmanja površina parcele (m²):",
+                "minDepth": "Obavezna dubina od ulice (m):"
             },
             "helper": {
                 "adjust": "Podesite parametre klizačima da izmenite oblik zgrade.",
@@ -2104,7 +2111,12 @@
                 "defaultProposalDescription": "Predlog zgrade za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedSliver": "Na ovu parcelu pada samo krhotina bloka — premala da bude zgrada.",
+                "rangeExact": "{{buildings}} zgrada · donosi {{permitted}} m² BRGP-a",
+                "rangeBetween": "{{buildings}} zgrada · garantuje {{guaranteed}} – {{permitted}} m² BRGP-a",
+                "rangeMax": "{{buildings}} zgrada · dozvoljava 0 – {{permitted}} m² BRGP-a"
             },
             "handles": {
                 "gap": "Prevucite da pomerite otvor",
@@ -2142,7 +2154,8 @@
                 "uploadGeojson": "Učitaj GeoJSON",
                 "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
                 "uploadError": "Nije moguće pročitati datoteku."
-            }
+            },
+            "regenerate": "Regeneriši"
         }
     },
     "rowHouses": {
@@ -2160,7 +2173,13 @@
                 "rotation": "Zakreni tlocrt",
                 "circumference": "Obim (m):",
                 "area": "Površina (m²):",
-                "volume": "Zapremina (m³):"
+                "volume": "Zapremina (m³):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeExact": "Tačno ovu visinu",
+                "ruleTypeMax": "Najviše ovu visinu",
+                "ruleTypeRange": "Između minimuma i ove visine",
+                "minHeight": "Min. visina (m):",
+                "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
                 "adjust": "Prevuci tlocrt za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
@@ -2184,13 +2203,16 @@
                 "defaultProposalDescription": "Predlog niza kuća za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedSliver": "Na ovu parcelu pada samo krhotina niza — premala da bude kuća."
             },
             "warnings": {
                 "dissimilarParcels": "Kuće u nizu mogu se definisati na bilo kojim parcelama, ali {{count}} izabranih parcela znatno se razlikuju po veličini i obliku. I dalje će raditi — kuće u nizu obično idu na parcele sličnih veličina i oblika. Želite li da nastavite?",
                 "proceed": "Ipak nastavi",
                 "cancel": "Nazad"
-            }
+            },
+            "regenerate": "Regeneriši"
         }
     },
     "parcelBased": {
@@ -2206,14 +2228,23 @@
                 "maxFloors": "Maks. spratova:",
                 "minDistance": "Min. udaljenost od granica (m):",
                 "buildingCount": "Zgrade:",
-                "totalArea": "Ukupna površina osnove (m²):",
-                "totalVolume": "Ukupna zapremina (m³):",
-                "avgFloors": "Prosečno spratova:"
+                "totalArea": "Dozvoljena površina osnove (m²):",
+                "totalVolume": "Dozvoljena zapremina (m³):",
+                "avgFloors": "Spratova u primeru (pros.):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeMax": "Najviše ovoliko",
+                "ruleTypeRange": "Između minimuma i ovoga",
+                "ruleTypeExact": "Tačno ovoliko",
+                "minFloors": "Min. spratova:",
+                "minFootprint": "Min. površina osnove (m²):",
+                "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "maxFloors": "Maks. spratova: svaka zgrada dobija nasumičan broj spratova od 1 do ove vrednosti.",
+                "maxFloors": "Maks. spratova: dozvoljena gornja granica. Primer izgradnje varira od 1 sprata do nje.",
                 "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica parcele.",
-                "regenerate": "Klikni Regeneriši za novu nasumičnu varijaciju — broj spratova te veličina i položaj osnove unutar odmaka."
+                "regenerate": "Klikni Regeneriši za drugi primer izgradnje — broj spratova te veličina i položaj osnove unutar odmaka. Dozvoljene brojke iznad se nikad ne menjaju.",
+                "ruleType": "Šta pravilo obavezuje: najviše ovoliko (niko nije dužan da gradi), između minimuma i ovoga, ili tačno ovoliko (svi grade pun gabarit).",
+                "minPlotArea": "Najmanja površina parcele: na parcelama manjim od ove po ovom pravilu ne može da se gradi i prikazane su šrafirano. Prvo ih treba spojiti."
             },
             "messages": {
                 "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
@@ -2223,7 +2254,11 @@
                 "defaultProposalDescription": "Predlog po parceli za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedNoRoom": "Nakon odmaka na ovoj parceli ne ostaje mesta za gradnju.",
+                "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obavezuje — pravilo sebi ovde protivreči."
             }
         }
     },
@@ -2866,7 +2901,16 @@
             "solid": "Puno:",
             "neither": "Nijedno",
             "showAllParcels": "Prikaži sve parcele",
-            "trees": "Drveće"
+            "trees": "Drveće",
+            "plannedAs": "Planirano kao",
+            "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dozvoljava, jedan primer izgradnje po njemu, ili oboje",
+            "representationMassing": "Gabarit",
+            "representationMassingTooltip": "Gabarit — zapremina koju pravilo dozvoljava, ono što predlog zapravo propisuje",
+            "representationBuildOut": "Izgradnja",
+            "representationBuildOutTooltip": "Izgradnja — jedan primer onoga što bi se po pravilu stvarno moglo izgraditi",
+            "representationBoth": "Oboje",
+            "representationBothTooltip": "Oboje — primer izgradnje unutar dozvoljenog gabarita",
+            "reroll": "Nasumično promeni svaki primer izgradnje. Ne menja ništa u predlozima."
         },
         "overlay": {
             "rendering": "Iscrtavanje…",

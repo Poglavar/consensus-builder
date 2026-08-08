@@ -2054,7 +2054,14 @@
                 "gaps": "Number of gaps:",
                 "gapWidth": "Gap width (m):",
                 "wings": "Number of wings:",
-                "wingLength": "Wing length (m):"
+                "wingLength": "Wing length (m):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeExact": "Exactly this height",
+                "ruleTypeMax": "At most this height",
+                "ruleTypeRange": "Between a minimum and this",
+                "minHeight": "Min Building Height (m):",
+                "minPlotArea": "Min Plot Size (m²):",
+                "minDepth": "Must build from street (m):"
             },
             "helper": {
                 "adjust": "Adjust parameters using the sliders to modify the building shape.",
@@ -2074,7 +2081,12 @@
                 "defaultProposalDescription": "Building proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedSliver": "Only a splinter of the block falls on this plot — too small to be a building.",
+                "rangeExact": "{{buildings}} buildings · delivers {{permitted}} m² of floor area",
+                "rangeBetween": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
+                "rangeMax": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area"
             },
             "handles": {
                 "gap": "Drag to move gap",
@@ -2112,7 +2124,8 @@
                 "uploadGeojson": "Upload GeoJSON",
                 "uploadNoPolygon": "No usable polygon found in that file.",
                 "uploadError": "Could not read that file."
-            }
+            },
+            "regenerate": "Regenerate"
         }
     },
     "rowHouses": {
@@ -2130,7 +2143,13 @@
                 "rotation": "Rotate footprint",
                 "circumference": "Circumference (m):",
                 "area": "Area (m²):",
-                "volume": "Volume (m³):"
+                "volume": "Volume (m³):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeExact": "Exactly this height",
+                "ruleTypeMax": "At most this height",
+                "ruleTypeRange": "Between a minimum and this",
+                "minHeight": "Min Height (m):",
+                "minPlotArea": "Min Plot Size (m²):"
             },
             "helper": {
                 "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.",
@@ -2154,13 +2173,16 @@
                 "defaultProposalDescription": "Row houses proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedSliver": "Only a splinter of the row falls on this plot — too small to be a house."
             },
             "warnings": {
                 "dissimilarParcels": "Row houses can be defined on any parcels, but the {{count}} selected parcels vary a lot in size and shape. It will still work — row houses typically sit on similar-sized, similar-shaped parcels. Do you want to proceed?",
                 "proceed": "Proceed anyway",
                 "cancel": "Go back"
-            }
+            },
+            "regenerate": "Regenerate"
         }
     },
     "parcelBased": {
@@ -2176,14 +2198,23 @@
                 "maxFloors": "Max Floors:",
                 "minDistance": "Min Distance from Borders (m):",
                 "buildingCount": "Buildings:",
-                "totalArea": "Total Footprint (m²):",
-                "totalVolume": "Total Volume (m³):",
-                "avgFloors": "Avg Floors:"
+                "totalArea": "Permitted Footprint (m²):",
+                "totalVolume": "Permitted Volume (m³):",
+                "avgFloors": "Example Floors (avg):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeMax": "At most this",
+                "ruleTypeRange": "Between a minimum and this",
+                "ruleTypeExact": "Exactly this",
+                "minFloors": "Min Floors:",
+                "minFootprint": "Min Ground Floor (m²):",
+                "minPlotArea": "Min Plot Size (m²):"
             },
             "helper": {
-                "maxFloors": "Max Floors: each building gets a random number of floors from 1 to this value.",
+                "maxFloors": "Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.",
                 "minDistance": "Min Distance: buildings keep at least this distance from parcel borders.",
-                "regenerate": "Click Regenerate for a new random variation — floor counts, footprint sizes and positions within the setbacks."
+                "regenerate": "Click Regenerate for another example build-out — floor counts, footprint sizes and positions within the setbacks. The permitted figures above never change.",
+                "ruleType": "What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).",
+                "minPlotArea": "Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",
@@ -2193,7 +2224,11 @@
                 "defaultProposalDescription": "Parcel-based proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedNoRoom": "The setback leaves no room to build on this plot.",
+                "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
             }
         }
     },
@@ -2836,7 +2871,16 @@
             "solid": "Solid:",
             "neither": "Neither",
             "showAllParcels": "Show all parcels",
-            "trees": "Trees"
+            "trees": "Trees",
+            "plannedAs": "Planned as",
+            "plannedAsTooltip": "Planned as — draw the volume the rule permits, one example of what could be built under it, or both",
+            "representationMassing": "Massing",
+            "representationMassingTooltip": "Massing — the volume the rule permits, which is what the proposal asserts",
+            "representationBuildOut": "Build-out",
+            "representationBuildOutTooltip": "Build-out — one example of what could actually be built under the rule",
+            "representationBoth": "Both",
+            "representationBothTooltip": "Both — the example build-out standing inside the permitted volume",
+            "reroll": "Randomize every example build-out. Changes nothing in the proposals."
         },
         "overlay": {
             "rendering": "Rendering…",
