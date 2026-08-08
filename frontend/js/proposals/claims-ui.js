@@ -136,7 +136,7 @@
             if (!key || key.indexOf('#') !== -1) return; // derived — not a cadastral parcel
             if (!layer || typeof layer.toGeoJSON !== 'function') return;
             try {
-                const gj = layer.toGeoJSON();
+                const gj = layer.toGeoJSON(false);
                 const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                 if (!feature || !feature.geometry || !/Polygon/.test(feature.geometry.type || '')) return;
                 const baseStyle = { color: '#b91c1c', weight: 1.4, opacity: 0.9, fillColor: '#fef3c7', fillOpacity: 0.28 };

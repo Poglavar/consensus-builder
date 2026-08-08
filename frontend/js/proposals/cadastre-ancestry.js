@@ -2,6 +2,15 @@
 // base-ancestry work — the logic lives in the pure plan-order.js; this file just reads the live
 // parcel index and hands it over.
 //
+// Every read here is `toGeoJSON(false)`, and the `false` is load-bearing: Leaflet rounds coordinates
+// to 6 decimals by default, which is ~8 cm of longitude and ~11 cm of latitude at Zagreb's latitude.
+// Cutting itself is exact — turf reuses the shared vertices, so difference() then intersect() against
+// the cutter measures 0 — but difference() also INTERPOLATES new vertices where the cutter crosses a
+// parcel edge, and those points have no twin on the other polygon to round with. Rounding drifts them
+// off the shared line, which is what left 0.3-1.8 m2 slivers between a corridor and the remainders it
+// cut (measured: 0 m2 unrounded vs 2.478 m2 rounded, on the same cut). Round for transport or display
+// if you must; never in the geometry pipeline.
+//
 // A formation stores only flat cadastral anchors. Geometry resolves the current live pieces at
 // replay time; derived ids are local tessellation output and never become prerequisites.
 //
@@ -32,7 +41,7 @@
                 if (!key || (typeof global.isSyntheticParcelId === 'function' && global.isSyntheticParcelId(key))) return;
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
                 try {
-                    const gj = layer.toGeoJSON();
+                    const gj = layer.toGeoJSON(false);
                     const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                     if (feature && feature.geometry && /Polygon/.test(feature.geometry.type || '')) {
                         out.push({ id: key, feature });
@@ -64,7 +73,7 @@
                 }
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
                 try {
-                    const gj = layer.toGeoJSON();
+                    const gj = layer.toGeoJSON(false);
                     const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                     if (feature && feature.geometry && /Polygon/.test(feature.geometry.type || '')) {
                         out.push({ id: key, feature });

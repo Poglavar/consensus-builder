@@ -66,6 +66,46 @@ describe('base-parcel ancestry', () => {
     });
 });
 
+// The ancestry floor separates a REAL take from coordinate-rounding noise, and it belongs at the
+// measured noise, not at a judgement about what size of take is worth registering. Measured on
+// Zagreb fabric (2026-08-08): rounding noise between abutting cadastral parcels tops out near
+// 0.1 m², while a corridor genuinely covering 0.755 m² of parcel 6804/5 was DISCARDED by the old
+// 2 m² floor — so the road never cut that parcel and its corridor lay on ground someone else still
+// owned, which then made the parcel unusable (taking it whole took road surface with it).
+describe('ancestry floor sits at the measured noise, not above real takes', () => {
+    const LAT = 45.80, LON = 15.96;
+    const mLat = m => m / 111320;
+    const mLon = m => m / (111320 * Math.cos(LAT * Math.PI / 180));
+    const rect = (x0, y0, x1, y1) => turf.polygon([[
+        [LON + mLon(x0), LAT + mLat(y0)],
+        [LON + mLon(x1), LAT + mLat(y0)],
+        [LON + mLon(x1), LAT + mLat(y1)],
+        [LON + mLon(x0), LAT + mLat(y1)],
+        [LON + mLon(x0), LAT + mLat(y0)]
+    ]]);
+    const overlapOf = (a, b) => { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; };
+    const parcel = () => rect(0, 0, 40, 40);
+
+    it('registers a genuine sub-2 m² take (the 6804/5 class)', () => {
+        // A corridor edge lying 2 cm inside a 40 m parcel boundary: ~0.8 m² of real ground.
+        const corridor = rect(-20, 0, 0.02, 40);
+        const overlap = overlapOf(parcel(), corridor);
+        expect(overlap).toBeGreaterThan(0.25);
+        expect(overlap).toBeLessThan(2); // the old 2 m² floor silently discarded exactly this
+        const anc = planOrder.computeBaseAncestry(corridor, [{ id: 'HR-339270-6804/5', feature: parcel() }]);
+        expect(anc.map(a => a.id)).toEqual(['HR-339270-6804/5']);
+    });
+
+    it('still ignores float-scale noise along a shared border', () => {
+        // 2.5 mm of overlap along the same 40 m border: ~0.1 m², the measured noise ceiling.
+        const neighbour = rect(-40, 0, 0.0025, 40);
+        const overlap = overlapOf(parcel(), neighbour);
+        expect(overlap).toBeLessThan(0.25);
+        const anc = planOrder.computeBaseAncestry(neighbour, [{ id: 'HR-339270-6804/5', feature: parcel() }]);
+        expect(anc).toEqual([]);
+    });
+});
+
 describe('apply order', () => {
     it('orders a shuffled plan identically without consulting geometry', () => {
         const shuffled = proposals().reverse();

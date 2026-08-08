@@ -109,7 +109,7 @@ function focusMapOnSharedProposal(proposal, payload) {
 }
 
 function shareAppliedProposals() {
-    showSharePlanModal();
+    showSharePlanPanel();
 }
 
 function shareSingleProposal(proposalIdOrProposal) {

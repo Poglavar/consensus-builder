@@ -20,7 +20,20 @@
 
     // Below this an intersection is shared-border noise from coordinate rounding, not a real
     // relationship. Two parcels that merely abut produce slivers of a few cm².
-    const MIN_INTERSECTION_M2 = 2;
+    //
+    // The floor is the MEASURED noise, not a judgement about what size of take "matters". Measured
+    // on real Zagreb fabric (2026-08-08): across 20,001 bbox-adjacent cadastral pairs only 8 overlap
+    // at all — three at 0.001 m², three at 0.100 m², and two genuine data defects at 1577/1859 m².
+    // So pure rounding noise tops out around 0.1 m², and 0.25 gives 2.5x headroom over it.
+    //
+    // It used to be 2 m², which is 20x above that noise floor, and it silently DISCARDED real
+    // takes: a corridor genuinely covering 0.755 m² of parcel 6804/5 never registered the parcel,
+    // so the road never cut it and the corridor simply lay on top of ground someone else still
+    // owned. That unregistered double-cover is what forced a string of tolerance exceptions
+    // elsewhere (the live-fabric overlap allowance, the severance genuine-overlap guard), and it
+    // made the parcel unusable: taking it whole for a square took road surface with it, which the
+    // severance test — correctly — read as cutting the road in two. Register the take instead.
+    const MIN_INTERSECTION_M2 = 0.25;
 
     // HR-339270-823/1#p-road-2#p-other-1  ->  HR-339270-823/1
     // Derived ids can nest, so strip repeatedly until the id stops changing.

@@ -310,7 +310,7 @@ async function detectRoadsFromWFS() {
             const parcelsInView = parcelLayer.getLayers().filter(layer => {
                 try { return map.getBounds().intersects(layer.getBounds()); } catch (_) { return false; }
             });
-            const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON() }));
+            const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON(false) }));
 
             let processed = 0;
             let marked = 0;
@@ -344,7 +344,7 @@ async function detectRoadsFromWFS() {
 
                     // Loosen match: consider a match if either polygon overlaps the other by >= 90%
                     if (overlapA >= 0.9 || overlapB >= 0.9) {
-                        const parcelFeature = pe.layer?.feature || (typeof pe.layer?.toGeoJSON === 'function' ? pe.layer.toGeoJSON() : null);
+                        const parcelFeature = pe.layer?.feature || (typeof pe.layer?.toGeoJSON === 'function' ? pe.layer.toGeoJSON(false) : null);
                         const parcelId = resolveParcelId(parcelFeature);
                         if (!parcelId) continue;
                         addRoadParcel(parcelId);
@@ -1009,7 +1009,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
         }
 
         const parcelId = resolveParcelId(parcel.feature);
-        const parcelGeoJSON = parcel.toGeoJSON();
+        const parcelGeoJSON = parcel.toGeoJSON(false);
 
         // Skip shape analysis and use only OSM data for detection
         let isRoad = false;
@@ -1195,7 +1195,7 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
             });
 
             for (const pe of candidates) {
-                const parcelGeoJSON = pe.layer.toGeoJSON();
+                const parcelGeoJSON = pe.layer.toGeoJSON(false);
                 let parcelBuffer;
                 try {
                     parcelBuffer = turf.buffer(parcelGeoJSON, 2, { units: 'meters' });

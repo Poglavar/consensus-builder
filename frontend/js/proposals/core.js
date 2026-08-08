@@ -258,7 +258,7 @@ function resolveProposalParcelsInViewport(proposalIdSet /* , proposal */) {
     forEachProposalParcelInViewport(proposalIdSet, (layer) => {
         if (!layer || typeof layer.toGeoJSON !== 'function') return;
         try {
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (feature) out.push(feature);
         } catch (_) { /* ignore */ }
     });

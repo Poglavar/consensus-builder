@@ -38,6 +38,13 @@
             ))
             : null;
 
+        // Share-plan panel open: the map is pan/zoom only. Every fabric click is inert — proposals
+        // included (highlighting happens from the panel's rows, never from the map).
+        if (global.sharePlanMode) {
+            if (e) L.DomEvent.stopPropagation(e);
+            return;
+        }
+
         // Proposal browse mode (the proposals list is open): the map is inert to everything EXCEPT
         // proposals. A click on a parcel carrying an applied proposal selects that proposal (which
         // opens its details and closes the list — see selectAndHighlightProposal); a click on any

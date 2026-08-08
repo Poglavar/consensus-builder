@@ -166,7 +166,7 @@
         // Try toGeoJSON as last resort
         if (typeof layer.toGeoJSON === 'function') {
             try {
-                const geojson = layer.toGeoJSON();
+                const geojson = layer.toGeoJSON(false);
                 if (geojson && geojson.type === 'Feature' && geojson.geometry) return geojson;
                 if (geojson && geojson.type === 'FeatureCollection' && Array.isArray(geojson.features) && geojson.features.length > 0) {
                     return geojson.features[0];

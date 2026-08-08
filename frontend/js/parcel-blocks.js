@@ -2187,14 +2187,14 @@ function animateFloodfillFromSelected() {
                     }
 
                     if (reason) {
-                        L.geoJSON(current.toGeoJSON(), { style: rejectedStyle, interactive: false }).addTo(map);
+                        L.geoJSON(current.toGeoJSON(false), { style: rejectedStyle, interactive: false }).addTo(map);
                         addRejectionLabel(current, reason);
                         setTimeout(animateStep, 100);
                         return;
                     }
 
                     blockParcels.push(current);
-                    L.geoJSON(current.toGeoJSON(), { style: acceptedStyle, interactive: false }).addTo(map);
+                    L.geoJSON(current.toGeoJSON(false), { style: acceptedStyle, interactive: false }).addTo(map);
 
                     const neighbors = findNeighbors(current, neighborMap);
                     for (const neighbor of neighbors) {
@@ -2301,7 +2301,7 @@ function highlightNeighbors(parcel) {
         const isNeighborRoad = neighborId ? isRoad(neighborId) : false;
 
         // Create a highlight layer from the neighbor's GeoJSON
-        const highlightLayer = L.geoJSON(neighbor.toGeoJSON(), {
+        const highlightLayer = L.geoJSON(neighbor.toGeoJSON(false), {
             style: isNeighborRoad ? roadNeighborStyle : normalNeighborStyle,
             interactive: false
         }).addTo(map);

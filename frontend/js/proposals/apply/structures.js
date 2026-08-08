@@ -296,21 +296,17 @@
                 // A PARTIAL parcel by definition has ground outside the body, so a null
                 // difference here is a failed computation, never "fully consumed" — swallowing
                 // it used to take the parcel whole with no outside piece minted (dead ground).
-                // Degenerate rings make turf's sweep-line throw; truncated coordinates usually
-                // heal it; if not, the cut fails loudly via the authoring refusal below.
+                // A retry on coordinates truncated to 7 decimals (~1.1 cm) used to sit here; it is
+                // gone, because quantizing coordinates is what manufactures the degenerate rings
+                // it was meant to survive, and a cut computed at centimetre precision is a silently
+                // wrong answer. A failure here fails loudly via the authoring refusal below.
                 let outside = null;
                 try {
                     outside = turfRef.difference(
                         { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint);
-                } catch (_) { outside = null; }
-                if ((!outside || !outside.geometry) && typeof turfRef.truncate === 'function') {
-                    try {
-                        const at = turfRef.truncate(
-                            { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(entry.feature.geometry)) },
-                            { precision: 7, mutate: true });
-                        const bt = turfRef.truncate(JSON.parse(JSON.stringify(footprint)), { precision: 7, mutate: true });
-                        outside = turfRef.difference(at, bt);
-                    } catch (_) { outside = null; }
+                } catch (error) {
+                    console.error('[_formStructureParcel] partial-cut difference failed for', String(partial.id), error);
+                    outside = null;
                 }
                 if (!outside || !outside.geometry) { cutsOk = false; return; }
                 const parts = [];

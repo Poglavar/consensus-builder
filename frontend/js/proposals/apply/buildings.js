@@ -400,20 +400,23 @@
         const allocateForeignIndex = typeof this._createForeignIndexAllocator === 'function'
             ? this._createForeignIndexAllocator()
             : null;
-        // A degenerate ring makes turf's sweep-line throw; retrying on truncated coordinates
-        // usually heals it. `threw` distinguishes a real "fully consumed" (null difference)
-        // from a failed computation.
+        // `threw` distinguishes a real "fully consumed" (null difference) from a failed
+        // computation, so the caller can refuse instead of hiding ground it never re-minted.
+        //
+        // There used to be a retry here on coordinates truncated to 7 decimals (~1.1 cm). It is
+        // gone: quantizing coordinates is what MANUFACTURES degenerate rings in the first place
+        // (a coarse grid collapses near-coincident points into identical ones), and it is the same
+        // rounding that used to leave sliver debris along every cut. Silently returning a cut
+        // computed at centimetre precision is a wrong answer wearing a right answer's clothes.
+        // A throw here is a real failure and is reported as one.
         const safeDifference = (aGeometry, bFeature) => {
             const a = { type: 'Feature', properties: {}, geometry: aGeometry };
-            try { return { result: turfRef.difference(a, bFeature), threw: false }; } catch (_) { }
             try {
-                if (typeof turfRef.truncate === 'function') {
-                    const at = turfRef.truncate(JSON.parse(JSON.stringify(a)), { precision: 7, mutate: true });
-                    const bt = turfRef.truncate(JSON.parse(JSON.stringify(bFeature)), { precision: 7, mutate: true });
-                    return { result: turfRef.difference(at, bt), threw: false };
-                }
-            } catch (_) { }
-            return { result: null, threw: true };
+                return { result: turfRef.difference(a, bFeature), threw: false };
+            } catch (error) {
+                console.error('[_formBuildingParcel] difference failed on host geometry', error);
+                return { result: null, threw: true };
+            }
         };
         let cutFailedHostId = null;
         hostFeatures.forEach(hostFeature => {

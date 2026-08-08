@@ -283,7 +283,7 @@ function getParcelFeatureForHighlight(parcelId, proposalContext = null, options 
             ? (multiParcelSelection.parcelIdIndex && multiParcelSelection.parcelIdIndex.get(parcelId.toString()))
             : multiParcelSelection.findParcelById(parcelId);
         if (layer && typeof layer.toGeoJSON === 'function') {
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (proposal) {
                 const cache = buildProposalFeatureCache(proposal);
                 if (cache && cache.parcelsById) {
@@ -690,6 +690,9 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         });
         return;
     }
+    // Share-plan mode: no surface may select a proposal or open its details — the panel's own
+    // row hover/click highlight is the only proposal interaction while the plan is being composed.
+    if (window.sharePlanMode) return;
     console.debug('[selectAndHighlightProposal] Called', {
         proposalIdOrHash,
         parcelId,

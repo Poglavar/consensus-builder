@@ -829,7 +829,7 @@ const ProposalManager = {
                     geoJsonFeature = feature.feature;
                 } else if (feature.toGeoJSON && typeof feature.toGeoJSON === 'function') {
                     // It's a Leaflet layer with toGeoJSON method
-                    geoJsonFeature = feature.toGeoJSON();
+                    geoJsonFeature = feature.toGeoJSON(false);
                 }
 
                 // Extract only GeoJSON properties (type, properties, geometry)
@@ -1498,7 +1498,7 @@ const ProposalManager = {
             let ownerId = '';
             try {
                 const layer = byId && typeof byId.get === 'function' ? byId.get(id) : null;
-                const gj = layer && typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON() : null;
+                const gj = layer && typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON(false) : null;
                 const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                 if (feature && feature.properties && feature.properties.proposalId) {
                     ownerId = String(feature.properties.proposalId);
@@ -2454,11 +2454,16 @@ const ProposalManager = {
 
         // One partition means selected live parents may touch at borders but may not overlap in
         // area. Refuse a corrupted fabric instead of multiplying its overlap into another replay.
-        // Tolerance: turf-cut neighbours carry kerf-level debris at shared boundaries (measured
-        // 0.8–2 m² on real fabric — e.g. a corridor run grazing tiny 6804/5 by 0.8 m²) that no
-        // replay can remove; refusing at epsilon made such ground permanently unusable. Genuine
-        // double-cover is tens of m² and up — 5 m² separates the classes.
-        const OVERLAP_REFUSAL_M2 = 5;
+        //
+        // This was 5 m² to tolerate "kerf" — sliver debris along the boundaries turf had just cut.
+        // That debris was never turf's: it came from reading geometry back through Leaflet's
+        // 6-decimal rounding (see cadastre-ancestry.js). With the fabric read at full precision the
+        // debris is GONE, measured, not assumed: across the whole live fabric (4,656 parcels,
+        // ~21k adjacent pairs) exactly zero overlaps involve a parcel we cut, and the only two that
+        // remain are defects in the cadastral source itself, at 1577 and 1855 m². So the floor goes
+        // back to the measured-noise scale, and a genuine double-cover is caught instead of waved
+        // through under 5 m².
+        const OVERLAP_REFUSAL_M2 = 0.25;
         try {
             if (typeof turf !== 'undefined' && typeof turf.intersect === 'function' && typeof turf.area === 'function') {
                 for (let i = 0; i < features.length; i += 1) {

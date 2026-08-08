@@ -7,6 +7,13 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Below this, two polygons are not meaningfully related — the same measured-noise floor
+    // plan-order.js uses for ancestry. It is NOT a tolerance for cut debris: the fabric is read at
+    // full precision now (see cadastre-ancestry.js), so ground a road actually cut leaves exactly
+    // zero overlap and mere adjacency measures exactly zero. Used below to tell a real take of
+    // corridor ground from an abutting one, which must never be trimmed.
+    const MIN_REAL_OVERLAP_M2 = 0.25;
+
     return {
     // §15b (decision 2026-08-06): one partition, latest wins — the taker AMENDS the taken.
     // After a formation successfully takes ground, every OTHER applied formation whose plan
@@ -106,7 +113,7 @@
                             const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: corridorClaim });
                             overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
                         } catch (_) { overlapM2 = 0; }
-                        if (overlapM2 < 0.5) continue;
+                        if (overlapM2 < MIN_REAL_OVERLAP_M2) continue;
                     }
                     const centerlineTaking = typeof formationEdit.roadCenterlineTaking === 'function'
                         ? formationEdit.roadCenterlineTaking(roadDef, taken, ctx)
@@ -353,7 +360,7 @@
                     console.warn('[_trimRoadDefinitionByTaking] overlap test failed for', String(victim.proposalId), '— not trimming without evidence of a take');
                     return null;
                 }
-                if (overlapM2 < 0.5) return null;
+                if (overlapM2 < MIN_REAL_OVERLAP_M2) return null;
             }
             const trimCtx = {
                 lineSplit: (line, polygon) => turfRef.lineSplit(line, polygon),

@@ -642,7 +642,7 @@
                 } catch (_) { }
             }
 
-            const featureRef = layer.feature || (typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON() : null);
+            const featureRef = layer.feature || (typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON(false) : null);
             if (!featureRef) {
                 return;
             }
@@ -1434,7 +1434,7 @@
         for (let idx = 0; idx < layers.length; idx++) {
             const layer = layers[idx];
             if (!layer || typeof layer.toGeoJSON !== 'function') continue;
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (!isPolygonGeometry(feature)) continue;
             const candidateBbox = computeFeatureBbox(feature);
             let intersects = false;
@@ -2883,7 +2883,7 @@
                 intersects = layerBounds && layerBounds.isValid && layerBounds.isValid() && layerBounds.intersects(bounds);
             } catch (_) { }
             if (!intersects) return;
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (!isPolygonGeometry(feature)) return;
             if (!isRoadParcelProperties(feature.properties || {})) return;
             features.push(cloneFeatureSafely(feature));
