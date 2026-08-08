@@ -370,24 +370,26 @@
                         type: 'MultiPolygon',
                         coordinates: severTestPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                     }));
-            const severedRoad = (typeof this._appliedRoadSeveredByTaking === 'function')
-                ? this._appliedRoadSeveredByTaking(severTestGround, idLabel) : null;
-            if (severedRoad) {
-                const roadName = severedRoad.title || severedRoad.name || severedRoad.proposalId;
-                const message = `Cannot apply the ${sp.kind}: it would cut the applied road "${roadName}" apart. Unapply or edit that road first.`;
+            const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
+                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel) : null;
+            if (roadHit) {
+                const road = roadHit.proposal;
+                const roadName = road.title || road.name || road.proposalId;
+                const message = `Cannot apply the ${sp.kind}: it would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is built over a street — move it clear, or unapply that road first.`;
                 if (typeof updateStatus === 'function') updateStatus(message);
                 try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
                 try {
                     this._setLastApplyFailure(idLabel, {
-                        code: 'structure-severs-road',
+                        code: 'structure-over-road',
                         message,
-                        roadProposalId: String(severedRoad.proposalId || '')
+                        roadProposalId: String(road.proposalId || ''),
+                        overlapM2: roadHit.overlapM2
                     });
                 } catch (_) { }
                 return { ok: false };
             }
         } catch (severError) {
-            console.warn('[_formStructureParcel] road-severance pre-check failed', severError);
+            console.warn('[_formStructureParcel] road-overlap pre-check failed', severError);
         }
         const cityAgentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
         const cityOwnership = { owners: [{ name: 'City', ownerLabel: 'City', percentageShare: 100, actualShareText: '100%' }] };
@@ -528,19 +530,17 @@
                             type: 'MultiPolygon',
                             coordinates: takenPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                         }));
-                this._amendAppliedPlansByTaking(proposalData, takenGround);
             } catch (amendError) {
                 console.warn('[_formStructureParcel] §15b amend pass failed', amendError);
             }
-            // Corridor pieces among the taken ground: the amend pass above trimmed the owning
-            // road's centerline (§15b, _trimRoadDefinitionByTaking) — this is a breadcrumb, not
-            // a gap warning.
+            // Corridor ground among what this structure took means the no-build-over-a-street
+            // guard did not fire — nothing may stand on a road, so this is a bug, not a note.
             try {
                 takenFeatures.forEach(feature => {
                     if (feature && feature.properties && feature.properties.isCorridor === true) {
-                        console.info('[§15b] structure consumed corridor ground —',
+                        console.error('[road] structure consumed corridor ground —',
                             String(_getParcelIdFromFeature(feature)),
-                            '— the owning road was trimmed by the amend pass');
+                            '— nothing may be built over a street; the pre-check was bypassed');
                     }
                 });
             } catch (_) { }

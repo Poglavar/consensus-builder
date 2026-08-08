@@ -53,86 +53,52 @@
         return null;
     },
 
-    // Ruling 2026-08-07: nothing may DISCONNECT an applied road. A non-road take may trim a
-    // road's end (footprint shrinks, stays one piece), but no editing gesture legitimately
-    // severs one — callers run this BEFORE mutating and refuse the apply on a hit. Returns
-    // the first applied road proposal the taking would sever (or wholly consume), else null.
-    _appliedRoadSeveredByTaking(takenGeometry, excludeProposalId) {
+    // A road, once placed, IS a parcel, and nothing else may be built on it. Not "may not cut it
+    // in two" — may not stand on it at all: a square laid across a street, a building overhanging
+    // the carriageway, a park swallowing a junction are all the same mistake, and the fabric has no
+    // way to represent two proposals owning the same ground.
+    //
+    // This replaces a narrower rule that refused only takes which DISCONNECTED a road, measured by
+    // trimming the road's CENTERLINE. That leaked the centerline into a decision the parcel owns:
+    // a road whose parcel no longer follows its centerline — one shaped by an edit, a migration or
+    // drawn by hand — was judged on a line that is not its ground. The test is now the parcel
+    // itself, so a derived corridor and a hand-drawn polygon behave identically.
+    //
+    // Roads still take from everything else; this is the one direction that is closed. Returns
+    // { proposal, overlapM2 } for the first applied road the taking would stand on, else null.
+    _appliedRoadOverlappedByTaking(takenGeometry, excludeProposalId) {
         try {
-            const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
             const turfRef = (typeof turf !== 'undefined') ? turf : null;
-            if (!formationEdit || typeof formationEdit.severanceVerdict !== 'function' || !turfRef) return null;
-            if (!takenGeometry) return null;
+            if (!turfRef || !takenGeometry) return null;
             const taken = takenGeometry.type === 'Feature'
                 ? takenGeometry
                 : { type: 'Feature', properties: {}, geometry: takenGeometry };
             if (!taken.geometry) return null;
-            // buffer is REQUIRED: roadCenterlineTaking expands the taking by the victim's
-            // half-width, and without it this pre-check trimmed an under-sized taking, said
-            // "not severed", and the amend pass (which does buffer) then disconnected the
-            // road anyway — a square take swallowed 174 m of a road this check had approved.
-            const ctx = {
-                area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-                intersectionArea: (a, b) => {
-                    try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
-                },
-                difference: (a, b) => { try { return turfRef.difference(a, b); } catch (_) { return null; } },
-                buffer: (feature, meters) => {
-                    try { return turfRef.buffer(feature, meters, { units: 'meters', steps: 8 }); } catch (_) { return feature; }
-                }
-            };
             const excludeKey = excludeProposalId === undefined || excludeProposalId === null
                 ? '' : String(excludeProposalId);
             const all = (typeof proposalStorage !== 'undefined' && proposalStorage
                 && typeof proposalStorage.getAllProposals === 'function')
                 ? proposalStorage.getAllProposals() : [];
-            const trimCtx = {
-                lineSplit: (line, polygon) => turfRef.lineSplit(line, polygon),
-                pointInPolygon: (point, polygon) => turfRef.booleanPointInPolygon(point, polygon),
-                lengthM: line => { try { return turfRef.length(line, { units: 'kilometers' }) * 1000; } catch (_) { return 0; } }
-            };
             for (const p of all) {
                 if (!p) continue;
                 if (excludeKey && String(p.proposalId) === excludeKey) continue;
-                const roadDef = p.roadProposal && p.roadProposal.definition;
-                if (!roadDef) continue;
+                if (!(p.roadProposal && p.roadProposal.definition)) continue;
                 if (typeof isProposalCurrentlyApplied === 'function' && !isProposalCurrentlyApplied(p)) continue;
-                // The honest severance test is the SAME trim the amendment would run: a corridor
-                // is wide, so its polygon can stay connected through an edge sliver while the
-                // centerline — the road itself — splits in two. Gov-plan roads (no centerline)
-                // keep the polygon-footprint verdict.
-                const segments = (typeof corridorCenterlineOf === 'function') ? corridorCenterlineOf(roadDef) : [];
-                if (segments.length && typeof formationEdit.trimCenterlineByTaking === 'function'
-                    && typeof turfRef.lineSplit === 'function' && typeof turfRef.booleanPointInPolygon === 'function') {
-                    // Same genuine-overlap guard as the trim itself: adjacency is not a take,
-                    // and the half-width buffer must never manufacture one.
-                    const corridorClaim = roadDef.polygon || this._takingFootprintOf(p);
-                    if (corridorClaim) {
-                        let overlapM2 = 0;
-                        try {
-                            const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: corridorClaim });
-                            overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
-                        } catch (_) { overlapM2 = 0; }
-                        if (overlapM2 < MIN_REAL_OVERLAP_M2) continue;
-                    }
-                    const centerlineTaking = typeof formationEdit.roadCenterlineTaking === 'function'
-                        ? formationEdit.roadCenterlineTaking(roadDef, taken, ctx)
-                        : taken;
-                    const trim = formationEdit.trimCenterlineByTaking(segments, centerlineTaking, trimCtx);
-                    if (!trim || !trim.changed) continue;
-                    const remaining = trim.segments.map(piece => piece.points);
-                    if (remaining.length === 0) return p; // whole road consumed
-                    if (typeof formationEdit.corridorComponents === 'function'
-                        && formationEdit.corridorComponents(remaining).length > 1) return p;
-                    continue; // an end/edge trim that leaves one connected stretch is legal
-                }
-                const footprint = this._takingFootprintOf(p);
-                if (!footprint) continue;
-                const verdict = formationEdit.severanceVerdict(null, footprint, taken, ctx);
-                if (verdict && verdict.verdict === 'severed') return p;
+                // The road's PARCEL: its stored polygon when it has one, the corridor it would cut
+                // otherwise. Same geometry the cut consumes, so the guard cannot disagree with it.
+                const claim = this._takingFootprintOf(p);
+                if (!claim) continue;
+                let overlapM2 = 0;
+                try {
+                    const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: claim });
+                    overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
+                } catch (_) { overlapM2 = 0; }
+                // Abutting a street is normal composition and measures exactly zero now that the
+                // fabric is read at full precision; anything above the noise floor is a real take.
+                if (overlapM2 >= MIN_REAL_OVERLAP_M2) return { proposal: p, overlapM2 };
             }
         } catch (error) {
-            console.warn('[_appliedRoadSeveredByTaking] severance pre-check failed', error);
+            console.warn('[_appliedRoadOverlappedByTaking] road-overlap pre-check failed', error);
         }
         return null;
     },
@@ -162,291 +128,23 @@
         } catch (_) { }
         return held;
     },
+    // §15b's amend pass lived here: when a formation took ground, every other applied formation
+    // whose plan still claimed it had its authored plots clipped. It is gone, and deliberately.
+    //
+    // The live fabric is a DERIVATION (§15c) — cadastre, then the applied formations in order, each
+    // cutting what stands — replayed from the authored records. A derivation must not rewrite its
+    // own inputs, and that is exactly what amending a victim's stored plan did: every rebuild
+    // re-ran every taker, so a readjustment's plan shrank on each pass. Measured on UPU Borovje:
+    // 103,145 m² of authored plots down to 81,271, until it resolved 79 fragmented parents instead
+    // of 29 whole parcels and could not apply at all — invisible, while its record still read
+    // "applied" from the first pass.
+    //
+    // Nothing is lost by removing it, because amendment never resolved the conflict anyway. A
+    // readjustment is refused on derived ground, so it can never be LATER than a taker on the same
+    // ground; when it is earlier it mints first and the taker consumes what it needs — the vertical
+    // stack, not a competing claim. Order decides. And since nothing may take road ground, a
+    // readjustment was the only victim the pass had left.
 
-    _amendAppliedPlansByTaking(takerProposalData, takenFootprint, amendOptions) {
-        try {
-            const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
-            const turfRef = (typeof turf !== 'undefined') ? turf : null;
-            if (!formationEdit || !turfRef || !takenFootprint
-                || typeof formationEdit.amendReparcellizationPlanByTaking !== 'function') return;
-            const taken = takenFootprint.type === 'Feature'
-                ? takenFootprint
-                : { type: 'Feature', properties: {}, geometry: takenFootprint };
-            if (!taken.geometry) return;
-            const ctx = {
-                area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-                intersectionArea: (a, b) => {
-                    try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
-                },
-                difference: (a, b) => { try { return turfRef.difference(a, b); } catch (_) { return null; } },
-                buffer: (feature, meters) => {
-                    try { return turfRef.buffer(feature, meters, { units: 'meters', steps: 8 }); } catch (_) { return feature; }
-                }
-            };
-            const takerKey = String((takerProposalData && takerProposalData.proposalId) || '');
-            const takerTitle = (takerProposalData && (takerProposalData.title || takerProposalData.name)) || 'This proposal';
-            const takerIsRoad = !!(takerProposalData && takerProposalData.roadProposal
-                && takerProposalData.roadProposal.definition);
-            let anyRoadTrimmed = false;
-            proposalStorage.getAllProposals().forEach(victim => {
-                if (!victim || String(victim.proposalId) === takerKey) return;
-                if (typeof isProposalCurrentlyApplied === 'function' && !isProposalCurrentlyApplied(victim)) return;
-                const hasPlan = !!(victim.reparcellization && Array.isArray(victim.reparcellization.polygons)
-                    && victim.reparcellization.polygons.length);
-                const roadDef = victim.roadProposal && victim.roadProposal.definition;
-                if (!hasPlan && !roadDef) return;
-                // Crossroads (ruling 2026-08-07): a road crossing a road is a JUNCTION, not a
-                // taking — neither corridor amends the other. The taker already minted around
-                // the crossing-box parcels, which stay with whichever road holds them.
-                if (takerIsRoad && roadDef && !hasPlan) return;
-                // §15c rule 2: a taking that would SEVER the readjustment (its pool or any
-                // surviving plot comes out in disconnected pieces) never amends fragments —
-                // the readjustment is DESTROYED and the ground reverts to the cadastre; the
-                // rebuild then replays the taker against the cadastral parcels beneath.
-                if (hasPlan && typeof formationEdit.severanceVerdict === 'function') {
-                    const poolGeometry = (victim.geometry && /Polygon/.test(String(victim.geometry.type || '')))
-                        ? victim.geometry : null;
-                    const severance = formationEdit.severanceVerdict(victim.reparcellization, poolGeometry, taken, ctx);
-                    if (severance.verdict === 'severed') {
-                        console.warn('[§15c] taking severs', `"${victim.title || victim.proposalId}"`,
-                            '— readjustment destroyed, ground reverts to the cadastre');
-                        try { setProposalApplied(victim, false); } catch (_) { }
-                        // A destroyed record holds no fabric — stale derived children left here
-                        // grew by re-adopted pieces on every replay (2 → 4 → …).
-                        try { this._clearDerivedRecordState(victim); } catch (_) { }
-                        try {
-                            if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(victim);
-                            if (typeof proposalStorage.save === 'function') proposalStorage.save();
-                        } catch (_) { }
-                        if (!(amendOptions && amendOptions.silent === true)) {
-                            try {
-                                if (typeof showEphemeralMessage === 'function') {
-                                    showEphemeralMessage(`${takerTitle} cuts "${victim.title || victim.proposalId}" apart — the readjustment is removed and its ground reverts to the cadastral parcels.`, 8000, 'warning');
-                                }
-                            } catch (_) { }
-                        }
-                        if (Array.isArray(this._severedThisRebuild)) {
-                            this._severedThisRebuild.push(String(victim.proposalId));
-                        }
-                        return;
-                    }
-                }
-                const result = hasPlan
-                    ? formationEdit.amendReparcellizationPlanByTaking(victim.reparcellization, taken, ctx)
-                    : null;
-                // A road victim's plan is its CENTERLINE: trim it by the taking and re-derive the
-                // corridor footprint, the same one-partition amendment a readjustment gets. The
-                // ground pieces themselves were already consumed by the taker's cut — this makes
-                // the road's DEFINITION stop claiming them (the full recut waits for the road's
-                // own next edit, where the edit funnel re-derives everything).
-                const roadResult = roadDef ? this._trimRoadDefinitionByTaking(victim, roadDef, taken, ctx, turfRef, formationEdit) : null;
-                if (roadResult && roadResult.changed) anyRoadTrimmed = true;
-                // The record-level geometry is the POOL — the outer claim footprintOf unions
-                // with the plots — and §15b shrinks it identically, or the drill keeps showing
-                // the readjustment over ground it no longer holds.
-                let poolResult = null;
-                if (victim.geometry && /Polygon/.test(victim.geometry.type || '')) {
-                    poolResult = formationEdit.clipPiecesByTaking([{ geometry: victim.geometry }], taken, ctx);
-                    if (poolResult.changed) {
-                        const parts = poolResult.pieces.map(piece => piece.geometry);
-                        victim.geometry = parts.length === 0
-                            ? null
-                            : (parts.length === 1
-                                ? parts[0]
-                                : {
-                                    type: 'MultiPolygon',
-                                    coordinates: parts.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
-                                });
-                    }
-                }
-                if (!(result && result.changed) && !(poolResult && poolResult.changed)
-                    && !(roadResult && roadResult.changed)) return;
-                if (result && result.changed) {
-                    victim.reparcellization = { ...victim.reparcellization, polygons: result.polygons };
-                }
-                // A taker's amendment legitimately leaves the plan under-covering its parents —
-                // the taker holds that ground now, and on replay the §14.2 remainders are exactly
-                // what the taker consumes. Stamp the record so the whole-parcel gate exempts it:
-                // a PRISTINE plan that under-covers is an authoring error; an amended one is the
-                // partition working.
-                if ((result && result.changed) || (poolResult && poolResult.changed)) {
-                    victim.amendedByTaking = true;
-                }
-                try {
-                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(victim);
-                    if (typeof proposalStorage.save === 'function') proposalStorage.save();
-                } catch (_) { }
-                const detail = [
-                    result && result.removedCount ? `${result.removedCount} plot(s) removed` : null,
-                    result && result.splitCount ? `${result.splitCount} plot(s) split` : null,
-                    roadResult && roadResult.changed ? roadResult.detail : null
-                ].filter(Boolean).join(', ');
-                const takenM2 = Math.max((result && result.takenAreaM2) || 0, (poolResult && poolResult.takenAreaM2) || 0);
-                const tookText = takenM2 >= 0.5 ? `took ${Math.round(takenM2)} m² from` : 'amended';
-                const message = `${takerTitle} ${tookText} "${victim.title || victim.proposalId}"${detail ? ` — ${detail}` : ''}.`;
-                console.info('[§15b amend]', message);
-                if (!(amendOptions && amendOptions.silent === true)) {
-                    try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 6000, 'info'); } catch (_) { }
-                }
-            });
-            // Trimmed centerlines moved the asphalt: redraw every applied corridor's strips once.
-            if (anyRoadTrimmed && typeof refreshAppliedCorridorStrips === 'function') {
-                try { refreshAppliedCorridorStrips(); } catch (_) { }
-            }
-        } catch (error) {
-            console.warn('[_amendAppliedPlansByTaking] amend pass failed', error);
-        }
-    },
-
-    // §15b road-as-victim: trim the victim's centerline where the taking crosses it and re-derive
-    // its corridor footprint — the road analog of clipping a readjustment's plots. Mutates the
-    // one authored definition in place. Returns { changed, detail } — the caller owns
-    // persistence and reporting.
-    // The remaining ground pieces are NOT recut here: they were untouched by the taking, and the
-    // road's own next edit re-derives the full cut through the edit funnel.
-    _trimRoadDefinitionByTaking(victim, roadDef, taken, ctx, turfRef, formationEdit) {
-        try {
-            if (typeof formationEdit.trimCenterlineByTaking !== 'function'
-                || typeof corridorCenterlineOf !== 'function'
-                || typeof buildRoadUnionPolygonForDefinition !== 'function'
-                || typeof turfRef.lineSplit !== 'function'
-                || typeof turfRef.booleanPointInPolygon !== 'function') return null;
-            const segments = corridorCenterlineOf(roadDef);
-            if (!segments.length) {
-                // A road with no centerline — a government-plan road, whose plan IS its authored
-                // polygons — amends the way a readjustment does: the claim and the authored
-                // child features are clipped by the taking.
-                if (typeof formationEdit.clipPiecesByTaking !== 'function') return null;
-                const claim = roadDef.polygon || null;
-                if (!claim) return null;
-                const clip = formationEdit.clipPiecesByTaking([{ geometry: claim }], taken, ctx);
-                if (!clip.changed) return null;
-                const parts = clip.pieces.map(piece => piece.geometry).filter(Boolean);
-                roadDef.polygon = parts.length === 0 ? null
-                    : (parts.length === 1 ? parts[0] : {
-                        type: 'MultiPolygon',
-                        coordinates: parts.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
-                    });
-                [victim.roadProposal, victim].forEach(holder => {
-                    if (!holder || !Array.isArray(holder.childFeatures) || !holder.childFeatures.length) return;
-                    try {
-                        const clipped = formationEdit.clipPiecesByTaking(holder.childFeatures, taken, ctx);
-                        if (clipped.changed) holder.childFeatures = clipped.pieces;
-                    } catch (_) { }
-                });
-                try {
-                    if (victim.roadProposal && victim.roadProposal.definition !== roadDef) {
-                        victim.roadProposal.definition = JSON.parse(JSON.stringify(roadDef));
-                    }
-                } catch (_) { }
-                const detail = `${Math.round(clip.takenAreaM2 || 0)} m² of authored footprint clipped`
-                    + (clip.removedCount ? `, ${clip.removedCount} part(s) removed` : '')
-                    + (clip.splitCount ? `, ${clip.splitCount} split` : '');
-                return { changed: true, detail };
-            }
-            // A taking only trims a road it GENUINELY takes corridor ground from. The
-            // half-width buffer below widens a real cut to the full crossing; without this
-            // guard it also manufactured cuts from mere adjacency — a park sharing a
-            // corridor's edge "trimmed" 105 m of a road it overlapped by 0 m².
-            const corridorClaim = roadDef.polygon
-                || (typeof corridorSurfaceFootprintForDefinition === 'function'
-                    ? corridorSurfaceFootprintForDefinition(roadDef) : null);
-            if (corridorClaim) {
-                let overlapM2 = 0;
-                try {
-                    const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: corridorClaim });
-                    overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
-                } catch (_) {
-                    console.warn('[_trimRoadDefinitionByTaking] overlap test failed for', String(victim.proposalId), '— not trimming without evidence of a take');
-                    return null;
-                }
-                if (overlapM2 < MIN_REAL_OVERLAP_M2) return null;
-            }
-            const trimCtx = {
-                lineSplit: (line, polygon) => turfRef.lineSplit(line, polygon),
-                pointInPolygon: (point, polygon) => turfRef.booleanPointInPolygon(point, polygon),
-                lengthM: line => { try { return turfRef.length(line, { units: 'kilometers' }) * 1000; } catch (_) { return 0; } }
-            };
-            const centerlineTaking = typeof formationEdit.roadCenterlineTaking === 'function'
-                ? formationEdit.roadCenterlineTaking(roadDef, taken, ctx)
-                : taken;
-            const trim = formationEdit.trimCenterlineByTaking(segments, centerlineTaking, trimCtx);
-            if (!trim || !trim.changed) return null;
-
-            const oldIds = Array.isArray(roadDef.segmentIds) ? roadDef.segmentIds : [];
-            const metersOf = pointLists => pointLists.reduce((total, points) => {
-                try {
-                    if (!Array.isArray(points) || points.length < 2) return total;
-                    return total + trimCtx.lengthM(turfRef.lineString(points.map(p => [p.lng, p.lat])));
-                } catch (_) { return total; }
-            }, 0);
-            const beforeM = metersOf(segments);
-            roadDef.points = trim.segments.map(piece => piece.points);
-            roadDef.segments = roadDef.points;
-            // A split's pieces SHARE the source segment's id: segmentProfiles are id-keyed, so
-            // both sides of the gap keep the street's cross-section. The next interactive edit
-            // re-normalizes ids through the edit funnel.
-            roadDef.segmentIds = trim.segments.map(piece =>
-                (oldIds[piece.sourceIndex] !== undefined && oldIds[piece.sourceIndex] !== null)
-                    ? oldIds[piece.sourceIndex] : null);
-            if (roadDef.segmentProfiles) {
-                const liveIds = new Set(roadDef.segmentIds.filter(Boolean).map(String));
-                Object.keys(roadDef.segmentProfiles).forEach(id => {
-                    if (!liveIds.has(id)) delete roadDef.segmentProfiles[id];
-                });
-            }
-            // Edge-keyed records die with their edges (a split inserts a new endpoint).
-            if (typeof retainLiveCorridorTunnelRecords === 'function' && Array.isArray(roadDef.tunnels)) {
-                roadDef.tunnels = retainLiveCorridorTunnelRecords(roadDef.points, roadDef.tunnels);
-            }
-            if (typeof retainLiveGradeSeparations === 'function' && Array.isArray(roadDef.gradeSeparations)) {
-                roadDef.gradeSeparations = retainLiveGradeSeparations(roadDef.points, roadDef.gradeSeparations);
-            }
-            // Re-derive the footprint exactly as the edit funnel does.
-            let rebuilt = false;
-            if (roadDef.points.length && typeof convertRoadPolygonToLatLngPairs === 'function'
-                && typeof convertLatLngPairsToGeoJSON === 'function') {
-                const unionPolygon = buildRoadUnionPolygonForDefinition(roadDef);
-                const latLngPairs = unionPolygon ? convertRoadPolygonToLatLngPairs(unionPolygon) : null;
-                const geoPolygon = latLngPairs ? convertLatLngPairsToGeoJSON(latLngPairs) : null;
-                if (geoPolygon && geoPolygon.type && Array.isArray(geoPolygon.coordinates)) {
-                    roadDef.polygon = geoPolygon;
-                    roadDef.latLngPairs = latLngPairs;
-                    rebuilt = true;
-                }
-            }
-            if (!rebuilt) {
-                roadDef.polygon = null;
-                roadDef.latLngPairs = null;
-                console.warn('[§15b] taking swallowed the entire road —', String(victim.proposalId),
-                    '— record left applied with an empty centerline');
-            }
-            // Ruling 2026-08-07: a non-road taking may TRIM a road (footprint shrinks, stays
-            // one piece) but never disconnect it — a severing take must be refused before any
-            // mutation. Reaching a disconnected result here means a pre-check failed upstream.
-            try {
-                if (typeof formationEdit.corridorComponents === 'function'
-                    && formationEdit.corridorComponents(roadDef.points).length > 1) {
-                    console.error('[contiguity] taking disconnected applied road', String(victim.proposalId),
-                        '— severing an applied road is an error; this take should have been refused');
-                }
-            } catch (_) { }
-            // Persist the amended authored definition at its single canonical location.
-            try {
-                if (victim.roadProposal && victim.roadProposal.definition !== roadDef) {
-                    victim.roadProposal.definition = JSON.parse(JSON.stringify(roadDef));
-                }
-            } catch (_) { }
-            const trimmedM = Math.max(0, beforeM - metersOf(roadDef.points));
-            const detail = `${Math.round(trimmedM)} m of corridor trimmed`
-                + (trim.splitCount ? `, ${trim.splitCount} stretch(es) split` : '')
-                + (trim.removedCount ? `, ${trim.removedCount} removed` : '');
-            return { changed: true, detail };
-        } catch (error) {
-            console.warn('[_trimRoadDefinitionByTaking] trim failed for', victim && victim.proposalId, error);
-            return null;
-        }
-    },
 
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
         if (
@@ -929,7 +627,6 @@
         // §15b: the taking is done — amend every earlier standing plan that still claims it.
         try {
             const takenFootprint = this._takingFootprintOf(proposalData);
-            if (takenFootprint) this._amendAppliedPlansByTaking(proposalData, takenFootprint);
         } catch (amendError) {
             console.warn('[_applyRoadProposal] §15b amend pass failed', amendError);
         }

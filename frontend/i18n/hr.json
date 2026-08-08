@@ -2286,7 +2286,7 @@
             "labelAfter": "Poslije",
             "sweepHandleHint": "Povuci za rotaciju linija parcelacije",
             "drawPlot": "Nacrtaj parcelu",
-            "drawLine": "Podijeli linijom",
+            "drawLine": "Povuci liniju",
             "drawFinish": "Završi parcelu",
             "drawFinishLine": "Završi liniju",
             "drawUndo": "Poništi točku",
@@ -2305,7 +2305,7 @@
                 "drawInvalid": "Nije moguće izraditi valjanu parcelu iz tih točaka.",
                 "drawNoOverlap": "Nacrtana parcela je izvan udružene zemlje.",
                 "drawSuccess": "Parcela dodana. Klikni je za dodjelu vlasnika.",
-                "lineHint": "Klikni za dodavanje točaka, povuci za prilagodbu, zatim pritisni Završi za podjelu.",
+                "lineHint": "Klikni da postaviš liniju. Povlači se samo između mjesta na kojima dodiruje postojeću među ili vrh — najmanje dva takva.",
                 "lineTooFew": "Dodaj barem 2 točke za liniju podjele.",
                 "lineNoSplit": "Linija nije presjekla nijednu parcelu.",
                 "lineSuccess": "Parcela podijeljena. Klikni svaki dio za dodjelu vlasnika.",
@@ -2318,7 +2318,17 @@
                 "nodeKept": "Taj se čvor ne može ukloniti — čestica bi prestala biti poligon.",
                 "undone": "Zadnja promjena je poništena.",
                 "nodeOnPool": "Taj je čvor na obodu obuhvata — pripada susjedima, ne ovom planu.",
-                "assignHint": "Kliknite česticu da odaberete njezine vlasnike. Uređivanje je pauzirano dok dodjeljujete."
+                "assignHint": "Kliknite česticu da odaberete njezine vlasnike. Uređivanje je pauzirano dok dodjeljujete.",
+                "cutSuccess": "Linija povučena — novih čestica: {{plots}}, novih čvorova: {{nodes}}. Klikni svaki dio da dodijeliš vlasnike.",
+                "cutNoSplit": "Linija je prošla između svojih uporišta, ali nije podijelila nijednu česticu — ništa se nije promijenilo.",
+                "cutOnNode": "Počinje na postojećem vrhu — to je jedno od dva potrebna uporišta.",
+                "cutFree": "Hvatanje je isključeno dok držiš Shift — točka pada točno gdje klikneš.",
+                "eraseHint": "Klikni među da je obrišeš — dvije čestice koje razdvaja postaju jedna. Međa koje se mogu obrisati: {{count}}.",
+                "eraseNone": "Ovdje nema međa između čestica — samo obuhvat zahvata, koji pripada susjedima.",
+                "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigdje drugdje.",
+                "lineOneAnchor": "Zasad jedno uporište. Prijeđi još jednu među ili završi na postojećem vrhu.",
+                "lineNoAnchor": "Još nema uporišta. Linija mora prijeći među ili dotaknuti postojeći vrh na dva mjesta da bi nastala nova međa.",
+                "lineNoAnchors": "Linija je dotaknula postojeće međe na manje od dva mjesta, pa nema između čega povući među. Prijeđi dvije međe, ili počni na vrhu i prijeđi jednu."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -2365,7 +2375,9 @@
             "colArea": "Površina",
             "unknownParcel": "Čestica",
             "oldPlotsMissing": "Ulazne čestice nije bilo moguće učitati pa je obod obuhvata izveden iz samog plana.",
-            "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih čestica."
+            "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih čestica.",
+            "eraseEdge": "Obriši među",
+            "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna čestica"
         }
     },
     "status": {

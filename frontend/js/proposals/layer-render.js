@@ -211,7 +211,13 @@ function clearProposalHoverLayers() {
     if (groups.hoverLabels) groups.hoverLabels.clearLayers();
 }
 
-function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, dashArray = '4 4', showLabels = false, className = 'proposal-hover-outline proposal-hover-outline--animate' } = {}) {
+// A hover usually answers more than one question at once: a proposal's own BODY — the building
+// footprint, the corridor surface, the park polygon — is not the same shape as the PARCELS it
+// stands on. Painting both in a single colour left a hovered proposal unreadable (a bunch of
+// identical borders, with no way to tell which building was meant), so a caller passes one group
+// per meaning. Groups are drawn in order, later ones on top; the hover layer is cleared exactly
+// once, before the first group, so nothing a caller draws wipes what it drew a moment earlier.
+function highlightFeatureGroupsForHover(featureGroups) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.hover || !groups.hoverLabels) return;
 
@@ -220,48 +226,72 @@ function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, da
     groups.hover.clearLayers();
     groups.hoverLabels.clearLayers();
 
-    if (!Array.isArray(features)) return;
+    if (!Array.isArray(featureGroups)) return;
 
-    features.forEach(feature => {
-        if (!feature || !feature.geometry) return;
-        try {
-            const outline = L.geoJSON(feature, {
-                pane: panes?.hover || undefined,
-                style: {
-                    color,
-                    weight,
-                    fillOpacity: 0,
-                    dashArray,
-                    className
-                },
-                interactive: false
-            });
-            outline.addTo(groups.hover);
+    featureGroups.forEach(group => {
+        if (!group || !Array.isArray(group.features)) return;
+        const {
+            features,
+            color = '#FFB300',
+            weight = 5,
+            dashArray = '4 4',
+            // Outlines are hollow unless a caller asks for a fill. A filled shape reads as "this
+            // object" rather than "this boundary", which is what separates the hovered body from
+            // the parcels around it.
+            fillColor = null,
+            fillOpacity = 0,
+            showLabels = false,
+            className = 'proposal-hover-outline proposal-hover-outline--animate'
+        } = group;
 
-            if (showLabels) {
-                const broj = getParcelDisplayNumberFromFeature(feature);
-                const center = getFeatureCentroid(feature);
-                if (broj && center) {
-                    const label = L.marker(center, {
-                        pane: panes?.hoverLabels || undefined,
-                        icon: L.divIcon({
-                            className: 'proposal-hover-parcel-label',
-                            html: `${broj}`,
-                            iconSize: [46, 20],
-                            iconAnchor: [23, 10]
-                        }),
-                        interactive: false
-                    });
-                    label.addTo(groups.hoverLabels);
+        features.forEach(feature => {
+            if (!feature || !feature.geometry) return;
+            try {
+                const outline = L.geoJSON(feature, {
+                    pane: panes?.hover || undefined,
+                    style: {
+                        color,
+                        weight,
+                        fillColor: fillColor || color,
+                        fillOpacity,
+                        dashArray,
+                        className
+                    },
+                    interactive: false
+                });
+                outline.addTo(groups.hover);
+
+                if (showLabels) {
+                    const broj = getParcelDisplayNumberFromFeature(feature);
+                    const center = getFeatureCentroid(feature);
+                    if (broj && center) {
+                        const label = L.marker(center, {
+                            pane: panes?.hoverLabels || undefined,
+                            icon: L.divIcon({
+                                className: 'proposal-hover-parcel-label',
+                                html: `${broj}`,
+                                iconSize: [46, 20],
+                                iconAnchor: [23, 10]
+                            }),
+                            interactive: false
+                        });
+                        label.addTo(groups.hoverLabels);
+                    }
                 }
+            } catch (error) {
+                console.warn('Failed to highlight feature for hover', error);
             }
-        } catch (error) {
-            console.warn('Failed to highlight feature for hover', error);
-        }
+        });
     });
 
     if (groups.hover.bringToFront) groups.hover.bringToFront();
     if (groups.hoverLabels.bringToFront) groups.hoverLabels.bringToFront();
+}
+
+// Single-meaning hover: one set of features, one style. Kept as the common case on top of the
+// grouped painter.
+function highlightFeaturesForHover(features, options = {}) {
+    highlightFeatureGroupsForHover([{ ...options, features }]);
 }
 
 function getParcelFeatureForHighlight(parcelId, proposalContext = null, options = {}) {

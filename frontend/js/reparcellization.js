@@ -77,9 +77,22 @@
         coverageEl: null,
         // Manual plot drawing state. mode 'polygon' draws/carves a new plot;
         // mode 'line' splits the plots it crosses into separate plots.
-        drawing: { active: false, points: [], tempLayer: null, tempMarkers: [], mode: 'polygon', cursor: null },
+        // `frozen[i]` marks a point placed with Shift held — taken exactly where it was clicked,
+        // snapping and all. `context` is the boundary graph the cut is measured against, built once
+        // per draw so a mousemove does not rebuild the topology; `ghostLayer` shows the nodes that
+        // are there to snap to, since the editing handles have to stand down while drawing.
+        drawing: {
+            active: false, points: [], frozen: [], tempLayer: null, tempMarkers: [],
+            mode: 'polygon', cursor: null, rawCursor: null, shift: false,
+            context: null, ghostLayer: null, snapLayer: null, snap: null,
+            statusText: null, keyHandler: null, zoomHandler: null
+        },
         drawBtn: null,
         lineBtn: null,
+        eraseBtn: null,
+        // Erase mode: the boundaries between plots drawn as clickable lines, so a boundary can be
+        // deleted and the two plots it separated merged. The inverse of cutting.
+        erase: { active: false, layer: null, topology: null, nodeEditWasActive: false },
         // Sweep-line orientation: a draggable point the cut lines point toward.
         sweepHandle: null,
         sweepDirLayer: null,
@@ -336,6 +349,10 @@
             persistResult();
         }
         cancelDraw();
+        clearEraseLayer();
+        state.erase.active = false;
+        state.erase.nodeEditWasActive = false;
+        state.eraseBtn = null;
         destroyMap();
         if (state.modal) {
             state.modal.remove();
@@ -412,7 +429,8 @@
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
                                 <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x2B1F;</button>
-                                <button type="button" class="btn-icon" data-reparcel-line aria-pressed="false" title="${t('reparcellization.modal.drawLine', 'Split with line')}">&#x2702;&#xFE0F;</button>
+                                <button type="button" class="btn-icon" data-reparcel-line aria-pressed="false" title="${t('reparcellization.modal.drawLine', 'Draw a line')}">&#x2571;</button>
+                                <button type="button" class="btn-icon" data-reparcel-erase aria-pressed="false" title="${t('reparcellization.modal.eraseEdge', 'Erase a boundary')}">&#x232B;</button>
                                 <button type="button" class="btn-icon" data-reparcel-nodes aria-pressed="false" title="${t('reparcellization.modal.editNodes', 'Edit boundaries (nodes)')}">&#x2735;</button>
                                 <button type="button" class="btn-icon" data-reparcel-undo-edit disabled title="${t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')}">&#x21B6;</button>
                                 <button type="button" class="btn-icon" data-reparcel-shuffle title="${t('reparcellization.modal.shuffle', 'Shuffle ownership')}">&#x1f500;</button>
@@ -491,6 +509,7 @@
         state.undoEditBtn = overlay.querySelector('[data-reparcel-undo-edit]');
         state.drawBtn = overlay.querySelector('[data-reparcel-draw]');
         state.lineBtn = overlay.querySelector('[data-reparcel-line]');
+        state.eraseBtn = overlay.querySelector('[data-reparcel-erase]');
         state.compareBtn = overlay.querySelector('[data-reparcel-compare]');
         if (state.compareBtn) state.compareBtn.hidden = false;
         state.drawToolbar = overlay.querySelector('[data-reparcel-draw-toolbar]');
@@ -550,6 +569,10 @@
                 if (state.drawing.active) {
                     cancelDraw();
                     setStatus('', 'info');
+                    return;
+                }
+                if (state.erase.active) {
+                    toggleEraseMode(false);
                     return;
                 }
                 cancelModal();
@@ -626,6 +649,9 @@
         if (state.lineBtn) {
             state.lineBtn.addEventListener('click', () => toggleDrawMode('line'));
         }
+        if (state.eraseBtn) {
+            state.eraseBtn.addEventListener('click', () => toggleEraseMode());
+        }
         updateDrawToolButtons();
         if (state.finishBtn) {
             state.finishBtn.addEventListener('click', () => onDrawFinish());
@@ -678,6 +704,12 @@
             minZoom: 3
         });
         baseLayer.addTo(map);
+        // A pane above the plots for the editing tools. Insertion order is not enough to keep them
+        // there: the preview layer calls bringToFront() on hover, so the moment the cursor crossed
+        // a plot that plot jumped over the erase lines and swallowed their clicks — the eraser then
+        // read as a tool for selecting parcels. A pane cannot be jumped over.
+        map.createPane('reparcelTools');
+        map.getPane('reparcelTools').style.zIndex = 620;
         state.baseLayer = baseLayer;
         state.map = map;
         map.whenReady(() => {
@@ -1312,134 +1344,122 @@
         return true;
     }
 
-    // Exact split of one polygon by a line, sharing the boundary (no gap): node the
-    // polygon boundary and the inside portion of the cut against each other, then
-    // polygonize the result into faces. Returns the face Features, or null if the
-    // line doesn't divide the polygon.
-    function splitPolygonByLineExact(polygon, line) {
-        if (typeof turf.polygonize !== 'function' || typeof turf.lineSplit !== 'function') return null;
-        try {
-            // Boundary as one or more LineStrings (a plot may be a donut with holes).
-            const boundary = turf.polygonToLine(polygon);
-            const boundaryLines = [];
-            if (boundary.geometry.type === 'LineString') {
-                boundaryLines.push(boundary);
-            } else if (boundary.geometry.type === 'MultiLineString') {
-                boundary.geometry.coordinates.forEach(c => boundaryLines.push(turf.lineString(c)));
-            } else if (boundary.type === 'FeatureCollection') {
-                boundary.features.forEach(f => boundaryLines.push(f));
-            }
-
-            const edges = [];
-            // Boundary arcs, noded where the cut crosses them.
-            boundaryLines.forEach(bl => {
-                let sp = null;
-                try { sp = turf.lineSplit(bl, line); } catch (_) { sp = null; }
-                if (sp && sp.features.length) edges.push(...sp.features);
-                else edges.push(bl);
-            });
-            // Only the portion(s) of the cut line that lie inside the polygon.
-            let cutPieces = null;
-            try { cutPieces = turf.lineSplit(line, polygon); } catch (_) { cutPieces = null; }
-            const innerCut = (cutPieces ? cutPieces.features : []).filter(seg => {
-                const coords = seg.geometry.coordinates;
-                if (!coords || coords.length < 2) return false;
-                const mid = turf.midpoint(turf.point(coords[0]), turf.point(coords[coords.length - 1]));
-                return turf.booleanPointInPolygon(mid, polygon);
-            });
-            if (!innerCut.length) return null; // line never enters the polygon
-            edges.push(...innerCut);
-
-            const faces = turf.polygonize(turf.featureCollection(edges));
-            if (!faces || !faces.features || faces.features.length < 2) return null;
-            // Keep faces that actually lie inside the original polygon.
-            const inside = faces.features.filter(f => {
-                try {
-                    const p = turf.pointOnFeature(f);
-                    return turf.booleanPointInPolygon(p, polygon);
-                } catch (_) { return false; }
-            });
-            return inside.length >= 2 ? inside : null;
-        } catch (err) {
-            console.warn('[reparcellization] exact line split failed', err);
-            return null;
-        }
+    // Settle the current plot list back onto the pool and drop whatever no longer has land.
+    //
+    // This is what lets the cutting tools stop deleting slivers. They used to discard any piece
+    // under 1 m², which quietly took that land OUT of the plan — and the apply gate wants the
+    // outputs to cover the inputs to within 5 m², so a few cuts near a corner could fail a plan for
+    // a reason invisible in the editor. Healing hands the scrap to the plot it borders most
+    // instead, so nothing is ever dropped on the floor.
+    function settleSlices() {
+        const settled = healLayout(state.slices.map(slice => slice.geometry));
+        if (!Array.isArray(settled)) { recomputeSliceAreas(); return; }
+        const kept = [];
+        state.slices.forEach((slice, index) => {
+            const geometry = settled[index];
+            if (geometry === undefined) { kept.push(slice); return; }
+            if (!geometry) return; // all of its land went to its neighbours
+            slice.geometry = geometry;
+            kept.push(slice);
+        });
+        if (kept.length !== state.slices.length) state.selectedSliceIndex = null;
+        state.slices = kept;
+        recomputeSliceAreas();
     }
 
-    // Split the plots a line crosses into separate plots, sharing exact edges.
-    // Falls back to a hair-thin buffer cut if the exact split can't be computed.
-    function splitPlanWithLine(lineFeature) {
-        if (typeof turf === 'undefined' || !lineFeature) return false;
-        const remaining = [];
-        let didSplit = false;
-        for (const slice of state.slices) {
-            const components = geometryToPolygonFeatures(slice.geometry);
-            let splitThis = false;
-            const facesForSlice = [];
-            components.forEach(comp => {
-                const faces = splitPolygonByLineExact(comp, lineFeature);
-                if (faces && faces.length >= 2) {
-                    splitThis = true;
-                    faces.forEach(f => facesForSlice.push(f));
-                } else {
-                    facesForSlice.push(comp); // not crossed → unchanged
-                }
-            });
-            if (splitThis) {
-                didSplit = true;
-                facesForSlice.forEach(f => {
-                    if (computeFeatureArea(f) < 1) return;
-                    remaining.push(makePlotFromOwners(f.geometry, cloneOwners(slice.owners), slice.source));
-                });
-            } else {
-                remaining.push(slice); // keep original plot untouched
-            }
-        }
-        if (didSplit) {
-            state.slices = remaining;
-            return true;
-        }
-        return splitPlanWithLineBuffer(lineFeature);
+    // Make the layout say what it already means: where one plot's corner sits partway along a
+    // neighbour's edge, give the neighbour that vertex too.
+    //
+    // Two plots only SHARE an edge when both rings carry the same two consecutive nodes. Where a
+    // neighbour has an extra vertex along the same line, the two sides are different edges with one
+    // plot each — so the boundary between them is not a boundary anything can act on, which is why
+    // some lines could be erased and others, looking identical, could not. On the Borovje plan this
+    // was 46 interior edges; one pass fixes all of them and adds no area, because inserting a vertex
+    // on a segment does not move the segment.
+    function conformLayout() {
+        const cutApi = window.__plotCut;
+        if (!cutApi || !state.slices.length) return 0;
+        const geometries = state.slices.map(slice => slice.geometry);
+        const vertices = [];
+        geometries.forEach(geometry => {
+            if (!geometry) return;
+            const rings = geometry.type === 'Polygon'
+                ? geometry.coordinates
+                : (geometry.coordinates || []).reduce((acc, part) => acc.concat(part), []);
+            (rings || []).forEach(ring => (ring || []).forEach(coord => vertices.push(coord)));
+        });
+        const conformed = cutApi.insertNodesIntoRings(geometries, vertices);
+        const added = conformed.inserted || 0;
+        if (!added) return 0;
+        state.slices.forEach((slice, index) => {
+            if (conformed[index]) slice.geometry = conformed[index];
+        });
+        console.debug('[reparcellization] layout conformed', { verticesAdded: added, plots: state.slices.length });
+        return added;
     }
 
-    // Fallback splitter: subtract a hair-thin buffer of the line so crossed plots
-    // divide; disjoint results become separate plots. Loses a negligible sliver.
-    const CUT_HALF_WIDTH_M = 0.05; // 10 cm cut
-    function splitPlanWithLineBuffer(lineFeature) {
-        let cut = null;
-        try { cut = turf.buffer(lineFeature, CUT_HALF_WIDTH_M, { units: 'meters', steps: 1 }); } catch (_) { cut = null; }
-        if (!cut || !cut.geometry) return false;
-
-        const remaining = [];
-        let didSplit = false;
-        for (const slice of state.slices) {
-            let diff = null;
-            try { diff = turf.difference(sliceToFeature(slice), cut); } catch (_) { diff = sliceToFeature(slice); }
-            if (!diff || !diff.geometry) { didSplit = true; continue; } // entire slice inside the cut
-            const before = remaining.length;
-            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
-            if (remaining.length - before > 1) didSplit = true;
-        }
-        if (!didSplit) return false; // line crossed nothing → no-op
-        state.slices = remaining;
-        return true;
-    }
-
-    // Extend a polyline's two ends outward so a line drawn roughly across a plot
-    // fully crosses it (a cut that stops inside won't separate the plot).
-    function extendPolylineEnds(points, extendDeg) {
-        if (!Array.isArray(points) || points.length < 2) return points;
-        const out = points.map(p => p.slice());
-        const ext = (a, b) => {
-            const dx = a[0] - b[0];
-            const dy = a[1] - b[1];
-            const len = Math.hypot(dx, dy) || 1;
-            return [a[0] + (dx / len) * extendDeg, a[1] + (dy / len) * extendDeg];
+    // What a cut is measured against: the current boundary graph, the pool, and the map's current
+    // scale (snap radii are in pixels, so they mean the same thing at every zoom).
+    function cutContext() {
+        const topo = window.__plotTopology;
+        if (!topo || !state.superParcel || !state.slices.length) return null;
+        return {
+            topology: topo.annotateBoundary(topo.buildTopology(state.slices), poolBoundaryIndex()),
+            pool: state.superParcel,
+            scale: mapScale()
         };
-        out[0] = ext(points[0], points[1]);
-        out[out.length - 1] = ext(points[points.length - 1], points[points.length - 2]);
-        return out;
     }
+
+    // Degrees per pixel on each axis. Longitude and latitude degrees are different lengths on the
+    // ground, so a snap radius expressed in raw degrees is an ellipse on screen — this is what lets
+    // plot-cut.js measure in the units the user's eye is using.
+    function mapScale() {
+        if (!state.map) return { x: 1, y: 1 };
+        try {
+            const center = state.map.getCenter();
+            const origin = state.map.latLngToContainerPoint(center);
+            const east = state.map.containerPointToLatLng(L.point(origin.x + 1, origin.y));
+            const south = state.map.containerPointToLatLng(L.point(origin.x, origin.y + 1));
+            return {
+                x: Math.abs(east.lng - center.lng) || 1e-9,
+                y: Math.abs(south.lat - center.lat) || 1e-9
+            };
+        } catch (_) { return { x: 1, y: 1 }; }
+    }
+
+    // Commit a cut. Pieces inherit the owners of the plot they were cut from; a plot the cut only
+    // NODED (a neighbour across a T-junction) keeps its identity and just gains the vertex.
+    function applyCutResult(result) {
+        const groups = new Map();
+        (result.results || []).forEach(entry => {
+            if (!entry || !entry.geometry) return;
+            if (!groups.has(entry.sourceIndex)) groups.set(entry.sourceIndex, []);
+            groups.get(entry.sourceIndex).push(entry.geometry);
+        });
+        const next = [];
+        state.slices.forEach((slice, index) => {
+            const pieces = groups.get(index);
+            if (!pieces || !pieces.length) { next.push(slice); return; }
+            if (pieces.length === 1) {
+                slice.geometry = pieces[0];
+                next.push(slice);
+                return;
+            }
+            pieces.forEach(geometry => next.push(
+                makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual')));
+        });
+        state.slices = next;
+        state.selectedSliceIndex = null;
+        settleSlices();
+        updateLegend(state.ownerShares);
+        try {
+            drawPreview();
+            updateCommitState();
+        } finally {
+            renderNodeHandles();
+        }
+    }
+
 
     // ── Manual plot drawing ──────────────────────────────────────────────
 
@@ -1447,7 +1467,8 @@
     // pencil/scissors icons are disabled (greyed out) for other algorithms.
     function updateDrawToolButtons() {
         const enabled = state.ownershipMode === 'multiple' && state.algorithm === 'manual';
-        [state.drawBtn, state.lineBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
+        [state.drawBtn, state.lineBtn, state.eraseBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
+        if (!enabled && state.erase.active) toggleEraseMode(false);
     }
 
     function setDrawButtonsActive() {
@@ -1497,7 +1518,7 @@
         if (latlngs.length < 2) return;
         if (state.drawing.mode === 'line') {
             state.drawing.tempLayer = L.polyline(latlngs, {
-                color: '#C73E1D', weight: 3, dashArray: '6 4', interactive: false
+                color: '#C73E1D', weight: 3, dashArray: '6 4', interactive: false, pane: 'reparcelTools'
             }).addTo(state.map);
         } else if (latlngs.length >= 3) {
             state.drawing.tempLayer = L.polygon(latlngs, {
@@ -1523,30 +1544,184 @@
             });
             marker.on('drag', () => {
                 const ll = marker.getLatLng();
-                state.drawing.points[i] = [ll.lng, ll.lat];
+                const snap = snapFor([ll.lng, ll.lat]);
+                state.drawing.points[i] = snap ? snap.coord.slice() : [ll.lng, ll.lat];
+                state.drawing.frozen[i] = state.drawing.shift;
                 updateDrawShape();
+                renderSnapFeedback(snap, previewLine(state.drawing.cursor).anchors);
             });
             marker.addTo(state.map);
             state.drawing.tempMarkers.push(marker);
         });
     }
 
+    // ── Snapping ─────────────────────────────────────────────────────────
+    //
+    // A cut that is meant to start at an existing corner has to actually start there, to the last
+    // decimal: a hair's gap is a different node, and the boundary it makes never joins the one it
+    // was drawn onto. Snapping is what makes that reachable by hand — and Shift turns it off for
+    // the times when the nearest node is not what was meant.
+
+    function snapFor(coord) {
+        const cutApi = window.__plotCut;
+        const context = state.drawing.context;
+        if (!cutApi || !context || state.drawing.shift || !Array.isArray(coord)) return null;
+        const snap = cutApi.snapPoint(coord, context, { scale: context.scale });
+        return (snap && snap.kind !== 'free') ? snap : null;
+    }
+
+    // The nodes already in the fabric, drawn as plain dots. The editing handles are Leaflet markers
+    // and would swallow the clicks that place vertices, so they come down while drawing — which
+    // used to leave the user drawing blind, aiming at corners they could not see.
+    function renderDrawGhosts() {
+        clearDrawGhosts();
+        const context = state.drawing.context;
+        if (!context || !state.map) return;
+        const layer = L.layerGroup();
+        (context.topology.nodes || []).forEach(node => {
+            L.circleMarker([node.coord[1], node.coord[0]], {
+                radius: 3, weight: 1, color: '#1B998B', fillColor: '#ffffff', fillOpacity: 1,
+                interactive: false, pane: 'reparcelTools', className: 'reparcel-snap-ghost'
+            }).addTo(layer);
+        });
+        layer.addTo(state.map);
+        state.drawing.ghostLayer = layer;
+    }
+
+    function clearDrawGhosts() {
+        if (state.drawing.ghostLayer) {
+            try { state.drawing.ghostLayer.remove(); } catch (_) { }
+            state.drawing.ghostLayer = null;
+        }
+    }
+
+    // What the cut is about to do, drawn before it is committed: where this point will attach, and
+    // every crossing that is about to become a node.
+    function renderSnapFeedback(snap, anchors) {
+        if (!state.map || !state.drawing.active) return;
+        // One layer group, refilled: this runs on every mousemove, and adding/removing a group
+        // from the map sixty times a second is churn the pointer can feel.
+        let layer = state.drawing.snapLayer;
+        if (layer) layer.clearLayers();
+        else layer = L.layerGroup().addTo(state.map);
+        const list = anchors || [];
+        // The outermost two are where the new boundary will END; the ones between are nodes it
+        // will create in passing. Drawing them differently says which is which before committing.
+        list.slice(0, 80).forEach((anchor, index) => {
+            const terminal = list.length >= 2 && (index === 0 || index === list.length - 1);
+            L.circleMarker([anchor.coord[1], anchor.coord[0]], {
+                radius: terminal ? 6 : 4, weight: 2, color: '#C73E1D',
+                fillColor: terminal ? '#C73E1D' : '#ffffff', fillOpacity: terminal ? 0.8 : 1,
+                interactive: false, pane: 'reparcelTools', className: 'reparcel-cut-crossing'
+            }).addTo(layer);
+        });
+        if (snap) {
+            L.circleMarker([snap.coord[1], snap.coord[0]], {
+                radius: snap.kind === 'node' ? 8 : 6, weight: 2,
+                color: '#F18F01', fillColor: '#F18F01', fillOpacity: 0.35,
+                interactive: false, pane: 'reparcelTools', className: 'reparcel-snap-target'
+            }).addTo(layer);
+        }
+        state.drawing.snapLayer = layer;
+    }
+
+    // What this line will do, said before the click rather than after. The anchor count is the
+    // part that matters: fewer than two and the line implies no boundary, so nothing happens.
+    function snapStatusText(snap, anchors) {
+        const count = (anchors || []).length;
+        if (state.drawing.mode !== 'line') {
+            return t('reparcellization.modal.status.drawHint',
+                'Click to add points, drag to adjust, then press Finish.');
+        }
+        if (count >= 2) {
+            return t('reparcellization.modal.status.lineAnchored',
+                'Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.',
+                { count });
+        }
+        if (count === 1) {
+            return t('reparcellization.modal.status.lineOneAnchor',
+                'One anchor so far. Cross another boundary, or finish on an existing corner.');
+        }
+        if (state.drawing.shift) {
+            return t('reparcellization.modal.status.cutFree',
+                'Snapping off while Shift is held — the point lands exactly where you click.');
+        }
+        if (snap && snap.kind === 'node') {
+            return t('reparcellization.modal.status.cutOnNode',
+                'Starts on an existing corner — that is one of the two anchors it needs.');
+        }
+        return t('reparcellization.modal.status.lineNoAnchor',
+            'No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.');
+    }
+
+    // What the line as it currently stands would anchor on. The anchors ARE the answer to "will
+    // this do anything": a new boundary needs a node at each end, so two is the minimum, and
+    // showing the count as it is drawn means the user is never guessing.
+    function previewLine(cursor) {
+        const empty = { crossings: [], anchors: [] };
+        const cutApi = window.__plotCut;
+        const context = state.drawing.context;
+        if (!cutApi || !context || state.drawing.mode !== 'line') return empty;
+        const points = state.drawing.points.concat(Array.isArray(cursor) ? [cursor] : []);
+        if (points.length < 2) return empty;
+        try {
+            const crossings = cutApi.crossingsOf(points, context, { scale: context.scale });
+            const snaps = points.map((point, index) => {
+                const frozen = (index < state.drawing.points.length)
+                    ? state.drawing.frozen[index] : state.drawing.shift;
+                return frozen
+                    ? { kind: 'free', coord: point }
+                    : cutApi.snapPoint(point, context, { scale: context.scale });
+            });
+            return { crossings, anchors: cutApi.anchorsFor(points, snaps, crossings) };
+        } catch (_) { return empty; }
+    }
+
+    // Recompute everything that depends on where the cursor is and whether Shift is down. Called
+    // from mousemove AND from the Shift key handler, because pressing Shift without moving the
+    // mouse must not leave the preview showing a snap that is no longer going to happen.
+    function updateDrawCursor() {
+        if (!state.drawing.active) return;
+        const raw = state.drawing.rawCursor;
+        if (!Array.isArray(raw)) return;
+        const snap = snapFor(raw);
+        const coord = snap ? snap.coord.slice() : raw.slice();
+        state.drawing.cursor = coord;
+        state.drawing.snap = snap;
+        updateDrawShape();
+        const preview = previewLine(coord);
+        renderSnapFeedback(snap, preview.anchors);
+        // Only when it actually changes — this runs on every mousemove.
+        const text = snapStatusText(snap, preview.anchors);
+        if (text !== state.drawing.statusText) {
+            state.drawing.statusText = text;
+            setStatus(text, 'info');
+        }
+    }
+
     function onDrawClick(e) {
         if (!state.drawing.active) return;
-        state.drawing.points.push([e.latlng.lng, e.latlng.lat]);
+        const raw = [e.latlng.lng, e.latlng.lat];
+        const shift = !!(e.originalEvent && e.originalEvent.shiftKey);
+        state.drawing.shift = shift;
+        const snap = snapFor(raw);
+        state.drawing.points.push(snap ? snap.coord.slice() : raw);
+        state.drawing.frozen.push(shift);
         renderDrawTemp();
         updateDrawToolbar();
     }
 
     function onDrawMouseMove(e) {
         if (!state.drawing.active || !e?.latlng) return;
-        state.drawing.cursor = [e.latlng.lng, e.latlng.lat];
-        updateDrawShape();
+        state.drawing.rawCursor = [e.latlng.lng, e.latlng.lat];
+        if (e.originalEvent) state.drawing.shift = !!e.originalEvent.shiftKey;
+        updateDrawCursor();
     }
 
     function undoLastPoint() {
         if (!state.drawing.active || !state.drawing.points.length) return;
         state.drawing.points.pop();
+        state.drawing.frozen.pop();
         renderDrawTemp();
         updateDrawToolbar();
     }
@@ -1587,34 +1762,41 @@
         pushHistory();
 
         if (state.drawing.mode === 'line') {
-            if (pts.length < 2) {
+            // The raw points, not the deduped ones: the Shift flags are indexed against them, and
+            // resolveCut dedupes in lockstep with those flags anyway.
+            const drawn = state.drawing.points.slice();
+            const frozen = state.drawing.frozen.slice();
+            const context = state.drawing.context || cutContext();
+            const cutApi = window.__plotCut;
+            if (drawn.length < 2) {
                 setStatus(t('reparcellization.modal.status.lineTooFew', 'Add at least 2 points to make a split line.'), 'warning');
                 discardLastHistory();
                 return;
             }
-            // Extend the ends so a line drawn roughly across a plot fully crosses it.
-            const span = state.superParcel ? Math.max.apply(null, (() => {
-                const b = turf.bbox(state.superParcel);
-                return [b[2] - b[0], b[3] - b[1]];
-            })()) : 0.001;
-            const extended = extendPolylineEnds(pts, span * 0.25);
-            let line = null;
-            try { line = turf.lineString(extended); } catch (_) { line = null; }
-            if (!line) {
+            if (!context || !cutApi || typeof turf === 'undefined') {
                 setStatus(t('reparcellization.modal.status.drawInvalid', 'Could not build a valid plot from those points.'), 'error');
+                discardLastHistory();
                 cancelDraw();
                 return;
             }
-            const ok = splitPlanWithLine(line);
+            const result = cutApi.cutPlots(state.slices, drawn, context, { turf }, { scale: context.scale, frozen });
             cancelDraw();
-            if (!ok) {
-                setStatus(t('reparcellization.modal.status.lineNoSplit', 'The line did not cross any plot to split.'), 'error');
+            if (!result.ok) {
+                discardLastHistory();
+                setStatus(cutFailureText(result.reason), 'error');
                 return;
             }
-            setStatus(t('reparcellization.modal.status.lineSuccess', 'Plot split. Click each part to assign owners.'), 'info');
-            updateLegend(state.ownerShares);
-            drawPreview();
-            updateCommitState();
+            applyCutResult(result);
+            console.debug('[reparcellization] cut', {
+                ends: (result.ends || []).map(end => end.kind),
+                crossings: (result.crossings || []).length,
+                nodesAdded: result.nodesAdded,
+                plotsAdded: result.added,
+                plotsNow: state.slices.length
+            });
+            setStatus(t('reparcellization.modal.status.cutSuccess',
+                'Cut made — {{plots}} new plot(s), {{nodes}} new node(s). Click each part to assign owners.',
+                { plots: Math.max(result.added, 0), nodes: result.nodesAdded || 0 }), 'info');
             return;
         }
 
@@ -1639,20 +1821,68 @@
             discardLastHistory();
             return;
         }
+        // Carving drops the sub-1 m² scraps it makes; healing puts that land back into a neighbour
+        // instead of letting it leave the plan.
+        settleSlices();
         setStatus(t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
+        renderNodeHandles();
+    }
+
+    // Why a cut did nothing. Each reason is a different mistake, and saying which one saves the
+    // user from re-drawing the same line to find out.
+    function cutFailureText(reason) {
+        if (reason === 'too-few') {
+            return t('reparcellization.modal.status.lineTooFew', 'Add at least 2 points to make a split line.');
+        }
+        if (reason === 'no-anchors') {
+            return t('reparcellization.modal.status.lineNoAnchors',
+                'That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one.');
+        }
+        if (reason === 'no-split') {
+            return t('reparcellization.modal.status.cutNoSplit',
+                'That line ran between its anchors without dividing a plot — nothing changed.');
+        }
+        return t('reparcellization.modal.status.drawInvalid', 'Could not build a valid plot from those points.');
     }
 
     function startDraw(mode) {
         if (!state.map) return;
         exitCompare(); // editing and before/after are mutually exclusive
         dismissOwnerPopup();
+        toggleEraseMode(false);
         state.drawing.active = true;
         state.drawing.mode = mode === 'line' ? 'line' : 'polygon';
         state.drawing.points = [];
+        state.drawing.frozen = [];
+        state.drawing.shift = false;
+        state.drawing.rawCursor = null;
+        state.drawing.snap = null;
         clearDrawTemp();
+        // The graph the cut is measured against, built once: a mousemove asks it where the nearest
+        // node is dozens of times a second, and rebuilding the topology each time would make the
+        // cursor lag on a plan this size.
+        conformLayout();
+        state.drawing.context = cutContext();
+        renderDrawGhosts();
+        // Zoom changes how many degrees a pixel is worth, and the snap radii are in pixels.
+        state.drawing.zoomHandler = () => {
+            if (state.drawing.context) state.drawing.context.scale = mapScale();
+        };
+        state.map.on('zoomend', state.drawing.zoomHandler);
+        // Shift pressed or released without moving the mouse still changes what the next click
+        // will do, so the preview has to follow the key, not only the pointer.
+        state.drawing.keyHandler = (event) => {
+            if (event.key !== 'Shift') return;
+            const down = event.type === 'keydown';
+            if (down === state.drawing.shift) return;
+            state.drawing.shift = down;
+            updateDrawCursor();
+        };
+        window.addEventListener('keydown', state.drawing.keyHandler);
+        window.addEventListener('keyup', state.drawing.keyHandler);
         // Close any plot tooltip that's open under the cursor as we enter draw mode.
         if (state.previewLayer) {
             try { state.previewLayer.eachLayer(l => l.closeTooltip && l.closeTooltip()); } catch (_) { }
@@ -1664,16 +1894,36 @@
         setDrawButtonsActive();
         updateDrawToolbar();
         setStatus(state.drawing.mode === 'line'
-            ? t('reparcellization.modal.status.lineHint', 'Click to add points, drag to adjust, then press Finish to split.')
+            ? t('reparcellization.modal.status.lineHint', 'Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.')
             : t('reparcellization.modal.status.drawHint', 'Click to add points, drag to adjust, then press Finish.'), 'info');
     }
 
     function cancelDraw() {
         clearDrawTemp();
+        clearDrawGhosts();
+        if (state.drawing.snapLayer) {
+            try { state.drawing.snapLayer.remove(); } catch (_) { }
+            state.drawing.snapLayer = null;
+        }
         state.drawing.active = false;
         state.drawing.points = [];
+        state.drawing.frozen = [];
         state.drawing.cursor = null;
+        state.drawing.rawCursor = null;
+        state.drawing.snap = null;
+        state.drawing.shift = false;
+        state.drawing.statusText = null;
+        state.drawing.context = null;
+        if (state.drawing.keyHandler) {
+            window.removeEventListener('keydown', state.drawing.keyHandler);
+            window.removeEventListener('keyup', state.drawing.keyHandler);
+            state.drawing.keyHandler = null;
+        }
         if (state.map) {
+            if (state.drawing.zoomHandler) {
+                state.map.off('zoomend', state.drawing.zoomHandler);
+                state.drawing.zoomHandler = null;
+            }
             state.map.off('click', onDrawClick);
             state.map.off('mousemove', onDrawMouseMove);
             try { state.map.getContainer().style.cursor = ''; } catch (_) { }
@@ -1698,6 +1948,127 @@
             clearNodeHandles();
             startDraw(target);
         }
+    }
+
+    // ── Erasing a boundary ───────────────────────────────────────────────
+    //
+    // The inverse of cutting, and the reason the tool is phrased as a BOUNDARY rather than as one
+    // edge: two plots that share a chain of edges are separated by the whole chain, and deleting
+    // one link of it would leave a polygon with a slit rather than two plots merged. So the unit of
+    // erasure is "every edge these two plots share" — which is the line the user is pointing at.
+    //
+    // Entering the mode draws that network, so what can be erased is visible before anything is
+    // clicked; hovering one lights the whole boundary, so what will go matches what is shown.
+
+    function eraseAvailable() {
+        return !!(window.__plotTopology && window.__plotCut && state.map && state.slices.length
+            && state.ownershipMode === 'multiple' && state.algorithm === 'manual');
+    }
+
+    function toggleEraseMode(force) {
+        const next = typeof force === 'boolean' ? force : !state.erase.active;
+        if (next === state.erase.active) return;
+        if (next && !eraseAvailable()) return;
+        state.erase.active = next;
+        if (state.eraseBtn) {
+            state.eraseBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
+            state.eraseBtn.classList.toggle('active', next);
+        }
+        if (next) {
+            exitCompare();
+            dismissOwnerPopup();
+            if (state.drawing.active) cancelDraw();
+            state.erase.nodeEditWasActive = state.nodeEdit.active;
+            if (state.nodeEdit.active) toggleNodeEditing(false);
+            try { state.map.getContainer().style.cursor = 'pointer'; } catch (_) { }
+            renderEraseLayer();
+        } else {
+            try { if (state.map) state.map.getContainer().style.cursor = ''; } catch (_) { }
+            clearEraseLayer();
+            const restore = state.erase.nodeEditWasActive;
+            state.erase.nodeEditWasActive = false;
+            if (restore) toggleNodeEditing(true);
+            else setStatus('', 'info');
+        }
+    }
+
+    function clearEraseLayer() {
+        if (state.erase.layer) {
+            try { state.erase.layer.remove(); } catch (_) { }
+            state.erase.layer = null;
+        }
+        state.erase.topology = null;
+    }
+
+    function eraseTooltipFor(group) {
+        const nameOf = index => {
+            const slice = state.slices[index];
+            const label = (slice && slice.displayName) || `#${index + 1}`;
+            const area = computeGeometryArea(slice && slice.geometry) || 0;
+            return `${label} (${Math.round(area).toLocaleString()} m²)`;
+        };
+        return escapeForCell(t('reparcellization.modal.eraseTooltip',
+            'Erase this boundary — {{a}} and {{b}} become one plot',
+            { a: nameOf(group.plots[0]), b: nameOf(group.plots[1]) }));
+    }
+
+    function renderEraseLayer() {
+        clearEraseLayer();
+        const topo = window.__plotTopology;
+        const cutApi = window.__plotCut;
+        if (!topo || !cutApi || !state.map) return;
+        conformLayout();
+        const topology = topo.annotateBoundary(topo.buildTopology(state.slices), poolBoundaryIndex());
+        const groups = cutApi.boundaryGroups(topology);
+        const layer = L.layerGroup().addTo(state.map);
+        groups.forEach(group => {
+            const paths = cutApi.boundaryPaths(group, topology)
+                .map(pair => pair.map(coord => L.latLng(coord[1], coord[0])));
+            if (!paths.length) return;
+            const line = L.polyline(paths, {
+                color: '#C73E1D', weight: 4, opacity: 0.9,
+                pane: 'reparcelTools', className: 'reparcel-erase-line'
+            });
+            // A 4 px line is a 4 px target. The halo is invisible and fat, so the boundary can be
+            // hit by aiming at it rather than by landing on it.
+            const halo = L.polyline(paths, {
+                color: '#C73E1D', weight: 16, opacity: 0,
+                pane: 'reparcelTools', className: 'reparcel-erase-line'
+            });
+            const hover = on => {
+                line.setStyle({ weight: on ? 9 : 4, opacity: on ? 1 : 0.9 });
+            };
+            [line, halo].forEach(target => {
+                target.on('mouseover', () => hover(true));
+                target.on('mouseout', () => hover(false));
+                target.on('click', (event) => {
+                    if (L.DomEvent && L.DomEvent.stop) L.DomEvent.stop(event);
+                    eraseBoundary(group);
+                });
+            });
+            halo.bindTooltip(eraseTooltipFor(group), { sticky: true, direction: 'top' });
+            line.addTo(layer);
+            halo.addTo(layer);
+        });
+        state.erase.layer = layer;
+        state.erase.topology = topology;
+        setStatus(groups.length
+            ? t('reparcellization.modal.status.eraseHint',
+                'Click a boundary to erase it — the two plots it separates become one. {{count}} boundaries can be erased.',
+                { count: groups.length })
+            : t('reparcellization.modal.status.eraseNone',
+                'There are no boundaries between plots here — only the pooled outline, which belongs to the neighbours.'),
+            groups.length ? 'info' : 'warning');
+    }
+
+    function eraseBoundary(group) {
+        if (!group || !Array.isArray(group.plots) || group.plots.length !== 2) return;
+        const merged = mergePlots(group.plots);
+        if (!merged) return;
+        console.debug('[reparcellization] boundary erased', { plots: group.plots, plotsNow: state.slices.length });
+        // The graph has changed under the layer, so it is rebuilt rather than patched — which also
+        // shows the merged plot's remaining boundaries immediately.
+        renderEraseLayer();
     }
 
     // ── GeoJSON Upload ──────────────────────────────────────────────────
@@ -1839,6 +2210,8 @@
                 drawPreview();
                 updateCommitState();
                 if (state.nodeEdit.active) renderNodeHandles();
+                // The erasable network describes the plots too, so it has to follow them back.
+                if (state.erase.active) renderEraseLayer();
                 setStatus(t('reparcellization.modal.status.undone', 'Undid the last change.'),
                     'info', 'reparcellization.modal.status.undone');
             },
@@ -1882,6 +2255,12 @@
         const next = typeof force === 'boolean' ? force : !state.nodeEdit.active;
         if (next && !nodeEditingAvailable()) return;
         if (next && state.drawing.active) cancelDraw();
+        if (next && state.erase.active) {
+            // Clear the restore flag first, or turning erase off would turn node editing back on
+            // and land straight back here.
+            state.erase.nodeEditWasActive = false;
+            toggleEraseMode(false);
+        }
         state.nodeEdit.active = next;
         if (state.nodesBtn) state.nodesBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
@@ -1913,6 +2292,8 @@
             state.nodeEditWasActive = state.nodeEdit.active;
             if (state.nodeEdit.active) toggleNodeEditing(false);
             if (state.drawing.active) cancelDraw();
+            state.erase.nodeEditWasActive = false;
+            toggleEraseMode(false);
             setStatus(t('reparcellization.modal.status.assignHint',
                 'Click a plot to choose its owners. Editing is paused while you assign.'),
                 'info', 'reparcellization.modal.status.assignHint');
@@ -2192,12 +2573,28 @@
             return removeNodePerRing(node, topology);
         }
 
-        const indices = Array.from(members).sort((a, b) => a - b);
+        const merged = mergePlots(Array.from(members));
+        if (!merged) return false;
+        console.debug('[reparcellization] boundary dissolved', {
+            node: node.coord, mergedPlots: members.size, plotsNow: state.slices.length
+        });
+        return true;
+    }
+
+    // Merge several plots into one. Union rather than re-derive: the surviving outline is made of
+    // the plots' own coordinates, so no vertex moves and none is invented. Shared by node removal
+    // (dissolve the boundary a node anchored) and by the eraser (dissolve the boundary itself).
+    function mergePlots(plotIndices) {
+        if (typeof turf === 'undefined') return false;
+        const indices = Array.from(new Set(plotIndices || []))
+            .filter(index => state.slices[index] && state.slices[index].geometry)
+            .sort((a, b) => a - b);
+        if (indices.length < 2) return false;
+
         const wrap = geometry => ({ type: 'Feature', properties: {}, geometry });
         let merged = null;
         indices.forEach(index => {
-            const geometry = state.slices[index] && state.slices[index].geometry;
-            if (!geometry) return;
+            const geometry = state.slices[index].geometry;
             merged = merged ? (turf.union(wrap(merged), wrap(geometry)) || {}).geometry || merged : geometry;
         });
         if (!merged) return false;
@@ -2207,7 +2604,7 @@
         let keeper = indices[0];
         let keeperArea = 0;
         indices.forEach(index => {
-            const area = computeGeometryArea(state.slices[index] && state.slices[index].geometry) || 0;
+            const area = computeGeometryArea(state.slices[index].geometry) || 0;
             if (area > keeperArea) { keeperArea = area; keeper = index; }
         });
 
@@ -2218,9 +2615,6 @@
             .sort((a, b) => b - a)
             .forEach(index => state.slices.splice(index, 1));
         state.selectedSliceIndex = null;
-        console.debug('[reparcellization] boundary dissolved', {
-            node: node.coord, mergedPlots: indices.length, plotsNow: state.slices.length
-        });
         recomputeSliceAreas();
         updateLegend(state.ownerShares);
         try {
@@ -2912,18 +3306,20 @@
                         layer.bindTooltip(owners, { sticky: true, className: 'reparcel-slice-tooltip' });
                         layer.on('click', (e) => {
                             // While drawing, let the click reach the map so vertices can be
-                            // placed over existing plots; don't swallow it for assignment.
-                            if (state.drawing.active) return;
+                            // placed over existing plots; don't swallow it for assignment. While
+                            // erasing, a plot is not the thing being clicked at all.
+                            if (state.drawing.active || state.erase.active) return;
                             L.DomEvent.stopPropagation(e);
                             layer.closeTooltip();
                             onSliceClick(idx, e.latlng);
                         });
                         layer.on('mouseover', () => {
                             // Don't show the plot tooltip while drawing/splitting or comparing.
-                            if (state.ownerAssignmentPopup || state.drawing.active || state.compare.active) {
+                            if (state.ownerAssignmentPopup || state.drawing.active || state.compare.active
+                                || state.erase.active) {
                                 layer.closeTooltip();
                             }
-                            if (state.drawing.active || state.compare.active) return;
+                            if (state.drawing.active || state.compare.active || state.erase.active) return;
                             if (state.selectedSliceIndex === idx) return;
                             layer.setStyle(plotStyle(feature.properties || {}, 'hover'));
                             if (typeof layer.bringToFront === 'function') layer.bringToFront();

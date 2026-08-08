@@ -63,7 +63,7 @@ function makeManager(parcels) {
         _addProposalAsAncestor: vi.fn(),
         _addChildParcels: vi.fn(),
         _setLastApplyFailure: vi.fn(),
-        _appliedRoadSeveredByTaking: vi.fn(() => null),
+        _appliedRoadOverlappedByTaking: vi.fn(() => null),
         _formBuildingParcel
     };
 }

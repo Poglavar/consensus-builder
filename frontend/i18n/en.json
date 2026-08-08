@@ -2268,7 +2268,7 @@
             "totalCashOffer": "Total cash offers: {{amount}}",
             "sweepHandleHint": "Drag to rotate the parcel lines",
             "drawPlot": "Draw plot",
-            "drawLine": "Split with line",
+            "drawLine": "Draw a line",
             "drawFinish": "Finish plot",
             "drawFinishLine": "Finish line",
             "drawUndo": "Undo point",
@@ -2287,7 +2287,7 @@
                 "drawInvalid": "Could not build a valid plot from those points.",
                 "drawNoOverlap": "The drawn plot is outside the pooled land.",
                 "drawSuccess": "Plot added. Click it to assign owners.",
-                "lineHint": "Click to add points, drag to adjust, then press Finish to split.",
+                "lineHint": "Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.",
                 "lineTooFew": "Add at least 2 points to make a split line.",
                 "lineNoSplit": "The line did not cross any plot to split.",
                 "lineSuccess": "Plot split. Click each part to assign owners.",
@@ -2300,7 +2300,17 @@
                 "nodeKept": "That node cannot be removed — a plot would stop being a polygon.",
                 "undone": "Undid the last change.",
                 "nodeOnPool": "That node sits on the pooled outline — it belongs to the neighbours, not to this plan.",
-                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign."
+                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign.",
+                "cutSuccess": "Line drawn — {{plots}} new plot(s), {{nodes}} new node(s). Click each part to assign owners.",
+                "cutNoSplit": "That line ran between its anchors without dividing a plot — nothing changed.",
+                "cutOnNode": "Starts on an existing corner — that is one of the two anchors it needs.",
+                "cutFree": "Snapping off while Shift is held — the point lands exactly where you click.",
+                "eraseHint": "Click a boundary to erase it — the two plots it separates become one. {{count}} boundaries can be erased.",
+                "eraseNone": "There are no boundaries between plots here — only the pooled outline, which belongs to the neighbours.",
+                "lineAnchored": "Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.",
+                "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
+                "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
+                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2335,7 +2345,9 @@
             "colArea": "Area",
             "unknownParcel": "Parcel",
             "oldPlotsMissing": "The input parcels could not be loaded, so the pooled outline is derived from the plan itself.",
-            "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded."
+            "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded.",
+            "eraseEdge": "Erase a boundary",
+            "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot"
         }
     },
     "status": {

@@ -2283,7 +2283,7 @@
             "labelAfter": "Después",
             "sweepHandleHint": "Arrastra para rotar las líneas de parcelación",
             "drawPlot": "Dibujar parcela",
-            "drawLine": "Dividir con línea",
+            "drawLine": "Trazar una línea",
             "drawFinish": "Terminar parcela",
             "drawFinishLine": "Terminar línea",
             "drawUndo": "Deshacer punto",
@@ -2302,7 +2302,7 @@
                 "drawInvalid": "No se pudo crear una parcela válida con esos puntos.",
                 "drawNoOverlap": "La parcela dibujada está fuera de la tierra mancomunada.",
                 "drawSuccess": "Parcela añadida. Haz clic para asignar propietarios.",
-                "lineHint": "Haz clic para añadir puntos, arrastra para ajustar y pulsa Terminar para dividir.",
+                "lineHint": "Haz clic para trazar la línea. Solo se dibuja entre los sitios donde toca un lindero o una esquina existente — al menos dos.",
                 "lineTooFew": "Añade al menos 2 puntos para crear una línea de división.",
                 "lineNoSplit": "La línea no cruzó ninguna parcela para dividir.",
                 "lineSuccess": "Parcela dividida. Haz clic en cada parte para asignar propietarios.",
@@ -2315,7 +2315,17 @@
                 "nodeKept": "Ese nodo no se puede quitar: una parcela dejaría de ser un polígono.",
                 "undone": "Se deshizo el último cambio.",
                 "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este plan.",
-                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas."
+                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas.",
+                "cutSuccess": "Línea trazada — {{plots}} parcela(s) nueva(s), {{nodes}} nodo(s) nuevo(s). Haz clic en cada parte para asignar propietarios.",
+                "cutNoSplit": "La línea pasó entre sus anclajes sin dividir ninguna parcela — no cambió nada.",
+                "cutOnNode": "Empieza en una esquina existente — ese es uno de los dos anclajes que necesita.",
+                "cutFree": "Enganche desactivado mientras mantienes Shift — el punto cae exactamente donde haces clic.",
+                "eraseHint": "Haz clic en un lindero para borrarlo — las dos parcelas que separa pasan a ser una. Linderos que se pueden borrar: {{count}}.",
+                "eraseNone": "Aquí no hay linderos entre parcelas — solo el perímetro agrupado, que pertenece a los vecinos.",
+                "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
+                "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
+                "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
+                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2384,7 +2394,9 @@
             "colArea": "Superficie",
             "unknownParcel": "Parcela",
             "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se deriva del propio plan.",
-            "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada."
+            "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada.",
+            "eraseEdge": "Borrar un lindero",
+            "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela"
         }
     },
     "status": {

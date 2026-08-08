@@ -618,10 +618,12 @@ const ProposalManager = {
             try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
             try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
             if (summary.failed.length && !(opts.silent === true)) {
-                const names = summary.failed.map(f => f.title).join(', ');
+                const names = summary.failed
+                    .map(f => (f.reason ? `${f.title} — ${f.reason}` : f.title))
+                    .join('; ');
                 try {
                     if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(`Rebuild: ${summary.failed.length} proposal(s) could not re-apply and were set aside: ${names}`, 8000, 'warning');
+                        showEphemeralMessage(`Rebuild: ${summary.failed.length} proposal(s) could not re-apply and were set aside: ${names}`, 12000, 'warning');
                     }
                 } catch (_) { }
             }
@@ -641,8 +643,8 @@ const ProposalManager = {
         // A replay is an ordered fold. Clear the ENTIRE target set before the first member runs;
         // then only the successfully replayed prefix is applied. Previously each record was flipped
         // off immediately before its own apply, so later records still looked applied to the first
-        // taker. `_amendAppliedPlansByTaking` consequently amended future formations before they
-        // stood, reversing the order and letting a remote road edit rewrite an old square boundary.
+        // taker, which reversed the order — the amend pass that exploited it is gone, but clearing
+        // the whole set up front is still what makes a replay an ordered fold rather than a race.
         const replayStamps = new Map();
         (appliedList || []).forEach(proposal => {
             if (!proposal) return;
@@ -698,9 +700,17 @@ const ProposalManager = {
             }
             if (ok) appliedCount += 1;
             else {
-                failed.push({ proposalId: String(proposal.proposalId), title: proposal.title || String(proposal.proposalId) });
-                console.warn('[rebuildAppliedFabric] could not re-apply', key,
-                    this._lastApplyFailureByProposalId.get(String(proposal.proposalId)) || '');
+                // Carry the refusal REASON out with the failure. Without it the only place the
+                // "why" existed was a console line, so a member vanishing from an applied plan
+                // looked like the app losing it rather than a gate refusing it.
+                const failure = this._lastApplyFailureByProposalId.get(String(proposal.proposalId)) || null;
+                failed.push({
+                    proposalId: String(proposal.proposalId),
+                    title: proposal.title || String(proposal.proposalId),
+                    code: (failure && failure.code) || null,
+                    reason: (failure && failure.message) || null
+                });
+                console.warn('[rebuildAppliedFabric] could not re-apply', key, failure || '');
             }
         }
         // A derivation failure is not a user action and must never flip a standing record off.

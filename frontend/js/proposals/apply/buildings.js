@@ -280,17 +280,18 @@
                 try { this._setLastApplyFailure(idLabel, { code: 'building-merge-failed', message }); } catch (_) { }
                 return { ok: false };
             }
-            // Ruling 2026-08-07: no take may DISCONNECT an applied road — refuse before any
-            // mutation. Whole taken parcels can reach far past the drawn footprint.
+            // Nothing is built over a street — refuse before any mutation. Whole taken parcels
+            // can reach far past the drawn footprint, so this tests the ground actually taken.
             {
-                const severedRoad = (typeof this._appliedRoadSeveredByTaking === 'function')
-                ? this._appliedRoadSeveredByTaking(unionFeature.geometry, idLabel) : null;
-                if (severedRoad) {
-                    const roadName = severedRoad.title || severedRoad.name || severedRoad.proposalId;
-                    const message = `Cannot apply the building: its parcel take would cut the applied road "${roadName}" apart. Unapply or edit that road first.`;
+                const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
+                    ? this._appliedRoadOverlappedByTaking(unionFeature.geometry, idLabel) : null;
+                if (roadHit) {
+                    const road = roadHit.proposal;
+                    const roadName = road.title || road.name || road.proposalId;
+                    const message = `Cannot apply the building: its parcel take would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is built over a street — move it clear, or unapply that road first.`;
                     if (typeof updateStatus === 'function') updateStatus(message);
                     try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
-                    try { this._setLastApplyFailure(idLabel, { code: 'building-severs-road', message, roadProposalId: String(severedRoad.proposalId || '') }); } catch (_) { }
+                    try { this._setLastApplyFailure(idLabel, { code: 'building-over-road', message, roadProposalId: String(road.proposalId || ''), overlapM2: roadHit.overlapM2 }); } catch (_) { }
                     return { ok: false };
                 }
             }
@@ -329,9 +330,6 @@
             try { this._addChildParcels(proposalId, buildingProposal.childParcelIds, proposalData); } catch (_) { }
             buildingProposal.formation = { mode: plan.mode, parcelIds: takenIds.slice(), childParcelIds: buildingProposal.childParcelIds.slice() };
             finishOwnership(buildingProposal.childParcelIds, buildingProposal.formation);
-            try { this._amendAppliedPlansByTaking(proposalData, unionFeature.geometry); } catch (amendError) {
-                console.warn('[_formBuildingParcel] whole-parcel amend pass failed', amendError);
-            }
             return { ok: true, parentIds: takenIds.slice() };
         }
 
@@ -484,17 +482,18 @@
             try { this._setLastApplyFailure(idLabel, { code: 'building-cut-failed', message, parcelId: cutFailedHostId }); } catch (_) { }
             return { ok: false };
         }
-        // Ruling 2026-08-07: no take may DISCONNECT an applied road — refuse before any
-        // mutation (everything above is pure computation on clones).
+        // Nothing is built over a street — refuse before any mutation (everything above is pure
+        // computation on clones).
         {
-            const severedRoad = (typeof this._appliedRoadSeveredByTaking === 'function')
-                ? this._appliedRoadSeveredByTaking(footprintGeometry, idLabel) : null;
-            if (severedRoad) {
-                const roadName = severedRoad.title || severedRoad.name || severedRoad.proposalId;
-                const message = `Cannot apply the building: its footprint would cut the applied road "${roadName}" apart. Unapply or edit that road first.`;
+            const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
+                ? this._appliedRoadOverlappedByTaking(footprintGeometry, idLabel) : null;
+            if (roadHit) {
+                const road = roadHit.proposal;
+                const roadName = road.title || road.name || road.proposalId;
+                const message = `Cannot apply the building: its footprint would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is built over a street — move it clear, or unapply that road first.`;
                 if (typeof updateStatus === 'function') updateStatus(message);
                 try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
-                try { this._setLastApplyFailure(idLabel, { code: 'building-severs-road', message, roadProposalId: String(severedRoad.proposalId || '') }); } catch (_) { }
+                try { this._setLastApplyFailure(idLabel, { code: 'building-over-road', message, roadProposalId: String(road.proposalId || ''), overlapM2: roadHit.overlapM2 }); } catch (_) { }
                 return { ok: false };
             }
         }
@@ -541,9 +540,6 @@
             buildingParcelIds
         };
         finishOwnership(buildingProposal.formation.buildingParcelIds, buildingProposal.formation);
-        try { this._amendAppliedPlansByTaking(proposalData, footprintGeometry); } catch (amendError) {
-            console.warn('[_formBuildingParcel] footprint amend pass failed', amendError);
-        }
 
         return { ok: true, parentIds: hostIds.slice() };
     },

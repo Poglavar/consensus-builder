@@ -926,6 +926,22 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 bodyLines.push(`<p>${tShare('summary.failedCount', '{{count}} failed.', {
                     count: failures.length
                 })}</p>`);
+                // Name them, with the gate's own words. "3 failed." with no titles and no reason
+                // left a plan that was visibly missing its readjustment looking like a lost record
+                // rather than a refused one — every reason already existed, it just never surfaced.
+                const escape = typeof escapeHtml === 'function' ? escapeHtml : (v => String(v));
+                const failureItems = failures.map(id => {
+                    const record = (typeof proposalStorage !== 'undefined' && proposalStorage
+                        && typeof proposalStorage.getProposal === 'function') ? proposalStorage.getProposal(id) : null;
+                    const title = (record && (record.title || record.name)) || String(id || '');
+                    const reason = (typeof ProposalManager !== 'undefined' && ProposalManager
+                        && typeof ProposalManager.getLastApplyFailure === 'function')
+                        ? ProposalManager.getLastApplyFailure(id) : null;
+                    return `<li>${escape(title)}${reason ? ` — ${escape(reason)}` : ''}</li>`;
+                }).filter(Boolean);
+                if (failureItems.length) {
+                    bodyLines.push(`<ul class="shared-plan-failures">${failureItems.join('')}</ul>`);
+                }
             }
             showSimpleShareModal({
                 title: tShare('summary.title', 'Applied Shared Proposals'),
@@ -1671,7 +1687,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { }
                 }
 
-                updateProposalLoadOverlay({ status: tShare('plan.applying', 'Importing proposal #{{id}}…', { id }) });
+                // Fallback wording matches the locale entry — en.json wins over the fallback, so a
+                // divergent fallback only ever lies about what the user will see.
+                updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying proposal #{{id}}…', { id }) });
                 const result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
 
                 const proposalId = (result && result.proposalId) || proposal?.proposalId || id;
@@ -1757,7 +1775,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // All imported members are now records with their applied flag set. Materialize that target
         // set once, from cadastre, after the queue is complete.
         if (applied.length > 0) {
-            updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying shared plan…') });
+            // Its OWN key: `plan.applying` is the per-proposal line and its translation carries an
+            // {{id}}. Borrowing it here — with no id to fill — rendered the placeholder verbatim,
+            // so the overlay read "Applying proposal #{{id}}…" for the whole plan.
+            updateProposalLoadOverlay({ status: tShare('plan.applyingAll', 'Applying shared plan…') });
             const replay = await ProposalManager.rebuildAppliedFabric();
             const replayFailures = new Map((replay?.failed || []).map(entry => [String(entry?.proposalId || ''), entry]));
             await parkFailedSharedImports(applied

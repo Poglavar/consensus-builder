@@ -621,6 +621,13 @@ const SHARE_PLAN_COLORS = [
     '#f032e6', '#bfef45', '#469990', '#9A6324', '#800000', '#000075'
 ];
 
+// Hovering a row answers two questions, and they have two different answers: WHERE the proposal
+// stands (the parcels it occupies) and WHAT it is (its own body — the building footprint, the
+// corridor surface, the park). One colour for both made a hovered building indistinguishable from
+// its neighbours' boundaries, so the body gets its own colour and is drawn last, filled, on top.
+const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
+const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
+
 let _sharePlanPanelState = null; // { root, overlayGroup, onKeyDown }
 
 function sharePlanColorForIndex(index) {
@@ -773,6 +780,33 @@ function showSharePlanPanel() {
             return [];
         };
 
+        // The proposal's OWN geometry, independent of the parcels it sits on: a building's
+        // footprints, a corridor surface, a park/square polygon, a readjustment's plots. This is
+        // the shape that names the row — without it, hovering "zgrada M1-11" outlined a plot that
+        // looked like every other plot on the block.
+        const proposalBodyFeaturesFor = (proposal) => {
+            if (typeof collectProposalFeatureSets !== 'function') return [];
+            try {
+                const sets = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }) || {};
+                return (sets.primaryFeatures || []).filter(feature => feature && feature.geometry);
+            } catch (error) {
+                console.warn('share plan: could not resolve proposal body', error);
+                return [];
+            }
+        };
+
+        // The ground the proposal STANDS ON, out of every parcel it minted — a remainder handed
+        // back to the host is not this proposal's ground, and it can be twenty times its size.
+        const groundFeaturesFor = (parcelFeatures, bodyFeatures) => {
+            const api = (typeof window !== 'undefined') ? window.__hoverGround : null;
+            if (!api || typeof api.groundUnderBody !== 'function' || typeof turf === 'undefined') return parcelFeatures;
+            return api.groundUnderBody(parcelFeatures, bodyFeatures, {
+                intersectionArea: (a, b) => {
+                    try { const hit = turf.intersect(a, b); return hit ? (turf.area(hit) || 0) : 0; } catch (_) { return 0; }
+                }
+            });
+        };
+
         const syncPlanOverlay = (key) => {
             if (!overlayGroup) return;
             const existing = overlayByKey.get(key);
@@ -781,7 +815,8 @@ function showSharePlanPanel() {
                 overlayByKey.delete(key);
             }
             if (!selected.has(key)) return;
-            const features = proposalFeaturesFor(proposalsByHash.get(key));
+            const proposal = proposalsByHash.get(key);
+            const features = groundFeaturesFor(proposalFeaturesFor(proposal), proposalBodyFeaturesFor(proposal));
             if (!features.length) return;
             try {
                 const color = colorByKey.get(key) || '#4363d8';
@@ -799,11 +834,29 @@ function showSharePlanPanel() {
         const highlightRowProposal = (key) => {
             const proposal = proposalsByHash.get(key);
             if (!proposal) return;
+            if (typeof highlightFeatureGroupsForHover !== 'function') return;
             // Same live-children resolver as the paint, so hover outlines exactly what is painted.
-            const features = proposalFeaturesFor(proposal);
-            if (features.length && typeof highlightFeaturesForHover === 'function') {
-                highlightFeaturesForHover(features, { color: '#FFEB3B', weight: 6, dashArray: '10 8', showLabels: false });
-            }
+            const bodyFeatures = proposalBodyFeaturesFor(proposal);
+            const parcelFeatures = groundFeaturesFor(proposalFeaturesFor(proposal), bodyFeatures);
+            highlightFeatureGroupsForHover([
+                {
+                    features: parcelFeatures,
+                    color: SHARE_PLAN_HOVER_PARCEL_COLOR,
+                    weight: 6,
+                    dashArray: '10 8',
+                    showLabels: false
+                },
+                {
+                    // Last, so the body sits above the parcels rather than under them.
+                    features: bodyFeatures,
+                    color: SHARE_PLAN_HOVER_BODY_COLOR,
+                    weight: 4,
+                    dashArray: null,
+                    fillColor: SHARE_PLAN_HOVER_BODY_COLOR,
+                    fillOpacity: 0.25,
+                    showLabels: false
+                }
+            ]);
         };
 
         const frameRowProposal = (key) => {

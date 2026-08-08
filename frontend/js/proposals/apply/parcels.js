@@ -457,7 +457,6 @@
                         type: 'MultiPolygon',
                         coordinates: claimed.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                     };
-                this._amendAppliedPlansByTaking(proposalData, takenGeometry);
             }
         } catch (amendError) {
             console.warn('[_applyReparcellizationProposal] §15b amend pass failed', amendError);

@@ -14,7 +14,9 @@
 //   - a readjustment whose pool is in more than one piece is REPORTED (a severed plot design
 //     needs its author, not a script);
 //   - a readjustment whose claim covers cadastral parcels only PARTIALLY is REPORTED (inputs
-//     must be whole parcels).
+//     must be whole parcels);
+//   - a structure body standing on an applied road's parcel is REPORTED: nothing is built over a
+//     street, so such a record refuses to apply and needs its author.
 //
 // Dry-run by default:
 //   node scripts/migrate-tessellation.js
@@ -441,58 +443,36 @@ async function readjustmentPartialInputs(pool, proposalData) {
             && (entry.areaM2 - entry.coveredM2) > 5);
 }
 
-// Would this structure body DISCONNECT the road's centerline? Runs the same trim the live
-// amendment (and the live pre-check) runs; at rebuild the structure's take IS its body, so
-// this matches app behaviour. Report-only — a structure authored across a road is author
-// work, not script work.
-export function roadSeveredByBody(roadDefinition, bodyGeometry, turfRef) {
-    const segments = centerlineSegmentsOf(roadDefinition);
-    if (!segments.length || !bodyGeometry) return false;
-    if (typeof formationEdit.trimCenterlineByTaking !== 'function') return false;
-    const ctx = {
-        area: f => { try { return turfRef.area(f) || 0; } catch (e) { return 0; } },
-        buffer: (f, m) => { try { return turfRef.buffer(f, m, { units: 'meters', steps: 8 }); } catch (e) { return f; } }
-    };
-    const trimCtx = {
-        lineSplit: (line, polygon) => turfRef.lineSplit(line, polygon),
-        pointInPolygon: (point, polygon) => turfRef.booleanPointInPolygon(point, polygon),
-        lengthM: line => { try { return turfRef.length(line, { units: 'kilometers' }) * 1000; } catch (e) { return 0; } }
-    };
-    const taken = { type: 'Feature', properties: {}, geometry: bodyGeometry };
-    // Genuine-overlap guard (same as the live trim): adjacency is not a take. When the split
-    // dropped the stored polygon, derive a corridor proxy by buffering the centerline.
-    let corridorClaim = roadDefinition.polygon || null;
-    if (!corridorClaim) {
+// Nothing may be built over a street, so the question a report asks is not "would this body cut
+// the road in two" but "does it stand on the road at all". Mirrors the live guard
+// (_appliedRoadOverlappedByTaking): the road's PARCEL answers — its stored polygon when it has
+// one, the corridor its centerline would cut otherwise. Returns the overlap in m², 0 for none.
+export function bodyStandsOnRoad(roadDefinition, bodyGeometry, turfRef) {
+    if (!roadDefinition || !bodyGeometry || !turfRef) return 0;
+    let claim = roadDefinition.polygon || null;
+    if (!claim) {
         try {
-            const lines = segments
+            const lines = centerlineSegmentsOf(roadDefinition)
                 .map(points => points.filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lng)).map(p => [p.lng, p.lat]))
                 .filter(coords => coords.length >= 2);
-            if (lines.length) {
-                const width = typeof formationEdit.corridorWidthMeters === 'function'
-                    ? (formationEdit.corridorWidthMeters(roadDefinition) || 12) : 12;
-                const buffered = turfRef.buffer(
-                    { type: 'Feature', properties: {}, geometry: { type: 'MultiLineString', coordinates: lines } },
-                    Math.max(1, width / 2), { units: 'meters', steps: 4 });
-                corridorClaim = buffered && buffered.geometry ? buffered.geometry : null;
-            }
-        } catch (e) { corridorClaim = null; }
+            if (!lines.length) return 0;
+            const width = typeof formationEdit.corridorWidthMeters === 'function'
+                ? (formationEdit.corridorWidthMeters(roadDefinition) || 12) : 12;
+            const buffered = turfRef.buffer(
+                { type: 'Feature', properties: {}, geometry: { type: 'MultiLineString', coordinates: lines } },
+                Math.max(1, width / 2), { units: 'meters', steps: 4 });
+            claim = buffered && buffered.geometry ? buffered.geometry : null;
+        } catch (e) { return 0; }
     }
-    if (corridorClaim) {
-        let overlapM2 = 0;
-        try {
-            const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: corridorClaim });
-            overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
-        } catch (e) { return false; }
-        if (overlapM2 < 0.5) return false;
-    }
-    const centerlineTaking = typeof formationEdit.roadCenterlineTaking === 'function'
-        ? formationEdit.roadCenterlineTaking(roadDefinition, taken, ctx)
-        : taken;
-    const trim = formationEdit.trimCenterlineByTaking(segments, centerlineTaking, trimCtx);
-    if (!trim || !trim.changed) return false;
-    const remaining = trim.segments.map(piece => piece.points);
-    if (!remaining.length) return true;
-    return formationEdit.corridorComponents(remaining).length > 1;
+    if (!claim) return 0;
+    try {
+        const hit = turfRef.intersect(
+            { type: 'Feature', properties: {}, geometry: bodyGeometry },
+            { type: 'Feature', properties: {}, geometry: claim });
+        const overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
+        // Abutting a street is ordinary composition and measures zero; the floor is measured noise.
+        return overlapM2 >= 0.25 ? overlapM2 : 0;
+    } catch (e) { return 0; }
 }
 
 async function proposalColumns(pool) {
@@ -557,7 +537,7 @@ export async function run(argv = process.argv.slice(2)) {
     const pool = new Pool();
     const stats = {
         total: 0, changed: 0, written: 0,
-        roadsSplit: 0, poolsDiscontiguous: 0, partialInputs: 0, structuresSeveringRoads: 0
+        roadsSplit: 0, poolsDiscontiguous: 0, partialInputs: 0, structuresOverRoads: 0
     };
     let tableColumns = null;
     try {
@@ -579,7 +559,7 @@ export async function run(argv = process.argv.slice(2)) {
 
         let turfRef = null;
         try { turfRef = requireCjs('@turf/turf'); } catch (_) {
-            console.log('note: @turf/turf unavailable — skipping the structure-severs-road check');
+            console.log('note: @turf/turf unavailable — skipping the structure-over-road check');
         }
         const roadEntries = rows
             .map(row => ({
@@ -673,10 +653,12 @@ export async function run(argv = process.argv.slice(2)) {
                 roadEntries.forEach(entry => {
                     if (entry.id === row.id) return;
                     try {
-                        if (roadSeveredByBody(entry.definition, bodyGeometry, turfRef)) {
-                            stats.structuresSeveringRoads += 1;
-                            console.log('#' + row.id + ' ' + row.proposal_id + ' — body would DISCONNECT road "'
-                                + entry.title + '" (#' + entry.id + ') — refuses to apply; needs its author');
+                        const overlapM2 = bodyStandsOnRoad(entry.definition, bodyGeometry, turfRef);
+                        if (overlapM2) {
+                            stats.structuresOverRoads += 1;
+                            console.log('#' + row.id + ' ' + row.proposal_id + ' — stands on ' + Math.round(overlapM2)
+                                + ' m² of road "' + entry.title + '" (#' + entry.id
+                                + ') — refuses to apply; needs its author');
                         }
                     } catch (_) { /* an unmeasurable pair is not evidence either way */ }
                 });

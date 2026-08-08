@@ -5168,6 +5168,43 @@
     box-sizing: border-box;
 }
 
+/* While a cut is being drawn the editing handles have to stand down — they would swallow the
+   clicks that place vertices — so the nodes are shown as plain dots instead. Without them the
+   user is aiming at corners they cannot see, which is what made "start the cut at that node"
+   hard rather than the snapping itself. */
+.reparcel-snap-ghost {
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+/* What the next click will attach to. */
+.reparcel-snap-target {
+    pointer-events: none;
+    animation: reparcel-snap-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes reparcel-snap-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reparcel-snap-target { animation: none; }
+}
+
+/* Every place the cut currently crosses the fabric — the nodes it is about to create, shown
+   before it is committed rather than discovered in the plot list afterwards. */
+.reparcel-cut-crossing {
+    pointer-events: none;
+}
+
+/* The erasable boundary network. Hovering one lights the WHOLE boundary between two plots,
+   because that is the unit that gets erased: deleting one link of a chain would leave a slit,
+   not two merged plots. */
+.reparcel-erase-line {
+    cursor: pointer;
+}
+
 /* Corner popup in the node editor: what this corner is, and the one action it has. */
 .reparcel-node-popup__title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
 .reparcel-node-popup__hint { font-size: 11px; color: #555; margin-bottom: 8px; }

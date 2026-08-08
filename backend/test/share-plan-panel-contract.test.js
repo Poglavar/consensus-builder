@@ -64,6 +64,32 @@ describe('share plan panel contract', () => {
         expect(panelFn).not.toContain('showProposalDetails(');
     });
 
+    it('hovering a row tells the proposal apart from the ground it stands on', () => {
+        // One colour for both made a hovered building unreadable among its neighbours' boundaries:
+        // the body (footprint/corridor/park) and the parcels are painted as two groups now.
+        const hoverFn = sourceSection(panelFn, 'const highlightRowProposal = (key)', 'const frameRowProposal');
+        expect(hoverFn).toContain('highlightFeatureGroupsForHover([');
+        expect(hoverFn).toContain('features: parcelFeatures');
+        expect(hoverFn).toContain('features: bodyFeatures');
+        // Body last — later groups draw on top (see highlightFeatureGroupsForHover).
+        expect(hoverFn.indexOf('features: parcelFeatures')).toBeLessThan(hoverFn.indexOf('features: bodyFeatures'));
+
+        const colorOf = (name) => {
+            const match = dialogShare.match(new RegExp(`const ${name} = '([^']+)'`));
+            expect(match, `missing colour constant: ${name}`).toBeTruthy();
+            return match[1];
+        };
+        expect(colorOf('SHARE_PLAN_HOVER_PARCEL_COLOR')).not.toBe(colorOf('SHARE_PLAN_HOVER_BODY_COLOR'));
+        expect(hoverFn).toContain('SHARE_PLAN_HOVER_PARCEL_COLOR');
+        expect(hoverFn).toContain('SHARE_PLAN_HOVER_BODY_COLOR');
+
+        // The body comes from the proposal's OWN geometry, never from the parcels under it.
+        expect(panelFn).toContain('collectProposalFeatureSets(proposal, { includeBuildingGeometry: true })');
+        // The grouped painter clears once and keeps every group (contract in
+        // proposal-hover-groups.test.js) — the share panel relies on both groups surviving.
+        expect(layerRender).toContain('function highlightFeatureGroupsForHover(featureGroups)');
+    });
+
     it('locks every fabric interaction surface while open', () => {
         // Selection/edit gate shared by many surfaces.
         expect(sourceSection(mapEditLock, 'function blocksSelection()', 'const api'))
