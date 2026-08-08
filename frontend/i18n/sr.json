@@ -2377,7 +2377,10 @@
             "oldPlotsMissing": "Ulazne parcele nije bilo moguće učitati pa je obod obuhvata izveden iz samog plana.",
             "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih parcela.",
             "eraseEdge": "Obriši među",
-            "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela"
+            "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela",
+            "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}} — menja vlasnika {{moved}} m².",
+            "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
+            "plotLabel": "parcela {{n}} ({{area}} m²)"
         }
     },
     "status": {

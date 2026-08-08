@@ -382,6 +382,25 @@
         }
     }
 
+    // Make a layout say what it already means: where one plot's corner sits partway along a
+    // neighbour's edge, give the neighbour that vertex too.
+    //
+    // Two plots only SHARE an edge when both rings carry the same two consecutive nodes. Where a
+    // neighbour has an extra vertex along the same line, the two sides are different edges with one
+    // plot each — so there is no boundary between them for anything to act on. That is why some
+    // boundaries could be erased and others, looking identical, could not, and it is also why a
+    // drag of a node on such a line opens a gap. Inserting a vertex on a segment does not move the
+    // segment, so this adds no area; on the Borovje plan one pass fixed all 46 and it converges
+    // there (a second pass adds nothing).
+    function conformGeometries(geometries, tolerance) {
+        const list = Array.isArray(geometries) ? geometries : [];
+        const vertices = [];
+        list.forEach(value => {
+            ringsOf(geometryOf(value)).forEach(ring => (ring || []).forEach(coord => vertices.push(coord)));
+        });
+        return insertNodesIntoRings(list, vertices, tolerance);
+    }
+
     function polygonFeaturesOf(geometry, turf) {
         const geom = geometryOf(geometry);
         if (!geom) return [];
@@ -676,7 +695,7 @@
         DEFAULT_NODE_PX, DEFAULT_EDGE_PX, DEFAULT_MERGE_PX, VERTEX_TOLERANCE,
         pixelDistance, projectOnSegment, segmentIntersection, segmentsFor,
         snapPoint, crossingsOf, anchorsFor, resolveCut,
-        insertNodesIntoRings, splitPolygonByLine, cutPlots,
+        insertNodesIntoRings, conformGeometries, splitPolygonByLine, cutPlots,
         boundaryGroups, boundaryPaths
     };
 });

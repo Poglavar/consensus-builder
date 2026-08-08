@@ -2347,7 +2347,10 @@
             "oldPlotsMissing": "The input parcels could not be loaded, so the pooled outline is derived from the plan itself.",
             "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded.",
             "eraseEdge": "Erase a boundary",
-            "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot"
+            "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot",
+            "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.",
+            "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
+            "plotLabel": "plot {{n}} ({{area}} m²)"
         }
     },
     "status": {

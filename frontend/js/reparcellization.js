@@ -112,7 +112,9 @@
         // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots and
         // their ownership taken BEFORE a mutating action, so undo restores the state the user
         // last saw rather than an intermediate drag frame.
-        historyCtl: null
+        historyCtl: null,
+        // Set for the duration of an open, so a second click cannot start a second editor.
+        opening: false
     };
 
     // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
@@ -1351,8 +1353,8 @@
     // outputs to cover the inputs to within 5 m², so a few cuts near a corner could fail a plan for
     // a reason invisible in the editor. Healing hands the scrap to the plot it borders most
     // instead, so nothing is ever dropped on the floor.
-    function settleSlices() {
-        const settled = healLayout(state.slices.map(slice => slice.geometry));
+    function settleSlices(previous) {
+        const settled = healLayout(state.slices.map(slice => slice.geometry), previous);
         if (!Array.isArray(settled)) { recomputeSliceAreas(); return; }
         const kept = [];
         state.slices.forEach((slice, index) => {
@@ -1367,28 +1369,12 @@
         recomputeSliceAreas();
     }
 
-    // Make the layout say what it already means: where one plot's corner sits partway along a
-    // neighbour's edge, give the neighbour that vertex too.
-    //
-    // Two plots only SHARE an edge when both rings carry the same two consecutive nodes. Where a
-    // neighbour has an extra vertex along the same line, the two sides are different edges with one
-    // plot each — so the boundary between them is not a boundary anything can act on, which is why
-    // some lines could be erased and others, looking identical, could not. On the Borovje plan this
-    // was 46 interior edges; one pass fixes all of them and adds no area, because inserting a vertex
-    // on a segment does not move the segment.
+    // Give every plot the vertices its neighbours already have on the same lines. The reasoning
+    // lives in plot-cut.js; this is the part that touches state.
     function conformLayout() {
         const cutApi = window.__plotCut;
         if (!cutApi || !state.slices.length) return 0;
-        const geometries = state.slices.map(slice => slice.geometry);
-        const vertices = [];
-        geometries.forEach(geometry => {
-            if (!geometry) return;
-            const rings = geometry.type === 'Polygon'
-                ? geometry.coordinates
-                : (geometry.coordinates || []).reduce((acc, part) => acc.concat(part), []);
-            (rings || []).forEach(ring => (ring || []).forEach(coord => vertices.push(coord)));
-        });
-        const conformed = cutApi.insertNodesIntoRings(geometries, vertices);
+        const conformed = cutApi.conformGeometries(state.slices.map(slice => slice.geometry));
         const added = conformed.inserted || 0;
         if (!added) return 0;
         state.slices.forEach((slice, index) => {
@@ -1436,21 +1422,32 @@
             if (!groups.has(entry.sourceIndex)) groups.set(entry.sourceIndex, []);
             groups.get(entry.sourceIndex).push(entry.geometry);
         });
+        // Captured before anything is reassigned. `previous` lines up with the NEW plot list so the
+        // settle afterwards can be scoped: without it the whole plan is settled, and drawing one
+        // line across one plot clipped thirty unrelated ones. An edit should touch what it names.
+        const wasGeometry = state.slices.map(slice => slice.geometry);
         const next = [];
+        const previous = [];
         state.slices.forEach((slice, index) => {
             const pieces = groups.get(index);
-            if (!pieces || !pieces.length) { next.push(slice); return; }
+            if (!pieces || !pieces.length) { next.push(slice); previous.push(wasGeometry[index]); return; }
             if (pieces.length === 1) {
                 slice.geometry = pieces[0];
                 next.push(slice);
+                previous.push(wasGeometry[index]);
                 return;
             }
-            pieces.forEach(geometry => next.push(
-                makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual')));
+            pieces.forEach((geometry, position) => {
+                next.push(makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual'));
+                // The first piece inherits the parent it was cut from; the rest are new, which the
+                // scoped settle reads as "changed, and holding nothing before". The arithmetic
+                // balances — the parent is counted once and the pieces add back up to it.
+                previous.push(position === 0 ? wasGeometry[index] : null);
+            });
         });
         state.slices = next;
         state.selectedSliceIndex = null;
-        settleSlices();
+        settleSlices(previous);
         updateLegend(state.ownerShares);
         try {
             drawPreview();
@@ -1821,8 +1818,11 @@
             discardLastHistory();
             return;
         }
-        // Carving drops the sub-1 m² scraps it makes; healing puts that land back into a neighbour
-        // instead of letting it leave the plan.
+        // Carving subtracts the new plot from whatever it overlapped, which leaves the neighbours
+        // without the corners it just introduced — the same non-conforming borders the line tool
+        // is careful not to make. Node them, then settle: carving drops the sub-1 m² scraps it
+        // makes, and healing puts that land back into a neighbour instead of letting it leave.
+        conformLayout();
         settleSlices();
         setStatus(t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
         updateLegend(state.ownerShares);
@@ -2001,12 +2001,7 @@
     }
 
     function eraseTooltipFor(group) {
-        const nameOf = index => {
-            const slice = state.slices[index];
-            const label = (slice && slice.displayName) || `#${index + 1}`;
-            const area = computeGeometryArea(slice && slice.geometry) || 0;
-            return `${label} (${Math.round(area).toLocaleString()} m²)`;
-        };
+        const nameOf = index => plotLabel(index);
         return escapeForCell(t('reparcellization.modal.eraseTooltip',
             'Erase this boundary — {{a}} and {{b}} become one plot',
             { a: nameOf(group.plots[0]), b: nameOf(group.plots[1]) }));
@@ -2255,6 +2250,10 @@
         const next = typeof force === 'boolean' ? force : !state.nodeEdit.active;
         if (next && !nodeEditingAvailable()) return;
         if (next && state.drawing.active) cancelDraw();
+        // Before any handle is drawn. Conforming used to run only when the line or erase tool
+        // opened, so going straight to the handles meant dragging a node on a layout where 46
+        // boundaries were not actually shared — and a drag there opens a gap in silence.
+        if (next) conformLayout();
         if (next && state.erase.active) {
             // Clear the restore flag first, or turning erase off would turn node editing back on
             // and land straight back here.
@@ -2442,6 +2441,17 @@
         }
         container.appendChild(hint);
 
+        // What the button will actually do, before it is pressed. Removing a junction node moves
+        // thousands of square metres between owners; it used to do that with nothing on screen to
+        // say so, and the only evidence was a number in the plot list that had quietly changed.
+        const consequence = removalConsequenceText(describeNodeRemoval(node, topology));
+        if (consequence) {
+            const warning = document.createElement('div');
+            warning.className = 'reparcel-node-popup__consequence';
+            warning.textContent = consequence;
+            container.appendChild(warning);
+        }
+
         // Removal is offered on EVERY node, outline included. Removing one dissolves the cut it
         // anchored and the plots on either side become one — remove the last cut and the pool is a
         // single parcel. That is a design decision about the cuts, not a change to the outline,
@@ -2485,12 +2495,28 @@
     // Settle a candidate layout back onto the pool: clip anything outside it, resolve overlaps, and
     // hand every unclaimed scrap to the plot it borders most. This is what lets an edit be allowed
     // unconditionally — the land always ends up belonging to something.
-    function healLayout(geometries) {
+    // `previous` is the layout as it was before the edit, when the caller has it. With it, only the
+    // plots the edit could have disturbed are settled — the global pass is quadratic in the plot
+    // count and ran in full on every drag release. Without it (a cut, which rebuilds the list and
+    // has no index-for-index predecessor), the global pass is still the right answer.
+    function healLayout(geometries, previous) {
         const heal = window.__plotHeal;
         if (!heal || typeof heal.healTiling !== 'function' || !state.superParcel || typeof turf === 'undefined') {
             return geometries;
         }
         try {
+            if (Array.isArray(previous) && typeof heal.healLocally === 'function') {
+                const local = heal.healLocally(previous, geometries, state.superParcel, { turf });
+                if (local && !local.fellBack) {
+                    if (local.changed) {
+                        console.debug('[reparcellization] layout healed (scoped)', {
+                            plots: local.scope, of: geometries.length, clipped: local.clipped,
+                            overlaps: local.overlaps, gapsFilled: local.gapsFilled, gapArea: Math.round(local.gapArea)
+                        });
+                    }
+                    return local.geometries;
+                }
+            }
             const result = heal.healTiling(geometries, state.superParcel, { turf });
             if (result.changed) {
                 console.debug('[reparcellization] layout healed', {
@@ -2503,6 +2529,76 @@
             console.warn('[reparcellization] could not heal the layout; keeping the edit as drawn', error);
             return geometries;
         }
+    }
+
+    // What removing this node would do, in the plan's own terms. Runs the removal on a COPY and
+    // measures it, so the popup cannot describe one thing while the button does another: both go
+    // through classifyNodeRemoval, and the numbers come from the edit itself rather than an
+    // estimate of it.
+    function describeNodeRemoval(node, topology) {
+        const topo = window.__plotTopology;
+        const heal = window.__plotHeal;
+        if (!topo || !node) return null;
+        const verdict = topo.classifyNodeRemoval(node, topology);
+        const before = state.slices.map(slice => slice.geometry);
+        if (verdict.kind === 'merge') {
+            // The merge keeps the biggest contributor and the others give up their land to it.
+            const areas = verdict.plots.map(index => ({
+                index, area: computeGeometryArea(state.slices[index] && state.slices[index].geometry) || 0
+            }));
+            const keeper = areas.reduce((best, entry) => (entry.area > best.area ? entry : best), areas[0]);
+            const joining = areas.filter(entry => entry.index !== keeper.index);
+            return {
+                kind: 'merge',
+                keeper,
+                joining,
+                moved: joining.reduce((sum, entry) => sum + entry.area, 0)
+            };
+        }
+        if (verdict.kind === 'outline') return { kind: 'outline', moved: 0 };
+        const result = topo.removeNode(state.slices, topology, node.id, { dissolveDegenerate: true });
+        if (!result.removed) return { kind: 'straighten', moved: 0, refused: true };
+        // Measured on the removal itself, NOT on a healed copy. Healing an 82-plot layout takes
+        // 1.1 s, which is a frozen popup rather than a description — and it would not change the
+        // headline anyway: dropping a vertex hands one plot's triangle to the other, and the heal
+        // only redistributes the slivers that frees.
+        const shift = (heal && typeof heal.areaShift === 'function')
+            ? heal.areaShift(before, result.geometries, { turf }) : { moved: 0, perPlot: [] };
+        return { kind: 'straighten', moved: shift.moved, perPlot: shift.perPlot };
+    }
+
+    // How a plot is named when an edit talks about it: by its number in the list and its size.
+    // Owners do not identify plots here — a whole plan can belong to one body — and "plot 7
+    // (4,941 m²)" is also what the user is looking at in the panel.
+    function plotLabel(index) {
+        const slice = state.slices[index];
+        const area = Math.round(computeGeometryArea(slice && slice.geometry) || 0).toLocaleString();
+        return t('reparcellization.modal.plotLabel', 'plot {{n}} ({{area}} m²)', { n: index + 1, area });
+    }
+
+    // One sentence naming the land an edit moves, or nothing when it moves none worth saying.
+    function removalConsequenceText(description) {
+        if (!description) return '';
+        const m2 = value => Math.round(value).toLocaleString();
+        // By NUMBER and area, the way the plot list reads. Naming them by owner produced
+        // "merges Prometna površina IS-1, Prometna površina IS-1 into Prometna površina IS-1" —
+        // every plot in this plan belongs to the same body, so the owner name identifies nothing.
+        const nameOf = index => plotLabel(index);
+        if (description.kind === 'merge') {
+            return t('reparcellization.modal.nodeRemoveMerges',
+                'Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.',
+                {
+                    joining: description.joining.map(entry => nameOf(entry.index)).join(', '),
+                    keeper: nameOf(description.keeper.index),
+                    moved: m2(description.moved)
+                });
+        }
+        if (description.kind === 'straighten' && description.moved >= 1) {
+            return t('reparcellization.modal.nodeRemoveStraightens',
+                'Removing it straightens the boundary — about {{moved}} m² moves across it.',
+                { moved: m2(description.moved) });
+        }
+        return '';
     }
 
     // Removing a node.
@@ -2522,25 +2618,27 @@
     function removeNodeFromLayout(node, topology) {
         const topo = window.__plotTopology;
         if (!topo || !node) return false;
-        const cuts = (topology.edges || []).filter(edge => !edge.onBoundary
-            && (edge.a === node.id || edge.b === node.id));
+        // Same verdict the popup described — one classifier, so the two cannot drift apart.
+        const verdict = topo.classifyNodeRemoval(node, topology);
+        const description = describeNodeRemoval(node, topology);
 
-        // A bend is two cuts meeting: the boundary passes THROUGH this node rather than ending at
-        // it, so removing it straightens the line and the line stays. Whether the node also happens
-        // to sit on the pooled outline is beside the point — a boundary that runs along the outline
-        // has middle nodes classified that way, and treating those as ends destroyed whole lines
-        // that had ordinary nodes on both sides.
-        const isBend = cuts.length === 2;
-        if (isBend) return removeNodePerRing(node, topology);
-
-        if (!cuts.length) {
+        if (verdict.kind === 'outline') {
             const text = t('reparcellization.modal.status.nodeOnPool',
                 'That node sits on the pooled outline — it belongs to the neighbours, not to this plan.');
             setStatus(text, 'warning', 'reparcellization.modal.status.nodeOnPool');
             showNodeMessagePopup(node, text);
             return false;
         }
-        return dissolveBoundariesAt(node, topology, cuts);
+        const done = verdict.kind === 'straighten'
+            ? removeNodePerRing(node, topology)
+            : dissolveBoundariesAt(node, topology, verdict.cuts);
+        // And say what it did, since the plot list is where the change would otherwise show up
+        // unannounced.
+        if (done) {
+            const consequence = removalConsequenceText(description);
+            if (consequence) setStatus(consequence, 'info');
+        }
+        return done;
     }
 
     // Straighten a boundary: drop the vertex from every plot that uses it, so both sides lose the
@@ -2641,7 +2739,7 @@
         // drops a boundary, a drag pushes one plot over another — and the fix is to settle the
         // land, not to forbid the gesture. Whatever is left unclaimed joins the plot it borders
         // most; whatever is claimed twice goes to one of them.
-        const settled = healLayout(geometries);
+        const settled = healLayout(geometries, state.slices.map(slice => slice.geometry));
         pushHistory();   // the pre-edit layout, captured before the assignment below
         const dissolved = [];
         state.slices.forEach((slice, idx) => {
@@ -3754,7 +3852,30 @@
 
     // `initialPolygons` (optional) reopens the editor on a saved plan's polygons[] instead of
     // re-running the algorithm — used by "Copy into new proposal" and by reopening a draft.
+    // One editor at a time.
+    //
+    // A second modal opens directly over the first, and because the module keeps ONE state object
+    // the older modal's buttons stay wired to a torn-down editor: visible, enabled, and doing
+    // nothing when clicked. That is indistinguishable from a broken tool — a symptom this editor
+    // has already been debugged for twice.
+    //
+    // The latch has to be set SYNCHRONOUSLY. Checking `state.modal` alone does not work: opening
+    // awaits the input parcels before it builds anything, so two clicks in the same tick both sail
+    // past a guard that only looks at what has been built.
     async function openReparcellizationModal(options = {}) {
+        if (state.opening || (state.modal && document.contains(state.modal))) {
+            console.warn('[reparcellization] the editor is already open; ignoring a second request');
+            return false;
+        }
+        state.opening = true;
+        try {
+            return await buildReparcellizationModal(options);
+        } finally {
+            state.opening = false;
+        }
+    }
+
+    async function buildReparcellizationModal(options = {}) {
         let selection = (typeof getCurrentParcelSelectionContext === 'function')
             ? getCurrentParcelSelectionContext()
             : null;

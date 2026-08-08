@@ -2396,7 +2396,10 @@
             "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se deriva del propio plan.",
             "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada.",
             "eraseEdge": "Borrar un lindero",
-            "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela"
+            "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela",
+            "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
+            "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
+            "plotLabel": "parcela {{n}} ({{area}} m²)"
         }
     },
     "status": {

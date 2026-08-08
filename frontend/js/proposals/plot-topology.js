@@ -237,6 +237,30 @@
         return geometry;
     }
 
+    // What removing a node would MEAN, decided once so the thing that describes it and the thing
+    // that does it can never disagree.
+    //
+    //   straighten — a bend: two cuts of ours meet here, so the boundary passes THROUGH the node.
+    //                Take it away and the line straightens but stays; a little land moves across it.
+    //   merge      — an end: the node is what holds a boundary up. Take it away and the boundary
+    //                stops existing, so the plots it separated become one. This is the case that
+    //                moves thousands of square metres, and it used to do so with no warning at all.
+    //   outline    — no cut of ours ends here; it is a corner of the pooled outline, which belongs
+    //                to the neighbours and is not this plan's to redraw.
+    function classifyNodeRemoval(node, topology) {
+        const edges = (topology && topology.edges) || [];
+        const cuts = edges.filter(edge => !edge.onBoundary && (edge.a === node.id || edge.b === node.id));
+        if (!cuts.length) return { kind: 'outline', cuts, plots: [] };
+        // A bend is two cuts meeting. Whether it also happens to sit on the pooled outline is beside
+        // the point: a boundary that runs ALONG the outline has middle nodes classified that way,
+        // and treating those as ends destroyed whole lines that had ordinary nodes either side.
+        if (cuts.length === 2) return { kind: 'straighten', cuts, plots: (node.plots || []).slice() };
+        const plots = new Set();
+        cuts.forEach(edge => (edge.plots || []).forEach(index => plots.add(index)));
+        if (plots.size < 2) return { kind: 'straighten', cuts, plots: Array.from(plots) };
+        return { kind: 'merge', cuts, plots: Array.from(plots).sort((a, b) => a - b) };
+    }
+
     // ── The pool boundary is not part of the design ──────────────────────────────────────────────
     //
     // A readjustment subdivides a POOL of input parcels. Two invariants: the outputs tile the pool
@@ -397,6 +421,7 @@
 
     const api = {
         DEFAULT_TOLERANCE, buildTopology, moveNode, insertNodeOnEdge, removeNode, edgeMidpoints,
+        classifyNodeRemoval,
         isClosedGeometry, shapesToPlots, plotsToShapes,
         boundaryIndexOf, classifyAgainstBoundary, annotateBoundary, isOnBoundary,
         nodeIsDraggable, constrainNodeDrop, projectOnSegment
