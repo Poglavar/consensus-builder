@@ -1543,7 +1543,13 @@
                     "all": "Sve",
                     "cumulative": "Kumulativno do {year}.",
                     "toApply": "za primenu: {n}",
-                    "toUnapply": "za uklanjanje: {n}"
+                    "toUnapply": "za uklanjanje: {n}",
+                    "selectForBulk": "Označi za grupnu dodelu epohe",
+                    "selectedCount": "označeno: {n}",
+                    "assignTo": "Dodeli u:",
+                    "assign": "Dodeli",
+                    "clearSelection": "Poništi",
+                    "bulkPartial": "Ažurirano {ok} od {total}; neuspelih {failed} (vidi konzolu)."
                 }
             },
             "proposalChoice": {

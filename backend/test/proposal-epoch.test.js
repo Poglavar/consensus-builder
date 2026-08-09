@@ -82,6 +82,15 @@ describe('epochDiff — što još primijeniti, što maknuti za odabranu godinu',
     });
 });
 
+describe('DEFAULT_CHOICES su ponuđene godine, sve valjane', () => {
+    it('rastu i prolaze parseEpochYear', () => {
+        const g = epoch.DEFAULT_CHOICES;
+        expect(g.length).toBeGreaterThan(1);
+        expect([...g].sort((a, b) => a - b)).toEqual([...g]);
+        for (const godina of g) expect(epoch.parseEpochYear(godina)).toBe(godina);
+    });
+});
+
 describe('serializer: epoch_year → epochYear', () => {
     const osnovni = { proposal_id: 'p-1', type: 'road', proposal_data: {} };
 

@@ -1589,7 +1589,13 @@
                     "all": "Todas",
                     "cumulative": "Acumulado hasta {year}.",
                     "toApply": "por aplicar: {n}",
-                    "toUnapply": "por quitar: {n}"
+                    "toUnapply": "por quitar: {n}",
+                    "selectForBulk": "Seleccionar para asignación masiva de época",
+                    "selectedCount": "{n} seleccionados",
+                    "assignTo": "Asignar a:",
+                    "assign": "Asignar",
+                    "clearSelection": "Borrar",
+                    "bulkPartial": "{ok} de {total} actualizados; {failed} fallaron (ver consola)."
                 }
             },
             "proposalChoice": {

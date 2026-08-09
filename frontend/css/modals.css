@@ -5362,6 +5362,7 @@
 .proposal-epoch-select {
     font-size: 12px;
     padding: 2px 6px;
+}
 
 /* What removing a node will cost, said in the popup before the button is pressed. A junction
    removal moves thousands of square metres between owners; it used to do so in silence. */
@@ -5374,4 +5375,55 @@
     padding: 5px 7px;
     margin: 0 0 8px;
     border-radius: 3px;
+}
+
+/* --- Epoch: skupna dodjela ---------------------------------------------- */
+.proposal-bulk-check {
+    margin: 0 2px 0 0;
+    flex: 0 0 auto;
+    cursor: pointer;
+    accent-color: #5b21b6;
+}
+
+.proposal-epoch-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: #5b21b6;
+    color: #fff;
+}
+.proposal-epoch-bulk-count {
+    font-weight: 600;
+    font-size: 12px;
+}
+.proposal-epoch-bulk span {
+    font-size: 12px;
+}
+.proposal-epoch-bulk-select {
+    font-size: 12px;
+    padding: 2px 6px;
+    max-width: 120px;   /* inače traka prelama "Odznači" u drugi red */
+}
+.proposal-epoch-bulk-apply,
+.proposal-epoch-bulk-clear {
+    font-size: 12px;
+    padding: 3px 12px;
+    border-radius: 12px;
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+.proposal-epoch-bulk-apply {
+    background: #fff;
+    color: #5b21b6;
+    font-weight: 600;
+}
+.proposal-epoch-bulk-apply:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+.proposal-epoch-bulk-clear {
+    background: transparent;
+    color: #fff;
 }

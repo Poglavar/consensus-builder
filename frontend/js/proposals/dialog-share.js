@@ -554,10 +554,12 @@ function renderProposalListModal() {
         bodyEl.scrollTop = scrollPositions.body;
     }
 
-    // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji.
+    // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji;
+    // traka skupne dodjele samo kad je nešto označeno kvačicom.
     try {
-        if (window.__proposalEpoch && typeof window.__proposalEpoch.injectTimeline === 'function') {
+        if (window.__proposalEpoch) {
             window.__proposalEpoch.injectTimeline(modal);
+            window.__proposalEpoch.refreshBulkBar();
         }
     } catch (_) { }
 

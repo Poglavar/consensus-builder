@@ -556,6 +556,8 @@ function showProposalDialog(overrides = null) {
         multiple: t('modal.createProposal.ownershipOptions.multiple', 'Multiple owners')
     };
     const nameLabel = t('modal.createProposal.nameLabel', 'Name:');
+    // Epoha plana: koje desetljeće ovaj prijedlog gradi (vremenska crta u listi).
+    const epochLabel = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
     const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Proposal name');
     const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const unknownOwnerLabel = t('modal.createProposal.ownerUnknown', 'Unknown');
@@ -837,6 +839,12 @@ function showProposalDialog(overrides = null) {
                 <div class="form-group">
                     <label for="proposalDescription">${descriptionLabel}</label>
                     <input type="text" id="proposalDescription" class="proposal-description-input" placeholder="${descriptionPlaceholder}">
+                </div>
+                <div class="form-group">
+                    <label for="proposalEpochYear" style="display: flex; align-items: center; gap: 8px;">
+                        <span>${epochLabel}</span>
+                        <select id="proposalEpochYear" style="flex: 1;"></select>
+                    </label>
                 </div>
                 <div class="proposal-options-collapsible collapsible collapsed" id="proposalOptionsSection" style="margin-top:8px;">
                     <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalOptionsContent" onclick="(function(){
@@ -1383,6 +1391,14 @@ function showProposalDialog(overrides = null) {
     // Pre-fill name and description with default text (facets already set it for a chosen goal;
     // this only fills the empty do-nothing default).
     updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
+
+    // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
+    // traži isti odabir svaki put.
+    try {
+        if (window.__proposalEpoch && typeof window.__proposalEpoch.initCreateDialogSelect === 'function') {
+            window.__proposalEpoch.initCreateDialogSelect(document.getElementById('proposalEpochYear'));
+        }
+    } catch (_) { }
 
     const nameInputEl = document.getElementById('proposalName');
     const descriptionInputEl = document.getElementById('proposalDescription');

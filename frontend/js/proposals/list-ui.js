@@ -823,6 +823,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         return `
             <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}" style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
                 <div class="proposal-card-head">
+                    ${window.__proposalEpoch ? window.__proposalEpoch.selectCheckboxHtml(proposalId) : ''}
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
                     ${serialProposalId ? `<span class="proposal-meta-number">#${escapeHtml(serialProposalId)}</span>` : ''}
@@ -880,6 +881,9 @@ function resetParcelSelectionForProposalListInteraction() {
 async function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
+
+    // Kvačica za skupnu dodjelu epohe označava, ne otvara prijedlog.
+    if (event.target && event.target.closest && event.target.closest('.proposal-bulk-check')) return;
 
     const proposalIdAttr = item.getAttribute('data-proposal-id');
     if (!proposalIdAttr) return;

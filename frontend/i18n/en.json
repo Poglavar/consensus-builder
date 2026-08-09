@@ -1569,7 +1569,13 @@
                     "all": "All",
                     "cumulative": "Cumulative to {year}.",
                     "toApply": "to apply: {n}",
-                    "toUnapply": "to remove: {n}"
+                    "toUnapply": "to remove: {n}",
+                    "selectForBulk": "Select for bulk epoch assignment",
+                    "selectedCount": "{n} selected",
+                    "assignTo": "Assign to:",
+                    "assign": "Assign",
+                    "clearSelection": "Clear",
+                    "bulkPartial": "{ok} of {total} updated; {failed} failed (see console)."
                 }
             },
             "proposalChoice": {
