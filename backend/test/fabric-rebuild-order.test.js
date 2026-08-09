@@ -160,6 +160,11 @@ describe('ProposalManager.reapplyAppliedProposals — reload barrier', () => {
     });
 });
 
+// These harnesses stand in for `this`, so every collaborator applyProposal reaches for has to be on
+// them — adding one to the real object without adding it here is a TypeError, not a skipped step.
+// _collectAppliedAlternativesForExplicitApply is borrowed rather than stubbed: with no
+// collectAppliedProposalAlternatives global installed it returns [], which is exactly these tests'
+// premise (no alternative is standing), and borrowing keeps that premise honest if the guard changes.
 describe('ProposalManager.applyProposal — canonical external mutation', () => {
     it('only flips the record, then delegates all map work to a queued rebuild', async () => {
         const proposal = { proposalId: 'new-road', goal: 'road-track', applied: false };
@@ -184,6 +189,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
                 return { ok: true, applied: 1, failed: [] };
             }),
             _refreshUIAfterProposalChange: vi.fn(),
+            _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
             applyProposal: ProposalManager.applyProposal
         };
 
@@ -219,6 +225,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
                 return { ok: true, applied: snapshots.length, failed: [] };
             }),
             _refreshUIAfterProposalChange() {},
+            _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
             applyProposal: ProposalManager.applyProposal
         };
 
@@ -254,6 +261,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
                 .mockResolvedValueOnce({ ok: false, applied: 0, failed: [{ proposalId: proposal.proposalId }] })
                 .mockResolvedValueOnce({ ok: true, applied: 0, failed: [] }),
             _refreshUIAfterProposalChange: vi.fn(),
+            _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
             applyProposal: ProposalManager.applyProposal
         };
 
