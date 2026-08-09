@@ -5263,3 +5263,66 @@
 
 .geom-undo-button:disabled { opacity: 0.4; cursor: default; }
 .geom-undo-button:not(:disabled):hover { background: #eef3fd; border-color: #9db8e8; }
+
+/* --- Epoch buckets (vremenska crta plana) ------------------------------- */
+.proposal-epoch-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 9px;
+    line-height: 1.5;
+    color: #5b21b6;
+    background: #ede9fe;
+    border: 1px solid #c4b5fd;
+    font-variant-numeric: tabular-nums;
+}
+
+.proposal-epoch-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-bottom: 1px solid #e5e9f0;
+    background: #f8f7ff;
+}
+.proposal-epoch-timeline-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-right: 2px;
+}
+.proposal-epoch-year {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1px solid #c4b5fd;
+    background: #fff;
+    color: #5b21b6;
+    cursor: pointer;
+}
+.proposal-epoch-year.is-active {
+    background: #5b21b6;
+    border-color: #5b21b6;
+    color: #fff;
+}
+.proposal-epoch-diff {
+    font-size: 11px;
+    color: #6b7280;
+    margin-left: auto;
+}
+
+.proposal-epoch-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 10px;
+}
+.proposal-epoch-row label {
+    font-size: 12px;
+    color: #6b7280;
+}
+.proposal-epoch-select {
+    font-size: 12px;
+    padding: 2px 6px;
+}

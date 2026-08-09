@@ -554,6 +554,13 @@ function renderProposalListModal() {
         bodyEl.scrollTop = scrollPositions.body;
     }
 
+    // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji.
+    try {
+        if (window.__proposalEpoch && typeof window.__proposalEpoch.injectTimeline === 'function') {
+            window.__proposalEpoch.injectTimeline(modal);
+        }
+    } catch (_) { }
+
     if (proposalListState.selectedId) {
         const selectedEl = modal.querySelector(`.proposal-list-item[data-proposal-id="${proposalListState.selectedId}"]`);
         if (selectedEl && typeof selectedEl.scrollIntoView === 'function') {

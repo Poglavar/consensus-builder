@@ -1585,7 +1585,20 @@
                     "acceptedNotFunded": "Accepted (Not funded)"
                 },
                 "syncBlockchainLabel": "Sync",
-                "downloadConfirm": "Proposal is not in local storage yet. Download?"
+                "downloadConfirm": "Proposal is not in local storage yet. Download?",
+                "epoch": {
+                    "badgeTooltip": "Plan epoch (timeline year)",
+                    "rowLabel": "Plan epoch",
+                    "none": "No epoch",
+                    "custom": "Other year…",
+                    "customPrompt": "Timeline year (2026–2966):",
+                    "saveError": "Failed to save the epoch.",
+                    "timelineLabel": "Timeline",
+                    "all": "All",
+                    "cumulative": "Cumulative to {year}.",
+                    "toApply": "to apply: {n}",
+                    "toUnapply": "to remove: {n}"
+                }
             },
             "proposalChoice": {
                 "title": "Choose Proposal",

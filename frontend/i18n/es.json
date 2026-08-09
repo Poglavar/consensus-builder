@@ -1605,7 +1605,20 @@
                     "acceptedNotFunded": "Aceptada (Sin fondos)"
                 },
                 "syncBlockchainLabel": "Sincronizar",
-                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?"
+                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
+                "epoch": {
+                    "badgeTooltip": "Época del plan (año de la línea de tiempo)",
+                    "rowLabel": "Época del plan",
+                    "none": "Sin época",
+                    "custom": "Otro año…",
+                    "customPrompt": "Año de la línea de tiempo (2026–2966):",
+                    "saveError": "No se pudo guardar la época.",
+                    "timelineLabel": "Línea de tiempo",
+                    "all": "Todas",
+                    "cumulative": "Acumulado hasta {year}.",
+                    "toApply": "por aplicar: {n}",
+                    "toUnapply": "por quitar: {n}"
+                }
             },
             "proposalChoice": {
                 "title": "Elegir propuesta",

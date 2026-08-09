@@ -607,6 +607,11 @@ function applyProposalListFilters(dataset) {
     const lifecycleFilter = proposalListState.lifecycleFilter || 'all';
     const appliedFilter = proposalListState.appliedFilter || 'all';
 
+    // Vremenska crta plana: kumulativni filtar po epohi (null = bez filtra).
+    if (window.__proposalEpoch) {
+        dataset = window.__proposalEpoch.filterEntriesCumulative(dataset, window.__proposalEpoch.getSelectedYear());
+    }
+
     return dataset.filter(entry => {
         const { metrics } = entry;
         if (goalFilter !== 'all' && metrics.goalKey !== goalFilter) {
@@ -826,6 +831,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                 </div>
                 <div class="proposal-card-sub">${metaBits}</div>
                 <div class="proposal-card-badges">
+                    ${window.__proposalEpoch ? window.__proposalEpoch.epochBadgeHtml(proposal) : ''}
                     <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
                     <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
                     ${buyButtonHtml}

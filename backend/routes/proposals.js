@@ -255,7 +255,22 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
         onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) },
         screenshotUrl: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true })) },
-        screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) }
+        screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) },
+        // Epoch bucket for the plan timeline (presentation metadata; see proposals-ddl.sql).
+        epochYear: { required: false, validate: validators.optional(validators.finiteNumber({ integer: true, min: 2026, max: 2966, label: 'epochYear' })) }
+    }
+});
+
+// PATCH /proposals/:id/epoch — epochYear: 2026–2966 postavlja bucket, null ga briše.
+const proposalEpochPatchValidator = createJsonBodyValidator({
+    schema: {
+        epochYear: {
+            required: true,
+            missingMessage: 'epochYear is required (integer year or null to clear).',
+            validate: (value, fieldName) => value === null
+                ? { ok: true, value: null }
+                : validators.finiteNumber({ integer: true, min: 2026, max: 2966, label: 'epochYear' })(value, fieldName)
+        }
     }
 });
 
@@ -451,6 +466,7 @@ export function setupProposalsRoute(app, pool) {
             const bounds = validated.bounds ?? null;
             const onchainData = validated.onchain ?? validated.onchainData ?? null;
             const screenshotUrl = validated.screenshotUrl ?? validated.screenshot_url ?? null;
+            const epochYear = validated.epochYear ?? null;
 
             // Corridor acquisition stats were scraped from the client's DOM and trusted. Recompute
             // them from PostGIS and overwrite the client copy (best-effort + Zagreb-only inside;
@@ -497,7 +513,7 @@ export function setupProposalsRoute(app, pool) {
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
-                    ownership_flow, cadastre_frame
+                    ownership_flow, cadastre_frame, epoch_year
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7,
                     $8,
@@ -511,7 +527,7 @@ export function setupProposalsRoute(app, pool) {
                     $31, $32,
                     $33, $34,
                     $35, $36, $37, $38, $39,
-                    $40, $41
+                    $40, $41, $42
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -543,7 +559,8 @@ export function setupProposalsRoute(app, pool) {
                 screenshotUrl,
                 JSON.stringify(proposalData),
                 ownershipFlow.length ? JSON.stringify(ownershipFlow) : null,
-                cadastreFrame ? JSON.stringify(cadastreFrame) : null
+                cadastreFrame ? JSON.stringify(cadastreFrame) : null,
+                epochYear
             ];
 
             const result = await pool.query(sql, params);
@@ -745,6 +762,7 @@ export function setupProposalsRoute(app, pool) {
                 -- server proposal touch my parcel" without fetching every proposal in full.
                 cadastre_parcel_ids,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
+                epoch_year,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
                 includePagination: true
@@ -769,7 +787,8 @@ export function setupProposalsRoute(app, pool) {
                     lifecycleStatus: proposal.lifecycleStatus,
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
-                    screenshotUrl: proposal.screenshotUrl || null
+                    screenshotUrl: proposal.screenshotUrl || null,
+                    epochYear: proposal.epochYear ?? null
                 };
             });
 
@@ -820,6 +839,61 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
+    // Plan po epohama: bucketi s prijedlozima, poredani po godini pa po
+    // created_at (redoslijed primjene UNUTAR godine i dalje diktira
+    // plan-order.js — ovo je izvještajni artefakt za report i hr-reljef,
+    // ne mehanizam ovisnosti).
+    app.get('/proposals/epoch-plan', async (req, res) => {
+        try {
+            const city = normalizeCityCode(req.query.city);
+            const params = [];
+            const clauses = ['epoch_year IS NOT NULL'];
+            if (city) {
+                params.push(city);
+                clauses.push(`city = $${params.length}`);
+            }
+            const sql = `
+                SELECT id, proposal_id, city,
+                       COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
+                       COALESCE(type, proposal_data->>'type') AS type,
+                       COALESCE(proposal_data->>'goal', type) AS goal,
+                       epoch_year, bounds, created_at,
+                       COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url
+                FROM proposal
+                WHERE ${clauses.join(' AND ')}
+                ORDER BY epoch_year, created_at
+            `;
+            const result = await pool.query(sql, params);
+
+            const epochs = [];
+            const byYear = new Map();
+            for (const row of result.rows) {
+                const year = Number(row.epoch_year);
+                if (!byYear.has(year)) {
+                    byYear.set(year, { year, proposals: [] });
+                    epochs.push(byYear.get(year));
+                }
+                byYear.get(year).proposals.push({
+                    id: row.id,
+                    proposalId: row.proposal_id,
+                    city: row.city,
+                    name: row.display_name,
+                    type: row.type,
+                    goal: row.goal,
+                    epochYear: year,
+                    bounds: row.bounds,
+                    createdAt: row.created_at,
+                    screenshotUrl: row.screenshot_url
+                });
+            }
+
+            res.json({ city: city || null, epochs, count: result.rows.length });
+        } catch (err) {
+            console.error('Error in GET /proposals/epoch-plan:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/proposals/:id', async (req, res) => {
         try {
             const idParam = req.params.id;
@@ -841,7 +915,7 @@ export function setupProposalsRoute(app, pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
-                    lens, bounds, onchain_data, screenshot_url, proposal_data
+                    lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data
                 FROM proposal
                 WHERE proposal_id = $1 OR id::text = $1
             `;
@@ -897,7 +971,7 @@ export function setupProposalsRoute(app, pool) {
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
                     ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, descendant_parcel_ids,
-                    onchain_data, screenshot_url, proposal_data
+                    onchain_data, screenshot_url, epoch_year, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}
                 ORDER BY created_at DESC
@@ -946,4 +1020,38 @@ export function setupProposalsRoute(app, pool) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // Postavlja/briše epoch bucket prijedloga (vremenska crta plana). Isti
+    // adresni oblik kao screenshot patch: server id ILI proposal_id.
+    app.patch('/proposals/:id/epoch', proposalEpochPatchValidator, async (req, res) => {
+        try {
+            const idParam = req.params.id;
+            if (!idParam) {
+                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
+            }
+            const { epochYear } = req.validatedBody;
+
+            const sql = `
+                UPDATE proposal
+                SET epoch_year = $1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE proposal_id = $2 OR id::text = $2
+                RETURNING id, proposal_id, epoch_year
+            `;
+            const result = await pool.query(sql, [epochYear, idParam]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Proposal not found' });
+            }
+            const row = result.rows[0];
+            res.json({
+                id: row.id,
+                proposalId: row.proposal_id,
+                epochYear: row.epoch_year
+            });
+        } catch (err) {
+            console.error('Error in PATCH /proposals/:id/epoch:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
 }

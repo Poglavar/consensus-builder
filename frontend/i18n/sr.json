@@ -1559,6 +1559,19 @@
                     "minted": "Iskovan",
                     "inMemory": "U memoriji",
                     "acceptedNotFunded": "Prihvaćen (Bez sredstava)"
+                },
+                "epoch": {
+                    "badgeTooltip": "Epoha plana (godina vremenske linije)",
+                    "rowLabel": "Epoha plana",
+                    "none": "Bez epohe",
+                    "custom": "Druga godina…",
+                    "customPrompt": "Godina vremenske linije (2026–2966):",
+                    "saveError": "Čuvanje epohe nije uspelo.",
+                    "timelineLabel": "Vremenska linija",
+                    "all": "Sve",
+                    "cumulative": "Kumulativno do {year}.",
+                    "toApply": "za primenu: {n}",
+                    "toUnapply": "za uklanjanje: {n}"
                 }
             },
             "proposalChoice": {

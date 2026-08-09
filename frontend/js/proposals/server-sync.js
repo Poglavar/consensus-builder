@@ -51,6 +51,7 @@ function normalizeServerProposalSummary(raw, cityCode) {
         // onchain_data->>'imageUrl')). Dropping it here is what made the server tab fall back to
         // the goal emoji for every row, even though almost all of them have a picture.
         screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
+        epochYear: raw.epochYear ?? raw.epoch_year ?? null,
         parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
         // The BASE-ancestry stamp — what the claims/dossier surfaces match on. Dropping it here
         // would silently blind every "does this server proposal touch my parcel" check.

@@ -1150,6 +1150,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 window.__claimsUi.injectProposalBreadcrumb(detailsContent, fullProposal || proposal);
             }
         } catch (_) { }
+        // Epoch bucket: kojoj godini plana prijedlog pripada (vremenska crta).
+        try {
+            if (window.__proposalEpoch && typeof window.__proposalEpoch.injectEpochRow === 'function') {
+                window.__proposalEpoch.injectEpochRow(detailsContent, fullProposal || proposal);
+            }
+        } catch (_) { }
         // Lazy append remaining ancestor parcels
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels

@@ -354,7 +354,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(41); // +cadastre_parcel_ids, +ownership_flow, +cadastre_frame
+        expect(insertParams).toHaveLength(42); // +cadastre_parcel_ids, +ownership_flow, +cadastre_frame, +epoch_year
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');

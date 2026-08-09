@@ -1036,6 +1036,17 @@ const proposalStorage = {
         return true;
     },
 
+    // Epoch bucket ("Kumulativno do godine" timeline) — shared plan metadata, ne lokalna vidljivost.
+    setProposalEpochYear(proposalId, epochYear) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        proposal.epochYear = (typeof epochYear === 'number' && Number.isInteger(epochYear)) ? epochYear : null;
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        this.save();
+        return true;
+    },
+
     setProposalApplied(proposalId, applied) {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;
