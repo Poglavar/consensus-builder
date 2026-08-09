@@ -162,6 +162,14 @@
             return { junctions: [], stats: { seedNodes: 0, junctions: 0, fused: 0, maxSpanM: 0, maxLinkLengthM } };
         }
 
+        // A junction the deterministic rules already settled is not work; it is only still a
+        // junction. Reading it off the problems keeps one definition of "unresolved" — the builder's.
+        const unresolvedNodeIds = new Set(
+            (Array.isArray(graph?.problems) ? graph.problems : [])
+                .filter(problem => problem?.type === 'unresolved_intersection')
+                .flatMap(problem => problem.nodeIds || [])
+        );
+
         const unionFind = fuseSeeds(seedIds, buildAdjacency(sections), nodesById, maxLinkLengthM);
         const components = new Map();
         seedIds.forEach(seedId => {
@@ -184,8 +192,13 @@
             });
             const osmNodeIds = nodeIds.map(osmNodeIdOf).filter(Boolean);
             const geometry = junctionGeometry(memberNodes);
+            const unsolvedNodeIds = nodeIds.filter(id => unresolvedNodeIds.has(id));
             return {
                 key: `junction:${(osmNodeIds.length ? osmNodeIds : nodeIds).join('+')}`,
+                unresolvedNodeIds: unsolvedNodeIds,
+                // Fusing is deliberately coarse, so one hard node makes the whole junction work:
+                // its movements cross the boundary the solved nodes sit on.
+                resolved: unsolvedNodeIds.length === 0,
                 name: junctionName(arms, osmNodeIds, nodeIds),
                 nodeIds,
                 osmNodeIds,
@@ -206,6 +219,8 @@
             stats: {
                 seedNodes: seedIds.length,
                 junctions: junctions.length,
+                resolved: junctions.filter(junction => junction.resolved).length,
+                unresolved: junctions.filter(junction => !junction.resolved).length,
                 fused: junctions.filter(junction => junction.nodeIds.length > 1).length,
                 maxSpanM: junctions.reduce((max, junction) => Math.max(max, junction.spanM || 0), 0),
                 maxLinkLengthM

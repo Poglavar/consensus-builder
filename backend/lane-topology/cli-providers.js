@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v9';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v10';
 export const PROVIDER_TIMEOUT_MS = Object.freeze({
     codex: 10 * 60 * 1000,
     claude: 15 * 60 * 1000
@@ -23,6 +23,80 @@ export const TOPOLOGY_OUTPUT_SCHEMA = {
 };
 
 const MAX_OUTPUT_CHARS = 500_000;
+
+// What is known about a model that a run cannot discover for itself. Absent from this table means
+// no known limitation: an unlisted model takes imagery and is free to run.
+export const MODEL_NOTES = Object.freeze({
+    'gpt-5.3-codex-spark': Object.freeze({
+        // input_modalities: ["text"]. Sending a crop does not fail — the CLI drops it and the model
+        // answers from the tags alone, which is indistinguishable from an answer that read the
+        // orthophoto until you check the reasons.
+        acceptsImagery: false,
+        // Scored against the deterministic rules on eight junctions they settle from turn:lanes, it
+        // agreed on one. Its usual failure is to answer other nodes in the crop instead of the one
+        // it was asked about. Wired up and selectable, but never by accident.
+        enabled: false,
+        note: 'text-only, and agreed with the deterministic rules on 1 of 8 junctions'
+    })
+});
+
+export function modelAcceptsImagery(model) {
+    return MODEL_NOTES[String(model || '')]?.acceptsImagery !== false;
+}
+
+export function modelIsEnabled(model) {
+    return MODEL_NOTES[String(model || '')]?.enabled !== false;
+}
+
+export function modelNote(model) {
+    return MODEL_NOTES[String(model || '')]?.note || null;
+}
+
+// Lanes are referred to by their index in graph.lanes rather than by the 90-character composite id.
+// The model only ever needs a handle — the server rebuilds connection ids and geometry from the lane
+// endpoints regardless — and the long form was both a third of the prompt and the thing runs got
+// wrong: three of eight scored runs returned ids that did not exist.
+const LANE_HANDLE = /^L(\d+)$/;
+
+export function laneHandle(index) {
+    return `L${index}`;
+}
+
+function withLaneHandles(graph) {
+    const handleOf = new Map((graph.lanes || []).map((lane, index) => [lane.id, laneHandle(index)]));
+    const to = id => handleOf.get(id) || id;
+    return {
+        ...graph,
+        lanes: (graph.lanes || []).map(lane => ({ ...lane, id: to(lane.id) })),
+        sections: (graph.sections || []).map(section => (
+            Array.isArray(section.laneIds) ? { ...section, laneIds: section.laneIds.map(to) } : section
+        )),
+        // Connection ids are dropped outright: the server mints them, so sending them only spends
+        // tokens on a string the model must not reuse.
+        connections: (graph.connections || []).map(({ id, ...connection }) => ({
+            ...connection,
+            fromLaneId: to(connection.fromLaneId),
+            toLaneId: to(connection.toLaneId)
+        })),
+        problems: (graph.problems || []).map(problem => (
+            Array.isArray(problem.laneIds) ? { ...problem, laneIds: problem.laneIds.map(to) } : problem
+        ))
+    };
+}
+
+// The junction nodes the deterministic rules could not settle — the whole of the work, and why each
+// one is hard. Without this the evidence package is a crop and the model picks its own target: the
+// commonest scored failure was a patch full of movements at every node except the one that mattered.
+export function recognitionTargets(graph) {
+    const degreeOf = new Map((graph?.nodes || []).map(node => [node.id, node.degree]));
+    return (graph?.problems || [])
+        .filter(problem => problem.type === 'unresolved_intersection')
+        .flatMap(problem => (problem.nodeIds || []).map(nodeId => ({
+            nodeId,
+            arms: degreeOf.get(nodeId) ?? null,
+            whyUnsettled: problem.declineReason || null
+        })));
+}
 
 export function providerCommand(provider) {
     if (provider === 'codex') {
@@ -105,16 +179,32 @@ export function providerAvailability(provider, spawnSyncImpl = spawnSync) {
 }
 
 export function buildRecognitionPrompt(input) {
+    const targets = recognitionTargets(input?.deterministicGraph);
+    const evidence = input?.deterministicGraph
+        ? { ...input, deterministicGraph: withLaneHandles(input.deterministicGraph) }
+        : input;
     return [
         'You are reconstructing a directed, lane-level road topology from OpenStreetMap evidence.',
         'Return only the JSON object required by the supplied schema.',
-        'The patch_json field must be a JSON-encoded object with complete connections, problems and imagery_observations arrays.',
+        'The patch_json field must be a JSON-encoded object with connections, problems and imagery_observations arrays.',
         'Do not re-emit sections, nodes, lanes, profiles, or graph-entity geometry; the server preserves and validates them.',
         'imagery_observations is the only place to return newly observed physical geometry.',
         'Each connection needs only fromLaneId, toLaneId, type, priority, confidence, and a short reason.',
         'The server creates connection IDs, node IDs, and geometry from the referenced lane endpoints.',
         '',
+        'Work:',
+        targets.length
+            ? '- Decide the lane-to-lane movements at these junction nodes, and only these. Every other '
+                + 'movement in the graph is already derived and is kept whether or not you repeat it.'
+            : '- No junction in this crop is unresolved. Return empty arrays unless the evidence '
+                + 'contradicts a movement already in the graph.',
+        JSON.stringify(targets),
+        '',
         'Rules:',
+        '- Refer to a lane by the short handle in graph.lanes[].id (L0, L1, …). Copy a handle exactly '
+            + 'from the evidence; never invent, abbreviate or renumber one.',
+        '- A node the graph has already answered is closed: a connection there is discarded and '
+            + 'reported, so spend no effort outside the listed nodes.',
         '- Preserve source section and lane geometry unless the evidence explicitly requires a correction.',
         '- Never treat an OSM tag as proof of physical reality when tags contradict each other.',
         '- An ordinary merge is binary: at most two incoming lanes and one outgoing lane; identify the continuing and yielding lane.',
@@ -138,7 +228,7 @@ export function buildRecognitionPrompt(input) {
         `Prompt version: ${TOPOLOGY_PROMPT_VERSION}`,
         '',
         'Evidence package:',
-        JSON.stringify(input)
+        JSON.stringify(evidence)
     ].join('\n');
 }
 
@@ -149,9 +239,17 @@ function boundedAppend(existing, addition) {
 
 function cliFailureDetail(stdout, stderr) {
     const output = [stderr, stdout].filter(Boolean).join('\n');
-    const apiMessages = [...output.matchAll(/"message"\s*:\s*"([^"]+)"/g)]
+    // Only stderr, and deliberately not stdout: a CLI echoes the prompt, so the evidence package's
+    // own problem messages are `"message": "..."` matches too — and being last, they won. A Codex
+    // quota refusal was reported as "4 road arms meet here", which also defeated the runner's
+    // quota check and would have turned one stop into a whole batch of identical failures.
+    const apiMessages = [...String(stderr || '').matchAll(/"message"\s*:\s*"([^"]+)"/g)]
         .map(match => match[1].replaceAll('\\"', '"'));
     if (apiMessages.length) return apiMessages.at(-1);
+    const errorLine = [...String(stderr || '').matchAll(/^\s*ERROR:\s*(.+)$/gm)]
+        .map(match => match[1].trim())
+        .filter(line => line && !line.startsWith('{'));
+    if (errorLine.length) return errorLine.at(-1).slice(-1800);
     for (const source of [stderr, stdout]) {
         if (!String(source || '').trim()) continue;
         try {
@@ -235,18 +333,41 @@ function runSpawn(command, args, prompt, options = {}) {
     });
 }
 
+// The CLI reports its token usage in the envelope, ahead of the answer. Reading it here is the only
+// reliable place: by the time the run is a stored output tail, a large patch has pushed the counts
+// out of the tail entirely. Subscription-billed runs still need the counts — they are what says
+// whether a prompt change doubled the cost.
+function envelopeUsage(envelope) {
+    const usage = envelope?.usage;
+    const cost = Number(envelope?.total_cost_usd);
+    if (!usage && !Number.isFinite(cost)) return null;
+    const count = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+    return {
+        inputTokens: count(usage?.input_tokens),
+        outputTokens: count(usage?.output_tokens),
+        cacheReadTokens: count(usage?.cache_read_input_tokens),
+        cacheCreationTokens: count(usage?.cache_creation_input_tokens),
+        // What the same run would have cost on the metered API; the CLI itself bills a subscription.
+        equivalentUsd: Number.isFinite(cost) ? cost : null,
+        durationMs: count(envelope?.duration_ms),
+        numTurns: count(envelope?.num_turns)
+    };
+}
+
 function parseProviderOutput(provider, stdout, outputFileText) {
     let parsed;
+    let usage = null;
     if (provider === 'codex') parsed = JSON.parse(outputFileText);
     else {
         const envelope = JSON.parse(stdout);
+        usage = envelopeUsage(envelope);
         const candidate = envelope.structured_output ?? envelope.result ?? envelope;
         parsed = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
     }
     if (typeof parsed?.patch_json === 'string') {
-        return { ...parsed, patch: JSON.parse(parsed.patch_json) };
+        return { ...parsed, usage, patch: JSON.parse(parsed.patch_json) };
     }
-    return parsed;
+    return { ...parsed, usage };
 }
 
 export function validateCandidateGraph(candidate, deterministicGraph) {
@@ -306,13 +427,18 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     if (!patch || !Array.isArray(patch.connections) || !Array.isArray(patch.problems)) {
         throw new Error('Provider returned an incomplete topology decision patch.');
     }
-    const laneById = new Map(
-        (deterministicGraph.lanes || []).map(lane => [lane.id, lane])
-    );
+    const laneList = deterministicGraph.lanes || [];
+    const laneById = new Map(laneList.map(lane => [lane.id, lane]));
+    // A handle is an index into graph.lanes; a full id still resolves, so an older provider's
+    // output applies unchanged.
+    const resolveLane = reference => {
+        const handle = LANE_HANDLE.exec(String(reference ?? ''));
+        return handle ? (laneList[Number(handle[1])] || null) : (laneById.get(reference) || null);
+    };
     const seenPairs = new Set();
     const connections = patch.connections.map((decision, index) => {
-        const fromLane = laneById.get(decision?.fromLaneId);
-        const toLane = laneById.get(decision?.toLaneId);
+        const fromLane = resolveLane(decision?.fromLaneId);
+        const toLane = resolveLane(decision?.toLaneId);
         if (!fromLane || !toLane) {
             throw new Error(`Patch connection ${index} references a missing lane.`);
         }
@@ -347,7 +473,17 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             }
         };
     });
-    const problems = patch.problems.map((problem, index) => ({
+    // The patch is a decision at the unresolved nodes, not a replacement graph. Before the rules
+    // settled junctions there was nothing to lose by overwriting; now nine movements in ten are
+    // derived, and a model answering one junction would have deleted the rest. A node the rules
+    // already answered is therefore off limits — which also contains a model that wanders, the
+    // commonest failure measured.
+    const derivedNodes = new Set((deterministicGraph.connections || []).map(connection => connection.nodeId));
+    const accepted = connections.filter(connection => !derivedNodes.has(connection.nodeId));
+    const overreach = connections.length - accepted.length;
+    const answeredNodes = new Set(accepted.map(connection => connection.nodeId));
+
+    const modelProblems = patch.problems.map((problem, index) => ({
         ...problem,
         id: String(problem?.id || `problem:${provider}:${index}`),
         type: String(problem?.type || 'model_uncertainty'),
@@ -356,6 +492,27 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             : 'warning',
         message: String(problem?.message || 'The model left this topology decision unresolved.')
     }));
+    // Findings the model was never asked about — a parcel too narrow for its lanes — survive, minus
+    // the "unresolved" note on every junction it has now answered. Same id means the model's version
+    // wins, so re-emitting a problem restates it rather than duplicating it.
+    const byId = new Map();
+    (deterministicGraph.problems || [])
+        .filter(problem => !(problem.type === 'unresolved_intersection'
+            && (problem.nodeIds || []).some(nodeId => answeredNodes.has(nodeId))))
+        .forEach(problem => byId.set(problem.id, problem));
+    modelProblems.forEach(problem => byId.set(problem.id, problem));
+    if (overreach) {
+        // Never a silent drop: a model spending its answer on the wrong nodes looks exactly like a
+        // model that found little to say.
+        byId.set(`problem:${provider}:outside-the-work`, {
+            id: `problem:${provider}:outside-the-work`,
+            type: 'movements_outside_the_work',
+            severity: 'warning',
+            message: `${overreach} returned movements sat at nodes the deterministic rules had `
+                + 'already answered and were discarded; only unresolved junctions are open to a patch.'
+        });
+    }
+    const problems = [...byId.values()];
     const fanOut = new Map();
     const fanIn = new Map();
     connections.filter(connection => connection.type !== 'turn').forEach(connection => {
@@ -406,7 +563,7 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         : deterministicGraph.observations;
     return validateCandidateGraph({
         ...deterministicGraph,
-        connections,
+        connections: [...(deterministicGraph.connections || []), ...accepted],
         problems,
         ...(observations ? { observations } : {})
     }, deterministicGraph);
@@ -414,6 +571,10 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
 
 export async function runCliTopologyProvider(provider, input, options = {}) {
     const definition = providerCommand(provider);
+    if (options.imageBuffer && !modelAcceptsImagery(options.model)) {
+        throw new Error(`Model ${options.model} takes text only; run it with imagery disabled `
+            + 'rather than letting it answer from the tags while a crop goes unread.');
+    }
     const jobDir = await mkdtemp(join(tmpdir(), `lane-topology-${provider}-`));
     const schemaPath = join(jobDir, 'output-schema.json');
     const outputPath = join(jobDir, 'output.json');
@@ -446,6 +607,7 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
             graph: applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
                 imagery: input.imagery
             }),
+            usage: parsed.usage || null,
             outputTail: `${result.stdout}\n${result.stderr}`.slice(-8000)
         };
     } finally {

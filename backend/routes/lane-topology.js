@@ -83,9 +83,12 @@ function bboxPolygon(bbox) {
     };
 }
 
-function graphBuildOptions(snapshotAt) {
+// Restrictions are build input, not only an after-the-fact check: the deterministic junction rules
+// must not emit a movement OSM forbids, or every restricted junction would build its own violation.
+function graphBuildOptions(snapshotAt, restrictions = []) {
     return {
         snapshotAt,
+        restrictions,
         profileFromTags: CorridorProfile.corridorProfileFromOsmTags,
         orientProfile: OsmProfile.orientForRightHandTraffic
     };
@@ -354,7 +357,7 @@ async function buildDeterministicSolution(pool, bbox, city, parentId = null, opt
     }
     const graph = withRestrictionProblems(
         LaneTopologyGraph.build(evidence, {
-            ...graphBuildOptions(evidence.snapshotAt),
+            ...graphBuildOptions(evidence.snapshotAt, evidence.restrictions),
             parcelFit: { parcels, turf, fit: LaneParcelFit, project: planarProjector(bbox) }
         }),
         evidence.restrictions
@@ -538,10 +541,15 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
         });
         await pool.query(
             `UPDATE public.lane_topology_job
-             SET status='completed', result_solution_id=$2, output_tail=$3,
+             SET status='completed', result_solution_id=$2, output_tail=$3, usage=$4::jsonb,
                  finished_at=now(), updated_at=now()
              WHERE id=$1`,
-            [job.id, solution.id, result.outputTail || result.summary || '']
+            [
+                job.id,
+                solution.id,
+                result.outputTail || result.summary || '',
+                result.usage ? JSON.stringify(result.usage) : null
+            ]
         );
     } catch (error) {
         console.error(`[lane-topology] ${job.provider} job ${job.id} failed:`, error);
@@ -964,8 +972,11 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                     model: row.model,
                     promptVersion: row.prompt_version,
                     imagerySource: row.input_summary?.imagerySource || null,
+                    usage: row.usage || null,
                     error: row.error,
-                    outputTail: row.status === 'failed' ? row.output_tail : null,
+                    // Also on success: the CLI envelope in the tail carries the token usage, and a
+                    // subscription-billed run still has to report what each junction cost.
+                    outputTail: row.output_tail,
                     createdAt: row.created_at,
                     startedAt: row.started_at,
                     finishedAt: row.finished_at

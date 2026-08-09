@@ -1438,6 +1438,9 @@
         if (!scoped.features.length) return null;
         return window.LaneTopologyGraph.build(scoped, {
             snapshotAt: scoped.snapshotAt || null,
+            // The junction rules read these, so a preview without them shows more movements than
+            // the backend will build — the exact impression this function exists to avoid.
+            restrictions: scoped.restrictions || [],
             profileFromTags: window.corridorProfileFromOsmTags,
             orientProfile: window.OsmProfile.orientForRightHandTraffic
         });

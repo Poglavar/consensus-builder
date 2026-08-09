@@ -84,6 +84,11 @@ CREATE TABLE IF NOT EXISTS public.lane_topology_job (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Token usage per job. A run billed to a subscription costs no money, but the counts are still the
+-- only thing that says whether a prompt change doubled what each junction takes.
+ALTER TABLE public.lane_topology_job
+    ADD COLUMN IF NOT EXISTS usage JSONB;
+
 CREATE INDEX IF NOT EXISTS lane_topology_job_created_idx
     ON public.lane_topology_job (created_at DESC);
 CREATE INDEX IF NOT EXISTS lane_topology_job_status_idx

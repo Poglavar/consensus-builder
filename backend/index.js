@@ -282,6 +282,13 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
             if (req.method === 'POST' && RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path)) {
                 return next();
             }
+            // The lane-topology workbench is a dev-only tool whose batch runner posts a build and a
+            // recognition job per junction — hundreds of writes in a sitting, all from localhost.
+            // 50 writes per 15 min is an abuse ceiling for the public API, not for that; outside
+            // development it still applies here exactly as before.
+            if (!isProduction && req.path.startsWith('/lane-topology/')) {
+                return next();
+            }
             return writeRateLimiter(req, res, next);
         }
         next();

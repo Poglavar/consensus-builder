@@ -225,7 +225,7 @@ describe('deriveJunctions', () => {
 
 describe('deriveJunctions on a real built graph', () => {
     // Guards against fixture drift: this consumes whatever LaneTopologyGraph.build() actually emits.
-    function way(id, name, coordinates, nodeIds) {
+    function way(id, name, coordinates, nodeIds, tags = {}) {
         return {
             type: 'Feature',
             geometry: { type: 'LineString', coordinates },
@@ -234,16 +234,20 @@ describe('deriveJunctions on a real built graph', () => {
                 highway_type: 'secondary',
                 name,
                 osm_node_ids: nodeIds,
-                tags: { highway: 'secondary', name }
+                tags: { highway: 'secondary', name, ...tags }
             }
         };
     }
 
     it('extracts the crossroads that the builder itself reports as unresolved', () => {
+        // Savska carries two forward lanes, which is what keeps this crossroads unresolved: with
+        // one lane per direction on every arm the deterministic rules would settle it and there
+        // would be no recognition work to extract.
         const evidence = {
             type: 'FeatureCollection',
             features: [
-                way(101, 'Savska cesta', [[15.9590, 45.8000], [15.9600, 45.8000], [15.9610, 45.8000]], [1, 2, 3]),
+                way(101, 'Savska cesta', [[15.9590, 45.8000], [15.9600, 45.8000], [15.9610, 45.8000]], [1, 2, 3],
+                    { lanes: '3', 'lanes:forward': '2', 'lanes:backward': '1' }),
                 way(102, 'Vukovarska ulica', [[15.9600, 45.7990], [15.9600, 45.8000], [15.9600, 45.8010]], [4, 2, 5])
             ]
         };
@@ -265,5 +269,6 @@ describe('deriveJunctions on a real built graph', () => {
         expect(junctions[0].sourceWayIds).toEqual(['101', '102']);
         // Exactly the node the builder gave up on.
         expect(unresolved[0].id).toContain(junctions[0].nodeIds[0]);
+        expect(junctions[0].resolved).toBe(false);
     });
 });

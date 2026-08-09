@@ -4,6 +4,7 @@ import { PassThrough } from 'node:stream';
 import {
     applyRecognitionPatch,
     buildRecognitionPrompt,
+    modelAcceptsImagery,
     PROVIDER_TIMEOUT_MS,
     providerAvailability,
     providerCommand,
@@ -38,7 +39,127 @@ function fanInGraph() {
     };
 }
 
+// A graph where the rules have already answered node A and left node B unresolved — the shape every
+// crop now has, and the one the patch contract has to survive.
+function partlySolvedGraph() {
+    const lane = (id, sectionId, fromNode, toNode, coordinates) => ({
+        id, sectionId, fromNode, toNode, geometry: { type: 'LineString', coordinates }
+    });
+    return {
+        schemaVersion: 1,
+        coverage: null,
+        source: {},
+        stats: { sourceWays: 4 },
+        sections: ['s1', 's2', 's3', 's4'].map(id => ({ id })),
+        nodes: [{ id: 'A', degree: 3 }, { id: 'B', degree: 3 }],
+        lanes: [
+            lane('lane:section:osm:11:0:x:A:forward:0', 's1', 'x', 'A', [[0, 0], [1, 0]]),
+            lane('lane:section:osm:12:0:A:B:forward:0', 's2', 'A', 'B', [[1, 0], [2, 0]]),
+            lane('lane:section:osm:13:0:B:y:forward:0', 's3', 'B', 'y', [[2, 0], [3, 0]]),
+            lane('lane:section:osm:14:0:B:z:forward:0', 's4', 'B', 'z', [[2, 0], [2, 1]])
+        ],
+        connections: [{
+            id: 'connection:A:in->out',
+            nodeId: 'A',
+            fromLaneId: 'lane:section:osm:11:0:x:A:forward:0',
+            toLaneId: 'lane:section:osm:12:0:A:B:forward:0',
+            type: 'continue',
+            source: 'deterministic'
+        }],
+        problems: [
+            {
+                id: 'problem:unresolved-intersection:B',
+                type: 'unresolved_intersection',
+                severity: 'warning',
+                nodeIds: ['B'],
+                declineReason: 'multi_lane_approach_without_turn_lanes'
+            },
+            {
+                id: 'problem:parcel:s2',
+                type: 'lane_band_exceeds_road_parcel',
+                severity: 'error',
+                sectionIds: ['s2']
+            }
+        ]
+    };
+}
+
+describe('lane-topology recognition contract', () => {
+    it('shows lanes by short handle and names the junctions that are the work', () => {
+        const prompt = buildRecognitionPrompt({ deterministicGraph: partlySolvedGraph() });
+
+        expect(prompt).toContain('"id":"L0"');
+        expect(prompt).toContain('"fromLaneId":"L0"');
+        // The composite id is what runs got wrong and what made the prompt large; it must be gone.
+        expect(prompt).not.toContain('lane:section:osm:11:0:x:A:forward:0');
+        // The work is exactly the unresolved node, with why it is hard — and node A, which the
+        // rules answered, is not in it. A still appears in the evidence, as a movement to respect.
+        expect(prompt).toContain(
+            '[{"nodeId":"B","arms":3,"whyUnsettled":"multi_lane_approach_without_turn_lanes"}]'
+        );
+    });
+
+    it('resolves a handle back to the lane it stands for', () => {
+        const graph = partlySolvedGraph();
+        const applied = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'L1', toLaneId: 'L2', type: 'continue', confidence: 0.8 }],
+            problems: []
+        }, graph, 'claude');
+        const added = applied.connections.find(connection => connection.source === 'claude');
+
+        expect(added.fromLaneId).toBe('lane:section:osm:12:0:A:B:forward:0');
+        expect(added.toLaneId).toBe('lane:section:osm:13:0:B:y:forward:0');
+        expect(added.nodeId).toBe('B');
+    });
+
+    it('keeps the movements the rules derived instead of replacing them', () => {
+        const graph = partlySolvedGraph();
+        const applied = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'L1', toLaneId: 'L3', type: 'turn', confidence: 0.7 }],
+            problems: []
+        }, graph, 'claude');
+
+        // Node A's deterministic movement survives a patch that only spoke about node B.
+        expect(applied.connections.filter(connection => connection.nodeId === 'A')).toHaveLength(1);
+        expect(applied.connections.filter(connection => connection.nodeId === 'B')).toHaveLength(1);
+        // The junction it answered is no longer unresolved; the parcel finding it was never asked
+        // about still is.
+        expect(applied.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(false);
+        expect(applied.problems.some(problem => problem.type === 'lane_band_exceeds_road_parcel')).toBe(true);
+    });
+
+    it('discards movements at a node the rules already answered, and says how many', () => {
+        const graph = partlySolvedGraph();
+        const applied = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'L0', toLaneId: 'L1', type: 'continue', confidence: 0.9 },
+                { fromLaneId: 'L1', toLaneId: 'L2', type: 'continue', confidence: 0.8 }
+            ],
+            problems: []
+        }, graph, 'claude');
+        const atA = applied.connections.filter(connection => connection.nodeId === 'A');
+
+        expect(atA).toHaveLength(1);
+        expect(atA[0].source).toBe('deterministic');
+        const reported = applied.problems.find(problem => problem.type === 'movements_outside_the_work');
+        expect(reported.message).toContain('1 returned movements');
+    });
+});
+
 describe('lane-topology CLI provider boundary', () => {
+    it('refuses to hand a crop to a text-only model', async () => {
+        expect(modelAcceptsImagery('opus')).toBe(true);
+        expect(modelAcceptsImagery('gpt-5.3-codex-spark')).toBe(false);
+
+        // The CLI would drop the image and answer from the tags, and the run would look identical
+        // to one that read the orthophoto. Refusing is the only way that stays visible.
+        await expect(runCliTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+            model: 'gpt-5.3-codex-spark',
+            imageBuffer: Buffer.from('not really a jpeg'),
+            spawnImpl: () => { throw new Error('the provider must not spawn at all'); }
+        })).rejects.toThrow(/text only/i);
+    });
+
     it('runs Codex ephemerally in a read-only sandbox with structured output', () => {
         const args = providerCommand('codex').args({
             jobDir: '/tmp/topology-job',
@@ -189,6 +310,92 @@ describe('lane-topology CLI provider boundary', () => {
         }
         expect(failure?.message).toContain('subscription authentication failed');
         expect(failure?.outputTail).toContain('subscription authentication failed');
+    });
+
+    // A CLI echoes the prompt to stdout, so the evidence package's own problem messages look exactly
+    // like API error messages — and being last, they used to win. A real Codex quota refusal was
+    // reported as "4 road arms meet here", which also hid the word the runner watches for to stop a
+    // batch, turning one refusal into a queue of identical failures.
+    it('reports the CLI refusal, not a problem message echoed back from the prompt', async () => {
+        function refusingSpawn() {
+            const child = new EventEmitter();
+            child.stdout = new PassThrough();
+            child.stderr = new PassThrough();
+            child.kill = () => {};
+            child.stdin = {
+                end() {
+                    queueMicrotask(() => {
+                        child.stdout.end('prompt echo … {"message":"4 road arms meet here; '
+                            + 'lane-to-lane movements have not been inferred yet."}');
+                        child.stderr.end("ERROR: You've hit your usage limit. Try again later.");
+                        child.emit('close', 1, null);
+                    });
+                }
+            };
+            return child;
+        }
+
+        let failure;
+        try {
+            await runCliTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+                spawnImpl: refusingSpawn,
+                timeoutMs: 1000
+            });
+        } catch (error) {
+            failure = error;
+        }
+        expect(failure?.message).toMatch(/usage limit/i);
+        expect(failure?.message).not.toMatch(/road arms meet here/);
+    });
+
+    // The envelope carries usage BEFORE the answer, so a large patch pushes the counts out of the
+    // 8000-char output tail entirely — a real run reported "usage not reported" for exactly that
+    // reason. The counts have to be read from the parsed envelope, not scraped back off the tail.
+    it('reports the token usage of a run whose patch is far larger than the output tail', async () => {
+        const patch = {
+            connections: [{ fromLaneId: 'in1', toLaneId: 'out', type: 'continue', confidence: 0.9 }],
+            problems: [{ type: 'padding', severity: 'info', message: 'x'.repeat(20000) }]
+        };
+        const envelope = JSON.stringify({
+            type: 'result',
+            usage: { input_tokens: 1234, output_tokens: 567, cache_read_input_tokens: 89 },
+            total_cost_usd: 1.25,
+            duration_ms: 42000,
+            structured_output: { summary: 'ok', patch_json: JSON.stringify(patch) }
+        });
+
+        function spawnImpl() {
+            const child = new EventEmitter();
+            child.stdout = new PassThrough();
+            child.stderr = new PassThrough();
+            child.kill = () => {};
+            child.stdin = {
+                end() {
+                    queueMicrotask(() => {
+                        child.stdout.end(envelope);
+                        child.emit('close', 0, null);
+                    });
+                }
+            };
+            return child;
+        }
+
+        const result = await runCliTopologyProvider('claude', {
+            selection: {},
+            osmWays: [],
+            deterministicGraph: fanInGraph()
+        }, { spawnImpl, timeoutMs: 1000 });
+
+        expect(result.outputTail).not.toContain('input_tokens');
+        expect(result.usage).toEqual({
+            inputTokens: 1234,
+            outputTokens: 567,
+            cacheReadTokens: 89,
+            cacheCreationTokens: null,
+            equivalentUsd: 1.25,
+            durationMs: 42000,
+            numTurns: null
+        });
     });
 
     it('applies a compact decision patch while preserving graph geometry and entities', () => {

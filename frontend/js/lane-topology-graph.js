@@ -20,6 +20,19 @@
         'unclassified', 'residential', 'living_street', 'service', 'road'
     ]);
 
+    let junctionRulesApi = null;
+    function junctionRulesModule() {
+        if (junctionRulesApi) return junctionRulesApi;
+        junctionRulesApi = (root && root.LaneTopologyJunctionRules)
+            || (typeof require === 'function' ? require('./lane-topology-junction-rules.js') : null);
+        // Silently skipping would leave every junction unresolved and look exactly like a city whose
+        // junctions are all hard, so a missing script tag has to say so.
+        if (!junctionRulesApi) {
+            throw new Error('LaneTopologyGraph requires lane-topology-junction-rules.js to be loaded first.');
+        }
+        return junctionRulesApi;
+    }
+
     function finiteCoordinate(point) {
         return Array.isArray(point)
             && Number.isFinite(Number(point[0]))
@@ -725,18 +738,37 @@
             lanesBySection.set(section.id, built);
         });
         const nodes = graphNodes(sections);
-        nodes.filter(node => node.degree > 2).forEach(node => problems.push({
-            id: `problem:unresolved-intersection:${node.id}`,
-            type: 'unresolved_intersection',
-            severity: 'warning',
-            point: node.point,
-            sectionIds: node.sectionIds,
-            message: `${node.degree} road arms meet here; lane-to-lane movements have not been inferred yet.`
-        }));
-
         const connections = [];
         const sectionsById = new Map(sections.map(section => [section.id, section]));
         nodes.forEach(node => connectSimpleNode(node, sectionsById, lanesBySection, connections, problems));
+
+        // A junction with one lane per direction on every arm has no lane assignment to decide, so
+        // it is settled here rather than queued for recognition. Everything the rules decline stays
+        // unresolved, and that residue IS the recognition queue.
+        const rules = junctionRulesModule();
+        const restrictionsByNode = rules.indexRestrictions(options.restrictions);
+        let resolvedIntersections = 0;
+        nodes.filter(node => node.degree > 2).forEach(node => {
+            const outcome = rules.resolveNode(node, { sectionsById, lanesBySection, restrictionsByNode });
+            if (!outcome.declined) {
+                connections.push(...outcome.connections);
+                resolvedIntersections += 1;
+                return;
+            }
+            problems.push({
+                id: `problem:unresolved-intersection:${node.id}`,
+                type: 'unresolved_intersection',
+                severity: 'warning',
+                point: node.point,
+                nodeIds: [node.id],
+                sectionIds: node.sectionIds,
+                // What the rules could not settle, so a caller can route the node to a model, to a
+                // split, or to a person instead of treating every unsolved junction alike.
+                declineReason: outcome.declined,
+                message: `${node.degree} road arms meet here; lane-to-lane movements have not been `
+                    + `inferred yet (${outcome.declined.replaceAll('_', ' ')}).`
+            });
+        });
 
         const outgoingCounts = new Map();
         const incomingCounts = new Map();
@@ -768,6 +800,7 @@
                 connections: connections.length,
                 problems: problems.length,
                 unresolvedIntersections: problems.filter(problem => problem.type === 'unresolved_intersection').length,
+                resolvedIntersections,
                 errors: problems.filter(problem => problem.severity === 'error').length,
                 warnings: problems.filter(problem => problem.severity === 'warning').length
             }
