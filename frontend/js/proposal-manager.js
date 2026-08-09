@@ -1484,6 +1484,21 @@ const ProposalManager = {
         return transaction;
     },
 
+    _collectAppliedAlternativesForExplicitApply(proposalData) {
+        if (!proposalData || typeof proposalStorage === 'undefined') return [];
+        const runtime = typeof window !== 'undefined' ? window : globalThis;
+        const collect = runtime && runtime.collectAppliedProposalAlternatives;
+        if (typeof collect !== 'function' || typeof proposalStorage.getAllProposals !== 'function') return [];
+        try {
+            return collect(proposalData, proposalStorage.getAllProposals(), {
+                planOrder: runtime.__planOrder || null
+            });
+        } catch (error) {
+            console.warn('[applyProposal] could not inspect applied alternatives', error);
+            return [];
+        }
+    },
+
     // Ruling 2026-08-07 "(ask to) unapply": a land readjustment stands on cadastral parcels
     // only. When its ground is currently held by other proposals' fabric, offer to unapply the
     // holders — OUTSIDE the fabric queue, so the real unapply flow (dependents panel, rebuild)
@@ -1560,14 +1575,47 @@ const ProposalManager = {
                 if (!proposal) return false;
                 if (appliedOf(proposal)) return true;
 
+                // Clicking Apply chooses this proposal over any currently-standing alternative.
+                // Keep a complete record snapshot until the canonical replay proves that choice can
+                // stand; if it cannot, restore both sides rather than leaving half of a switch.
+                const recordSnapshot = proposalStorage.proposals instanceof Map
+                    ? proposalMutationTransactions.snapshotRecordMap(proposalStorage.proposals)
+                    : null;
+                let switchedAlternatives = [];
+                const fallbackStates = [];
+                const restorePreApplyState = () => {
+                    if (recordSnapshot && proposalStorage.proposals instanceof Map) {
+                        proposalMutationTransactions.restoreRecordMap(proposalStorage.proposals, recordSnapshot);
+                    } else {
+                        setProposalApplied(proposal, false, { stamp: false });
+                        fallbackStates.forEach(({ record, appliedAt, hadAppliedAt }) => {
+                            setProposalApplied(record, true, { stamp: false });
+                            if (hadAppliedAt) record.appliedAt = appliedAt;
+                        });
+                    }
+                    proposalStorage.save?.();
+                };
+
                 // Applying is a record flip followed by the same complete derivation used by
-                // reload, edit and unapply. No external caller stamps into the current map.
+                // reload, edit and unapply. Alternatives are parked as record flips in the same
+                // state transaction; no external caller stamps into the current map.
                 const marked = await _runProposalMutationBoundary(
                     this,
                     'apply-state',
                     proposalId,
                     applyOptions,
                     () => {
+                        switchedAlternatives = this._collectAppliedAlternativesForExplicitApply(proposal);
+                        switchedAlternatives.forEach(alternative => {
+                            fallbackStates.push({
+                                record: alternative,
+                                hadAppliedAt: Object.prototype.hasOwnProperty.call(alternative, 'appliedAt'),
+                                appliedAt: alternative.appliedAt
+                            });
+                            this._clearDerivedRecordState(alternative);
+                            setProposalApplied(alternative, false, { stamp: false });
+                            proposalStorage._indexProposal?.(alternative);
+                        });
                         setProposalApplied(proposal, true);
                         proposalStorage._indexProposal?.(proposal);
                         proposalStorage.save?.();
@@ -1583,18 +1631,23 @@ const ProposalManager = {
                     });
                     const failed = (replay?.failed || [])
                         .some(entry => String(entry?.proposalId || '') === String(proposal.proposalId));
-                    if (failed) {
-                        setProposalApplied(proposal, false, { stamp: false });
-                        proposalStorage._indexProposal?.(proposal);
-                        proposalStorage.save?.();
+                    const refreshed = _getProposalRecord(proposalId) || proposal;
+                    const standing = (typeof isProposalCurrentlyApplied === 'function')
+                        ? isProposalCurrentlyApplied(refreshed)
+                        : appliedOf(refreshed);
+                    if (failed || !standing) {
+                        restorePreApplyState();
                         await this.rebuildAppliedFabric({ silent: true, _fabricQueue: true });
-                        this._refreshUIAfterProposalChange(proposal);
+                        this._refreshUIAfterProposalChange(_getProposalRecord(proposalId) || proposal);
                         return false;
                     }
                 } catch (error) {
-                    setProposalApplied(proposal, false, { stamp: false });
-                    proposalStorage._indexProposal?.(proposal);
-                    proposalStorage.save?.();
+                    restorePreApplyState();
+                    try {
+                        await this.rebuildAppliedFabric({ silent: true, _fabricQueue: true });
+                    } catch (restoreError) {
+                        console.error('[applyProposal] could not re-derive the pre-apply state after failure', restoreError);
+                    }
                     throw error;
                 }
                 const refreshed = _getProposalRecord(proposalId) || proposal;
