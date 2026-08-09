@@ -918,11 +918,20 @@ function corridorCenterlineOf(definition) {
     );
     if (!raw || !raw.length) return [];
 
+    // `level` rides along because this is the funnel every consumer of a stored centreline goes
+    // through, including the acquisition footprint — rebuilding a bare {lat,lng} here is precisely
+    // how a vertical profile gets silently discarded and a tunnel starts taking land again. It is
+    // only attached when the stored point actually has one, so a corridor without levels still
+    // yields the identical bare {lat,lng} objects it always did.
     const toPoint = (point) => {
         if (!point) return null;
         const lat = Number(point.lat !== undefined ? point.lat : (Array.isArray(point) ? point[1] : NaN));
         const lng = Number(point.lng !== undefined ? point.lng : (Array.isArray(point) ? point[0] : NaN));
-        return (Number.isFinite(lat) && Number.isFinite(lng)) ? { lat, lng } : null;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        const level = (point && typeof point.level === 'number' && Number.isFinite(point.level))
+            ? point.level
+            : null;
+        return level === null ? { lat, lng } : { lat, lng, level };
     };
 
     const isFlat = !Array.isArray(raw[0]);
