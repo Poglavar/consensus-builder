@@ -411,8 +411,34 @@ function corridorProtectedEdgeKeySet(tunnels, gradeSeparations) {
 
 // The taking geometry and cutting geometry are the same full corridor. Tunnels and grade
 // separations are authored road content, but they still take the cadastral surface.
+//
+// The one exception is a stretch that is fully underground by LEVEL (corridor-elevation.md,
+// 2026-07-12): it takes nothing, because nothing on the surface changes. Levels only exist on
+// imported corridors so far, and a corridor without them yields one span per segment — byte for
+// byte the previous footprint. Edge-keyed `tunnels` metadata is a different concept and still
+// acquires; only an explicit -1 level is exempt.
 function buildCorridorAcquisitionPolygon(definition) {
-    return buildRoadUnionPolygonForDefinition(definition);
+    const levels = (typeof window !== 'undefined' && window.__corridorLevels)
+        || (typeof globalThis !== 'undefined' && globalThis.__corridorLevels)
+        || null;
+    if (!levels || typeof corridorSegmentEntries !== 'function') {
+        return buildRoadUnionPolygonForDefinition(definition);
+    }
+
+    const entries = corridorSegmentEntries(definition);
+    const pointLists = [];
+    const widths = [];
+    entries.forEach(entry => {
+        // Splitting happens here rather than on the definition on purpose: the union builder takes
+        // plain point lists, so a segment can be cut into several without disturbing segmentIds or
+        // the id-keyed profiles that carry its width.
+        levels.acquiringSpans(entry.points).forEach(span => {
+            pointLists.push(span);
+            widths.push(entry.width);
+        });
+    });
+    if (!pointLists.length) return null;
+    return buildRoadUnionPolygonWithWidths(pointLists, widths, Number(definition?.width) || 10);
 }
 
 // Same footprint as GeoJSON — parent collection and drafts store this shape.
