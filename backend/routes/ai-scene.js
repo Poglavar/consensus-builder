@@ -7,7 +7,7 @@
 
 import { randomBytes } from 'crypto';
 import { createRequire } from 'node:module';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { saveImageBuffer } from '../utils/image-store.js';
 
 // The canonical prompt template is the SAME pure function the UI uses, required rather than copied
@@ -207,8 +207,18 @@ const RENDER_QUOTA_MAX = Number(process.env.AI_SCENE_QUOTA_MAX) || 10;
 
 // True client IP behind Cloudflare -> nginx: CF-Connecting-IP is the real visitor; req.ip would be
 // the proxy, bucketing everyone together. Falls back to req.ip in dev where the header is absent.
-function clientIp(req) {
-    return req.headers['cf-connecting-ip'] || req.ip;
+//
+// The address is then reduced to a bucket by ipKeyGenerator rather than used raw. An IPv6 visitor is
+// routinely handed a whole /56, so keying on the full /128 lets one person present a fresh address
+// per request and reset both the cooldown and the paid daily render quota at will — the quota is the
+// expensive half, since every render past it is a real charge to the image provider. IPv4 keys are
+// returned unchanged, so nothing about existing limits moves.
+export function clientIp(req) {
+    const header = req.headers?.['cf-connecting-ip'];
+    const declared = Array.isArray(header) ? header[0] : header;
+    // CF sends one address, but a misconfigured proxy chain can append; the client's own is first.
+    const address = String(declared || '').split(',')[0].trim() || req.ip;
+    return address ? ipKeyGenerator(address) : 'unknown';
 }
 
 // Map a provider failure to a stable code the UI can localise. "No funds" spans several providers'
