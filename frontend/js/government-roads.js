@@ -642,7 +642,7 @@
                 } catch (_) { }
             }
 
-            const featureRef = layer.feature || (typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON() : null);
+            const featureRef = layer.feature || (typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON(false) : null);
             if (!featureRef) {
                 return;
             }
@@ -774,11 +774,6 @@
         // Replace core proposal fields with the current batch (canonical schema)
         storedProposal.parentParcelIds = build.proposalData.parentParcelIds || [];
         storedProposal.childParcelIds = build.proposalData.childParcelIds || [];
-        storedProposal.geometry = Object.assign({}, storedProposal.geometry || {}, {
-            roadPlan: build.proposalData.geometry?.roadPlan || build.roadProposal?.definition || null,
-            roadGeometry: build.proposalData.geometry?.roadGeometry || build.roadProposal?.roadGeometry || null
-        });
-
         // Keep minimal roadProposal for metadata/status only (no embedded features)
         storedProposal.roadProposal = Object.assign({}, build.roadProposal || {}, {
             parentParcelIds: storedProposal.parentParcelIds.slice(),
@@ -844,11 +839,6 @@
             childParcelIds: Array.isArray(aggregatedSnapshot.childParcelIds) ? aggregatedSnapshot.childParcelIds.slice() : [],
             segmentCount: aggregatedSnapshot.roadProposal?.segmentCount || aggregatedSnapshot.segmentCount || 0
         });
-        batchProposal.geometry = Object.assign({}, batchProposal.geometry || {}, {
-            roadPlan: aggregatedSnapshot.geometry?.roadPlan || aggregatedSnapshot.roadProposal?.definition || null,
-            roadGeometry: aggregatedSnapshot.geometry?.roadGeometry || aggregatedSnapshot.roadProposal?.roadGeometry || null
-        });
-
         const normalizedBatch = normalizeProposalForStorage(batchProposal) || batchProposal;
         normalizedBatch.proposalId = storedProposal.proposalId || proposalId;
         normalizedBatch.createdAt = storedProposal.createdAt;
@@ -1444,7 +1434,7 @@
         for (let idx = 0; idx < layers.length; idx++) {
             const layer = layers[idx];
             if (!layer || typeof layer.toGeoJSON !== 'function') continue;
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (!isPolygonGeometry(feature)) continue;
             const candidateBbox = computeFeatureBbox(feature);
             let intersects = false;
@@ -1865,10 +1855,6 @@
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
             childFeatures,
-            geometry: {
-                roadPlan: roadProposal.definition,
-                roadGeometry: null
-            },
             roadProposal,
             isCorridor: true,
             tags: {
@@ -2225,10 +2211,6 @@
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
             childFeatures,
-            geometry: {
-                roadPlan: roadProposal.definition,
-                roadGeometry: null
-            },
             roadProposal,
             isCorridor: true,
             tags: {
@@ -2901,7 +2883,7 @@
                 intersects = layerBounds && layerBounds.isValid && layerBounds.isValid() && layerBounds.intersects(bounds);
             } catch (_) { }
             if (!intersects) return;
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (!isPolygonGeometry(feature)) return;
             if (!isRoadParcelProperties(feature.properties || {})) return;
             features.push(cloneFeatureSafely(feature));

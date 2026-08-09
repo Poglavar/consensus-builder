@@ -211,7 +211,13 @@ function clearProposalHoverLayers() {
     if (groups.hoverLabels) groups.hoverLabels.clearLayers();
 }
 
-function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, dashArray = '4 4', showLabels = false, className = 'proposal-hover-outline proposal-hover-outline--animate' } = {}) {
+// A hover usually answers more than one question at once: a proposal's own BODY — the building
+// footprint, the corridor surface, the park polygon — is not the same shape as the PARCELS it
+// stands on. Painting both in a single colour left a hovered proposal unreadable (a bunch of
+// identical borders, with no way to tell which building was meant), so a caller passes one group
+// per meaning. Groups are drawn in order, later ones on top; the hover layer is cleared exactly
+// once, before the first group, so nothing a caller draws wipes what it drew a moment earlier.
+function highlightFeatureGroupsForHover(featureGroups) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.hover || !groups.hoverLabels) return;
 
@@ -220,48 +226,72 @@ function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, da
     groups.hover.clearLayers();
     groups.hoverLabels.clearLayers();
 
-    if (!Array.isArray(features)) return;
+    if (!Array.isArray(featureGroups)) return;
 
-    features.forEach(feature => {
-        if (!feature || !feature.geometry) return;
-        try {
-            const outline = L.geoJSON(feature, {
-                pane: panes?.hover || undefined,
-                style: {
-                    color,
-                    weight,
-                    fillOpacity: 0,
-                    dashArray,
-                    className
-                },
-                interactive: false
-            });
-            outline.addTo(groups.hover);
+    featureGroups.forEach(group => {
+        if (!group || !Array.isArray(group.features)) return;
+        const {
+            features,
+            color = '#FFB300',
+            weight = 5,
+            dashArray = '4 4',
+            // Outlines are hollow unless a caller asks for a fill. A filled shape reads as "this
+            // object" rather than "this boundary", which is what separates the hovered body from
+            // the parcels around it.
+            fillColor = null,
+            fillOpacity = 0,
+            showLabels = false,
+            className = 'proposal-hover-outline proposal-hover-outline--animate'
+        } = group;
 
-            if (showLabels) {
-                const broj = getParcelDisplayNumberFromFeature(feature);
-                const center = getFeatureCentroid(feature);
-                if (broj && center) {
-                    const label = L.marker(center, {
-                        pane: panes?.hoverLabels || undefined,
-                        icon: L.divIcon({
-                            className: 'proposal-hover-parcel-label',
-                            html: `${broj}`,
-                            iconSize: [46, 20],
-                            iconAnchor: [23, 10]
-                        }),
-                        interactive: false
-                    });
-                    label.addTo(groups.hoverLabels);
+        features.forEach(feature => {
+            if (!feature || !feature.geometry) return;
+            try {
+                const outline = L.geoJSON(feature, {
+                    pane: panes?.hover || undefined,
+                    style: {
+                        color,
+                        weight,
+                        fillColor: fillColor || color,
+                        fillOpacity,
+                        dashArray,
+                        className
+                    },
+                    interactive: false
+                });
+                outline.addTo(groups.hover);
+
+                if (showLabels) {
+                    const broj = getParcelDisplayNumberFromFeature(feature);
+                    const center = getFeatureCentroid(feature);
+                    if (broj && center) {
+                        const label = L.marker(center, {
+                            pane: panes?.hoverLabels || undefined,
+                            icon: L.divIcon({
+                                className: 'proposal-hover-parcel-label',
+                                html: `${broj}`,
+                                iconSize: [46, 20],
+                                iconAnchor: [23, 10]
+                            }),
+                            interactive: false
+                        });
+                        label.addTo(groups.hoverLabels);
+                    }
                 }
+            } catch (error) {
+                console.warn('Failed to highlight feature for hover', error);
             }
-        } catch (error) {
-            console.warn('Failed to highlight feature for hover', error);
-        }
+        });
     });
 
     if (groups.hover.bringToFront) groups.hover.bringToFront();
     if (groups.hoverLabels.bringToFront) groups.hoverLabels.bringToFront();
+}
+
+// Single-meaning hover: one set of features, one style. Kept as the common case on top of the
+// grouped painter.
+function highlightFeaturesForHover(features, options = {}) {
+    highlightFeatureGroupsForHover([{ ...options, features }]);
 }
 
 function getParcelFeatureForHighlight(parcelId, proposalContext = null, options = {}) {
@@ -277,12 +307,13 @@ function getParcelFeatureForHighlight(parcelId, proposalContext = null, options 
     }
 
     try {
-        // If skipRecovery is true, don't trigger recoverParcelFromProposals (prevents infinite recursion)
+        // Draft highlights inspect only the current layer index; they must not materialize a
+        // hidden parcel from a cache while the replay owns the live fabric.
         const layer = skipRecovery
             ? (multiParcelSelection.parcelIdIndex && multiParcelSelection.parcelIdIndex.get(parcelId.toString()))
             : multiParcelSelection.findParcelById(parcelId);
         if (layer && typeof layer.toGeoJSON === 'function') {
-            const feature = layer.toGeoJSON();
+            const feature = layer.toGeoJSON(false);
             if (proposal) {
                 const cache = buildProposalFeatureCache(proposal);
                 if (cache && cache.parcelsById) {
@@ -689,6 +720,9 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         });
         return;
     }
+    // Share-plan mode: no surface may select a proposal or open its details — the panel's own
+    // row hover/click highlight is the only proposal interaction while the plan is being composed.
+    if (window.sharePlanMode) return;
     console.debug('[selectAndHighlightProposal] Called', {
         proposalIdOrHash,
         parcelId,
@@ -789,10 +823,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
-            // Prefer descendant parcels (not child proposal ids) — _getProposalDescendants mixes both.
-            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getAllDescendantParcelIds === 'function') {
-                const descParcels = ProposalManager._getAllDescendantParcelIds(proposalKey);
-                if (Array.isArray(descParcels) && descParcels.length > 0) return descParcels;
+            // Use only this formation's current derived parcels; records have no proposal family.
+            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalChildParcels === 'function') {
+                const children = ProposalManager._getProposalChildParcels(proposalKey);
+                if (Array.isArray(children) && children.length > 0) return children;
             }
             const childIds = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds))
                 ? proposal.roadProposal.childParcelIds
@@ -937,7 +971,6 @@ async function removeProposalFromMap(proposalId, options = {}) {
         console.log('[removeProposalFromMap] Current proposal status', {
             lifecycleStatus: getLifecycleStatus(proposalSnapshot),
             applied: isApplied(proposalSnapshot),
-            roadApplied: isApplied(proposalSnapshot, proposalSnapshot.roadProposal),
             childIds: Array.isArray(proposalSnapshot.childParcelIds) ? proposalSnapshot.childParcelIds.slice() : [],
             parentIds: Array.isArray(proposalSnapshot.parentParcelIds) ? proposalSnapshot.parentParcelIds.slice() : []
         });
@@ -955,11 +988,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
     }
 
     try {
-        // ProposalManager.unapplyProposal handles everything:
-        // - Restores ancestor parcels, removes descendants
-        // - Updates proposal status
-        // - Refreshes UI indicators
-        // - Re-highlights the proposal if it's currently highlighted (via selectAndHighlightProposal)
+        // Unapply flips only the root record and invokes the same cadastre-first replay.
         const unapplied = await ProposalManager.unapplyProposal(proposalId);
         if (unapplied === false) {
             return false;
@@ -996,30 +1025,7 @@ function focusOnRemovedParcelLocation(parcelId, parcelItem) {
         } catch (_) { }
     }
 
-    // If not found, try to get from parentFeatures in the current proposal
-    if (!geometry && !feature) {
-        try {
-            const proposalDetailsContent = document.getElementById('proposal-details-content');
-            if (proposalDetailsContent) {
-                // Try to find proposal id from any element with data-proposal-id attribute
-                const proposalIdElement = proposalDetailsContent.querySelector('[data-proposal-id]');
-                if (proposalIdElement) {
-                    const proposalId = proposalIdElement.getAttribute('data-proposal-id');
-                    if (proposalId && typeof proposalStorage !== 'undefined') {
-                        const proposal = proposalStorage.getProposal(proposalId);
-                        if (proposal) {
-                            // Fetch by ID - no parentFeatures cache
-                            // Parent parcels are fetched by ID when needed
-                            // Building proposals typically don't store parentFeatures, but we can still try PersistentStorage
-                            // which is already handled below
-                        }
-                    }
-                }
-            }
-        } catch (_) { }
-    }
-
-    // If still not found, try PersistentStorage
+    // Fall back to the immutable/derived parcel store.
     if (!geometry && !feature) {
         try {
             const record = readPersistedParcelRecord(parcelId);
@@ -1102,10 +1108,6 @@ function rerenderProposalListIfOpen() {
             renderProposalListModal();
         }
     } catch (_) { }
-}
-
-function enableShowProposalsMode() {
-    // No-op retained for backward compatibility
 }
 
 function findParcelLayerById(parcelId) {
@@ -1217,33 +1219,6 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
         addParcelLayerToMapIfAppropriate();
     }
 
-    // Try to rehydrate missing parcels from storage BEFORE polling
-    // This prevents stalls when parcels exist in storage but not in the layer index
-    const missingFromIndex = scopedIds.filter(id => !isParcelLayerReady(id));
-    if (missingFromIndex.length > 0) {
-        const rehydrated = [];
-        for (const id of missingFromIndex) {
-            if (typeof readPersistedParcelRecord === 'function') {
-                const record = readPersistedParcelRecord(id);
-                if (record && record.geometry && record.properties) {
-                    rehydrated.push({
-                        type: 'Feature',
-                        geometry: record.geometry,
-                        properties: Object.assign({}, record.properties, { parcelId: id })
-                    });
-                }
-            }
-        }
-        if (rehydrated.length > 0 && typeof ingestParcelFeatures === 'function') {
-            try {
-                await ingestParcelFeatures(rehydrated, { replaceExisting: false });
-                console.debug(`[waitForParcelLayersReady] Rehydrated ${rehydrated.length} parcels from storage`);
-            } catch (e) {
-                console.warn('[waitForParcelLayersReady] Failed to ingest rehydrated parcels:', e);
-            }
-        }
-    }
-
     const pending = new Set(scopedIds);
     const start = Date.now();
     while (pending.size && (Date.now() - start) < timeoutMs) {
@@ -1251,10 +1226,6 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
             if (isParcelLayerReady(id)) {
                 pending.delete(id);
                 continue;
-            }
-            // Parcel consumed by an earlier proposal — deliberately off-map, not actually missing.
-            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) {
-                pending.delete(id);
             }
         }
         if (!pending.size) {

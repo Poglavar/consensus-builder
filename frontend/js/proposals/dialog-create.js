@@ -57,7 +57,7 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
     // Check if this is a corridor proposal, to style its geometry differently. Track-ness is a fact
     // about the cross-section (does it carry rail lanes), not a flag on the proposal.
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-    const corridorDefinition = proposal?.roadProposal?.definition || proposal?.definition;
+    const corridorDefinition = proposal?.roadProposal?.definition;
     const isTrack = isRoadProposal && typeof corridorIsTrack === 'function' && corridorIsTrack(corridorDefinition);
 
     // CRITICAL: Check zoom level before rendering parcel features
@@ -644,7 +644,7 @@ function showProposalDialog(overrides = null) {
     const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
     const submitLabel = isEditingExisting
-        ? t('modal.createProposal.submitEdit', 'Save')
+        ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
         : t('modal.createProposal.submit', 'Create Proposal');
 
     const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
@@ -1897,13 +1897,6 @@ function showWalkUploadGateModal(options = {}) {
             if (!proposal) return false;
             const state = rowState.get(key) || {};
             if (state.uploading || state.uploaded) return !!state.uploaded;
-
-            const gate = await ensureAncestorProposalsUploaded(proposal);
-            if (!gate.ok) {
-                const missingList = gate.missing.map(e => e.id || (e.hash ? e.hash.slice(0, 8) : '?')).filter(Boolean);
-                setStatus(`Upload ancestor proposals first: ${missingList.join(', ')}`);
-                return false;
-            }
 
             rowState.set(key, { uploading: true, uploaded: false });
             updateRowVisual(key);

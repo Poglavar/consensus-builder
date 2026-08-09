@@ -158,8 +158,8 @@
 
                             // Inserting the crossing vertex does NOT change what the segment IS —
                             // the id must survive, because per-segment cross-section overrides are
-                            // keyed by it. (Nulling it here orphaned every absorbed road's profile
-                            // at the junction step, repainting merges with the newest profile.)
+                            // keyed by it. Nulling it here would orphan a seeded segment's profile
+                            // at the junction step.
                             if (A === B) {
                                 // Both insertions target one array. Apply the later splice first so
                                 // the earlier edge index cannot move underneath us.
@@ -402,228 +402,127 @@
         return true;
     }
 
-    // Connected components of a segment set: segments sharing any coincident vertex belong to one
-    // body. Bodies are returned sorted by total length descending (the main run first).
-    function corridorConnectedComponents(segments, segmentIds) {
-        const EPS = 1e-7;
-        const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-        const parent = segments.map((_, index) => index);
-        const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
-        const union = (i, j) => { parent[find(j)] = find(i); };
-        for (let i = 0; i < segments.length; i += 1) {
-            for (let j = i + 1; j < segments.length; j += 1) {
-                if (find(i) === find(j)) continue;
-                const touches = segments[i].some(p => segments[j].some(q => near(p, q)));
-                if (touches) union(i, j);
-            }
-        }
-        const groups = new Map();
-        segments.forEach((segment, index) => {
-            const root = find(index);
-            if (!groups.has(root)) groups.set(root, { segments: [], segmentIds: [], length: 0 });
-            const group = groups.get(root);
-            group.segments.push(segment);
-            group.segmentIds.push(Array.isArray(segmentIds) ? (segmentIds[index] || null) : null);
-            group.length += (typeof calculateSegmentLengthMeters === 'function') ? calculateSegmentLengthMeters(segment) : segment.length;
-        });
-        return [...groups.values()].sort((a, b) => b.length - a.length);
+    function cloneCorridorValue(value) {
+        return value == null ? value : JSON.parse(JSON.stringify(value));
     }
 
-    // How close a T-junction endpoint may stop short of the other road's centerline and still be
-    // healed into a shared node. Two ordinary roads meant to connect land within this; two parallel
-    // roads that merely graze by their widths do not (their endpoints sit at each other's ENDS, not
-    // mid-span). Metres — a couple of lane-widths short of touching is still clearly a junction.
-    const NEAR_MISS_JUNCTION_METERS = 2.5;
-
-    // Fuse vertices that sit within `toleranceMeters` of one another onto ONE shared position, so a
-    // node placed close to an existing one BECOMES the same node — a genuine shared junction when the
-    // two vertices belong to different legs — instead of two near-coincident duplicates. There is no
-    // legitimate "two vertices almost in the same spot": either the user meant one node (weld them) or
-    // they are far enough apart to stay distinct. Runs BEFORE crossing-node insertion and connectivity
-    // so the welded coincidence is what those see. Mutates `segments` in place; segment COUNT is
-    // preserved (a leg that collapses to a single distinct point is left for the caller's usual
-    // length>=2 filter). Zero-length edges the weld creates inside a leg are dropped.
-    function weldNearbyVertices(segments, toleranceMeters = NEAR_MISS_JUNCTION_METERS) {
-        if (!Array.isArray(segments) || typeof wgs84ToHTRS96 !== 'function') return;
-        const project = (p) => {
-            try {
-                const xy = wgs84ToHTRS96(p.lat, p.lng);
-                return (Array.isArray(xy) && isFinite(xy[0]) && isFinite(xy[1])) ? xy : null;
-            } catch (_) { return null; }
+    function corridorEditInputs(segments, segmentIds, segmentProfiles) {
+        const sourceSegments = Array.isArray(segments) ? segments : [];
+        return {
+            segments: sourceSegments.map(segment => (
+                Array.isArray(segment) ? segment.map(point => ({ ...point })) : []
+            )),
+            segmentIds: sourceSegments.map((_, index) => (
+                Array.isArray(segmentIds) && segmentIds[index] !== undefined
+                    ? segmentIds[index]
+                    : null
+            )),
+            segmentProfiles: segmentProfiles && typeof segmentProfiles === 'object'
+                ? cloneCorridorValue(segmentProfiles)
+                : null
         };
-        const tolSq = toleranceMeters * toleranceMeters;
-        // Each vertex snaps onto the nearest EARLIER vertex within tolerance — earlier ones are the
-        // anchors and never move, which makes the result deterministic and convergent (two near nodes
-        // don't chase each other). A vertex is NEVER welded to its own immediate neighbour in the same
-        // leg: that gap is a real edge (a bend, a finely-sampled curve) and collapsing it would eat
-        // geometry. Cross-leg proximity, and a leg looping back onto a non-adjacent part of itself,
-        // ARE welded — that is the "I placed this node on that one to join them" case.
-        const anchors = []; // { si, pi, xy, point }
-        segments.forEach((segment, si) => {
+    }
+
+    function nextSplitSegmentId(sourceId, usedIds) {
+        const base = sourceId !== null && sourceId !== undefined && String(sourceId)
+            ? `${String(sourceId)}~2`
+            : 'split~2';
+        let candidate = base;
+        let suffix = 2;
+        while (usedIds.has(candidate)) candidate = `${base}~${suffix++}`;
+        usedIds.add(candidate);
+        return candidate;
+    }
+
+    function pruneCorridorEditProfiles(segmentIds, segmentProfiles) {
+        if (!segmentProfiles) return null;
+        const liveIds = new Set(segmentIds.filter(id => id !== null && id !== undefined).map(String));
+        Object.keys(segmentProfiles).forEach(id => {
+            if (!liveIds.has(String(id))) delete segmentProfiles[id];
+        });
+        return segmentProfiles;
+    }
+
+    // Remove exactly one authored centerline edge. A road is one formation even when this leaves
+    // disconnected stretches: those stretches remain in this ONE result and replay re-derives its
+    // complete footprint. Segment identity stays index-aligned; when one polyline becomes two, the
+    // leading remainder keeps its id and the trailing remainder receives a stable derived id plus a
+    // copy of the source profile. Inputs are never mutated.
+    function removeCorridorEdge(segments, segmentIds, segmentProfiles, segmentIndex, edgeIndex) {
+        const result = corridorEditInputs(segments, segmentIds, segmentProfiles);
+        const target = result.segments[segmentIndex];
+        if (!Array.isArray(target) || !target[edgeIndex] || !target[edgeIndex + 1]) {
+            return { ...result, changed: false };
+        }
+
+        const sourceId = result.segmentIds[segmentIndex] ?? null;
+        const before = target.slice(0, edgeIndex + 1);
+        const after = target.slice(edgeIndex + 1);
+        const replacementSegments = [];
+        const replacementIds = [];
+        if (before.length >= 2) {
+            replacementSegments.push(before);
+            replacementIds.push(sourceId);
+        }
+        if (after.length >= 2) {
+            replacementSegments.push(after);
+            if (replacementSegments.length === 1) {
+                replacementIds.push(sourceId);
+            } else {
+                const usedIds = new Set(result.segmentIds
+                    .filter(id => id !== null && id !== undefined)
+                    .map(String));
+                const derivedId = nextSplitSegmentId(sourceId, usedIds);
+                replacementIds.push(derivedId);
+                if (result.segmentProfiles && sourceId !== null && sourceId !== undefined
+                    && result.segmentProfiles[String(sourceId)]) {
+                    result.segmentProfiles[String(derivedId)] = cloneCorridorValue(
+                        result.segmentProfiles[String(sourceId)]
+                    );
+                }
+            }
+        }
+
+        result.segments.splice(segmentIndex, 1, ...replacementSegments);
+        result.segmentIds.splice(segmentIndex, 1, ...replacementIds);
+        result.segmentProfiles = pruneCorridorEditProfiles(result.segmentIds, result.segmentProfiles);
+        return { ...result, changed: true };
+    }
+
+    // Remove one displayed graph node from every polyline occurrence that represents it. Targets
+    // are processed from the end of each polyline so a loop seam or self-junction cannot shift a
+    // later point index. Dropped one-point polylines take their aligned id/profile with them.
+    function removeCorridorNodes(segments, segmentIds, segmentProfiles, targets) {
+        const result = corridorEditInputs(segments, segmentIds, segmentProfiles);
+        const bySegment = new Map();
+        (Array.isArray(targets) ? targets : []).forEach(target => {
+            const segmentIndex = Number(target?.segIndex);
+            const pointIndex = Number(target?.pointIndex);
+            if (!Number.isInteger(segmentIndex) || !Number.isInteger(pointIndex)) return;
+            if (!bySegment.has(segmentIndex)) bySegment.set(segmentIndex, new Set());
+            bySegment.get(segmentIndex).add(pointIndex);
+        });
+
+        let changed = false;
+        bySegment.forEach((pointIndexes, segmentIndex) => {
+            const segment = result.segments[segmentIndex];
             if (!Array.isArray(segment)) return;
-            segment.forEach((point, pi) => {
-                if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
-                const xy = project(point);
-                if (!xy) return;
-                let best = null;
-                for (const anchor of anchors) {
-                    if (anchor.si === si && Math.abs(anchor.pi - pi) === 1) continue; // same-leg neighbour
-                    const dx = xy[0] - anchor.xy[0];
-                    const dy = xy[1] - anchor.xy[1];
-                    const distSq = dx * dx + dy * dy;
-                    if (distSq <= tolSq && (!best || distSq < best.distSq)) best = { distSq, point: anchor.point };
-                }
-                if (best) {
-                    point.lat = best.point.lat;
-                    point.lng = best.point.lng;
-                }
-                anchors.push({ si, pi, xy: project(point) || xy, point });
+            [...pointIndexes].sort((a, b) => b - a).forEach(pointIndex => {
+                if (!segment[pointIndex]) return;
+                segment.splice(pointIndex, 1);
+                changed = true;
             });
         });
-        // Drop any EXACT zero-length edge (consecutive identical vertices) the weld produced. A
-        // non-consecutive self-touch (a leg that loops back onto itself) is left intact.
-        const EPS = 1e-9;
-        segments.forEach(segment => {
-            if (!Array.isArray(segment)) return;
-            for (let i = segment.length - 1; i > 0; i -= 1) {
-                const a = segment[i];
-                const b = segment[i - 1];
-                if (a && b && Math.abs(a.lat - b.lat) < EPS && Math.abs(a.lng - b.lng) < EPS) {
-                    segment.splice(i, 1);
-                }
-            }
-        });
-    }
+        if (!changed) return { ...result, changed: false };
 
-    // Closest point on segment [a,b] to p, in planar metres. Returns { dist, t } with t the clamped
-    // position along the segment (0 at a, 1 at b), or null if the projection is unavailable. Uses the
-    // runtime's wgs84ToHTRS96 (bare global, like polylineHasSelfIntersection) so metres are honest.
-    function pointToSegmentMetric(p, a, b) {
-        if (typeof wgs84ToHTRS96 !== 'function') return null;
-        let P, A, B;
-        try {
-            P = wgs84ToHTRS96(p.lat, p.lng);
-            A = wgs84ToHTRS96(a.lat, a.lng);
-            B = wgs84ToHTRS96(b.lat, b.lng);
-        } catch (_) { return null; }
-        if (![P, A, B].every(v => Array.isArray(v) && isFinite(v[0]) && isFinite(v[1]))) return null;
-        const abx = B[0] - A[0], aby = B[1] - A[1];
-        const lenSq = abx * abx + aby * aby;
-        if (lenSq < 1e-12) return null;
-        let t = ((P[0] - A[0]) * abx + (P[1] - A[1]) * aby) / lenSq;
-        const tc = Math.max(0, Math.min(1, t));
-        const cx = A[0] + tc * abx, cy = A[1] + tc * aby;
-        return { dist: Math.hypot(P[0] - cx, P[1] - cy), t: tc };
-    }
-
-    // Does an ENDPOINT of one set stop just short of the MID-SPAN of the other's edge — a near-miss
-    // T-junction? (t strictly interior, so an endpoint landing near the other's ENDPOINT — parallel
-    // roads grazing — does not count.) This is the merge-gate half of near-miss healing.
-    function endpointNearMidSpan(segmentsA, segmentsB, toleranceMeters) {
-        for (const a of segmentsA) {
-            if (!Array.isArray(a) || a.length < 1) continue;
-            for (const endpoint of [a[0], a[a.length - 1]]) {
-                for (const b of segmentsB) {
-                    if (!Array.isArray(b) || b.length < 2) continue;
-                    for (let j = 0; j < b.length - 1; j += 1) {
-                        const hit = pointToSegmentMetric(endpoint, b[j], b[j + 1]);
-                        if (hit && hit.t > 1e-6 && hit.t < 1 - 1e-6 && hit.dist <= toleranceMeters) return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    // Do two centerline sets genuinely connect — sharing a vertex or crossing? With
-    // `allowNearMiss` (a deliberate join), a near-miss T-junction — one road's endpoint stopped a
-    // couple of metres short of the other's mid-span — also counts. That near-miss match is OPT-IN:
-    // callers pass it when the join is a willing user act — dragging a node onto a road, or drawing a
-    // stroke onto one (the finish/absorb merge). A background pass that must never fuse roads merely
-    // near each other leaves it off. Two parallel roads grazing each other's width are never a join.
-    function centerlinesTouch(segmentsA, segmentsB, allowNearMiss = false) {
-        const EPS = 1e-7;
-        const near = (p, q) => Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-        for (const a of segmentsA) {
-            for (const b of segmentsB) {
-                if (a.some(p => b.some(q => near(p, q)))) return true;
-                for (let i = 0; i < a.length - 1; i += 1) {
-                    for (let j = 0; j < b.length - 1; j += 1) {
-                        if (planarSegmentIntersection(a[i], a[i + 1], b[j], b[j + 1])) return true;
-                    }
-                }
-            }
-        }
-        if (!allowNearMiss) return false;
-        if (endpointNearMidSpan(segmentsA, segmentsB, NEAR_MISS_JUNCTION_METERS)) return true;
-        if (endpointNearMidSpan(segmentsB, segmentsA, NEAR_MISS_JUNCTION_METERS)) return true;
-        return false;
-    }
-
-    // Heal near-miss T-junctions in a segment set: an endpoint that stopped just short of another
-    // segment's mid-span is snapped exactly onto that span, and the snap point is inserted into the
-    // span as a vertex — so the two roads share a real graph node (draggable, connected, a junction
-    // dot) instead of merely overlapping by their widths. Without this, `insertCorridorCrossingNodes`
-    // finds no true crossing, `corridorConnectedComponents` sees no shared vertex, and the roads stay
-    // two objects that look joined but are not. Mutates `segments` in place; run it BEFORE crossing
-    // nodes are inserted. `segmentIds` stays index-aligned (endpoints move, no segment is added).
-    function healNearMissJunctions(segments, toleranceMeters = NEAR_MISS_JUNCTION_METERS) {
-        if (!Array.isArray(segments) || segments.length < 2) return;
-        if (typeof wgs84ToHTRS96 !== 'function') return;
-        const EPS = 1e-7;
-        const near = (p, q) => p && q && Math.abs(p.lat - q.lat) < EPS && Math.abs(p.lng - q.lng) < EPS;
-        // Collect first, apply after: inserting a vertex shifts later indices, so gather every heal
-        // then splice in descending order per target segment.
-        const inserts = []; // { targetSeg, insertAfter, point }
-        for (let si = 0; si < segments.length; si += 1) {
-            const seg = segments[si];
-            if (!Array.isArray(seg) || seg.length < 2) continue;
-            for (const endIdx of [0, seg.length - 1]) {
-                const endpoint = seg[endIdx];
-                let best = null;
-                for (let ti = 0; ti < segments.length; ti += 1) {
-                    if (ti === si) continue;
-                    const other = segments[ti];
-                    if (!Array.isArray(other) || other.length < 2) continue;
-                    // Already a shared node with this segment: nothing to heal.
-                    if (other.some(v => near(v, endpoint))) { best = null; break; }
-                    for (let k = 0; k < other.length - 1; k += 1) {
-                        const hit = pointToSegmentMetric(endpoint, other[k], other[k + 1]);
-                        if (!hit || hit.t <= 1e-6 || hit.t >= 1 - 1e-6 || hit.dist > toleranceMeters) continue;
-                        if (best && hit.dist >= best.dist) continue;
-                        // Snap point in lat/lng: interpolate the target edge at the metric parameter t
-                        // (close enough over a metres-long edge to avoid a second projection round-trip).
-                        const A = other[k], B = other[k + 1];
-                        const point = { lat: A.lat + hit.t * (B.lat - A.lat), lng: A.lng + hit.t * (B.lng - A.lng) };
-                        best = { dist: hit.dist, targetSeg: ti, insertAfter: k, point };
-                    }
-                }
-                if (best) {
-                    // Move the endpoint exactly onto the target span, and remember to give the target a
-                    // matching vertex there so the two share the node.
-                    endpoint.lat = best.point.lat;
-                    endpoint.lng = best.point.lng;
-                    inserts.push(best);
-                }
-            }
-        }
-        // Apply insertions per target segment, descending by position so earlier indices stay valid.
-        const byTarget = new Map();
-        inserts.forEach(entry => {
-            if (!byTarget.has(entry.targetSeg)) byTarget.set(entry.targetSeg, []);
-            byTarget.get(entry.targetSeg).push(entry);
-        });
-        byTarget.forEach((entries, targetSeg) => {
-            const other = segments[targetSeg];
-            entries.sort((a, b) => b.insertAfter - a.insertAfter);
-            entries.forEach(entry => {
-                const A = other[entry.insertAfter];
-                const B = other[entry.insertAfter + 1];
-                // Skip if the span already carries this vertex (a second endpoint healed to the same spot).
-                if (near(A, entry.point) || near(B, entry.point)) return;
-                other.splice(entry.insertAfter + 1, 0, { lat: entry.point.lat, lng: entry.point.lng });
-            });
-        });
+        const kept = result.segments.map((segment, index) => ({
+            segment,
+            id: result.segmentIds[index] ?? null
+        })).filter(entry => entry.segment.length >= 2);
+        result.segments = kept.map(entry => entry.segment);
+        result.segmentIds = kept.map(entry => entry.id);
+        result.segmentProfiles = pruneCorridorEditProfiles(result.segmentIds, result.segmentProfiles);
+        return { ...result, changed: true };
     }
 
     function segmentsIntersect(p1, q1, p2, q2) {
@@ -691,67 +590,6 @@
             }
         }
         return false;
-    }
-
-    // Joining two endpoint-connected strokes is only safe while the result remains one simple path.
-    // If the joined path crosses or touches itself away from an ordinary loop closure, keeping the
-    // strokes separate preserves the road graph: the crossing-noder can then put the same junction
-    // vertex into both strokes, and each strip renderer receives non-self-crossing input.
-    function polylineHasNontrivialSelfIntersection(points) {
-        if (!Array.isArray(points) || points.length < 4) return false;
-        const EPS = 1e-7;
-        const near = (a, b) => a && b
-            && Math.abs(a.lat - b.lat) < EPS
-            && Math.abs(a.lng - b.lng) < EPS;
-        for (let i = 0; i < points.length - 1; i += 1) {
-            for (let j = i + 2; j < points.length - 1; j += 1) {
-                // The first and last edge of a closed ring are neighbours, not a self-crossing.
-                if (i === 0 && j === points.length - 2 && near(points[0], points[points.length - 1])) continue;
-                if (planarSegmentIntersection(points[i], points[i + 1], points[j], points[j + 1])) return true;
-            }
-        }
-        return false;
-    }
-
-    // Merge polylines that share an endpoint into single segments, keeping ids and per-segment
-    // profile overrides aligned. Pieces with DIFFERENT cross-section profiles stay separate.
-    function weldCorridorSegments(segments, segmentIds, segmentProfiles = null) {
-        const EPS = 1e-7; // ~1 cm — snap targets copy exact vertex coordinates
-        const same = (a, b) => a && b && Math.abs(a.lat - b.lat) < EPS && Math.abs(a.lng - b.lng) < EPS;
-        const profileKeyOf = id => {
-            if (!segmentProfiles || id === null || id === undefined) return '';
-            const override = segmentProfiles[String(id)];
-            return override ? JSON.stringify(override) : '';
-        };
-        const segs = segments.map(segment => segment.slice());
-        const ids = segmentIds.slice();
-        let joined = true;
-        while (joined) {
-            joined = false;
-            outer:
-            for (let i = 0; i < segs.length; i += 1) {
-                for (let j = 0; j < segs.length; j += 1) {
-                    if (i === j) continue;
-                    if (profileKeyOf(ids[i]) !== profileKeyOf(ids[j])) continue;
-                    const a = segs[i];
-                    const b = segs[j];
-                    let candidate = null;
-                    if (same(a[a.length - 1], b[0])) candidate = a.concat(b.slice(1));
-                    else if (same(a[a.length - 1], b[b.length - 1])) candidate = a.concat(b.slice(0, -1).reverse());
-                    else if (same(a[0], b[b.length - 1])) candidate = b.concat(a.slice(1));
-                    else if (same(a[0], b[0])) candidate = b.slice(1).reverse().concat(a);
-                    else continue;
-                    if (polylineHasNontrivialSelfIntersection(candidate)) continue;
-                    segs[i] = candidate;
-                    ids[i] = profileKeyOf(ids[i]) ? ids[i] : (profileKeyOf(ids[j]) ? ids[j] : null);
-                    segs.splice(j, 1);
-                    ids.splice(j, 1);
-                    joined = true;
-                    break outer;
-                }
-            }
-        }
-        return { segments: segs, segmentIds: ids };
     }
 
     // ---- Road-footprint shape conversion (moved out of road-drawing.js) ----------------------
@@ -1142,13 +980,10 @@
         splitCorridorSelfJunctions,
         normalizeCorridorGraph,
         normalizeCorridorDefinitionTopology,
-        healNearMissJunctions,
-        weldNearbyVertices,
-        corridorConnectedComponents,
-        centerlinesTouch,
+        removeCorridorEdge,
+        removeCorridorNodes,
         segmentsIntersect,
         polylineHasSelfIntersection,
-        weldCorridorSegments,
         convertRoadPolygonToLatLngPairs,
         convertLatLngPairsToGeoJSON,
         isValidPolygonLatLngPairs
@@ -1162,13 +997,8 @@
         window.splitCorridorSelfJunctions = splitCorridorSelfJunctions;
         window.normalizeCorridorGraph = normalizeCorridorGraph;
         window.normalizeCorridorDefinitionTopology = normalizeCorridorDefinitionTopology;
-        window.healNearMissJunctions = healNearMissJunctions;
-        window.weldNearbyVertices = weldNearbyVertices;
-        window.corridorConnectedComponents = corridorConnectedComponents;
-        window.centerlinesTouch = centerlinesTouch;
         window.segmentsIntersect = segmentsIntersect;
         window.polylineHasSelfIntersection = polylineHasSelfIntersection;
-        window.weldCorridorSegments = weldCorridorSegments;
         window.convertRoadPolygonToLatLngPairs = convertRoadPolygonToLatLngPairs;
         window.convertLatLngPairsToGeoJSON = convertLatLngPairsToGeoJSON;
         window.isValidPolygonLatLngPairs = isValidPolygonLatLngPairs;

@@ -22,23 +22,70 @@ const fakeLayer = (feature) => ({ toGeoJSON: () => feature });
 
 beforeAll(() => {
     globalThis.turf = turf;
+    require('../../frontend/js/proposal-parcel-identity.js');
     ancestry = require('../../frontend/js/proposals/cadastre-ancestry.js');
 });
 
 beforeEach(() => {
+    const base = fakeLayer(A);
+    const derived = fakeLayer(B);
+    const consumed = fakeLayer(CONSUMED);
+    const broken = { toGeoJSON: () => { throw new Error('cannot serialise'); } };
     globalThis.getParcelLayerIdMap = () => new Map([
-        ['HR-1-1', fakeLayer(A)],
-        ['HR-1-2#p-road-1', fakeLayer(B)],
-        ['HR-1-3', fakeLayer(CONSUMED)],
-        ['broken', { toGeoJSON: () => { throw new Error('cannot serialise'); } }]
+        ['HR-1-1', base],
+        ['HR-1-2#p-road-1', derived],
+        ['HR-1-3', consumed],
+        ['broken', broken]
     ]);
-    globalThis.isParcelReplacedByChildren = (id) => id === 'HR-1-3';
+    const visible = new Set([base, derived, broken]);
+    globalThis.parcelLayer = { hasLayer: layer => visible.has(layer) };
 });
 
 describe('loadedLiveParcels', () => {
     it('keeps derived slices, drops consumed parents and unserialisable layers', () => {
         const live = ancestry.loadedLiveParcels();
         expect(live.map(p => p.id).sort()).toEqual(['HR-1-1', 'HR-1-2#p-road-1']);
+    });
+});
+
+describe('loadedCadastreParcels', () => {
+    it('rejects both current and legacy synthetic parcel ids', () => {
+        const base = fakeLayer(A);
+        const currentDerived = fakeLayer(B);
+        const legacyDerived = fakeLayer(B);
+        globalThis.getParcelLayerIdMap = () => new Map([
+            ['HR-1-1', base],
+            ['HR-1-2#p-road-1', currentDerived],
+            ['HR-339270-824_proposal_9', legacyDerived]
+        ]);
+        expect(ancestry.loadedCadastreParcels().map(item => item.id)).toEqual(['HR-1-1']);
+    });
+});
+
+describe('computeCadastreParcelIds', () => {
+    it('publishes geometry-derived cadastral ids and ignores stale declarations', () => {
+        const base = fakeLayer(A);
+        globalThis.getParcelLayerIdMap = () => new Map([['HR-1-1', base]]);
+        const proposal = {
+            parentParcelIds: ['HR-stale'],
+            structureProposal: { geometry: A.geometry }
+        };
+        expect(ancestry.computeCadastreParcelIds(proposal)).toEqual(['HR-1-1']);
+    });
+
+    it('refuses when loaded cadastre covers less than 95% of the footprint', () => {
+        const base = fakeLayer(A);
+        globalThis.getParcelLayerIdMap = () => new Map([['HR-1-1', base]]);
+        const proposal = {
+            parentParcelIds: ['HR-1-1'],
+            structureProposal: { geometry: square(16.000, 46.000, 16.002, 46.001).geometry }
+        };
+        expect(() => ancestry.computeCadastreParcelIds(proposal)).toThrow(/cover only 50%/);
+    });
+
+    it('refuses records without authored geometry instead of using declared ids', () => {
+        expect(() => ancestry.computeCadastreParcelIds({ parentParcelIds: ['HR-1-1'] }))
+            .toThrow(/no usable authored footprint/);
     });
 });
 
@@ -71,29 +118,35 @@ describe('resolveParentsByGeometry', () => {
     });
 });
 
-describe('loadedLiveParcels — structural consumption', () => {
-    it('excludes a parent whose derived children are live, even when the replaced flag lies', () => {
-        // The 97-104 replay measured exactly this: base 824 stayed layer-ready and unreplaced
-        // next to its own subdivision slices. The id structure is the ground truth.
+describe('loadedLiveParcels — visible fabric only', () => {
+    it('excludes hidden registry entries without inferring state from id prefixes', () => {
+        const parent = fakeLayer(A);
+        const childA = fakeLayer(A);
+        const childB = fakeLayer(B);
+        const unrelated = fakeLayer(B);
         globalThis.getParcelLayerIdMap = () => new Map([
-            ['HR-1-824', fakeLayer(A)],
-            ['HR-1-824#c-sub-1', fakeLayer(A)],
-            ['HR-1-824#c-sub-2', fakeLayer(B)],
-            ['HR-1-9', fakeLayer(B)]
+            ['HR-1-824', parent],
+            ['HR-1-824#c-sub-1', childA],
+            ['HR-1-824#c-sub-2', childB],
+            ['HR-1-9', unrelated]
         ]);
-        globalThis.isParcelReplacedByChildren = () => false; // the lying flag
+        const visible = new Set([childA, childB, unrelated]);
+        globalThis.parcelLayer = { hasLayer: layer => visible.has(layer) };
         const ids = ancestry.loadedLiveParcels().map(p => p.id).sort();
         expect(ids).toEqual(['HR-1-824#c-sub-1', 'HR-1-824#c-sub-2', 'HR-1-9']);
     });
 
-    it('consumes every #-prefix of a nested derived id', () => {
+    it('does not heal a non-conforming visible partition from identifier ancestry', () => {
+        const base = fakeLayer(A);
+        const first = fakeLayer(A);
+        const second = fakeLayer(B);
         globalThis.getParcelLayerIdMap = () => new Map([
-            ['HR-1-5', fakeLayer(A)],
-            ['HR-1-5#p-a-1', fakeLayer(A)],
-            ['HR-1-5#p-a-1#p-b-1', fakeLayer(B)]
+            ['HR-1-5', base],
+            ['HR-1-5#p-a-1', first],
+            ['HR-1-5#p-a-1#p-b-1', second]
         ]);
-        globalThis.isParcelReplacedByChildren = () => false;
+        globalThis.parcelLayer = { hasLayer: () => true };
         const ids = ancestry.loadedLiveParcels().map(p => p.id);
-        expect(ids).toEqual(['HR-1-5#p-a-1#p-b-1']);
+        expect(ids).toEqual(['HR-1-5', 'HR-1-5#p-a-1', 'HR-1-5#p-a-1#p-b-1']);
     });
 });

@@ -138,212 +138,32 @@ function collectProposalFeatureSets(proposal, options = {}) {
     const parcelFeatures = [];
     const primaryFeatures = [];
     const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
-    const cache = buildProposalFeatureCache(proposal) || {};
-
     // Parents and road descendants are now handled by the in-place setStyle path in
     // renderAppliedProposalHighlight — it walks the viewport spatial index directly and
     // mutates layers without going through Feature extraction. We deliberately do NOT
     // populate parcelFeatures for parents or road descendants here to avoid the
     // O(N) toGeoJSON clones that dominated collectProposalFeatureSets runtime.
 
-    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal) {
-        if (proposal.roadProposal.definition) {
-            // Always draw the road definition corridor — it is the proposal's primary geometry
-            // and must remain visible regardless of viewport / zoom / descendant materialization.
-            const definition = proposal.roadProposal.definition;
-            let roadPolygon = null;
-            let geometry = null;
-
-            // First, check if definition already has a stored polygon (from road drawing)
-            if (definition.polygon && definition.polygon.type === 'Polygon' && Array.isArray(definition.polygon.coordinates)) {
-                geometry = definition.polygon;
-            } else if (definition.polygon && Array.isArray(definition.polygon.coordinates)) {
-                geometry = { type: 'Polygon', coordinates: definition.polygon.coordinates };
-            }
-
-            // If no stored polygon, try to calculate from points and width
-            if (!geometry) {
-                const points = Array.isArray(definition.points) ? definition.points : null;
-                const width = typeof definition.width === 'number' ? definition.width : parseFloat(definition.width);
-
-                if (points && points.length >= 2 && Number.isFinite(width) && width > 0) {
-                    // Use the calculateRoadPolygon function from road-drawing.js if available
-                    try {
-                        if (typeof window !== 'undefined' && typeof window.calculateRoadPolygon === 'function') {
-                            roadPolygon = window.calculateRoadPolygon(points, width);
-                        } else if (typeof calculateRoadPolygon === 'function') {
-                            roadPolygon = calculateRoadPolygon(points, width);
-                        } else if (typeof ProposalManager !== 'undefined' && ProposalManager._calculateRoadPolygon && typeof ProposalManager._calculateRoadPolygon === 'function') {
-                            roadPolygon = ProposalManager._calculateRoadPolygon(points, width);
-                        } else if (typeof _calculateRoadPolygon === 'function') {
-                            roadPolygon = _calculateRoadPolygon(points, width);
-                        }
-                    } catch (error) {
-                        console.warn('[collectProposalFeatureSets] calculateRoadPolygon failed, using turf buffer fallback', error);
-                    }
-
-                    if (roadPolygon && Array.isArray(roadPolygon)) {
-                        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
-
-                        const ensureClosedRing = (coords) => {
-                            if (!Array.isArray(coords) || coords.length < 3) return null;
-                            const first = coords[0];
-                            const last = coords[coords.length - 1];
-                            if (!first || !last) return null;
-                            const closed = coords.slice();
-                            if (first[0] !== last[0] || first[1] !== last[1]) {
-                                closed.push([first[0], first[1]]);
-                            }
-                            return closed.length >= 4 ? closed : null;
-                        };
-
-                        const ringFromLatLngs = (ring) => {
-                            const coords = (Array.isArray(ring) ? ring : [])
-                                .map(pt => (isLatLng(pt) ? [pt.lng, pt.lat] : null))
-                                .filter(Boolean);
-                            return ensureClosedRing(coords);
-                        };
-
-                        const buildGeometry = (poly) => {
-                            // LatLng[]
-                            if (poly.length && isLatLng(poly[0])) {
-                                const outer = ringFromLatLngs(poly);
-                                return outer ? { type: 'Polygon', coordinates: [outer] } : null;
-                            }
-                            // LatLng[][] (polygon with holes)
-                            if (poly.length && Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
-                                const rings = poly.map(ringFromLatLngs).filter(Boolean);
-                                return rings.length ? { type: 'Polygon', coordinates: rings } : null;
-                            }
-                            // LatLng[][][] (multipolygon)
-                            if (poly.length && Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
-                                const polys = poly
-                                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(ringFromLatLngs).filter(Boolean))
-                                    .filter(rings => rings.length > 0);
-                                return polys.length ? { type: 'MultiPolygon', coordinates: polys } : null;
-                            }
-                            return null;
-                        };
-
-                        geometry = buildGeometry(roadPolygon);
-                    }
-                }
-            }
-
-            // Fallback for when calculateRoadPolygon is unavailable: build the strip from the
-            // CENTRELINE with the same shared, square-ended builder the real path uses.
-            //
-            // This used to be `turf.buffer(centreline, width/2)`, which is why every road highlight
-            // had semicircular ends: turf caps a buffered LineString with a round cap of the buffer
-            // radius, so the outline ran half a road-width past each end and bulged sideways. A road
-            // footprint is a strip with square ends — never a capsule.
-            //
-            // It also preferred `definition.latLngPairs`, which is the POLYGON ring (written next to
-            // definition.polygon), not a centreline — buffering that as a line was wrong whatever the
-            // caps did. Only definition.points is a centreline, and it may be a flat point list or an
-            // array of disjoint segments.
-            const makeSegment = (typeof window !== 'undefined' && window.createRectangularRoadSegment)
-                || (typeof createRectangularRoadSegment === 'function' ? createRectangularRoadSegment : null);
-            if (!geometry && makeSegment && typeof turf !== 'undefined' && turf.polygon) {
-                try {
-                    const isLatLngPoint = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
-                    const rawPoints = Array.isArray(definition.points) ? definition.points : null;
-                    const segments = [];
-                    if (rawPoints && rawPoints.length) {
-                        if (isLatLngPoint(rawPoints[0])) segments.push(rawPoints);
-                        else rawPoints.forEach(seg => {
-                            if (Array.isArray(seg) && seg.length >= 2 && isLatLngPoint(seg[0])) segments.push(seg);
-                        });
-                    }
-                    const widthMeters = Number.isFinite(definition.width)
-                        ? definition.width
-                        : (definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road);
-                    if (segments.length && Number.isFinite(widthMeters) && widthMeters > 0) {
-                        const ringToPolygon = (ring) => {
-                            const coords = (Array.isArray(ring) ? ring : []).filter(isLatLngPoint).map(p => [p.lng, p.lat]);
-                            if (coords.length < 3) return null;
-                            const first = coords[0];
-                            const last = coords[coords.length - 1];
-                            if (first[0] !== last[0] || first[1] !== last[1]) coords.push([first[0], first[1]]);
-                            return coords.length >= 4 ? turf.polygon([coords]) : null;
-                        };
-                        let merged = null;
-                        segments.forEach(segment => {
-                            for (let i = 0; i < segment.length - 1; i++) {
-                                const strip = ringToPolygon(makeSegment(segment[i], segment[i + 1], widthMeters));
-                                if (!strip) continue;
-                                if (!merged) { merged = strip; continue; }
-                                // Unioning keeps the joints clean; without turf.union the strips would
-                                // still be square-ended, just seamed, so fall back to the last one only
-                                // when union is genuinely missing.
-                                merged = (typeof turf.union === 'function' && turf.union(merged, strip)) || merged;
-                            }
-                        });
-                        if (merged && merged.geometry) geometry = merged.geometry;
-                    }
-                } catch (e) {
-                    console.warn('square-strip fallback for road/track geometry failed', e);
-                }
-            }
-
-            if (geometry) {
-                const roadFeature = {
-                    type: 'Feature',
-                    geometry: geometry,
-                    properties: {
-                        isRoad: true,
-                        isTrack: corridorIsTrack(definition),
-                        isProposed: true,
-                        proposalId: proposal.proposalId || null,
-                        source: 'road-definition'
-                    }
-                };
-
-                const normalised = normaliseToFeature(roadFeature, { source: 'road-definition' });
-                if (normalised) {
-                    primaryFeatures.push(normalised);
-                }
+    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal?.definition) {
+        const definition = proposal.roadProposal.definition;
+        let geometry = definition.polygon;
+        if (!geometry && typeof corridorSurfaceFootprintForDefinition === 'function') {
+            try {
+                geometry = corridorSurfaceFootprintForDefinition(definition);
+            } catch (error) {
+                console.error('[collectProposalFeatureSets] canonical corridor derivation failed', error);
             }
         }
-        // Also check for geometry.roadGeometry.polygon (from newly drawn roads)
-        if (primaryFeatures.length === 0 && proposal.geometry?.roadGeometry?.polygon) {
-            const storedPolygon = proposal.geometry.roadGeometry.polygon;
-            let geometry = null;
-
-            // polygon might be a GeoJSON Polygon object or raw coordinates
-            if (storedPolygon.type === 'Polygon' && Array.isArray(storedPolygon.coordinates)) {
-                geometry = storedPolygon;
-            } else if (Array.isArray(storedPolygon.coordinates) && storedPolygon.coordinates.length > 0) {
-                geometry = { type: 'Polygon', coordinates: storedPolygon.coordinates };
-            } else if (Array.isArray(storedPolygon) && storedPolygon.length > 0) {
-                // Raw coordinates array - assume it's already in GeoJSON [lng, lat] order
-                const firstItem = storedPolygon[0];
-                if (Array.isArray(firstItem) && Array.isArray(firstItem[0])) {
-                    // Already rings: [[lng, lat], ...]
-                    geometry = { type: 'Polygon', coordinates: storedPolygon };
-                } else if (Array.isArray(firstItem) && firstItem.length >= 2 && typeof firstItem[0] === 'number') {
-                    // Single ring: [[lng, lat], ...]
-                    geometry = { type: 'Polygon', coordinates: [storedPolygon] };
-                }
-            }
-
-            if (geometry) {
-                const roadFeature = {
-                    type: 'Feature',
-                    geometry: geometry,
-                    properties: {
-                        isRoad: true,
-                        isTrack: corridorIsTrack(proposal?.roadProposal?.definition),
-                        isProposed: true,
-                        proposalId: proposal.proposalId || null,
-                        source: 'road-geometry-stored'
-                    }
-                };
-                const normalised = normaliseToFeature(roadFeature, { source: 'road-geometry-stored' });
-                if (normalised) {
-                    primaryFeatures.push(normalised);
-                }
-            }
+        const geom = geometry?.type === 'Feature' ? geometry.geometry : geometry;
+        if (geom && /^(Polygon|MultiPolygon)$/.test(String(geom.type || '')) && Array.isArray(geom.coordinates)) {
+            const roadFeature = normaliseToFeature(geom, {
+                isRoad: true,
+                isTrack: corridorIsTrack(definition),
+                isProposed: true,
+                proposalId: proposal.proposalId || null,
+                source: 'road-definition'
+            });
+            if (roadFeature) primaryFeatures.push(roadFeature);
         }
     }
     if (includeBuildingGeometry) {
@@ -1078,12 +898,8 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
     if (!proposalId) return null;
     if (typeof proposalStorage === 'undefined' || !proposalStorage) return null;
 
-    // Find the visible descendant - this is the proposal whose children are actually on the map
-    const visibleDescendantId = findVisibleDescendant(proposalId);
-    const proposal = getProposalByIdOrHash(visibleDescendantId);
+    const proposal = getProposalByIdOrHash(proposalId);
     if (!proposal) return null;
-
-    console.debug('[calculateBoundsForLastAppliedProposal] Using visible descendant:', visibleDescendantId);
 
     // Just get the child parcel IDs of this proposal directly
     let parcelIdsForBounds = [];
@@ -1107,7 +923,7 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
         parcelIdsForBounds = ensureArrayOfStrings(proposal.parentParcelIds || []);
     }
 
-    // First try parcel-based bounds (descendants preferred). Do not fall back to parents if descendants exist.
+    // First try the formation's current child parcels. Do not fall back if children exist.
     if (parcelIdsForBounds.length > 0) {
         const bounds = calculateProposalBounds(parcelIdsForBounds, { proposal });
         if (bounds) {
@@ -1145,13 +961,13 @@ function calculateProposalGeometryBounds(proposal) {
 
     try {
         if (proposal.geometry) {
-            addGeom(proposal.geometry.roadGeometry || proposal.geometry.roadPlan || proposal.geometry.structureGeometry || proposal.geometry.structure || proposal.geometry.parcelGeometry || proposal.geometry.parcel);
+            addGeom(proposal.geometry.structureGeometry || proposal.geometry.structure || proposal.geometry.parcelGeometry || proposal.geometry.parcel);
             if (Array.isArray(proposal.geometry.buildings)) {
                 proposal.geometry.buildings.forEach(addFeatureGeom);
             }
         }
-        if (proposal.roadProposal && proposal.roadProposal.geometry) {
-            addGeom(proposal.roadProposal.geometry);
+        if (proposal.roadProposal?.definition?.polygon) {
+            addGeom(proposal.roadProposal.definition.polygon);
         }
         if (proposal.structureProposal && proposal.structureProposal.geometry) {
             addGeom(proposal.structureProposal.geometry);

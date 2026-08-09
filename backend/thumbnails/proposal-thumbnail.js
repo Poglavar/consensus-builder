@@ -98,41 +98,8 @@ export function resolveProposalPolygon(proposal) {
     if (!proposal) return { polygon: null };
 
     if (isRoadProposal(proposal)) {
-        const rp = proposal.roadProposal || {};
-        const def = rp.definition || proposal.definition || {};
-        const candidates = [
-            rp.polygon,
-            rp.superGeometry,
-            rp.geometry,
-            def.polygon,
-            proposal.geometry && proposal.geometry.roadGeometry && proposal.geometry.roadGeometry.polygon
-        ];
-        for (const candidate of candidates) {
-            const resolved = fromGeometry(candidate);
-            if (resolved) return { ...resolved, fitToPolygonOnly: true };
-        }
-
-        // Last resort: buffer the centerline by half the road width to synthesise a polygon.
-        const points = Array.isArray(def.points) ? def.points : [];
-        const width = Number.isFinite(Number(def.width)) ? Number(def.width) : 0;
-        if (points.length >= 2 && width > 0) {
-            try {
-                const coords = points
-                    .map(p => {
-                        const lng = Number(p && (p.lng ?? p.lon ?? p.longitude ?? p[0]));
-                        const lat = Number(p && (p.lat ?? p.latitude ?? p[1]));
-                        return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : null;
-                    })
-                    .filter(Boolean);
-                if (coords.length >= 2) {
-                    const buffered = turf.buffer(turf.lineString(coords), width / 2, { units: 'meters' });
-                    const resolved = fromGeometry(buffered && buffered.geometry);
-                    if (resolved) return { ...resolved, fitToPolygonOnly: true };
-                }
-            } catch (err) {
-                console.warn('[thumbnail] Failed to buffer road centerline:', err.message);
-            }
-        }
+        const resolved = fromGeometry(proposal.roadProposal?.definition?.polygon);
+        if (resolved) return { ...resolved, fitToPolygonOnly: true };
     }
 
     if (proposal.buildingGeometry) {

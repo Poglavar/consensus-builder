@@ -391,21 +391,6 @@ class AgentBubbleManager {
             return;
         }
 
-        // Always enable show proposals mode and clear multi-selection when clicking on any agent bubble
-        if (typeof enableShowProposalsMode === 'function') {
-            enableShowProposalsMode();
-        } else {
-            // Fallback if helper function not available
-            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-                showProposalsCheckbox.checked = true;
-                // Trigger the change event to update the proposal layer
-                if (typeof updateProposalLayer === 'function') {
-                    updateProposalLayer();
-                }
-            }
-        }
-
         // Mark this bubble as moving so it won't be repositioned by map events
         bubbleData.isMoving = true;
         // Pin the bubble: subsequent turns / new same-agent actions must not
@@ -936,4 +921,4 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(checkMapInterval);
         }
     }, 100);
-}); 
+});

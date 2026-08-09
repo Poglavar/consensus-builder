@@ -431,8 +431,6 @@
             "reformTooltip": "Skeniraj vidljive parcele i ponovo izgradi blokove",
             "fromSelectedButton": "Od izabrane parcele",
             "fromSelectedTooltip": "Poplavi od izabrane parcele da formiraš blok",
-            "breakUpButton": "Podeli blok",
-            "breakUpTooltip": "Podeli izabrani blok novim putem",
             "showNames": "Imena blokova",
             "showParks": "Parkovi",
             "showSquares": "Trgovi",
@@ -1003,15 +1001,11 @@
             "builtStatus": "Put izgrađen — kliknite ga za uređivanje ili predlog.",
             "segmentCancelledStatus": "Segment poništen — postavljeni segmenti ostaju. Esc ponovo gradi put.",
             "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili predlog.",
-            "mergedStatus": "Povezano sa “{{name}}” — sada je jedan put.",
-            "mergedStatusTrack": "Povezano sa “{{name}}” — sada je jedna pruga.",
-            "absorbedStatus": "Nastavljate “{{name}}” — završetak je zadržava kao jedan put.",
             "nodeHint": "Prevucite za pomeranje · ⌥-klik uklanja ovaj čvor",
             "bulldozeHint": "🚜 Sruši ovu deonicu",
-            "splitStatus": "Put se razdvojio — sada su {{count}} zasebna puta.",
             "editRevertedStatus": "Tu promenu puta nije bilo moguće dovršiti — vraćeno.",
+            "splitIntoStretches": "Uređivanje je prekinulo put — podeljen je u {{count}} zasebnih predloga puteva.",
             "applyingEdit": "Primenjujem…",
-            "bulldozedAllStatus": "Put srušen.",
             "junctionHint": "Raskrsnica — prevucite za pomeranje svih krakova · ⌥-klik razdvaja",
             "finishButtonShortTrack": "Završi prugu (F)",
             "lengthLabelTrack": "Dužina pruge:",
@@ -1194,7 +1188,7 @@
             "scopeLabel": "Primenjuje se na",
             "scopeSegment": "Ovu deonicu",
             "scopeRoad": "Celu putnu mrežu",
-            "hitsBuildings": "Preklapa zgrade — u režimu crtanja možete zaobići put oko njih ili proći tunelom",
+            "hitsBuildings": "Ovaj obuhvat preseca zgrade; ponovna izvedba određuje posledice",
             "extendsCut": "Dodatno zaseca već presečenu zgradu (žuto na karti)",
             "cutsStructures": "Preseca postavljene parkove/trgove/jezera",
             "cancel": "Otkaži",
@@ -1314,37 +1308,15 @@
             "show": "Prikaži"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} bi prolazio kroz {{count}} novu zgradu/nove zgrade. Preseći ih, srušiti ili prokopati tunel?",
+            "offer": "Ovaj {{kind}} preseca {{count}} zgradu/zgrada. Zadržati ovu deonicu na površini ili projektovati tunel?",
             "road": "put",
             "track": "pruga",
-            "unapply": "Ukloni postojeći predlog sa mape",
-            "destroy": "Sruši zgrade",
-            "cut": "Preseci zgrade",
-            "proposalImpact": "Presecanje ili rušenje ukloniće ove primenjene predloge sa mape (ostaće na listi predloga):",
-            "proposalImpactTunnel": "Tunel ostavlja ove predloge primenjenima.",
-            "cutWithProposals": "Preseci — ukloni {{count}} predlog(a) sa mape",
-            "destroyWithProposals": "Sruši — ukloni {{count}} predlog(a) sa mape",
-            "mergeImpact": "Nastavak će spojiti ove predloge puteva sa ovim putem i ukloniti njihove zasebne zapise predloga:",
-            "merge": "Spoji puteve",
+            "proposalImpact": "Ovaj put je kasniji od ovih predloga zgrada; površinski prelaz preuzima njihovo zemljište tokom ponovne izvedbe:",
+            "proposalImpactTunnel": "Tunel menja autorski prikaz puta, ali ne i obuhvat zemljišta koje put preuzima.",
+            "surface": "Nastavi na površini",
+            "sameGround": "Puni koridor u oba slučaja preuzima isto katastarsko zemljište; ponovna izvedba određuje površinske posledice.",
             "confirm": "Tunel kroz zgradu",
             "cancel": "Izaberi drugu trasu"
-        },
-        "impactTour": {
-            "applyToAll": "Primeni na sve:",
-            "cutAll": "Preseci sve",
-            "demolishAll": "Sruši sve",
-            "tunnelAll": "Tuneliraj sve",
-            "prev": "Prethodna zgrada",
-            "next": "Sledeća zgrada",
-            "counter": "Zgrada {{n}} / {{total}}",
-            "cut": "Preseci",
-            "demolish": "Sruši",
-            "tunnel": "Tunel",
-            "apply": "Primeni",
-            "applyNext": "Primeni i sledeća",
-            "applyActionToAll": "Primeni {{action}} na sve",
-            "cancel": "Otkaži",
-            "existingProposal": "postojeći predlog"
         },
         "corridorGrade": {
             "offer": "Ova pešačka ruta ukršta {{count}} nepešački put/puteve. Kako treba da ih pređe?",
@@ -1681,10 +1653,6 @@
                 "uploadError": "Otpremanje predloga nije uspelo. Molimo pokušajte ponovo.",
                 "shareUrlLabel": "URL za deljenje:",
                 "copyUrlButton": "Kopiraj URL",
-                "ancestorNote": "Napomena: ovaj predlog uključuje parcele kreirane od strane drugih predloga. Da bi se primenio na ciljnoj mapi, predlozi prethodnici će morati prvo da se primene. Umesto deljenja ovog jednog predloga, možda biste želeli da podelite ceo plan koristeći dugme \"Podeli ceo plan\" u sekciji Predlozi u bočnoj traci. Lista parcela:",
-                "parcelIdHeader": "ID Parcele",
-                "proposalIdHeader": "ID Predloga",
-                "ancestorUploadButton": "Otpremi",
                 "sharePlanButton": "Podeli ceo plan (svi primenjeni predlozi)…",
                 "plan": {
                     "uploadAncestorsMissing": "Uključite ove nadređene predloge u plan: {{list}}",
@@ -1694,6 +1662,8 @@
                     "applying": "Primеnjivanje predloga #{{id}}…",
                     "fetchingPlan": "Preuzimanje plana…",
                     "fetchingPlanTitle": "Preuzimanje predloga",
+                    "rebuildingPlanTitle": "Ponovna izgradnja primenjenog plana",
+                    "rebuildingPlan": "Ponovna primena formacija iz katastra…",
                     "countHeading": {
                         "one": "U trenutnom planu je {{count}} predlog",
                         "few": "U trenutnom planu su {{count}} predloga",
@@ -1996,7 +1966,6 @@
             "ownerUnknown": "Nepoznato",
             "lensTooltip": "Otvori modal sočiva",
             "submit": "Kreiraj predlog",
-            "submitEdit": "Sačuvaj",
             "creating": "Kreiram...",
             "waiting": "Čekam transakciju...",
             "rejected": "Transakcija odbijena",
@@ -2128,7 +2097,14 @@
                 "gaps": "Broj otvora:",
                 "gapWidth": "Širina otvora (m):",
                 "wings": "Broj krila:",
-                "wingLength": "Dužina krila (m):"
+                "wingLength": "Dužina krila (m):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeExact": "Tačno ovu visinu",
+                "ruleTypeMax": "Najviše ovu visinu",
+                "ruleTypeRange": "Između minimuma i ove visine",
+                "minHeight": "Min. visina zgrade (m):",
+                "minPlotArea": "Najmanja površina parcele (m²):",
+                "minDepth": "Obavezna dubina od ulice (m):"
             },
             "helper": {
                 "adjust": "Podesite parametre klizačima da izmenite oblik zgrade.",
@@ -2148,7 +2124,12 @@
                 "defaultProposalDescription": "Predlog zgrade za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedSliver": "Na ovu parcelu pada samo krhotina bloka — premala da bude zgrada.",
+                "rangeExact": "{{buildings}} zgrada · donosi {{permitted}} m² BRGP-a",
+                "rangeBetween": "{{buildings}} zgrada · garantuje {{guaranteed}} – {{permitted}} m² BRGP-a",
+                "rangeMax": "{{buildings}} zgrada · dozvoljava 0 – {{permitted}} m² BRGP-a"
             },
             "handles": {
                 "gap": "Prevucite da pomerite otvor",
@@ -2186,7 +2167,8 @@
                 "uploadGeojson": "Učitaj GeoJSON",
                 "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
                 "uploadError": "Nije moguće pročitati datoteku."
-            }
+            },
+            "regenerate": "Regeneriši"
         }
     },
     "rowHouses": {
@@ -2204,7 +2186,13 @@
                 "rotation": "Zakreni tlocrt",
                 "circumference": "Obim (m):",
                 "area": "Površina (m²):",
-                "volume": "Zapremina (m³):"
+                "volume": "Zapremina (m³):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeExact": "Tačno ovu visinu",
+                "ruleTypeMax": "Najviše ovu visinu",
+                "ruleTypeRange": "Između minimuma i ove visine",
+                "minHeight": "Min. visina (m):",
+                "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
                 "adjust": "Prevuci tlocrt za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
@@ -2228,13 +2216,16 @@
                 "defaultProposalDescription": "Predlog niza kuća za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedSliver": "Na ovu parcelu pada samo krhotina niza — premala da bude kuća."
             },
             "warnings": {
                 "dissimilarParcels": "Kuće u nizu mogu se definisati na bilo kojim parcelama, ali {{count}} izabranih parcela znatno se razlikuju po veličini i obliku. I dalje će raditi — kuće u nizu obično idu na parcele sličnih veličina i oblika. Želite li da nastavite?",
                 "proceed": "Ipak nastavi",
                 "cancel": "Nazad"
-            }
+            },
+            "regenerate": "Regeneriši"
         }
     },
     "parcelBased": {
@@ -2250,14 +2241,23 @@
                 "maxFloors": "Maks. spratova:",
                 "minDistance": "Min. udaljenost od granica (m):",
                 "buildingCount": "Zgrade:",
-                "totalArea": "Ukupna površina osnove (m²):",
-                "totalVolume": "Ukupna zapremina (m³):",
-                "avgFloors": "Prosečno spratova:"
+                "totalArea": "Dozvoljena površina osnove (m²):",
+                "totalVolume": "Dozvoljena zapremina (m³):",
+                "avgFloors": "Spratova u primeru (pros.):",
+                "ruleType": "Šta pravilo obavezuje:",
+                "ruleTypeMax": "Najviše ovoliko",
+                "ruleTypeRange": "Između minimuma i ovoga",
+                "ruleTypeExact": "Tačno ovoliko",
+                "minFloors": "Min. spratova:",
+                "minFootprint": "Min. površina osnove (m²):",
+                "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "maxFloors": "Maks. spratova: svaka zgrada dobija nasumičan broj spratova od 1 do ove vrednosti.",
+                "maxFloors": "Maks. spratova: dozvoljena gornja granica. Primer izgradnje varira od 1 sprata do nje.",
                 "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica parcele.",
-                "regenerate": "Klikni Regeneriši za novu nasumičnu varijaciju — broj spratova te veličina i položaj osnove unutar odmaka."
+                "regenerate": "Klikni Regeneriši za drugi primer izgradnje — broj spratova te veličina i položaj osnove unutar odmaka. Dozvoljene brojke iznad se nikad ne menjaju.",
+                "ruleType": "Šta pravilo obavezuje: najviše ovoliko (niko nije dužan da gradi), između minimuma i ovoga, ili tačno ovoliko (svi grade pun gabarit).",
+                "minPlotArea": "Najmanja površina parcele: na parcelama manjim od ove po ovom pravilu ne može da se gradi i prikazane su šrafirano. Prvo ih treba spojiti."
             },
             "messages": {
                 "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
@@ -2267,7 +2267,11 @@
                 "defaultProposalDescription": "Predlog po parceli za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcela"
+                "multiParcelLabel": "{{count}} parcela",
+                "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
+                "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
+                "excludedNoRoom": "Nakon odmaka na ovoj parceli ne ostaje mesta za gradnju.",
+                "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obavezuje — pravilo sebi ovde protivreči."
             }
         }
     },
@@ -2330,7 +2334,7 @@
             "labelAfter": "Posle",
             "sweepHandleHint": "Prevuci za rotaciju linija parcelacije",
             "drawPlot": "Nacrtaj parcelu",
-            "drawLine": "Podeli linijom",
+            "drawLine": "Povuci liniju",
             "drawFinish": "Završi parcelu",
             "drawFinishLine": "Završi liniju",
             "drawUndo": "Poništi tačku",
@@ -2349,7 +2353,7 @@
                 "drawInvalid": "Nije moguće napraviti ispravnu parcelu iz tih tačaka.",
                 "drawNoOverlap": "Nacrtana parcela je izvan udružene zemlje.",
                 "drawSuccess": "Parcela dodata. Klikni je za dodelu vlasnika.",
-                "lineHint": "Klikni za dodavanje tačaka, prevuci za podešavanje, zatim pritisni Završi za podelu.",
+                "lineHint": "Klikni da postaviš liniju. Povlači se samo između mesta na kojima dodiruje postojeću među ili vrh — najmanje dva takva.",
                 "lineTooFew": "Dodaj bar 2 tačke za liniju podele.",
                 "lineNoSplit": "Linija nije presekla nijednu parcelu.",
                 "lineSuccess": "Parcela podeljena. Klikni svaki deo za dodelu vlasnika.",
@@ -2362,7 +2366,17 @@
                 "nodeKept": "Taj čvor se ne može ukloniti — parcela bi prestala da bude poligon.",
                 "undone": "Poslednja promena je poništena.",
                 "nodeOnPool": "Taj čvor je na obodu obuhvata — pripada susedima, ne ovom planu.",
-                "assignHint": "Kliknite parcelu da izaberete njene vlasnike. Uređivanje je pauzirano dok dodeljujete."
+                "assignHint": "Kliknite parcelu da izaberete njene vlasnike. Uređivanje je pauzirano dok dodeljujete.",
+                "cutSuccess": "Linija povučena — novih parcela: {{plots}}, novih čvorova: {{nodes}}. Klikni svaki deo da dodeliš vlasnike.",
+                "cutNoSplit": "Linija je prošla između svojih uporišta, ali nije podelila nijednu parcelu — ništa se nije promenilo.",
+                "cutOnNode": "Počinje na postojećem vrhu — to je jedno od dva potrebna uporišta.",
+                "cutFree": "Hvatanje je isključeno dok držiš Shift — tačka pada tačno gde klikneš.",
+                "eraseHint": "Klikni među da je obrišeš — dve parcele koje razdvaja postaju jedna. Međa koje se mogu obrisati: {{count}}.",
+                "eraseNone": "Ovde nema međa između parcela — samo obuhvat zahvata, koji pripada susedima.",
+                "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigde drugde.",
+                "lineOneAnchor": "Zasad jedno uporište. Pređi još jednu među ili završi na postojećem vrhu.",
+                "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
+                "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodeli vlasnike",
@@ -2387,6 +2401,7 @@
                 "other": "{{count}} vlasnika"
             },
             "cancel": "Odustani",
+            "derivedGroundBlocked": "Reparcelacija mora stajati na katastarskim parcelama. Najpre poništite predlog koji drži ovo zemljište.",
             "discardTitle": "Odbaciti ove promene?",
             "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u predlog. Ako sada zatvorite, odbacuju se.",
             "discardConfirm": "Odbaci promene",
@@ -2408,7 +2423,12 @@
             "colArea": "Površina",
             "unknownParcel": "Parcela",
             "oldPlotsMissing": "Ulazne parcele nije bilo moguće učitati pa je obod obuhvata izveden iz samog plana.",
-            "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih parcela."
+            "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih parcela.",
+            "eraseEdge": "Obriši među",
+            "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela",
+            "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}} — menja vlasnika {{moved}} m².",
+            "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
+            "plotLabel": "parcela {{n}} ({{area}} m²)"
         }
     },
     "status": {
@@ -2421,7 +2441,6 @@
             "block_has_no_parcels_with_name": "Blok {{name}} nema parcele",
             "block_not_found_with_name": "Blok {{name}} nije pronađen",
             "blockify_created_proposed_building_block": "Kreiran predloženi blok zgrade za {{block}} (širina: {{width}}m, povlačenje: {{setback}}m)",
-            "block_split_by_a_perpendicular_road_through_its_middle": "Blok podeljen poprečnim putem kroz sredinu",
             "building_design_saved_add_proposal_details_to_submit": "Dizajn zgrade sačuvan. Dodaj detalje predloga za slanje.",
             "building_generator_is_unavailable": "Generator zgrade nije dostupan.",
             "building_proposal_missing_geometry": "Predlog zgrade nema geometriju; ne može se primeniti.",
@@ -2474,7 +2493,6 @@
             "error_fetching_osm_data_with_reason": "Greška pri preuzimanju OSM podataka: {{reason}}",
             "error_occurred_while_counting_blocks_please_try_again": "Greška tokom brojanja blokova. Pokušaj ponovo.",
             "error_while_forming_block_from_selected_parcel": "Greška pri formiranju bloka od izabrane parcele.",
-            "error_while_splitting_the_selected_block": "Greška pri deljenju izabranog bloka.",
             "error_in_road_detection_with_reason": "Greška u detekciji puta: {{reason}}",
             "error_proposal_not_found": "Greška: predlog nije pronađen",
             "failed_to_compute_mbr": "Nije moguće izračunati MBR",
@@ -2669,7 +2687,6 @@
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Dizajn jedne zgrade sačuvan. Popuni formu predloga za slanje.",
             "single_building_proposal_created_use_apply_when_ready": "Predlog \"{{title}}\" kreiran. Koristi „Primeni na mapu\" kada budeš spreman.",
             "single_building_tool_is_unavailable": "Alat za jednu zgradu nije dostupan.",
-            "split_road_did_not_intersect_any_parcels_try_adjusting_width_or_ensure_the_block_is_fully_in_view": "Podeljeni put nije presekao nijednu parcelu. Podesi širinu ili proveri da je blok u pogledu.",
             "structure_proposal_dialog_is_unavailable": "Dijalog predloga strukture nije dostupan.",
             "unable_to_build_geometry_for_reparcellization": "Nije moguće izgraditi geometriju za reparcelaciju.",
             "unable_to_compute_bounds_for_this_block": "Nije moguće izračunati granice za ovaj blok.",
@@ -2897,7 +2914,16 @@
             "solid": "Puno:",
             "neither": "Nijedno",
             "showAllParcels": "Prikaži sve parcele",
-            "trees": "Drveće"
+            "trees": "Drveće",
+            "plannedAs": "Planirano kao",
+            "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dozvoljava, jedan primer izgradnje po njemu, ili oboje",
+            "representationMassing": "Gabarit",
+            "representationMassingTooltip": "Gabarit — zapremina koju pravilo dozvoljava, ono što predlog zapravo propisuje",
+            "representationBuildOut": "Izgradnja",
+            "representationBuildOutTooltip": "Izgradnja — jedan primer onoga što bi se po pravilu stvarno moglo izgraditi",
+            "representationBoth": "Oboje",
+            "representationBothTooltip": "Oboje — primer izgradnje unutar dozvoljenog gabarita",
+            "reroll": "Nasumično promeni svaki primer izgradnje. Ne menja ništa u predlozima."
         },
         "overlay": {
             "rendering": "Iscrtavanje…",

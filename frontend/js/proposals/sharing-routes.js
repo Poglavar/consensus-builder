@@ -109,7 +109,7 @@ function focusMapOnSharedProposal(proposal, payload) {
 }
 
 function shareAppliedProposals() {
-    showSharePlanModal();
+    showSharePlanPanel();
 }
 
 function shareSingleProposal(proposalIdOrProposal) {
@@ -162,13 +162,6 @@ function shareSingleProposal(proposalIdOrProposal) {
         // If the proposal is already minted, still show the full share modal
         // (the upload modal handles minted state in the mint row UI)
 
-        const parentParcelIdsForShare = collectProposalParentParcelIdsForShare(proposal);
-        const nonOriginalParcels = checkParcelsOriginal(parentParcelIdsForShare);
-        if (nonOriginalParcels.length > 0) {
-            showNonOriginalParcelShareBlockedModal(proposal, parentParcelIdsForShare);
-            return;
-        }
-
         showUploadProposalModal(proposal);
     } catch (error) {
         console.error('shareSingleProposal failed', error);
@@ -200,6 +193,12 @@ function buildSharedProposalsPayload(appliedProposals) {
     if (!Array.isArray(appliedProposals) || appliedProposals.length === 0) {
         return null;
     }
+    const ancestryApi = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
+    const depthApi = (typeof window !== 'undefined') ? window.__formationDepth : null;
+    if (!ancestryApi || typeof ancestryApi.computeCadastreParcelIds !== 'function'
+        || !depthApi || typeof depthApi.preparePublishRecord !== 'function') {
+        throw new Error('Cannot share: the cadastral publish gate is unavailable.');
+    }
 
     const featuresForBounds = [];
     const sanitized = appliedProposals.map(proposal => {
@@ -221,9 +220,7 @@ function buildSharedProposalsPayload(appliedProposals) {
             // The publish-time stamps, computed here because a payload share IS a publication —
             // this snapshot is what the recipient replays (see buildUploadReadyProposal, which
             // stamps the same fields on the upload path).
-            cadastreParcelIds: (typeof window !== 'undefined' && window.__cadastreAncestry)
-                ? window.__cadastreAncestry.computeCadastreParcelIds(proposal)
-                : ensureArrayOfStrings(proposal.cadastreParcelIds),
+            cadastreParcelIds: ancestryApi.computeCadastreParcelIds(proposal),
             ownershipFlow: (typeof window !== 'undefined' && window.__cadastreAncestry
                 && typeof window.__cadastreAncestry.computeOwnershipFlow === 'function')
                 ? window.__cadastreAncestry.computeOwnershipFlow(proposal)
@@ -266,12 +263,9 @@ function buildSharedProposalsPayload(appliedProposals) {
 
             sanitizedProposal.roadProposal = {
                 definition: deepClone(proposal.roadProposal.definition),
-                childParcelIds,
-                roadGeometry: deepClone(proposal.roadProposal.roadGeometry),
                 metadata: deepClone(proposal.roadProposal.metadata),
                 id: proposal.roadProposal.id || proposal.roadProposal.proposalId || undefined,
-                parentParcelIds: parentIds // IDs only, not full geometries
-                // Note: parentFeatures is intentionally excluded - will be fetched on load
+                parentParcelIds: parentIds
             };
         }
 
@@ -379,7 +373,14 @@ function buildSharedProposalsPayload(appliedProposals) {
         const parentIds = Array.from(parentIdsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         sanitizedProposal.parentParcelIds = parentIds;
 
-        return sanitizedProposal;
+        const gate = depthApi.preparePublishRecord(sanitizedProposal, {
+            geometricBaseIds: sanitizedProposal.cadastreParcelIds
+        });
+        if (!gate.verdict.flat) {
+            const detail = gate.verdict.violations.map(item => item.code).join(', ');
+            throw new Error(`Cannot share non-conforming proposal ${proposal.proposalId || ''}: ${detail}`);
+        }
+        return gate.proposal;
     });
 
     const camera = (typeof map !== 'undefined' && map && typeof map.getCenter === 'function')
@@ -409,6 +410,21 @@ function buildSharedProposalsPayload(appliedProposals) {
         bbox,
         camera
     };
+}
+
+async function parkFailedSharedImports(proposalIds) {
+    const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
+        .map(id => String(id || '')).filter(Boolean)));
+    if (!ids.length || typeof proposalStorage === 'undefined') return;
+    ids.forEach(id => {
+        const record = proposalStorage.getProposal(id);
+        if (!record) return;
+        if (typeof setProposalApplied === 'function') setProposalApplied(record, false, { stamp: false });
+        else record.applied = false;
+        proposalStorage._indexProposal?.(record);
+    });
+    proposalStorage.save?.();
+    await ProposalManager.rebuildAppliedFabric({ silent: true });
 }
 
 // Enter URL-driven 3D framed on `focusIds`, waiting (capped) until at least one of those
@@ -562,12 +578,7 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         }
 
         // Ensure parent parcels are fetched (this replaces the old stageSharedProposalDependencies logic)
-        const fetchedParentIds = await ensureParentParcelsFetched(sharedProposal, normalized);
-
-        // For road proposals, resolve and store parentFeatures (needed for rebuilding road geometry)
-        if (normalized.roadProposal && !resolveRoadParentFeatures(sharedProposal, normalized, fetchedParentIds)) {
-            throw new Error('Missing parcel geometry required for this proposal.');
-        }
+        await ensureParentParcelsFetched(sharedProposal, normalized);
 
         parkProposalForImport(normalized);
         normalized.acceptedParcelIds = [];
@@ -588,21 +599,6 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
 
         if (!stored) {
             throw new Error('Failed to store the shared proposal locally.');
-        }
-
-        if (normalized.roadProposal && stored.proposalId) {
-            stored.roadProposal = stored.roadProposal || {};
-            // Only store parentParcelIds - geometries fetched when needed
-            if (normalized.roadProposal.parentParcelIds) {
-                stored.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds;
-            } else if (normalized.roadProposal.parentFeatures) {
-                // Legacy: extract IDs from parentFeatures if they exist (from old data)
-                stored.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => getParcelIdFromFeature(feature)));
-            }
-            if (typeof proposalStorage._indexProposal === 'function') {
-                proposalStorage._indexProposal(stored);
-            }
-            proposalStorage.save();
         }
 
         if (suppressedHere) {
@@ -715,39 +711,6 @@ function handleSharedProposalsFromUrl(attempt = 0) {
     }
 }
 
-// §7.5: failure text for missing prerequisites. A derived id (…#p-…) is another proposal's
-// OUTPUT, so the useful message names that proposal — the raw ids belong in the console beside
-// it, not in the user's face. Nothing is healed any more (§15a): the ground a formation consumes
-// resolves geometrically at apply, so a surviving miss means the land genuinely is not here. `members` are the other proposals
-// in the same plan/payload, used to name the provider.
-function describeMissingPrereqs(missingIds, members, self, tShare) {
-    const escape = typeof escapeHtml === 'function' ? escapeHtml : (v => v);
-    const rootOf = (id) => (typeof window !== 'undefined' && window.__planOrder)
-        ? window.__planOrder.cadastreRootId(id) : String(id);
-    const missing = ensureArrayOfStrings(missingIds);
-    if (!missing.length) return '';
-    const ghosts = missing.filter(id => id.includes('#p-'));
-    const bases = missing.filter(id => !id.includes('#p-'));
-    const parts = [];
-    if (ghosts.length) {
-        const roots = new Set(ghosts.map(rootOf));
-        const providers = (Array.isArray(members) ? members : []).filter(p => p && p !== self
-            && (p.roadProposal || p.reparcellization || p.decideLaterProposal)
-            && ensureArrayOfStrings(p.parcelIds || p.parentParcelIds).some(pid => roots.has(rootOf(pid))));
-        parts.push(providers.length
-            ? tShare('summary.blockedWaitingOn', 'waiting on {{titles}}', {
-                titles: providers.map(p => escape(p.title || p.proposalId || '')).join(', ')
-            })
-            : tShare('summary.blockedMissingFabric', 'the re-cut land under it is not present here'));
-    }
-    if (bases.length) {
-        parts.push(tShare('summary.blockedMissingParcels', 'missing cadastral parcels: {{list}}', {
-            list: bases.map(escape).join(', ')
-        }));
-    }
-    return parts.join(' · ');
-}
-
 // §11's first rung — replay fidelity. After a shared apply, verify each proposal takes the SAME
 // ground here as when it was published: the stamped ownership flow against one re-derived from
 // the receiver's live cadastre. A green apply proves the mechanics ran, not that the effect
@@ -812,88 +775,29 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
 
         // No global ancestor pre-check; proceed proposal by proposal
 
-        // Same restore barrier as handleSharedPlanRoute: the per-member presence check and the
-        // construction-scoped exemption both judge MATERIALIZATION, which is arbitrary while the
-        // boot restore is still rehydrating. Bounded (2×10 s), no-op once restore has run.
-        try {
-            if (typeof ProposalManager !== 'undefined'
-                && typeof ProposalManager.reapplyAppliedProposals === 'function'
-                && typeof proposalStorage !== 'undefined' && proposalStorage
-                && (proposalStorage.getAllProposals() || []).some(p => p && isProposalCurrentlyApplied(p))) {
-                await Promise.race([
-                    Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
-                    new Promise(resolve => setTimeout(resolve, 10000))
-                ]);
-                let waitedForReapply = 0;
-                while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    waitedForReapply += 100;
-                }
-            }
-        } catch (_) { }
+        // Same single-flight restore barrier as handleSharedPlanRoute. Do not inspect applied
+        // flags to decide whether to wait: ordered replay deliberately clears them mid-pass.
+        if (typeof ProposalManager !== 'undefined'
+            && typeof ProposalManager.reapplyAppliedProposals === 'function') {
+            await ProposalManager.reapplyAppliedProposals();
+        }
 
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
 
-        // A6 (rethink-proposals.md §5/§12 next step 6): order the payload by its constraint graph —
-        // footprint intersection + creation time — exactly as handleSharedPlanRoute orders a plan.
-        // The payloads are already in memory, so no fetching is needed. The numeric-id sort below
-        // stays as the fallback for payloads plan-order cannot read.
-        const sorted = (() => {
-            try {
-                if (typeof window !== 'undefined' && window.__planOrder && proposals.length > 1) {
-                    const keyOf = (p) => String(getProposalKey(p) || p.proposalId || '');
-                    const items = proposals.map(p => {
-                        let footprint = null;
-                        try { footprint = window.__planOrder.footprintOf(p); } catch (_) { }
-                        return { id: keyOf(p), goal: p.goal, footprint, createdAt: p.createdAt || null };
-                    });
-                    const resolution = window.__planOrder.resolveApplyOrder(items);
-                    if (resolution && Array.isArray(resolution.order) && resolution.order.length === proposals.length) {
-                        const position = new Map(resolution.order.map((id, i) => [id, i]));
-                        console.log('[applySharedProposalsFromPayload] Apply order resolved from constraint graph:', {
-                            order: resolution.order, constraints: resolution.constraints
-                        });
-                        return proposals.slice().sort((a, b) => (position.get(keyOf(a)) ?? 0) - (position.get(keyOf(b)) ?? 0));
-                    }
-                }
-            } catch (orderError) {
-                console.warn('[applySharedProposalsFromPayload] Constraint-graph ordering failed; using id order', orderError);
-            }
-            return proposals.slice().sort((a, b) => {
-                // Extract numeric ID from proposalId (e.g., "58" or "local-3" -> 3)
-                const extractNumericId = (proposal) => {
-                    if (!proposal || !proposal.proposalId) return null;
-                    const str = String(proposal.proposalId);
-                    if (/^\d+$/.test(str)) {
-                        return parseInt(str, 10);
-                    }
-                    const match = str.match(/^local-(\d+)$/);
-                    if (match) {
-                        return parseInt(match[1], 10);
-                    }
-                    return null;
-                };
-                const aId = extractNumericId(a);
-                const bId = extractNumericId(b);
-                const aHasId = aId !== null && Number.isFinite(aId);
-                const bHasId = bId !== null && Number.isFinite(bId);
-                if (aHasId && bHasId) {
-                    return aId - bId; // includes 0
-                }
-                if (aHasId && !bHasId) return -1;
-                if (!aHasId && bHasId) return 1;
-                const aRaw = new Date(a.createdAt || 0).getTime();
-                const bRaw = new Date(b.createdAt || 0).getTime();
-                const aTime = Number.isFinite(aRaw) ? aRaw : 0;
-                const bTime = Number.isFinite(bRaw) ? bRaw : 0;
-                return aTime - bTime;
+        // The same immutable order drives imports and every later replay. No geometry or map state
+        // participates, so loading tiles cannot reshuffle the plan.
+        const sorted = (typeof window !== 'undefined' && window.__planOrder
+            && typeof window.__planOrder.orderFormations === 'function')
+            ? window.__planOrder.orderFormations(proposals)
+            : proposals.slice().sort((a, b) => {
+                const at = Date.parse(a?.createdAt) || 0;
+                const bt = Date.parse(b?.createdAt) || 0;
+                return at - bt || String(a?.proposalId || '').localeCompare(String(b?.proposalId || ''), undefined, { numeric: true });
             });
-        })();
 
         // Position of each proposal in the sorted payload (oldest-first), so the view can end
-        // up framing the most recently created loaded proposal regardless of the chronological
-        // order dependency requeueing applied them in.
+        // up framing the most recently created loaded proposal.
         const payloadOrder = new Map();
         sorted.forEach((p, idx) => {
             [getProposalKey(p), p.proposalId].forEach(key => {
@@ -904,27 +808,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         const actuallyApplied = [];
         const skipped = [];
         const failures = [];
-        const blockedAncestors = new Map();
         let lastLoadedProposalIdFor3D = null;
-
-        // Every payload-member id, for the intra-plan occupancy rule (§3.3): proposals that
-        // coexisted applied in the sharer's browser cannot genuinely conflict, so a member
-        // occupying a sibling's ground is composition, not a consent stop.
-        //
-        // The exemption covers members UNDER CONSTRUCTION in this pass only. A member that was
-        // already applied and materialized BEFORE the pass is standing fabric: a re-applying
-        // sibling that overlaps it must surface the conflict, not silently consume it — the
-        // exemption once let a re-applied road cut the standing park's parcel, inverting the
-        // plan's structure and baking the inversion into the record's parents.
-        const payloadMemberIds = new Set();
-        sorted.forEach(p => {
-            const local = (p && p.proposalId && typeof proposalStorage !== 'undefined' && proposalStorage)
-                ? proposalStorage.getProposal(p.proposalId)
-                : null;
-            if (local && typeof isProposalAppliedAndMaterialized === 'function'
-                && isProposalAppliedAndMaterialized(local)) return;
-            [getProposalKey(p), p.proposalId, p.serverProposalId].forEach(k => { if (k) payloadMemberIds.add(String(k)); });
-        });
 
         // ONE ordered pass (A6). Records are flat and the ground a formation consumes resolves
         // geometrically at apply time (§15a), so there is nothing a requeue lap could discover:
@@ -940,9 +824,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 }
             } catch (_) { }
 
-            const result = await importAndApplySharedProposal(proposal, {
-                occupationExemptKeys: Array.from(payloadMemberIds)
-            });
+            const result = await importAndApplySharedProposal(proposal);
             const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
 
             if (result && result.skipped) {
@@ -957,22 +839,23 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 continue;
             }
 
-            // Failed. Classify for the report: missing prerequisites get the named-provider
-            // message (describeMissingPrereqs), everything else lands in the failure list.
-            const ancestryCheck = (proposalId && typeof ProposalManager !== 'undefined' && typeof ProposalManager.canApplyProposal === 'function')
-                ? ProposalManager.canApplyProposal(proposalId)
-                : { ok: true, missing: [] };
-            if (!ancestryCheck.ok && Array.isArray(ancestryCheck.missing) && ancestryCheck.missing.length) {
-                blockedAncestors.set(proposalId || proposal.title || `blocked-${failures.length}`, {
-                    missing: ancestryCheck.missing.slice(),
-                    proposal
-                });
-            } else {
-                failures.push(proposalId || proposal.proposalId || '');
+            failures.push(proposalId || proposal.proposalId || '');
+        }
+
+        if (actuallyApplied.length > 0) {
+            const replay = await ProposalManager.rebuildAppliedFabric();
+            const replayFailures = new Set((replay?.failed || []).map(entry => String(entry?.proposalId || '')));
+            if (replayFailures.size) {
+                await parkFailedSharedImports(actuallyApplied.filter(id => replayFailures.has(String(id))));
+                for (let i = actuallyApplied.length - 1; i >= 0; i -= 1) {
+                    if (!replayFailures.has(String(actuallyApplied[i]))) continue;
+                    failures.push(actuallyApplied[i]);
+                    actuallyApplied.splice(i, 1);
+                }
             }
         }
 
-        if (actuallyApplied.length > 0 || skipped.length > 0 || failures.length > 0 || blockedAncestors.size > 0) {
+        if (actuallyApplied.length > 0 || skipped.length > 0 || failures.length > 0) {
             if (typeof updateProposalLayer === 'function') {
                 updateProposalLayer();
             }
@@ -982,7 +865,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
 
             // Center map on the most recently loaded proposal (latest in payload order among
             // applied and skipped-as-duplicate), framed as if it had been loaded alone:
-            // fit its visible descendant's bounds and open its details panel.
+            // fit its current derived bounds and open its details panel.
             let lastProposalId = null;
             let lastProposalOrd = -1;
             [...actuallyApplied, ...skipped].forEach(pid => {
@@ -1001,15 +884,12 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             }
             if (lastProposalId && typeof map !== 'undefined' && map) {
                 try {
-                    const visibleId = (typeof findVisibleDescendant === 'function')
-                        ? (findVisibleDescendant(lastProposalId) || lastProposalId)
-                        : lastProposalId;
-                    const bounds = calculateBoundsForLastAppliedProposal(visibleId);
+                    const bounds = calculateBoundsForLastAppliedProposal(lastProposalId);
                     if (bounds && bounds.isValid && bounds.isValid()) {
                         map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
                     }
                     if (typeof focusProposalDetails === 'function') {
-                        await focusProposalDetails(visibleId, {
+                        await focusProposalDetails(lastProposalId, {
                             centerOnProposal: false, // camera has already been fit to bounds above
                             showDetails: true
                         });
@@ -1046,19 +926,22 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 bodyLines.push(`<p>${tShare('summary.failedCount', '{{count}} failed.', {
                     count: failures.length
                 })}</p>`);
-            }
-            if (blockedAncestors.size > 0) {
-                const blockedList = Array.from(blockedAncestors.entries());
-                const limitedBlocked = blockedList.slice(0, 5);
-                const escape = typeof escapeHtml === 'function' ? escapeHtml : (value => value);
-                bodyLines.push(`<p>${tShare('summary.blockedAncestors', 'Blocked by missing applied ancestors:')}</p><ul>${limitedBlocked.map(([hash, info]) => {
-                    const label = info && info.proposal && info.proposal.title
-                        ? `${escape(info.proposal.title)}${hash ? ` (${escape(hash)})` : ''}`
-                        : escape(hash || '');
-                    const missingList = describeMissingPrereqs(info && info.missing, sorted, info && info.proposal, tShare);
-                    return `<li>${label}${missingList ? ` · ${missingList}` : ''}</li>`;
-                }).join('')}${blockedList.length > limitedBlocked.length ? '<li>…</li>' : ''}</ul>`);
-                console.warn('[applySharedProposalsFromPayload] blocked proposals detail', blockedList);
+                // Name them, with the gate's own words. "3 failed." with no titles and no reason
+                // left a plan that was visibly missing its readjustment looking like a lost record
+                // rather than a refused one — every reason already existed, it just never surfaced.
+                const escape = typeof escapeHtml === 'function' ? escapeHtml : (v => String(v));
+                const failureItems = failures.map(id => {
+                    const record = (typeof proposalStorage !== 'undefined' && proposalStorage
+                        && typeof proposalStorage.getProposal === 'function') ? proposalStorage.getProposal(id) : null;
+                    const title = (record && (record.title || record.name)) || String(id || '');
+                    const reason = (typeof ProposalManager !== 'undefined' && ProposalManager
+                        && typeof ProposalManager.getLastApplyFailure === 'function')
+                        ? ProposalManager.getLastApplyFailure(id) : null;
+                    return `<li>${escape(title)}${reason ? ` — ${escape(reason)}` : ''}</li>`;
+                }).filter(Boolean);
+                if (failureItems.length) {
+                    bodyLines.push(`<ul class="shared-plan-failures">${failureItems.join('')}</ul>`);
+                }
             }
             showSimpleShareModal({
                 title: tShare('summary.title', 'Applied Shared Proposals'),
@@ -1067,29 +950,27 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                     { label: t('modal.common.close', 'Close'), primary: true },
                     ...(actuallyApplied.length > 0 ? [{
                         label: tShare('summary.unapplyApplied', 'Unapply applied'),
-                        onClick: () => {
+                        onClick: async () => {
                             try {
-                                const hasFamilyUnapply = typeof ProposalManager !== 'undefined' && typeof ProposalManager.unapplyWholeFamily === 'function';
                                 actuallyApplied.forEach(hash => {
-                                    try {
-                                        if (hasFamilyUnapply) {
-                                            ProposalManager.unapplyWholeFamily(hash, new Set(), { skipRestoreSource: true });
-                                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                                            ProposalManager.unapplyProposal(hash, { skipConfirm: true, skipRestoreSource: true });
-                                        }
-                                    } catch (_) { }
+                                    const record = proposalStorage.getProposal(hash);
+                                    if (!record) return;
+                                    if (typeof setProposalApplied === 'function') {
+                                        setProposalApplied(record, false, { stamp: false });
+                                    } else {
+                                        record.applied = false;
+                                    }
                                 });
-                                // Refresh UI once after all bulk unapplies
-                                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
-                                    ProposalManager._refreshUIAfterProposalChange(null);
-                                }
+                                proposalStorage.save?.();
+                                await ProposalManager.rebuildAppliedFabric();
+                                ProposalManager._refreshUIAfterProposalChange?.(null);
                             } catch (_) { }
                         }
                     }] : [])
                 ]
             });
 
-            // Nothing was loaded (only failures/blocked): firmly return to parcel-mode
+            // Nothing was loaded (only failures): firmly return to parcel-mode
             // hover/leave behavior. When a proposal was loaded we keep its highlight and
             // details panel, matching the single shared-proposal flow.
             if (!lastProposalId) {
@@ -1099,12 +980,9 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             }
         }
 
-        if ((failures.length > 0 || blockedAncestors.size > 0) && typeof showEphemeralMessage === 'function') {
-            const blockedCount = blockedAncestors.size;
-            const failureCount = failures.length;
-            const total = failureCount + blockedCount;
-            showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals_summary', `Unable to apply ${total} shared proposal${total === 1 ? '' : 's'} (missing ancestors or errors).`, {
-                count: total
+        if (failures.length > 0 && typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals_summary', `Unable to apply ${failures.length} shared proposal${failures.length === 1 ? '' : 's'}.`, {
+                count: failures.length
             }), 6000, 'error');
         }
 
@@ -1144,53 +1022,13 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     const proposalId = normalized?.proposalId || fallbackHash;
     if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
 
-    // If this proposal is already present AND already applied AND its descendants are actually
-    // on the map, there is nothing to do — skip. Critically, we do NOT early-skip when the
-    // proposal is marked applied but its descendants are missing, because that is exactly the
-    // case we need to handle: a cross-client or cross-session deep-link where the local copy
-    // has stale childParcelIds but no materialized geometry. For that case we must fall through
-    // to applyProposal, which rebuilds children from definition via _restoreFromAlreadyAppliedState.
-    const existing = proposalStorage.getProposal(normalized.proposalId);
-    if (existing && syncCanonicalSharedProposalState(existing, normalized)) {
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(existing);
-        }
-        if (typeof proposalStorage.save === 'function') {
-            proposalStorage.save();
-        }
-    }
-    if (existing) {
-        const alreadyApplied = isProposalCurrentlyApplied(existing);
-        if (alreadyApplied) {
-            // One presence predicate for every route (execution.js): children live on the map,
-            // consumed children witnessed by their saved feature's descendant marker, adopt-mode
-            // formations verified via the formation record. This used to be an inline copy that
-            // demanded every stored child id in the registry — a child a later formation consumed
-            // failed it on every reload, and the needless re-apply degraded the fabric.
-            const descendantsMaterialized = (typeof isProposalAppliedAndMaterialized === 'function')
-                ? isProposalAppliedAndMaterialized(existing)
-                : false;
-            if (descendantsMaterialized) {
-                try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-                return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
-            }
-            console.debug('[importAndApplySharedProposal] Proposal marked applied but descendants not on map — falling through to re-apply', { proposalId: normalized.proposalId });
-        }
+    let existing = proposalStorage.getProposal(normalized.proposalId);
+    if (existing && isProposalCurrentlyApplied(existing)) {
+        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+        return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
     }
 
     const skipDependencyFetch = options && options.skipDependencyFetch === true;
-    const applyOptions = skipDependencyFetch ? { suppressMissingParentAlerts: true } : {};
-    // Plan replay may explicitly accept intra-plan occupancy (§3.3: proposals that coexisted
-    // applied never geometrically conflict) — proceed with the parents that are present.
-    if (options && options.applyAnyway === true) applyOptions.applyAnyway = true;
-    // Siblings in the same plan never block each other on occupation — see the call site.
-    if (options && Array.isArray(options.occupationExemptKeys) && options.occupationExemptKeys.length) {
-        applyOptions.occupationExemptKeys = options.occupationExemptKeys.slice();
-    }
-
-    // Some flows (notably /proposals/:id1,id2,...) want to apply a queue where missing parcels
-    // are expected to appear after other proposals apply. In that case do NOT fetch parcels here;
-    // let ProposalManager apply or throw, and let the caller requeue.
     let parentIds = [];
     if (!skipDependencyFetch) {
         try {
@@ -1216,136 +1054,23 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         }
     }
 
-    if (existing) {
-        // Try applying existing without re-importing (idempotent)
-        // For roads, ensure parent features exist on stored object
-        if (normalized.roadProposal && normalized.roadProposal.parentParcelIds) {
-            existing.roadProposal = existing.roadProposal || {};
-            existing.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds;
-            if (typeof proposalStorage._indexProposal === 'function') {
-                proposalStorage._indexProposal(existing);
-            }
-            proposalStorage.save();
-        }
-        let appliedExisting = await ProposalManager.applyProposal(existing.proposalId, applyOptions);
-        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-
-        // A record marked applied whose child parcels are GONE from the map is stale bookkeeping
-        // by definition — the flag survived a session that lost/re-cut the fabric (measured: a
-        // replay over such a record failed 'restore-missing-children' twice, because restore mode
-        // demands slices a fresh re-cut no longer mints). The proposal's definition is the truth
-        // (§A2: shipping the road IS enough to re-derive its cuts), so drop the lying flag and
-        // re-apply FRESH, once. A fresh apply that then misses parents flows into the caller's
-        // normal requeue + ghost-healing machinery.
-        if (!appliedExisting) {
-            try {
-                const lastInfo = getStoredApplyFailureInfo(existing.proposalId);
-                if (lastInfo && lastInfo.code === 'restore-missing-children') {
-                    console.warn('[importAndApplySharedProposal] Stale applied flag — children gone; downgrading to fresh apply', {
-                        proposalId: existing.proposalId, missingIds: lastInfo.missingIds || []
-                    });
-                    existing.applied = false;
-                    delete existing.appliedAt;
-                    ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
-                        .forEach(subKey => {
-                            const sub = existing[subKey];
-                            if (sub && typeof sub === 'object') { sub.applied = false; delete sub.appliedAt; }
-                        });
-                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(existing);
-                    if (typeof proposalStorage.save === 'function') proposalStorage.save();
-                    appliedExisting = await ProposalManager.applyProposal(existing.proposalId, applyOptions);
-                    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-                }
-            } catch (downgradeError) {
-                console.warn('[importAndApplySharedProposal] Fresh-apply downgrade failed', downgradeError);
-            }
-        }
-
-        if (appliedExisting) {
-            return { applied: true, skipped: false, proposalId };
-        }
-
-        if (skipDependencyFetch) {
-            try {
-                const lastInfo = getStoredApplyFailureInfo(existing.proposalId);
-                if (lastInfo && lastInfo.message) {
-                    return {
-                        applied: false,
-                        skipped: false,
-                        proposalId,
-                        reason: lastInfo.message,
-                        failureInfo: lastInfo
-                    };
-                }
-            } catch (_) { }
-        }
-
-        // If apply failed and we *did* do dependency fetch, provide a reason that upstream
-        // can treat as retryable. (When skipDependencyFetch=true, caller will handle via thrown errors.)
-        if (!skipDependencyFetch) {
-            try {
-                const required = ensureArrayOfStrings(parentIds);
-                const missing = findMissingParentParcels(required);
-                if (missing && missing.length > 0) {
-                    const sample = missing.slice(0, 10).join(', ');
-                    const suffix = missing.length > 10 ? '…' : '';
-                    return { applied: false, skipped: false, proposalId, reason: `Missing required parcels: ${sample}${suffix}` };
-                }
-            } catch (_) { }
-        }
-
-        return { applied: false, skipped: false, proposalId, reason: 'Proposal did not apply' };
+    if (!existing) {
+        existing = proposalStorage.importProposal(normalized, { overwrite: true });
+        if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
+    }
+    if (normalized.roadProposal?.parentParcelIds) {
+        existing.roadProposal = existing.roadProposal || {};
+        existing.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds.slice();
     }
 
-    // Fresh import then apply
-    const imported = proposalStorage.importProposal(normalized, { overwrite: true });
-    if (!imported) {
-        return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
-    }
-
-    if (normalized.roadProposal && normalized.roadProposal.parentParcelIds) {
-        imported.roadProposal = imported.roadProposal || {};
-        imported.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds;
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(imported);
-        }
-        proposalStorage.save();
-    }
-
-    const applied = await ProposalManager.applyProposal(normalized.proposalId, applyOptions);
-    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-    if (applied) {
-        return { applied: true, skipped: false, proposalId };
-    }
-
-    if (skipDependencyFetch) {
-        try {
-            const lastInfo = getStoredApplyFailureInfo(normalized.proposalId);
-            if (lastInfo && lastInfo.message) {
-                return {
-                    applied: false,
-                    skipped: false,
-                    proposalId,
-                    reason: lastInfo.message,
-                    failureInfo: lastInfo
-                };
-            }
-        } catch (_) { }
-    }
-
-    if (!skipDependencyFetch) {
-        try {
-            const required = ensureArrayOfStrings(parentIds);
-            const missing = findMissingParentParcels(required);
-            if (missing && missing.length > 0) {
-                const sample = missing.slice(0, 10).join(', ');
-                const suffix = missing.length > 10 ? '…' : '';
-                return { applied: false, skipped: false, proposalId, reason: `Missing required parcels: ${sample}${suffix}` };
-            }
-        } catch (_) { }
-    }
-
-    return { applied: false, skipped: false, proposalId, reason: 'Proposal did not apply' };
+    // Import changes records only. The caller flips every plan member first, then invokes the one
+    // canonical cadastre replay after the whole plan is present; no member applies against a
+    // half-imported plan and no retry pass can observe a later tile batch.
+    if (typeof setProposalApplied === 'function') setProposalApplied(existing, true);
+    else existing.applied = true;
+    proposalStorage._indexProposal?.(existing);
+    proposalStorage.save?.();
+    return { applied: true, skipped: false, proposalId: existing.proposalId || proposalId, queued: true };
 }
 
 // Reads the shared proposal's own `city` and, when it disagrees with the city on screen, hands the
@@ -1425,10 +1150,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
-        // Apply many proposals robustly:
-        // - descendant-only prerequisites: do NOT fetch, just requeue until available
-        // - base-only prerequisites: fetch base parcels before applying
-        // - mixed base + descendant prerequisites: kick off base fetch, then requeue
+        // Import the complete flat record set, prefetch its base cadastral anchors, then replay it
+        // once. Derived ids are invalid transport data and are never prerequisites.
         const normalizeId = (raw) => {
             const s = (raw !== undefined && raw !== null) ? String(raw).trim() : '';
             return s;
@@ -1461,15 +1184,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const applied = [];
         const skipped = [];
         const failed = [];
-        // Geography conflicts are not failures: the proposal imported fine and simply stays
-        // unapplied because another applied proposal already occupies its parcels.
-        const overlapped = [];
-        // Conflicts the user resolved as "keep the existing proposal" during the conflict tour.
-        const keptExisting = [];
-        // local proposalId -> queue id for everything reported applied, so a replace that drags
-        // an already-applied plan member down (it chained onto the occupier's fabric before the
-        // occupier was unapplied) can re-queue that member instead of leaving the summary lying.
-        const appliedQueueIdByLocal = new Map();
         let lastLoadedProposalIdFor3D = null;
 
         const fetchProgressIds = new Set();
@@ -1484,43 +1198,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (!normalized) return fetchProgressIds.size + 1;
             return fetchProgressIds.has(normalized) ? fetchProgressIds.size : fetchProgressIds.size + 1;
         };
-        const getFailureMessage = (value) => {
-            if (value && value.message) return String(value.message);
-            if (typeof value === 'string') return value;
-            return '';
-        };
-        const getDependencyFailureInfo = (value) => {
-            if (!value) return null;
-            const message = getFailureMessage(value);
-            const code = (value && typeof value === 'object' && value.code) ? String(value.code) : '';
-            const missingIds = (value && typeof value === 'object' && Array.isArray(value.missingIds))
-                ? ensureArrayOfStrings(value.missingIds)
-                : [];
-            if (code === 'dependency-missing') {
-                return { message, code, missingIds };
-            }
-            if (!message) return null;
-            // Typical failure when parcels aren't yet available in parcelLayerById / cache.
-            if (/Missing\s+parcel\s+.+\s+in\s+parcelLayerById/i.test(message)) return { message, code, missingIds };
-            if (/missing\s+in\s+parcelLayerById/i.test(message)) return { message, code, missingIds };
-            if (/prerequisite\s+parcels\s+are\s+missing/i.test(message)) return { message, code, missingIds };
-            if (/Cannot\s+apply\s+proposal:\s+missing\s+parent\s+parcel\s+geometries/i.test(message)) return { message, code, missingIds };
-            if (/Cannot\s+apply\s+proposal:\s+missing\s+parcel\s+geometries/i.test(message)) return { message, code, missingIds };
-            return null;
-        };
-        const extractMissingParcelId = (value) => {
-            const structuredMissingIds = (value && typeof value === 'object' && Array.isArray(value.missingIds))
-                ? ensureArrayOfStrings(value.missingIds)
-                : [];
-            if (structuredMissingIds.length > 0) return structuredMissingIds[0];
-            const msg = getFailureMessage(value);
-            if (!msg) return null;
-            const match = msg.match(/Missing\s+parcel\s+([^\s]+)\s+in\s+parcelLayerById/i);
-            return match && match[1] ? String(match[1]) : null;
-        };
         const isDerivedParcelId = (parcelId) => {
-            const s = parcelId ? String(parcelId) : '';
-            return s.includes('#p-');
+            const id = parcelId ? String(parcelId) : '';
+            if (!id) return false;
+            if (typeof isSyntheticParcelId === 'function') return isSyntheticParcelId(id);
+            return id.includes('#') || /^HR-\d+-.+?_[a-z0-9]+_\d+$/i.test(id);
         };
 
         const getPrerequisiteParcelIdsForProposal = (proposal) => {
@@ -1549,10 +1231,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 if (proposal && Array.isArray(proposal.parentParcelIds)) {
                     ensureArrayOfStrings(proposal.parentParcelIds).forEach(id => ids.push(id));
                 }
-                // The published base-cadastre ancestry (stamped at upload, backfilled for old rows).
-                // Fetching these roots loads the true ground under the footprint even when every
-                // declared parent is a derived id from the creator's browser — which is what lets
-                // geometry re-parenting see the live fabric instead of refusing on low coverage.
+                // The geometry-derived cadastral ancestry stamped by the publish gate.
                 if (proposal && Array.isArray(proposal.cadastreParcelIds)) {
                     ensureArrayOfStrings(proposal.cadastreParcelIds).forEach(id => ids.push(id));
                 }
@@ -1563,23 +1242,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         };
 
-        const splitBaseAndDerivedIds = (ids) => {
+        const basePrerequisiteIds = (ids) => {
             const baseIds = [];
-            const derivedIds = [];
             (Array.isArray(ids) ? ids : []).forEach(id => {
                 const s = id && id.toString ? id.toString() : String(id || '');
                 if (!s) return;
-                (isDerivedParcelId(s) ? derivedIds : baseIds).push(s);
+                if (!isDerivedParcelId(s)) baseIds.push(s);
             });
-            return {
-                baseIds: Array.from(new Set(baseIds)),
-                derivedIds: Array.from(new Set(derivedIds))
-            };
+            return Array.from(new Set(baseIds));
         };
-        const isDependencyFailure = (value) => {
-            return Boolean(getDependencyFailureInfo(value));
-        };
-
         let queue = idParts.map(normalizeId).filter(Boolean);
         // Position of each id in the link. Share URLs list proposals oldest-first, so the
         // highest position is the most recently created proposal — the one the view should
@@ -1597,15 +1268,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
         const lastUnfetchedBasePrereqIdsById = new Map();
-        const prereqIdsById = new Map();
-        const lastMissingPrereqsById = new Map();
-        const attemptById = new Map();
-        const lastReasonById = new Map();
         const fetchedBaseParcels = new Set();
         const baseParcelFetchInFlight = new Map();
-        const maxAttemptsPerId = 120;
-        let stepsSinceProgress = 0;
-        const attemptedSinceProgress = new Set();
 
         // Wait for PersistentStorage to be ready before checking local proposals.
         if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
@@ -1613,56 +1277,24 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         }
 
         // Ensure previously-applied proposals have finished re-materializing before we analyse
-        // conflicts. reapplyAppliedProposals() runs independently on window 'load'; if it hasn't
-        // completed, the materialization check below misses those proposals, so a conflicting
-        // incoming proposal is applied WITHOUT first unapplying them — and then fails because its
-        // base parcels are still consumed (e.g. switching from a road-split plan like 47/48/49 back
-        // to a whole-block building proposal). Waiting here makes that detection deterministic.
+        // conflicts OR synchronize an incoming snapshot onto a local record. The replay is an
+        // ordered fold and temporarily marks its whole target set unapplied; testing "is anything
+        // applied?" here therefore races with the exact interval this barrier exists to protect.
+        // `reapplyAppliedProposals` is single-flight and returns its in-flight promise, so always
+        // await it. A reload is a reader of the completed fabric, never a concurrent apply pass.
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            // The barrier must hold whenever ANYTHING is applied: the presence analysis below
-            // gates on MATERIALIZATION (isProposalAppliedAndMaterialized), and mid-restore the
-            // fabric is arbitrarily incomplete — the same reload skipped 8 members or re-applied
-            // 6 of them depending on which side of the boot restore the analysis raced to. A
-            // re-opened link is not exempt: "re-opening applies nothing" is only true AFTER the
-            // check can see the restored fabric. Bounded below (2×10 s caps), and a warm profile
-            // rehydrates in well under a second.
-            let anythingApplied = false;
-            try {
-                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-                    anythingApplied = (proposalStorage.getAllProposals() || [])
-                        .some(p => p && isProposalCurrentlyApplied(p));
-                }
-            } catch (_) {
-                anythingApplied = true; // unsure → keep the safe barrier
-            }
-            if (anythingApplied) {
-                // Kick off (or no-op if already done/in-flight), capped so a hung parcel fetch can't
-                // stall the whole route.
-                await Promise.race([
-                    Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { }),
-                    new Promise(resolve => setTimeout(resolve, 10000))
-                ]);
-                // If a reapply was already in flight, the call above returned immediately without
-                // awaiting it — poll the completion flag (capped) so we don't proceed mid-materialization.
-                let waitedForReapply = 0;
-                while (!ProposalManager._initialReapplyDone && waitedForReapply < 10000) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    waitedForReapply += 100;
-                }
-            } else {
-                // Still let materialization proceed in the background (the in-flight guard makes this
-                // a no-op if the load-time reapply is already running) — we simply do not block on it.
-                Promise.resolve().then(() => ProposalManager.reapplyAppliedProposals()).catch(() => { });
-            }
+            updateProposalLoadOverlay({
+                title: tShare('plan.rebuildingPlanTitle', 'Rebuilding applied plan'),
+                status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
+            });
+            await ProposalManager.reapplyAppliedProposals();
         }
 
         const urlRequests3D = is3DModeRequestedFromUrl();
 
         // Analyze what's currently applied vs what's incoming
         const incomingIds = new Set(queue.map(normalizeId).filter(Boolean));
-        let allAppliedProposals = [];
         let incomingAlreadyApplied = [];
-        let otherAppliedProposals = [];
 
         console.log('[handleSharedPlanRoute] Incoming IDs from URL:', Array.from(incomingIds));
 
@@ -1703,37 +1335,48 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return ids;
         };
 
+        // Ids each proposal answers to — its own, PLUS, for a replacement snapshot, every id
+        // along its replacement chain. An edited road keeps its share-link identity: the URL
+        // names the SOURCE while the fabric holds the replacement, and without the chain a
+        // reload re-applied the source next to its own replacement (two "Road 2043" standing).
+        const coveredIncomingIds = new Set();
         if (typeof proposalStorage !== 'undefined' && proposalStorage) {
             const allProposals = proposalStorage.getAllProposals() || [];
+            const byKey = new Map();
+            allProposals.forEach(p => { if (p && p.proposalId) byKey.set(String(p.proposalId), p); });
+
+            const idsAnsweredBy = (proposal) => {
+                const out = [];
+                const push = value => {
+                    if (value === undefined || value === null) return;
+                    const key = String(value);
+                    if (key) out.push(key);
+                };
+                const seen = new Set();
+                let current = proposal;
+                let hops = 0;
+                while (current && hops < 10) {
+                    push(current.serverProposalId);
+                    push(current.proposalId);
+                    try { push(typeof getServerProposalId === 'function' ? getServerProposalId(current) : null); } catch (_) { }
+                    const prevKey = current.replacementOfProposalId || current.sourceProposalId || null;
+                    if (!prevKey || seen.has(String(prevKey))) break;
+                    seen.add(String(prevKey));
+                    push(prevKey);
+                    current = byKey.get(String(prevKey)) || null;
+                    hops += 1;
+                }
+                return out;
+            };
 
             allProposals.forEach(p => {
                 if (!isProposalCurrentlyApplied(p)) return;
-
-                const serverId = p.serverProposalId ? String(p.serverProposalId) : null;
-                const hashId = p.proposalId ? String(p.proposalId) : null;
-                // Also check using getServerProposalId helper which may extract from nested structures
-                const extractedServerId = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
-
-                const isIncoming = (serverId && incomingIds.has(serverId))
-                    || (hashId && incomingIds.has(hashId))
-                    || (extractedServerId && incomingIds.has(String(extractedServerId)));
-
-                if (isIncoming) {
-                    // Incoming already-applied: gate on actual materialization. A proposal marked
-                    // status=applied but not yet drawn (fresh reload) must NOT be treated as done —
-                    // we still need to reach the apply path so children rebuild from the definition.
-                    if (isProposalAppliedAndMaterialized(p)) incomingAlreadyApplied.push(p);
-                } else {
-                    // Other applied proposals (conflict candidates): status is enough. Building /
-                    // urban-rule proposals create no child parcels, so they fail the materialization
-                    // check — yet two urban rules on the same parcels are mutually exclusive and the
-                    // applied one MUST be unapplied before the incoming one applies. Missing them here
-                    // was why an applied building proposal (e.g. 50) was left drawn under a new one.
-                    otherAppliedProposals.push(p);
+                const matched = idsAnsweredBy(p).filter(id => incomingIds.has(id));
+                if (matched.length) {
+                    incomingAlreadyApplied.push(p);
+                    matched.forEach(id => coveredIncomingIds.add(id));
                 }
             });
-
-            allAppliedProposals = [...incomingAlreadyApplied, ...otherAppliedProposals];
         }
 
         const linkOrderForProposal = (p) => {
@@ -1765,35 +1408,30 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return best;
         };
 
-        const allIncomingApplied = incomingAlreadyApplied.length === totalProposals;
-        const hasOtherApplied = otherAppliedProposals.length > 0;
-        const noProposalsApplied = allAppliedProposals.length === 0;
+        // Counted over COVERED incoming ids, not list length — with a source and its
+        // replacement both standing, the list double-counts one member.
+        const allIncomingApplied = coveredIncomingIds.size === totalProposals;
 
-        console.log('[handleSharedPlanRoute] Conflict analysis:',
+        console.log('[handleSharedPlanRoute] Applied-state analysis:',
             'totalProposals=' + totalProposals,
             'incomingAlreadyApplied=' + incomingAlreadyApplied.length,
-            'otherApplied=' + otherAppliedProposals.length,
-            'allIncomingApplied=' + allIncomingApplied,
-            'hasOtherApplied=' + hasOtherApplied
+            'allIncomingApplied=' + allIncomingApplied
         );
 
         // Helper: focus on applied proposals — frame and open them the same way a
-        // single-proposal link would (center on visible descendant + details panel).
+        // single-proposal link would (center on its current derivation + details panel).
         // Move the camera to the plan and open its details. Separate from the 3D advance below so
         // it can run unconditionally: framing is what a link to a proposal is FOR, and it is not a
         // decision the user needs to confirm.
         const frameAppliedProposals = async (proposalIdToFocus) => {
             if (!proposalIdToFocus || typeof map === 'undefined' || !map) return;
             try {
-                const visibleId = (typeof findVisibleDescendant === 'function')
-                    ? (findVisibleDescendant(proposalIdToFocus) || proposalIdToFocus)
-                    : proposalIdToFocus;
-                const bounds = calculateBoundsForLastAppliedProposal(visibleId);
+                const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
                 if (bounds && bounds.isValid && bounds.isValid()) {
                     map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
                 }
                 if (typeof focusProposalDetails === 'function') {
-                    await focusProposalDetails(visibleId, {
+                    await focusProposalDetails(proposalIdToFocus, {
                         centerOnProposal: false,
                         showDetails: true
                     });
@@ -1811,9 +1449,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         };
 
-        // Scenario 1: Plan already fully applied, no other proposals
+        // Plan already fully applied.
         // → "Plan Already Applied [Show me] [OK]"
-        if (allIncomingApplied && !hasOtherApplied) {
+        if (allIncomingApplied) {
             hideProposalLoadOverlay();
             const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
@@ -1845,16 +1483,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return;
         }
 
-        // Scenario 2: other proposals are already on the map. This used to auto-unapply the
-        // id-overlap conflicts silently ("Replaced N proposal(s)…"). That agency now belongs to
-        // the CONFLICT TOUR: cross-plan occupations surface one by one during the ordered apply,
-        // and the user decides per conflict — replace the existing proposal or keep it — with an
-        // optional blanket decision. Nothing is unapplied before the user has said so.
-
-        // Scenario 3: No proposals on map → proceed silently (no dialog needed)
-
-        // Build set of already-applied server IDs to exclude from queue
-        const alreadyAppliedServerIds = new Set();
+        // Build set of already-applied server IDs to exclude from queue — including members
+        // covered through a replacement chain (the replacement itself has no server id).
+        const alreadyAppliedServerIds = new Set(coveredIncomingIds);
         incomingAlreadyApplied.forEach(p => {
             if (p.serverProposalId) alreadyAppliedServerIds.add(String(p.serverProposalId));
             const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
@@ -1889,11 +1520,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return;
         }
 
-        // A6 (rethink-proposals.md §5): order the plan by its constraint graph — footprint
-        // intersection + creation time — instead of trusting link order. Link order is usually
-        // oldest-first already, but hand-assembled URLs are not, and the requeue below should be
-        // a safety net, not the ordering mechanism. Payloads fetched here are cached in
-        // loadedById, so the apply loop reuses them instead of fetching twice.
+        // Fetch every record once, then use the same immutable record order as canonical replay.
         try {
             if (typeof window !== 'undefined' && window.__planOrder && queue.length > 1) {
                 await Promise.all(queue.map(async (qid) => {
@@ -1906,27 +1533,17 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }));
                 const items = queue.map(qid => {
                     const payload = loadedById.get(qid);
-                    if (!payload) return { id: qid, goal: null, footprint: null, createdAt: null };
-                    let footprint = null;
-                    try { footprint = window.__planOrder.footprintOf(payload); } catch (_) { }
-                    return {
-                        id: qid,
-                        goal: payload.goal,
-                        footprint,
-                        createdAt: payload.createdAt || payload.created_at || null
-                    };
+                    return payload
+                        ? { ...payload, key: qid, serverProposalId: payload.serverProposalId || qid }
+                        : { key: qid, serverProposalId: qid, createdAt: null };
                 });
-                const resolution = window.__planOrder.resolveApplyOrder(items);
-                if (resolution && Array.isArray(resolution.order) && resolution.order.length === queue.length) {
-                    queue = resolution.order.slice();
-                    console.log('[handleSharedPlanRoute] Apply order resolved from constraint graph:', {
-                        order: queue,
-                        constraints: resolution.constraints
-                    });
+                if (typeof window.__planOrder.orderFormations === 'function') {
+                    queue = window.__planOrder.orderFormations(items).map(item => String(item.key));
+                    console.log('[handleSharedPlanRoute] Immutable apply order:', queue);
                 }
             }
         } catch (orderError) {
-            console.warn('[handleSharedPlanRoute] Constraint-graph ordering failed; keeping link order', orderError);
+            console.warn('[handleSharedPlanRoute] Record ordering failed; keeping link order', orderError);
         }
 
         const startFetchBaseParcels = async (parcelIds, options = {}) => {
@@ -1939,9 +1556,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 if (!id) return;
                 if (fetchedBaseParcels.has(id)) return;
                 if (baseParcelFetchInFlight.has(id)) return;
-                // Skip parcels already consumed by an earlier applied proposal; ingest
-                // would skip them anyway and waiting for them causes an infinite loop.
-                if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return;
                 toFetch.push(id);
             });
 
@@ -1955,7 +1569,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
                 const missingAfter = unique.filter(id => {
                     if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
-                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return false;
                     return true;
                 });
                 return { attempted: [], missingAfter };
@@ -1971,7 +1584,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     }
                     if (typeof waitForParcelLayersReady === 'function') {
                         // The fetch above has already resolved, so every parcel it returned is in the
-                        // index (or rehydratable from storage) and becomes ready within a poll or two.
+                        // immutable cadastral index and becomes ready within a poll or two.
                         // The only ids that reach the timeout are PHANTOMS — a declared base/cadastre
                         // parent the fetch never returned, which will never become ready no matter how
                         // long we wait. 15 s of that froze the loader at "1 / 1"; 4 s covers real
@@ -2004,7 +1617,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const missingAfter = unique.filter(id => {
                 try {
                     if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
-                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return false;
                     return true;
                 } catch (_) {
                     return true;
@@ -2014,230 +1626,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return { attempted: toFetch, missingAfter };
         };
 
-        // Every LOCAL proposal id belonging to this plan. A parcel-conflict whose occupiers all
-        // sit in this set is not a real conflict: these proposals coexisted APPLIED in the
-        // sharer's browser (§3.3 — coexisting fabric never geometrically conflicts), so the
-        // "occupation" is stale id bookkeeping between generations, and the right response is to
-        // retry accepting intra-plan occupancy rather than park the proposal as overlapped.
-        const planMemberLocalIds = () => {
-            const ids = new Set();
-            incomingIds.forEach(sid => ids.add(String(sid)));
-            loadedById.forEach(payload => {
-                if (payload && payload.proposalId) ids.add(String(payload.proposalId));
-                if (payload && payload.serverProposalId) ids.add(String(payload.serverProposalId));
-            });
-            incomingAlreadyApplied.forEach(p => {
-                if (p && p.proposalId) ids.add(String(p.proposalId));
-                if (p && p.serverProposalId) ids.add(String(p.serverProposalId));
-            });
-            return ids;
-        };
-
-        // --- Conflict tour: CROSS-plan occupations ask the user, one conflict at a time --------
-        // (rethink-proposals.md §12). Intra-plan occupancy stays automatic above; this only runs
-        // when ground the plan needs is held by a proposal that is NOT part of the plan. The user
-        // replaces the existing proposal or keeps it (skipping the incoming one), optionally for
-        // all remaining conflicts. Decisions live in the pure __conflictTour state.
-        const tourState = (window.__conflictTour && typeof window.__conflictTour.createTourState === 'function')
-            ? window.__conflictTour.createTourState()
-            : null;
-        const TOUR_HIGHLIGHT_PANE = 'tourHighlightPane';
-        let tourHighlightLayer = null;
-        const escForTour = (value) => (typeof escapeHtml === 'function') ? escapeHtml(String(value)) : String(value);
-
-        const clearTourHighlights = () => {
-            try {
-                if (tourHighlightLayer && typeof map !== 'undefined' && map) {
-                    map.removeLayer(tourHighlightLayer);
-                }
-            } catch (_) { }
-            tourHighlightLayer = null;
-        };
-
-        // Blue dashed = the incoming proposal's footprint; red = the ground the occupiers hold.
-        const showTourHighlights = (incomingPayload, occupierIds) => {
-            try {
-                if (typeof map === 'undefined' || !map || !window.__planOrder) return;
-                if (typeof map.getPane === 'function' && !map.getPane(TOUR_HIGHLIGHT_PANE)) {
-                    const pane = map.createPane(TOUR_HIGHLIGHT_PANE);
-                    pane.style.zIndex = 646;
-                    pane.style.pointerEvents = 'none';
-                }
-                clearTourHighlights();
-                const group = L.layerGroup([], { pane: TOUR_HIGHLIGHT_PANE });
-                let union = null;
-                const add = (proposalLike, style) => {
-                    try {
-                        const footprint = window.__planOrder.footprintOf(proposalLike);
-                        if (!footprint) return;
-                        const layer = L.geoJSON(footprint, { pane: TOUR_HIGHLIGHT_PANE, style, interactive: false });
-                        group.addLayer(layer);
-                        const b = layer.getBounds && layer.getBounds();
-                        if (b && b.isValid && b.isValid()) union = union ? union.extend(b) : L.latLngBounds(b.getSouthWest(), b.getNorthEast());
-                    } catch (_) { }
-                };
-                add(incomingPayload, { color: '#1d4ed8', weight: 3, dashArray: '8,6', fillColor: '#3b82f6', fillOpacity: 0.18 });
-                (Array.isArray(occupierIds) ? occupierIds : []).forEach(cid => {
-                    const record = (typeof proposalStorage !== 'undefined' && proposalStorage && proposalStorage.getProposal)
-                        ? proposalStorage.getProposal(cid)
-                        : null;
-                    if (record) add(record, { color: '#b91c1c', weight: 3, fillColor: '#ef4444', fillOpacity: 0.22 });
-                });
-                group.addTo(map);
-                tourHighlightLayer = group;
-                // animate:false — a background tab throttles rAF and would strand the view mid-flight.
-                if (union && union.isValid()) map.fitBounds(union, { padding: [80, 80], maxZoom: 18, animate: false });
-            } catch (err) {
-                console.warn('[handleSharedPlanRoute] tour highlight failed', err);
-            }
-        };
-
-        const runCrossPlanConflictStop = async (queueId, payload, label, conflictIds, conflictTitles) => {
-            const tour = window.__conflictTour;
-            if (!tour || !tourState) return 'keep';
-            const key = tour.stopKey(queueId, conflictIds);
-            const decided = tour.resolveAction(tourState, key);
-            if (decided !== 'ask') return decided;
-
-            hideProposalLoadOverlay();
-            showTourHighlights(payload, conflictIds);
-            const occupierNames = (Array.isArray(conflictTitles) && conflictTitles.length ? conflictTitles : conflictIds)
-                .map(x => String(x)).filter(Boolean);
-            const checkboxId = 'plan-tour-apply-all';
-            // showSimpleShareModal removes the modal BEFORE running the clicked action, so the
-            // checkbox cannot be read at decision time — its state is cached on every change.
-            let applyAllChecked = false;
-            const readAll = () => applyAllChecked;
-            const choice = await new Promise(resolve => {
-                let settled = false;
-                const finish = (value) => { if (!settled) { settled = true; resolve(value); } };
-                const modalApi = showSimpleShareModal({
-                    title: tShare('plan.tour.title', 'Space conflict'),
-                    body: `<p>${tShare('plan.tour.body', '"{{incoming}}" needs ground currently held by:', { incoming: escForTour(label) })}</p>`
-                        + `<ul>${occupierNames.map(n => `<li>${escForTour(n)}</li>`).join('')}</ul>`
-                        + `<label style="display:flex;align-items:center;gap:6px;margin-top:10px;">`
-                        + `<input type="checkbox" id="${checkboxId}">`
-                        + `<span>${tShare('plan.tour.applyToAll', 'Do this for all remaining conflicts')}</span></label>`,
-                    actions: [
-                        {
-                            label: tShare('plan.tour.replace', 'Replace existing'),
-                            primary: true,
-                            onClick: () => finish({ action: 'replace', all: readAll() })
-                        },
-                        {
-                            label: tShare('plan.tour.keep', 'Keep existing'),
-                            primary: false,
-                            onClick: () => finish({ action: 'keep', all: readAll() })
-                        }
-                    ],
-                    // Dismissing (×, Escape, overlay click) is the non-destructive choice.
-                    // showSimpleShareModal runs onClose BEFORE the clicked action's onClick, so
-                    // the dismiss-default must yield a tick — an action click settles the promise
-                    // synchronously right after closeModal, and only a true dismissal reaches this.
-                    onClose: () => setTimeout(() => finish({ action: 'keep', all: false }), 0)
-                });
-                try {
-                    const checkbox = modalApi && modalApi.body ? modalApi.body.querySelector('#' + checkboxId) : null;
-                    if (checkbox) checkbox.addEventListener('change', () => { applyAllChecked = !!checkbox.checked; });
-                } catch (_) { }
-            });
-            clearTourHighlights();
-            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
-                total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
-            });
-            tour.recordDecision(tourState, key, choice.action, choice.all);
-            return choice.action;
-        };
-
-        // Intra-plan occupancy exemption (§3.3), scoped to members UNDER CONSTRUCTION in this
-        // pass. Members already applied and materialized before the pass are standing fabric —
-        // a re-applying sibling overlapping one must surface the conflict (tour below), not
-        // silently consume it: the blanket exemption once let a re-applied road cut the standing
-        // park's parcel, inverting the plan's structure on every reload. Snapshot ONCE before
-        // the loop: members applied earlier in this same pass stay exempt for later members.
-        const constructionExemptKeys = (() => {
-            const ids = planMemberLocalIds();
-            try {
-                incomingAlreadyApplied.forEach(p => {
-                    if (!p || typeof isProposalAppliedAndMaterialized !== 'function') return;
-                    if (!isProposalAppliedAndMaterialized(p)) return;
-                    if (p.proposalId) ids.delete(String(p.proposalId));
-                    if (p.serverProposalId) ids.delete(String(p.serverProposalId));
-                    try {
-                        const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
-                        if (extracted) ids.delete(String(extracted));
-                    } catch (_) { }
-                });
-            } catch (_) { }
-            return ids;
-        })();
-
         while (queue.length > 0) {
             const id = queue.shift();
-            try { attemptedSinceProgress.add(normalizeId(id)); } catch (_) { }
-            const priorAttempts = attemptById.get(id) || 0;
-            attemptById.set(id, priorAttempts + 1);
-
-            // Hard stop for a single proposal to avoid infinite loops.
-            if (attemptById.get(id) > maxAttemptsPerId) {
-                const cachedProposal = loadedById.get(id) || null;
-                const cachedType = proposalTypeById.get(id) || formatSharedProposalTypeLabel(cachedProposal);
-                const key = String(id);
-
-                const missingPrereqs = (() => {
-                    try {
-                        const explicitMissing = lastMissingPrereqsById.get(key) || lastUnfetchedBasePrereqIdsById.get(key);
-                        if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
-                        const storedFailure = getStoredApplyFailureInfo(key);
-                        if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
-                            return ensureArrayOfStrings(storedFailure.missingIds);
-                        }
-                        const basePrereqs = basePrereqIdsById.get(key) || [];
-                        return ensureArrayOfStrings(basePrereqs)
-                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                    } catch (_) {
-                        return [];
-                    }
-                })();
-
-                const fallbackReason = (() => {
-                    try {
-                        const cached = lastReasonById.get(key);
-                        if (cached) return String(cached);
-                        const storedFailure = getStoredApplyFailureInfo(key);
-                        return storedFailure && storedFailure.message ? String(storedFailure.message) : '';
-                    } catch (_) {
-                        return '';
-                    }
-                })();
-
-                const reasonParts = [];
-                if (fallbackReason) reasonParts.push(fallbackReason);
-                // §7.5 under §15a: ground resolves geometrically at apply and nothing heals,
-                // so a surviving miss means the land genuinely could not be re-formed here — say
-                // that, naming the provider proposal; the raw ids go to the console.warn below.
-                if (missingPrereqs.length) {
-                    reasonParts.push(describeMissingPrereqs(missingPrereqs, Array.from(loadedById.values()), cachedProposal, tShare)
-                        || `Missing prerequisite parcels: ${missingPrereqs.join(', ')}`);
-                }
-                const reason = reasonParts.length
-                    ? reasonParts.join(' · ') + ` (too many retries: ${maxAttemptsPerId})`
-                    : tShare('plan.applyUnknownFailure', 'Unknown error while applying.') + ` (too many retries: ${maxAttemptsPerId})`;
-
-                console.warn('[handleSharedPlanRoute] Giving up after max retries', { id, reason, missingPrereqs });
-
-                failed.push({
-                    id,
-                    label: formatSharedProposalLabel(cachedProposal, id),
-                    type: cachedType,
-                    missingPrereqs,
-                    reason
-                });
-                stepsSinceProgress += 1;
-                continue;
-            }
-
             try {
                 let proposal = loadedById.get(id);
                 if (!proposal) {
@@ -2261,7 +1651,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         }
                         failed.push({ id, label: formatSharedProposalLabel(null, id), reason });
                         markFetchProgress(id);
-                        stepsSinceProgress += 1;
                         continue;
                     }
                     proposal = await response.json();
@@ -2279,68 +1668,29 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 // ground a formation consumes resolves geometrically at apply, and a genuine miss
                 // fails loudly below with the named prerequisites.
                 const prereqIds = getPrerequisiteParcelIdsForProposal(proposal);
-                const { baseIds } = splitBaseAndDerivedIds(prereqIds);
+                const baseIds = basePrerequisiteIds(prereqIds);
                 try {
                     const queueKey = String(id);
                     const payloadKey = (proposal && proposal.proposalId) ? String(proposal.proposalId) : '';
 
-                    prereqIdsById.set(queueKey, prereqIds);
                     basePrereqIdsById.set(queueKey, baseIds);
                     if (payloadKey) {
-                        prereqIdsById.set(payloadKey, prereqIds);
                         basePrereqIdsById.set(payloadKey, baseIds);
                     }
                 } catch (_) { }
-
-                const parseMissingFromString = (text) => {
-                    try {
-                        if (!text || typeof text !== 'string') return [];
-                        const match = text.match(/missing[^:]*:\s*(.+)$/i);
-                        if (match && match[1]) {
-                            return match[1].split(/[,\s]+/).map(x => x.trim()).filter(Boolean);
-                        }
-                        return [];
-                    } catch (_) { return []; }
-                };
 
                 if (baseIds.length > 0) {
                     const fetchResult = await startFetchBaseParcels(baseIds, { await: true });
                     try {
                         lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingAfter);
                         if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingAfter);
-                        const missingNow = Array.from(new Set(ensureArrayOfStrings(prereqIds))).filter(pid => {
-                            if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
-                            // Consumed by an earlier applied proposal — off the map by design, not missing.
-                            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
-                            return true;
-                        });
-                        lastMissingPrereqsById.set(String(id), missingNow);
-                        if (proposal && proposal.proposalId) lastMissingPrereqsById.set(String(proposal.proposalId), missingNow);
                     } catch (_) { }
                 }
 
+                // Fallback wording matches the locale entry — en.json wins over the fallback, so a
+                // divergent fallback only ever lies about what the user will see.
                 updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying proposal #{{id}}…', { id }) });
-                let result;
-                try {
-                    // For /proposals/:id1,id2,… we intentionally do NOT fetch/resolve parcels here.
-                    // Missing parcels are expected to be created by earlier applies.
-                    result = await importAndApplySharedProposal(proposal, {
-                        skipDependencyFetch: true,
-                        // Occupation (§15 decision 3) protects OTHER people's applied proposals.
-                        // Inside one plan the author composed these together deliberately, so a
-                        // member overlapping a sibling is a geometry question for the author, not
-                        // a consent question at replay time — same intra/cross split the parcel
-                        // conflict tour already makes. Cross-plan occupiers still block and ask.
-                        occupationExemptKeys: Array.from(constructionExemptKeys)
-                    });
-                } catch (err) {
-                    // Convert thrown dependency errors into retryable results.
-                    if (isDependencyFailure(err)) {
-                        result = { applied: false, skipped: false, proposalId: proposal?.proposalId || id, reason: err.message || String(err) };
-                    } else {
-                        throw err;
-                    }
-                }
+                const result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
 
                 const proposalId = (result && result.proposalId) || proposal?.proposalId || id;
                 const label = formatSharedProposalLabel(proposal, proposalId);
@@ -2356,7 +1706,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 try {
                     const pidKey = proposalId ? String(proposalId) : '';
                     if (pidKey && prereqIds && Array.isArray(prereqIds)) {
-                        prereqIdsById.set(pidKey, prereqIds);
                         basePrereqIdsById.set(pidKey, baseIds);
                         const baseMissing = lastUnfetchedBasePrereqIdsById.get(String(id))
                             || lastUnfetchedBasePrereqIdsById.get((proposal && proposal.proposalId) ? String(proposal.proposalId) : '')
@@ -2370,185 +1719,26 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 if (result && result.skipped) {
                     skipped.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
                     if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                    stepsSinceProgress = 0;
-                    attemptedSinceProgress.clear();
                     continue;
                 }
 
                 if (result && result.applied) {
                     applied.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
-                    if (proposalId) appliedQueueIdByLocal.set(String(proposalId), normalizeId(id));
                     if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                    stepsSinceProgress = 0;
-                    attemptedSinceProgress.clear();
                     continue;
                 }
 
-                const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while applying.');
-                const failureInfo = (result && result.failureInfo) ? result.failureInfo : null;
-                if (failureInfo && String(failureInfo.code || '') === 'parcel-conflict') {
-                    const conflictIds = ensureArrayOfStrings(failureInfo.conflictProposalIds || []);
-                    // Same scope as the exemption: only a conflict with a member under
-                    // construction is "intra-plan" composition. A standing member's occupation
-                    // goes to the tour like any other applied proposal's would.
-                    const intraPlan = conflictIds.length > 0 && conflictIds.every(cid => constructionExemptKeys.has(String(cid)));
-                    console.log('[handleSharedPlanRoute] Parcel conflict while applying plan member', {
-                        id: normalizeId(id),
-                        occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],
-                        conflictIds,
-                        intraPlan
-                    });
-                    if (!intraPlan && conflictIds.length > 0) {
-                        // Cross-plan occupation: the user decides, one conflict at a time.
-                        const decision = await runCrossPlanConflictStop(
-                            id, proposal, label, conflictIds,
-                            Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : []);
-                        if (decision === 'replace') {
-                            for (const cid of conflictIds) {
-                                try {
-                                    if (typeof ProposalManager.unapplyWholeFamily === 'function') {
-                                        await ProposalManager.unapplyWholeFamily(cid, new Set(), { skipRestoreSource: true });
-                                    } else if (typeof ProposalManager.unapplyProposal === 'function') {
-                                        await ProposalManager.unapplyProposal(cid, { skipConfirm: true, skipRestoreSource: true });
-                                    }
-                                } catch (unapplyErr) {
-                                    console.warn('[handleSharedPlanRoute] Failed to unapply occupier', cid, unapplyErr);
-                                }
-                            }
-                            try {
-                                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
-                                    ProposalManager._refreshUIAfterProposalChange(null);
-                                }
-                            } catch (_) { }
-                            // A plan member that chained onto the occupier's fabric earlier in
-                            // this run goes down with the occupier's family unapply. Detect it,
-                            // pull it from the applied bucket, reset its retry guards and requeue
-                            // it — it re-applies onto the post-replace fabric via geometry.
-                            try {
-                                for (let i = applied.length - 1; i >= 0; i--) {
-                                    const entry = applied[i];
-                                    const record = proposalStorage.getProposal(entry.id);
-                                    const stillApplied = record && typeof isProposalCurrentlyApplied === 'function'
-                                        ? isProposalCurrentlyApplied(record)
-                                        : true;
-                                    if (record && !stillApplied) {
-                                        const draggedQueueId = appliedQueueIdByLocal.get(String(entry.id));
-                                        if (draggedQueueId) {
-                                            console.log('[handleSharedPlanRoute] Replace dragged down an applied plan member — requeueing', draggedQueueId);
-                                            applied.splice(i, 1);
-                                            if (queue.indexOf(draggedQueueId) === -1) queue.push(draggedQueueId);
-                                        }
-                                    }
-                                }
-                            } catch (_) { }
-                            // The freed ground resolves geometrically at apply (§15a), so the
-                            // retry needs no id rewriting.
-                            queue.unshift(id);
-                            stepsSinceProgress = 0;
-                            continue;
-                        }
-                        keptExisting.push({
-                            id: proposalId,
-                            label,
-                            occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : conflictIds,
-                            ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1
-                        });
-                        stepsSinceProgress = 0;
-                        attemptedSinceProgress.clear();
-                        continue;
-                    }
-                    overlapped.push({
-                        id: proposalId,
-                        label,
-                        occupiers: Array.isArray(failureInfo.conflictTitles) ? failureInfo.conflictTitles : [],
-                        ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1
-                    });
-                    stepsSinceProgress = 0;
-                    attemptedSinceProgress.clear();
-                    continue;
-                }
-                const dependencyFailure = getDependencyFailureInfo(failureInfo || reason);
-                try { if (proposalId) lastReasonById.set(String(proposalId), String(reason || '')); } catch (_) { }
-                if (dependencyFailure) {
-                    const dependencyMissingIds = ensureArrayOfStrings(dependencyFailure.missingIds || []);
-                    if (dependencyMissingIds.length > 0) {
-                        const existingMissing = ensureArrayOfStrings(lastMissingPrereqsById.get(String(id)) || []);
-                        const combinedMissing = Array.from(new Set(existingMissing.concat(dependencyMissingIds)));
-                        lastMissingPrereqsById.set(String(id), combinedMissing);
-                        if (proposalId) lastMissingPrereqsById.set(String(proposalId), combinedMissing);
-                    }
-                    // A missing BASE parcel is a LOADING problem, not a healing one: fetch it
-                    // once, then re-attempt immediately on the freshly loaded fabric (bounded by
-                    // fetchedBaseParcels — each base id is fetched at most once).
-                    const missingParcelId = extractMissingParcelId(dependencyFailure);
-                    if (missingParcelId && !isDerivedParcelId(missingParcelId) && !fetchedBaseParcels.has(missingParcelId)) {
-                        fetchedBaseParcels.add(missingParcelId);
-                        try {
-                            const fetchResult = await startFetchBaseParcels([missingParcelId], { await: true });
-                            try {
-                                const key = String(proposalId || id);
-                                const basePrereqs = basePrereqIdsById.get(key) || [];
-                                const missingNow = Array.from(new Set([...(fetchResult.missingAfter || []), ...basePrereqs]))
-                                    .filter(pid => pid && !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                                lastUnfetchedBasePrereqIdsById.set(key, missingNow);
-                            } catch (_) { }
-                        } catch (fetchErr) {
-                            console.warn('[handleSharedPlanRoute] Failed to fetch missing base parcel for apply plan', { missingParcelId, fetchErr });
-                        }
-                        queue.unshift(id);
-                        stepsSinceProgress = 0;
-                        continue;
-                    }
-
-                    // Nothing left to load and nothing is healed any more (§15a): the miss is
-                    // real — fail loudly with the named prerequisites.
-                    failed.push({
-                        id: proposalId,
-                        label,
-                        type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
-                        missingPrereqs: (() => {
-                            try {
-                                const key = String(proposalId || id);
-                                const explicitMissing = lastMissingPrereqsById.get(key) || lastUnfetchedBasePrereqIdsById.get(key);
-                                if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
-                                return ensureArrayOfStrings(dependencyFailure.missingIds || []);
-                            } catch (_) {
-                                return [];
-                            }
-                        })(),
-                        reason
-                    });
-                    stepsSinceProgress += 1;
-                } else {
-                    failed.push({
-                        id: proposalId,
-                        label,
-                        type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
-                        missingPrereqs: (() => {
-                            try {
-                                const key = String(proposalId || id);
-                                const explicitMissing = lastUnfetchedBasePrereqIdsById.get(key);
-                                if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
-                                const storedFailure = getStoredApplyFailureInfo(key);
-                                if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
-                                    return ensureArrayOfStrings(storedFailure.missingIds);
-                                }
-                                const basePrereqs = basePrereqIdsById.get(key) || [];
-                                const missing = ensureArrayOfStrings(basePrereqs)
-                                    .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                                return missing;
-                            } catch (_) {
-                                return [];
-                            }
-                        })(),
-                        reason
-                    });
-                    stepsSinceProgress += 1;
-                }
+                const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while importing.');
+                failed.push({
+                    id: proposalId,
+                    label,
+                    type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
+                    missingPrereqs: ensureArrayOfStrings(lastUnfetchedBasePrereqIdsById.get(String(proposalId || id)) || []),
+                    reason
+                });
             } catch (error) {
                 console.error('apply plan item failed', id, error);
                 const reason = (error && error.message) ? error.message : 'Unexpected error';
-                try { lastReasonById.set(String(id), String(reason || '')); } catch (_) { }
                 // No requeue and no healing (§15a): a thrown apply is a loud failure with its
                 // reason and named prerequisites.
                 {
@@ -2578,101 +1768,36 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     });
                 }
                 markFetchProgress(id);
-                stepsSinceProgress += 1;
             }
 
-            // If we've attempted every remaining unique id since last progress and still made no progress,
-            // stop to avoid an infinite loop. (This also ensures we capture at least one failure reason per id.)
-            if (queue.length > 0) {
-                const remainingUnique = new Set(queue.map(normalizeId).filter(Boolean));
-                let allAttempted = true;
-                for (const rem of remainingUnique) {
-                    if (!attemptedSinceProgress.has(rem)) {
-                        allAttempted = false;
-                        break;
-                    }
-                }
-                if (allAttempted && stepsSinceProgress >= remainingUnique.size) {
-                    break;
-                }
-            }
         }
 
-        // Anything left in the queue after the loop is considered blocked.
-        if (queue.length > 0) {
-            const seen = new Set();
-            queue.forEach(id => {
-                const norm = normalizeId(id);
-                if (!norm || seen.has(norm)) return;
-                seen.add(norm);
-                const cachedProposal = loadedById.get(norm) || null;
-                const cachedType = proposalTypeById.get(norm) || formatSharedProposalTypeLabel(cachedProposal);
-                const missingPrereqs = (() => {
-                    try {
-                        const combined = new Set();
-                        const explicitMissing = lastMissingPrereqsById.get(norm) || lastUnfetchedBasePrereqIdsById.get(norm);
-                        ensureArrayOfStrings(explicitMissing).forEach(id => combined.add(id));
-                        const storedFailure = getStoredApplyFailureInfo(norm);
-                        ensureArrayOfStrings(storedFailure && storedFailure.missingIds ? storedFailure.missingIds : []).forEach(id => combined.add(id));
-
-                        const basePrereqs = basePrereqIdsById.get(norm) || [];
-                        ensureArrayOfStrings(basePrereqs)
-                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)))
-                            .forEach(id => combined.add(id));
-
-                        const allPrereqs = prereqIdsById.get(norm) || [];
-                        ensureArrayOfStrings(allPrereqs)
-                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)))
-                            .forEach(id => combined.add(id));
-
-                        const fallback = (() => {
-                            try {
-                                const reason = lastReasonById.get(norm) || fallbackReason;
-                                return parseMissingFromString(reason);
-                            } catch (_) { return []; }
-                        })();
-                        ensureArrayOfStrings(fallback).forEach(id => combined.add(id));
-
-                        return Array.from(combined);
-                    } catch (_) {
-                        return [];
-                    }
-                })();
-                const lastReason = (() => {
-                    try {
-                        const cached = lastReasonById.get(norm);
-                        return cached ? String(cached) : '';
-                    } catch (_) {
-                        return '';
-                    }
-                })();
-
-                const fallbackReason = (() => {
-                    try {
-                        if (lastReason) return '';
-                        const storedFailure = getStoredApplyFailureInfo(norm);
-                        return storedFailure && storedFailure.message ? String(storedFailure.message) : '';
-                    } catch (_) {
-                        return '';
-                    }
-                })();
-
-                const reasonParts = [tShare('plan.applyBlockedByDependencies', 'Blocked: dependencies not satisfied after retries.')];
-                if (lastReason) reasonParts.push(lastReason);
-                else if (fallbackReason) reasonParts.push(fallbackReason);
-                if (missingPrereqs.length) {
-                    reasonParts.push(describeMissingPrereqs(missingPrereqs, Array.from(loadedById.values()), cachedProposal, tShare)
-                        || `Missing prerequisite parcels: ${missingPrereqs.join(', ')}`);
-                }
-
+        // All imported members are now records with their applied flag set. Materialize that target
+        // set once, from cadastre, after the queue is complete.
+        if (applied.length > 0) {
+            // Its OWN key: `plan.applying` is the per-proposal line and its translation carries an
+            // {{id}}. Borrowing it here — with no id to fill — rendered the placeholder verbatim,
+            // so the overlay read "Applying proposal #{{id}}…" for the whole plan.
+            updateProposalLoadOverlay({ status: tShare('plan.applyingAll', 'Applying shared plan…') });
+            const replay = await ProposalManager.rebuildAppliedFabric();
+            const replayFailures = new Map((replay?.failed || []).map(entry => [String(entry?.proposalId || ''), entry]));
+            await parkFailedSharedImports(applied
+                .filter(entry => replayFailures.has(String(entry.id)))
+                .map(entry => entry.id));
+            for (let i = applied.length - 1; i >= 0; i -= 1) {
+                const entry = applied[i];
+                const replayFailure = replayFailures.get(String(entry.id));
+                if (!replayFailure) continue;
+                const record = proposalStorage.getProposal(entry.id);
                 failed.push({
-                    id: norm,
-                    label: formatSharedProposalLabel(cachedProposal, norm),
-                    type: cachedType,
-                    missingPrereqs,
-                    reason: reasonParts.join(' · ')
+                    id: entry.id,
+                    label: entry.label,
+                    type: formatSharedProposalTypeLabel(record) || '',
+                    missingPrereqs: [],
+                    reason: getStoredApplyFailureInfo(entry.id)?.message || 'The proposal could not be derived from the loaded cadastre.'
                 });
-            });
+                applied.splice(i, 1);
+            }
         }
 
         hideProposalLoadOverlay();
@@ -2706,30 +1831,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 count: skipped.length
             })}</p>${skippedItems}`);
         }
-        if (overlapped.length > 0) {
-            if (bodyLines.length > 0) bodyLines.push('<br>');
-            const overlappedItems = renderList(overlapped, item => {
-                const label = escape(item.label || formatSharedProposalLabel(null, item.id));
-                const occupiers = (item.occupiers || []).filter(Boolean).map(name => escape(name)).join(', ');
-                return `<li>${label}${occupiers ? ` — ${escape(tShare('plan.overlapsWith', 'overlaps'))} ${occupiers}` : ''}</li>`;
-            });
-            bodyLines.push(`<p>${tShare('plan.overlappedCountDetailed', '{{count}} proposal(s) stay unapplied — their space is already occupied. Find them in the proposals list to preview or apply them:', {
-                count: overlapped.length
-            })}</p>${overlappedItems}`);
-        }
-        if (keptExisting.length > 0) {
-            if (bodyLines.length > 0) bodyLines.push('<br>');
-            const keptItems = renderList(keptExisting, item => {
-                const label = escape(item.label || formatSharedProposalLabel(null, item.id));
-                const occupiers = Array.isArray(item.occupiers) && item.occupiers.length
-                    ? ` — ${escape(item.occupiers.map(String).join(', '))}`
-                    : '';
-                return `<li>${label}${occupiers}</li>`;
-            });
-            bodyLines.push(`<p>${tShare('plan.tour.keptCountDetailed', 'You kept the existing proposals — {{count}} incoming proposal(s) stay unapplied (find them in the proposals list):', {
-                count: keptExisting.length
-            })}</p>${keptItems}`);
-        }
         if (failed.length > 0) {
             if (bodyLines.length > 0) bodyLines.push('<br>');
             // Raw prerequisite-id dumps belong in the console, not in the user's face.
@@ -2752,11 +1853,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
         }
 
-        // Center map on the visible descendant of the most recently loaded proposal — the one
+        // Center map on the most recently loaded proposal — the one
         // latest in link order among everything now on the map (applied, skipped as duplicate,
         // or filtered out earlier because it was already applied) — as if it were loaded alone.
-        // Link order is used instead of chronological apply order because dependency requeueing
-        // can apply an older proposal after a newer one.
+        // Link order is a presentation choice; fabric precedence remains immutable record order.
         let rawLastProposalId = null;
         let rawLastOrd = -1;
         const considerFocusCandidate = (candidateId, ord) => {
@@ -2775,8 +1875,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 || (applied.length > 0 ? applied[applied.length - 1].id : null)
                 || (skipped.length > 0 ? skipped[skipped.length - 1].id : null);
         }
-        const lastProposalId = rawLastProposalId ? findVisibleDescendant(rawLastProposalId) : null;
-        console.log('[handleSharedPlanRoute] Centering on proposal:', rawLastProposalId, '→ visible descendant:', lastProposalId);
+        const lastProposalId = rawLastProposalId;
+        console.log('[handleSharedPlanRoute] Centering on proposal:', lastProposalId);
 
         if (lastProposalId && typeof map !== 'undefined' && map) {
             try {
@@ -2808,12 +1908,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
-        // Only make the user read/dismiss the summary when something genuinely FAILED. Duplicates
-        // (reloading the same link) and occupancy overlaps are normal outcomes — they get a toast,
-        // never a modal that blocks every load of a shared 3D link.
-        // Kept-existing entries are user decisions worth restating in the summary, not issues —
-        // but they must never be silently swallowed by the 3D auto-advance either.
-        const summaryHasIssues = failed.length > 0 || keptExisting.length > 0;
+        const summaryHasIssues = failed.length > 0;
         const showSummaryModal = bodyLines.length > 0 && (summaryHasIssues || !wants3DFromUrl);
 
         let planSummaryModal = null;
@@ -2871,18 +1966,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     } catch (_) { }
                 }
             });
-        } else if ((applied.length > 0 || skipped.length > 0 || overlapped.length > 0) && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
+        } else if ((applied.length > 0 || skipped.length > 0) && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
             // Clean-enough apply, auto-advancing into 3D: lightweight feedback instead of a modal.
             const bits = [];
             const appliedOrPresent = applied.length + skipped.length;
             if (appliedOrPresent > 0) {
                 bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposals.', {
                     count: appliedOrPresent
-                }));
-            }
-            if (overlapped.length > 0) {
-                bits.push(tShare('plan.overlappedToast', '{{count}} stay unapplied (space occupied) — see the proposals list.', {
-                    count: overlapped.length
                 }));
             }
             showEphemeralMessage(bits.join(' '), 6000, 'info');

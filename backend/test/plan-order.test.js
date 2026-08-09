@@ -66,82 +66,66 @@ describe('base-parcel ancestry', () => {
     });
 });
 
-describe('constraint graph', () => {
-    it('constrains only the fabric-changers whose footprints actually intersect', () => {
-        const { edges } = planOrder.buildConstraintGraph(proposals());
-        const pairs = edges.map(e => [e.from, e.to].sort((a, b) => a - b).join('-')).sort();
-        expect(pairs).toEqual(['97-98', '98-102']);
+// The ancestry floor separates a REAL take from coordinate-rounding noise, and it belongs at the
+// measured noise, not at a judgement about what size of take is worth registering. Measured on
+// Zagreb fabric (2026-08-08): rounding noise between abutting cadastral parcels tops out near
+// 0.1 m², while a corridor genuinely covering 0.755 m² of parcel 6804/5 was DISCARDED by the old
+// 2 m² floor — so the road never cut that parcel and its corridor lay on ground someone else still
+// owned, which then made the parcel unusable (taking it whole took road surface with it).
+describe('ancestry floor sits at the measured noise, not above real takes', () => {
+    const LAT = 45.80, LON = 15.96;
+    const mLat = m => m / 111320;
+    const mLon = m => m / (111320 * Math.cos(LAT * Math.PI / 180));
+    const rect = (x0, y0, x1, y1) => turf.polygon([[
+        [LON + mLon(x0), LAT + mLat(y0)],
+        [LON + mLon(x1), LAT + mLat(y0)],
+        [LON + mLon(x1), LAT + mLat(y1)],
+        [LON + mLon(x0), LAT + mLat(y1)],
+        [LON + mLon(x0), LAT + mLat(y0)]
+    ]]);
+    const overlapOf = (a, b) => { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; };
+    const parcel = () => rect(0, 0, 40, 40);
+
+    it('registers a genuine sub-2 m² take (the 6804/5 class)', () => {
+        // A corridor edge lying 2 cm inside a 40 m parcel boundary: ~0.8 m² of real ground.
+        const corridor = rect(-20, 0, 0.02, 40);
+        const overlap = overlapOf(parcel(), corridor);
+        expect(overlap).toBeGreaterThan(0.25);
+        expect(overlap).toBeLessThan(2); // the old 2 m² floor silently discarded exactly this
+        const anc = planOrder.computeBaseAncestry(corridor, [{ id: 'HR-339270-6804/5', feature: parcel() }]);
+        expect(anc.map(a => a.id)).toEqual(['HR-339270-6804/5']);
     });
 
-    it('records the intersection area that makes each constraint real', () => {
-        const { edges } = planOrder.buildConstraintGraph(proposals());
-        const find = (a, b) => edges.find(e => (e.from === a && e.to === b) || (e.from === b && e.to === a));
-        // Measured: #97 x #98 = 128 m², #98 x #102 = 15 m².
-        expect(find(97, 98).intersectionM2).toBeGreaterThan(120);
-        expect(find(97, 98).intersectionM2).toBeLessThan(140);
-        expect(find(98, 102).intersectionM2).toBeGreaterThan(10);
-        expect(find(98, 102).intersectionM2).toBeLessThan(20);
-    });
-
-    it('leaves the deadlocked pair completely unrelated', () => {
-        // #100 and #102 are each other's ancestor under the derived-id model — an unsatisfiable
-        // cycle that made five proposals permanently unuploadable. Geometrically they only ABUT:
-        // the raw intersection is ~0.0012 m², a sliver off their shared border, four orders of
-        // magnitude below the 2 m² noise floor. Compare the pairs that do constrain: 128 and 15 m².
-        const abut = planOrder.intersectionArea(byId(100).footprint, byId(102).footprint);
-        expect(abut).toBeLessThan(0.01);
-        expect(abut).toBeLessThan(planOrder.MIN_INTERSECTION_M2);
-
-        const { edges } = planOrder.buildConstraintGraph(proposals());
-        const between = edges.find(e =>
-            (e.from === 100 && e.to === 102) || (e.from === 102 && e.to === 100));
-        expect(between).toBeUndefined();
-    });
-
-    it('never constrains an overlay — overlays consume nothing', () => {
-        const { edges, fabricIds } = planOrder.buildConstraintGraph(proposals());
-        expect(fabricIds.sort((a, b) => a - b)).toEqual([97, 98, 100, 102]);
-        const overlayIds = [99, 101, 103, 104];
-        edges.forEach(e => {
-            expect(overlayIds).not.toContain(e.from);
-            expect(overlayIds).not.toContain(e.to);
-        });
+    it('still ignores float-scale noise along a shared border', () => {
+        // 2.5 mm of overlap along the same 40 m border: ~0.1 m², the measured noise ceiling.
+        const neighbour = rect(-40, 0, 0.0025, 40);
+        const overlap = overlapOf(parcel(), neighbour);
+        expect(overlap).toBeLessThan(0.25);
+        const anc = planOrder.computeBaseAncestry(neighbour, [{ id: 'HR-339270-6804/5', feature: parcel() }]);
+        expect(anc).toEqual([]);
     });
 });
 
 describe('apply order', () => {
-    it('produces an order that satisfies every constraint', () => {
-        const result = planOrder.resolveApplyOrder(proposals());
-        expect(result.violated).toEqual([]);
-        expect(result.order).toHaveLength(8);
-    });
-
-    it('is acyclic by construction — creation time is a total order', () => {
-        // The old model's cycle exists in this very fixture, via derived ids.
-        const derivedEdges = [];
-        fixture.proposals.forEach(p => p.declared.filter(id => id.includes('#')).forEach(id => {
-            const m = id.match(/#(.+)-\d+$/);
-            if (m) derivedEdges.push([m[1], p.id]);
-        }));
-        expect(derivedEdges.length).toBeGreaterThan(0);
-
-        // The new model cannot express a cycle: every edge runs earlier -> later in one total order.
-        const { edges } = planOrder.buildConstraintGraph(proposals());
-        const created = new Map(fixture.proposals.map(p => [p.id, Date.parse(p.createdAt)]));
-        edges.forEach(e => expect(created.get(e.from)).toBeLessThanOrEqual(created.get(e.to)));
-    });
-
-    it('reports which fabric-changers are free of any constraint', () => {
-        const result = planOrder.resolveApplyOrder(proposals());
-        // #100 is a road that touches no other fabric-changer, so nothing orders it.
-        expect(result.unconstrained).toContain(100);
-        expect(result.overlays.sort((a, b) => a - b)).toEqual([99, 101, 103, 104]);
-    });
-
-    it('orders a shuffled plan identically — the result does not depend on input order', () => {
+    it('orders a shuffled plan identically without consulting geometry', () => {
         const shuffled = proposals().reverse();
-        expect(planOrder.resolveApplyOrder(shuffled).order)
-            .toEqual(planOrder.resolveApplyOrder(proposals()).order);
+        expect(planOrder.orderFormations(shuffled).map(p => p.id))
+            .toEqual(planOrder.orderFormations(proposals()).map(p => p.id));
+    });
+
+    it('ignores obsolete local edit timestamps', () => {
+        const older = { ...byId(97), localEditAt: '2026-08-06T13:30:00.000Z' };
+        const newer = { ...byId(98) };
+        expect(planOrder.orderFormations([newer, older]).map(p => p.id)).toEqual([97, 98]);
+    });
+
+    it('uses the numeric server row id as the deterministic timestamp tie-break', () => {
+        const sameTime = '2026-08-06T13:30:00.000Z';
+        const records = [
+            { id: 670, proposalId: 'c-z', createdAt: sameTime },
+            { id: 663, proposalId: 'c-a', createdAt: sameTime }
+        ];
+        expect(planOrder.orderFormations(records).map(p => p.id)).toEqual([663, 670]);
     });
 });
 
@@ -153,6 +137,7 @@ describe('cadastre ancestry', () => {
 
     it('unwraps nested derived ids — a re-split of an already-split parcel', () => {
         expect(planOrder.cadastreRootId('HR-335649-371/1#p-a-10#p-b-3')).toBe('HR-335649-371/1');
+        expect(planOrder.cadastreRootId('HR-339270-824_proposal_9')).toBe('HR-339270-824');
     });
 
     it('dedupes the roots of a declared parent list', () => {
@@ -161,10 +146,10 @@ describe('cadastre ancestry', () => {
         ])).toEqual(['HR-339270-823/1', 'HR-339270-824']);
     });
 
-    it('prefers geometry but never records less land than the proposal declared', () => {
+    it('uses geometry only and ignores an unrelated declared parent', () => {
         // #104 declares four derived parents whose roots are 6804/1, 6804/5 and 6804/9. Geometry
-        // finds only 6804/1 and 6804/9 — the third is declared but not actually covered, and must
-        // still be kept so a proposal never claims LESS than it did before.
+        // finds only 6804/1 and 6804/9. The third is a stale declaration and must not become a
+        // false ground claim.
         const p = fixture.proposals.find(x => x.id === 104);
         const ids = planOrder.computeCadastreParcelIds(
             { parentParcelIds: p.declared, geometry: p.footprint },
@@ -172,14 +157,14 @@ describe('cadastre ancestry', () => {
         );
         expect(ids).toContain('HR-339270-6804/1');
         expect(ids).toContain('HR-339270-6804/9');
-        expect(ids).toContain('HR-339270-6804/5'); // declared-only, preserved
+        expect(ids).not.toContain('HR-339270-6804/5');
         expect(ids.every(id => !id.includes('#'))).toBe(true);
     });
 
-    it('recovers cadastral ancestry for a proposal whose geometry is unavailable', () => {
+    it('refuses to infer cadastral ancestry when geometry is unavailable', () => {
         const ids = planOrder.computeCadastreParcelIds(
             { parentParcelIds: ['HR-339270-823/1#p-a-1'], geometry: null }, baseParcels());
-        expect(ids).toEqual(['HR-339270-823/1']);
+        expect(ids).toEqual([]);
     });
 
     it('extracts a footprint from every typology in the plan', () => {
@@ -190,149 +175,29 @@ describe('cadastre ancestry', () => {
     });
 });
 
-describe('legacy road footprints', () => {
-    it('buffers a centerline when the record predates stored corridor polygons', () => {
-        // Roads drawn before the corridor rework store only points + width. Without this fallback
-        // 29 of 94 zagreb rows had no footprint at all and could not be given cadastral ancestry.
-        const legacy = {
-            roadProposal: {
-                definition: {
-                    width: 10,
-                    points: [{ lat: 45.8053, lng: 15.9636 }, { lat: 45.8060, lng: 15.9650 }]
-                }
-            }
-        };
-        const fp = planOrder.footprintOf(legacy);
-        expect(fp).toBeTruthy();
-        const area = turf.area(fp);
-        // ~10 m wide over ~135 m, plus the rounded caps.
-        expect(area).toBeGreaterThan(1000);
-        expect(area).toBeLessThan(2500);
-    });
-
-    it('handles a multi-segment centerline', () => {
-        const fp = planOrder.footprintOf({
-            definition: {
-                width: 8,
-                points: [
-                    [{ lat: 45.8053, lng: 15.9636 }, { lat: 45.8058, lng: 15.9640 }],
-                    [{ lat: 45.8070, lng: 15.9660 }, { lat: 45.8075, lng: 15.9665 }]
-                ]
-            }
-        });
-        expect(fp).toBeTruthy();
-        expect(turf.area(fp)).toBeGreaterThan(500);
-    });
-
-    it('prefers a stored polygon over the buffered approximation', () => {
+describe('road footprints', () => {
+    it('prefers the authored derived polygon', () => {
         const square = turf.polygon([[[15.96, 45.80], [15.96, 45.801], [15.961, 45.801], [15.961, 45.80], [15.96, 45.80]]]);
         const fp = planOrder.footprintOf({
-            definition: { width: 10, points: [{ lat: 45.9, lng: 16.0 }, { lat: 45.91, lng: 16.01 }], polygon: square.geometry }
+            roadProposal: {
+                definition: { width: 10, points: [{ lat: 45.9, lng: 16.0 }, { lat: 45.91, lng: 16.01 }], polygon: square.geometry }
+            }
         });
         expect(turf.area(fp)).toBeCloseTo(turf.area(square), 0);
     });
 
+    it('delegates centerline derivation to the canonical corridor builder', () => {
+        const square = turf.polygon([[[15.96, 45.80], [15.96, 45.801], [15.961, 45.801], [15.961, 45.80], [15.96, 45.80]]]);
+        globalThis.corridorSurfaceFootprintForDefinition = () => square.geometry;
+        try {
+            const fp = planOrder.footprintOf({ roadProposal: { definition: { width: 10, points: [] } } });
+            expect(turf.area(fp)).toBeCloseTo(turf.area(square), 0);
+        } finally {
+            delete globalThis.corridorSurfaceFootprintForDefinition;
+        }
+    });
+
     it('returns nothing for a record carrying only bounds', () => {
         expect(planOrder.footprintOf({ bounds: [1, 2, 3, 4] })).toBeNull();
-    });
-});
-
-describe('parcel formation (A7)', () => {
-    const parcelsOf = () => baseParcels();
-
-    it('reports a pure merge when the footprint swallows a parcel whole', () => {
-        // #97's footprint is the whole of HR-339270-824.
-        const plan = planOrder.formationPlan(byId(97).footprint, parcelsOf());
-        expect(plan.merged.map(m => m.id)).toEqual(['HR-339270-824']);
-        expect(plan.cut).toHaveLength(0);
-    });
-
-    it('reports cuts, and what each one leaves behind', () => {
-        const plan = planOrder.formationPlan(byId(104).footprint, parcelsOf());
-        expect(plan.merged).toHaveLength(0);
-        expect(plan.cut.map(c => c.id).sort()).toEqual(['HR-339270-6804/1', 'HR-339270-6804/9']);
-        const big = plan.cut.find(c => c.id === 'HR-339270-6804/1');
-        expect(big.takenM2).toBeGreaterThan(3400);
-        expect(big.remainderM2).toBeGreaterThan(9000);
-    });
-
-    it('judges a remainder against its PARENT, not against a fixed compactness', () => {
-        // The trap: HR-339270-6804/1 scores 0.083 untouched — long and thin is normal for a real
-        // cadastral parcel. A remainder at 0.13 is an improvement, and must not be called a sliver.
-        const plan = planOrder.formationPlan(byId(101).footprint, parcelsOf());
-        const parent = plan.cut.find(c => c.id === 'HR-339270-6804/1');
-        expect(parent.parentCompactness).toBeLessThan(0.15);
-        const biggest = parent.pieces[0];
-        expect(biggest.compactness).toBeGreaterThan(parent.parentCompactness);
-        expect(plan.degraded.some(d => d.id === 'HR-339270-6804/1')).toBe(false);
-    });
-
-    it('still flags a genuinely tiny remainder', () => {
-        const plan = planOrder.formationPlan(byId(103).footprint, parcelsOf());
-        expect(plan.tiny.map(t => t.id)).toContain('HR-339270-823/6');
-        expect(plan.tiny.find(t => t.id === 'HR-339270-823/6').areaM2).toBeLessThan(50);
-    });
-
-    it('flags a parcel shattered into disconnected pieces', () => {
-        const plan = planOrder.formationPlan(byId(100).footprint, parcelsOf());
-        expect(plan.shattered.length).toBeGreaterThan(0);
-        const worst = plan.shattered.find(c => c.id === 'HR-339270-6804/1');
-        expect(worst.pieces.length).toBeGreaterThan(2);
-    });
-
-    it('reports footprint area that no cadastral parcel covers', () => {
-        // The precondition for A7: a target parcel can only be formed from cadastral land.
-        const offMap = turf.buffer(turf.point([16.9, 46.4]), 20, { units: 'meters' });
-        const plan = planOrder.formationPlan(offMap, parcelsOf());
-        expect(plan.uncoveredM2).toBeGreaterThan(0);
-        expect(plan.merged).toHaveLength(0);
-        expect(plan.cut).toHaveLength(0);
-    });
-});
-
-describe('rewriteParentParcelIds', () => {
-    const makeProposal = () => ({
-        proposalId: 'p-x',
-        parentParcelIds: ['HR-339270-823/1#p-ghost-2', 'HR-339270-824'],
-        roadProposal: { parentParcelIds: ['HR-339270-823/1#p-ghost-2'], definition: { width: 12 } },
-        buildingProposal: { parentParcelIds: [] }
-    });
-
-    it('rewrites the top-level list and every typology sub-object that exists', () => {
-        const proposal = makeProposal();
-        const touched = planOrder.rewriteParentParcelIds(proposal, ['HR-339270-823/1', 'HR-339270-6804/1']);
-        expect(touched).toEqual([
-            'parentParcelIds',
-            'roadProposal.parentParcelIds',
-            'buildingProposal.parentParcelIds'
-        ]);
-        expect(proposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
-        expect(proposal.roadProposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
-        expect(proposal.buildingProposal.parentParcelIds).toEqual(['HR-339270-823/1', 'HR-339270-6804/1']);
-        // Absent sub-objects must not be invented.
-        expect(proposal.structureProposal).toBeUndefined();
-        expect(proposal.decideLaterProposal).toBeUndefined();
-        expect(proposal.reparcellization).toBeUndefined();
-    });
-
-    it('hands each list its own copy, not a shared array', () => {
-        const proposal = makeProposal();
-        planOrder.rewriteParentParcelIds(proposal, ['HR-1']);
-        proposal.roadProposal.parentParcelIds.push('mutation');
-        expect(proposal.parentParcelIds).toEqual(['HR-1']);
-    });
-
-    it('is a no-op without a proposal or without ids', () => {
-        expect(planOrder.rewriteParentParcelIds(null, ['HR-1'])).toEqual([]);
-        const proposal = makeProposal();
-        expect(planOrder.rewriteParentParcelIds(proposal, [])).toEqual([]);
-        expect(planOrder.rewriteParentParcelIds(proposal, null)).toEqual([]);
-        expect(proposal.parentParcelIds).toEqual(['HR-339270-823/1#p-ghost-2', 'HR-339270-824']);
-    });
-
-    it('coerces ids to strings and drops empties', () => {
-        const proposal = { parentParcelIds: ['old'] };
-        planOrder.rewriteParentParcelIds(proposal, [42, '', null, 'HR-2']);
-        expect(proposal.parentParcelIds).toEqual(['42', 'HR-2']);
     });
 });

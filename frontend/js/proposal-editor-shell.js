@@ -938,23 +938,6 @@
             }
             structureGeometry = lakeGraphics.geometry;
         }
-        // A park/square/lake clears its ground by DEFAULT, without prompting: buildings under
-        // the footprint are demolished (rendered as condemned red ghosts in 3D, hidden in 2D,
-        // restored on unapply); building PROPOSALS in the way are unapplied but kept in the list.
-        let demolishedBuildings = [];
-        try {
-            // Building footprints load lazily (the road tool preloads them; one-click
-            // structures must too, or the scan sees an empty city and demolishes nothing).
-            if (typeof global.ensureCorridorBuildingFootprintsLoaded === 'function') {
-                await global.ensureCorridorBuildingFootprintsLoaded();
-            }
-            if (typeof global.demolishBuildingsUnderFootprint === 'function') {
-                demolishedBuildings = await global.demolishBuildingsUnderFootprint(structureGeometry);
-            }
-        } catch (error) {
-            console.error('[ProposalEditor] structure demolition scan failed', error);
-        }
-
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: kind,
@@ -968,8 +951,7 @@
                     geometry: structureGeometry,
                     parentParcelIds: ids.slice(),
                     blockName: null,
-                    lakeGraphics: lakeGraphics || null,
-                    demolishedBuildings
+                    lakeGraphics: lakeGraphics || null
                 }
             },
             previewGeometry: structureGeometry
@@ -1006,8 +988,8 @@
         // The design tool seeded multi-select for its parcel context; closing the tool must
         // disarm it, or the "Multiparcel selection" panel resurfaces on later clicks.
         try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-        // A CONFIRMED design tool commits its session here: a changed draft becomes the object
-        // (absorbing the source in instantCreate); an untouched one dissolves without residue.
+        // A confirmed design tool commits its session here: a changed draft mints a replacement
+        // snapshot; an untouched one dissolves without residue.
         // An abandoned session (X/Esc) never reaches this point — discardProposalDraftDesignSession
         // clears the commit id first, so tearing the tool down publishes nothing.
         if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
@@ -1224,144 +1206,21 @@
         }
         const submit = global.document?.getElementById('createProposalSubmitButton');
         if (submit) {
-            // Only a minted source truly gets a *replacement* (it is immutable and stays behind);
-            // an unminted local object is absorbed, so the action is simply "Create proposal".
             const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
-            const sourceIsMinted = !!(source && typeof global.isProposalMinted === 'function' && global.isProposalMinted(source));
             // A no-property-change proposal (ownership no-change + parcels as-is) is a non-binding
             // vote — that outcome wins over the create/replacement label, matching
             // updateCreateProposalSubmitState() so applying the facets doesn't clobber it.
             const facets = (typeof global !== 'undefined' && global.proposalFacets) || {};
             const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
-            // A non-minted existing source is edited IN PLACE (kept id) — the action is "Save". A
-            // minted source forks into a replacement; a sourceless draft is a plain create.
-            const editingInPlace = !!(source && !sourceIsMinted);
-            submit.textContent = editingInPlace
-                ? tDraft('modal.createProposal.submitEdit', 'Save')
-                : (isVote
-                    ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
-                    : (sourceIsMinted
-                        ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
-                        : tDraft('proposalDrafts.actions.createProposal', 'Create proposal')));
+            submit.textContent = isVote
+                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
+                : (source
+                    ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
+                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();
         return true;
-    }
-
-    // Geometry edit — the unified in-place mechanism (roads work this way via
-    // runLocalCorridorGeometryUpdate). Mutate the EXISTING proposal `source` in place, KEEPING its
-    // proposalId stable across edits (no per-edit id churn), then unapply → re-apply so the map
-    // re-derives the carved parcels + rendered geometry from the new shape. The PUBLISHED serial is
-    // detached (serverProposalId nulled, on-chain pointers dropped) so the UI offers re-upload and the
-    // NEXT save mints a new server id ONLY if the content actually changed (dedup by content
-    // fingerprint at upload). A synced/minted source is treated as your local copy — unapply only
-    // clears THIS browser's map, never the NFT. Returns the (unchanged) proposalId, or null to fall
-    // back to the add-new path.
-    async function commitGeometryEditInPlace(draftId, source, built) {
-        const storage = global.proposalStorage;
-        const manager = global.ProposalManager;
-        if (!storage || !manager || !source || !source.proposalId || typeof manager.applyProposal !== 'function') return null;
-        const id = source.proposalId;
-        const store = global.proposalDraftStore;
-        const wasApplied = typeof global.isProposalApplied === 'function' && global.isProposalApplied(source);
-        const wasSelected = typeof global.ProposalSelection?.is === 'function' && global.ProposalSelection.is(id);
-
-        // A reparcellization edit is a PARTITION edit (formation-edit.js; rethink-proposals.md
-        // §15a): capture the previous plots BEFORE the unapply destroys their layers, so the
-        // re-apply keeps the identity of every plot that survives the edit. Buildings and
-        // structures mint no parcels, so there is nothing to carry for them.
-        let priorChildren = null;
-        if (wasApplied && built.reparcellization && typeof manager._resolveParcelFeaturesByIds === 'function') {
-            const priorChildIds = Array.from(new Set([
-                ...(Array.isArray(source.childParcelIds) ? source.childParcelIds : []),
-                ...(Array.isArray(source.reparcellization?.childParcelIds) ? source.reparcellization.childParcelIds : [])
-            ].map(cid => String(cid)).filter(Boolean)));
-            if (priorChildIds.length) {
-                try {
-                    const priorFeatures = manager._resolveParcelFeaturesByIds(priorChildIds,
-                        { preferMap: true, allowStorage: true, fallbackToMap: true, allowMissing: true }) || [];
-                    priorChildren = priorFeatures.map(feature => {
-                        if (!feature || !feature.geometry) return null;
-                        const props = feature.properties || {};
-                        const childId = (typeof global._getParcelIdFromFeature === 'function'
-                            ? global._getParcelIdFromFeature(feature) : null) || props.parcelId || null;
-                        if (!childId) return null;
-                        return {
-                            parcelId: String(childId),
-                            parcelNumber: props.BROJ_CESTICE || props.parcelNumber || null,
-                            rootParcelId: props.rootParcelId || null,
-                            isCorridor: false,
-                            feature: { type: 'Feature', properties: {}, geometry: JSON.parse(JSON.stringify(feature.geometry)) }
-                        };
-                    }).filter(Boolean);
-                } catch (error) {
-                    console.warn('[ProposalEditor] prior-plot capture failed — identities will re-mint', error);
-                    priorChildren = null;
-                }
-            }
-        }
-
-        // 1. Tear down the OLD geometry's applied state (rendered features + carved child parcels).
-        //    apply() is a no-op on an already-applied building/structure, so the unapply is mandatory.
-        if (wasApplied && typeof manager.unapplyProposal === 'function') {
-            try { await manager.unapplyProposal(id, { skipConfirm: true, skipRestoreSource: true }); }
-            catch (error) { console.warn('[ProposalEditor] in-place unapply failed', error); return null; }
-        }
-
-        // 2. Mutate the SOURCE record in place — overwrite only the edited payload/geometry/parents from
-        //    `built` (mirroring how roads overwrite `definition`), so every other field and the
-        //    proposalId are preserved. Detach the published serial + on-chain pointers, and drop
-        //    lifecycle/acceptance/supersession/old-child/hash state — a changed proposal is unproposed
-        //    again, and a lingering replacementOfProposalId would make apply try to supersede itself.
-        const typeKey = built.buildingProposal ? 'buildingProposal'
-            : built.structureProposal ? 'structureProposal' : 'reparcellization';
-        source[typeKey] = built[typeKey];
-        if (built.geometry !== undefined) source.geometry = built.geometry;
-        source.parentParcelIds = Array.isArray(built.parentParcelIds) ? built.parentParcelIds.slice() : (source.parentParcelIds || []);
-        // The geometry editor can also change these scalar fields; take the draft's final values.
-        ['goal', 'title', 'name', 'proposalName', 'description', 'offer', 'offerCurrency',
-            'primaryType', 'facets', 'proposalFacets', 'isConditional', 'expiresAt']
-            .forEach(key => { if (built[key] !== undefined) source[key] = built[key]; });
-        source.applied = false;
-        source.serverProposalId = null;
-        ['onchain', 'nft', 'isMinted', 'chainProposalId', 'tokenId', 'hash', 'sourceProposalId',
-            'replacementOfProposalId', 'supersedesProposalIds', 'replacementLifecycle',
-            'ownerAcceptances', 'acceptedParcelIds', 'termsConfirmed', 'childParcelIds']
-            .forEach(key => { delete source[key]; });
-        try { storage._indexProposal(source); } catch (error) { console.warn('[ProposalEditor] in-place re-index failed', error); return null; }
-        try { storage.save?.(); } catch (_) { }
-        try { store?.consumeAfterPublish?.(draftId, id); } catch (_) { }
-        clearProposalDraftComparison();
-
-        // 3. Re-apply the NEW geometry in place (re-carves child parcels + re-renders). Same options the
-        //    add-new path uses for this type, minus absorbSourceProposalId (the source is already
-        //    unapplied above, so it is no longer a conflict to park).
-        const applyOptions = (source.goal === 'road-track' || source.goal === 'station')
-            ? { applyAnyway: true, suppressMissingParentAlerts: true }
-            : { autoParkConflicts: true };
-        // Surviving plots of the previous partition keep their parcel identity.
-        if (Array.isArray(priorChildren) && priorChildren.length) applyOptions.priorChildren = priorChildren;
-        try {
-            try { manager._linkProposalToAncestors?.(id, source.parentParcelIds || []); } catch (_) { }
-            await manager.applyProposal(id, applyOptions);
-            try { manager._refreshUIAfterProposalChange?.(storage.getProposal?.(id)); } catch (_) { }
-        } catch (error) {
-            console.warn('[ProposalEditor] in-place re-apply failed; object stays parked', error);
-        }
-
-        // 4. Rebuild the selection overlay from the NEW footprint — the blue outline was drawn from the
-        //    old geometry and would otherwise linger.
-        if (wasSelected) {
-            try { global.clearProposalHighlights?.(); } catch (_) { }
-            try {
-                if (typeof global.selectAndHighlightProposal === 'function') {
-                    global.__openProposalDetailsCollapsed = true;
-                    global.selectAndHighlightProposal(id, null, false, true);
-                }
-            } catch (_) { }
-        }
-        return id;
     }
 
     // SimCity-style creation: turn a finished draft directly into an applied object on the map —
@@ -1423,47 +1282,6 @@
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
 
-        // Building typologies REDEVELOP their parcels: existing buildings on them are
-        // demolished by default (partially, clipped at the parcel boundary, when a building
-        // straddles it). Structures record theirs at creation; roads decide while drawing.
-        if (proposal.buildingProposal && !Array.isArray(proposal.buildingProposal.demolishedBuildings)) {
-            try {
-                const parentIds = (proposal.parentParcelIds || []).map(String);
-                const layers = parentIds
-                    .map(id => (global.parcelLayerById instanceof Map) ? global.parcelLayerById.get(id) : null)
-                    .filter(layer => layer && layer.feature);
-                const region = (layers.length && typeof global.buildGeometryFromParcels === 'function')
-                    ? global.buildGeometryFromParcels(layers)
-                    : null;
-                if (region && region.type && typeof global.demolishBuildingsUnderFootprint === 'function') {
-                    if (typeof global.ensureCorridorBuildingFootprintsLoaded === 'function') {
-                        await global.ensureCorridorBuildingFootprintsLoaded();
-                    }
-                    proposal.buildingProposal.demolishedBuildings = await global.demolishBuildingsUnderFootprint(region);
-                } else {
-                    proposal.buildingProposal.demolishedBuildings = [];
-                }
-            } catch (error) {
-                console.error('[ProposalEditor] building-typology demolition scan failed', error);
-                proposal.buildingProposal.demolishedBuildings = [];
-            }
-        }
-
-        // Geometry edit: when this draft edits an EXISTING same-type proposal (buildings, structures,
-        // reparcellization), mutate that proposal in place and re-apply it — keeping its proposalId, no
-        // add-new + absorb-source + remove. Brand-new creations (no source) and roads (their own
-        // corridor path) fall through to the add-new flow below.
-        const editSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
-        const editSource = editSourceId ? global.proposalStorage?.getProposal?.(editSourceId) : null;
-        const editTypeKey = proposal.buildingProposal ? 'buildingProposal'
-            : proposal.structureProposal ? 'structureProposal'
-                : proposal.reparcellization ? 'reparcellization' : null;
-        if (editSource && editTypeKey && editSource[editTypeKey]) {
-            const inPlaceId = await commitGeometryEditInPlace(draftId, editSource, proposal);
-            if (inPlaceId) return inPlaceId;
-            // In-place bailed (storage/re-index failure) — fall through to the add-new path.
-        }
-
         const proposalId = global.proposalStorage?.addProposal?.(proposal);
         if (!proposalId) {
             if (typeof global.showStyledAlert === 'function') {
@@ -1471,67 +1289,25 @@
             }
             return keepAsDraft();
         }
-        try { global.ProposalManager?._linkProposalToAncestors?.(proposalId, proposal.parentParcelIds || []); } catch (_) { }
         store.consumeAfterPublish(draftId, proposalId);
         // Drop any comparison overlay the drawing/sync path may have painted for this draft.
         clearProposalDraftComparison();
-        // Roads never warn or park anything: touching roads merged before this point, and a road
-        // sharing a parcel with another road (without touching it) simply coexists — corridors
-        // take partial slices, so overlap with occupied parcels is tolerated silently.
-        // The about-to-be-absorbed source still occupies the parcels; it must be unapplied
-        // silently (it is replaced, not parked), so the conflict gate must know about it.
-        const absorbingSourceId = proposal.sourceProposalId || proposal.replacementOfProposalId || null;
-        const applyOptions = (proposal.goal === 'road-track' || proposal.goal === 'station')
-            ? { applyAnyway: true, suppressMissingParentAlerts: true }
-            : { autoParkConflicts: true, absorbSourceProposalId: absorbingSourceId };
+        // A create/edit changes records, then the one canonical replay materializes the result.
+        // For an edit the old snapshot stays in storage but leaves the applied set; no source is
+        // mutated, absorbed, deleted or restored later.
         try {
-            await global.ProposalManager?.applyProposal?.(proposalId, applyOptions);
-            // Refresh the derived layers (corridor cross-sections, parcel styles, structure
-            // layers) the same way the panel's apply button does — the manager alone doesn't.
+            const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
+            if (typeof global.setProposalApplied === 'function') global.setProposalApplied(stored, true);
+            else stored.applied = true;
+            global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
+            global.proposalStorage?.save?.();
+            await global.ProposalManager?.rebuildAppliedFabric?.();
             try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
         } catch (error) {
-            console.warn('[ProposalEditor] Auto-apply after instant create failed; object stays parked', error);
+            console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
         }
-        // Rebuilding from a LOCAL object absorbs it (same rule as the create dialog): exactly one
-        // thing remains on the map and in the list. Minted sources are immutable and stay behind.
-        let absorbedSource = false;
-        try {
-            const absorbedSourceId = absorbingSourceId;
-            const sourceRecord = absorbedSourceId ? global.proposalStorage?.getProposal?.(absorbedSourceId) : null;
-            if (sourceRecord && !(typeof global.isProposalMinted === 'function' && global.isProposalMinted(sourceRecord))) {
-                absorbedSource = true;
-                if (typeof global.isProposalApplied === 'function' && global.isProposalApplied(sourceRecord)) {
-                    await global.ProposalManager.unapplyProposal(absorbedSourceId, { skipConfirm: true, skipRestoreSource: true });
-                }
-                global.proposalStorage.removeProposal(absorbedSourceId);
-                const storedReplacement = global.proposalStorage.getProposal(proposalId);
-                if (storedReplacement) {
-                    delete storedReplacement.replacementLifecycle;
-                    delete storedReplacement.supersedesProposalIds;
-                    // One-jump undo: remember the ORIGINAL object this edit chain started from
-                    // (an earlier snapshot is carried forward), so Delete can offer to restore it.
-                    try {
-                        const snapshot = JSON.parse(JSON.stringify(sourceRecord.revertSnapshot || sourceRecord));
-                        ['revertSnapshot', 'childParcelIds', 'replacementLifecycle', 'supersedesProposalIds', 'proposalDraftId', 'acceptedParcelIds', 'ownerAcceptances'].forEach(key => delete snapshot[key]);
-                        snapshot.applied = false;
-                        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'].forEach(kind => {
-                            if (snapshot[kind] && typeof snapshot[kind] === 'object') {
-                                snapshot[kind].applied = false;
-                                if (Array.isArray(snapshot[kind].childParcelIds)) snapshot[kind].childParcelIds = [];
-                            }
-                        });
-                        storedReplacement.revertSnapshot = snapshot;
-                    } catch (_) { }
-                    if (typeof global.proposalStorage._indexProposal === 'function') global.proposalStorage._indexProposal(storedReplacement);
-                    if (typeof global.proposalStorage.save === 'function') global.proposalStorage.save();
-                }
-                try { global.ProposalManager._refreshUIAfterProposalChange?.(storedReplacement); } catch (_) { }
-            }
-        } catch (absorbError) {
-            console.warn('[ProposalEditor] Could not absorb the source object', absorbError);
-        }
-        // A rebuild of an existing local object reads as an edit to the user, so say exactly that.
-        if (absorbedSource && typeof global.showEphemeralMessage === 'function') {
+        if ((proposal.sourceProposalId || proposal.replacementOfProposalId)
+            && typeof global.showEphemeralMessage === 'function') {
             global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
 
@@ -1544,46 +1320,12 @@
             }
         } catch (_) { }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }
-        try { if (typeof global.enableShowProposalsMode === 'function') global.enableShowProposalsMode(); } catch (_) { }
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide
         // it; the object's own details panel opens collapsed instead.
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         global.__openProposalDetailsCollapsed = true;
         try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
         return proposalId;
-    }
-
-    // Undo an edit chain in one jump: delete the replacement and bring its remembered original
-    // back onto the map (e.g. the proposal originally loaded from a shared URL).
-    async function revertProposalToSnapshot(proposalIdOrKey) {
-        const record = proposalById(proposalIdOrKey);
-        const snapshot = record?.revertSnapshot;
-        if (!record || !snapshot) return false;
-        const replacementKey = record.proposalId || proposalIdOrKey;
-        try { await global.ProposalManager?.unapplyProposal?.(replacementKey, { skipConfirm: true }); } catch (_) { }
-        try { global.proposalStorage.removeProposal(replacementKey); } catch (_) { }
-        const restored = JSON.parse(JSON.stringify(snapshot));
-        const restoredId = global.proposalStorage.addProposal(restored);
-        if (!restoredId) {
-            if (typeof global.updateStatus === 'function') global.updateStatus(tDraft('proposalDrafts.revertFailed', 'Could not restore the previous version.'));
-            return false;
-        }
-        try { global.ProposalManager?._linkProposalToAncestors?.(restoredId, restored.parentParcelIds || []); } catch (_) { }
-        try {
-            const isRoad = restored.goal === 'road-track' || !!restored.roadProposal;
-            await global.ProposalManager?.applyProposal?.(restoredId, isRoad
-                ? { applyAnyway: true, suppressMissingParentAlerts: true }
-                : { autoParkConflicts: true });
-            try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage.getProposal(restoredId)); } catch (_) { }
-        } catch (error) {
-            console.warn('[ProposalEditor] Restored proposal could not be re-applied', error);
-        }
-        global.__openProposalDetailsCollapsed = true;
-        try { global.selectAndHighlightProposal?.(restoredId, (restored.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
-        if (typeof global.showEphemeralMessage === 'function') {
-            global.showEphemeralMessage(tDraft('proposalDrafts.reverted', 'Restored the previous version.'), 4000, 'success');
-        }
-        return restoredId;
     }
 
     function payloadTypology(draft) {
@@ -1726,7 +1468,6 @@
     global.editProposalGeometry = editProposalGeometry;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;
-    global.revertProposalToSnapshot = revertProposalToSnapshot;
     global.instantCreateStructureFromSelection = instantCreateStructureFromSelection;
     global.getProposalEditCapability = getProposalEditCapability;
     global.createNewProposalDraft = createNewProposalDraft;

@@ -354,10 +354,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(42); // +cadastre_parcel_ids, +ownership_flow, +cadastre_frame, +epoch_year
+        expect(insertParams).toHaveLength(37); // main's 36 + epoch_year
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
-        expect(JSON.parse(insertParams[26])).toEqual({ width: 6 });
-        expect(JSON.parse(insertParams[38])).not.toHaveProperty('applied');
+        expect(JSON.parse(insertParams[25])).toEqual({ width: 6 });
+        expect(JSON.parse(insertParams[33])).not.toHaveProperty('applied');
     });
 
     it('derives Active lifecycle for an older client that sends a legacy application status', async () => {
@@ -382,22 +382,49 @@ describe('POST /proposals', () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('persists cadastreParcelIds — the base parcels a proposal covers', async () => {
-        // Stored alongside parentParcelIds, never instead of it. Cadastral ids are the same on every
-        // machine, unlike the derived ids parentParcelIds may hold. See rethink-proposals.md.
+    it('persists flat cadastral parent declarations unchanged', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({
-                parentParcelIds: ['HR-339270-823/1#p-road-2'],
+                parentParcelIds: ['HR-339270-823/1'],
                 cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2']
             }));
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1#p-road-2']));
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1']));
         expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
+    });
+
+    it('rejects derived parent declarations instead of flattening them live', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: ['HR-339270-823/1#p-road-2'],
+                cadastreParcelIds: ['HR-339270-823/1']
+            }));
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/only base cadastral ids/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('rejects derived nested and legacy parent declarations too', async () => {
+        const nested = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: ['HR-339270-823/1'],
+                roadProposal: { parentParcelIds: ['HR-339270-823/1#c-road-1'] }
+            }));
+        expect(nested.status).toBe(400);
+
+        const legacy = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ parentParcelIds: ['HR-339270-824_proposal_9'] }));
+        expect(legacy.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
     it('rejects a malformed cadastreParcelIds payload', async () => {
@@ -426,11 +453,11 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         // cededM2 is normalized to whole m² by the validator.
-        expect(JSON.parse(insertParams[39])).toEqual([
+        expect(JSON.parse(insertParams[34])).toEqual([
             { parcelId: 'HR-339270-823/1', cededM2: 1700, destination: 'public' },
             { parcelId: 'HR-339270-823/2', cededM2: 15, destination: 'public' }
         ]);
-        expect(JSON.parse(insertParams[40])).toEqual({ capturedAt: '2026-08-02T10:00:00.000Z' });
+        expect(JSON.parse(insertParams[35])).toEqual({ capturedAt: '2026-08-02T10:00:00.000Z' });
     });
 
     it('rejects an ownership flow with an unknown destination', async () => {
@@ -470,18 +497,16 @@ describe('POST /proposals', () => {
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBeNull();
         expect(insertParams[22]).toBeNull(); // cadastre_parcel_ids — absent from this payload
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-child-1']));
-        expect(insertParams[24]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[25]).toBe(JSON.stringify({ alice: 'accepted' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[27]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[29]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[32]).toBe(JSON.stringify(['parent-1']));
-        expect(insertParams[33]).toBeNull();
-        expect(insertParams[34]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[35]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[36]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[29]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[30]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[31]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(pool.getCalls()[0].sql).not.toMatch(/descendant_parcel_ids|parent_features|child_features|parent_proposal_ids|child_proposal_ids/);
     });
 
     it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
@@ -578,17 +603,17 @@ describe('POST /proposals', () => {
 
         const invalidArrayEntry = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ parentProposals: ['parent-1', ''] }));
+            .send(validProposalBody({ parentParcelIds: ['HR-1', ''] }));
 
         expect(invalidArrayEntry.status).toBe(400);
-        expect(invalidArrayEntry.body).toEqual({ error: 'parentProposals must not contain empty values.' });
+        expect(invalidArrayEntry.body).toEqual({ error: 'parentParcelIds must not contain empty values.' });
 
         const invalidControlChars = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ childProposals: ['child-1', 'bad\u0000child'] }));
+            .send(validProposalBody({ cadastreParcelIds: ['HR-1', 'bad\u0000parcel'] }));
 
         expect(invalidControlChars.status).toBe(400);
-        expect(invalidControlChars.body).toEqual({ error: 'childProposals contains invalid control characters.' });
+        expect(invalidControlChars.body).toEqual({ error: 'cadastreParcelIds contains invalid control characters.' });
     });
 
     it('rejects overlong and control-character identifier aliases', async () => {
@@ -635,7 +660,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[36]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[31]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 
@@ -757,9 +782,9 @@ describe('GET /proposals/:id', () => {
         expect(res.body.roadProposal.definition.polygon).toBeDefined();
         expect(res.body.roadProposal.definition.polygon.type).toBe('Polygon');
         expect(res.body.roadProposal.definition.points).toHaveLength(3);
-        expect(res.body.roadProposal.childParcelIds).toEqual(splitChildIds);
+        expect(res.body.roadProposal.childParcelIds).toBeUndefined();
         expect(res.body.parentParcelIds).toEqual(splitParcelIds);
-        expect(res.body.childParcelIds).toEqual(splitChildIds);
+        expect(res.body.childParcelIds).toBeUndefined();
     });
 
     it('returns row-backed proposal data when proposal_data is null', async () => {
@@ -786,14 +811,14 @@ describe('GET /proposals/:id', () => {
             proposalId: 'test-proposal-001',
             roadProposal: { width: 5 },
             parentParcelIds: ['HR-1'],
-            childParcelIds: ['HR-2'],
-            parentProposals: ['parent-1'],
-            childProposals: ['child-1'],
             lens: ['planning'],
             bounds: [1, 2, 3, 4],
             onchain: { txHash: '0x1' },
             onchainData: { txHash: '0x1' }
         });
+        expect(res.body).not.toHaveProperty('childParcelIds');
+        expect(res.body).not.toHaveProperty('parentProposals');
+        expect(res.body).not.toHaveProperty('childProposals');
     });
 
     it('falls back to proposal_data fields when db columns are null', async () => {
@@ -876,20 +901,20 @@ describe('GET /proposals/:id', () => {
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
             parentParcelIds: ['PARENT'],
-            childParcelIds: ['CHILD'],
             acceptedParcelIds: ['ACCEPTED'],
             ownerAcceptances: { alice: true },
             roadProposal: { width: 4 },
             buildingProposal: { height: 8 },
             structureProposal: { floors: 2 },
             reparcellization: { merge: true },
-            parentProposals: ['parent-proposal'],
-            childProposals: ['child-proposal'],
             lens: ['mobility'],
             bounds: [1, 2, 3, 4],
             onchain: { txHash: '0xabc' },
             onchainData: { txHash: '0xabc' }
         });
+        expect(res.body).not.toHaveProperty('childParcelIds');
+        expect(res.body).not.toHaveProperty('parentProposals');
+        expect(res.body).not.toHaveProperty('childProposals');
     });
 
     it('preserves explicit zero and empty db values when reading a proposal', async () => {
@@ -1095,6 +1120,7 @@ describe('GET /proposals/counts', () => {
         expect(res.body.counts).toEqual({ 'HR-1-100': 2, 'HR-1-101': 1 }); // 102 absent → 0
         const call = pool.getCalls()[0];
         expect(call.sql).toMatch(/ancestor_parcel_ids \?\| \$1/);
+        expect(call.sql).not.toContain('descendant_parcel_ids');
         expect(call.params[0]).toEqual(['HR-1-100', 'HR-1-101', 'HR-1-102']);
         expect(call.params).toContain('zagreb'); // normalized city
     });
@@ -1376,7 +1402,7 @@ describe('GET /proposals?parcel_id=', () => {
         expect(res.body.proposals[0].offer).toBe(1.5);
         expect(res.body.proposals[0].offerCurrency).toBe('ETH');
         expect(res.body.proposals[0].parentParcelIds).toEqual(['HR-1234-5678']);
-        expect(res.body.proposals[0].childParcelIds).toEqual(['HR-1234-9999']);
+        expect(res.body.proposals[0].childParcelIds).toBeUndefined();
         expect(pool.getCalls()[0].params[0]).toBe('buenos_aires');
     });
 
@@ -1401,9 +1427,9 @@ describe('GET /proposals?parcel_id=', () => {
             proposalId: 'db-only-id',
             city: 'zagreb',
             title: 'Test Proposal Title',
-            parentParcelIds: ['HR-1234-5678'],
-            childParcelIds: null
+            parentParcelIds: ['HR-1234-5678']
         });
+        expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });
 
     it('finds proposals by parcel containment', async () => {
@@ -1419,7 +1445,7 @@ describe('GET /proposals?parcel_id=', () => {
 
         const call = pool.getCalls()[0];
         expect(call.sql).toContain('ancestor_parcel_ids @>');
-        expect(call.sql).toContain('descendant_parcel_ids @>');
+        expect(call.sql).not.toContain('descendant_parcel_ids @>');
         expect(call.params).toContain(JSON.stringify(['HR-1234-5678']));
     });
 
@@ -1462,9 +1488,9 @@ describe('GET /proposals?parcel_id=', () => {
             id: 77,
             proposalId: 'row-only',
             title: 'Row title only',
-            parentParcelIds: ['HR-1234-5678'],
-            childParcelIds: ['HR-9999-0001']
+            parentParcelIds: ['HR-1234-5678']
         });
+        expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });
 
     it('returns empty proposals with preserved raw parcel ids when an unknown city code is used', async () => {
@@ -1509,9 +1535,9 @@ describe('GET /proposals?parcel_id=', () => {
             proposalId: 'zero-values',
             offer: 0,
             budget: 0,
-            parentParcelIds: [],
-            childParcelIds: []
+            parentParcelIds: []
         });
+        expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });
 });
 

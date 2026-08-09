@@ -38,14 +38,15 @@ describe('road drawing finalization contract', () => {
         expect(finish).not.toContain('showStyledChoice(');
     });
 
-    it('resolves changed-width impacts when the cross-section edit is applied', () => {
+    it('commits changed-width authored tunnels without running demolition scans', () => {
         const validation = sourceSection(
             drawingSource,
             'async function validateRoadDrawingProfileImpacts()',
             '// Locked parcels tracking'
         );
         expect(validation).toContain('ensureBuildingTunnelsForSegments(');
-        expect(validation).toContain('{ promptForMissing: true }');
+        expect(validation).not.toContain('resolveBuildingObstacles(');
+        expect(validation).not.toContain('demolishedBuildings');
         expect(editorSource).toContain('await window.validateRoadDrawingProfileImpacts();');
     });
 
@@ -55,28 +56,59 @@ describe('road drawing finalization contract', () => {
         expect(drawingSource).toContain("updateStatus('Wait for the current segment to finish validating.');");
     });
 
-    it('drops stale tunnel edges before a moved road derives already-tunnelled buildings', () => {
+    it('turns a geometry edit into a fresh snapshot and one canonical replay', () => {
         const edit = sourceSection(
             drawingSource,
             'async function runLocalCorridorGeometryUpdate',
-            '// Merge-on-connect works on drags too'
+            '// ---------------------------------------------------------------------------\n// Snapping'
         );
-        const reconcile = edit.indexOf('definition.tunnels = retainLiveCorridorTunnelRecords(');
-        const deriveTunnelEdgeKeys = edit.indexOf('const tunnelEdgeKeys = new Set();');
-        expect(reconcile).toBeGreaterThanOrEqual(0);
-        expect(deriveTunnelEdgeKeys).toBeGreaterThan(reconcile);
-        // The tunnelled-building set must come from the PRE-EDIT snapshot. retainLiveCorridorTunnelRecords
-        // has already dropped the record whose edge key the drag changed, so `definition.tunnels` is empty
-        // exactly when the building is still tunnelled — deriving from it re-prompts and re-splices portals.
-        // (This used to be a blanket ban on the `(record?.buildingIds || []).forEach` idiom, which the
-        // correct snapshot-based derivation also uses, so it failed on the very fix it was guarding.)
-        const alreadyTunnelled = sourceSection(
-            edit,
-            'const alreadyTunnelledIds = new Set();',
-            '(definition.demolishedBuildings || []).forEach'
+        expect(edit).toContain('makeFreshRoadSnapshot(sourceProposal, definition');
+        expect(edit).toContain('proposalStorage.addProposal(replacement)');
+        expect(edit).toContain('setProposalApplied(sourceProposal, false');
+        expect(edit).toContain('ProposalManager.rebuildAppliedFabric({ _fabricQueue: options._fabricQueue === true })');
+        // Ruling 2026-08-07: an authored disconnect SPLITS into one proposal per connected
+        // component — via the tested pure engine, with per-stretch metadata carried, still
+        // inside the same single transaction and single replay.
+        expect(edit).toContain('corridorComponents');
+        expect(edit).toContain('componentDefinitions');
+        expect(edit).not.toContain('unapplyProposal(');
+        expect(edit).not.toContain('createRoadProposalFromComponent');
+        expect(edit).not.toContain('corridorConnectedComponents');
+        expect(edit).not.toContain('weldNearbyVertices');
+        expect(edit).not.toContain('healNearMissJunctions');
+        expect(edit).not.toContain('demolishedBuildings');
+        expect(edit).not.toContain('resolveBuildingObstacles(');
+    });
+
+    it('serializes the record flip with replay and deletes a failed replacement record', () => {
+        const wrapper = sourceSection(
+            drawingSource,
+            'async function updateLocalCorridorGeometry',
+            'async function runLocalCorridorGeometryUpdate'
         );
-        expect(alreadyTunnelled).toContain('(definitionSnapshot.tunnels || []).forEach');
-        expect(alreadyTunnelled).not.toContain('(definition.tunnels');
-        expect(edit).toContain('.filter(hit => !fullyDemolishedIds.has(String(hit.id)))');
+        const edit = sourceSection(
+            drawingSource,
+            'async function runLocalCorridorGeometryUpdate',
+            '// ---------------------------------------------------------------------------\n// Snapping'
+        );
+
+        expect(wrapper).toContain('ProposalManager._enqueueFabricChange');
+        expect(wrapper).toContain('proposalStorage.beginBatch()');
+        expect(wrapper).toContain('proposalStorage.endBatch()');
+        // A failed replay deletes EVERY minted replacement (a split mints several).
+        expect(edit).toContain('replacementIds.forEach(id => { try { proposalStorage.removeProposal(id); }');
+        expect(edit).toContain('_fabricQueue: options._fabricQueue === true');
+    });
+
+    it('never strips click handlers from the live parcel tessellation while drawing', () => {
+        const toggle = sourceSection(
+            drawingSource,
+            'function toggleRoadDrawTool()',
+            'function handleRoadKeydown(e)'
+        );
+
+        expect(toggle).not.toContain("layer.off('click')");
+        expect(drawingSource).not.toContain('restoreParcelClickInteractivity');
+        expect(drawingSource).toContain('click-time drawing-mode guard');
     });
 });

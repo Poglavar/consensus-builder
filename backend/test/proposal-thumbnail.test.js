@@ -187,13 +187,13 @@ describe('resolveProposalPolygon', () => {
     it('frames a road proposal on its corridor, pinned to the corridor only', () => {
         const resolved = resolveProposalPolygon({
             goal: 'road-track',
-            roadProposal: { polygon: { type: 'Polygon', coordinates: ZAGREB_SQUARE } }
+            roadProposal: { definition: { polygon: { type: 'Polygon', coordinates: ZAGREB_SQUARE } } }
         });
         expect(resolved.polygon).toEqual(ZAGREB_SQUARE);
         expect(resolved.fitToPolygonOnly).toBe(true);
     });
 
-    it('buffers a road centerline when the corridor polygon was never stored', () => {
+    it('does not invent a second footprint when the canonical corridor polygon is absent', () => {
         const resolved = resolveProposalPolygon({
             goal: 'road-track',
             roadProposal: {
@@ -203,24 +203,19 @@ describe('resolveProposalPolygon', () => {
                 }
             }
         });
-        expect(resolved.polygon).toBeTruthy();
-        expect(resolved.fitToPolygonOnly).toBe(true);
-        expect(resolved.polygon[0].length).toBeGreaterThan(3);
+        expect(resolved.polygon).toBeNull();
     });
 
-    it('still frames an old road proposal that has a roadProposal but no goal key', () => {
-        // These exist in the wild (type 'road'/'Track', no `goal`). The browser only matched the exact
-        // key 'road-track', so it silently drew nothing for them.
+    it('frames a canonical road proposal even when it has no goal key', () => {
         const resolved = resolveProposalPolygon({
             type: 'road',
             roadProposal: {
                 definition: {
-                    width: 7.5,
-                    points: [{ lat: 45.8100, lng: 15.9770 }, { lat: 45.8104, lng: 15.9775 }]
+                    polygon: { type: 'Polygon', coordinates: ZAGREB_SQUARE }
                 }
             }
         });
-        expect(resolved.polygon).toBeTruthy();
+        expect(resolved.polygon).toEqual(ZAGREB_SQUARE);
         expect(resolved.fitToPolygonOnly).toBe(true);
     });
 

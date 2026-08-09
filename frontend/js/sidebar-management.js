@@ -690,7 +690,6 @@ function updateBlockButtonStates() {
     const singleBuildingButton = document.getElementById('singleBuilding');
     const parkButton = document.getElementById('park');
     const squareButton = document.getElementById('square');
-    const breakBlockUpButton = document.getElementById('breakBlockUpButton');
 
     // Basic block operation buttons are always available; other buttons are conditionally enabled below
     clearBlocksButton.disabled = false;
@@ -797,17 +796,6 @@ function updateBlockButtonStates() {
         } else {
             buildingsButton.disabled = true;
             buildingsButton.classList.add('disabled');
-        }
-    }
-
-    // Enable Break Block Up only if a block is selected
-    if (breakBlockUpButton) {
-        if (typeof selectedBlockName !== 'undefined' && selectedBlockName) {
-            breakBlockUpButton.disabled = false;
-            breakBlockUpButton.classList.remove('disabled');
-        } else {
-            breakBlockUpButton.disabled = true;
-            breakBlockUpButton.classList.add('disabled');
         }
     }
 

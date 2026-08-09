@@ -3075,7 +3075,7 @@ function getParcelProposalCount(parcelId) {
         return 0;
     }
 
-    const proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false });
+    const proposals = proposalStorage.getProposalsForParcel(parcelId);
     return proposals.length;
 }
 

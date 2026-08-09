@@ -68,6 +68,8 @@
         if (truthy('roadDrawingMode')) return true;
         if (truthy('cadastreViewActive')) return true;
         try { if (global.proposalListBrowseMode) return true; } catch (_) { }
+        // Share-plan panel open: the map is pan/zoom only.
+        try { if (global.sharePlanMode) return true; } catch (_) { }
         if (activeFn('isParcelDrawingModeActive')) return true;
         if (activeFn('isStructureGeometryEditorActive')) return true;
         try { if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return true; } catch (_) { }

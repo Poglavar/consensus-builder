@@ -52,7 +52,6 @@
             PersistentStorage.removeItem(key);
         });
 
-        PersistentStorage.removeItem('modified_parcels');
 
         // Final message shown after clearing
         const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
@@ -204,4 +203,3 @@
     global.clearLocalParcelData = clearLocalParcelData;
     global.handleParcelLayerChange = handleParcelLayerChange;
 })(typeof window !== 'undefined' ? window : globalThis);
-

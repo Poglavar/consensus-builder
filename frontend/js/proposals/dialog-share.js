@@ -614,102 +614,52 @@ function getSharedInspectorI18nHelper() {
     return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
-function showNonOriginalParcelShareBlockedModal(proposal, parcelList) {
-    const t = getProposalI18nHelper();
-    const tShare = getShareI18nHelper();
+// --- Share Plan panel ---------------------------------------------------------------------------
+// The share-plan UI is a right-docked, full-height panel (like the proposals list), NOT a modal:
+// the map stays visible so the plan can be read spatially while it is being composed. While the
+// panel is open the app is in share-plan mode (window.sharePlanMode): the map is pan/zoom ONLY —
+// parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
+// lockdown via body.share-plan-mode). Every CHECKED proposal is painted on the map in its row's
+// colour so the exact content of the shared plan is visible at a glance; hovering or clicking a
+// row outlines that proposal (click also frames it). No interaction opens details.
 
-    const pairs = collectParcelProposalPairs(parcelList);
+const SHARE_PLAN_COLORS = [
+    '#e6194B', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4',
+    '#f032e6', '#bfef45', '#469990', '#9A6324', '#800000', '#000075'
+];
 
-    const container = document.createElement('div');
-    const message = document.createElement('p');
-    message.setAttribute('data-i18n-key', 'modal.roadWidth.share.ancestorNote');
-    message.textContent = tShare('ancestorNote', 'Note: this proposal includes parcels created by other proposals. For it to be applied on a target map the ancestor proposals will have to be applied first. Instead of sharing this one proposal you might want to share the entire plan using "Share entire plan" button in the Proposals section of the sidebar. The parcel list:');
-    container.appendChild(message);
+// Hovering a row answers two questions, and they have two different answers: WHERE the proposal
+// stands (the parcels it occupies) and WHAT it is (its own body — the building footprint, the
+// corridor surface, the park). One colour for both made a hovered building indistinguishable from
+// its neighbours' boundaries, so the body gets its own colour and is drawn last, filled, on top.
+const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
+const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
 
-    const listWrapper = document.createElement('div');
-    listWrapper.style.maxHeight = '240px';
-    listWrapper.style.overflowY = 'auto';
-    listWrapper.style.border = '1px solid #d8ddf0';
-    listWrapper.style.borderRadius = '8px';
-    listWrapper.style.padding = '8px';
-    listWrapper.style.background = '#f9fafb';
+let _sharePlanPanelState = null; // { root, overlayGroup, onKeyDown }
 
-    // Create table with two columns
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-    table.style.margin = '0';
-
-    // Table header
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    headerRow.style.borderBottom = '1px solid #d8ddf0';
-
-    const headerParcel = document.createElement('th');
-    headerParcel.setAttribute('data-i18n-key', 'modal.roadWidth.share.parcelIdHeader');
-    headerParcel.textContent = tShare('parcelIdHeader', 'Parcel ID');
-    headerParcel.style.padding = '6px 8px';
-    headerParcel.style.textAlign = 'left';
-    headerParcel.style.fontWeight = '600';
-    headerRow.appendChild(headerParcel);
-
-    const headerProposal = document.createElement('th');
-    headerProposal.setAttribute('data-i18n-key', 'modal.roadWidth.share.proposalIdHeader');
-    headerProposal.textContent = tShare('proposalIdHeader', 'Proposal ID');
-    headerProposal.style.padding = '6px 8px';
-    headerProposal.style.textAlign = 'left';
-    headerProposal.style.fontWeight = '600';
-    headerRow.appendChild(headerProposal);
-
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    // Table body
-    const tbody = document.createElement('tbody');
-    pairs.forEach(pair => {
-        const row = document.createElement('tr');
-        row.style.borderBottom = '1px solid #f0f0f0';
-
-        const cellParcel = document.createElement('td');
-        cellParcel.textContent = pair.parcelId;
-        cellParcel.style.padding = '6px 8px';
-        row.appendChild(cellParcel);
-
-        const cellProposal = document.createElement('td');
-        cellProposal.textContent = pair.proposalId || '?';
-        cellProposal.style.padding = '6px 8px';
-        row.appendChild(cellProposal);
-
-        tbody.appendChild(row);
-    });
-    table.appendChild(tbody);
-
-    listWrapper.appendChild(table);
-    container.appendChild(listWrapper);
-
-    // Apply translations
-    if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        window.i18n.applyTranslations(container);
-    }
-
-    const modal = showSimpleShareModal({
-        title: tShare('title', 'Share Proposal'),
-        body: container,
-        actions: [
-            {
-                label: tShare('ancestorUploadButton', 'Upload'),
-                primary: true,
-                onClick: () => {
-                    if (proposal) {
-                        showUploadProposalModal(proposal);
-                    }
-                }
-            }
-        ]
-    });
+function sharePlanColorForIndex(index) {
+    const n = SHARE_PLAN_COLORS.length;
+    return SHARE_PLAN_COLORS[((index % n) + n) % n];
 }
 
-function showSharePlanModal() {
+function closeSharePlanPanel() {
+    const state = _sharePlanPanelState;
+    _sharePlanPanelState = null;
+    if (typeof window !== 'undefined') window.sharePlanMode = false;
+    try { document.body.classList.remove('share-plan-mode'); } catch (_) { }
+    if (state) {
+        try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
+        try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
+        try {
+            if (state.overlayGroup && typeof map !== 'undefined' && map && typeof map.removeLayer === 'function') {
+                map.removeLayer(state.overlayGroup);
+            }
+        } catch (_) { }
+    }
+    try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
+}
+
+function showSharePlanPanel() {
     try {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
@@ -735,14 +685,209 @@ function showSharePlanModal() {
             return;
         }
 
+        // Reopening replaces any previous instance (and resets a stale lockdown).
+        closeSharePlanPanel();
+
+        // The coloured plan overlay is a 2D map layer — leave model/photo view before the mode
+        // switches lock, otherwise the plan would be invisible AND the way back unreachable.
+        try {
+            if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
+                && typeof window.exitThreeMode === 'function') {
+                window.exitThreeMode();
+            }
+        } catch (_) { }
+
+        // Leave any proposal-list/browse/selection surface; the share panel owns the screen now.
+        try { if (typeof closeProposalList === 'function') closeProposalList(); } catch (_) { }
+        try { if (typeof resetParcelSelectionForProposalListInteraction === 'function') resetParcelSelectionForProposalListInteraction(); } catch (_) { }
+        try { if (typeof clearProposalInfoHoverOverlay === 'function') clearProposalInfoHoverOverlay(); } catch (_) { }
+
+        window.sharePlanMode = true;
+        try { document.body.classList.add('share-plan-mode'); } catch (_) { }
+        // Fold the sidebar away so the (locked) chrome doesn't cover the map — the same move the
+        // proposals list makes when it opens.
+        try {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') toggleSidebar();
+        } catch (_) { }
+
         const selected = new Set(proposalsByHash.keys());
         const uploadState = new Map(); // key -> { uploaded, uploading, serverId }
         const rowControls = new Map();
 
+        const colorByKey = new Map();
+        Array.from(proposalsByHash.keys()).forEach((key, index) => {
+            colorByKey.set(key, sharePlanColorForIndex(index));
+        });
+
+        // Panel skeleton: header + body; the body holds count/status, the row list (stretches),
+        // and the share-link area pinned at the bottom.
+        const panelRoot = document.createElement('div');
+        panelRoot.className = 'share-plan-panel';
+        const panelContent = document.createElement('div');
+        panelContent.className = 'share-plan-panel-content';
+        panelRoot.appendChild(panelContent);
+
+        const panelHeader = document.createElement('div');
+        panelHeader.className = 'share-plan-panel-header';
+        const panelTitle = document.createElement('h2');
+        panelTitle.textContent = tShare('plan.title', 'Share Plan');
+        const panelCloseBtn = document.createElement('button');
+        panelCloseBtn.type = 'button';
+        panelCloseBtn.className = 'close-circle-btn close-circle-btn--lg';
+        panelCloseBtn.setAttribute('aria-label', t('modal.common.close', 'Close'));
+        panelCloseBtn.innerHTML = '&times;';
+        panelCloseBtn.addEventListener('click', () => closeSharePlanPanel());
+        panelHeader.append(panelTitle, panelCloseBtn);
+        panelContent.appendChild(panelHeader);
+
         const container = document.createElement('div');
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.gap = '12px';
+        container.className = 'share-plan-panel-body';
+        panelContent.appendChild(container);
+
+        // One coloured, non-interactive map sublayer per CHECKED proposal, keyed by proposal.
+        const overlayGroup = (typeof L !== 'undefined' && typeof map !== 'undefined' && map)
+            ? L.layerGroup().addTo(map)
+            : null;
+        const overlayByKey = new Map();
+
+        const proposalFeaturesFor = (proposal) => {
+            // Live CHILDREN first — the applied footprint (a road's corridor pieces, a structure's
+            // ground, a building's parcel). The shared collectProposalHighlightFeatures helper only
+            // resolves road children and otherwise falls back to parentParcelIds, but parents are
+            // hidden once a proposal is applied, so structures/buildings would paint nothing.
+            const ids = new Set();
+            const push = (arr) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach(id => { if (id != null && String(id)) ids.add(String(id)); });
+            };
+            if (proposal) {
+                push(proposal.childParcelIds);
+                push(proposal.roadProposal && proposal.roadProposal.childParcelIds);
+                push(proposal.buildingProposal && proposal.buildingProposal.childParcelIds);
+                push(proposal.structureProposal && proposal.structureProposal.childParcelIds);
+                push(proposal.reparcellization && proposal.reparcellization.childParcelIds);
+                push(proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds);
+            }
+            const features = [];
+            ids.forEach(id => {
+                try {
+                    const feature = (typeof getParcelFeatureForHighlight === 'function')
+                        ? getParcelFeatureForHighlight(id, proposal)
+                        : null;
+                    if (feature && feature.geometry) features.push(feature);
+                } catch (_) { }
+            });
+            if (features.length) return features;
+            try {
+                if (typeof collectProposalHighlightFeatures === 'function') {
+                    return (collectProposalHighlightFeatures(proposal) || []).filter(f => f && f.geometry);
+                }
+            } catch (_) { }
+            return [];
+        };
+
+        // The proposal's OWN geometry, independent of the parcels it sits on: a building's
+        // footprints, a corridor surface, a park/square polygon, a readjustment's plots. This is
+        // the shape that names the row — without it, hovering "zgrada M1-11" outlined a plot that
+        // looked like every other plot on the block.
+        const proposalBodyFeaturesFor = (proposal) => {
+            if (typeof collectProposalFeatureSets !== 'function') return [];
+            try {
+                const sets = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }) || {};
+                return (sets.primaryFeatures || []).filter(feature => feature && feature.geometry);
+            } catch (error) {
+                console.warn('share plan: could not resolve proposal body', error);
+                return [];
+            }
+        };
+
+        // The ground the proposal STANDS ON, out of every parcel it minted — a remainder handed
+        // back to the host is not this proposal's ground, and it can be twenty times its size.
+        const groundFeaturesFor = (parcelFeatures, bodyFeatures) => {
+            const api = (typeof window !== 'undefined') ? window.__hoverGround : null;
+            if (!api || typeof api.groundUnderBody !== 'function' || typeof turf === 'undefined') return parcelFeatures;
+            return api.groundUnderBody(parcelFeatures, bodyFeatures, {
+                intersectionArea: (a, b) => {
+                    try { const hit = turf.intersect(a, b); return hit ? (turf.area(hit) || 0) : 0; } catch (_) { return 0; }
+                }
+            });
+        };
+
+        const syncPlanOverlay = (key) => {
+            if (!overlayGroup) return;
+            const existing = overlayByKey.get(key);
+            if (existing) {
+                try { overlayGroup.removeLayer(existing); } catch (_) { }
+                overlayByKey.delete(key);
+            }
+            if (!selected.has(key)) return;
+            const proposal = proposalsByHash.get(key);
+            const features = groundFeaturesFor(proposalFeaturesFor(proposal), proposalBodyFeaturesFor(proposal));
+            if (!features.length) return;
+            try {
+                const color = colorByKey.get(key) || '#4363d8';
+                const layer = L.geoJSON({ type: 'FeatureCollection', features }, {
+                    style: { color, weight: 2, fillColor: color, fillOpacity: 0.35 },
+                    interactive: false
+                });
+                overlayGroup.addLayer(layer);
+                overlayByKey.set(key, layer);
+            } catch (error) {
+                console.warn('share plan: could not paint proposal', key, error);
+            }
+        };
+
+        const highlightRowProposal = (key) => {
+            const proposal = proposalsByHash.get(key);
+            if (!proposal) return;
+            if (typeof highlightFeatureGroupsForHover !== 'function') return;
+            // Same live-children resolver as the paint, so hover outlines exactly what is painted.
+            const bodyFeatures = proposalBodyFeaturesFor(proposal);
+            const parcelFeatures = groundFeaturesFor(proposalFeaturesFor(proposal), bodyFeatures);
+            highlightFeatureGroupsForHover([
+                {
+                    features: parcelFeatures,
+                    color: SHARE_PLAN_HOVER_PARCEL_COLOR,
+                    weight: 6,
+                    dashArray: '10 8',
+                    showLabels: false
+                },
+                {
+                    // Last, so the body sits above the parcels rather than under them.
+                    features: bodyFeatures,
+                    color: SHARE_PLAN_HOVER_BODY_COLOR,
+                    weight: 4,
+                    dashArray: null,
+                    fillColor: SHARE_PLAN_HOVER_BODY_COLOR,
+                    fillOpacity: 0.25,
+                    showLabels: false
+                }
+            ]);
+        };
+
+        const frameRowProposal = (key) => {
+            const proposal = proposalsByHash.get(key);
+            if (!proposal || typeof map === 'undefined' || !map) return;
+            let bounds = null;
+            try {
+                if (typeof resolveStandaloneProposalFocusBounds === 'function') {
+                    bounds = resolveStandaloneProposalFocusBounds(proposal);
+                }
+            } catch (_) { }
+            if (!bounds) {
+                try {
+                    const features = proposalFeaturesFor(proposal);
+                    if (features.length) bounds = L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+                } catch (_) { }
+            }
+            if (!bounds || (typeof bounds.isValid === 'function' && !bounds.isValid())) return;
+            const padding = (typeof getProposalPanelFitPadding === 'function')
+                ? getProposalPanelFitPadding(40)
+                : { paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] };
+            // animate:false — deterministic, and immune to background-tab rAF throttling.
+            try { map.fitBounds(bounds, { ...padding, maxZoom: 18, animate: false }); } catch (_) { }
+        };
 
         const totalInPlan = proposalsByHash.size;
         const countLine = document.createElement('div');
@@ -760,19 +905,11 @@ function showSharePlanModal() {
         container.appendChild(statusLine);
 
         const listWrap = document.createElement('div');
-        listWrap.style.maxHeight = '320px';
-        listWrap.style.overflowY = 'auto';
-        listWrap.style.border = '1px solid #d8ddf0';
-        listWrap.style.borderRadius = '8px';
-        listWrap.style.padding = '8px';
-        listWrap.style.background = '#f9fafb';
+        listWrap.className = 'share-plan-list';
         container.appendChild(listWrap);
 
         const shareArea = document.createElement('div');
-        shareArea.style.display = 'flex';
-        shareArea.style.flexDirection = 'column';
-        shareArea.style.gap = '8px';
-        shareArea.style.marginTop = '4px';
+        shareArea.className = 'share-plan-share-area';
 
         const linkRow = document.createElement('div');
         linkRow.style.display = 'flex';
@@ -945,18 +1082,6 @@ function showSharePlanModal() {
             statusLine.textContent = message || '';
         };
 
-        const getDescendantsInPlan = (hash) => {
-            if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findDescendantTree !== 'function') return [];
-            const nodes = ProposalManager.findDescendantTree(hash, { depthLimit: 64 }) || [];
-            return nodes.map(n => n.proposalId).filter(h => proposalsByHash.has(h));
-        };
-
-        const getAncestorsInPlan = (hash) => {
-            if (typeof ProposalManager === 'undefined' || typeof ProposalManager.findAncestorTree !== 'function') return [];
-            const nodes = ProposalManager.findAncestorTree(hash, { depthLimit: 64 }) || [];
-            return nodes.map(n => n.proposalId).filter(h => proposalsByHash.has(h));
-        };
-
         const updateShareUrl = () => {
             const hasSelection = selected.size > 0;
             if (!hasSelection) {
@@ -1027,64 +1152,30 @@ function showSharePlanModal() {
                     : tShare('plan.upload', 'Upload');
             }
             controls.checkbox.checked = selected.has(key);
+            if (controls.row) controls.row.classList.toggle('is-excluded', !selected.has(key));
         };
 
         const toggleCheckbox = (key, checked) => {
             const controls = rowControls.get(key);
             if (controls) {
                 controls.checkbox.checked = checked;
+                if (controls.row) controls.row.classList.toggle('is-excluded', !checked);
             }
         };
 
         const onCheckboxChange = (key, checked) => {
-            if (checked) {
-                const ancestors = getAncestorsInPlan(key);
-                const added = [];
-                selected.add(key);
-                ancestors.forEach(hash => {
-                    if (!selected.has(hash)) added.push(hash);
-                    selected.add(hash);
-                });
-                selected.forEach(hash => toggleCheckbox(hash, true));
-                if (added.length > 0) {
-                    const summary = added.slice(0, 5).join(', ');
-                    setStatus(tShare('plan.addedAncestors', 'Also added {{count}} ancestor proposals: {{list}}', {
-                        count: added.length,
-                        list: summary
-                    }));
-                } else {
-                    setStatus('');
-                }
-            } else {
-                const descendants = getDescendantsInPlan(key);
-                const removed = [];
-                selected.delete(key);
-                descendants.forEach(hash => {
-                    if (selected.delete(hash)) removed.push(hash);
-                });
-                selected.forEach(hash => toggleCheckbox(hash, selected.has(hash)));
-                toggleCheckbox(key, false);
-                descendants.forEach(hash => toggleCheckbox(hash, false));
-                if (removed.length > 0) {
-                    const summary = removed.slice(0, 5).join(', ');
-                    setStatus(tShare('plan.removedDescendants', 'Also removed {{count}} descendant proposals: {{list}}', {
-                        count: removed.length,
-                        list: summary
-                    }));
-                } else {
-                    setStatus('');
-                }
-            }
+            if (checked) selected.add(key);
+            else selected.delete(key);
+            toggleCheckbox(key, checked);
+            // The map mirrors the checkbox: in the plan = painted, out of the plan = unpainted.
+            syncPlanOverlay(key);
+            setStatus('');
             updateShareUrl();
         };
 
         const attachRow = (proposal, key) => {
             const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.alignItems = 'center';
-            row.style.justifyContent = 'space-between';
-            row.style.gap = '8px';
-            row.style.padding = '6px 4px';
+            row.className = 'share-plan-row';
 
             const left = document.createElement('div');
             left.style.display = 'flex';
@@ -1096,6 +1187,12 @@ function showSharePlanModal() {
             checkbox.checked = true;
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
             left.appendChild(checkbox);
+
+            // The chip carries the exact colour this proposal is painted with on the map.
+            const chip = document.createElement('span');
+            chip.className = 'share-plan-color-chip';
+            chip.style.background = colorByKey.get(key) || '#4363d8';
+            left.appendChild(chip);
 
             const title = document.createElement('div');
             title.style.display = 'flex';
@@ -1133,19 +1230,6 @@ function showSharePlanModal() {
             uploadedLabel.style.display = 'none';
 
             uploadBtn.addEventListener('click', async () => {
-                // Everything currently selected is being shared as one plan, so an ancestor inside
-                // the selection needs no upload of its own first — only an ancestor the user has
-                // unchecked (and which is not already on the server) is a real gap. Order-free, so a
-                // cyclic ancestry between two selected proposals can no longer deadlock the plan.
-                const gate = await ensureAncestorProposalsUploaded(proposal, { satisfiedBy: selected });
-                if (!gate.ok) {
-                    const missingList = gate.missing.map(entry => entry.id || (entry.hash ? entry.hash.slice(0, 8) : '?')).filter(Boolean);
-                    setStatus(tShare('plan.uploadAncestorsMissing', 'Include these ancestor proposals in the plan: {{list}}', {
-                        list: missingList.join(', ')
-                    }));
-                    return;
-                }
-
                 uploadState.set(key, { uploaded: false, uploading: true, serverId: getServerProposalId(proposal) });
                 updateRowState(key);
                 try {
@@ -1190,8 +1274,20 @@ function showSharePlanModal() {
             row.appendChild(left);
             row.appendChild(right);
 
+            // Rows are the ONLY proposal interaction in share-plan mode: hovering outlines the
+            // proposal on the map, clicking also frames it. Nothing opens details.
+            row.addEventListener('mouseenter', () => highlightRowProposal(key));
+            row.addEventListener('mouseleave', () => {
+                try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
+            });
+            row.addEventListener('click', (event) => {
+                if (event.target && event.target.closest && event.target.closest('input, button')) return;
+                highlightRowProposal(key);
+                frameRowProposal(key);
+            });
+
             listWrap.appendChild(row);
-            rowControls.set(key, { checkbox, uploadBtn, uploadedLabel, meta });
+            rowControls.set(key, { row, checkbox, chip, uploadBtn, uploadedLabel, meta });
         };
 
         proposalsByHash.forEach(attachRow);
@@ -1253,14 +1349,22 @@ function showSharePlanModal() {
             updateShareUrl();
         };
 
-        showSimpleShareModal({
-            title: tShare('plan.title', 'Share Plan'),
-            body: container
-        });
+        document.body.appendChild(panelRoot);
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') closeSharePlanPanel();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        _sharePlanPanelState = { root: panelRoot, overlayGroup, onKeyDown };
+
+        // Paint every (initially checked) proposal, then frame the whole plan beside the panel.
+        proposalsByHash.forEach((_, key) => syncPlanOverlay(key));
+        try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
 
         initializeUploadChecks();
     } catch (error) {
-        console.error('showSharePlanModal failed', error);
+        console.error('showSharePlanPanel failed', error);
+        // Undo any partially-entered lockdown so a failure never leaves the map inert.
+        try { closeSharePlanPanel(); } catch (_) { }
         if (typeof showEphemeralMessage === 'function') {
             const t = getProposalI18nHelper();
             showEphemeralMessage(t('ephemeral.messages.failed_to_generate_share_link', 'Failed to generate share link.'), 5000, 'error');

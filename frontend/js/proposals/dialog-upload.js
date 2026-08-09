@@ -806,33 +806,6 @@ function showUploadProposalModal(proposal) {
         detachWalletStateListener = window.walletManager.on('stateChanged', () => handleWalletStateChange());
     }
 
-    async function enforceUploadAncestryGate() {
-        try {
-            const gate = await ensureAncestorProposalsUploaded(proposal);
-            if (!gate.ok) {
-                const ancestorList = gate.missing.map(item => item.id || (item.hash ? item.hash.slice(0, 8) : '?')).filter(Boolean);
-                uploadButton.disabled = true;
-                uploadButton.classList.add('disabled');
-                uploadButton.title = tShare('uploadAncestorsMissingTitle', 'Upload ancestor proposals first.');
-                uploadStatus.textContent = tShare('uploadAncestorsMissing', 'Upload ancestor proposals first: {{list}}', {
-                    count: ancestorList.length,
-                    list: ancestorList.join(', ')
-                });
-            } else {
-                uploadButton.disabled = false;
-                uploadButton.classList.remove('disabled');
-                uploadButton.title = '';
-                uploadStatus.textContent = '';
-            }
-        } catch (error) {
-            console.warn('Failed to enforce upload ancestor gate', error);
-            uploadButton.disabled = true;
-            uploadButton.classList.add('disabled');
-            uploadStatus.textContent = tShare('uploadAncestorsCheckFailed', 'Could not verify ancestor uploads. Please retry.');
-        }
-    }
-
-    enforceUploadAncestryGate();
 
     // Upload handler
     uploadButton.addEventListener('click', async () => {

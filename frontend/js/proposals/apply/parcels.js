@@ -31,59 +31,90 @@
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
-        let parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-        // A7, receiving side (rethink-proposals.md §15a): the pool actually consumed is derived
-        // from the plan's footprint against the LIVE fabric — geometry is authoritative, in both
-        // directions: coverage ≥ 95% → the pool IS the live fabric under the plan's polygons;
-        // coverage < 95% → REFUSE. Minting plots without consuming the pieces underneath is how
-        // a readjustment stacked double fabric on the ground (found by the Cibona square).
-        {
-            const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-            const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
-                ? ancestry.resolveParentsByGeometry(proposalData)
-                : null;
-            if (resolution) {
-                if (Array.isArray(resolution.ids) && resolution.ids.length && resolution.coverage >= 0.95) {
-                    // Attempt-local; the record's parents are written on SUCCESS at the tail.
-                    parentIds = resolution.ids.map(String);
-                } else {
-                    const coveragePct = Math.round((resolution.coverage || 0) * 100);
-                    const message = `The live fabric covers only ${coveragePct}% of this readjustment's plots here — the ground is not loaded or not present, so nothing was re-formed.`;
-                    if (typeof updateStatus === 'function') updateStatus(message);
-                    try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-unresolved', message }); } catch (_) { }
-                    return false;
-                }
-            }
-        }
-        let parentFeatures = parentIds.length
-            ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
-            : [];
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'readjustment');
+        if (!liveParents.ok) return false;
+        let parentIds = liveParents.ids;
+        let parentFeatures = liveParents.features;
+        proposalData.cadastreParcelIds = liveParents.cadastreIds.slice();
 
-        // Parent availability + conflict decision (this only runs on a fresh apply — already-applied
-        // reparcellizations short-circuit in the dispatcher). Like road, this replaces parents with
-        // child slices, so a parent occupied by another applied proposal is a real conflict.
+        // Ruling 2026-08-07: a land readjustment stands on the CADASTRE, never on another
+        // proposal's fabric, and its inputs are WHOLE cadastral parcels only. The interactive
+        // apply path asks to unapply the coverers before this transaction (applyProposal
+        // pre-ask); by the time this gate runs, refusal is the only honest move.
         {
-            const decision = await this._resolveParentAvailabilityOrDefer({ idLabel, proposalData, declaredParentIds: parentIds, parentFeatures, options });
-            if (decision.defer) {
-                if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+            const derivedParents = parentIds.map(String).filter(id => id.includes('#'));
+            if (derivedParents.length) {
+                const coverers = new Map();
+                derivedParents.forEach(id => {
+                    const layerFeature = parentFeatures.find(f => String(_getParcelIdFromFeature(f)) === id);
+                    const ownerId = layerFeature && layerFeature.properties && layerFeature.properties.proposalId
+                        ? String(layerFeature.properties.proposalId) : '';
+                    if (!ownerId) return;
+                    const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
+                    coverers.set(ownerId, (record && (record.title || record.name)) || ownerId);
+                });
+                const names = Array.from(coverers.values());
+                const message = names.length
+                    ? `A land readjustment must stand on cadastral parcels, but this ground is held by ${names.map(n => `"${n}"`).join(', ')}. Unapply ${names.length === 1 ? 'that proposal' : 'those proposals'} first.`
+                    : 'A land readjustment must stand on cadastral parcels, but part of this ground is held by another proposal. Unapply it first.';
+                if (typeof updateStatus === 'function') updateStatus(message);
+                console.warn(`[_applyReparcellizationProposal] ${idLabel}: derived ground —`, derivedParents);
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'readjustment-derived-ground',
+                        message,
+                        coveringProposalIds: Array.from(coverers.keys())
+                    });
+                } catch (_) { }
                 return false;
             }
-            parentFeatures = decision.parentFeatures;
-        }
-
-        // The gate may have PARKED occupying conflicts (autoParkConflicts), which changes the
-        // live fabric this pool consumes — re-derive so the working set is the post-park ground.
-        // Without this, the pre-gate resolution kept naming the parked square's now-dead parcel,
-        // the success write-back recorded it as a consumed parent, and that stale claim then
-        // blocked the square's own re-mint through the descendant index.
-        {
-            const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-            const resolution = (ancestry && typeof ancestry.resolveParentsByGeometry === 'function')
-                ? ancestry.resolveParentsByGeometry(proposalData)
-                : null;
-            if (resolution && Array.isArray(resolution.ids) && resolution.ids.length && resolution.coverage >= 0.95) {
-                parentIds = resolution.ids.map(String);
-                parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
+            // Amended records are exempt from the whole-parcel check: a taker clipped their
+            // slices, so under-covering the parents is the one-partition model working, and the
+            // §14.2 remainders minted below are exactly the ground the taker consumes on replay.
+            const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
+            const wholeTurf = (typeof turf !== 'undefined') ? turf : null;
+            const claim = (proposalData.amendedByTaking !== true
+                && planOrderApi && typeof planOrderApi.footprintOf === 'function')
+                ? planOrderApi.footprintOf(proposalData) : null;
+            if (claim && wholeTurf && typeof wholeTurf.intersect === 'function' && typeof wholeTurf.area === 'function') {
+                const claimFeature = claim.type === 'Feature' ? claim : { type: 'Feature', properties: {}, geometry: claim };
+                const partials = [];
+                parentFeatures.forEach(feature => {
+                    try {
+                        const parcelFeature = { type: 'Feature', properties: {}, geometry: feature.geometry };
+                        const area = wholeTurf.area(parcelFeature) || 0;
+                        if (!(area > 0)) return;
+                        const hit = wholeTurf.intersect(parcelFeature, claimFeature);
+                        const covered = hit ? (wholeTurf.area(hit) || 0) : 0;
+                        const uncovered = Math.max(0, area - covered);
+                        // Strict (ruling 2026-08-07): the plan must tessellate every input
+                        // parcel. Calibration: turf/4326 vs the cadastre's native 3765 measure
+                        // the same parcel-aligned claim ~1% apart (Cibona's conforming 2042
+                        // read 99% on HR-339270-824), so noise absorbs up to 3% AND 5 m²;
+                        // every real offender seen so far sits at ≤95% with tens of m² missing.
+                        if (covered < area * 0.97 && uncovered > 5) {
+                            partials.push({
+                                id: String(_getParcelIdFromFeature(feature)),
+                                coveredShare: area > 0 ? covered / area : 0
+                            });
+                        }
+                    } catch (_) { /* an unmeasurable parent cannot pass a whole-parcel gate either way */ }
+                });
+                if (partials.length) {
+                    const partialText = partials
+                        .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
+                        .join(', ');
+                    const message = `A land readjustment takes whole cadastral parcels, but its outline covers only part of: ${partialText}. Align the outline to parcel boundaries.`;
+                    if (typeof updateStatus === 'function') updateStatus(message);
+                    try {
+                        this._setLastApplyFailure(idLabel, {
+                            code: 'readjustment-partial-parcels',
+                            message,
+                            partials
+                        });
+                    } catch (_) { }
+                    return false;
+                }
             }
         }
 
@@ -150,13 +181,11 @@
             return false;
         }
 
-        // Flat anchors + identity carry-over (formation-edit.js; rethink-proposals.md §15a). Every
+        // Flat anchors (formation-edit.js; rethink-proposals.md §15a). Every
         // plot records the base cadastral parcels actually under it — a comasation plot spanning
         // thirty parents is one formation with thirty base anchors, never a chain — and the
-        // proposal's flat declaration is written where the cut is computed. On an EDIT, the caller
-        // passes the previous partition's plots (options.priorChildren): plots that survive keep
-        // their parcel identity, fresh plots continue the numbering past every prior index.
-        let identityOptions = {};
+        // proposal's flat declaration is written where the cut is computed. Edits are new records;
+        // an unchanged record therefore derives the same ids from the same ordered geometry.
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
         if (formationEdit && turfRef && typeof turfRef.intersect === 'function') {
@@ -180,43 +209,12 @@
                 const cadastreIds = Array.from(new Set(parentEntries.map(entry => entry.baseId)));
                 if (cadastreIds.length) proposalData.cadastreParcelIds = cadastreIds;
 
-                const priorChildren = Array.isArray(options.priorChildren) ? options.priorChildren : null;
-                if (priorChildren && priorChildren.length) {
-                    const beforeEntries = priorChildren.map(prior => ({
-                        id: prior.parcelId !== undefined && prior.parcelId !== null ? String(prior.parcelId) : null,
-                        number: prior.parcelNumber !== undefined && prior.parcelNumber !== null ? String(prior.parcelNumber) : null,
-                        baseId: formationEdit.baseIdOf(prior.rootParcelId || prior.parcelId || ''),
-                        isCorridor: false,
-                        feature: prior.feature || null
-                    }));
-                    const afterEntries = childFeatures.map(feature => ({
-                        baseId: formationEdit.baseIdOf(feature?.properties?.rootParcelId || ''),
-                        isCorridor: false,
-                        feature
-                    }));
-                    const match = formationEdit.matchPieces(beforeEntries, afterEntries, anchorCtx);
-                    match.assignments.forEach((beforeIndex, afterIndex) => {
-                        if (beforeIndex === null || !beforeEntries[beforeIndex].id) return;
-                        childFeatures[afterIndex].properties.__carryIdentity = {
-                            parcelId: beforeEntries[beforeIndex].id,
-                            parcelNumber: beforeEntries[beforeIndex].number
-                        };
-                    });
-                    const grow = (typeof window !== 'undefined' && window.__corridorGrow) ? window.__corridorGrow : null;
-                    if (grow && typeof grow.nextSyntheticIndexByRoot === 'function') {
-                        identityOptions = {
-                            startIndexByRootId: grow.nextSyntheticIndexByRoot(
-                                priorChildren.map(prior => prior.parcelId),
-                                _buildSyntheticToken(proposalId, 'proposal')
-                            )
-                        };
-                    }
-                }
             } catch (error) {
-                console.warn('[_applyReparcellizationProposal] flat anchors / identity carry-over skipped', error);
+                console.warn('[_applyReparcellizationProposal] flat anchors skipped', error);
             }
         }
 
+        let allocForeignIndex = null;
         // §14.2: a formation owes the owner their remainders. The pool consumed above is the
         // LIVE ground under the plan's footprint, and the authored plots may tile less than that
         // (plots drawn against another generation's fabric) — every scrap of pool the plots do
@@ -244,6 +242,51 @@
                         try { leftoverArea = turfRemainder.area(leftover) || 0; } catch (_) { leftoverArea = 0; }
                         if (leftoverArea < 0.5) return; // rounding, not land
                         const parentId = _getParcelIdFromFeature(parentFeature);
+                        // §15b identity flows with the ground: the leftover of ANOTHER
+                        // proposal's formed plot stays the VICTIM's child — the largest part
+                        // keeps the plot's id (same parcel, smaller), splits continue the
+                        // victim's numbering, and the clone keeps the victim's proposalId and
+                        // ownership untouched. Only ground under this plan's plots changes hands.
+                        const feCarry = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                        const carryParts = (feCarry && typeof feCarry.derivedIdParts === 'function')
+                            ? feCarry.derivedIdParts(String(parentId || '')) : null;
+                        const ownTokenCarry = (typeof _buildSyntheticToken === 'function')
+                            ? _buildSyntheticToken(proposalId, 'proposal') : null;
+                        if (carryParts && carryParts.token && ownTokenCarry && carryParts.token !== ownTokenCarry
+                            && typeof _extractPolygonsWithHolesFromGeometry === 'function'
+                            && typeof _ensurePolygonIsClosed === 'function') {
+                            if (!allocForeignIndex) allocForeignIndex = _createForeignIndexAllocator();
+                            const parts = _extractPolygonsWithHolesFromGeometry(leftover.geometry)
+                                .map(({ outer, holes }) => {
+                                    const coords = [_ensurePolygonIsClosed(outer || []), ...(Array.isArray(holes) ? holes.map(ring => _ensurePolygonIsClosed(ring || [])) : [])];
+                                    let area = 0;
+                                    try { area = turfRemainder.area(turfRemainder.polygon(coords)) || 0; } catch (_) { area = 0; }
+                                    return { coords, area };
+                                })
+                                .filter(part => part.area >= 0.5)
+                                .sort((x, y) => y.area - x.area);
+                            parts.forEach((part, partIndex) => {
+                                const carried = JSON.parse(JSON.stringify(parentFeature));
+                                carried.geometry = { type: 'Polygon', coordinates: part.coords };
+                                carried.properties = carried.properties || {};
+                                carried.properties.calculatedArea = Math.round(part.area);
+                                const carriedId = partIndex === 0
+                                    ? String(parentId)
+                                    : `${carryParts.base}#${carryParts.token}-${allocForeignIndex(carryParts.base, carryParts.token)}`;
+                                const carriedNumber = partIndex === 0
+                                    ? ((parentFeature.properties && parentFeature.properties.BROJ_CESTICE) || null)
+                                    : (typeof _composeSyntheticParcelNumber === 'function'
+                                        ? _composeSyntheticParcelNumber(
+                                            (carried.properties.rootParcelNumber || null),
+                                            carryParts.token,
+                                            Number(carriedId.slice(carriedId.lastIndexOf('-') + 1)))
+                                        : null);
+                                carried.properties.__carryIdentity = { parcelId: carriedId, parcelNumber: carriedNumber };
+                                _ensureParcelIdOnProperties(carried.properties, carriedId);
+                                childFeatures.push(carried);
+                            });
+                            return;
+                        }
                         const remainder = JSON.parse(JSON.stringify(parentFeature));
                         remainder.geometry = leftover.geometry;
                         remainder.properties = remainder.properties || {};
@@ -264,30 +307,45 @@
             console.warn('[_applyReparcellizationProposal] remainder minting failed', remainderError);
         }
 
-        this._assignSyntheticChildIdentities(proposalId, childFeatures, identityOptions);
-
-        // A plot a standing dependent CONSUMED is not re-minted as live fabric: re-applying (or
-        // editing) this readjustment under an applied square that merge-took a plot re-created
-        // that plot UNDER the square — double fabric. Same rule the road applies to its slices
-        // (§15a: dependents on unchanged ground are untouched). Identities were assigned on the
-        // FULL set above so the blocked plot's index stays allocated and nothing else can take
-        // its id.
-        const mintableChildFeatures = (typeof _filterChildFeaturesBlockedByDescendants === 'function')
-            ? _filterChildFeaturesBlockedByDescendants(childFeatures, proposalId)
-            : childFeatures;
-        const blockedCount = childFeatures.length - mintableChildFeatures.length;
-        if (blockedCount > 0) {
-            console.debug(`[_applyReparcellizationProposal] Skipping ${blockedCount} plot(s) consumed by applied dependent proposals`);
+        // §15b: the record's geometry IS its current claim — the resolved pool, the union of
+        // the ground actually consumed. Stored so §14.2 remainder ground is part of the
+        // amendable plan: when a later formation takes a remainder, the amend pass clips THIS
+        // geometry, footprintOf shrinks with it, and the next re-derivation avoids the taken
+        // ground instead of re-minting under the taker.
+        try {
+            const turfPool = (typeof turf !== 'undefined') ? turf : null;
+            if (turfPool && typeof turfPool.union === 'function' && parentFeatures.length) {
+                let pool = null;
+                parentFeatures.forEach(parentFeature => {
+                    if (!parentFeature || !parentFeature.geometry) return;
+                    const f = { type: 'Feature', properties: {}, geometry: parentFeature.geometry };
+                    try { pool = pool ? turfPool.union(pool, f) : f; } catch (_) { }
+                });
+                if (pool && pool.geometry) proposalData.geometry = JSON.parse(JSON.stringify(pool.geometry));
+            }
+        } catch (poolError) {
+            console.warn('[_applyReparcellizationProposal] pool claim persistence failed', poolError);
         }
-        this._addFeaturesToMap(mintableChildFeatures, true, proposalData);
+
+        this._assignSyntheticChildIdentities(proposalId, childFeatures);
+
+        this._addFeaturesToMap(childFeatures, true, proposalData);
 
         const childParcelIds = [];
         const touchedAgentIds = new Set();
-        mintableChildFeatures.forEach(feature => {
+        childFeatures.forEach(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             _ensureParcelIdOnProperties(feature.properties, parcelId);
+            // §15b: a carried piece of a FOREIGN plot is the victim's child, not this
+            // readjustment's — see the road apply's twin branch.
+            const pieceProposalId = feature.properties && feature.properties.proposalId
+                ? String(feature.properties.proposalId) : String(proposalId);
+            if (pieceProposalId !== String(proposalId)) {
+                this._persistParcelFeature(feature);
+                this._addProposalAsAncestor(parcelId, pieceProposalId);
+                return;
+            }
             feature.properties.ancestorProposal = proposalId;
-            delete feature.properties.descendantProposal;
             this._persistParcelFeature(feature);
             this._addProposalAsAncestor(parcelId, proposalId);
             if (parcelId !== undefined && parcelId !== null) {
@@ -336,31 +394,73 @@
         // PARKED still resolves a feature; recording its id as a parent made it a standing
         // claim that blocked the parked structure's own re-mint and was resurrected by every
         // later unapply.
+        // §15b: an id carried onto a minted piece is the LIVE piece now — hiding it or
+        // recording it as a consumed parent would consume the victim's surviving plot. The
+        // ground it lost is anchored to the BASE parcel instead, so this readjustment's unapply
+        // frees it as a BASE remainder (latest wins — never the plot at stale geometry).
+        const mintedIdSet = new Set(childFeatures
+            .map(f => { try { return String(_getParcelIdFromFeature(f)); } catch (_) { return null; } })
+            .filter(Boolean));
+        const feParcelAnchor = (typeof window !== 'undefined') ? window.__formationEdit : null;
+        const carriedBaseAnchors = new Set();
         const consumedParentIds = Array.from(new Set(parentFeatures
             .map(f => { const id = _getParcelIdFromFeature(f); return id ? String(id) : null; })
             .filter(Boolean)))
             .filter(id => {
+                if (mintedIdSet.has(String(id))) {
+                    try {
+                        const baseId = (feParcelAnchor && typeof feParcelAnchor.baseIdOf === 'function')
+                            ? feParcelAnchor.baseIdOf(String(id)) : null;
+                        if (baseId && baseId !== String(id)) carriedBaseAnchors.add(baseId);
+                    } catch (_) { }
+                    return false;
+                }
                 try {
                     const layer = window.parcelLayerById.get(String(id));
                     return !!(layer && window.parcelLayer && window.parcelLayer.hasLayer(layer));
                 } catch (_) { return true; }
             });
-        this._setDescendantProposalOnParcels(consumedParentIds, proposalId);
-        this._linkProposalToAncestors(proposalId, consumedParentIds);
-        this._hideFeaturesFromMap(parentFeatures);
-        this._markParcelsModifiedBatch([...consumedParentIds, ...childParcelIds]);
+        carriedBaseAnchors.forEach(baseId => {
+            if (!consumedParentIds.includes(baseId)) consumedParentIds.push(baseId);
+        });
+        this._hideFeaturesFromMap(parentFeatures.filter(f => {
+            try { return !mintedIdSet.has(String(_getParcelIdFromFeature(f))); } catch (_) { return true; }
+        }));
         if (childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
-
-        plan.parentParcelIds = consumedParentIds;
+        const flatParentIds = Array.isArray(proposalData.cadastreParcelIds) && proposalData.cadastreParcelIds.length
+            ? Array.from(new Set(proposalData.cadastreParcelIds.map(String)))
+            : consumedParentIds.map(id => {
+                const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                return fe && typeof fe.baseIdOf === 'function' ? fe.baseIdOf(String(id)) : String(id);
+            });
+        plan.parentParcelIds = Array.from(new Set(flatParentIds));
         plan.childParcelIds = childParcelIds;
-        proposalData.parentParcelIds = consumedParentIds;
+        proposalData.parentParcelIds = plan.parentParcelIds.slice();
         proposalData.childParcelIds = childParcelIds;
         proposalData.reparcellization = plan;
 
         persistAppliedProposal(proposalData, proposalId);
         refreshProposalUIAfterApply(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
+
+        // §15b: this plan's authored polygons are the ground it took — amend every other
+        // applied plan that still claims any of it (one partition, latest wins).
+        try {
+            const claimed = plan.polygons
+                .map(slice => slice && slice.geometry)
+                .filter(g => g && /Polygon/.test(g.type));
+            if (claimed.length) {
+                const takenGeometry = claimed.length === 1
+                    ? claimed[0]
+                    : {
+                        type: 'MultiPolygon',
+                        coordinates: claimed.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
+                    };
+            }
+        } catch (amendError) {
+            console.warn('[_applyReparcellizationProposal] §15b amend pass failed', amendError);
+        }
 
         const totalTime = performance.now() - startTime;
         console.debug(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);
@@ -373,279 +473,11 @@
         console.debug(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
 
         const decideLaterState = proposalData.decideLaterProposal || {};
-        const parentIds = Array.from(new Set([
-            ...(Array.isArray(decideLaterState.parentParcelIds) ? decideLaterState.parentParcelIds : []),
-            ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
-        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-
-        let childIdsExisting = Array.from(new Set([
-            ...(Array.isArray(decideLaterState.childParcelIds) ? decideLaterState.childParcelIds : []),
-            ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
-        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-
-        // Children are addressed by their DECLARED ids only. The old PersistentStorage scan that
-        // guessed children back by token heuristics was legacy healing — records are flat and
-        // authoritative now (rethink-proposals.md §15a); a record whose children are genuinely
-        // gone fails loudly below instead of being reconstructed from lookalikes.
-
-        const alreadyApplied = appliedOf(proposalData, decideLaterState) || lifecycleOf(proposalData) === 'Executed';
-
-        const restoreFromExistingChildren = () => {
-            if (!childIdsExisting.length) return null;
-            // For decide later proposals, child parcels might only exist in PersistentStorage
-            // Try to load them from storage if not found in map/cache
-            const childFeatures = this._resolveParcelFeaturesByIds(childIdsExisting, {
-                preferMap: true,
-                allowStorage: true,
-                allowMissing: true,  // Allow missing so we can fallback to direct storage load
-                fallbackToMap: false
-            }) || [];
-
-            // If still not found, try loading directly from PersistentStorage
-            // This is critical for decide later proposals where child parcels might only exist in storage
-            if (childFeatures.length === 0 && typeof readPersistedParcelRecord === 'function') {
-                console.debug(`[_applyDecideLaterProposal] Child parcels not found via _resolveParcelFeaturesByIds, trying direct PersistentStorage load for ${childIdsExisting.length} parcels`);
-                for (const childId of childIdsExisting) {
-                    try {
-                        const record = readPersistedParcelRecord(childId);
-                        if (record && record.properties) {
-                            let geometry = null;
-
-                            // Handle different geometry storage formats
-                            if (record.geometry) {
-                                if (record.geometry.type && record.geometry.coordinates) {
-                                    // Already in GeoJSON format
-                                    geometry = JSON.parse(JSON.stringify(record.geometry));
-                                } else if (Array.isArray(record.geometry)) {
-                                    // Stored as coordinates array directly - wrap in Polygon
-                                    geometry = {
-                                        type: 'Polygon',
-                                        coordinates: [record.geometry]
-                                    };
-                                }
-                            }
-
-                            if (geometry && geometry.type && geometry.coordinates) {
-                                const feature = {
-                                    type: 'Feature',
-                                    properties: { ...record.properties },
-                                    geometry: geometry
-                                };
-                                // Ensure parcelId is set
-                                if (!feature.properties.parcelId && childId) {
-                                    feature.properties.parcelId = String(childId);
-                                }
-                                // Ensure ancestorProposal is set (critical for isParcelReplacedByChildren to work correctly)
-                                if (!feature.properties.ancestorProposal) {
-                                    feature.properties.ancestorProposal = proposalId;
-                                }
-                                childFeatures.push(feature);
-                                console.debug(`[_applyDecideLaterProposal] Loaded child parcel ${childId} from PersistentStorage`, {
-                                    hasGeometry: !!geometry,
-                                    geometryType: geometry?.type,
-                                    hasAncestorProposal: !!feature.properties.ancestorProposal
-                                });
-                            } else {
-                                console.warn(`[_applyDecideLaterProposal] Child parcel ${childId} found in storage but missing valid geometry`, {
-                                    hasRecord: !!record,
-                                    hasGeometry: !!record?.geometry,
-                                    geometryType: record?.geometry?.type,
-                                    hasCoordinates: !!record?.geometry?.coordinates
-                                });
-                            }
-                        }
-                    } catch (err) {
-                        console.warn(`[_applyDecideLaterProposal] Failed to load child parcel ${childId} from PersistentStorage:`, err);
-                    }
-                }
-            }
-
-            if (!childFeatures.length) {
-                console.warn(`[_applyDecideLaterProposal] restoreFromExistingChildren: No child features found for ${idLabel}`, {
-                    childIdsExisting,
-                    childIdsExistingLength: childIdsExisting.length
-                });
-                return null;
-            }
-            console.debug(`[_applyDecideLaterProposal] restoreFromExistingChildren: Found ${childFeatures.length} child features for ${idLabel}`);
-
-            // Only add layers that are not already on the map to avoid duplicates on repeated restores
-            const missingFeatures = childFeatures.filter(feature => {
-                const id = _getParcelIdFromFeature(feature);
-                if (!id) {
-                    console.warn(`[_applyDecideLaterProposal] Child feature missing parcelId:`, feature);
-                    return false;
-                }
-                const alreadyOnMap = this._getParcelLayerById(id);
-                if (alreadyOnMap) {
-                    console.debug(`[_applyDecideLaterProposal] Child parcel ${id} already on map, skipping`);
-                    return false;
-                }
-                return true;
-            });
-            if (missingFeatures.length) {
-                console.debug(`[_applyDecideLaterProposal] Adding ${missingFeatures.length} child parcels to map for ${idLabel}`, {
-                    featureIds: missingFeatures.map(f => _getParcelIdFromFeature(f)),
-                    features: missingFeatures.map(f => ({
-                        id: _getParcelIdFromFeature(f),
-                        hasGeometry: !!f.geometry,
-                        hasAncestorProposal: !!f.properties?.ancestorProposal,
-                        ancestorProposal: f.properties?.ancestorProposal
-                    }))
-                });
-
-                // Ensure all features have ancestorProposal set before adding
-                missingFeatures.forEach(feature => {
-                    if (!feature.properties) feature.properties = {};
-                    if (!feature.properties.ancestorProposal) {
-                        feature.properties.ancestorProposal = proposalId;
-                        console.debug(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on feature ${_getParcelIdFromFeature(feature)}`);
-                    }
-                    if (!feature.properties.mergedFromDecideLater) {
-                        feature.properties.mergedFromDecideLater = true;
-                    }
-                });
-
-                this._addFeaturesToMap(missingFeatures, true, proposalData);
-
-                // Verify they were added - wait a bit for async operations
-                setTimeout(() => {
-                    const addedIds = missingFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean);
-                    const verifiedOnMap = addedIds.filter(id => this._getParcelLayerById(id));
-                    if (verifiedOnMap.length !== addedIds.length) {
-                        console.warn(`[_applyDecideLaterProposal] Only ${verifiedOnMap.length} of ${addedIds.length} child parcels verified on map after add`, {
-                            missing: addedIds.filter(id => !verifiedOnMap.includes(id))
-                        });
-                    } else {
-                        console.debug(`[_applyDecideLaterProposal] Successfully added ${verifiedOnMap.length} child parcels to map`);
-                    }
-                }, 100);
-            } else if (childFeatures.length > 0) {
-                console.debug(`[_applyDecideLaterProposal] All ${childFeatures.length} child parcels already on map`);
-            }
-
-            // Ensure child parcels are NOT flagged as removed and have their linkage set correctly
-            childFeatures.forEach(feature => {
-                const parcelId = _getParcelIdFromFeature(feature);
-                _ensureParcelIdOnProperties(feature.properties, parcelId);
-                feature.properties.ancestorProposal = proposalId;
-                feature.properties.mergedFromDecideLater = true;
-                this._persistParcelFeature(feature);
-                this._addProposalAsAncestor(parcelId, proposalId);
-                // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
-            });
-            this._addChildParcels(proposalId, childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean), proposalData);
-            return childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean);
-        };
-
-        // Fast path: restoring an already applied proposal with stored children
-        if (alreadyApplied) {
-            const alreadyRestored = decideLaterState._restored === true;
-            const childIdsOnMap = childIdsExisting.filter(id => this._getParcelLayerById(id));
-
-            console.debug(`[_applyDecideLaterProposal] Restoring ${idLabel}:`, {
-                childIdsExisting: childIdsExisting.length,
-                childIdsOnMap: childIdsOnMap.length,
-                alreadyRestored
-            });
-
-            // If everything is already in place, skip noisy work
-            if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length && alreadyRestored) {
-                console.debug(`[_applyDecideLaterProposal] All ${childIdsOnMap.length} child parcels already on map and restored for ${idLabel}`);
-                return true;
-            }
-
-            if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length) {
-                // Children already present; just ensure linkage/flags and exit
-                // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
-                this._setDescendantProposalOnParcels(parentIds, proposalId);
-                this._linkProposalToAncestors(proposalId, parentIds);
-                this._markParcelsModifiedBatch([...parentIds, ...childIdsOnMap]);
-                proposalData.decideLaterProposal = {
-                    parentParcelIds: parentIds,
-                    childParcelIds: childIdsExisting.map(String),
-                    _restored: true
-                };
-                proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...childIdsExisting.map(String)]));
-                setProposalApplied(proposalData, true);
-                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
-                if (proposalStorage.save) proposalStorage.save();
-                console.debug(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
-                return true;
-            }
-
-            // Try to restore child parcels from storage
-            console.debug(`[_applyDecideLaterProposal] Attempting to restore ${childIdsExisting.length} child parcels from storage for ${idLabel}`, {
-                childIdsExisting,
-                proposalId,
-                proposalIdStr: String(proposalId)
-            });
-            const restoredChildIds = restoreFromExistingChildren();
-            if (restoredChildIds && restoredChildIds.length) {
-                console.debug(`[_applyDecideLaterProposal] Successfully restored ${restoredChildIds.length} child parcels for ${idLabel}:`, restoredChildIds);
-                // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
-                this._setDescendantProposalOnParcels(parentIds, proposalId);
-                this._linkProposalToAncestors(proposalId, parentIds);
-                this._markParcelsModifiedBatch([...parentIds, ...restoredChildIds]);
-                proposalData.decideLaterProposal = {
-                    parentParcelIds: parentIds,
-                    childParcelIds: restoredChildIds.map(String),
-                    _restored: true
-                };
-                proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...restoredChildIds.map(String)]));
-                setProposalApplied(proposalData, true);
-                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
-                if (proposalStorage.save) proposalStorage.save();
-                console.debug(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
-                return true;
-            } else {
-                console.warn(`[_applyDecideLaterProposal] Failed to restore child parcels for ${idLabel} - restoreFromExistingChildren returned null or empty`, {
-                    childIdsExisting,
-                    childIdsExistingLength: childIdsExisting.length
-                });
-                // Don't return false here - the proposal might still be considered applied even if child parcels aren't found
-                // This can happen if the child parcel was never created or was deleted
-            }
-        }
-
-        if (!parentIds.length) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Cannot apply decide later proposal: no ancestor parcels found.');
-            }
-            try { this._setLastApplyFailure(idLabel, { code: 'no-parent-parcels', message: 'The decide-later proposal names no ancestor parcels to merge.' }); } catch (_) { }
-            return false;
-        }
-
-        let parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
-        let missingParents = this._getMissingParentParcels(parentFeatures);
-        const missingIds = missingParents.map(info => info && info.id ? info.id.toString() : '').filter(Boolean);
-
-        if (missingIds.length && typeof fetchParcelsForIds === 'function') {
-            try {
-                await fetchParcelsForIds(missingIds, { forceRefresh: true });
-                parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
-                missingParents = this._getMissingParentParcels(parentFeatures);
-            } catch (err) {
-                console.warn('[_applyDecideLaterProposal] Failed to fetch missing ancestor parcels', { missingIds, err });
-            }
-        }
-
-        if (missingParents.length > 0) {
-            const summary = missingParents.map(info => info && info.number ? `${info.number} [${info.id}]` : info && info.id ? info.id : '').filter(Boolean).join(', ');
-            const message = summary
-                ? `Cannot apply decide later proposal: missing parcels ${summary}`
-                : 'Cannot apply decide later proposal: missing ancestor parcels.';
-            if (typeof updateStatus === 'function') updateStatus(message);
-            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
-            try {
-                this._setLastApplyFailure(idLabel, {
-                    code: 'dependency-missing',
-                    message: `${missingParents.length} of the ${parentIds.length} ancestor parcel(s) could not be found, even after refetching.`,
-                    missingIds: missingParents.map(info => (info && info.id) ? info.id : null).filter(Boolean)
-                });
-            } catch (_) { }
-            return false;
-        }
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'decide-later formation');
+        if (!liveParents.ok) return false;
+        const parentIds = liveParents.ids;
+        const parentFeatures = liveParents.features;
+        const flatParentIds = liveParents.cadastreIds.slice();
 
         const mergedGeometry = _mergeParcelGeometries(parentFeatures);
         if (!mergedGeometry) {
@@ -738,61 +570,21 @@
             }
         }
 
-        const filteredChildFeatures = _filterChildFeaturesBlockedByDescendants([childFeature], proposalId);
-        const shouldAddChild = filteredChildFeatures.length > 0;
-        if (shouldAddChild) {
-            const filteredChild = filteredChildFeatures[0];
-            // Ensure ancestorProposal is set before persisting (critical for recovery on reload)
-            if (!filteredChild.properties.ancestorProposal) {
-                filteredChild.properties.ancestorProposal = proposalId;
-            }
-            // Ensure mergedFromDecideLater flag is set
-            filteredChild.properties.mergedFromDecideLater = true;
+        this._persistParcelFeature(childFeature);
+        this._addFeaturesToMap([childFeature], true, proposalData);
+        this._addProposalAsAncestor(childParcelId, proposalId);
+        this._addChildParcels(proposalId, [childParcelId], proposalData);
 
-            // CRITICAL: Ensure ancestorProposal is set before persisting and adding to map
-            if (!filteredChild.properties.ancestorProposal) {
-                filteredChild.properties.ancestorProposal = proposalId;
-                console.debug(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on child parcel ${childParcelId} before persisting`);
-            }
-            if (!filteredChild.properties.mergedFromDecideLater) {
-                filteredChild.properties.mergedFromDecideLater = true;
-            }
-
-            console.debug(`[_applyDecideLaterProposal] Persisting child parcel ${childParcelId} with ancestorProposal=${filteredChild.properties.ancestorProposal}`);
-            this._persistParcelFeature(filteredChild);
-
-            // Verify it was persisted correctly
-            if (typeof readPersistedParcelRecord === 'function') {
-                const persisted = readPersistedParcelRecord(childParcelId);
-                if (persisted && persisted.properties) {
-                    console.debug(`[_applyDecideLaterProposal] Verified child parcel ${childParcelId} persisted with ancestorProposal=${persisted.properties.ancestorProposal}`);
-                } else {
-                    console.warn(`[_applyDecideLaterProposal] Failed to verify child parcel ${childParcelId} was persisted`);
-                }
-            }
-
-            this._addFeaturesToMap([filteredChild], true, proposalData);
-
-            this._addProposalAsAncestor(childParcelId, proposalId);
-            this._addChildParcels(proposalId, [childParcelId], proposalData);
-        } else {
-            console.debug(`[_applyDecideLaterProposal] Skipping child parcel ${childParcelId} because a descendant proposal is already applied`);
-        }
-
-        this._setDescendantProposalOnParcels(parentIds, proposalId);
-        this._linkProposalToAncestors(proposalId, parentIds);
-        this._markParcelsModifiedBatch([...parentIds, ...(shouldAddChild ? [childParcelId] : [])]);
 
         // Hide parents from visible layer but keep in parcelLayerById for descendant proposals
         this._hideFeaturesFromMap(parentFeatures);
 
         proposalData.decideLaterProposal = {
-            parentParcelIds: parentIds,
-            childParcelIds: shouldAddChild ? [String(childParcelId)] : [],
-            _restored: true
+            parentParcelIds: flatParentIds,
+            childParcelIds: [String(childParcelId)]
         };
-        proposalData.parentParcelIds = parentIds;
-        proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...(shouldAddChild ? [String(childParcelId)] : [])]));
+        proposalData.parentParcelIds = flatParentIds;
+        proposalData.childParcelIds = [String(childParcelId)];
         persistAppliedProposal(proposalData, proposalId);
         refreshProposalUIAfterApply(`Applied decide later proposal ${proposalData.title || idLabel}`);
 

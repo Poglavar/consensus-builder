@@ -78,14 +78,14 @@
             try { return ctx.pointInPolygon(pt, feature) === true; } catch (_) { return false; }
         };
 
-        // Parcels under the point. Dead intermediate slices (unapplied generations) are noise,
-        // but consumed BASE parcels are the ownership anchor and always belong in the chain.
+        // Parcels under the point. The product has no time view: consumed cadastral parcels and
+        // dead intermediate slices are ancestry data, not members of the live tessellation.
         const parcelsAt = [];
         (Array.isArray(ctx.parcels) ? ctx.parcels : []).forEach(entry => {
             if (!entry || !entry.id || !pip(entry.feature)) return;
+            if (entry.live === false) return;
             const depth = parcelDepth(entry.id);
-            if (!entry.live && depth > 0) return;
-            parcelsAt.push({ kind: 'parcel', id: String(entry.id), feature: entry.feature, live: entry.live !== false, depth });
+            parcelsAt.push({ kind: 'parcel', id: String(entry.id), feature: entry.feature, live: true, depth });
         });
 
         const parcelDepthById = new Map();

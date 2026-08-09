@@ -406,8 +406,6 @@
             "reformTooltip": "Scan visible parcels and rebuild blocks",
             "fromSelectedButton": "From Selected Parcel",
             "fromSelectedTooltip": "Flood fill from the selected parcel to form a block",
-            "breakUpButton": "Break Block Up",
-            "breakUpTooltip": "Split the selected block with a new road",
             "showNames": "Block names",
             "showParks": "Parks",
             "showSquares": "Squares",
@@ -978,15 +976,11 @@
             "builtStatus": "Road built — click it to edit or propose.",
             "segmentCancelledStatus": "Segment cancelled — placed segments stay. Esc again builds the road.",
             "builtStatusTrack": "Track built — click it to edit or propose.",
-            "mergedStatus": "Connected to “{{name}}” — now one road.",
-            "mergedStatusTrack": "Connected to “{{name}}” — now one track.",
-            "absorbedStatus": "Continuing “{{name}}” — finishing keeps it one road.",
             "nodeHint": "Drag to move · ⌥-click to remove this node",
             "bulldozeHint": "🚜 Bulldoze this stretch",
-            "splitStatus": "The road came apart — now {{count}} separate roads.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
+            "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road proposals.",
             "applyingEdit": "Applying…",
-            "bulldozedAllStatus": "Road bulldozed.",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
             "finishButtonShortTrack": "Finish track (F)",
             "lengthLabelTrack": "Track length:",
@@ -1193,7 +1187,7 @@
             "scopeLabel": "Applies to",
             "scopeSegment": "This segment",
             "scopeRoad": "Entire road network",
-            "hitsBuildings": "Overlaps buildings — in drawing mode you can bend the road around them or tunnel through",
+            "hitsBuildings": "This footprint intersects buildings; replay derives the resulting impact",
             "extendsCut": "Cuts deeper into an already-cut building (amber on the map)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
             "cancel": "Cancel",
@@ -1313,37 +1307,15 @@
             "show": "Show"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?",
+            "offer": "This {{kind}} intersects {{count}} building(s). Keep this edge at surface level or author a tunnel?",
             "road": "road",
             "track": "track",
-            "unapply": "Unapply existing proposal",
-            "destroy": "Demolish the buildings",
-            "cut": "Cut through the buildings",
-            "proposalImpact": "Cutting or demolishing will unapply these proposals (they remain in the proposal list and can be applied again):",
-            "proposalImpactTunnel": "Tunnelling keeps these proposals applied.",
-            "cutWithProposals": "Cut through — unapply {{count}} proposal(s)",
-            "destroyWithProposals": "Demolish — unapply {{count}} proposal(s)",
-            "mergeImpact": "Continuing will merge these road proposals into this road and remove their separate proposal entries:",
-            "merge": "Merge roads",
+            "proposalImpact": "This road is later than these building proposals; a surface crossing takes their ground during replay:",
+            "proposalImpactTunnel": "A tunnel changes the authored road presentation, not the parcel-taking footprint.",
+            "surface": "Continue at surface level",
+            "sameGround": "The full corridor takes the same cadastral ground either way; replay derives the surface impact.",
             "confirm": "Tunnel through",
             "cancel": "Choose another route"
-        },
-        "impactTour": {
-            "applyToAll": "Apply to all:",
-            "cutAll": "Cut all",
-            "demolishAll": "Demolish all",
-            "tunnelAll": "Tunnel all",
-            "prev": "Previous building",
-            "next": "Next building",
-            "counter": "Building {{n}} / {{total}}",
-            "cut": "Cut",
-            "demolish": "Demolish",
-            "tunnel": "Tunnel",
-            "apply": "Apply",
-            "applyNext": "Apply & next",
-            "applyActionToAll": "Apply {{action}} to all",
-            "cancel": "Cancel",
-            "existingProposal": "existing proposal"
         },
         "corridorGrade": {
             "offer": "This pedestrian route crosses {{count}} non-pedestrian road(s). How should it cross?",
@@ -1708,10 +1680,6 @@
                 "shareModalTitle": "Share one proposal",
                 "shareUrlLabel": "Share URL:",
                 "copyUrlButton": "Copy URL",
-                "ancestorNote": "Note: this proposal includes parcels created by other proposals. For it to be applied on a target map the ancestor proposals will have to be applied first. Instead of sharing this one proposal you might want to share the entire plan using \"Share entire plan\" button in the Proposals section of the sidebar. The parcel list:",
-                "parcelIdHeader": "Parcel ID",
-                "proposalIdHeader": "Proposal ID",
-                "ancestorUploadButton": "Upload",
                 "sharePlanButton": "Share the whole plan instead (all applied proposals)…",
                 "plan": {
                     "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
@@ -1721,6 +1689,8 @@
                     "applying": "Applying proposal #{{id}}…",
                     "fetchingPlan": "Fetching plan…",
                     "fetchingPlanTitle": "Fetching proposal",
+                    "rebuildingPlanTitle": "Rebuilding applied plan",
+                    "rebuildingPlan": "Replaying its formations from the cadastre…",
                     "countHeading": {
                         "one": "There is {{count}} proposal in the current plan",
                         "few": "There are {{count}} proposals in the current plan",
@@ -1992,7 +1962,6 @@
             "ownerUnknown": "Unknown",
             "lensTooltip": "Open lens modal",
             "submit": "Create Proposal",
-            "submitEdit": "Save",
             "creating": "Creating...",
             "waiting": "Waiting for transaction...",
             "rejected": "Transaction rejected",
@@ -2098,7 +2067,14 @@
                 "gaps": "Number of gaps:",
                 "gapWidth": "Gap width (m):",
                 "wings": "Number of wings:",
-                "wingLength": "Wing length (m):"
+                "wingLength": "Wing length (m):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeExact": "Exactly this height",
+                "ruleTypeMax": "At most this height",
+                "ruleTypeRange": "Between a minimum and this",
+                "minHeight": "Min Building Height (m):",
+                "minPlotArea": "Min Plot Size (m²):",
+                "minDepth": "Must build from street (m):"
             },
             "helper": {
                 "adjust": "Adjust parameters using the sliders to modify the building shape.",
@@ -2118,7 +2094,12 @@
                 "defaultProposalDescription": "Building proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedSliver": "Only a splinter of the block falls on this plot — too small to be a building.",
+                "rangeExact": "{{buildings}} buildings · delivers {{permitted}} m² of floor area",
+                "rangeBetween": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
+                "rangeMax": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area"
             },
             "handles": {
                 "gap": "Drag to move gap",
@@ -2156,7 +2137,8 @@
                 "uploadGeojson": "Upload GeoJSON",
                 "uploadNoPolygon": "No usable polygon found in that file.",
                 "uploadError": "Could not read that file."
-            }
+            },
+            "regenerate": "Regenerate"
         }
     },
     "rowHouses": {
@@ -2174,7 +2156,13 @@
                 "rotation": "Rotate footprint",
                 "circumference": "Circumference (m):",
                 "area": "Area (m²):",
-                "volume": "Volume (m³):"
+                "volume": "Volume (m³):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeExact": "Exactly this height",
+                "ruleTypeMax": "At most this height",
+                "ruleTypeRange": "Between a minimum and this",
+                "minHeight": "Min Height (m):",
+                "minPlotArea": "Min Plot Size (m²):"
             },
             "helper": {
                 "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.",
@@ -2198,13 +2186,16 @@
                 "defaultProposalDescription": "Row houses proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedSliver": "Only a splinter of the row falls on this plot — too small to be a house."
             },
             "warnings": {
                 "dissimilarParcels": "Row houses can be defined on any parcels, but the {{count}} selected parcels vary a lot in size and shape. It will still work — row houses typically sit on similar-sized, similar-shaped parcels. Do you want to proceed?",
                 "proceed": "Proceed anyway",
                 "cancel": "Go back"
-            }
+            },
+            "regenerate": "Regenerate"
         }
     },
     "parcelBased": {
@@ -2220,14 +2211,23 @@
                 "maxFloors": "Max Floors:",
                 "minDistance": "Min Distance from Borders (m):",
                 "buildingCount": "Buildings:",
-                "totalArea": "Total Footprint (m²):",
-                "totalVolume": "Total Volume (m³):",
-                "avgFloors": "Avg Floors:"
+                "totalArea": "Permitted Footprint (m²):",
+                "totalVolume": "Permitted Volume (m³):",
+                "avgFloors": "Example Floors (avg):",
+                "ruleType": "What the rule compels:",
+                "ruleTypeMax": "At most this",
+                "ruleTypeRange": "Between a minimum and this",
+                "ruleTypeExact": "Exactly this",
+                "minFloors": "Min Floors:",
+                "minFootprint": "Min Ground Floor (m²):",
+                "minPlotArea": "Min Plot Size (m²):"
             },
             "helper": {
-                "maxFloors": "Max Floors: each building gets a random number of floors from 1 to this value.",
+                "maxFloors": "Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.",
                 "minDistance": "Min Distance: buildings keep at least this distance from parcel borders.",
-                "regenerate": "Click Regenerate for a new random variation — floor counts, footprint sizes and positions within the setbacks."
+                "regenerate": "Click Regenerate for another example build-out — floor counts, footprint sizes and positions within the setbacks. The permitted figures above never change.",
+                "ruleType": "What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).",
+                "minPlotArea": "Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",
@@ -2237,7 +2237,11 @@
                 "defaultProposalDescription": "Parcel-based proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
-                "multiParcelLabel": "{{count}} Parcels"
+                "multiParcelLabel": "{{count}} Parcels",
+                "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
+                "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
+                "excludedNoRoom": "The setback leaves no room to build on this plot.",
+                "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
             }
         }
     },
@@ -2312,7 +2316,7 @@
             "totalCashOffer": "Total cash offers: {{amount}}",
             "sweepHandleHint": "Drag to rotate the parcel lines",
             "drawPlot": "Draw plot",
-            "drawLine": "Split with line",
+            "drawLine": "Draw a line",
             "drawFinish": "Finish plot",
             "drawFinishLine": "Finish line",
             "drawUndo": "Undo point",
@@ -2331,7 +2335,7 @@
                 "drawInvalid": "Could not build a valid plot from those points.",
                 "drawNoOverlap": "The drawn plot is outside the pooled land.",
                 "drawSuccess": "Plot added. Click it to assign owners.",
-                "lineHint": "Click to add points, drag to adjust, then press Finish to split.",
+                "lineHint": "Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.",
                 "lineTooFew": "Add at least 2 points to make a split line.",
                 "lineNoSplit": "The line did not cross any plot to split.",
                 "lineSuccess": "Plot split. Click each part to assign owners.",
@@ -2344,7 +2348,17 @@
                 "nodeKept": "That node cannot be removed — a plot would stop being a polygon.",
                 "undone": "Undid the last change.",
                 "nodeOnPool": "That node sits on the pooled outline — it belongs to the neighbours, not to this plan.",
-                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign."
+                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign.",
+                "cutSuccess": "Line drawn — {{plots}} new plot(s), {{nodes}} new node(s). Click each part to assign owners.",
+                "cutNoSplit": "That line ran between its anchors without dividing a plot — nothing changed.",
+                "cutOnNode": "Starts on an existing corner — that is one of the two anchors it needs.",
+                "cutFree": "Snapping off while Shift is held — the point lands exactly where you click.",
+                "eraseHint": "Click a boundary to erase it — the two plots it separates become one. {{count}} boundaries can be erased.",
+                "eraseNone": "There are no boundaries between plots here — only the pooled outline, which belongs to the neighbours.",
+                "lineAnchored": "Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.",
+                "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
+                "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
+                "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one."
             },
             "parcelCount": {
                 "one": "{{count}} parcel",
@@ -2357,6 +2371,7 @@
                 "other": "{{count}} owners"
             },
             "cancel": "Cancel",
+            "derivedGroundBlocked": "A land readjustment must stand on cadastral parcels. Unapply the proposal holding this ground first.",
             "discardTitle": "Discard these changes?",
             "discardMessage": "The edits you made here have not been saved to the proposal. Closing now discards them.",
             "discardConfirm": "Discard changes",
@@ -2378,7 +2393,12 @@
             "colArea": "Area",
             "unknownParcel": "Parcel",
             "oldPlotsMissing": "The input parcels could not be loaded, so the pooled outline is derived from the plan itself.",
-            "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded."
+            "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded.",
+            "eraseEdge": "Erase a boundary",
+            "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot",
+            "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.",
+            "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
+            "plotLabel": "plot {{n}} ({{area}} m²)"
         }
     },
     "status": {
@@ -2391,7 +2411,6 @@
             "block_has_no_parcels_with_name": "Block {{name}} has no parcels",
             "block_not_found_with_name": "Block {{name}} not found",
             "blockify_created_proposed_building_block": "Created proposed building block for {{block}} (width: {{width}}m, setback: {{setback}}m)",
-            "block_split_by_a_perpendicular_road_through_its_middle": "Block split by a perpendicular road through its middle",
             "building_design_saved_add_proposal_details_to_submit": "Building design saved. Add proposal details to submit.",
             "building_generator_is_unavailable": "Building generator is unavailable.",
             "building_proposal_missing_geometry": "Building proposal missing geometry; cannot apply.",
@@ -2444,7 +2463,6 @@
             "error_fetching_osm_data_with_reason": "Error fetching OSM data: {{reason}}",
             "error_occurred_while_counting_blocks_please_try_again": "Error occurred while counting blocks. Please try again.",
             "error_while_forming_block_from_selected_parcel": "Error while forming block from selected parcel.",
-            "error_while_splitting_the_selected_block": "Error while splitting the selected block.",
             "error_in_road_detection_with_reason": "Error in road detection: {{reason}}",
             "error_proposal_not_found": "Error: Proposal not found",
             "failed_to_compute_mbr": "Failed to compute MBR",
@@ -2639,7 +2657,6 @@
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Single building design saved. Complete the proposal form to submit.",
             "single_building_proposal_created_use_apply_when_ready": "Proposal \"{{title}}\" created. Use Apply to map from the proposal details when ready.",
             "single_building_tool_is_unavailable": "Single building tool is unavailable.",
-            "split_road_did_not_intersect_any_parcels_try_adjusting_width_or_ensure_the_block_is_fully_in_view": "Split road did not intersect any parcels. Try adjusting width or ensure the block is fully in view.",
             "structure_proposal_dialog_is_unavailable": "Structure proposal dialog is unavailable.",
             "unable_to_build_geometry_for_reparcellization": "Unable to build geometry for reparcellization.",
             "unable_to_compute_bounds_for_this_block": "Unable to compute bounds for this block.",
@@ -2867,7 +2884,16 @@
             "solid": "Solid:",
             "neither": "Neither",
             "showAllParcels": "Show all parcels",
-            "trees": "Trees"
+            "trees": "Trees",
+            "plannedAs": "Planned as",
+            "plannedAsTooltip": "Planned as — draw the volume the rule permits, one example of what could be built under it, or both",
+            "representationMassing": "Massing",
+            "representationMassingTooltip": "Massing — the volume the rule permits, which is what the proposal asserts",
+            "representationBuildOut": "Build-out",
+            "representationBuildOutTooltip": "Build-out — one example of what could actually be built under the rule",
+            "representationBoth": "Both",
+            "representationBothTooltip": "Both — the example build-out standing inside the permitted volume",
+            "reroll": "Randomize every example build-out. Changes nothing in the proposals."
         },
         "overlay": {
             "rendering": "Rendering…",

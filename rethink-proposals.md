@@ -1511,10 +1511,12 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
    amending it is bookkeeping, not consent violation. Share-import applies the published plan and
    then the same rule governs local edits on top.
 
-4. **Determinism: `editSeq`.** Each record carries a monotonic edit sequence, bumped by any
-   geometry-affecting action. Amendments are applied eagerly, so the fabric is always current;
-   the sequence exists so a rebuild-from-records is a deterministic fold (A6 for cross-record
-   order on import, editSeq for local precedence) — reload cannot drift, ever.
+4. **Determinism: `editSeq` + `localEditAt`.** `editSeq` versions every geometry amendment on a
+   record. A committed USER geometry edit additionally receives a strictly increasing local action
+   timestamp, because per-record counters cannot order road A's first edit against road B's third.
+   Rebuild uses A6 creation order for published/imported snapshots and `localEditAt` for this
+   browser's working-copy precedence. Publish promotes that action time to the new snapshot's
+   `createdAt` and strips the local field — reload cannot drift, and local metadata never travels.
 
 5. **What this deletes** (the payoff, all shipped 2026-08-05 as reconciliation and retired by
    this decision once implemented): the saved-feature presence witness; the
@@ -1536,6 +1538,317 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
    4. Simplify restore + presence to the current-plan form.
    5. One-off migration flattening existing local records against the applied fabric; full
       Cibona/Borovje battery incl. edits and reload cycles as the verdict.
+
+   **Implementation status (2026-08-06): steps 1–2 BUILT and verified.**
+   - Pure engine: `clipPiecesByTaking` + `amendReparcellizationPlanByTaking` in
+     formation-edit.js (5 headless tests: split keeps carry fields and area accounting,
+     full-take removes, untouched pieces return by reference, sub-floor grazes are rounding,
+     plan-level wrapper is pure).
+   - Amend pass: `_amendAppliedPlansByTaking` wired into all three takers — road apply/recut
+     (SURFACE footprint, never on restore), reparcellization apply (its authored polygons),
+     structure merge-take (its geometry; adopt takes nothing). Amends victims' plan polygons
+     AND the record-level pool geometry (the outer claim footprintOf unions in), bumps
+     `editSeq`, persists, and toasts: measured live — a strip through Subdivide 2048 took
+     331 m², split 1 plot into 2 (1508→1177 m², exact), zeroed the victim's claim over the
+     taken ground, and a second identical pass was a silent no-op. The drill at a corridor
+     point now shows the road alone. `editSeq` bumps on every road edit (one funnel in
+     updateLocalCorridorGeometry) and every editor-shell geometry commit; those user commits also
+     stamp the cross-record `localEditAt` precedence. Reload after an
+     amendment: Skipped 8, amended plan persisted, nothing re-applied.
+   - **Steps 3–5 progress (same day): telemetry, pruning, migration.** The four
+     reconciliation mechanisms (presence witness, blocked-children filter, residual restore
+     clip, formed-body veto) now announce every firing as `[§15b]` warns — behaviour kept,
+     silence removed; each firing is a named work item, and quiet telemetry is the retirement
+     criterion. The amend pass prunes amended victims' dead child ids (records become
+     self-consistent, so presence passes without the witness), and a versioned boot-once
+     migration replays every applied taking in historical order through the amend pass
+     (`cb_flat_partition_v1`). The battery then made the system enumerate its own remaining
+     old world, exactly as designed:
+     1. *A taking path that is not the surface corridor* — ADDRESSED: the taking geometry now
+        equals the CUT geometry (`_takingFootprintOf` prefers the full `definition.polygon`,
+        tunnels included, exactly what the resolver and parcel cut consume; the surface form
+        remains the fallback). Whether a tunnelled stretch SHOULD take the surface parcel is a
+        recorded model question — until the cut changes, taking and amending stay consistent.
+        Verified: fresh apply 8/8 → two reloads, NO modal, nothing re-applies (the 2042
+        once-per-reload symptom is gone); the telemetry remains the watchdog if any taking
+        path still escapes the pass.
+     2. *Remainder ground has no amendable plan* — CLOSED: the reparcellization apply now
+        persists the RESOLVED POOL (union of consumed parents) as the record's geometry — the
+        record's current claim, which the amend pass already clips and footprintOf already
+        reads, so the next re-derivation avoids taken ground. The pool is stripped at publish
+        (derived; receivers re-derive their own). And a merge-take's taking is the WHOLE
+        PARCELS taken, not the drawn footprint — a 1 m² graze used to take a whole remainder
+        while the amend clipped only the graze. Verified: the unapply/re-apply-under-the-square
+        roundtrip that fired `blocked a child` on every earlier run now completes with ZERO
+        blocked-child warns, both proposals applied and intact.
+     3. *Roads as victims* — CLOSED: a road's plan is its CENTERLINE, and the amend pass now
+        trims it like a readjustment's plots. Pure engine `trimCenterlineByTaking`
+        (formation-edit.js, 4 headless tests): splits each segment where the taking crosses,
+        drops the midpoint-inside stretches and sub-metre slivers beside them, and — the rule
+        that matters — a segment changes ONLY when a piece actually lies INSIDE the taking; a
+        boundary graze (lineSplit firing where a centerline touches a taken plot's edge at a
+        junction) returns the original points by reference, because the first wiring without
+        that rule produced "0 m of corridor trimmed" churn amends on the pristine Cibona
+        apply. Orchestrator `_trimRoadDefinitionByTaking` (apply/road.js, called from the one
+        victim loop so every taker gets it): rebuilds `points`/`segmentIds` (split pieces
+        SHARE the source segment's id, so id-keyed segmentProfiles survive on both sides of
+        the gap), drops edge-keyed tunnel/grade-separation records with their edges, re-derives
+        `polygon`/`latLngPairs`/`surfaceFootprint` exactly as the edit funnel does, mirrors the
+        definition to all three record locations, and redraws applied corridor strips once per
+        pass. A taking that swallows the whole centerline leaves the record applied with an
+        empty centerline and a loud warn. The full recut of remaining ground stays deferred to
+        the road's own next edit. Verified live: a square over Road 2043's one surviving
+        corridor piece swallowed it (454 m, 6 segments, loud), stayed trimmed across reloads
+        and PERMANENTLY after the square un-applied (ground freed, road still empty — latest
+        wins); a synthetic strip across Road 2045 split 1 stretch into 2 (36→30 m, segIds
+        [s3,s3], polygon 143→121 m², mirrors in sync). Government-plan roads (no centerline)
+        are skipped with a warn only when the taking overlaps their claim.
+     The same battery exposed a regression the aggressive prune had been hiding: the amend
+     tail pruned victims' dead child ids by liveness alone, and when a taker's cut consumed
+     EVERY plot of a victim (road 2045's corridor ate both of Subdivide 2042's plots), the
+     record emptied to `childParcelIds: []` — which presence reads as "never materialized",
+     re-applying the victim on every reload. The prune now keeps dead-but-WITNESSED ids
+     (`_isChildConsumedInSavedFabric` — the exact mechanism built to excuse them); the witness
+     noise it keeps is the honest telemetry that identity does not yet carry over ACROSS
+     proposals. Pristine apply 8/8 → NO modal on repeated reloads, with only the two real
+     amends firing (2045 took 128 m² from 2042; 2049 took 2903 m² from 2048).
+     Items 1–3 are closed; the four mechanisms stay in place, loud, until their telemetry
+     goes quiet in real use.
+
+   **Identity carry-over ACROSS proposals (decision + build 2026-08-06, Simun: "2042 is
+   amended, its children, those that remain, are its children and know nothing about 2045
+   or any other readjustment").** The full-switchover piece: when a taker's cut partially
+   consumes ANOTHER proposal's formed plot, the surviving remainder IS that plot — same
+   parcel, smaller — so it keeps the victim's id, proposalId, parents, roots and ownership
+   (the clone is left untouched); a split's extra pieces continue the VICTIM's own
+   numbering (`derivedIdParts` in formation-edit.js parses the token; a per-run allocator
+   scans the registry — which keeps dead layers — plus every record's child lists, so a
+   freed index is never re-issued). Wired in BOTH silent-partial takers: the road cut
+   (`_buildChildFeaturesFromDefinition`'s remainder loop; the own-prior matcher never
+   overrides a foreign stamp) and the reparcellization's §14.2 remainder mint. Structure
+   merges take whole parcels only — full consumption, nothing to carry. Record side
+   (`_adoptForeignPlotPieces`): carried pieces append to the victim's child lists (bump
+   `editSeq`), and are excluded from the taker's children, parents, hide and descendant
+   marks (the existing `newChildIds` guards catch them structurally, since a carried id IS
+   a minted-feature id).
+   - *The taker's record anchors to BASE ids*: the strip a foreign plot lost is recorded as
+     `baseIdOf(plot)`, never the plot id (which is alive) — so the taker's unapply frees
+     the strip as a BASE remainder, never resurrects the victim's plot at stale geometry.
+     Two consequences fixed with it: `_parentStillConsumedElsewhere` no longer hard-blocks
+     a restore when the residual can be computed (a base is legitimately named by several
+     records at once; GEOMETRY decides — the residual clip subtracts exactly what stands,
+     and fully-consumed ground still blocks as residual-NONE), and a residual-clipped
+     restore stamps `residualOfConsumedBase: true` into its properties so the boot
+     visibility predicate (proposals/core.js) does not hide it as claimed-by-children —
+     without the flag the freed strip existed only until the next reload (re-apply then
+     refused at 0% coverage over the hole). A later full restore spreads fresh properties
+     and self-clears the flag.
+   - *Presence for amended-empty records* (`_recordClaimsNoGround`, execution.js): a record
+     every plot of which was taken is legitimately childless — applied, standing, claiming
+     nothing; `editSeq > 0` + empty plan = materialized, not "needs apply".
+   - *Government-plan roads* (Simun: "government plan comes as polygons"): they have no
+     centerline, so the road trim couldn't touch them — they now amend like a readjustment:
+     `clipPiecesByTaking` on the authored polygon claim AND the authored childFeatures.
+   - *Tunnel ruling recorded*: a tunnelled stretch DOES take the surface parcel (current
+     behavior confirmed — the app does level tunnels only, no underground); taking = full
+     `definition.polygon` stays correct.
+   - VERIFIED fresh-profile: pristine 8/8 — 2042 ends with ALL THREE children LIVE
+     (`824#c-942ac24kurky-1/-2/-3`, the split minted `-3` under 2042's own token), road
+     2045's remainders survived two successive cuts with numbering continued (`-1,-2,-3`
+     then `-1,-4,-5`), and boot ran with ZERO presence-witness warns (the retirement
+     signal). Unapply road 2045 → 97/97 transect points over its old footprint stay
+     covered (bases restore residual-clipped: 824 at 99% owned restored its free 1%),
+     2042's carried pieces untouched; boot after the unapply keeps 97/97 (flag honored);
+     re-apply over the freed ground succeeds; final reload NO-MODAL, all 8 standing.
+     Suite 2060 (one parallel-run flake, area-monitors, passes isolated).
+   - *Road-edit regression caught by Simun's live extend (same day)*: the edit funnel's
+     unapply→re-apply refused at 21–27% coverage over a fully covered corridor. Three
+     places still treated the flagged base residuals as their FULL cadastral parcels:
+     (1) the blocked-children filter dropped a restored residual BY ID because other
+     records' children live on that base — but a flagged residual is clipped around every
+     dependent by construction, so it is exempt; (2) the resolver's structural
+     consumed-shadow (`loadedLiveParcels`) excluded any base with a live `#`-derived child
+     on the map — flagged residuals are exempt for the same reason; (3) at reload, ingest
+     rebuilt the base from the SERVER row (full geometry, no flag), so the residual claim
+     vanished at boot — a persisted record flagged `residualOfConsumedBase` now replaces
+     the server row wholesale (force-refresh stays deliberately fabric-destructive).
+     Verified fresh-profile: apply 8 → 40 m extend (cut-all) applies, corridor carries
+     `-1/-4/-5…` and mints extension pieces, presence true with every child
+     registry+persisted → reload ×2 = Skipped 8, record byte-identical, 495 m intact,
+     2042's carried children untouched. Suite 2061, zero failures.
+   - *Stale residual flags (Simun's sliver-merged-across-the-road)*: the flag asserts
+     "clipped around every live claim AT WRITE TIME" — when a later apply consumes flagged
+     ground, a flag left behind makes ingest and the visibility predicate resurrect the
+     pre-cut shape on every boot: a base parcel spanning both sides of the road that
+     consumed it, swallowing a previously separate sliver. Two-part fix: consumption
+     clears the flag at the one marking choke point (`_setDescendantProposalOnParcels` —
+     as explicit `false`, because `_upsertParcelProperties` merges properties by spread
+     and a deleted key silently survives), and the ingest swap heals records already
+     stale (flag + a consumption marker naming an APPLIED proposal → drop the flag, use
+     the server row; profiles from the broken window self-heal at next boot). Verified:
+     post-extend zero flag+consumer records, zero parcels with ground on both sides of
+     the corridor, reload ×2 Skipped 8 with clean probes; a hand-staled record healed at
+     boot. Suite 2060 (docs flake passes isolated).
+
+## 15c. Drawing board (decision 2026-08-06): tessellation, never restoration
+
+Simun's four rules, verbatim intent:
+
+1. **Nothing is ever restored.** Cadastral parcels are the physical/ground FACT. The only
+   thing that changes is the tessellation the land readjustments stamp over them. A change
+   to a readjustment re-derives the tessellation — it never "restores" copies of ground.
+2. **Subdivisions are contiguous.** If a subdivision turned 1 parcel into 3 and a road cut
+   would sever it so the 3 become 6: there is no restoration step. The subdivision is
+   DESTROYED (unapplied); the cadastral parcels are simply the ground again; the road then
+   applies against the CADASTRAL parcels — never against the subdivision or its children.
+3. **A cut that only reduces does not destroy.** If the road only trims the subdivision,
+   the subdivision is amended by the cut: output parcels intersecting the cut are reduced,
+   or destroyed individually when fully under it. (Severance test: if the pool or any
+   surviving plot would become non-contiguous, that is rule 2, not rule 3.)
+4. **Non-conforming records migrate.** An existing proposal that violates the standing
+   rules (a non-contiguous subdivision, etc.) has its data/geometry adjusted so it works.
+
+**Architecture that follows.** The live fabric is a DERIVATION:
+`cadastre → applied formations in order (appliedAt), each cutting what stands`. Every
+change operation (edit a road, unapply anything, resolve a severance) = flip the record,
+then REBUILD: reset the derived fabric to pristine cadastre and replay the applied list in
+order through the existing apply layer. Identity stays stable across rebuilds via the
+matchPieces prior-children carry (each proposal replays with its previous pieces as
+priors). Decisions already recorded in definitions (building cuts, tunnels, demolitions)
+replay silently; only genuinely NEW obstacles prompt.
+
+This RETIRES the entire restore machinery: `_filterRestorableParents`, residualGround
+clipping of restores, `residualOfConsumedBase` flags and their ingest/visibility/resolver
+exemptions, the `r-` restore-token pieces, re-show-priors in the edit funnel, and the
+witness-based presence excuses — a rebuild leaves no ground needing any of them.
+
+Severance rule in the amend pass: when a taking would leave a victim readjustment's pool
+or any surviving plot non-contiguous, the victim is DESTROYED (unapplied, cascading to
+its dependents), and the rebuild replays the taker against the cadastre beneath — rule 2
+exactly. A taking that only reduces amends as today (§15b).
+
+Migration (rule 4): a ONE-TIME SCRIPT against the database (per Simun: "done once by a
+script, not live by fallback code") — it examines stored records, adjusts the data and
+geometry of any that violate the standing rules (non-contiguous subdivision polygons,
+stale derived fields), and writes them back; dry-run by default like every migration here.
+The app carries NO live fallback for non-conforming records.
+
+**§15c implementation status (2026-08-06, same day):** BUILT and verified end-to-end.
+`rebuildAppliedFabric` (proposal-manager.js): captures every applied proposal's pieces as
+priors, resets the derived fabric (derived-id layers off the map, replay-set persistence
+cleared, cadastre shown), and replays the applied list through the ordinary apply layer in
+the constraint-graph order (published `createdAt`, plus local user-edit precedence — `appliedAt`
+is restamped by every re-apply and cannot order anything). Each member's ground is fetched by
+its base anchors and footprint bounds first (the derive is geometric against LOADED
+fabric; without the fetch, coverage depended on where the viewport happened to be — 0%,
+65% and 95% for the same operation). The parcelDataLoaded reapply listener stands down
+while a rebuild runs. Severance (`severanceVerdict`, pure, 7 tests): destroyed only on
+the rule-2 signature — pool fragments AND a plot fragments with it ("cuts it in half so
+the 3 become 6"); a whole-plot take that merely disconnects the pool, and an edge cut
+that splits one plot, are rule 3 and amend. Severance outside a rebuild schedules ONE
+deferred rebuild that waits for the apply queue to go idle (firing mid-plan-apply wrecked
+the remaining members). The edit funnel's unapply→re-show→re-apply core is REPLACED by
+one rebuild call; `unapplyProposal` rebuilds AFTER its transaction commits (inside it,
+the rebuild's own applies deadlock on the transaction queue). The restore machinery is
+DELETED: `_filterRestorableParents`, `_liveGroundEntriesNear`,
+`_parentStillConsumedElsewhere`, residual clipping, `residualOfConsumedBase` flags and
+their ingest/visibility/resolver exemptions, `r-` restore pieces, re-show-priors.
+Two long-standing predicates were corrected on the way: `hasLiveReplacementSlice` now
+requires the replacement slice ON THE MAP (a hidden dead registry key made every base
+with historical children read "replaced" after a reset — the resolver went blind), and
+the structure/building formation guards re-persist standing bodies and fall through to
+re-form only on VERIFIED absence (bodies survived the session but vanished at boot).
+Verified fresh-profile: apply 8/8 → drag-sweep across the plan → ALL 8 stay applied,
+zero multipart parcels, zero parcels under the road, zero overlaps → reload ×2 Skipped 8
+→ unapply road 2045 → clean cascade (dependent road follows), freed ground shows
+cadastre (remaining bare points are genuinely unparceled street ground), reload Skipped
+6\. Suite 2068. Migration script `backend/scripts/migrate-tessellation.js` (dry-run
+default) explodes non-contiguous stored subdivision slices; the local DB is already
+fully conforming (342 rows, 0 changes).
+
+**§15c follow-up (same day, Simun's hover screenshot):** hovering a sliver between the
+road and the square outlined ground UNDER the square — the hover was honest, the fabric
+was not: after a rebuild the structure/building formation guard saw its body layer
+standing (the apply's own earlier steps re-add it from stored data) and skipped the
+re-take, leaving the replay's freshly re-minted road remainders VISIBLE beneath the body
+(measured: five parcels totalling the square's whole area). Two changes: (1) a rebuild
+ALWAYS re-takes formations; (2) because a road edit reshapes the parcels a standing
+structure once took whole, the rebuild take CUTS partial parcels at the body's edge
+instead of refusing — "whole parcels" is the AUTHORING gate, not a rebuild gate. The
+inside is consumed; each outside piece is re-minted with identity flowing to its owner
+(a derived parent's pieces stay its proposal's children via the §15b carry; a base
+parent's leftover becomes the structure's own §14.2 remainder). Verified: apply 8/8 →
+drag-sweep → all 8 applied, ZERO parcels under any body, reload ×2 Skipped 8 with the
+settled state clean. Suite 2068.
+
+## 15d. Decisions 2026-08-07 (Simun) — contiguity everywhere, crossroads, cadastre-anchored readjustments
+
+Four rulings, given while reviewing the §15c enumeration, that close the geometry model.
+
+### 1. Every proposal footprint is ONE connected piece — always
+
+Not just parcels (rule 8): the proposal's own footprint must stay contiguous at authoring, at
+publish, and through every amendment. Severance therefore simplifies to pure geometry:
+**severed = the taking consumes the victim's footprint, or leaves it in more than one
+meaningful part** (`severanceVerdict`, crumb floor 1 m²). The old "pool AND plots fragment"
+conjunct is gone — a whole-plot take that disconnects the pool now severs too. A plot split
+while the domain holds together stays rule 3 (the plot becomes two contiguous output
+parcels). "If a land readjustment is cut in two, it should be unapplied, not get two
+footprints."
+
+### 2. Crossroads: a road crossing a road is a JUNCTION, not a taking
+
+No road ever takes ground from another applied road — same as a self-crossing noding into a
+junction inside one proposal. Mechanics: the later road's apply drops applied-road-held
+parcels from its parent set (`_appliedRoadHeldParcelIds`) — they are neither cut, hidden nor
+recorded — and mints its corridor AROUND the boxes; the amend pass skips road victims when
+the taker is a road; `trimCenterlineByTaking` no longer runs road-against-road. Junction-box
+ownership is a DERIVATION: unapply the holder and the §15c rebuild replays the other road
+against holderless ground, so it mints the box itself. A corridor lying entirely over
+applied road ground refuses (`road-over-road`).
+
+### 3. Severing a road is impossible — it refuses with an error
+
+There is no structure/readjustment editing gesture that legitimately severs a road, so a
+take that would disconnect (or wholly consume) an applied road REFUSES before any mutation
+(`_appliedRoadSeveredByTaking` pre-checks in structures + both building paths;
+`structure-severs-road` / `building-severs-road`). An end-take that leaves the road one
+connected piece is still a legal trim. A disconnected trim result reaching
+`_trimRoadDefinitionByTaking` anyway logs a loud `[contiguity]` error — it means a pre-check
+was bypassed.
+
+### 4. Readjustments stand on the CADASTRE, take whole parcels, and their plan covers them
+
+- **Cadastral anchors only**: a readjustment on parcels created by another proposal refuses
+  (`readjustment-derived-ground`); the interactive apply first ASKS to unapply the holders
+  (`_offerToFreeReadjustmentGround`, outside the fabric queue so the real unapply flow runs
+  unnested), and the reparcellization editor blocks derived parcels in a fresh selection.
+- **The plan must tessellate every input parcel** (strict reading, chosen over
+  "consume-whole + §14.2 remainders satisfy it"): a pristine record whose slices leave >1 m²
+  of any parent uncovered refuses (`readjustment-partial-parcels`). Ten stored plans
+  (incl. Cibona's Subdivide 2107-2048) violate this and now refuse until their geometry is
+  redesigned — accepted explicitly.
+- **Amended records are exempt** (`amendedByTaking`, stamped by the amend pass): a taker
+  clipped their slices, so under-covering parents is the one-partition model working, and
+  their §14.2 remainders are exactly the ground the taker consumes on replay. Remainder
+  minting stays for that purpose.
+
+### Editor and migration
+
+- An authored edit that disconnects a road's graph SPLITS at save into one proposal per
+  connected component (`corridorComponents` — endpoint↔vertex matching, since a T-branch
+  shares a mid-polyline node), each carrying its subset of profiles/tunnels/grade
+  separations; the largest stretch keeps the title, the others get "(2)", "(3)"….
+- `migrate-tessellation.js` extended: splits stored disconnected roads (Golden Street →
+  13, Silver Way → 12, UPU Borovje ulice → 2 — applied locally 2026-08-07, idempotent),
+  REPORTS non-contiguous pools and partial-input readjustments (10 locally; author work,
+  not script work).
+
+Open (noted, not ruled): a road cutting an applied STRUCTURE's parcel mid-body would
+fragment the structure's footprint; by ruling 1 it should sever the structure, but
+structure-as-victim handling isn't in the amend pass yet. Gov-plan roads applied OVER an
+existing applied road keep their authored child polygons un-clipped (double cover) — rare
+direction, unhandled.
 
 ## 16. Related notes
 

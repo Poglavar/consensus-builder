@@ -1,9 +1,6 @@
 // Characterization test for _applyBuildingProposal — the FIRST node-runnable coverage of a
-// ProposalManager apply path. The method is pure I/O orchestration (no return value worth much on its
-// own), so we assert its OBSERVABLE EFFECTS on its collaborators: it renders the building feature,
-// flips the applied flags, persists, and links ancestors. Collaborators are stubbed as spies; deleting
-// the method's save/link/render tail (or its applied=true writes) makes these assertions fail — i.e.
-// this is a test that can actually go red. It is the safety net for extracting the shared apply tail.
+// ProposalManager apply path. It resolves parents from current geometry, derives demolition data,
+// renders authored building content and persists one flat applied record.
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -59,16 +56,16 @@ afterEach(() => {
     });
 });
 
-// A ProposalManager-shaped `this` whose collaborators are spies. The building path overlays parents,
-// so parent availability resolves (no defer) and no other building conflicts.
+// A ProposalManager-shaped `this` whose collaborators are spies.
 function makeManager(overrides = {}) {
     return {
-        _resolveParcelFeaturesByIds: () => [],
-        _resolveParentAvailabilityOrDefer: async () => ({ defer: false }),
-        _isBuildingProposal: () => false,
-        _getBuildingAncestorKey: () => null,
-        _setDescendantProposalOnParcels: spy(),
-        _linkProposalToAncestors: spy(),
+        _resolveLiveFormationParents: () => ({
+            ok: true,
+            ids: ['HR-1', 'HR-2'],
+            cadastreIds: ['HR-1', 'HR-2'],
+            features: []
+        }),
+        _deriveDemolishedBuildings: async () => [],
         ...overrides
     };
 }
@@ -85,7 +82,7 @@ function buildingProposalData() {
 }
 
 describe('_applyBuildingProposal (characterization)', () => {
-    it('applies: renders the building, flips applied flags, persists, links ancestors', async () => {
+    it('applies: renders the building, flips applied flags and persists one flat record', async () => {
         const mgr = makeManager();
         const data = buildingProposalData();
 
@@ -102,10 +99,10 @@ describe('_applyBuildingProposal (characterization)', () => {
         const rendered = globalThis.upsertProposedBuildingFeature.calls[0][0];
         expect(rendered.properties.proposalId).toBe('p-b1');
         expect(rendered.properties.proposalState).toBe('applied');
-        // Persisted and linked to the (deduped) ancestors.
+        // Persisted with flat cadastral anchors; no ancestry graph is written.
         expect(store.saved).toBeGreaterThan(0);
-        expect(mgr._linkProposalToAncestors.calls[0]).toEqual(['p-b1', ['HR-1', 'HR-2']]);
-        expect(mgr._setDescendantProposalOnParcels.calls[0]).toEqual([['HR-1', 'HR-2'], 'p-b1']);
+        expect(data.parentParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(data.buildingProposal.parentParcelIds).toEqual(['HR-1', 'HR-2']);
     });
 
     it('marks proposalState "executed" when the lifecycle is Executed', async () => {
@@ -117,9 +114,9 @@ describe('_applyBuildingProposal (characterization)', () => {
 
     it('refuses (no persist) when there are no ancestor parcels', async () => {
         const data = buildingProposalData();
-        data.parentParcelIds = [];
-        data.buildingProposal.parentParcelIds = [];
-        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
+        const result = await _applyBuildingProposal.call(makeManager({
+            _resolveLiveFormationParents: () => ({ ok: false, ids: [], features: [] })
+        }), 'p-b1', data, {});
         expect(result).toBe(false);
         expect(store.saved).toBe(0);
         expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(0);
@@ -131,40 +128,6 @@ describe('_applyBuildingProposal (characterization)', () => {
         const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
         expect(result).toBe(false);
         expect(store.saved).toBe(0);
-    });
-
-    it('defers (returns false) when parent availability says defer', async () => {
-        const mgr = makeManager({ _resolveParentAvailabilityOrDefer: async () => ({ defer: true }) });
-        const result = await _applyBuildingProposal.call(mgr, 'p-b1', buildingProposalData(), {});
-        expect(result).toBe(false);
-        expect(store.saved).toBe(0);
-    });
-
-    it('waits for a conflicting building to be fully unapplied before rendering', async () => {
-        let finishUnapply;
-        const conflict = {
-            proposalId: 'p-old',
-            applied: true,
-            buildingProposal: { parentParcelIds: ['HR-1', 'HR-2'] }
-        };
-        globalThis.proposalStorage.getAllProposals = () => [conflict];
-        const unapplyWholeFamily = spy(() => new Promise(resolve => { finishUnapply = resolve; }));
-        const mgr = makeManager({
-            _isBuildingProposal: () => true,
-            _getBuildingAncestorKey: () => 'HR-1|HR-2',
-            unapplyWholeFamily
-        });
-
-        const applying = _applyBuildingProposal.call(mgr, 'p-b1', buildingProposalData(), {});
-        await Promise.resolve();
-        await Promise.resolve();
-
-        expect(unapplyWholeFamily.calls.length).toBe(1);
-        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(0);
-
-        finishUnapply(true);
-        expect(await applying).toBe(true);
-        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(1);
     });
 
     it('returns false on null proposalData without throwing', async () => {

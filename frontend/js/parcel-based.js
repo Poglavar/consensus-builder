@@ -1,22 +1,34 @@
 /**
  * Parcel-based Urban Rule functionality.
- * 
+ *
  * This file contains the functionality for parcel-based urban rules - generating
- * individual buildings per parcel with setback from borders and random floor counts.
- * 
+ * individual buildings per parcel with setback from borders and varying floor counts.
+ *
  * Unlike block or row typology which work with superparcels, parcel-based typology
  * generates one building per parcel using configurable rules:
  * - min_distance: setback from parcel borders
- * - max_floors: random floors from 1 to max_floors per building
+ * - max_floors: the permitted ceiling; a build-out varies from 1 up to it
+ *
+ * What the proposal SAVES is the permitted massing — one maximum envelope per parcel — because
+ * that is what the rule asserts and what the stats and the € gain must read. The varied houses
+ * shown here are one example build-out of that rule, derived from (rule, seed) by
+ * urban-rule-variation.js, so the same design always redraws the same street. See
+ * urban-rule-massing.md.
  */
 
 (function () {
+    const Variation = (typeof window !== 'undefined' && window.UrbanRuleVariation) ? window.UrbanRuleVariation : null;
+
     // Modal state
     let parcelBasedModal = null;
     let parcelBasedMap = null;
     let parcelBasedParcelLayer = null;
     let parcelBasedBuildingLayers = [];
+    let parcelBasedEnvelopeLayers = [];
+    let parcelBasedExcludedLayers = [];
+    // The permitted massing (saved with the proposal) and the example build-out drawn from it.
     let generatedParcelBasedFeatures = [];
+    let parcelBasedBuildOut = [];
     let parcelBasedBlockNameOverride = null;
     let parcelBasedBlock = null;
     let pendingParcelBasedProposalContext = null;
@@ -25,8 +37,24 @@
     const DEFAULT_MAX_FLOORS = 5;
     const DEFAULT_MIN_DISTANCE = 3; // meters from parcel borders
     const DEFAULT_FLOOR_HEIGHT = 3; // meters per floor
+    const DEFAULT_RULE_KIND = 'max'; // A: permits up to the envelope; nobody is compelled to build
+    const DEFAULT_MIN_FLOORS = 1;
+    const DEFAULT_MIN_FOOTPRINT_M2 = 0;
+    // GUP's najmanja površina građevne čestice. Small by default — buildings are possible on very
+    // small plots — but non-zero, because a sliver of a plot is not a building site.
+    const DEFAULT_MIN_PLOT_AREA_M2 = 50;
     let currentMaxFloors = DEFAULT_MAX_FLOORS;
     let currentMinDistance = DEFAULT_MIN_DISTANCE;
+    let currentRuleKind = DEFAULT_RULE_KIND;
+    let currentMinFloors = DEFAULT_MIN_FLOORS;
+    let currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+    let currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
+
+    // The variation seed for this design. Every house is derived from it, so the same seed always
+    // redraws the same street — on reload, in a shared link, and in a server-rendered thumbnail.
+    // Only Regenerate advances it; moving a slider re-derives from the same seed, so an edit
+    // disturbs only what it touches instead of reshuffling the whole block.
+    let currentVariationSeed = newVariationSeed();
 
     // Parameters to restore when the modal next opens, instead of the defaults. Set by
     // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
@@ -130,8 +158,64 @@
         return translateParcelBasedText('parcelBased.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
     }
 
-    function getRandomColor(index) {
-        return BUILDING_COLORS[index % BUILDING_COLORS.length];
+    // A parcel keeps its shade whatever order the parcels arrive in. An index-based colour
+    // recoloured the whole street the moment one parcel joined or left the selection.
+    function colorForParcel(parcelId, index = 0) {
+        if (!Variation || parcelId === undefined || parcelId === null || parcelId === '') {
+            return BUILDING_COLORS[index % BUILDING_COLORS.length];
+        }
+        return BUILDING_COLORS[Variation.hashIndex(parcelId, BUILDING_COLORS.length)];
+    }
+
+    // A fresh seed for a fresh design. Random once, then stored and replayed forever after.
+    function newVariationSeed() {
+        return (Math.floor(Math.random() * 0xffffffff) >>> 0);
+    }
+
+    // The rule the sliders currently describe. This is the proposal's actual content — the
+    // geometry below is derived from it.
+    function currentParcelRule() {
+        const params = {
+            typology: 'parcelBased',
+            kind: currentRuleKind,
+            minDistance: currentMinDistance,
+            maxFloors: currentMaxFloors,
+            minFloors: currentMinFloors,
+            minFootprintAreaM2: currentMinFootprintM2,
+            minPlotAreaM2: currentMinPlotAreaM2,
+            floorHeightM: DEFAULT_FLOOR_HEIGHT
+        };
+        return Variation ? Variation.normalizeParcelRule(params) : params;
+    }
+
+    // Under "exactly this" every plot builds its full envelope, so there is no variation to roll —
+    // hide the button rather than leave a control that provably does nothing. The minimums only
+    // exist for the between-a-minimum-and-this rule.
+    function syncRuleKindControls() {
+        const minimums = document.getElementById('parcelbased-minimums');
+        if (minimums) minimums.style.display = currentRuleKind === 'range' ? '' : 'none';
+
+        const regenerate = document.getElementById('btn-parcelbased-regenerate');
+        if (regenerate) regenerate.style.display = currentRuleKind === 'exact' ? 'none' : '';
+
+        // Min floors can never exceed the ceiling it sits under.
+        const minFloorsSlider = document.getElementById('parcelbased-minfloors-slider');
+        if (minFloorsSlider) {
+            minFloorsSlider.max = String(currentMaxFloors);
+            if (currentMinFloors > currentMaxFloors) currentMinFloors = currentMaxFloors;
+            minFloorsSlider.value = String(currentMinFloors);
+            const label = document.getElementById('parcelbased-minfloors-value');
+            if (label) label.textContent = String(currentMinFloors);
+        }
+    }
+
+    // turf plus the app's own polygon sanitizers, which know the cadastre's quirks.
+    function variationDeps() {
+        return {
+            turf,
+            sanitize: (typeof sanitizePolygonFeature === 'function') ? sanitizePolygonFeature : null,
+            largestPolygon: toSingleLargestPolygonLocal
+        };
     }
 
     // --- Geometry utilities ---
@@ -168,166 +252,122 @@
         return feature;
     }
 
-    // Generate a building polygon set back from the parcel border
-    function generateSetbackPolygon(parcelFeature, minDistance) {
-        if (!parcelFeature || !parcelFeature.geometry) return null;
-
-        // Sanitize polygon first
-        let feature = parcelFeature;
-        if (typeof sanitizePolygonFeature === 'function') {
-            feature = sanitizePolygonFeature(feature) || feature;
-        }
-        feature = toSingleLargestPolygonLocal(feature) || feature;
-
-        if (!feature || !feature.geometry) return null;
-
-        // Apply negative buffer (inward setback)
-        try {
-            const buffered = turf.buffer(feature, -minDistance / 1000, { units: 'kilometers', steps: 16 });
-            if (!buffered || !buffered.geometry) {
-                // If buffer results in nothing (parcel too small), return null
-                return null;
-            }
-            // Ensure we have a valid polygon
-            const result = toSingleLargestPolygonLocal(buffered);
-            if (!result || !result.geometry) return null;
-
-            // Check if resulting polygon has reasonable area
-            const resultArea = turf.area(result);
-            if (resultArea < 1) return null; // Less than 1 m² is too small
-
-            return result;
-        } catch (e) {
-            console.warn('[ParcelBased] Error generating setback polygon:', e);
-            return null;
-        }
-    }
-
-    // A random footprint inside the setback envelope: shrink the envelope by a random extra
-    // inset, then slide it randomly while it still fits (concave envelopes may refuse a slide —
-    // retried smaller; the unslid shrunken footprint always fits).
-    function randomFootprintWithinEnvelope(envelope) {
-        try {
-            const [minX, minY, maxX, maxY] = turf.bbox(envelope);
-            const shortSideMeters = Math.min(maxX - minX, maxY - minY) * 111320;
-            const insetMeters = Math.random() * shortSideMeters * 0.18;
-            if (insetMeters < 0.3) return envelope;
-            const shrunk = turf.buffer(envelope, -insetMeters / 1000, { units: 'kilometers', steps: 8 });
-            const footprint = shrunk ? toSingleLargestPolygonLocal(shrunk) : null;
-            if (!footprint || !footprint.geometry || turf.area(footprint) < 25) return envelope;
-
-            const [fMinX, fMinY, fMaxX, fMaxY] = turf.bbox(footprint);
-            const translate = (feature, dx, dy) => {
-                const clone = JSON.parse(JSON.stringify(feature));
-                const shift = coords => coords.map(item => Array.isArray(item[0]) ? shift(item) : [item[0] + dx, item[1] + dy]);
-                clone.geometry.coordinates = shift(clone.geometry.coordinates);
-                return clone;
-            };
-            for (let attempt = 0; attempt < 8; attempt++) {
-                const scale = 1 - attempt / 8;
-                const dx = ((minX - fMinX) + Math.random() * ((maxX - fMaxX) - (minX - fMinX))) * scale;
-                const dy = ((minY - fMinY) + Math.random() * ((maxY - fMaxY) - (minY - fMinY))) * scale;
-                const shifted = translate(footprint, dx, dy);
-                try {
-                    if (turf.booleanContains(envelope, shifted)) return shifted;
-                } catch (_) { }
-            }
-            return footprint;
-        } catch (error) {
-            console.warn('[ParcelBased] random footprint failed; using the full envelope', error);
-            return null;
-        }
-    }
-
-    // Generate building for a single parcel
-    function generateBuildingForParcel(parcel, index, minDistance, maxFloors) {
+    // The permitted massing for one parcel: the parcel set back by the rule, extruded to the
+    // maximum floors, stamped with the rule and this parcel's variation seed so any consumer can
+    // derive the same example build-out from it. Returns null for a parcel the rule leaves nothing
+    // buildable on.
+    function generateBuildingForParcel(parcel, index, rule, designSeed) {
         const feature = parcel.feature;
-        if (!feature) return null;
+        if (!feature || !Variation) return { envelope: null, status: 'invalid', feature, parcelId: null };
 
-        // Get parcel ID for properties
         const props = feature.properties || {};
         const parcelId = typeof ensureParcelId === 'function'
             ? ensureParcelId(feature)
             : (props.parcelId || props.parcel_id || props.id || `parcel-${index}`);
 
-        // Generate setback envelope
-        const envelope = generateSetbackPolygon(feature, minDistance);
+        const { envelope, status } = Variation.evaluateParcel(feature, rule, variationDeps());
         if (!envelope) {
-            console.warn(`[ParcelBased] Could not generate building for parcel ${parcelId} - polygon too small or invalid`);
-            return null;
+            return { envelope: null, status, feature, parcelId };
         }
 
-        // The setbacks are MINIMUMS, not the building form: randomize the footprint's size and
-        // its position within the envelope, so Regenerate explores real variety.
-        const buildingPolygon = randomFootprintWithinEnvelope(envelope) || envelope;
-
-        // Pick random number of floors between 1 and maxFloors
-        const floors = Math.floor(Math.random() * maxFloors) + 1;
-        const height = floors * DEFAULT_FLOOR_HEIGHT;
-
-        // Set building properties
-        buildingPolygon.properties = {
+        envelope.properties = {
+            ...envelope.properties,
             type: 'proposedParcelBasedBuilding',
             parcelId: parcelId,
-            floors: floors,
-            height: height,
-            minDistance: minDistance,
-            maxFloors: maxFloors,
-            color: getRandomColor(index),
+            urbanRule: rule,
+            variationSeed: Variation.hashSeed(designSeed, parcelId),
+            color: colorForParcel(parcelId, index),
             buildingIndex: index
         };
 
-        return buildingPolygon;
+        return { envelope, status, feature, parcelId };
     }
 
-    // Generate all buildings for the block
-    function generateBuildingsForBlock(block, minDistance, maxFloors) {
+    // The permitted massing for every parcel in the block, plus the parcels the rule leaves out.
+    // Excluded parcels are returned rather than dropped: an empty plot in the middle of a street
+    // reads as a bug unless the editor can say which rule excluded it.
+    function generateBuildingsForBlock(block, rule, designSeed) {
+        const buildings = [];
+        const excluded = [];
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-            return [];
+            return { buildings, excluded };
         }
 
-        const buildings = [];
         block.parcels.forEach((parcel, index) => {
-            const building = generateBuildingForParcel(parcel, index, minDistance, maxFloors);
-            if (building) {
-                buildings.push(building);
-            }
+            const outcome = generateBuildingForParcel(parcel, index, rule, designSeed);
+            if (outcome.envelope) buildings.push(outcome.envelope);
+            else excluded.push(outcome);
         });
 
-        return buildings;
+        return { buildings, excluded };
     }
 
-    // Display buildings on the modal map
-    function displayBuildingsInModal(features) {
+    // One example build-out of the massing: what a street built under this rule could look like.
+    // Presentation only — the envelopes above are what the proposal stores and the stats read.
+    function buildOutFor(envelopes) {
+        if (!Variation || !Array.isArray(envelopes)) return [];
+        const deps = variationDeps();
+        return envelopes.map(envelope => Variation.realizeFeature(envelope, deps));
+    }
+
+    function excludedParcelReason(status) {
+        if (status === 'below-min-plot') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedBelowMinPlot',
+                'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+        }
+        if (status === 'cannot-meet-minimum') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedCannotMeet',
+                'Too small to meet the minimum this rule compels — the rule contradicts itself here.');
+        }
+        return translateParcelBasedText('parcelBased.modal.messages.excludedNoRoom',
+            'The setback leaves no room to build on this plot.');
+    }
+
+    // Draw the example build-out solid, inside the permitted envelope drawn as a dashed outline —
+    // the classic planning drawing, so the rule and a sample of it read in one picture. Parcels the
+    // rule excludes are drawn hatched with the reason on hover, never left silently empty.
+    function displayBuildingsInModal(envelopes, buildOut, excluded) {
         if (!parcelBasedMap) return;
 
-        // Clear existing building layers
-        parcelBasedBuildingLayers.forEach(layer => {
-            if (parcelBasedMap && layer) {
-                parcelBasedMap.removeLayer(layer);
-            }
+        [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
+            layers.forEach(layer => {
+                if (parcelBasedMap && layer) parcelBasedMap.removeLayer(layer);
+            });
         });
+        parcelBasedEnvelopeLayers = [];
         parcelBasedBuildingLayers = [];
+        parcelBasedExcludedLayers = [];
 
-        if (!Array.isArray(features) || features.length === 0) return;
+        (Array.isArray(excluded) ? excluded : []).forEach(entry => {
+            if (!entry || !entry.feature || !entry.feature.geometry) return;
+            const layer = L.geoJSON(entry.feature, {
+                style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
+            }).addTo(parcelBasedMap);
+            layer.bindTooltip(excludedParcelReason(entry.status), { permanent: false, direction: 'center' });
+            parcelBasedExcludedLayers.push(layer);
+        });
 
-        features.forEach((feature, index) => {
-            if (!feature || !feature.geometry) return;
+        if (!Array.isArray(envelopes) || envelopes.length === 0) return;
+        const houses = Array.isArray(buildOut) ? buildOut : [];
 
-            const color = feature.properties?.color || getRandomColor(index);
-            const layer = L.geoJSON(feature, {
-                style: {
-                    fillColor: color,
-                    fillOpacity: 0.6,
-                    color: color,
-                    weight: 2
-                }
+        envelopes.forEach((envelope, index) => {
+            if (!envelope || !envelope.geometry) return;
+            const color = envelope.properties?.color || colorForParcel(envelope.properties?.parcelId, index);
+
+            parcelBasedEnvelopeLayers.push(L.geoJSON(envelope, {
+                style: { fillColor: color, fillOpacity: 0.08, color, weight: 1, dashArray: '4, 4' }
+            }).addTo(parcelBasedMap));
+
+            const house = houses[index];
+            if (!house || !house.geometry) return;
+            const layer = L.geoJSON(house, {
+                style: { fillColor: color, fillOpacity: 0.6, color, weight: 2 }
             }).addTo(parcelBasedMap);
 
-            // Add tooltip with building info
-            const floors = feature.properties?.floors || 1;
-            const parcelId = feature.properties?.parcelId || 'Unknown';
-            layer.bindTooltip(`Parcel ${parcelId}: ${floors} floor${floors > 1 ? 's' : ''}`, {
+            const floors = house.properties?.floors || 1;
+            const permitted = envelope.properties?.floors || floors;
+            const parcelId = house.properties?.parcelId || 'Unknown';
+            layer.bindTooltip(`Parcel ${parcelId}: ${floors} of ${permitted} permitted floor${permitted > 1 ? 's' : ''}`, {
                 permanent: false,
                 direction: 'center'
             });
@@ -335,15 +375,16 @@
             parcelBasedBuildingLayers.push(layer);
         });
 
-        // Update metrics display
-        updateBuildingMetrics(features);
+        updateBuildingMetrics(envelopes, houses);
 
         // Update 3D view
-        try { updateParcelBased3DScene(features); } catch (_) { }
+        try { updateParcelBased3DScene(envelopes, houses); } catch (_) { }
     }
 
-    // Calculate and display building metrics
-    function updateBuildingMetrics(features) {
+    // Footprint and volume are the PERMITTED figures, read off the envelopes — they are what the
+    // rule asserts and what the € gain uses, so re-rolling the build-out must never move them. Only
+    // the average floor count describes the example, and it is labelled as such.
+    function updateBuildingMetrics(envelopes, buildOut) {
         const buildingCountEl = document.getElementById('parcelbased-building-count-value');
         const totalAreaEl = document.getElementById('parcelbased-total-area-value');
         const totalVolumeEl = document.getElementById('parcelbased-total-volume-value');
@@ -351,41 +392,37 @@
 
         if (!buildingCountEl || !totalAreaEl || !totalVolumeEl || !avgFloorsEl) return;
 
-        if (!Array.isArray(features) || features.length === 0) {
+        const blank = () => {
             buildingCountEl.textContent = '0';
             totalAreaEl.textContent = '0';
             totalVolumeEl.textContent = '0';
             avgFloorsEl.textContent = '0';
-            return;
-        }
+        };
+
+        if (!Array.isArray(envelopes) || envelopes.length === 0) { blank(); return; }
 
         try {
-            let totalArea = 0;
-            let totalVolume = 0;
-            let totalFloors = 0;
+            let permittedArea = 0;
+            let permittedVolume = 0;
 
-            features.forEach(feature => {
-                if (!feature || !feature.geometry) return;
-                const area = turf.area(feature);
-                const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
-                const floors = feature.properties?.floors || 1;
-                totalArea += area;
-                totalVolume += area * height;
-                totalFloors += floors;
+            envelopes.forEach(envelope => {
+                if (!envelope || !envelope.geometry) return;
+                const area = turf.area(envelope);
+                permittedArea += area;
+                permittedVolume += area * (envelope.properties?.height || DEFAULT_FLOOR_HEIGHT);
             });
 
-            const avgFloors = features.length > 0 ? totalFloors / features.length : 0;
+            const houses = Array.isArray(buildOut) ? buildOut.filter(house => house && house.geometry) : [];
+            const totalFloors = houses.reduce((sum, house) => sum + (house.properties?.floors || 1), 0);
+            const avgFloors = houses.length > 0 ? totalFloors / houses.length : 0;
 
-            buildingCountEl.textContent = features.length.toString();
-            totalAreaEl.textContent = totalArea.toFixed(1);
-            totalVolumeEl.textContent = totalVolume.toFixed(1);
+            buildingCountEl.textContent = envelopes.length.toString();
+            totalAreaEl.textContent = permittedArea.toFixed(1);
+            totalVolumeEl.textContent = permittedVolume.toFixed(1);
             avgFloorsEl.textContent = avgFloors.toFixed(1);
         } catch (e) {
             console.warn('[ParcelBased] Error calculating metrics:', e);
-            buildingCountEl.textContent = '0';
-            totalAreaEl.textContent = '0';
-            totalVolumeEl.textContent = '0';
-            avgFloorsEl.textContent = '0';
+            blank();
         }
     }
 
@@ -413,14 +450,29 @@
             parcelIds,
             parentDetails,
             blockName: getParcelBasedDisplayName(),
-            parameters: {
-                maxFloors: Number(currentMaxFloors) || DEFAULT_MAX_FLOORS,
-                minDistance: Number(currentMinDistance) || DEFAULT_MIN_DISTANCE,
-                typology: 'parcelBased'
-            },
+            parameters: parcelBasedDesignParameters(),
             buildings,
             buildingFeature: buildings[0] || null
         }, { coalesceKey: 'parcel-based-live' });
+    }
+
+    // Everything needed to reproduce this design exactly: the rule it asserts and the seed its
+    // example build-out came from. maxFloors/minDistance stay alongside for the slider restore.
+    function parcelBasedDesignParameters() {
+        return {
+            typology: 'parcelBased',
+            rule: currentParcelRule(),
+            seed: currentVariationSeed,
+            maxFloors: Number(currentMaxFloors) || DEFAULT_MAX_FLOORS,
+            minDistance: Number(currentMinDistance) || DEFAULT_MIN_DISTANCE
+        };
+    }
+
+    // Roll a new example build-out. Only this changes the seed — a slider re-derives from the same
+    // one, so raising the height limit does not also reshuffle every footprint on the street.
+    function rerollParcelBasedBuildOut() {
+        currentVariationSeed = newVariationSeed();
+        generateBuildingsInModal();
     }
 
     // Generate buildings in modal
@@ -436,23 +488,29 @@
             // Ensure 3D is initialized
             try { if (!parcelBased3D || !parcelBased3D.renderer) initParcelBased3DSimple(); } catch (_) { }
 
-            const buildings = generateBuildingsForBlock(block, currentMinDistance, currentMaxFloors);
+            const { buildings, excluded } = generateBuildingsForBlock(block, currentParcelRule(), currentVariationSeed);
 
             if (!buildings || buildings.length === 0) {
                 throw new Error('Failed to generate any buildings');
             }
 
             generatedParcelBasedFeatures = buildings;
-            displayBuildingsInModal(buildings);
+            parcelBasedBuildOut = buildOutFor(buildings);
+            displayBuildingsInModal(buildings, parcelBasedBuildOut, excluded);
             autosaveParcelBasedDraft();
 
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
 
-            // Clear info text on successful generation
-            setParcelBasedInfo('parcelBased.modal.generatedSummary',
-                'Generated {{count}} building(s)',
-                { count: buildings.length });
+            if (excluded.length) {
+                setParcelBasedInfo('parcelBased.modal.generatedSummaryExcluded',
+                    'Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule',
+                    { count: buildings.length, excluded: excluded.length });
+            } else {
+                setParcelBasedInfo('parcelBased.modal.generatedSummary',
+                    'Generated {{count}} building(s)',
+                    { count: buildings.length });
+            }
 
         } catch (error) {
             console.error('[ParcelBased] Generation error:', error);
@@ -616,51 +674,67 @@
         }
     }
 
-    function updateParcelBased3DScene(features) {
-        if (!parcelBased3D.modelGroup || typeof THREE === 'undefined' || !features || !Array.isArray(features)) return;
+    // Extrude one polygon into the preview scene. `massing` draws the permitted envelope as a
+    // faint hull; the solid volume inside it is the example build-out.
+    function addParcelBasedVolume(feature, projector, origin, massing) {
+        const geom = feature.geometry;
+        if (geom.type !== 'Polygon') return 0;
+
+        const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
+        const color = feature.properties?.color || colorForParcel(feature.properties?.parcelId);
+        const ring = geom.coordinates[0];
+        if (!Array.isArray(ring) || ring.length < 4) return 0;
+
+        const shape = new THREE.Shape();
+        ring.forEach(([lng, lat], i) => {
+            const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
+            const px = x - origin[0];
+            const py = y - origin[1];
+            if (i === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+        });
+
+        const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
+        const threeColor = new THREE.Color(color);
+        const material = new THREE.MeshLambertMaterial({
+            color: threeColor,
+            transparent: true,
+            opacity: massing ? 0.12 : 0.8,
+            depthWrite: !massing
+        });
+        parcelBased3D.modelGroup.add(new THREE.Mesh(extrudeGeom, material));
+
+        const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
+        const edgeMaterial = new THREE.LineBasicMaterial({
+            color: massing ? 0x8899aa : 0x333333,
+            transparent: massing,
+            opacity: massing ? 0.5 : 1
+        });
+        parcelBased3D.modelGroup.add(new THREE.LineSegments(edgeGeom, edgeMaterial));
+        return height;
+    }
+
+    function updateParcelBased3DScene(envelopes, buildOut) {
+        if (!parcelBased3D.modelGroup || typeof THREE === 'undefined' || !Array.isArray(envelopes)) return;
 
         clearThreeGroup(parcelBased3D.modelGroup);
 
         const projector = getParcelBasedProjector();
-        const origin = computeParcelBasedOrigin(features, projector);
+        const origin = computeParcelBasedOrigin(envelopes, projector);
         parcelBased3D.originHTRS = origin;
-        loadParcelBasedContextBuildings(features, origin);
+        loadParcelBasedContextBuildings(envelopes, origin);
 
+        const houses = Array.isArray(buildOut) ? buildOut : [];
         let maxHeight = 0;
 
-        features.forEach((feature, idx) => {
-            if (!feature || !feature.geometry) return;
-            const geom = feature.geometry;
-            if (geom.type !== 'Polygon') return;
-
-            const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
-            if (height > maxHeight) maxHeight = height;
-            const color = feature.properties?.color || getRandomColor(idx);
-            const ring = geom.coordinates[0];
-
-            if (!Array.isArray(ring) || ring.length < 4) return;
-
-            const shape = new THREE.Shape();
-            ring.forEach(([lng, lat], i) => {
-                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
-                const px = x - origin[0];
-                const py = y - origin[1];
-                if (i === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-            });
-
-            const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
-
-            // Convert hex color to THREE.Color
-            const threeColor = new THREE.Color(color);
-            const material = new THREE.MeshLambertMaterial({ color: threeColor, transparent: true, opacity: 0.8 });
-            const mesh = new THREE.Mesh(extrudeGeom, material);
-            parcelBased3D.modelGroup.add(mesh);
-
-            // Add edges
-            const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
-            const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-            const edges = new THREE.LineSegments(edgeGeom, edgeMaterial);
-            parcelBased3D.modelGroup.add(edges);
+        envelopes.forEach((envelope, idx) => {
+            if (!envelope || !envelope.geometry) return;
+            maxHeight = Math.max(maxHeight, addParcelBasedVolume(envelope, projector, origin, true));
+            const house = houses[idx];
+            // Under a build-exactly rule the build-out IS the massing; drawing it twice would just
+            // z-fight with itself.
+            if (house && house.geometry && house !== envelope) {
+                addParcelBasedVolume(house, projector, origin, false);
+            }
         });
 
         // Fit the camera only on the first render of the scene. On slider-driven updates
@@ -737,6 +811,14 @@
                 <div id="parcelbased-sidebar">
                     <h3 data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
+                        <label for="parcelbased-ruletype-select" data-i18n-key="parcelBased.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
+                        <select id="parcelbased-ruletype-select">
+                            <option value="max" data-i18n-key="parcelBased.modal.labels.ruleTypeMax" data-i18n-attr="text">At most this</option>
+                            <option value="range" data-i18n-key="parcelBased.modal.labels.ruleTypeRange" data-i18n-attr="text">Between a minimum and this</option>
+                            <option value="exact" data-i18n-key="parcelBased.modal.labels.ruleTypeExact" data-i18n-attr="text">Exactly this</option>
+                        </select>
+                    </div>
+                    <div class="parameter-group">
                         <label for="parcelbased-maxfloors-slider">
                             <span data-i18n-key="parcelBased.modal.labels.maxFloors" data-i18n-attr="text">Max Floors:</span>
                             <span id="parcelbased-maxfloors-value">${DEFAULT_MAX_FLOORS}</span>
@@ -750,29 +832,54 @@
                         </label>
                         <input type="range" id="parcelbased-mindistance-slider" min="0.5" max="20" value="${DEFAULT_MIN_DISTANCE}" step="0.5">
                     </div>
+                    <div id="parcelbased-minimums" style="display: none;">
+                        <div class="parameter-group">
+                            <label for="parcelbased-minfloors-slider">
+                                <span data-i18n-key="parcelBased.modal.labels.minFloors" data-i18n-attr="text">Min Floors:</span>
+                                <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
+                            </label>
+                            <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
+                        </div>
+                        <div class="parameter-group">
+                            <label for="parcelbased-minfootprint-slider">
+                                <span data-i18n-key="parcelBased.modal.labels.minFootprint" data-i18n-attr="text">Min Ground Floor (m²):</span>
+                                <span id="parcelbased-minfootprint-value">${DEFAULT_MIN_FOOTPRINT_M2}</span>
+                            </label>
+                            <input type="range" id="parcelbased-minfootprint-slider" min="0" max="500" value="${DEFAULT_MIN_FOOTPRINT_M2}" step="5">
+                        </div>
+                    </div>
+                    <div class="parameter-group">
+                        <label for="parcelbased-minplot-slider">
+                            <span data-i18n-key="parcelBased.modal.labels.minPlotArea" data-i18n-attr="text">Min Plot Size (m²):</span>
+                            <span id="parcelbased-minplot-value">${DEFAULT_MIN_PLOT_AREA_M2}</span>
+                        </label>
+                        <input type="range" id="parcelbased-minplot-slider" min="0" max="10000" value="${DEFAULT_MIN_PLOT_AREA_M2}" step="10">
+                    </div>
                     <div class="parameter-metrics">
                         <div class="metric-row">
                             <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
                             <span id="parcelbased-building-count-value">0</span>
                         </div>
                         <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Total Footprint (m²):</span>
+                            <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Permitted Footprint (m²):</span>
                             <span id="parcelbased-total-area-value">0</span>
                         </div>
                         <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Total Volume (m³):</span>
+                            <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Permitted Volume (m³):</span>
                             <span id="parcelbased-total-volume-value">0</span>
                         </div>
                         <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Avg Floors:</span>
+                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example Floors (avg):</span>
                             <span id="parcelbased-avg-floors-value">0</span>
                         </div>
                     </div>
                     <div class="parameter-info">
                         <p>
-                            <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: each building gets a random number of floors from 1 to this value.</span>
+                            <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
+                            <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.</span>
                             <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate to randomize floor counts again.</span>
+                            <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
+                            <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate for another example build-out. The permitted figures above never change.</span>
                         </p>
                     </div>
                 </div>
@@ -805,19 +912,47 @@
 
             const regenerateButton = document.getElementById('btn-parcelbased-regenerate');
             if (regenerateButton) {
-                regenerateButton.addEventListener('click', generateBuildingsInModal);
+                regenerateButton.addEventListener('click', rerollParcelBasedBuildOut);
+            }
+
+            const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
+            if (ruleTypeSelect) {
+                ruleTypeSelect.addEventListener('change', function (e) {
+                    currentRuleKind = e.target.value;
+                    syncRuleKindControls();
+                    generateBuildingsInModal();
+                });
             }
 
             // Slider event listeners
             document.getElementById('parcelbased-maxfloors-slider').addEventListener('input', function (e) {
                 currentMaxFloors = parseInt(e.target.value, 10);
                 document.getElementById('parcelbased-maxfloors-value').textContent = currentMaxFloors.toString();
+                syncRuleKindControls(); // the minimum rides on the ceiling
                 generateBuildingsInModal();
             });
 
             document.getElementById('parcelbased-mindistance-slider').addEventListener('input', function (e) {
                 currentMinDistance = parseFloat(e.target.value);
                 document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
+                generateBuildingsInModal();
+            });
+
+            document.getElementById('parcelbased-minfloors-slider').addEventListener('input', function (e) {
+                currentMinFloors = Math.min(parseInt(e.target.value, 10), currentMaxFloors);
+                document.getElementById('parcelbased-minfloors-value').textContent = currentMinFloors.toString();
+                generateBuildingsInModal();
+            });
+
+            document.getElementById('parcelbased-minfootprint-slider').addEventListener('input', function (e) {
+                currentMinFootprintM2 = parseFloat(e.target.value);
+                document.getElementById('parcelbased-minfootprint-value').textContent = currentMinFootprintM2.toString();
+                generateBuildingsInModal();
+            });
+
+            document.getElementById('parcelbased-minplot-slider').addEventListener('input', function (e) {
+                currentMinPlotAreaM2 = parseFloat(e.target.value);
+                document.getElementById('parcelbased-minplot-value').textContent = currentMinPlotAreaM2.toString();
                 generateBuildingsInModal();
             });
 
@@ -851,28 +986,47 @@
         // Reset parameters
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+        currentRuleKind = DEFAULT_RULE_KIND;
+        currentMinFloors = DEFAULT_MIN_FLOORS;
+        currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+        currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
 
-        // Restore a saved design over the defaults (e.g. a copied proposal). Buildings here are a
-        // pure function of these two parameters, so seeding them reproduces the exact geometry.
-        const seed = parcelBasedSeedParameters;
+        // Restore a saved design over the defaults (e.g. a copied proposal). Geometry here is a
+        // pure function of (rule, seed), so restoring both reproduces the design exactly — houses
+        // and all. A design saved without a seed has no build-out to reproduce, so it gets a fresh
+        // one rather than silently redrawing a different street under the same name.
+        const saved = parcelBasedSeedParameters;
         parcelBasedSeedParameters = null;
-        if (seed) {
-            if (Number.isFinite(Number(seed.maxFloors))) currentMaxFloors = Number(seed.maxFloors);
-            if (Number.isFinite(Number(seed.minDistance))) currentMinDistance = Number(seed.minDistance);
+        currentVariationSeed = newVariationSeed();
+        if (saved) {
+            const rule = saved.rule || {};
+            const restore = (value, apply) => {
+                if (typeof value === 'number' && Number.isFinite(value)) apply(value);
+            };
+            restore(saved.maxFloors ?? rule.maxFloors, v => { currentMaxFloors = v; });
+            restore(saved.minDistance ?? rule.minDistance, v => { currentMinDistance = v; });
+            restore(rule.minFloors, v => { currentMinFloors = Math.max(1, v); });
+            restore(rule.minFootprintAreaM2, v => { currentMinFootprintM2 = v; });
+            restore(rule.minPlotAreaM2, v => { currentMinPlotAreaM2 = v; });
+            if (Variation && Variation.RULE_KINDS.includes(rule.kind)) currentRuleKind = rule.kind;
+            restore(saved.seed, v => { currentVariationSeed = v >>> 0; });
         }
 
         // Update sliders
-        const maxFloorsSlider = document.getElementById('parcelbased-maxfloors-slider');
-        const minDistanceSlider = document.getElementById('parcelbased-mindistance-slider');
-
-        if (maxFloorsSlider) {
-            maxFloorsSlider.value = currentMaxFloors;
-            document.getElementById('parcelbased-maxfloors-value').textContent = currentMaxFloors.toString();
-        }
-        if (minDistanceSlider) {
-            minDistanceSlider.value = currentMinDistance;
-            document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
-        }
+        const setSlider = (id, value, text) => {
+            const slider = document.getElementById(id + '-slider');
+            const label = document.getElementById(id + '-value');
+            if (slider) slider.value = value;
+            if (label) label.textContent = text;
+        };
+        setSlider('parcelbased-maxfloors', currentMaxFloors, currentMaxFloors.toString());
+        setSlider('parcelbased-mindistance', currentMinDistance, currentMinDistance.toFixed(1));
+        setSlider('parcelbased-minfloors', currentMinFloors, currentMinFloors.toString());
+        setSlider('parcelbased-minfootprint', currentMinFootprintM2, currentMinFootprintM2.toString());
+        setSlider('parcelbased-minplot', currentMinPlotAreaM2, currentMinPlotAreaM2.toString());
+        const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
+        if (ruleTypeSelect) ruleTypeSelect.value = currentRuleKind;
+        syncRuleKindControls();
 
         // Generate buildings immediately
         setTimeout(() => {
@@ -947,18 +1101,21 @@
                 parcelBasedMap.removeLayer(parcelBasedParcelLayer);
                 parcelBasedParcelLayer = null;
             }
-            parcelBasedBuildingLayers.forEach(layer => {
-                if (parcelBasedMap && layer) {
-                    parcelBasedMap.removeLayer(layer);
-                }
+            [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
+                layers.forEach(layer => {
+                    if (parcelBasedMap && layer) parcelBasedMap.removeLayer(layer);
+                });
             });
+            parcelBasedEnvelopeLayers = [];
             parcelBasedBuildingLayers = [];
+            parcelBasedExcludedLayers = [];
             parcelBasedMap.remove();
             parcelBasedMap = null;
         }
 
         // Clear state
         generatedParcelBasedFeatures = [];
+        parcelBasedBuildOut = [];
         parcelBasedBlock = null;
         parcelBasedBlockNameOverride = null;
 
@@ -981,6 +1138,10 @@
         // Reset parameters to defaults
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+        currentRuleKind = DEFAULT_RULE_KIND;
+        currentMinFloors = DEFAULT_MIN_FLOORS;
+        currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+        currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
 
         if (!preservePending) {
             setPendingParcelBasedProposalContext(null);
@@ -1053,11 +1214,7 @@
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
             blockName: getParcelBasedDisplayName(),
-            parameters: {
-                maxFloors: Number.isFinite(Number(currentMaxFloors)) ? Number(currentMaxFloors) : DEFAULT_MAX_FLOORS,
-                minDistance: Number.isFinite(Number(currentMinDistance)) ? Number(currentMinDistance) : DEFAULT_MIN_DISTANCE,
-                typology: 'parcelBased'
-            },
+            parameters: parcelBasedDesignParameters(),
             buildings: clonedFeatures,
             buildingFeature: clonedFeatures[0] || null
         };

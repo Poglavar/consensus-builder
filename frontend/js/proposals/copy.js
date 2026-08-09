@@ -95,7 +95,7 @@ function reselectParcelsForCopy(parcelIds) {
 }
 
 function roadDefinitionOf(source) {
-    return (source && ((source.roadProposal && source.roadProposal.definition) || source.definition)) || null;
+    return source?.roadProposal?.definition || null;
 }
 
 // A road centerline is stored either as one flat list of points (older roads) or as a list of

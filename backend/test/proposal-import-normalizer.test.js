@@ -83,11 +83,23 @@ describe('proposal import boundary', () => {
         expect(imported.roadProposal).not.toHaveProperty('status');
     });
 
+    it('refuses derived parent declarations instead of healing them during import', () => {
+        expect(() => prepareProposalForImport({
+            proposalId: 'legacy-derived-parent',
+            goal: 'road-track',
+            parentParcelIds: ['HR-1#c-old-1'],
+            roadProposal: {
+                parentParcelIds: ['HR-1#c-old-1'],
+                definition: { width: 10, points: [] }
+            }
+        })).toThrow(/run migrate-tessellation\.js first/);
+    });
+
     it('keeps server summaries lifecycle-only', () => {
         const summary = normalizeServerProposalSummary({
             id: 7,
             proposalId: 'p-7',
-            status: 'Cancelled',
+            lifecycleStatus: 'Cancelled',
             applied: true,
             goal: 'parcel'
         }, 'zagreb');

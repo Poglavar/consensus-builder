@@ -71,7 +71,7 @@
             if (typeof resolveParcelLayerById === 'function') {
                 const layer = resolveParcelLayerById(id);
                 if (layer && typeof layer.toGeoJSON === 'function') {
-                    return layer.toGeoJSON();
+                    return layer.toGeoJSON(false);
                 }
             }
         } catch (_) { /* ignore */ }
@@ -80,7 +80,7 @@
             if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
                 const layer = multiParcelSelection.findParcelById(id);
                 if (layer && typeof layer.toGeoJSON === 'function') {
-                    return layer.toGeoJSON();
+                    return layer.toGeoJSON(false);
                 }
             }
         } catch (_) { /* ignore */ }
@@ -104,8 +104,6 @@
 
         const candidates = [
             proposal.childParcelIds,
-            proposal.descendantParcelIds,
-            proposal.childIds,
             proposal.roadProposal && proposal.roadProposal.childParcelIds,
             proposal.reparcellization && proposal.reparcellization.childParcelIds,
             proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds,
@@ -195,7 +193,7 @@
 
         try {
             layer.getLayers().forEach(l => {
-                const feature = l?.feature || (typeof l.toGeoJSON === 'function' ? l.toGeoJSON() : null);
+                const feature = l?.feature || (typeof l.toGeoJSON === 'function' ? l.toGeoJSON(false) : null);
                 if (!feature || !feature.geometry) return;
                 const id = parcelIdFromFeature(feature);
                 const normalized = normalizeParcelId(id);

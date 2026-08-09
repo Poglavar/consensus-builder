@@ -1915,3 +1915,140 @@ textarea.proposal-description-input {
     opacity: 0.5;
     pointer-events: none;
 }
+
+/* --- Share Plan panel -------------------------------------------------------------------------
+   Right-docked, full-height panel (mobile: lower-half dock) mirroring the proposals-list panel.
+   The wrapper ignores pointer events so the map stays pannable/zoomable beside it. */
+.share-plan-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    pointer-events: none;
+    z-index: 12000; /* Above sidebar (z<=4000) and info panels, same plane as the proposals list */
+}
+
+.share-plan-panel-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: clamp(360px, 33vw, 560px);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: -8px 0 28px rgba(15, 30, 45, 0.22);
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    .share-plan-panel-content {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 50vh;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 -8px 24px rgba(15, 30, 45, 0.22);
+    }
+}
+
+.share-plan-panel-header {
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.share-plan-panel-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.share-plan-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    flex: 1;
+    min-height: 0; /* lets the row list shrink and scroll instead of overflowing the panel */
+}
+
+.share-plan-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border: 1px solid #d8ddf0;
+    border-radius: 8px;
+    padding: 8px;
+    background: #f9fafb;
+}
+
+.share-plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.share-plan-row:hover {
+    background: #eef2fb;
+}
+
+/* Swatch matching the colour the proposal is painted with on the map. */
+.share-plan-color-chip {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(15, 23, 42, 0.25);
+}
+
+/* Unchecked = out of the plan: the row dims and its chip fades with the map colouring. */
+.share-plan-row.is-excluded {
+    opacity: 0.6;
+}
+
+.share-plan-row.is-excluded .share-plan-color-chip {
+    opacity: 0.25;
+}
+
+.share-plan-share-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid #e5e9f5;
+    padding-top: 10px;
+}
+
+/* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The sidebar, its
+   toggles and the mode switches are disabled; Leaflet controls too — except zoom, which stays. */
+body.share-plan-mode #sidebar,
+body.share-plan-mode .sidebar-toggle-button,
+body.share-plan-mode .map-mode-toggle,
+body.share-plan-mode .map-mode-walk-btn,
+body.share-plan-mode .map-mode-realistic-btn,
+body.share-plan-mode .map-mode-ai-btn {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+body.share-plan-mode .leaflet-control-container .leaflet-control {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
+    pointer-events: auto;
+    opacity: 1;
+}

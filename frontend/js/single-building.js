@@ -1822,8 +1822,6 @@
             lakeGraphics: null,
             parkGraphics: null,
             squareGraphics: null,
-            roadGeometry: null,
-            roadPlan: null,
             buildings: buildingFeatures.map(f => ({
                 type: f.type || 'Feature',
                 geometry: f.geometry ? JSON.parse(JSON.stringify(f.geometry)) : null,
@@ -1906,25 +1904,6 @@
         }
 
         const primaryParcelId = uniqueParcelIds.length ? uniqueParcelIds[0] : null;
-
-        const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
-        if (proposalApi && typeof proposalApi.registerBuildingProposal === 'function') {
-            try {
-                proposalApi.registerBuildingProposal(proposalId, uniqueParcelIds);
-            } catch (error) {
-                console.warn('registerBuildingProposal failed', error);
-            }
-        }
-
-        if (typeof enableShowProposalsMode === 'function') {
-            enableShowProposalsMode();
-        } else {
-            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-                showProposalsCheckbox.checked = true;
-            }
-            if (typeof updateProposalLayer === 'function') updateProposalLayer();
-        }
 
         if (typeof window !== 'undefined') {
             try { window.pendingSingleBuildingFeature = null; } catch (_) { }

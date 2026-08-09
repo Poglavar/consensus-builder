@@ -123,15 +123,6 @@ body.corridor-editor-open .leaflet-interactive {
     border: 1px solid #f5d9a8;
 }
 
-/* Re-cut: the widening eats deeper into a building this road already partially demolished.
-   Amber like the structures chip (informational, never blocks) — matching the amber footprint
-   paint on the map, where red is reserved for the hits that DO block. */
-.corridor-editor-indicator--recut {
-    background: #fef3e2;
-    color: #9a5b13;
-    border: 1px solid #f5d9a8;
-}
-
 /* The way out of a blocked widening: a clickable chip that jumps to the Corridor tab, where the
    fit computation and the move button live. Blue (an action), unlike the red/amber status chips. */
 .corridor-editor-indicator--fit {
@@ -972,4 +963,3 @@ button.corridor-lane-standard--reset:hover {
     flex-direction: column;
     gap: 3px;
 }
-

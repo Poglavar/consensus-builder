@@ -33,15 +33,6 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         let canUndo = false;
         if (isAccepted && currentUser && acceptanceMeta.agentId === currentUser.id) {
             canUndo = true;
-            // If proposal is executed, only allow undo if there are no descendants
-            if (getLifecycleStatus(proposal) === 'Executed') {
-                if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
-                    const descendants = ProposalManager._getProposalDescendants(proposal.proposalId);
-                    if (descendants && descendants.length > 0) {
-                        canUndo = false;
-                    }
-                }
-            }
         }
 
         return {
@@ -642,28 +633,13 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
-            // A refusal because applied proposals hold this ground is a QUESTION, not a dead end
-            // (rethink §15 decision 3): the tour lists them, and confirming un-applies them and
-            // re-applies. Anything else falls through to the ordinary failure path below.
-            let resolved = false;
-            try {
-                const info = ProposalManager.getLastApplyFailureInfo?.(safeId);
-                if (info && info.code === 'content-occupied' && window.__unapplyTour?.resolveContentOccupation) {
-                    resolved = await window.__unapplyTour.resolveContentOccupation(safeId);
-                }
-            } catch (occupationError) {
-                console.warn('[applyProposalToMap] Occupation resolution failed', occupationError);
+            if (button && originalButtonContent) {
+                button.innerHTML = originalButtonContent;
+                button.disabled = false;
+                button.style.opacity = '';
+                button.style.cursor = '';
             }
-            if (!resolved) {
-                // Restore button on failure
-                if (button && originalButtonContent) {
-                    button.innerHTML = originalButtonContent;
-                    button.disabled = false;
-                    button.style.opacity = '';
-                    button.style.cursor = '';
-                }
-                return false;
-            }
+            return false;
         }
     } catch (error) {
         console.error(`[applyProposalToMap] Error applying proposal to map (${(performance.now() - startTime).toFixed(2)}ms):`, error);
@@ -1031,8 +1007,6 @@ function isProposalApplied(proposal) {
         || goalKey === 'lake'
         || goalKey === 'reparcellization'
         || goalKey === 'decide-later'
-        || (proposal.roadProposal && proposal.roadProposal.roadGeometry)
-        || proposal.roadGeometry
         || proposal.buildingProposal
         || proposal.buildingGeometry
         || structureData
@@ -1042,12 +1016,9 @@ function isProposalApplied(proposal) {
 
     if (!hasSpatialComponent) return false;
 
-    // Canonical map-application axis (proposals/status.js). Prefers the explicit `applied` boolean on
-    // the proposal or any of its sub-proposals; falls back to the legacy applied/executed status for
-    // rows the split has not upgraded. isApplied is a global defined by status.js, loaded first.
-    if (isApplied(proposal)) return true;
-    return [proposal.roadProposal, proposal.buildingProposal, structureData, proposal.reparcellization, proposal.decideLaterProposal]
-        .some(sub => sub && isApplied(proposal, sub));
+    // Canonical map-application axis (proposals/status.js): one root boolean, no nested or legacy
+    // inference. isApplied is a global defined by status.js, loaded first.
+    return isApplied(proposal);
 }
 
 function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
@@ -1127,70 +1098,7 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
 }
 
 function isProposalCurrentlyApplied(proposal) {
-    if (!proposal) return false;
-    // Canonical map-application axis: the boolean on the proposal or any sub-proposal.
-    if (isApplied(proposal)) return true;
-    return [proposal.roadProposal, proposal.buildingProposal, proposal.structureProposal, proposal.reparcellization, proposal.decideLaterProposal]
-        .some(sub => sub && isApplied(proposal, sub));
-}
-
-// After a reload, boot restore rehydrates the plan's END-STATE: a child that a LATER formation
-// consumed is deliberately not re-added, so it is absent from the registry BY DESIGN — its saved
-// feature still carries the descendant marker (the same criterion _reapplyAppliedProposal skips
-// by). That marker is the local witness that the fabric moved PAST this child, as opposed to the
-// child never having materialized here (a cross-session stale applied flag). Without this
-// distinction the plan route re-applied 4 of Cibona's 8 members on EVERY reload — and each
-// needless re-apply ran against the standing downstream members, inverting the plan's structure.
-function _isChildConsumedInSavedFabric(childId) {
-    try {
-        if (typeof _buildFeatureFromPersisted !== 'function' || typeof _shouldSkipChildFeature !== 'function') return false;
-        const saved = _buildFeatureFromPersisted(String(childId));
-        return !!(saved && _shouldSkipChildFeature(saved));
-    } catch (_) {
-        return false;
-    }
-}
-
-function isProposalAppliedAndMaterialized(proposal) {
-    if (!isProposalCurrentlyApplied(proposal)) return false;
-    try {
-        const mapById = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
-            ? window.parcelLayerById
-            : null;
-        if (!mapById) return false;
-        const descendantIds = [];
-        const push = (arr) => {
-            if (!Array.isArray(arr)) return;
-            for (const id of arr) {
-                if (id != null) descendantIds.push(String(id));
-            }
-        };
-        push(proposal.childParcelIds);
-        push(proposal.roadProposal && proposal.roadProposal.childParcelIds);
-        push(proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds);
-        if (descendantIds.length === 0) {
-            // A structure/building that formed by ADOPT mints nothing — its fabric is the parcel
-            // it adopted, named by the formation record. Verify that instead of treating "no
-            // children" as "needs apply" (which re-ran the square's apply on every reload).
-            const formation = (proposal.structureProposal && proposal.structureProposal.formation)
-                || (proposal.buildingProposal && proposal.buildingProposal.formation);
-            if (formation) {
-                const formed = (Array.isArray(formation.childParcelIds) && formation.childParcelIds.length)
-                    ? formation.childParcelIds
-                    : formation.parcelIds;
-                if (Array.isArray(formed) && formed.length) {
-                    return formed.every(id => mapById.has(String(id)));
-                }
-            }
-            // Nothing stored to verify — treat as "needs apply" so the rebuild-from-definition
-            // path runs. Building/urban-rule overlays don't hit this helper because they are
-            // gated on descendant-producing rules elsewhere.
-            return false;
-        }
-        return descendantIds.every(id => mapById.has(id) || _isChildConsumedInSavedFabric(id));
-    } catch (_) {
-        return false;
-    }
+    return !!proposal && isApplied(proposal);
 }
 
 function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
@@ -1252,12 +1160,9 @@ function currentConsentBindingHash(proposal) {
         if (effect) return effect;
     } catch (_) { /* fall through to the content fingerprint */ }
     try {
-        // Deliberately the LEGACY variant: for a content-only proposal the parcel TARGETS are part
-        // of the terms an owner consented to — an offer silently retargeted to other parcels must
-        // lapse. (The v2 upload identity drops the parent lists for the opposite reason: derived
-        // name churn must not move a share id.) Also keeps pre-v2 acceptance records valid: the
-        // legacy bytes are exactly what they were stamped with.
-        if (typeof proposalContentFingerprintLegacy === 'function') return proposalContentFingerprintLegacy(proposal);
+        // For a content-only proposal the cadastral TARGETS are part of the terms an owner
+        // consented to — an offer retargeted to other ground must lapse.
+        if (typeof proposalConsentFingerprint === 'function') return proposalConsentFingerprint(proposal);
         return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
     } catch (_) {
         return null;
@@ -1415,25 +1320,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                 return fallback;
             })();
 
-            if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadGeometry) {
-                const affectedParcels = parcelIds.map(id => {
-                    const layer = multiParcelSelection.findParcelById(id);
-                    return {
-                        id,
-                        number: layer?.feature?.properties?.BROJ_CESTICE || id,
-                        layer
-                    };
-                });
-
-                if (proposal.roadGeometry.polygon && proposal.roadGeometry.polygon.coordinates) {
-                    const coordinates = proposal.roadGeometry.polygon.coordinates[0];
-                    const roadPolygon = coordinates.map(coord => ({ lat: coord[1], lng: coord[0] }));
-                    const roadName = proposal.roadGeometry.name || 'New Road';
-                    if (typeof updateParcelsWithRoad === 'function') {
-                        updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
-                    }
-                }
-            } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
+            if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
                 if (typeof markProposedBuildingState === 'function') {
                     markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true, save: true });
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
@@ -1471,17 +1358,6 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     if (!proposal) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
         return;
-    }
-
-    // Check if proposal is executed and has descendants
-    if (getLifecycleStatus(proposal) === 'Executed') {
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
-            const descendants = ProposalManager._getProposalDescendants(proposalId);
-            if (descendants && descendants.length > 0) {
-                showProposalAlertMessage('cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels', 'Cannot undo acceptance from an executed proposal that has descendant parcels.');
-                return;
-            }
-        }
     }
 
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId);
@@ -1657,16 +1533,12 @@ function rejectProposal(proposalId, parcelId, ownerKey = null) {
             proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
         }
 
-        // If proposal was executed and now has no descendants, revert the LIFECYCLE to Active.
+        // Undoing consent reopens the immutable snapshot's lifecycle. Fabric application is a
+        // separate local axis and is re-derived independently.
         // Pure lifecycle change — leave `applied` (the map-application axis) untouched.
         if (getLifecycleStatus(proposal) === 'Executed') {
-            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
-                const descendants = ProposalManager._getProposalDescendants(proposalId);
-                if (!descendants || descendants.length === 0) {
-                    proposal.lifecycleStatus = 'Active';
-                    delete proposal.executedAt;
-                }
-            }
+            proposal.lifecycleStatus = 'Active';
+            delete proposal.executedAt;
         }
 
         if (typeof proposalStorage._indexProposal === 'function') {

@@ -529,13 +529,12 @@
         const passesIsolation = function (proposal) {
             return !isolationFilter || String(proposal && proposal.proposalId) === isolationFilter;
         };
-        // Applied road corridors: the surface-level footprint wins over the full outline, so
-        // tunnelled / grade-separated stretches keep the mesh above them.
+        // Applied roads use the same full corridor polygon for rendering and ground formation.
         appliedCorridorProposals().forEach(function (proposal) {
             if (!passesIsolation(proposal)) return;
             const definition = window.corridorProposalDefinition(proposal);
             if (definition) {
-                const geom = definition.surfaceFootprint || definition.polygon;
+                const geom = definition.polygon;
                 // A terrain-following road may legitimately fall below the old global z=-0.3 cut
                 // floor. Roads get their own height-aware mask channel; its exact surface boundary
                 // is shared by the replacement deck, curtain and streamed-mesh fascia, while alpha

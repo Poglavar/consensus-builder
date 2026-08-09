@@ -8,16 +8,14 @@
 //
 //   isApplied(p, sub)     -> boolean
 //       Whether this proposal's geometry is stamped onto THIS browser's map. The root boolean is
-//       the sole steady-state source of truth. `sub` is accepted only to migrate pre-split records.
+//       the sole source of truth; nested status is never consulted.
 //
-// Both read the NEW fields (proposal.lifecycleStatus and proposal.applied) when present and otherwise
-// derive from legacy `status` strings so old localStorage and imported files can be normalized in
-// place. Server payloads carry lifecycle only; importing one always starts locally unapplied.
+// Both read only the canonical fields (proposal.lifecycleStatus and proposal.applied). Legacy rows
+// are converted once by migrate-tessellation.js; live code never guesses or heals their meaning.
 //
 // Dependency-light (no DOM, no proposalStorage) so the same file loads in the browser and in node
 // tests, exactly like corridor-carve.js.
 
-const APPLIED_LIKE = new Set(['applied', 'executed']);
 const STATUS_SUB_KEYS = Object.freeze([
     'roadProposal',
     'buildingProposal',
@@ -34,10 +32,7 @@ function norm(value) {
 // that leaked into the old `status` field collapse to 'Active' — they were never a lifecycle state.
 function getLifecycleStatus(proposal) {
     if (!proposal) return 'Active';
-    if (typeof proposal.lifecycleStatus === 'string' && proposal.lifecycleStatus.trim()) {
-        return canonicalLifecycle(proposal.lifecycleStatus);
-    }
-    return canonicalLifecycle(proposal.status);
+    return canonicalLifecycle(proposal.lifecycleStatus);
 }
 
 function canonicalLifecycle(value) {
@@ -51,45 +46,18 @@ function canonicalLifecycle(value) {
     }
 }
 
-// Whether this proposal is applied to this browser's map. Once a root boolean exists it is
-// authoritative: a stale nested flag can never override it. Nested flags and legacy status strings
-// are consulted only for an unnormalised, pre-split record with no root boolean.
-//
-// There is deliberately no demolition-based rescue heuristic here: a locally unapplied road can
-// still carry demolition records and must give its buildings back. Steady state relies on the
-// explicit root boolean instead.
-function isApplied(proposal, sub) {
-    const propFlag = proposal && typeof proposal.applied === 'boolean' ? proposal.applied : undefined;
-    if (propFlag !== undefined) return propFlag;
-    return deriveAppliedFromLegacy(proposal, sub);
+// The root boolean is the only application state. The optional second argument remains accepted so
+// old call sites cannot accidentally turn nested state into authority.
+function isApplied(proposal) {
+    return proposal?.applied === true;
 }
 
-// Legacy fallback for rows the split has not upgraded yet: the old application semantics, where a
-// status of 'applied' or 'executed' (on the sub-proposal or the proposal) meant on-the-map.
-function deriveAppliedFromLegacy(proposal, sub) {
-    if (!proposal) return false;
-    if (proposal.supersededByProposalId) return false;
-    const life = norm(proposal.status);
-    if (life === 'cancelled' || life === 'expired') return false;
-    if (sub && typeof sub.applied === 'boolean') return sub.applied;
-    for (const key of STATUS_SUB_KEYS) {
-        if (proposal[key] && typeof proposal[key].applied === 'boolean') return proposal[key].applied;
-    }
-    if (sub && APPLIED_LIKE.has(norm(sub.status))) return true;
-    if (APPLIED_LIKE.has(life)) return true;
-    return STATUS_SUB_KEYS
-        .some(k => proposal[k] && APPLIED_LIKE.has(norm(proposal[k].status)));
-}
-
-// Upgrade one record to the steady-state two-axis shape. This is intentionally mutating: the
-// storage boundary calls it once and persists the canonical form, eliminating split-brain reads.
+// Canonicalise records created by current code. This deliberately does not infer legacy state;
+// migration owns that conversion.
 function normalizeProposalStatusAxes(proposal) {
     if (!proposal || typeof proposal !== 'object') return proposal;
-    const applied = typeof proposal.applied === 'boolean'
-        ? proposal.applied
-        : deriveAppliedFromLegacy(proposal);
     proposal.lifecycleStatus = getLifecycleStatus(proposal);
-    proposal.applied = applied;
+    proposal.applied = proposal.applied === true;
     delete proposal.status;
     STATUS_SUB_KEYS.forEach(key => {
         const sub = proposal[key];
@@ -154,7 +122,6 @@ if (typeof module !== 'undefined' && module.exports) {
         getLifecycleStatus,
         canonicalLifecycle,
         isApplied,
-        deriveAppliedFromLegacy,
         normalizeProposalStatusAxes,
         setProposalApplied,
         stripProposalAppliedState,

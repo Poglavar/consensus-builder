@@ -58,7 +58,7 @@ function demolishedBuildingRecordsFrom(proposals, options = {}) {
             const corridorRecords = (typeof options.consolidateCorridorRecords === 'function')
                 ? options.consolidateCorridorRecords(
                     rawRecords,
-                    definition.surfaceFootprint || definition.polygon || null,
+                    definition.polygon || null,
                     definition
                 )
                 : rawRecords;

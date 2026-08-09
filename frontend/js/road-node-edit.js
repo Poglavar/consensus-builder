@@ -1,7 +1,7 @@
 // Purpose: node-edit mode for applied local corridors — selecting a road outside drawing mode
 // shows draggable node handles; dragging a node moves the centerline and the road re-applies.
-// Drawing mode is drawing-only: handles hide while a corridor tool is active. Minted proposals
-// are immutable and never get handles (they go through the draft/replacement editor instead).
+// Drawing mode is drawing-only: handles hide while a corridor tool is active. Every edit creates
+// a fresh local replacement snapshot, so the published/minted source itself remains immutable.
 (function attachRoadNodeEdit(global) {
     'use strict';
 
@@ -75,38 +75,44 @@
 
     function normalizedSegmentsOf(definition) {
         return (global.corridorCenterlineOf?.(definition) || [])
-            .map(segment => segment.map(point => ({ lat: point.lat, lng: point.lng })));
+            .map(segment => segment.map(point => ({ ...point, lat: point.lat, lng: point.lng })));
     }
 
-    function writeSegments(definition, segments) {
-        const kept = segments.filter(segment => segment.length >= 2);
-        definition.points = kept;
-        definition.segments = kept;
-        const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds : [];
-        definition.segmentIds = kept.map((_, index) => ids[index] || null);
+    function writeSegments(definition, segments, segmentIds = null, segmentProfiles = undefined) {
+        const ids = Array.isArray(segmentIds)
+            ? segmentIds
+            : (Array.isArray(definition.segmentIds) ? definition.segmentIds : []);
+        const kept = segments.map((segment, index) => ({ segment, id: ids[index] ?? null }))
+            .filter(entry => entry.segment.length >= 2);
+        definition.points = kept.map(entry => entry.segment);
+        definition.segments = definition.points;
+        definition.segmentIds = kept.map(entry => entry.id);
+        if (segmentProfiles !== undefined) {
+            if (segmentProfiles && Object.keys(segmentProfiles).length) {
+                definition.segmentProfiles = segmentProfiles;
+            } else {
+                delete definition.segmentProfiles;
+            }
+        }
     }
 
-    // Corridor re-apply is stateful (unapply→apply + parcel/building re-cut) and cannot safely run
-    // twice at once. Rather than DROP an edit that arrives mid-apply (which lost the drag and orphaned
-    // its node), edits are serialized and COALESCED: the newest queued edit wins, because liveMoveNode
-    // has already written every drag into the live definition, so one final re-apply captures them all.
-    // A non-blocking "Applying…" spinner (in updateLocalCorridorGeometry) tells the user work is running.
-    let pendingEdit = null;
+    // A handle captures array indexes from the snapshot it was rendered against. The moment an edit
+    // starts those indexes are stale, so remove the handles until the atomic replacement/replay has
+    // selected and rendered the new snapshot. Queuing a second click against the old proposal was
+    // what created duplicate replacement records and removed unrelated stretches.
     function runExclusiveEdit(runFn) {
         if (typeof runFn !== 'function') return;
-        if (busy) { pendingEdit = runFn; return; } // coalesce: only the latest matters
+        if (busy) return;
         busy = true;
+        if (handleGroup) {
+            try { global.map?.removeLayer(handleGroup); } catch (_) { }
+            handleGroup = null;
+        }
         Promise.resolve(runFn()).catch(error => {
             console.warn('[roadNodeEdit] Geometry edit failed', error);
         }).finally(() => {
             busy = false;
-            if (pendingEdit) {
-                const next = pendingEdit;
-                pendingEdit = null;
-                runExclusiveEdit(next);
-            } else {
-                refresh();
-            }
+            refresh();
         });
     }
 
@@ -137,7 +143,12 @@
                     const segments = (typeof global.corridorCenterlineOf === 'function')
                         ? global.corridorCenterlineOf(snapshot)
                         : null;
-                    if (segments) writeSegments(definition, segments);
+                    if (segments) writeSegments(
+                        definition,
+                        segments,
+                        snapshot.segmentIds,
+                        snapshot.segmentProfiles
+                    );
                 }));
             },
             onChange: () => { }
@@ -156,33 +167,35 @@
         runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, mutator));
     }
 
-    // Bulldoze one stretch: the edge disappears, the segment splits around it, and if the body
-    // disconnects, updateLocalCorridorGeometry splits it into separate roads.
+    // Bulldoze one stretch. Disconnected remainders stay stretches of this same road formation.
     function bulldozeEdge(proposalKey, segIndex, edgeIndex) {
         mutateGeometry(proposalKey, definition => {
             const segments = normalizedSegmentsOf(definition);
-            const segment = segments[segIndex];
-            if (!segment || !segment[edgeIndex + 1]) return;
-            const before = segment.slice(0, edgeIndex + 1);
-            const after = segment.slice(edgeIndex + 1);
-            const replacement = [];
-            if (before.length >= 2) replacement.push(before);
-            if (after.length >= 2) replacement.push(after);
-            segments.splice(segIndex, 1, ...replacement);
-            writeSegments(definition, segments);
+            const result = global.CorridorGeometry.removeCorridorEdge(
+                segments,
+                definition.segmentIds,
+                definition.segmentProfiles,
+                segIndex,
+                edgeIndex
+            );
+            if (!result.changed) return;
+            writeSegments(definition, result.segments, result.segmentIds, result.segmentProfiles);
         });
     }
 
     // Alt-click a node: remove the vertex from every leg that shares it (each polyline
-    // straightens through; disconnected results split via updateLocalCorridorGeometry).
+    // straightens through; any disconnected results remain in the same road formation).
     function deleteNode(proposalKey, targets) {
         mutateGeometry(proposalKey, definition => {
             const segments = normalizedSegmentsOf(definition);
-            targets.forEach(({ segIndex, pointIndex }) => {
-                const segment = segments[segIndex];
-                if (segment && segment[pointIndex]) segment.splice(pointIndex, 1);
-            });
-            writeSegments(definition, segments);
+            const result = global.CorridorGeometry.removeCorridorNodes(
+                segments,
+                definition.segmentIds,
+                definition.segmentProfiles,
+                targets
+            );
+            if (!result.changed) return;
+            writeSegments(definition, result.segments, result.segmentIds, result.segmentProfiles);
         });
     }
 
@@ -190,11 +203,15 @@
     // so dragging the center of an X carries all four legs.
     function moveNodeTargets(definition, targets, latlng) {
         const segments = (global.corridorCenterlineOf?.(definition) || [])
-            .map(segment => segment.map(point => ({ lat: point.lat, lng: point.lng })));
+            .map(segment => segment.map(point => ({ ...point, lat: point.lat, lng: point.lng })));
         let moved = false;
         targets.forEach(({ segIndex, pointIndex }) => {
             if (segments[segIndex] && segments[segIndex][pointIndex]) {
-                segments[segIndex][pointIndex] = { lat: latlng.lat, lng: latlng.lng };
+                segments[segIndex][pointIndex] = {
+                    ...segments[segIndex][pointIndex],
+                    lat: latlng.lat,
+                    lng: latlng.lng
+                };
                 moved = true;
             }
         });

@@ -134,18 +134,18 @@ describe('effectFingerprintOf', () => {
         expect(flowApi.effectFingerprintOf({ goal: 'urban-rule', parentParcelIds: ['HR-1-P'] })).toBeNull();
     });
 
-    it('per-building verdicts move the hash: cut vs demolish vs tunnel are different takings', () => {
+    it('ignores derived demolition scans but includes authored tunnel choices', () => {
         const bare = makeRoad();
         const reference = flowApi.effectFingerprintOf(bare);
 
         const withCut = makeRoad();
         withCut.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {}, remainder: { type: 'Polygon' } }] } };
         const cutHash = flowApi.effectFingerprintOf(withCut);
-        expect(cutHash).not.toBe(reference);
+        expect(cutHash).toBe(reference);
 
         const withDemolish = makeRoad();
         withDemolish.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {} }] } }; // no remainder = full
-        expect(flowApi.effectFingerprintOf(withDemolish)).not.toBe(cutHash);
+        expect(flowApi.effectFingerprintOf(withDemolish)).toBe(reference);
 
         const withTunnel = makeRoad();
         withTunnel.roadProposal = { definition: { tunnels: [{ edgeKey: 'e1', buildingIds: ['b1'] }] } };

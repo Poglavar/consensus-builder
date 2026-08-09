@@ -158,7 +158,7 @@ function handleProposalParcelClick(parcelId, event) {
             multiParcelSelection.clearSingleParcelSelection();
         }
 
-        let proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => getLifecycleStatus(p) !== 'Executed');
+        let proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
         if (proposals.length === 0) {
             proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
         }
@@ -984,9 +984,13 @@ function getProposalPanelFitPadding(margin = 40) {
     let paddingBottomRight = [margin, margin];
     try {
         let rect = null;
+        // The share-plan panel exists in the DOM only while open, so presence means visible.
+        const sharePanel = document.querySelector('.share-plan-panel-content');
         const listModal = document.querySelector('.proposal-list-modal');
         const listPanel = document.querySelector('.proposal-list-modal-content');
-        if (listModal && listModal.style.display === 'block' && listPanel) {
+        if (sharePanel) {
+            rect = sharePanel.getBoundingClientRect();
+        } else if (listModal && listModal.style.display === 'block' && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
             const details = document.getElementById('proposal-details-panel');
@@ -1040,18 +1044,9 @@ function fitMapToAppliedProposals() {
 
     if (!combined || !combined.isValid()) return false;
 
-    // Pad the side the panel covers so proposals aren't framed underneath it.
-    let paddingTopLeft = [40, 40];
-    let paddingBottomRight = [40, 40];
-    try {
-        const panel = document.querySelector('.proposal-list-modal-content');
-        if (panel) {
-            const rect = panel.getBoundingClientRect();
-            const docksBottom = rect.top > window.innerHeight * 0.4; // mobile: lower-half dock
-            if (docksBottom) paddingBottomRight = [40, Math.round(rect.height) + 40];
-            else paddingBottomRight = [Math.round(rect.width) + 40, 40];
-        }
-    } catch (_) { }
+    // Pad the side the open panel covers (proposals list OR share-plan panel) so proposals
+    // aren't framed underneath it.
+    const { paddingTopLeft, paddingBottomRight } = getProposalPanelFitPadding(40);
 
     try {
         // animate:false — an instant overview when the list opens (no distracting pan), and it avoids
@@ -1152,10 +1147,6 @@ function handleMultiSelectChange(checked, source) {
             multiParcelSelection.toggle();
         }
     }
-}
-
-function handleShowProposalsChange() {
-    // No-op: proposal mode removed
 }
 
 function cancelMultiParcelSelection() {

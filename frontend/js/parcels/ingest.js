@@ -73,7 +73,7 @@
 
         var renderableFeatures = [];
         var idsToReplace = new Set();
-        var removedByProposalSkipped = [];
+        var hiddenBaseIds = new Set();
         var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
         var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
             ? global.ParcelsState.getParcelCache()
@@ -124,16 +124,14 @@
                 parcelStore.byId.set(parcelId.toString(), feature);
             }
 
-            // If a proposal previously removed this parcel (replaced by children), keep it out of the map layer while retaining it in cache.
-            // isParcelReplacedByChildren only says "replaced" when a replacement slice actually
-            // exists on this device, so a parent whose children were never (re)generated here
-            // (a shared proposal carrying the sender's slice ids) still reaches the map.
+            // A standing formation's current derivation replaces this cadastral layer. Still
+            // instantiate and index the immutable base so the next cadastre-first replay has its
+            // ground fact; hide it after registration instead of dropping it at tile-ingest time.
             try {
                 const idString = parcelId.toString();
                 const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(idString) : false;
                 if (isReplaced) {
-                    removedByProposalSkipped.push(idString);
-                    return;
+                    hiddenBaseIds.add(idString);
                 }
             } catch (_) { /* best-effort guard */ }
 
@@ -243,6 +241,10 @@
 
                 if (typeof global.indexParcelLayer === 'function') {
                     global.indexParcelLayer(layer);
+                }
+
+                if (hiddenBaseIds.has(String(parcelId)) && typeof global.hideParcelLayerById === 'function') {
+                    global.hideParcelLayerById(String(parcelId));
                 }
 
                 addedLayers.push(layer);

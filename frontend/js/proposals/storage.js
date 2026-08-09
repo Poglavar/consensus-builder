@@ -204,40 +204,6 @@ function getProposalByIdOrHash(idOrHash) {
     return resolved ? proposalStorage.getProposal(resolved) : null;
 }
 
-function loadRoadAssetsForCache(proposal) {
-    const roadProposal = proposal?.roadProposal || {};
-    const manager = (typeof ProposalManager !== 'undefined') ? ProposalManager : null;
-
-    // Always fetch by ID - never cache parentFeatures on proposal objects
-    let parentFeatures = [];
-    if (manager && typeof manager._loadRoadProposalAssets === 'function') {
-        try {
-            // Get parent IDs from the proposal data directly (don't call _collectParentParcelIds which might fail)
-            const parentIds = Array.isArray(roadProposal.parentParcelIds) && roadProposal.parentParcelIds.length > 0
-                ? roadProposal.parentParcelIds
-                : (Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0
-                    ? proposal.parentParcelIds
-                    : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []));
-            if (parentIds.length > 0) {
-                const loaded = manager._loadRoadProposalAssets(proposal, {
-                    includeParents: true,
-                    includeChildren: false,
-                    includeKeepDetails: false,
-                    allowMissing: true
-                }) || {};
-                if (Array.isArray(loaded.parentFeatures)) {
-                    parentFeatures = loaded.parentFeatures;
-                }
-            }
-        } catch (error) {
-            // Silently fail - this is just for caching, not critical
-            console.debug('loadRoadAssetsForCache: failed to load assets for proposal', error);
-        }
-    }
-
-    return { parentFeatures };
-}
-
 function getFirstSelectableParcel(proposal) {
     if (!proposal || !Array.isArray(proposal.parentParcelIds)) {
         return null;
@@ -308,32 +274,6 @@ function deleteProposal(proposalId) {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
             updateStatus('Error: Proposal not found');
-            return;
-        }
-
-        // An edited object remembers what it replaced: deleting it offers a one-jump restore of
-        // the original (e.g. the proposal loaded from a shared link) instead of losing both.
-        if (proposal.revertSnapshot && typeof window !== 'undefined'
-            && typeof window.showStyledChoice === 'function'
-            && typeof window.revertProposalToSnapshot === 'function'
-            && !proposal.__deleteChoiceResolved) {
-            const tHelper = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : ((k, f) => f);
-            const originalName = proposal.revertSnapshot.title || proposal.revertSnapshot.name || '';
-            window.showStyledChoice(
-                tHelper('modal.deleteProposal.withRevert', 'This object replaced “{{name}}”. Restore that version, or delete everything?', { name: originalName }),
-                [
-                    { value: 'revert', label: tHelper('modal.deleteProposal.restore', 'Restore previous version'), primary: true },
-                    { value: 'delete', label: tHelper('modal.deleteProposal.deleteAll', 'Delete everything') },
-                    { value: 'cancel', label: tHelper('modal.deleteProposal.cancel', 'Cancel') }
-                ]
-            ).then(answer => {
-                if (answer === 'revert') {
-                    window.revertProposalToSnapshot(proposalId);
-                } else if (answer === 'delete') {
-                    proposal.__deleteChoiceResolved = true;
-                    try { deleteProposal(proposalId); } finally { delete proposal.__deleteChoiceResolved; }
-                }
-            });
             return;
         }
 
@@ -494,118 +434,6 @@ async function offerBlockedWorkRecovery() {
     }
 }
 
-function checkParcelsOriginal(parcelList) {
-    const nonOriginal = [];
-    const seen = new Set();
-    if (!parcelList) return nonOriginal;
-
-    const list = Array.isArray(parcelList) ? parcelList : Array.from(parcelList);
-    list.forEach(entry => {
-        let parcelId = null;
-        if (entry === undefined || entry === null) return;
-        if (typeof entry === 'string' || typeof entry === 'number') {
-            parcelId = entry;
-        } else if (typeof entry === 'object') {
-            parcelId = entry.parcelId || entry.id || entry.parcel_id;
-            if (!parcelId && entry.feature && typeof getParcelIdFromFeature === 'function') {
-                parcelId = getParcelIdFromFeature(entry.feature);
-            }
-            if (!parcelId && entry.properties) {
-                parcelId = entry.properties.parcelId || entry.properties.parcel_id || entry.properties.id;
-            }
-        }
-
-        const normalized = parcelId !== undefined && parcelId !== null
-            ? (parcelId.toString ? parcelId.toString() : String(parcelId))
-            : null;
-        if (!normalized || seen.has(normalized)) return;
-        seen.add(normalized);
-
-        let ancestors = [];
-        try {
-            if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._getParcelAncestors === 'function') {
-                ancestors = ProposalManager._getParcelAncestors(normalized) || [];
-            } else if (typeof readPersistedParcelRecord === 'function') {
-                const props = readPersistedParcelRecord(normalized)?.properties;
-                if (props && props.ancestorProposal) {
-                    ancestors = [props.ancestorProposal];
-                }
-            }
-        } catch (_) {
-            ancestors = [];
-        }
-
-        if (Array.isArray(ancestors) && ancestors.length > 0) {
-            nonOriginal.push(normalized);
-        }
-    });
-
-    return nonOriginal;
-}
-
-function collectParcelProposalPairs(parcelList) {
-    const pairs = [];
-    const seen = new Set();
-    if (!parcelList) return pairs;
-
-    const list = Array.isArray(parcelList) ? parcelList : Array.from(parcelList);
-    list.forEach(entry => {
-        let parcelId = null;
-        if (entry === undefined || entry === null) return;
-        if (typeof entry === 'string' || typeof entry === 'number') {
-            parcelId = entry;
-        } else if (typeof entry === 'object') {
-            parcelId = entry.parcelId || entry.id || entry.parcel_id;
-            if (!parcelId && entry.feature && typeof getParcelIdFromFeature === 'function') {
-                parcelId = getParcelIdFromFeature(entry.feature);
-            }
-            if (!parcelId && entry.properties) {
-                parcelId = entry.properties.parcelId || entry.properties.parcel_id || entry.properties.id;
-            }
-        }
-
-        const normalized = parcelId !== undefined && parcelId !== null
-            ? (parcelId.toString ? parcelId.toString() : String(parcelId))
-            : null;
-        if (!normalized || seen.has(normalized)) return;
-        seen.add(normalized);
-
-        let ancestors = [];
-        try {
-            if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._getParcelAncestors === 'function') {
-                ancestors = ProposalManager._getParcelAncestors(normalized) || [];
-            } else if (typeof readPersistedParcelRecord === 'function') {
-                const props = readPersistedParcelRecord(normalized)?.properties;
-                if (props && props.ancestorProposal) {
-                    ancestors = [props.ancestorProposal];
-                }
-            }
-        } catch (_) {
-            ancestors = [];
-        }
-
-        if (Array.isArray(ancestors) && ancestors.length > 0) {
-            // Get the first ancestor proposal ID (or all if multiple)
-            ancestors.forEach(ancestorProposalId => {
-                pairs.push({
-                    parcelId: normalized,
-                    proposalId: ancestorProposalId
-                });
-            });
-        }
-    });
-
-    return pairs;
-}
-
-function migrateRoadAssetsToNewId(oldId, newId) {
-    if (!oldId || !newId || oldId === newId) return;
-    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.clearRoadAssets === 'function') {
-        proposalStorage.clearRoadAssets(oldId);
-        proposalStorage.clearRoadAssets(newId);
-    }
-}
-
 function savePlanPayloadAsJson(payload) {
     try {
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -646,10 +474,6 @@ function getStoredApplyFailureInfo(proposalId) {
                     message: String(info.message),
                     code: info.code ? String(info.code) : null,
                     missingIds: ensureArrayOfStrings(info.missingIds || []),
-                    // Occupier identity rides along so the shared-plan route can tell intra-plan
-                    // occupancy (retry) from a genuine cross-plan conflict (park as overlapped).
-                    conflictTitles: ensureArrayOfStrings(info.conflictTitles || []),
-                    conflictProposalIds: ensureArrayOfStrings(info.conflictProposalIds || []),
                     at: info.at || null
                 };
             }

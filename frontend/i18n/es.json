@@ -398,8 +398,6 @@
             "reformTooltip": "Analiza las parcelas visibles y reconstruye los bloques",
             "fromSelectedButton": "Desde la parcela seleccionada",
             "fromSelectedTooltip": "Inundar desde la parcela seleccionada para formar un bloque",
-            "breakUpButton": "Dividir bloque",
-            "breakUpTooltip": "Partir el bloque seleccionado con una nueva carretera",
             "showNames": "Nombres de bloques",
             "showParks": "Parques",
             "showSquares": "Plazas",
@@ -1025,15 +1023,11 @@
             "builtStatus": "Carretera construida — haz clic para editarla o proponerla.",
             "segmentCancelledStatus": "Segmento cancelado — los segmentos colocados se mantienen. Esc de nuevo construye el camino.",
             "builtStatusTrack": "Vía construida — haz clic para editarla o proponerla.",
-            "mergedStatus": "Conectado con “{{name}}” — ahora es una sola carretera.",
-            "mergedStatusTrack": "Conectado con “{{name}}” — ahora es una sola vía.",
-            "absorbedStatus": "Continuando “{{name}}” — al terminar seguirá siendo una sola carretera.",
             "nodeHint": "Arrastra para mover · ⌥-clic elimina este nodo",
             "bulldozeHint": "🚜 Demoler este tramo",
-            "splitStatus": "La carretera se separó — ahora son {{count}} carreteras independientes.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
+            "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} propuestas de vía separadas.",
             "applyingEdit": "Aplicando…",
-            "bulldozedAllStatus": "Carretera demolida.",
             "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta",
             "finishButtonShortTrack": "Terminar vía (F)",
             "lengthLabelTrack": "Longitud de la vía:",
@@ -1242,7 +1236,7 @@
             "scopeLabel": "Se aplica a",
             "scopeSegment": "Este tramo",
             "scopeRoad": "Toda la red vial",
-            "hitsBuildings": "Se superpone con edificios — en el modo de dibujo puedes rodearlos con la vía o atravesarlos con un túnel",
+            "hitsBuildings": "Esta huella intersecta edificios; la repetición deriva el impacto resultante",
             "extendsCut": "Corta más profundo en un edificio ya recortado (ámbar en el mapa)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
             "cancel": "Cancelar",
@@ -1362,37 +1356,15 @@
             "show": "Mostrar"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} atravesaría {{count}} edificio(s) nuevo(s). ¿Cortarlos, demolerlos o hacer un túnel?",
+            "offer": "Este {{kind}} cruza {{count}} edificio(s). ¿Mantener este tramo en superficie o proyectar un túnel?",
             "road": "camino",
             "track": "vía férrea",
-            "unapply": "Retirar la propuesta existente",
-            "destroy": "Demoler los edificios",
-            "cut": "Cortar los edificios",
-            "proposalImpact": "Cortar o demoler retirará estas propuestas aplicadas del mapa (seguirán en la lista de propuestas):",
-            "proposalImpactTunnel": "El túnel mantiene aplicadas estas propuestas.",
-            "cutWithProposals": "Cortar — retirar {{count}} propuesta(s)",
-            "destroyWithProposals": "Demoler — retirar {{count}} propuesta(s)",
-            "mergeImpact": "Continuar fusionará estas propuestas de carretera con esta carretera y eliminará sus entradas de propuesta separadas:",
-            "merge": "Fusionar carreteras",
+            "proposalImpact": "Esta carretera es posterior a estas propuestas de edificios; un cruce en superficie ocupa su suelo durante la repetición:",
+            "proposalImpactTunnel": "Un túnel cambia la representación diseñada de la carretera, no la huella de suelo que ocupa.",
+            "surface": "Continuar en superficie",
+            "sameGround": "El corredor completo ocupa el mismo suelo catastral en ambos casos; la repetición deriva el impacto en superficie.",
             "confirm": "Atravesar con túnel",
             "cancel": "Elegir otra ruta"
-        },
-        "impactTour": {
-            "applyToAll": "Aplicar a todos:",
-            "cutAll": "Cortar todos",
-            "demolishAll": "Demoler todos",
-            "tunnelAll": "Tunelar todos",
-            "prev": "Edificio anterior",
-            "next": "Edificio siguiente",
-            "counter": "Edificio {{n}} / {{total}}",
-            "cut": "Cortar",
-            "demolish": "Demoler",
-            "tunnel": "Túnel",
-            "apply": "Aplicar",
-            "applyNext": "Aplicar y siguiente",
-            "applyActionToAll": "Aplicar {{action}} a todos",
-            "cancel": "Cancelar",
-            "existingProposal": "propuesta existente"
         },
         "corridorGrade": {
             "offer": "Esta ruta peatonal cruza {{count}} vía(s) no peatonal(es). ¿Cómo debe cruzarlas?",
@@ -1728,10 +1700,6 @@
                 "shareModalTitle": "Compartir una propuesta",
                 "shareUrlLabel": "URL para compartir:",
                 "copyUrlButton": "Copiar URL",
-                "ancestorNote": "Nota: esta propuesta incluye parcelas creadas por otras propuestas. Para que se aplique en un mapa objetivo, las propuestas ancestras tendrán que aplicarse primero. En lugar de compartir esta única propuesta, es posible que desee compartir el plan completo usando el botón \"Compartir plan completo\" en la sección de Propuestas de la barra lateral. La lista de parcelas:",
-                "parcelIdHeader": "ID de Parcela",
-                "proposalIdHeader": "ID de Propuesta",
-                "ancestorUploadButton": "Subir",
                 "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
                 "plan": {
                     "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
@@ -1741,6 +1709,8 @@
                     "applying": "Aplicando propuesta #{{id}}…",
                     "fetchingPlan": "Obteniendo plan…",
                     "fetchingPlanTitle": "Obteniendo propuesta",
+                    "rebuildingPlanTitle": "Reconstruyendo el plan aplicado",
+                    "rebuildingPlan": "Reaplicando sus formaciones desde el catastro…",
                     "countHeading": {
                         "one": "Hay {{count}} propuesta en el plan actual",
                         "few": "Hay {{count}} propuestas en el plan actual",
@@ -2041,7 +2011,6 @@
             "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
             "submit": "Crear propuesta",
-            "submitEdit": "Guardar",
             "creating": "Creando...",
             "waiting": "Esperando la transacción...",
             "rejected": "Transacción rechazada",
@@ -2147,7 +2116,14 @@
                 "gaps": "Número de huecos:",
                 "gapWidth": "Ancho de hueco (m):",
                 "wings": "Número de alas:",
-                "wingLength": "Longitud de ala (m):"
+                "wingLength": "Longitud de ala (m):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeExact": "Exactamente esta altura",
+                "ruleTypeMax": "Como máximo esta altura",
+                "ruleTypeRange": "Entre un mínimo y esta altura",
+                "minHeight": "Altura mínima del edificio (m):",
+                "minPlotArea": "Superficie mínima de parcela (m²):",
+                "minDepth": "Profundidad obligatoria desde la calle (m):"
             },
             "helper": {
                 "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma del edificio.",
@@ -2167,7 +2143,12 @@
                 "defaultProposalDescription": "Propuesta de edificio para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedSliver": "Solo cae una astilla de la manzana en esta parcela — demasiado pequeña para ser un edificio.",
+                "rangeExact": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida",
+                "rangeBetween": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
+                "rangeMax": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida"
             },
             "handles": {
                 "gap": "Arrastra para mover el hueco",
@@ -2205,7 +2186,8 @@
                 "uploadGeojson": "Subir GeoJSON",
                 "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
                 "uploadError": "No se pudo leer el archivo."
-            }
+            },
+            "regenerate": "Regenerar"
         }
     },
     "rowHouses": {
@@ -2223,7 +2205,13 @@
                 "rotation": "Girar huella",
                 "circumference": "Perímetro (m):",
                 "area": "Área (m²):",
-                "volume": "Volumen (m³):"
+                "volume": "Volumen (m³):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeExact": "Exactamente esta altura",
+                "ruleTypeMax": "Como máximo esta altura",
+                "ruleTypeRange": "Entre un mínimo y esta altura",
+                "minHeight": "Altura mínima (m):",
+                "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
                 "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo.",
@@ -2247,13 +2235,16 @@
                 "defaultProposalDescription": "Propuesta de viviendas en hilera para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedSliver": "Solo cae una astilla de la hilera en esta parcela — demasiado pequeña para ser una casa."
             },
             "warnings": {
                 "dissimilarParcels": "Las casas en hilera se pueden definir sobre cualquier parcela, pero las {{count}} parcelas seleccionadas varían mucho en tamaño y forma. Funcionará igual, pero las casas en hilera suelen ir sobre parcelas de tamaño y forma similares. ¿Quieres continuar?",
                 "proceed": "Continuar de todos modos",
                 "cancel": "Volver"
-            }
+            },
+            "regenerate": "Regenerar"
         }
     },
     "parcelBased": {
@@ -2269,14 +2260,23 @@
                 "maxFloors": "Pisos máximos:",
                 "minDistance": "Distancia mín. de los bordes (m):",
                 "buildingCount": "Edificios:",
-                "totalArea": "Huella total (m²):",
-                "totalVolume": "Volumen total (m³):",
-                "avgFloors": "Pisos promedio:"
+                "totalArea": "Huella permitida (m²):",
+                "totalVolume": "Volumen permitido (m³):",
+                "avgFloors": "Pisos del ejemplo (prom.):",
+                "ruleType": "Qué obliga la norma:",
+                "ruleTypeMax": "Como máximo esto",
+                "ruleTypeRange": "Entre un mínimo y esto",
+                "ruleTypeExact": "Exactamente esto",
+                "minFloors": "Pisos mínimos:",
+                "minFootprint": "Planta baja mínima (m²):",
+                "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "maxFloors": "Pisos máximos: cada edificio recibe un número aleatorio de pisos entre 1 y este valor.",
+                "maxFloors": "Pisos máximos: el techo permitido. El ejemplo de edificación varía desde 1 piso hasta ese valor.",
                 "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
-                "regenerate": "Haz clic en Regenerar para una nueva variación aleatoria — pisos, tamaño y posición de la planta dentro de los retiros."
+                "regenerate": "Haz clic en Regenerar para otro ejemplo de edificación — pisos, tamaño y posición de la planta dentro de los retiros. Las cifras permitidas de arriba nunca cambian.",
+                "ruleType": "Qué obliga la norma: como máximo esto (nadie está obligado a construir), entre un mínimo y esto, o exactamente esto (todos construyen el volumen completo).",
+                "minPlotArea": "Superficie mínima de parcela: en parcelas menores que esta no se puede construir bajo esta norma, y se muestran rayadas. Primero hay que fusionarlas."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
@@ -2286,7 +2286,11 @@
                 "defaultProposalDescription": "Propuesta por parcela para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
-                "multiParcelLabel": "{{count}} parcelas"
+                "multiParcelLabel": "{{count}} parcelas",
+                "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
+                "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
+                "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
             }
         }
     },
@@ -2327,7 +2331,7 @@
             "labelAfter": "Después",
             "sweepHandleHint": "Arrastra para rotar las líneas de parcelación",
             "drawPlot": "Dibujar parcela",
-            "drawLine": "Dividir con línea",
+            "drawLine": "Trazar una línea",
             "drawFinish": "Terminar parcela",
             "drawFinishLine": "Terminar línea",
             "drawUndo": "Deshacer punto",
@@ -2346,7 +2350,7 @@
                 "drawInvalid": "No se pudo crear una parcela válida con esos puntos.",
                 "drawNoOverlap": "La parcela dibujada está fuera de la tierra mancomunada.",
                 "drawSuccess": "Parcela añadida. Haz clic para asignar propietarios.",
-                "lineHint": "Haz clic para añadir puntos, arrastra para ajustar y pulsa Terminar para dividir.",
+                "lineHint": "Haz clic para trazar la línea. Solo se dibuja entre los sitios donde toca un lindero o una esquina existente — al menos dos.",
                 "lineTooFew": "Añade al menos 2 puntos para crear una línea de división.",
                 "lineNoSplit": "La línea no cruzó ninguna parcela para dividir.",
                 "lineSuccess": "Parcela dividida. Haz clic en cada parte para asignar propietarios.",
@@ -2359,7 +2363,17 @@
                 "nodeKept": "Ese nodo no se puede quitar: una parcela dejaría de ser un polígono.",
                 "undone": "Se deshizo el último cambio.",
                 "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este plan.",
-                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas."
+                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas.",
+                "cutSuccess": "Línea trazada — {{plots}} parcela(s) nueva(s), {{nodes}} nodo(s) nuevo(s). Haz clic en cada parte para asignar propietarios.",
+                "cutNoSplit": "La línea pasó entre sus anclajes sin dividir ninguna parcela — no cambió nada.",
+                "cutOnNode": "Empieza en una esquina existente — ese es uno de los dos anclajes que necesita.",
+                "cutFree": "Enganche desactivado mientras mantienes Shift — el punto cae exactamente donde haces clic.",
+                "eraseHint": "Haz clic en un lindero para borrarlo — las dos parcelas que separa pasan a ser una. Linderos que se pueden borrar: {{count}}.",
+                "eraseNone": "Aquí no hay linderos entre parcelas — solo el perímetro agrupado, que pertenece a los vecinos.",
+                "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
+                "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
+                "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
+                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
             },
             "assignOwners": "Asignar propietarios",
             "colNewArea": "Nueva",
@@ -2406,6 +2420,7 @@
                 "other": "{{count}} propietarios"
             },
             "cancel": "Cancelar",
+            "derivedGroundBlocked": "Una reparcelación debe apoyarse en parcelas catastrales. Primero desaplica la propuesta que ocupa este terreno.",
             "discardTitle": "¿Descartar estos cambios?",
             "discardMessage": "Los cambios que hiciste aquí no se han guardado en la propuesta. Si cierras ahora, se descartan.",
             "discardConfirm": "Descartar cambios",
@@ -2427,7 +2442,12 @@
             "colArea": "Superficie",
             "unknownParcel": "Parcela",
             "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se deriva del propio plan.",
-            "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada."
+            "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada.",
+            "eraseEdge": "Borrar un lindero",
+            "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela",
+            "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
+            "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
+            "plotLabel": "parcela {{n}} ({{area}} m²)"
         }
     },
     "status": {
@@ -2440,7 +2460,6 @@
             "block_has_no_parcels_with_name": "El bloque {{name}} no tiene parcelas",
             "block_not_found_with_name": "Bloque {{name}} no encontrado",
             "blockify_created_proposed_building_block": "Bloque de edificio propuesto creado para {{block}} (ancho: {{width}} m, retiro: {{setback}} m)",
-            "block_split_by_a_perpendicular_road_through_its_middle": "El bloque se dividió con una carretera perpendicular por el medio",
             "building_design_saved_add_proposal_details_to_submit": "Diseño del edificio guardado. Agrega los detalles de la propuesta para enviarla.",
             "building_generator_is_unavailable": "El generador de edificios no está disponible.",
             "building_proposal_missing_geometry": "La propuesta de edificio no tiene geometría; no se puede aplicar.",
@@ -2489,7 +2508,6 @@
             "error_fetching_data_please_try_again": "Error al obtener datos. Inténtalo de nuevo.",
             "error_occurred_while_counting_blocks_please_try_again": "Se produjo un error al contar los bloques. Inténtalo de nuevo.",
             "error_while_forming_block_from_selected_parcel": "Error al formar el bloque desde la parcela seleccionada.",
-            "error_while_splitting_the_selected_block": "Error al dividir el bloque seleccionado.",
             "error_proposal_not_found": "Error: propuesta no encontrada",
             "failed_to_compute_mbr": "No se pudo calcular el MBR",
             "failed_to_compute_block_hull_for_mbr": "No se pudo calcular el envolvente del bloque para el MBR",
@@ -2678,7 +2696,6 @@
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Diseño de edificio único guardado. Completa el formulario de propuesta para enviarlo.",
             "single_building_proposal_created_use_apply_when_ready": "Propuesta \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles de la propuesta cuando esté lista.",
             "single_building_tool_is_unavailable": "La herramienta de edificio único no está disponible.",
-            "split_road_did_not_intersect_any_parcels_try_adjusting_width_or_ensure_the_block_is_fully_in_view": "La carretera dividida no intersectó ninguna parcela. Ajusta el ancho o asegúrate de que el bloque esté completamente en vista.",
             "structure_proposal_dialog_is_unavailable": "El cuadro de diálogo de propuestas de estructuras no está disponible.",
             "unable_to_build_geometry_for_reparcellization": "No se pudo construir la geometría para la reparcelación.",
             "unable_to_compute_bounds_for_this_block": "No se pudieron calcular los límites de este bloque.",
@@ -2916,7 +2933,16 @@
             "solid": "Sólido:",
             "neither": "Ninguno",
             "showAllParcels": "Mostrar todas las parcelas",
-            "trees": "Árboles"
+            "trees": "Árboles",
+            "plannedAs": "Planificado como",
+            "plannedAsTooltip": "Planificado como — dibuja el volumen que permite la norma, un ejemplo de lo que podría construirse, o ambos",
+            "representationMassing": "Volumen",
+            "representationMassingTooltip": "Volumen — el volumen que permite la norma, que es lo que la propuesta establece",
+            "representationBuildOut": "Edificación",
+            "representationBuildOutTooltip": "Edificación — un ejemplo de lo que realmente podría construirse bajo la norma",
+            "representationBoth": "Ambos",
+            "representationBothTooltip": "Ambos — el ejemplo de edificación dentro del volumen permitido",
+            "reroll": "Aleatoriza cada ejemplo de edificación. No cambia nada en las propuestas."
         },
         "overlay": {
             "rendering": "Renderizando…",

@@ -208,8 +208,9 @@
 
         let proposedParcelArea = parcelArea;
         try {
-            if (((typeof global.normalizeProposalGoalKey === 'function' ? global.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase()) === 'road-track') && proposal.roadGeometry && proposal.roadGeometry.polygon && parcelFeature) {
-                const remaining = global.turf ? global.turf.difference(parcelFeature, proposal.roadGeometry.polygon) : null;
+            const roadPolygon = proposal?.roadProposal?.definition?.polygon;
+            if (((typeof global.normalizeProposalGoalKey === 'function' ? global.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase()) === 'road-track') && roadPolygon && parcelFeature) {
+                const remaining = global.turf ? global.turf.difference(parcelFeature, roadPolygon) : null;
                 proposedParcelArea = remaining && global.turf ? global.turf.area(remaining) : parcelArea;
             }
         } catch (_) { proposedParcelArea = parcelArea; }
@@ -342,4 +343,3 @@
     global.showProposalCompareModal = showProposalCompareModal;
     global.hideProposalCompareModal = hideProposalCompareModal;
 })(typeof window !== 'undefined' ? window : globalThis);
-

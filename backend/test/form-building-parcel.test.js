@@ -63,6 +63,7 @@ function makeManager(parcels) {
         _addProposalAsAncestor: vi.fn(),
         _addChildParcels: vi.fn(),
         _setLastApplyFailure: vi.fn(),
+        _appliedRoadOverlappedByTaking: vi.fn(() => null),
         _formBuildingParcel
     };
 }
@@ -110,13 +111,32 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         expect(manager._setLastApplyFailure.mock.calls[0][1].code).toBe('building-uncovered-ground');
     });
 
-    it('is idempotent on restore — an existing formation record is not re-taken', async () => {
+    it('refuses when a host remainder cannot be computed, instead of hiding dead ground', async () => {
+        // turf's sweep-line throws on degenerate rings; treating that as "fully consumed"
+        // hid the host with no remainder minted — a whole parcel of unclickable dead ground.
+        const parcels = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
+        const manager = makeManager(parcels);
+        const broken = new Proxy(turf, {
+            get: (target, key) => key === 'difference'
+                ? () => { throw new Error('Unable to find segment in SweepLine tree.'); }
+                : target[key]
+        });
+        globalThis.turf = broken;
+        const result = await manager._formBuildingParcel('p-bld', { author: 'Ana' }, {}, rect(1, 0.5, 3, 1.5), [], 'p-bld');
+        expect(result.ok).toBe(false);
+        expect(manager.hidden).toHaveLength(0);
+        expect(manager._setLastApplyFailure.mock.calls[0][1].code).toBe('building-cut-failed');
+    });
+
+    it('rebuilds from live ground and ignores a stale derived formation cache', async () => {
         const manager = makeManager([parcelOf('HR-A', 0, 2)]);
         const bp = { formation: { mode: 'footprint', parcelIds: ['HR-A'], childParcelIds: ['HR-A#p-bld-1'] } };
         const result = await manager._formBuildingParcel('p-bld', {}, bp, rect(0, 0, 2, 2), [], 'p-bld');
         expect(result.ok).toBe(true);
         expect(result.parentIds).toEqual(['HR-A']);
-        expect(manager.added).toHaveLength(0);
+        expect(manager.added).toHaveLength(1);
+        expect(manager.added[0].properties.buildingParcel).toBe(true);
+        expect(bp.formation.childParcelIds).toEqual([manager.added[0].properties.parcelId]);
     });
 });
 
@@ -130,9 +150,11 @@ describe('_formBuildingParcel — whole-parcel option', () => {
 
         expect(result.ok).toBe(true);
         expect(bp.formation.mode).toBe('adopt');
-        expect(host.properties.ownershipDetails.owners[0].name).toBe('Ana');
-        expect(bp.formation.prior[0].ownershipDetails.owners[0].name).toBe('Owner HR-A');
-        expect(manager.added).toHaveLength(0); // nothing minted on adoption
+        expect(host.properties.ownershipDetails.owners[0].name).toBe('Owner HR-A');
+        expect(bp.formation.prior).toBeUndefined();
+        expect(manager.added).toHaveLength(1);
+        expect(manager.added[0].properties.ownershipDetails.owners[0].name).toBe('Ana');
+        expect(manager.hidden).toEqual([host]);
     });
 
     it('refuses partial coverage under the whole-parcel option, naming the offender', async () => {

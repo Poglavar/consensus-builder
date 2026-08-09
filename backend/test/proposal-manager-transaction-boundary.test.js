@@ -23,7 +23,6 @@ describe('ProposalManager mutation boundary', () => {
         ]);
         store = {
             proposals,
-            proposalIndexByHash: new Map(),
             nextProposalId: 3,
             batchDepth: 0,
             saves: 0,
@@ -31,7 +30,6 @@ describe('ProposalManager mutation boundary', () => {
             endBatch() { this.batchDepth -= 1; },
             save() { this.saves += 1; },
             getProposal(id) { return this.proposals.get(String(id)); },
-            _invalidateAncestorIndex() {}
         };
         globalThis.proposalStorage = store;
         ProposalManager._refreshUIAfterProposalChange = () => {};
@@ -67,7 +65,7 @@ describe('ProposalManager mutation boundary', () => {
             return false;
         };
 
-        await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
+        await expect(ProposalManager.applyProposal('target', { replay: true })).resolves.toBe(false);
         expect(store.proposals.get('target')).toBe(targetIdentity);
         expect(store.proposals.get('conflict')).toBe(conflictIdentity);
         expect(targetIdentity).toEqual({ proposalId: 'target', applied: false, value: 'before' });
@@ -83,7 +81,7 @@ describe('ProposalManager mutation boundary', () => {
             throw cause;
         };
 
-        await expect(ProposalManager.applyProposal('target')).rejects.toBe(cause);
+        await expect(ProposalManager.applyProposal('target', { replay: true })).rejects.toBe(cause);
         expect(store.getProposal('target').value).toBe('before');
         expect(store.batchDepth).toBe(0);
     });

@@ -552,16 +552,13 @@
         options = {}
     ) {
         const count = Array.isArray(hits) ? hits.length : 0;
-        const mergeProposalImpacts = Array.isArray(options.mergeProposalImpacts)
-            ? options.mergeProposalImpacts.filter(Boolean)
-            : [];
         const kind = corridorKind === 'track'
             ? tunnelText('modal.corridorTunnel.track', 'track')
             : tunnelText('modal.corridorTunnel.road', 'road');
         let message = count
             ? tunnelText(
                 'modal.corridorTunnel.offer',
-                'This {{kind}} would pass through {{count}} new building(s). Cut through them, demolish, or tunnel?',
+                'This {{kind}} intersects {{count}} building(s). Keep this edge at surface level or author a tunnel?',
                 { kind, count }
             )
             : '';
@@ -569,193 +566,64 @@
         if (proposalCount) {
             const heading = tunnelText(
                 'modal.corridorTunnel.proposalImpact',
-                'Cutting or demolishing will unapply these proposals (they remain in the proposal list and can be applied again):',
+                'This road is later than these building proposals; a surface crossing takes their ground during replay:',
                 { count: proposalCount }
             );
             const tunnelNote = tunnelText(
                 'modal.corridorTunnel.proposalImpactTunnel',
-                'Tunnelling keeps these proposals applied.',
+                'A tunnel changes the authored road presentation, not the parcel-taking footprint.',
                 { count: proposalCount }
             );
             const list = proposalImpacts.map(impact => `• ${impact.title}`).join('\n');
             message = `${message}\n\n${heading}\n${list}\n\n${tunnelNote}`;
         }
-        if (mergeProposalImpacts.length) {
-            const mergeHeading = tunnelText(
-                'modal.corridorTunnel.mergeImpact',
-                'Continuing will merge these road proposals into this road and remove their separate proposal entries:',
-                { count: mergeProposalImpacts.length }
-            );
-            const mergeList = mergeProposalImpacts.map(impact => `• ${impact.title}`).join('\n');
-            message = `${message}${message ? '\n\n' : ''}${mergeHeading}\n${mergeList}`;
+        if (count) {
+            message += `\n\n${tunnelText(
+                'modal.corridorTunnel.sameGround',
+                'The full corridor takes the same cadastral ground either way; replay derives the surface impact.'
+            )}`;
         }
-        // Demolition is the common outcome for a road pushed through a parcel; tunnels are the
-        // exception. Destroy leads and is preselected (Enter accepts it).
-        // Cutting is the DEFAULT: the corridor takes exactly its own footprint out of the
-        // buildings; full demolition and tunnelling are the deliberate alternatives.
         const choices = count ? [
             {
-                value: 'cut',
-                label: proposalCount
-                    ? tunnelText('modal.corridorTunnel.cutWithProposals', 'Cut through — unapply {{count}} proposal(s)', { count: proposalCount })
-                    : tunnelText('modal.corridorTunnel.cut', 'Cut through the buildings'),
+                value: 'surface',
+                label: tunnelText('modal.corridorTunnel.surface', 'Continue at surface level'),
                 primary: true
-            },
-            {
-                value: 'destroy',
-                label: proposalCount
-                    ? tunnelText('modal.corridorTunnel.destroyWithProposals', 'Demolish — unapply {{count}} proposal(s)', { count: proposalCount })
-                    : tunnelText('modal.corridorTunnel.destroy', 'Demolish the buildings')
             },
             { value: 'tunnel', label: tunnelText('modal.corridorTunnel.confirm', 'Tunnel through') },
             { value: 'cancel', label: tunnelText('modal.corridorTunnel.cancel', 'Choose another route') }
-        ] : [
-            { value: 'merge', label: tunnelText('modal.corridorTunnel.merge', 'Merge roads'), primary: true },
-            { value: 'cancel', label: tunnelText('modal.corridorTunnel.cancel', 'Choose another route') }
-        ];
-        return { message, choices, proposalImpacts, mergeProposalImpacts };
+        ] : [];
+        return { message, choices, proposalImpacts };
     }
 
     async function promptBuildingObstacle(hits, corridorKind, options = {}) {
         const proposalImpacts = collectObstacleProposalImpacts(hits);
         const built = buildBuildingObstaclePrompt(hits, corridorKind, proposalImpacts, options);
-        const count = Array.isArray(hits) ? hits.length : 0;
-        // Buildings in the way → the guided per-building tour (global default + per-building override).
-        // It resolves to { action, perBuilding } | 'cancel', or a flat action string when it can't
-        // render a map. Zero buildings (a road merge only) keeps the flat choice dialog below.
-        if (count && typeof global.showBuildingImpactTour === 'function') {
-            return global.showBuildingImpactTour(hits, corridorKind, {
-                message: built.message,
-                proposalImpacts,
-                mergeProposalImpacts: built.mergeProposalImpacts,
-                defaultAction: 'cut',
-                // Geometry to outline the road (no fill) over the buildings, from the caller.
-                previewLatLngs: options.previewLatLngs,
-                roadWidth: options.roadWidth,
-                // The applied road being edited — hide only ITS strips during the tour (absent when drawing).
-                roadProposalKey: options.roadProposalKey
-            });
-        }
         if (typeof global.showStyledChoice === 'function') {
             const answer = await global.showStyledChoice(built.message, built.choices);
             return answer || 'cancel';
         }
         if (typeof global.showStyledConfirm === 'function') {
             const ok = await global.showStyledConfirm(built.message, {
-                okText: tunnelText('modal.corridorTunnel.destroy', 'Demolish the buildings'),
+                okText: tunnelText('modal.corridorTunnel.surface', 'Continue at surface level'),
                 cancelText: tunnelText('modal.corridorTunnel.cancel', 'Choose another route')
             });
-            return ok ? 'destroy' : 'cancel';
+            return ok ? 'surface' : 'cancel';
         }
-        return global.confirm?.(built.message) ? 'destroy' : 'cancel';
-    }
-
-    // Walks the user through the buildings a new corridor edge collides with.
-    // Returns { action: 'cut' | 'destroy' | 'tunnel' | 'cancel', removedProposalIds,
-    // demolishedBuildings, cutHits }. Proposal impacts are disclosed in the choice dialog before
-    // this function mutates anything; `removedProposalIds` records the proposals actually unapplied.
-    // Destroy: proposal-owned buildings are unapplied (the proposal survives in the list);
-    // real buildings are recorded as demolished — the object_id AND the footprint. The id is what
-    // the 3D view and the walk sim match on (same GDI object_id, exactly); the footprint is what
-    // the cut geometry is subtracted from, and what the 2D layer redraws a partial demolition with.
-    // Unapply a proposal whose building sits under the corridor (it stays in its parcels'
-    // list, recoverable), recording its id in `removedProposalIds`.
-    //
-    // DECISION (2026-07-15, see impact-resolver.md): a proposal a road runs into is only ever unapplied
-    // (unapply), tunnelled under, or destroyed — NEVER cut in place or split into two. This holds for
-    // every kind and both mutability classes. Splitting a bisected proposal is the only contiguity-
-    // preserving alternative to unapply (non-contiguous proposals are a firm no-go), but a bisected
-    // BUILDING has no natural two-piece meaning, so splitting is deferred and cut-in-place with it. An
-    // IMMUTABLE proposal (minted OR server-uploaded — see isProposalImmutable) could never be rewritten
-    // anyway. If a local cut/split is ever built, its branch goes RIGHT HERE gated on !isProposalImmutable.
-    async function setAsideObstacleProposal(owner, removedProposalIds) {
-        if (removedProposalIds.includes(owner)) return;
-        try {
-            const done = await global.ProposalManager?.unapplyProposal?.(owner, { skipConfirm: true, skipRestoreSource: true });
-            if (done !== false) removedProposalIds.push(owner);
-            else console.error('[corridor-tunnel] unapply refused for obstacle proposal', owner);
-        } catch (error) {
-            console.error('[corridor-tunnel] could not unapply obstacle proposal', owner, error);
-        }
-    }
-
-    // Split obstacle hits into their per-building outcomes, given the global default action and an
-    // optional per-building override map (id -> 'cut' | 'destroy' | 'tunnel'). A proposal-owned
-    // building can't be sliced (see impact-resolver.md), so any cut/destroy on it becomes an unapply
-    // of the owning proposal. Pure and unit-tested: no DOM, no proposal mutation, no geometry
-    // capture — the resolver does those side effects from the lists this returns.
-    function partitionObstacleHits(hits, globalAction, perBuilding, ownerOf = tunnelHitProposalId) {
-        const list = Array.isArray(hits) ? hits : [];
-        const overrides = perBuilding instanceof Map
-            ? perBuilding
-            : new Map(Object.entries(perBuilding || {}));
-        const effectiveActionById = new Map();
-        const realCut = [];
-        const realDestroy = [];
-        const tunnelHits = [];
-        const proposalUnapply = new Set();
-        list.forEach(hit => {
-            const id = String(hit && hit.id != null ? hit.id : '');
-            const action = overrides.get(id) || globalAction || 'cut';
-            effectiveActionById.set(id, action);
-            if (action === 'tunnel') { tunnelHits.push(hit); return; }
-            const owner = typeof ownerOf === 'function' ? ownerOf(hit) : null;
-            if (owner) { proposalUnapply.add(owner); return; } // proposal-owned cut/destroy → unapply
-            if (action === 'cut') realCut.push(hit);
-            else realDestroy.push(hit);
-        });
-        return { effectiveActionById, realCut, realDestroy, tunnelHits, proposalUnapply };
+        return global.confirm?.(built.message) ? 'surface' : 'cancel';
     }
 
     async function resolveBuildingObstacles(hits, corridorKind = 'road', options = {}) {
-        const removedProposalIds = [];
-        const demolishedBuildings = [];
         const obstacleHits = Array.isArray(hits) ? hits : [];
-        const mergeImpacts = Array.isArray(options.mergeProposalImpacts) ? options.mergeProposalImpacts.filter(Boolean) : [];
-        const outcome = action => ({ action, removedProposalIds, demolishedBuildings, cutHits: [], effectiveActionById: new Map() });
-        if (!obstacleHits.length && !mergeImpacts.length) return outcome('destroy');
+        const outcome = action => ({ action, surfaceHits: [], tunnelHits: [] });
+        if (!obstacleHits.length) return outcome('surface');
         if (promptActive) return outcome('cancel');
         promptActive = true;
         try {
-            const answer = await promptBuildingObstacle(obstacleHits, corridorKind, { ...options, mergeProposalImpacts: mergeImpacts });
-            // Normalize both prompt shapes: the tour returns { action, perBuilding }; the flat dialog a string.
-            let globalAction = null;
-            let perBuilding = new Map();
+            const answer = await promptBuildingObstacle(obstacleHits, corridorKind, options);
             if (answer === 'cancel' || answer == null) return outcome('cancel');
-            if (answer === 'merge') return outcome('merge');
-            if (typeof answer === 'string') {
-                globalAction = answer;
-            } else {
-                if (answer.action === 'cancel') return outcome('cancel');
-                if (answer.action === 'merge') return outcome('merge');
-                globalAction = answer.action;
-                perBuilding = answer.perBuilding instanceof Map
-                    ? answer.perBuilding
-                    : new Map(Object.entries(answer.perBuilding || {}));
-            }
-            if (!['cut', 'destroy', 'tunnel'].includes(globalAction)) return outcome('cancel');
-
-            const part = partitionObstacleHits(obstacleHits, globalAction, perBuilding, tunnelHitProposalId);
-            // Proposal-owned buildings set to cut/destroy: unapply the owning proposal (kept in the list).
-            for (const owner of part.proposalUnapply) {
-                await setAsideObstacleProposal(owner, removedProposalIds);
-            }
-            // Real buildings set to destroy: capture the footprint so the 3D view and cut geometry match.
-            part.realDestroy.forEach(hit => {
-                let geometry = null;
-                try { geometry = JSON.parse(JSON.stringify(originalBuildingFeature(hit)?.geometry || null)); } catch (error) {
-                    console.error('[corridor-tunnel] could not capture footprint of demolished building — it will still render in 3D', hit.id, error);
-                }
-                demolishedBuildings.push({ id: String(hit.id), geometry });
-            });
-            return {
-                action: globalAction,
-                perBuilding,
-                effectiveActionById: part.effectiveActionById,
-                removedProposalIds,
-                demolishedBuildings,
-                cutHits: part.realCut
-            };
+            if (answer === 'tunnel') return { action: 'tunnel', surfaceHits: [], tunnelHits: obstacleHits };
+            if (answer === 'surface') return { action: 'surface', surfaceHits: obstacleHits, tunnelHits: [] };
+            return outcome('cancel');
         } finally {
             promptActive = false;
         }
@@ -1013,7 +881,7 @@
     // proposal-owned buildings are unapplied silently (kept in the list), real ones are
     // returned as demolition records. Buildings straddling the region boundary are
     // demolished PARTIALLY (see splitDemolitionFootprint).
-    async function demolishBuildingsUnderFootprint(geometry) {
+    async function demolishBuildingsUnderFootprint(geometry, options = {}) {
         const records = [];
         if (!geometry || !geometry.type) return records;
         const regionFeature = { type: 'Feature', properties: {}, geometry };
@@ -1031,8 +899,19 @@
         for (const hit of hits) {
             const owner = tunnelHitProposalId(hit);
             if (owner) {
+                // A replay begins by clearing the whole target set, including its presentation
+                // caches. If a stale cache nevertheless exposes the taker's own old building,
+                // it is not an obstacle and must never recursively unapply itself.
+                if (options.proposalId && String(options.proposalId) === String(owner)) continue;
                 try {
-                    await global.ProposalManager?.unapplyProposal?.(owner, { skipConfirm: true, skipRestoreSource: true });
+                    await global.ProposalManager?.unapplyProposal?.(owner, {
+                        skipConfirm: true,
+                        skipRebuild: true,
+                        // This scan runs inside the taker's apply transaction. Enqueuing a second
+                        // root mutation behind that transaction while the taker awaits it is a
+                        // promise cycle (the Ctrl+R deadlock). Nested parking belongs to the root.
+                        _mutationTransaction: options._mutationTransaction
+                    });
                 } catch (error) {
                     console.error('[corridor-tunnel] could not unapply building proposal under structure', owner, error);
                 }
@@ -1140,7 +1019,6 @@
         corridorTunnelHitProposalId: tunnelHitProposalId,
         collectObstacleProposalImpacts,
         buildBuildingObstaclePrompt,
-        partitionObstacleHits,
         resolveBuildingObstacles,
         collectTunnelledBuildingIds,
         classifyBuildingOutcome,
@@ -1168,7 +1046,6 @@
             consolidateBuildingDemolitionRecords,
             collectObstacleProposalImpacts,
             buildBuildingObstaclePrompt,
-            partitionObstacleHits,
             resolveBuildingObstacles,
             collectTunnelledBuildingIds,
             classifyBuildingOutcome,

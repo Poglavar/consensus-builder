@@ -65,10 +65,10 @@ const cutRecord = (id) => ({
     remainder: REMAINDER
 });
 
-const roadWith = (records, status = 'applied') => ({
+const roadWith = (records, applied = true) => ({
     proposalId: 'p-road',
-    status,
-    roadProposal: { status, definition: { demolishedBuildings: records } }
+    applied,
+    roadProposal: { definition: { demolishedBuildings: records } }
 });
 
 describe('demolishedBuildingRecordsFrom', () => {
@@ -76,9 +76,9 @@ describe('demolishedBuildingRecordsFrom', () => {
 
     it('collects records from roads, structures and building typologies alike', () => {
         const records = demolishedBuildingRecordsFrom([
-            { status: 'applied', roadProposal: { status: 'applied', definition: { demolishedBuildings: [record] } } },
-            { status: 'applied', structureProposal: { status: 'applied', demolishedBuildings: [{ ...record, id: 'b2' }] } },
-            { status: 'executed', buildingProposal: { status: 'executed', demolishedBuildings: [{ ...record, id: 'b3' }] } }
+            { applied: true, roadProposal: { definition: { demolishedBuildings: [record] } } },
+            { applied: true, structureProposal: { demolishedBuildings: [{ ...record, id: 'b2' }] } },
+            { applied: true, lifecycleStatus: 'Executed', buildingProposal: { demolishedBuildings: [{ ...record, id: 'b3' }] } }
         ]);
 
         expect(records.map(r => r.id)).toEqual(['b1', 'b2', 'b3']);
@@ -86,8 +86,8 @@ describe('demolishedBuildingRecordsFrom', () => {
 
     it('ignores proposals that are not applied — unapplying gives the buildings back', () => {
         const records = demolishedBuildingRecordsFrom([
-            { status: 'unapplied', roadProposal: { status: 'unapplied', definition: { demolishedBuildings: [record] } } },
-            { status: 'Active', structureProposal: { status: 'Active', demolishedBuildings: [record] } }
+            { applied: false, roadProposal: { definition: { demolishedBuildings: [record] } } },
+            { lifecycleStatus: 'Active', structureProposal: { demolishedBuildings: [record] } }
         ]);
 
         expect(records).toEqual([]);
@@ -122,14 +122,14 @@ describe('collectCarveRecords', () => {
     it('lets a full demolition win over a cut of the same building — it cannot be resurrected', () => {
         const { records } = collectCarveRecords([
             roadWith([fullDemolition(61075)]),
-            { proposalId: 'p2', status: 'applied', structureProposal: { status: 'applied', demolishedBuildings: [cutRecord(61075)] } }
+            { proposalId: 'p2', applied: true, structureProposal: { demolishedBuildings: [cutRecord(61075)] } }
         ]);
 
         expect(records.get('61075').remainder).toBeUndefined();
     });
 
     it('holds nothing for proposals that are not applied', () => {
-        const { records } = collectCarveRecords([roadWith([fullDemolition(61075)], 'unapplied')]);
+        const { records } = collectCarveRecords([roadWith([fullDemolition(61075)], false)]);
 
         expect(records.size).toBe(0);
     });
@@ -202,9 +202,8 @@ describe('carveBuildingByObjectId', () => {
         // no corridor-footprint region left in the carve that could reach it.
         const tunnelled = {
             proposalId: 'p-tunnel',
-            status: 'applied',
+            applied: true,
             roadProposal: {
-                status: 'applied',
                 definition: {
                     polygon: box(LNG0 - 0.0004, LAT0 + 0.0001, 0.0016, 0.00005),
                     tunnels: [{ edgeKey: 'a|b', buildingIds: ['61075'] }],
@@ -219,8 +218,8 @@ describe('carveBuildingByObjectId', () => {
     it.each(['park', 'square', 'lake'])('lets a %s clear its ground — its records carve exactly like a corridor\'s', kind => {
         const structure = {
             proposalId: `p-${kind}`,
-            status: 'applied',
-            structureProposal: { kind, status: 'applied', demolishedBuildings: [fullDemolition(61075)] }
+            applied: true,
+            structureProposal: { kind, demolishedBuildings: [fullDemolition(61075)] }
         };
         const carve = carveBuildingByObjectId(61075, collectCarveRecords([structure]));
 
@@ -229,7 +228,7 @@ describe('carveBuildingByObjectId', () => {
     });
 
     it('gives the buildings back when the proposal is unapplied', () => {
-        expect(carveBuildingByObjectId(61075, collectCarveRecords([roadWith([fullDemolition(61075)], 'unapplied')]))).toBeNull();
+        expect(carveBuildingByObjectId(61075, collectCarveRecords([roadWith([fullDemolition(61075)], false)]))).toBeNull();
     });
 
     it('accepts a numeric or a string object_id — the pool and the record may disagree on type', () => {

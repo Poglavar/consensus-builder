@@ -178,5 +178,114 @@
         return { geometries: resolved, changed, clipped, overlaps, gapsFilled, gapArea };
     }
 
-    return { healTiling, DEFAULT_MIN_PIECE_M2 };
+    function bboxOf(turf, geometry) {
+        try { return turf.bbox(feature(geometry)); } catch (_) { return null; }
+    }
+
+    function boxesMeet(a, b, pad) {
+        if (!a || !b) return false;
+        return !(a[2] + pad < b[0] || b[2] + pad < a[0] || a[3] + pad < b[1] || b[3] + pad < a[1]);
+    }
+
+    // Heal only the part of the layout an edit could have disturbed.
+    //
+    // healTiling resolves overlaps by accumulating a running union and testing every plot against
+    // it. That union grows to the whole pool, so the work is quadratic in the number of plots — and
+    // it ran in full on every node-drag commit, for an edit that moved three of them. Measured at
+    // roughly half a second on an 82-plot plan, which is a stall on every drag release.
+    //
+    // The invariant that an edit can break is LOCAL: a plot that changed may now overlap a
+    // neighbour or leave a gap beside one, and nothing else moved. So the pass runs over the
+    // changed plots plus anything whose bounds meet theirs, against the land that subset held
+    // BEFORE — which is exactly the land it must still hold after.
+    //
+    // It refuses rather than guesses. If the subset does not hand back the area it started with,
+    // its pool was the wrong shape and `fellBack` tells the caller to run the global pass; same if
+    // the edit reaches so much of the plan that scoping buys nothing.
+    function healLocally(before, after, pool, deps, options) {
+        const turf = (deps && deps.turf) || (typeof window !== 'undefined' ? window.turf : null);
+        const opts = options || {};
+        const from = (Array.isArray(before) ? before : []).map(geometryOf);
+        const to = (Array.isArray(after) ? after : []).map(geometryOf);
+        if (!turf || !from.length || from.length !== to.length) return { fellBack: true };
+
+        const changed = [];
+        for (let i = 0; i < to.length; i++) {
+            if (JSON.stringify(from[i]) !== JSON.stringify(to[i])) changed.push(i);
+        }
+        if (!changed.length) {
+            return { geometries: to, changed: false, clipped: 0, overlaps: 0, gapsFilled: 0, gapArea: 0, scope: 0, fellBack: false };
+        }
+
+        // A plot counts as affected if it meets where a changed plot WAS or where it now IS: a drag
+        // can free land beside its old position as easily as it can push into a new neighbour.
+        const pad = Number.isFinite(opts.padDeg) ? opts.padDeg : 1e-6;
+        const seeds = [];
+        changed.forEach(index => {
+            const was = bboxOf(turf, from[index]);
+            const now = bboxOf(turf, to[index]);
+            if (was) seeds.push(was);
+            if (now) seeds.push(now);
+        });
+        const affected = new Set(changed);
+        for (let i = 0; i < to.length; i++) {
+            if (affected.has(i)) continue;
+            const box = bboxOf(turf, to[i]) || bboxOf(turf, from[i]);
+            if (seeds.some(seed => boxesMeet(seed, box, pad))) affected.add(i);
+        }
+        const indices = Array.from(affected).sort((a, b) => a - b);
+        const maxShare = Number.isFinite(opts.maxShare) ? opts.maxShare : 0.6;
+        if (indices.length >= Math.max(2, to.length * maxShare)) return { fellBack: true };
+
+        const localPool = unionAll(turf, indices.map(index => from[index]));
+        if (!localPool) return { fellBack: true };
+
+        const result = healTiling(indices.map(index => to[index]), localPool, deps, opts);
+
+        const held = indices.reduce((sum, index) => sum + safeArea(turf, from[index]), 0);
+        const returned = result.geometries.reduce((sum, geometry) => sum + safeArea(turf, geometry), 0);
+        if (Math.abs(returned - held) > Math.max(1, held * 1e-4)) return { fellBack: true };
+
+        const geometries = to.slice();
+        indices.forEach((index, position) => { geometries[index] = result.geometries[position]; });
+        return {
+            geometries,
+            changed: result.changed,
+            clipped: result.clipped,
+            overlaps: result.overlaps,
+            gapsFilled: result.gapsFilled,
+            gapArea: result.gapArea,
+            scope: indices.length,
+            fellBack: false
+        };
+    }
+
+    // How much land an edit actually moved, per plot. An edit that is allowed unconditionally still
+    // has to be REPORTABLE: removing a node where three plots meet transferred 3,940 m² between
+    // owners with nothing on screen to say so, and the only evidence was a number in a list that
+    // had quietly changed. Comparing before against after is what lets the editor name it.
+    function areaShift(before, after, deps) {
+        const turf = (deps && deps.turf) || (typeof window !== 'undefined' ? window.turf : null);
+        const from = (Array.isArray(before) ? before : []).map(geometryOf);
+        const to = (Array.isArray(after) ? after : []).map(geometryOf);
+        const perPlot = [];
+        let moved = 0;
+        const dissolved = [];
+        if (!turf) return { perPlot, moved, dissolved };
+        const count = Math.max(from.length, to.length);
+        for (let index = 0; index < count; index++) {
+            const was = safeArea(turf, from[index]);
+            const now = safeArea(turf, to[index]);
+            const delta = now - was;
+            if (was > 0 && !to[index]) dissolved.push(index);
+            if (Math.abs(delta) < 1e-6) continue;
+            perPlot.push({ index, before: was, after: now, delta });
+            // Land taken from one plot and given to another is counted once, not twice.
+            if (delta > 0) moved += delta;
+        }
+        perPlot.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+        return { perPlot, moved, dissolved };
+    }
+
+    return { healTiling, healLocally, areaShift, DEFAULT_MIN_PIECE_M2 };
 });

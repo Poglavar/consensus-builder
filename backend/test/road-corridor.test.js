@@ -76,12 +76,11 @@ describe('resolveRoadFootprintGeometry', () => {
         expect(geom).toEqual(SQUARE);
     });
 
-    it('buffers the centerline when no polygon is stored', () => {
+    it('does not synthesize a competing footprint when no canonical polygon is stored', () => {
         const geom = resolveRoadFootprintGeometry({
             roadProposal: { definition: { points: [[15.97, 45.80], [15.98, 45.80]], width: 10 } }
         });
-        expect(geom).toBeTruthy();
-        expect(['Polygon', 'MultiPolygon']).toContain(geom.type);
+        expect(geom).toBeNull();
     });
 
     it('returns null for a non-road / geometry-less proposal', () => {

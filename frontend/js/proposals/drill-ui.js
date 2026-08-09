@@ -61,10 +61,14 @@
         if (index && leafletMap) {
             index.forEach((layer, id) => {
                 if (!layer || !layer.feature || typeof layer.getBounds !== 'function') return;
+                // parcelLayerById is an ancestry/index cache: consumed cadastre and older
+                // derived pieces deliberately remain in it. They are not ground in the one
+                // live partition and must never be hover/click candidates.
+                try { if (!leafletMap.hasLayer(layer)) return; } catch (_) { return; }
                 try {
                     const bounds = layer.getBounds();
                     if (!bounds || !bounds.isValid || !bounds.isValid() || !bounds.contains(latlng)) return;
-                    parcels.push({ id: String(id), feature: layer.feature, live: leafletMap.hasLayer(layer) });
+                    parcels.push({ id: String(id), feature: layer.feature, live: true });
                 } catch (_) { }
             });
         }
@@ -469,6 +473,7 @@
             if (global.roadDrawingMode === true) return true;
             if (global.cadastreViewActive === true) return true;
             if (global.proposalListBrowseMode) return true;
+            if (global.sharePlanMode) return true;
             if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) return true;
             if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return true;
             if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return true;
@@ -525,6 +530,9 @@
     // From structure fills and corridor hit targets: nothing is selected yet; the drill both
     // selects the topmost object and shows the chain.
     function handleSurfaceClick(latlng) {
+        // Share-plan panel open: surface clicks (structures forward here directly) must not
+        // open the drill panel — the map is pan/zoom only.
+        if (global.sharePlanMode) return false;
         const stack = stackAt(latlng);
         if (!stack.length) { hidePanel(); return false; }
         const top = stack[0];
