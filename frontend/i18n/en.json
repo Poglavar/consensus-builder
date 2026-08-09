@@ -1,4 +1,13 @@
 {
+    "densityStats": {
+        "title": "Geometry statistics",
+        "parcelArea": "Parcel area",
+        "footprint": "Building footprint",
+        "siteCoverage": "Site coverage (kig)",
+        "gbp": "Above-ground GBP",
+        "kin": "kin",
+        "floorHeightHint": "Calculated from the drawn footprints and height \u00f7 {{height}} m per storey."
+    },
     "multitab": {
         "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
         "notSaved": "Proposal was NOT saved and will be lost on browser reload."

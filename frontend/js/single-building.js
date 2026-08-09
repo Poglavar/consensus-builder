@@ -159,6 +159,44 @@
         return formatSingleBuildingText(fallback, params);
     };
 
+    const refreshSingleBuildingDensityStats = () => {
+        const api = (typeof window !== 'undefined') ? window.BuildingDensityStats : null;
+        const container = document.getElementById('single-building-density-stats');
+        if (!api || !container || typeof turf === 'undefined') return;
+        const locale = document.documentElement.lang || navigator.language || 'en';
+        let stats = null;
+        try {
+            stats = api.summarizeDensity({
+                parcelFeature: singleBlockFeature,
+                buildings: buildingEntries,
+                turf,
+                floorHeightM: 3,
+                preferHeight: true
+            });
+        } catch (_) { }
+
+        const setValue = (suffix, value) => {
+            const element = document.getElementById(`single-building-density-${suffix}`);
+            if (element) element.textContent = value;
+        };
+        const area = value => stats && Number.isFinite(value) ? `${api.formatNumber(value, locale, 0)} m\u00b2` : '\u2014';
+        setValue('parcel', stats?.parcelAreaM2 > 0 ? area(stats.parcelAreaM2) : '\u2014');
+        setValue('footprint', stats ? area(stats.footprintAreaM2) : '\u2014');
+        setValue('coverage', stats?.parcelAreaM2 > 0 ? `${api.formatNumber(stats.siteCoveragePercent, locale, 1)}%` : '\u2014');
+        setValue('gbp', stats ? area(stats.aboveGroundGbpM2) : '\u2014');
+        setValue('kin', stats?.parcelAreaM2 > 0 ? api.formatNumber(stats.kin, locale, 3) : '\u2014');
+
+        const hint = document.getElementById('single-building-density-hint');
+        if (hint) {
+            const height = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(3);
+            hint.textContent = translateSingleBuildingText(
+                'densityStats.floorHeightHint',
+                'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+                { height }
+            );
+        }
+    };
+
     const showSingleBuildingAlert = (key, fallback, params = {}) => {
         const message = translateSingleBuildingText(`alerts.messages.${key}`, fallback, params);
         const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
@@ -251,10 +289,12 @@
         }
         if (!feature) return null;
         const id = nextBuildingId++;
+        const savedName = String(options.name || feature.properties?.name || '').trim();
+        const savedColor = options.color || feature.properties?.color || pickBuildingColor(buildingEntries.length);
         const entry = {
             id,
-            name: translateSingleBuildingText('modal.singleBuilding.defaultName', 'Building {{n}}', { n: id }),
-            color: pickBuildingColor(buildingEntries.length),
+            name: savedName || translateSingleBuildingText('modal.singleBuilding.defaultName', 'Building {{n}}', { n: id }),
+            color: savedColor,
             feature,
             height,
             rotation,
@@ -858,6 +898,7 @@
 
     function updateSingleBuilding3D(buildingFeature, options = {}) {
         const { skipFit = false, buildings = null } = options;
+        refreshSingleBuildingDensityStats();
         if (typeof THREE === 'undefined') return;
         if (!single3D.renderer) {
             initSingleBuilding3D(singleBlockFeature);
@@ -1966,6 +2007,12 @@
             deleteLabel: translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete'),
             renameLabel: translateSingleBuildingText('modal.singleBuilding.renameLabel', 'Rename'),
             parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
+            densityTitle: translateSingleBuildingText('densityStats.title', 'Geometry statistics'),
+            densityParcelArea: translateSingleBuildingText('densityStats.parcelArea', 'Parcel area'),
+            densityFootprint: translateSingleBuildingText('densityStats.footprint', 'Building footprint'),
+            densitySiteCoverage: translateSingleBuildingText('densityStats.siteCoverage', 'Site coverage (kig)'),
+            densityGbp: translateSingleBuildingText('densityStats.gbp', 'Above-ground GBP'),
+            densityKin: translateSingleBuildingText('densityStats.kin', 'kin'),
             heightLabel: translateSingleBuildingText('modal.singleBuilding.heightLabel', 'Height (m):'),
             rotationLabel: translateSingleBuildingText('modal.singleBuilding.rotationLabel', 'Rotate footprint'),
             rotateCounterclockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateCounterclockwiseLabel', 'Rotate counterclockwise 5 degrees'),
@@ -2036,6 +2083,17 @@
                         <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
                         <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
                     </div>
+                    <section id="single-building-density-stats" class="building-density-card" aria-live="polite">
+                        <h3>${modalText.densityTitle}</h3>
+                        <dl class="building-density-grid">
+                            <div><dt>${modalText.densityParcelArea}</dt><dd id="single-building-density-parcel">\u2014</dd></div>
+                            <div><dt>${modalText.densityFootprint}</dt><dd id="single-building-density-footprint">\u2014</dd></div>
+                            <div><dt>${modalText.densitySiteCoverage}</dt><dd id="single-building-density-coverage">\u2014</dd></div>
+                            <div><dt>${modalText.densityGbp}</dt><dd id="single-building-density-gbp">\u2014</dd></div>
+                            <div><dt>${modalText.densityKin}</dt><dd id="single-building-density-kin">\u2014</dd></div>
+                        </dl>
+                        <p id="single-building-density-hint" class="building-density-hint"></p>
+                    </section>
                     <h3>${modalText.parametersTitle}</h3>
                     <div class="parameter-group">
                         <label>${modalText.heightLabel} <span id="single-height-value">${DEFAULT_HEIGHT_M}</span></label>

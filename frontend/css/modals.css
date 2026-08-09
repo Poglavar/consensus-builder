@@ -3085,6 +3085,53 @@
     box-sizing: border-box;
 }
 
+/* Live regulatory indicators shared by the Urban Rule and Freeform geometry editors. */
+.building-density-card {
+    margin: 0 0 18px;
+    padding: 14px;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+    border-radius: 10px;
+    background: rgba(13, 110, 253, 0.055);
+}
+
+.building-density-card h3 {
+    margin: 0 0 10px;
+}
+
+.building-density-grid {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+}
+
+.building-density-grid > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.building-density-grid dt {
+    color: #4b5563;
+    font-size: 0.82rem;
+}
+
+.building-density-grid dd {
+    margin: 0;
+    color: #14213d;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.building-density-hint {
+    margin: 10px 0 0;
+    color: #667085;
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
 #single-building-sidebar h3 {
     margin-top: 0;
     margin-bottom: 12px;

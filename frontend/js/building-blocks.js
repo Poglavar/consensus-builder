@@ -110,6 +110,49 @@ function translateBuildingText(key, fallback, params = {}) {
     return formatBuildingText(fallback, params);
 }
 
+function refreshBlockifyDensityStats(buildings = null) {
+    const api = (typeof window !== 'undefined') ? window.BuildingDensityStats : null;
+    const container = document.getElementById('blockify-density-stats');
+    if (!api || !container || typeof turf === 'undefined') return;
+
+    const candidates = Array.isArray(buildings)
+        ? buildings
+        : (blockMassingPieces.length ? blockMassingPieces : (generatedBuildingFeature ? [generatedBuildingFeature] : []));
+    const floorHeightM = blockifyMode === 'existing' ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M;
+    const locale = document.documentElement.lang || navigator.language || 'en';
+    let stats = null;
+    try {
+        stats = api.summarizeDensity({
+            parcelFeature: lastSuperparcel,
+            buildings: candidates,
+            turf,
+            floorHeightM,
+            preferHeight: true
+        });
+    } catch (_) { }
+
+    const setValue = (suffix, value) => {
+        const element = document.getElementById(`blockify-density-${suffix}`);
+        if (element) element.textContent = value;
+    };
+    const area = value => stats && Number.isFinite(value) ? `${api.formatNumber(value, locale, 0)} m\u00b2` : '\u2014';
+    setValue('parcel', stats?.parcelAreaM2 > 0 ? area(stats.parcelAreaM2) : '\u2014');
+    setValue('footprint', stats ? area(stats.footprintAreaM2) : '\u2014');
+    setValue('coverage', stats?.parcelAreaM2 > 0 ? `${api.formatNumber(stats.siteCoveragePercent, locale, 1)}%` : '\u2014');
+    setValue('gbp', stats ? area(stats.aboveGroundGbpM2) : '\u2014');
+    setValue('kin', stats?.parcelAreaM2 > 0 ? api.formatNumber(stats.kin, locale, 3) : '\u2014');
+
+    const hint = document.getElementById('blockify-density-hint');
+    if (hint) {
+        const height = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(floorHeightM);
+        hint.textContent = translateBuildingText(
+            'densityStats.floorHeightHint',
+            'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+            { height }
+        );
+    }
+}
+
 function showBuildingAlert(key, fallback, params = {}) {
     const message = key
         ? translateBuildingText(`alerts.messages.${key}`, fallback, params)
@@ -1440,6 +1483,17 @@ function showBlockifyModal() {
                         <span data-i18n-key="${defaultDescKey}">${defaultDesc}</span>
                     </div>
                 </div>
+                <section id="blockify-density-stats" class="building-density-card" aria-live="polite">
+                    <h3 data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</h3>
+                    <dl class="building-density-grid">
+                        <div><dt data-i18n-key="densityStats.parcelArea" data-i18n-attr="text">Parcel area</dt><dd id="blockify-density-parcel">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.footprint" data-i18n-attr="text">Building footprint</dt><dd id="blockify-density-footprint">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.siteCoverage" data-i18n-attr="text">Site coverage (kig)</dt><dd id="blockify-density-coverage">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.gbp" data-i18n-attr="text">Above-ground GBP</dt><dd id="blockify-density-gbp">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.kin" data-i18n-attr="text">kin</dt><dd id="blockify-density-kin">\u2014</dd></div>
+                    </dl>
+                    <p id="blockify-density-hint" class="building-density-hint"></p>
+                </section>
                 <h3 data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
                 <div class="parameter-group">
                     <label class="blockify-existing-toggle" for="blockify-existing-toggle">
@@ -2986,6 +3040,7 @@ function refreshBlockPieceHeights() {
         piece.properties.urbanRule = rule;
     });
     blockBuildOut = blockMassingPieces.map(piece => window.UrbanRuleVariation.realizeFeature(piece, deps));
+    refreshBlockifyDensityStats(blockMassingPieces);
 }
 
 function displayBuildingInModal(buildingFeature) {
@@ -2998,7 +3053,10 @@ function displayBuildingInModal(buildingFeature) {
     blockifyPieceLayers = [];
     blockifyExcludedLayers = [];
 
-    if (!buildingFeature) return;
+    if (!buildingFeature) {
+        refreshBlockifyDensityStats([]);
+        return;
+    }
     if (buildingFeature.geometry.type === 'MultiLineString' || buildingFeature.geometry.type === 'MultiPolygon' || buildingFeature.geometry.type === 'Polygon') {
         rebuildBlockPieces(buildingFeature);
 
@@ -3040,6 +3098,7 @@ function displayBuildingInModal(buildingFeature) {
             updateBlockify3DScene(blockBuildOut.length ? blockBuildOut : buildingFeature);
         } catch (e) { console.warn('3D update failed', e); }
         reportBlockRuleRange();
+        refreshBlockifyDensityStats(blockMassingPieces.length ? blockMassingPieces : [buildingFeature]);
         autosaveBlockifyDraft(blockMassingPieces.length ? blockMassingPieces : buildingFeature);
     }
 
@@ -3496,6 +3555,7 @@ function displayBuildingsInModal(features) {
     }
     if (!Array.isArray(features) || !features.length) {
         try { updateBlockify3DScene([]); } catch (_) { } // clear the 3D proposal meshes
+        refreshBlockifyDensityStats([]);
         return;
     }
     blockifyBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
@@ -3507,6 +3567,7 @@ function displayBuildingsInModal(features) {
         }
     }).addTo(blockifyMap);
     try { updateBlockify3DScene(features); } catch (e) { console.warn('3D update failed', e); }
+    refreshBlockifyDensityStats(features);
     autosaveBlockifyDraft(features);
 }
 
