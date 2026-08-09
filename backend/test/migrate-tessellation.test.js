@@ -6,6 +6,7 @@ import {
     normalizeProposalRow,
     normalizePolygonGeometry,
     normalizeStoredProposal,
+    proposalColumns,
     roadDisconnection,
     splitDefinitionByComponents
 } from '../scripts/migrate-tessellation.js';
@@ -275,5 +276,23 @@ describe('contiguity rulings (2026-08-07)', () => {
             type: 'MultiPolygon',
             coordinates: [square(15, 45), square(15.01, 45, 0.0000001)]
         })).toBe(1);
+    });
+});
+
+describe('proposalColumns', () => {
+    const poolReturning = rows => ({ query: async sql => { poolReturning.lastSql = sql; return { rows }; } });
+
+    it('resolves the table through the search_path, not a hardcoded schema', async () => {
+        const pool = poolReturning([{ column_name: 'proposal_id' }, { column_name: 'proposal_data' }]);
+        await expect(proposalColumns(pool)).resolves.toEqual(['proposal_id', 'proposal_data']);
+        expect(poolReturning.lastSql).toContain("to_regclass('proposal')");
+        expect(poolReturning.lastSql).not.toContain("'public'");
+    });
+
+    it('refuses to build an insert when the table is not visible', async () => {
+        // The server keeps proposal in the `consensus` schema; asking for `public` returned no rows
+        // and produced `INSERT INTO proposal () SELECT`, which failed 12 rows into an apply as an
+        // opaque syntax error. An empty column list must announce itself instead.
+        await expect(proposalColumns(poolReturning([]))).rejects.toThrow(/search_path/);
     });
 });
