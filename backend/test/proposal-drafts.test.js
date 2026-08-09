@@ -1,5 +1,5 @@
 // Unit tests for the versioned, multi-city proposal draft lifecycle.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -283,6 +283,7 @@ describe('ProposalDraftStore', () => {
             err.name = 'QuotaExceededError';
             throw err;
         };
+        const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const { store } = harness({ storage: quotaStorage });
 
         let draft;
@@ -291,5 +292,41 @@ describe('ProposalDraftStore', () => {
         expect(store.getDraft(draft.id)).not.toBeNull();
         expect(() => store.updateDraft(draft.id, { editorPayload: { giant: 'x'.repeat(1000) } })).not.toThrow();
         expect(store.getDraft(draft.id).editorPayload.giant).toHaveLength(1000);
+        store.validateDraft(draft.id);
+        expect(warning).toHaveBeenCalledTimes(1);
+        warning.mockRestore();
+    });
+
+    it('persists a large draft by trimming only its stored undo history', () => {
+        const storage = memoryStorage();
+        const write = storage.setItem;
+        storage.setItem = (key, value) => {
+            if (String(value).length > 5000) {
+                const error = new Error('Draft storage quota exceeded.');
+                error.name = 'QuotaExceededError';
+                throw error;
+            }
+            write(key, value);
+        };
+        const { store, advance } = harness({ storage });
+        const draft = store.createDraft({
+            cityId: 'zagreb',
+            goal: 'buildings',
+            fields: { name: 'Large recoverable block', parentParcelIds: ['parcel-1'] },
+            editorPayload: { giantGeometry: 'x'.repeat(1800), step: 0 }
+        });
+
+        for (let step = 1; step <= 8; step += 1) {
+            advance(1000);
+            store.updateDraft(draft.id, { editorPayload: { step } });
+        }
+
+        expect(store.getDraft(draft.id).history.past).toHaveLength(8);
+        const persisted = JSON.parse(storage.getItem(PROPOSAL_DRAFT_STORAGE_KEY));
+        expect(persisted.drafts[0].history.past).toEqual([]);
+
+        const restored = createProposalDraftStore({ storage });
+        expect(restored.getDraft(draft.id).editorPayload).toMatchObject({ step: 8 });
+        expect(restored.getDraft(draft.id).editorPayload.giantGeometry).toHaveLength(1800);
     });
 });
