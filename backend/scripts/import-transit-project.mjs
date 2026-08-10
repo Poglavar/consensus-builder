@@ -157,9 +157,12 @@ async function parcelsUnder(pool, footprintGeoJSON) {
     }));
 }
 
-export function buildProposal({ project, track, trackIndex, spans, centreline, footprint, parcels, widthM, city }) {
+export function buildProposal({ project, track, trackIndex, spans, centreline, footprint, parcels, widthM, city, ko }) {
     const now = new Date().toISOString();
-    const proposalId = `transit-project-${project.id}-track-${trackIndex + 1}`;
+    // The window is part of the identity. Without it, importing one municipality of a line silently
+    // REPLACED the whole-line import at the same id — including one already applied on the map.
+    const window = (Array.isArray(ko) && ko.length) ? `-ko${[...ko].sort((a, b) => a - b).join('_')}` : '';
+    const proposalId = `transit-project-${project.id}-track-${trackIndex + 1}${window}`;
     const parcelIds = parcels.map(parcel => parcel.id);
     const summary = corridorLevels.summarizeLevels(centreline);
 
@@ -283,7 +286,8 @@ async function main() {
             const parcels = await parcelsUnder(pool, footprint.geometry);
 
             const proposal = buildProposal({
-                project, track, trackIndex, spans, centreline, footprint, parcels, widthM, city: args.city
+                project, track, trackIndex, spans, centreline, footprint, parcels, widthM,
+                city: args.city, ko: args.ko
             });
             console.log(JSON.stringify({
                 proposalId: proposal.proposalId,
