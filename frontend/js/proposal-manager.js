@@ -993,6 +993,44 @@ const ProposalManager = {
     // Because a piece is named by a hash of its own outline, a piece whose shape did not change
     // keeps its id, so the map update is a set difference: untouched pieces are never removed and
     // re-added, and a road drawn at one end of town does not disturb anything at the other.
+    // A cadastral parcel that ARRIVES after the corridors were applied.
+    //
+    // Pieces were materialised when a road was applied, over whatever cadastre happened to be loaded
+    // at that moment — and tile arrivals were presentation-only. So panning in a parcel afterwards
+    // left it whole under a road that plainly crossed it, with no error and nothing to suggest it
+    // had been missed (HR-330264-519 sat uncut under two). A parcel's pieces are a function of that
+    // parcel and the takes over it, so a late arrival has the same answer as any other parcel: it
+    // just had not been asked yet. Only arrivals a corridor actually reaches are derived, so a pan
+    // across empty country costs one overlap test each and nothing more.
+    deriveArrivingParcels(parcelIds) {
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const A = browserRoot.__parcelArrangement;
+        const ancestry = browserRoot.__cadastreAncestry;
+        if (!A || !ancestry || typeof ancestry.loadedCadastreParcels !== 'function') return null;
+        // A rebuild is already deriving everything; joining in would fight it.
+        if (this._rebuildInProgress) return null;
+
+        const arriving = new Set((parcelIds || [])
+            .map(id => (id === null || id === undefined) ? '' : String(id))
+            .filter(id => id && id.indexOf('#') === -1));
+        if (!arriving.size) return null;
+
+        const takes = this._appliedCorridorTakes();
+        if (!takes.length) return null;
+
+        const scoped = ancestry.loadedCadastreParcels()
+            .filter(entry => arriving.has(String(entry.id)))
+            .filter(entry => A.takesOverlapping(entry.feature, takes).length > 0)
+            .map(entry => String(entry.id));
+        if (!scoped.length) return null;
+
+        const fabric = this._deriveCorridorFabric({ parcelIds: scoped, takes });
+        if (fabric && fabric.added) {
+            try { if (typeof refreshAppliedCorridorStrips === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+        }
+        return fabric;
+    },
+
     _deriveCorridorFabric(options = {}) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const A = browserRoot.__parcelArrangement;

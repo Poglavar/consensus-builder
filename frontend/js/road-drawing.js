@@ -972,6 +972,20 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const wasSelected = typeof window.ProposalSelection?.is === 'function'
         && window.ProposalSelection.is(sourceKey);
     try {
+        // Release the ground the road held at its OLD position FIRST, while the record still holds
+        // that position. _undoProposalPayload reads the record's own footprint, so writing the new
+        // geometry before it frees the ground the road is moving ONTO and leaves the pieces at the
+        // old position standing with nothing claiming them.
+        let freedByEdit = null;
+        if (sourceWasApplied) {
+            if (typeof setProposalApplied === 'function') {
+                setProposalApplied(sourceProposal, false, { stamp: false });
+            } else {
+                sourceProposal.applied = false;
+            }
+            freedByEdit = ProposalManager._undoProposalPayload?.(sourceProposal) || null;
+        }
+
         writeRoadDefinition(sourceProposal, componentDefinitions[0]);
         try { proposalStorage._indexProposal?.(sourceProposal); } catch (_) { }
 
@@ -996,18 +1010,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         });
         proposalStorage.save?.();
 
-        // The ground the OLD position held is released, then the road derives the parcels under its
-        // new footprint. Nowhere else in the plan does anything change, so nothing else is
-        // recomputed. The record must read as unapplied while its payload comes off, or the
-        // re-derivation still counts the take it is giving up.
-        let freedByEdit = null;
+        // Now the road derives the parcels under its NEW footprint, plus the ones the old position
+        // just gave up. Nowhere else in the plan does anything change, so nothing else is recomputed.
         if (sourceWasApplied) {
-            if (typeof setProposalApplied === 'function') {
-                setProposalApplied(sourceProposal, false, { stamp: false });
-            } else {
-                sourceProposal.applied = false;
-            }
-            freedByEdit = ProposalManager._undoProposalPayload?.(sourceProposal) || null;
             const alsoDerive = (freedByEdit && freedByEdit.geometry) ? [freedByEdit] : [];
             for (const id of [sourceKey, ...extraStretchIds]) {
                 const stored = proposalStorage.getProposal(id);

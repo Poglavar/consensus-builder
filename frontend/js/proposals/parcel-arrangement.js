@@ -39,6 +39,64 @@
     // enough that a vertex re-emitted with floating-point noise still hashes the same.
     const KEY_PRECISION = 7;
 
+    // turf 6 clips with `polygon-clipping`, whose sweep line can fail outright on real cadastre:
+    //
+    //   "Infinite loop when passing sweep line over endpoints (too many sweep line segments)"
+    //
+    // It is a robustness limit, not bad data. The sweep line compares event points at full double
+    // precision, and around 15.88°E / 43.7°N one ulp is ~2e-15 degrees — so two vertices that are
+    // the same corner to any surveyor, but differ in the last bit, order inconsistently and the
+    // algorithm never converges. HR-330264-519 hit it and was recorded as "could not arrange", which
+    // leaves the parcel WHOLE: a 5,048 m² parcel sat uncut under two roads that plainly crossed it,
+    // with nothing on screen to say it had been skipped.
+    //
+    // So a failed clip is retried on coordinates snapped to a grid, which collapses those
+    // near-duplicates into genuinely equal points. 9 then 8 decimal places is 0.1 mm then 1.1 mm —
+    // orders of magnitude below cadastral survey precision, and below KEY_PRECISION, so a piece
+    // still hashes to the same id. The happy path never snaps, so every parcel that already worked
+    // is bit-for-bit unchanged; only the ones that would otherwise be dropped are touched. If every
+    // attempt fails the error is rethrown, because a clip that cannot be done must stay loud.
+    const CLIP_RETRY_DECIMALS = [9, 8];
+
+    function snapCoordinates(value, factor) {
+        if (Array.isArray(value)) {
+            return typeof value[0] === 'number'
+                ? value.map(n => Math.round(n * factor) / factor)
+                : value.map(entry => snapCoordinates(entry, factor));
+        }
+        return value;
+    }
+
+    function snapFeature(feature, decimals) {
+        if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) return feature;
+        const factor = Math.pow(10, decimals);
+        return {
+            type: 'Feature',
+            properties: feature.properties || {},
+            geometry: {
+                type: feature.geometry.type,
+                coordinates: snapCoordinates(feature.geometry.coordinates, factor)
+            }
+        };
+    }
+
+    // Run a two-operand turf clip, retrying on snapped coordinates if the clipper gives up.
+    function clip(operation, a, b) {
+        const t = T();
+        try {
+            return t[operation](a, b);
+        } catch (error) {
+            for (const decimals of CLIP_RETRY_DECIMALS) {
+                try {
+                    const result = t[operation](snapFeature(a, decimals), snapFeature(b, decimals));
+                    console.warn(`[parcel-arrangement] ${operation} needed ${decimals}-dp snapping to clip:`, error && error.message);
+                    return result;
+                } catch (_) { /* try a coarser grid */ }
+            }
+            throw error;
+        }
+    }
+
     function featureOf(geometry) {
         if (!geometry) return null;
         if (geometry.type === 'Feature') return geometry;
@@ -181,11 +239,11 @@
         const takenParts = [];
         relevant.forEach(take => {
             let hit = null;
-            try { hit = t.intersect(parcelFeature, take.feature); } catch (_) { hit = null; }
+            try { hit = clip('intersect', parcelFeature, take.feature); } catch (_) { hit = null; }
             if (!hit || !(t.area(hit) > MIN_PIECE_M2)) return;
             takersUsed.push(take.id);
             takenParts.push(hit);
-            taken = taken ? (t.union(taken, hit) || taken) : hit;
+            taken = taken ? (clip('union', taken, hit) || taken) : hit;
         });
 
         if (!taken) {
@@ -215,7 +273,7 @@
         let leftover = parcelFeature;
         for (const hit of takenParts) {
             if (!leftover) break;
-            leftover = t.difference(leftover, hit);
+            leftover = clip('difference', leftover, hit);
         }
 
         const pieces = [];
@@ -228,7 +286,7 @@
                 ? relevant
                     .filter(take => {
                         try {
-                            const hit = t.intersect(feature, take.feature);
+                            const hit = clip('intersect', feature, take.feature);
                             return !!hit && t.area(hit) > MIN_PIECE_M2;
                         } catch (_) { return false; }
                     })
@@ -258,7 +316,7 @@
             const feature = featureOf(take.geometry);
             if (boxesDisjoint(t, parcelFeature, feature)) return false;
             try {
-                const hit = t.intersect(parcelFeature, feature);
+                const hit = clip('intersect', parcelFeature, feature);
                 return !!hit && t.area(hit) > MIN_PIECE_M2;
             } catch (_) { return false; }
         });
