@@ -146,6 +146,42 @@
     // readjustment was the only victim the pass had left.
 
 
+    // Load the ground a corridor declares, so the live-fabric resolver is asked once the fabric can
+    // actually answer. Only the parcels that are genuinely absent are fetched, so a corridor drawn
+    // in view costs nothing here. Failure is deliberately not fatal: the resolver still refuses on
+    // its own terms and says how much it could see, which is a better message than this one could
+    // give.
+    async _stageCorridorGround(parentIds, idLabel) {
+        const ids = Array.isArray(parentIds) ? parentIds.filter(Boolean) : [];
+        if (!ids.length || typeof ensureParentParcelsLoaded !== 'function') return;
+
+        let missing = ids;
+        if (typeof findMissingParentParcels === 'function') {
+            try { missing = findMissingParentParcels(ids) || []; } catch (_) { missing = ids; }
+        }
+        if (!missing.length) return;
+
+        console.info(`[_applyRoadProposal] ${idLabel}: loading ${missing.length} of ${ids.length} `
+            + 'declared parcels before resolving the live fabric');
+        try {
+            if (typeof updateStatus === 'function') {
+                updateStatus(`Loading ${missing.length} parcels under the corridor…`);
+            }
+            await ensureParentParcelsLoaded(ids);
+            if (typeof waitForParcelLayersReady === 'function') {
+                // The default 8 s is sized for a proposal over a handful of parcels. Hundreds of
+                // them render slower than that, and giving up early does not fail loudly — it hands
+                // the resolver a half-drawn fabric, which then refuses for a reason that reads like
+                // the corridor's fault. Bounded, so a genuinely stuck render still ends.
+                await waitForParcelLayersReady(ids, {
+                    timeoutMs: Math.min(30000, 8000 + ids.length * 25)
+                });
+            }
+        } catch (error) {
+            console.warn(`[_applyRoadProposal] ${idLabel}: staging the corridor's ground failed`, error);
+        }
+    },
+
     async _applyRoadProposal(proposalId, proposalData, options = {}) {
         if (
             options._parcelWriteBatchActive !== true
@@ -192,6 +228,15 @@
         }
 
         let childFeatures = [];
+
+        // Parcels load by viewport, and a corridor can be far longer than any viewport — an imported
+        // 17 km track declares 661 parents, of which wherever the user happens to be standing shows
+        // a few dozen. The resolver below is right to refuse a partial fabric ("a partial viewport
+        // must refuse publication ... the caller may load more ground and try again"), so this is
+        // the caller doing exactly that, once, before it asks. Without it a long corridor applies to
+        // no effect: it draws on the map and cuts nothing, which reads as the cut being broken
+        // rather than as ground being absent.
+        await this._stageCorridorGround(canonicalParentIds, idLabel);
 
         const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'road');
         if (!liveParents.ok) {
