@@ -56,3 +56,15 @@
     fill: url(#corridor-paving-pattern);
     fill-opacity: 0.95;
 }
+
+/* Ballast under a track, for the same reason: a mix of stone greys rather than one flat fill, so
+   the black rails and sleepers have something to read against. The pattern replaces the lane's
+   surface colour entirely, so it must be opaque enough to separate the corridor from the parcel
+   shading beneath it. */
+.corridor-strip--rail {
+    fill: url(#corridor-ballast-pattern);
+    fill-opacity: 1;
+}
+
+/* Rail and sleeper COLOUR deliberately stays in JS, per call site: the drawing preview paints them
+   orange on purpose, and a stroke rule here would silently repaint it. */

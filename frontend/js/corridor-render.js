@@ -12,6 +12,7 @@
 
 const CORRIDOR_STRIPS_PANE = 'corridorStripsPane';
 const CORRIDOR_HIT_PANE = 'corridorHitPane';
+const CORRIDOR_RAIL_PANE = 'corridorRailPane';
 
 function ensureCorridorStripsPane() {
     if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
@@ -172,15 +173,41 @@ function renderCorridorGradeSeparations(records, group, pane) {
 // ---------------------------------------------------------------------------
 
 let corridorRailCanvasRenderer = null;
+// Rails and sleepers are drawn on a CANVAS while the ballast under them is an SVG polygon. Those are
+// two different DOM containers, so adding the rails to the layer group after the strips does not put
+// them on top — only the pane's z-index does. They shared the strips pane, which left the rails
+// underneath the ballast: invisible once the ballast is opaque, and a washed-out grey rather than
+// black while it was not. So the rail canvas gets its own pane, one above the strips.
+function ensureCorridorRailPane() {
+    if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+    let pane = map.getPane(CORRIDOR_RAIL_PANE);
+    if (!pane && typeof map.createPane === 'function') pane = map.createPane(CORRIDOR_RAIL_PANE);
+    if (pane && pane.style) {
+        // Above the strips (655) and the transparent hit layer (656), below the proposal hover
+        // outlines and labels (660/670). Never interactive, so it cannot steal a click from the hit
+        // layer it sits over.
+        pane.style.zIndex = '657';
+        pane.style.pointerEvents = 'none';
+    }
+    return pane;
+}
+
 function corridorRailRenderer() {
     if (!corridorRailCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
-        corridorRailCanvasRenderer = L.canvas({ padding: 0.5 });
+        const pane = ensureCorridorRailPane();
+        corridorRailCanvasRenderer = pane
+            ? L.canvas({ padding: 0.5, pane: CORRIDOR_RAIL_PANE })
+            : L.canvas({ padding: 0.5 });
     }
     return corridorRailCanvasRenderer;
 }
 
 const CORRIDOR_SLEEPER_SPACING = 0.6; // metres between sleepers
 const CORRIDOR_SLEEPER_LENGTH = 2.5;  // metres, across the track
+// Screen pixels, not metres: these are drawn as lines rather than as scale bodies. The rail must
+// stay the heavier of the two — that difference is what distinguishes them once both are black.
+const CORRIDOR_RAIL_WEIGHT = 2.6;
+const CORRIDOR_SLEEPER_WEIGHT = 1.1;
 
 // One track: a pair of rails `gauge` apart, and the sleepers under them, laid along the centerline
 // offset by `centerlineOffset` (the rail lane's own centre).
@@ -237,9 +264,11 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
         rightRailPoints.push(L.latLng(rightLat, rightLng));
     }
 
+    // The rail is the heavier of the two lines and the sleeper the lighter one, so the pair stays
+    // readable once both are the same colour — on ballast, weight is what separates them.
     [leftRailPoints, rightRailPoints].forEach(railPoints => {
         L.polyline(railPoints, {
-            pane, renderer, color: options.railColor, weight: 2, opacity: 0.9,
+            pane, renderer, color: options.railColor, weight: CORRIDOR_RAIL_WEIGHT, opacity: 1,
             interactive: false, className: 'corridor-rail'
         }).addTo(layerGroup);
     });
@@ -273,7 +302,7 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
     }
     if (sleepers.length) {
         L.polyline(sleepers, {
-            pane, renderer, color: options.sleeperColor, weight: 1, opacity: 0.7,
+            pane, renderer, color: options.sleeperColor, weight: CORRIDOR_SLEEPER_WEIGHT, opacity: 0.95,
             interactive: false, className: 'corridor-sleepers'
         }).addTo(layerGroup);
     }
@@ -744,9 +773,10 @@ function refreshAppliedCorridorStrips() {
                 .filter(decoration => decoration.kind === 'tree');
             const segmentGroup = renderCorridorStrips(strips, {
                 pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
-                // A placed corridor's rails are black, like the asphalt it is laid in.
+                // A placed corridor's rails and sleepers are both black, read against the ballast
+                // texture under them rather than against each other's colour.
                 centerlines: [entry.points], profile: entry.profile,
-                railColor: '#000000', sleeperColor: '#666666'
+                railColor: '#000000', sleeperColor: '#000000'
             });
             if (segmentGroup) {
                 segmentGroup.addTo(group);

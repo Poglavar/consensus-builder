@@ -38,7 +38,10 @@ const CORRIDOR_LANE_TYPES = {
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
     // One TRACK — a single pair of rails and the ballast under it. A rail lane carries a `gauge`, the way
     // a verge carries a `landscape`: it is a property of the lane, and it sets the lane's width.
-    rail: { label: 'Track', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
+    // Ballast grey, and deliberately NOT #d3d3d3: that is the parcel fill, so a track drawn in it
+    // was the same grey as the ground it crossed and disappeared into it. This is the base tone the
+    // 2D ballast pattern is built on, kept here so 2D and 3D read as the same material.
+    rail: { label: 'Track', surface: '#9a9a97', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
