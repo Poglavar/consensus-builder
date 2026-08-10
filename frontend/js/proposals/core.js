@@ -537,6 +537,59 @@ function normalizeCityCodeForApi(code) {
     return raw;
 }
 
+// Bring one card in the proposal list up to date with the fact that it is now downloaded.
+//
+// A surgical DOM update rather than a rerender, so scroll position, the previewing row and the
+// user's place in a long list all survive. Three things change and nothing else:
+//   - the Download button becomes a disabled "Downloaded"
+//   - the thumbnail upgrades from placeholder to the local image, if there is one
+//   - the source toggle's Local count goes up by one
+//
+// Shared, because there are TWO ways to download and only one of them used to do this. The card's
+// own Download button did; clicking the ROW — which asks first, then downloads — did not, so a
+// proposal fetched that way sat there still offering to be downloaded.
+function markProposalCardDownloaded(cardKey, imported) {
+    if (!imported || typeof document === 'undefined') return;
+    const t = getProposalI18nHelper();
+    const key = (cardKey === undefined || cardKey === null) ? '' : String(cardKey);
+
+    // Matched by attribute rather than by CSS selector: a parcel-derived proposal id can carry
+    // characters (`/`, `#`, `*`) that would need escaping to be selected safely.
+    if (key) {
+        const button = Array.from(document.querySelectorAll('.proposal-download-btn'))
+            .find(candidate => candidate.getAttribute('data-proposal-id') === key
+                || candidate.getAttribute('data-server-id') === key);
+        if (button) {
+            button.textContent = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
+            button.disabled = true;
+        }
+    }
+
+    const screenshotUrl = imported.screenshotUrl
+        || (imported.onchain && imported.onchain.imageUrl)
+        || (imported.onchainData && imported.onchainData.imageUrl)
+        || null;
+    if (screenshotUrl || imported.screenshotDataUrl) {
+        try {
+            document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
+                detail: {
+                    proposalId: key,
+                    screenshotUrl,
+                    screenshotDataUrl: imported.screenshotDataUrl || null
+                }
+            }));
+        } catch (_) { }
+    }
+
+    const localToggleBtn = document.querySelector('.proposal-source-btn[data-source="local"]');
+    if (localToggleBtn && typeof proposalStorage !== 'undefined'
+        && typeof proposalStorage.getAllProposals === 'function') {
+        const newLocalCount = proposalStorage.getAllProposals().length;
+        const localBaseLabel = t('modal.roadWidth.proposalList.sources.local', 'Local');
+        localToggleBtn.textContent = `${localBaseLabel} (${newLocalCount})`;
+    }
+}
+
 async function handleProposalDownloadClick(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -564,42 +617,7 @@ async function handleProposalDownloadClick(event) {
             throw new Error('Unable to store proposal locally');
         }
         updateShowProposalsButton();
-
-        // Surgical DOM update — no full rerender, so the user's scroll position and selection stay
-        // exactly where they are. We only update what actually changed for this card:
-        //   - the Download button becomes "Downloaded" disabled
-        //   - the thumbnail upgrades from placeholder to the local image (if any)
-        //   - the source-toggle Local count goes up by one
-        const downloadedLabel = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
-        button.textContent = downloadedLabel;
-        button.disabled = true;
-
-        const thumbImage = imported.screenshotUrl
-            || (imported.onchain && imported.onchain.imageUrl)
-            || (imported.onchainData && imported.onchainData.imageUrl)
-            || imported.screenshotDataUrl
-            || null;
-        if (thumbImage) {
-            try {
-                document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
-                    detail: {
-                        proposalId: cardKey,
-                        screenshotUrl: imported.screenshotUrl
-                            || (imported.onchain && imported.onchain.imageUrl)
-                            || (imported.onchainData && imported.onchainData.imageUrl)
-                            || null,
-                        screenshotDataUrl: imported.screenshotDataUrl || null
-                    }
-                }));
-            } catch (_) { }
-        }
-
-        const localToggleBtn = document.querySelector('.proposal-source-btn[data-source="local"]');
-        if (localToggleBtn && typeof proposalStorage.getAllProposals === 'function') {
-            const newLocalCount = proposalStorage.getAllProposals().length;
-            const localBaseLabel = t('modal.roadWidth.proposalList.sources.local', 'Local');
-            localToggleBtn.textContent = `${localBaseLabel} (${newLocalCount})`;
-        }
+        markProposalCardDownloaded(cardKey, imported);
     } catch (error) {
         console.error('Failed to download proposal', proposalId, error);
         button.disabled = false;

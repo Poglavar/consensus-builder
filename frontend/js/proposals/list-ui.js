@@ -904,6 +904,12 @@ async function handleProposalListItemClick(event) {
             }
             justDownloaded = true;
             updateShowProposalsButton();
+            // The card still said "Download". Downloading by clicking the ROW leaves the same card
+            // on screen as downloading by its own button does, so it has to end in the same state —
+            // otherwise the list keeps offering to fetch something it already holds.
+            if (typeof markProposalCardDownloaded === 'function') {
+                markProposalCardDownloaded(proposalIdAttr, proposal);
+            }
         } catch (error) {
             console.error('Failed to download server proposal on click', serverId, error);
             updateStatus('Failed to download proposal');
