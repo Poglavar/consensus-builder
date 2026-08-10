@@ -272,8 +272,16 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         message: { error: 'Too many requests, please try again later.' }
     });
     // Routes that use POST for body-size reasons but are read-only — skip the write limiter.
+    //
+    // /parcels/under is one of these and being counted as a write had a nasty shape: a fabric replay
+    // asks it once per applied formation, so a plan of twenty roads spends twenty of the fifty-per-
+    // fifteen-minutes budget EVERY time a road is finished. Four finishes exhausted it, and after
+    // that the ground fetches 429'd, the fabric was not loaded, and the coverage gate refused
+    // members with "could not re-apply and were set aside" — intermittently, on a rolling window
+    // that healed itself after fifteen minutes, which is exactly how it was reported.
     const RATE_LIMIT_EXEMPT_POST_PATHS = new Set([
-        '/buildings/near'
+        '/buildings/near',
+        '/parcels/under'
     ]);
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
