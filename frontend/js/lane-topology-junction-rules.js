@@ -187,9 +187,16 @@
         return null;
     }
 
-    // { connections, arms, evidence } for a node the rules can settle, or { declined } with the
-    // reason. Declining is always the safe answer and is returned for every doubt; the reason is
-    // what lets a caller route the node to a model, to a split, or to a person.
+    // { connections, arms, evidence, open } — the movements the rules can settle at this node, and
+    // the approaches still open, each with why. An empty `open` means the node is fully settled.
+    //
+    // `{ declined }` instead means nothing at the node could be looked at: the whole node is open.
+    // Those two are different states and a caller must not confuse them, because a missing
+    // connection in this model reads as a movement that is forbidden, not one nobody decided —
+    // which is why `open` has to be carried alongside the connections and honoured downstream.
+    //
+    // Resolution is per APPROACH, never per movement. A doubt anywhere in an approach opens all of
+    // it; the other approaches at the same node keep their answers.
     function resolveNode(node, context) {
         const sectionsById = context?.sectionsById;
         const lanesBySection = context?.lanesBySection;
@@ -220,14 +227,7 @@
             if (arriving.length) approaches.set(sectionId, arriving);
             if (leaving.length) exits.set(sectionId, leaving);
         });
-        // Only the approach side. A bus lane arriving at the node has movements of its own that
-        // nothing here can settle, so the node is forfeit; a bus lane on the way OUT is merely a
-        // lane general traffic may not enter, and `receivingLanes` drops it from the candidates.
         const multiLaneApproaches = [...approaches.values()].filter(group => group.length > 1);
-        if (multiLaneApproaches.some(group => !ordinaryLanes(group))) {
-            return { declined: 'restricted_lane_in_multi_lane_approach' };
-        }
-
         const rules = (context.restrictionsByNode || new Map()).get(node.id) || [];
         const matchers = rules.length ? restrictionsModule() : null;
         const isMandatory = rule => !!matchers && matchers.MANDATORY.test(rule.kind);
@@ -241,23 +241,43 @@
             huggedTurns: 0,
             multiLaneApproaches: multiLaneApproaches.length
         };
+        const open = [];
         for (const [fromSectionId, approach] of approaches) {
+            // An approach is decided as a whole, and a doubt anywhere in it leaves the WHOLE
+            // approach open: emitting some of its movements and not others would say the missing
+            // ones are forbidden. Its neighbours at the same node are unaffected — they have their
+            // own lanes and their own evidence.
+            const leaveOpen = reason => {
+                open.push({
+                    sectionId: fromSectionId,
+                    name: sectionsById.get(fromSectionId)?.name || null,
+                    reason
+                });
+            };
+            const decided = [];
             const arriving = headingAtNode(approach[0].geometry.coordinates, true);
-            if (arriving === null) return { declined: 'degenerate_arm_heading' };
+            if (arriving === null) { leaveOpen('degenerate_arm_heading'); continue; }
+            // A bus lane arriving has movements of its own that nothing here can settle. On the way
+            // OUT it is merely a lane general traffic may not enter, and `receivingLanes` drops it.
+            if (approach.length > 1 && !ordinaryLanes(approach)) {
+                leaveOpen('restricted_lane_in_multi_lane_approach');
+                continue;
+            }
             // With one lane the token is optional — there is nothing to assign it to. With more,
             // an untagged lane is precisely the question a picture has to answer.
             const permitted = approach.map(turnCategoriesOf);
             if (approach.length > 1 && permitted.some(categories => !categories)) {
-                return { declined: 'multi_lane_approach_without_turn_lanes' };
+                leaveOpen('multi_lane_approach_without_turn_lanes');
+                continue;
             }
             const fromWayId = wayOf(fromSectionId);
             const only = rules.find(rule => isMandatory(rule) && rule.fromWayId === fromWayId);
-            let reachable = 0;
+            let undecidable = null;
 
             for (const [toSectionId, exit] of exits) {
                 if (toSectionId === fromSectionId) continue; // the U-turn back down the arm
                 const departing = headingAtNode(exit[0].geometry.coordinates, false);
-                if (departing === null) return { declined: 'degenerate_arm_heading' };
+                if (departing === null) { undecidable = 'degenerate_arm_heading'; break; }
                 const category = classifyTurn(relativeTurnDegrees(arriving, departing));
                 // Two arms that leave in opposite directions are a hairpin, not a junction movement.
                 if (category === 'reverse') continue;
@@ -276,7 +296,7 @@
                 const turning = approach.filter((lane, index) => !permitted[index] || permitted[index].has(category));
                 if (!turning.length) continue;
                 const receiving = receivingLanes(turning, exit, category);
-                if (!receiving) return { declined: 'receiving_lane_undetermined' };
+                if (!receiving) { undecidable = 'receiving_lane_undetermined'; break; }
                 if (receiving.hugged) evidence.huggedTurns += 1;
 
                 const forced = !!(only && only.toWayId === toWayId);
@@ -288,8 +308,7 @@
                     const fromPoint = laneEndpoint(from, true);
                     const toPoint = laneEndpoint(to, false);
                     if (!fromPoint || !toPoint) return;
-                    reachable += 1;
-                    connections.push({
+                    decided.push({
                         id: `connection:${node.id}:${from.id}->${to.id}`,
                         nodeId: node.id,
                         fromLaneId: from.id,
@@ -305,12 +324,14 @@
                 });
             }
 
+            if (undecidable) { leaveOpen(undecidable); continue; }
             // An approach that can reach nothing means the tags and the restrictions contradict each
-            // other or the geometry. That is a finding, not a solved junction.
-            if (!reachable) return { declined: 'approach_reaches_nothing' };
+            // other or the geometry. That is a finding, not a settled approach.
+            if (!decided.length) { leaveOpen('approach_reaches_nothing'); continue; }
+            connections.push(...decided);
         }
 
-        return { connections, arms: sectionIds.length, evidence };
+        return { connections, arms: sectionIds.length, evidence, open };
     }
 
     return {

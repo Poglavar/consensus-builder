@@ -100,11 +100,26 @@ describe('deterministic junction rules', () => {
         const graph = LaneTopologyGraph.build(tJunction({
             west: { lanes: '3', 'lanes:forward': '2', 'lanes:backward': '1' }
         }), BUILD_OPTIONS);
+        const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+        const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection');
 
-        expect(junctionConnections(graph)).toHaveLength(0);
+        // The node is not settled — but only the two-lane approach is open. Its neighbours have
+        // their own lanes and their own evidence, and they keep their answers.
         expect(graph.stats.resolvedIntersections).toBe(0);
-        expect(graph.problems.some(problem => problem.type === 'unresolved_intersection'
-            && problem.nodeIds.includes('osm-node:100'))).toBe(true);
+        expect(graph.stats.partialIntersections).toBe(1);
+        expect(problem.nodeIds).toContain('osm-node:100');
+        expect(problem.declineReason).toBe('multi_lane_approach_without_turn_lanes');
+        expect(problem.openApproaches).toHaveLength(1);
+        expect(problem.openApproaches[0].reason).toBe('multi_lane_approach_without_turn_lanes');
+
+        // Two settled approaches, two exits each.
+        const emitted = junctionConnections(graph);
+        expect(emitted).toHaveLength(4);
+        // Nothing arriving on the open approach may be claimed: a movement absent from the graph
+        // reads as one that is forbidden.
+        const openSection = problem.openApproaches[0].sectionId;
+        expect(emitted.some(connection => laneById.get(connection.fromLaneId).sectionId === openSection))
+            .toBe(false);
     });
 
     it('declines a junction with a two-way centre lane', () => {
@@ -162,14 +177,17 @@ describe('deterministic junction rules', () => {
         expect(fromWest[0].reason).toContain('turn:lanes names it');
     });
 
-    it('declines rather than stranding an approach with nowhere to go', () => {
+    it('leaves an approach with nowhere to go open rather than stranding it', () => {
         // The tag says this approach may only go left, and there is no left arm at this T.
         const graph = LaneTopologyGraph.build(tJunction({
             west: { highway: 'residential', oneway: 'yes', lanes: '1', 'turn:lanes': 'left' }
         }), BUILD_OPTIONS);
+        const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection');
 
-        expect(junctionConnections(graph)).toHaveLength(0);
         expect(graph.stats.resolvedIntersections).toBe(0);
+        expect(problem.openApproaches.map(entry => entry.reason)).toEqual(['approach_reaches_nothing']);
+        // The contradiction is confined to the approach that has it.
+        expect(junctionConnections(graph)).toHaveLength(4);
     });
 
     it('declines a node with more arms than a junction plausibly has', () => {
@@ -243,6 +261,33 @@ describe('deterministic junction rules', () => {
             expect(graph.stats.resolvedIntersections).toBe(0);
             expect(graph.problems.find(problem => problem.type === 'unresolved_intersection').declineReason)
                 .toBe('receiving_lane_undetermined');
+        });
+
+        it('confines an undetermined receiving lane to the approach that has it', () => {
+            const graph = LaneTopologyGraph.build([
+                // Two through lanes into a three-lane continuation: which lane goes unused is a
+                // decision, so this approach is open.
+                way(1, [[15.9787, 45.8], CENTRE], {
+                    highway: 'secondary', name: 'Ilica', oneway: 'yes', lanes: '2',
+                    'turn:lanes': 'through|through'
+                }, [10, 100]),
+                way(2, [CENTRE, [15.9813, 45.8]], {
+                    highway: 'secondary', name: 'Ilica', oneway: 'yes', lanes: '3'
+                }, [100, 20]),
+                // A plain two-way side street: its northbound approach has one lane and one place
+                // to go, and nothing about Ilica's problem touches it.
+                way(3, [CENTRE, [15.98, 45.799]], { ...TWO_WAY, name: 'Frankopanska' }, [100, 30])
+            ], BUILD_OPTIONS);
+            const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection');
+            const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+
+            expect(problem.openApproaches.map(entry => entry.reason)).toEqual(['receiving_lane_undetermined']);
+            const emitted = junctionConnections(graph);
+            expect(emitted.length).toBeGreaterThan(0);
+            // Every movement emitted comes from the side street, none from the open approach.
+            const openSection = problem.openApproaches[0].sectionId;
+            expect(emitted.some(connection => laneById.get(connection.fromLaneId).sectionId === openSection))
+                .toBe(false);
         });
 
         it('refuses a multi-lane approach with no turn:lanes at all', () => {

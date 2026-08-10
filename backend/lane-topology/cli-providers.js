@@ -94,7 +94,16 @@ export function recognitionTargets(graph) {
         .flatMap(problem => (problem.nodeIds || []).map(nodeId => ({
             nodeId,
             arms: degreeOf.get(nodeId) ?? null,
-            whyUnsettled: problem.declineReason || null
+            whyUnsettled: problem.declineReason || null,
+            // Named approaches mean the rest of the node is already decided and must be left alone.
+            // Absent means every approach there is open.
+            ...(problem.openApproaches?.length
+                ? { openApproaches: problem.openApproaches.map(entry => ({
+                    section: entry.sectionId,
+                    street: entry.name || null,
+                    why: entry.reason
+                })) }
+                : {})
         })));
 }
 
@@ -194,8 +203,10 @@ export function buildRecognitionPrompt(input) {
         '',
         'Work:',
         targets.length
-            ? '- Decide the lane-to-lane movements at these junction nodes, and only these. Every other '
-                + 'movement in the graph is already derived and is kept whether or not you repeat it.'
+            ? '- Decide the lane-to-lane movements at these junction nodes, and only these. Where '
+                + 'openApproaches is given, only traffic ARRIVING on those sections is undecided — the '
+                + 'other approaches at that node are already derived and must be left alone. Every '
+                + 'movement already in the graph is kept whether or not you repeat it.'
             : '- No junction in this crop is unresolved. Return empty arrays unless the evidence '
                 + 'contradicts a movement already in the graph.',
         JSON.stringify(targets),
@@ -473,14 +484,35 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             }
         };
     });
-    // The patch is a decision at the unresolved nodes, not a replacement graph. Before the rules
+    // The patch is a decision at the open APPROACHES, not a replacement graph. Before the rules
     // settled junctions there was nothing to lose by overwriting; now nine movements in ten are
-    // derived, and a model answering one junction would have deleted the rest. A node the rules
-    // already answered is therefore off limits — which also contains a model that wanders, the
-    // commonest failure measured.
+    // derived, and a model answering one junction would have deleted the rest. What is already
+    // decided is therefore off limits — which also contains a model that wanders, the commonest
+    // failure measured.
+    //
+    // Openness is per approach because resolution is: a node can have three settled approaches and
+    // one open. An unresolved_intersection with an empty openApproaches means the whole node is
+    // open; a graph with no unresolved problems at all predates this and is taken as fully open.
+    const openApproachesByNode = new Map();
+    (deterministicGraph.problems || [])
+        .filter(problem => problem.type === 'unresolved_intersection')
+        .forEach(problem => (problem.nodeIds || []).forEach(nodeId => {
+            const sections = (problem.openApproaches || []).map(entry => entry.sectionId).filter(Boolean);
+            openApproachesByNode.set(nodeId, sections.length ? new Set(sections) : null);
+        }));
     const derivedNodes = new Set((deterministicGraph.connections || []).map(connection => connection.nodeId));
-    const accepted = connections.filter(connection => !derivedNodes.has(connection.nodeId));
+    const isOpen = connection => {
+        if (openApproachesByNode.has(connection.nodeId)) {
+            const sections = openApproachesByNode.get(connection.nodeId);
+            return !sections || sections.has(laneById.get(connection.fromLaneId)?.sectionId);
+        }
+        return !derivedNodes.has(connection.nodeId);
+    };
+    const accepted = connections.filter(isOpen);
     const overreach = connections.length - accepted.length;
+    const answeredApproaches = new Set(accepted.map(connection => (
+        `${connection.nodeId}|${laneById.get(connection.fromLaneId)?.sectionId}`
+    )));
     const answeredNodes = new Set(accepted.map(connection => connection.nodeId));
 
     const modelProblems = patch.problems.map((problem, index) => ({
@@ -496,10 +528,29 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     // the "unresolved" note on every junction it has now answered. Same id means the model's version
     // wins, so re-emitting a problem restates it rather than duplicating it.
     const byId = new Map();
-    (deterministicGraph.problems || [])
-        .filter(problem => !(problem.type === 'unresolved_intersection'
-            && (problem.nodeIds || []).some(nodeId => answeredNodes.has(nodeId))))
-        .forEach(problem => byId.set(problem.id, problem));
+    (deterministicGraph.problems || []).forEach(problem => {
+        if (problem.type !== 'unresolved_intersection') {
+            byId.set(problem.id, problem);
+            return;
+        }
+        const nodeIds = problem.nodeIds || [];
+        const listed = problem.openApproaches || [];
+        if (!listed.length) {
+            // Whole node was open: answering it at all closes it, as before.
+            if (nodeIds.some(nodeId => answeredNodes.has(nodeId))) return;
+            byId.set(problem.id, problem);
+            return;
+        }
+        // Only the approaches the model actually answered close. A node with one approach left is
+        // still unresolved, and saying otherwise would hide the remaining work.
+        const stillOpen = listed.filter(entry => !nodeIds.some(
+            nodeId => answeredApproaches.has(`${nodeId}|${entry.sectionId}`)
+        ));
+        if (!stillOpen.length) return;
+        byId.set(problem.id, stillOpen.length === listed.length
+            ? problem
+            : { ...problem, openApproaches: stillOpen });
+    });
     modelProblems.forEach(problem => byId.set(problem.id, problem));
     if (overreach) {
         // Never a silent drop: a model spending its answer on the wrong nodes looks exactly like a

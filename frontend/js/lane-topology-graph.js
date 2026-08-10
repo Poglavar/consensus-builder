@@ -688,6 +688,14 @@
         }
     }
 
+    // One reason has to stand for the node in the summary; the full per-approach list is beside it.
+    function commonest(values) {
+        const counts = new Map();
+        values.forEach(value => counts.set(value, (counts.get(value) || 0) + 1));
+        return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0]
+            || 'no_approach_decidable';
+    }
+
     function graphNodes(sections) {
         const nodes = new Map();
         const add = (id, point, sectionId) => {
@@ -748,13 +756,20 @@
         const rules = junctionRulesModule();
         const restrictionsByNode = rules.indexRestrictions(options.restrictions);
         let resolvedIntersections = 0;
+        let partialIntersections = 0;
         nodes.filter(node => node.degree > 2).forEach(node => {
             const outcome = rules.resolveNode(node, { sectionsById, lanesBySection, restrictionsByNode });
-            if (!outcome.declined) {
-                connections.push(...outcome.connections);
+            connections.push(...(outcome.connections || []));
+            const open = outcome.open || [];
+            if (!outcome.declined && !open.length) {
                 resolvedIntersections += 1;
                 return;
             }
+            if (outcome.connections?.length) partialIntersections += 1;
+            // An EMPTY openApproaches means the whole node is open — nothing here could be looked
+            // at. A populated one means only those approaches are; the rest are settled above and a
+            // consumer must not reopen them.
+            const reason = outcome.declined || commonest(open.map(entry => entry.reason));
             problems.push({
                 id: `problem:unresolved-intersection:${node.id}`,
                 type: 'unresolved_intersection',
@@ -764,9 +779,14 @@
                 sectionIds: node.sectionIds,
                 // What the rules could not settle, so a caller can route the node to a model, to a
                 // split, or to a person instead of treating every unsolved junction alike.
-                declineReason: outcome.declined,
-                message: `${node.degree} road arms meet here; lane-to-lane movements have not been `
-                    + `inferred yet (${outcome.declined.replaceAll('_', ' ')}).`
+                declineReason: reason,
+                openApproaches: open,
+                message: open.length && outcome.connections?.length
+                    ? `${node.degree} road arms meet here; ${open.length} of ${open.length
+                        + new Set((outcome.connections || []).map(connection => connection.fromLaneId)).size} `
+                        + `approaches are still undecided (${reason.replaceAll('_', ' ')}).`
+                    : `${node.degree} road arms meet here; lane-to-lane movements have not been `
+                        + `inferred yet (${reason.replaceAll('_', ' ')}).`
             });
         });
 
@@ -801,6 +821,9 @@
                 problems: problems.length,
                 unresolvedIntersections: problems.filter(problem => problem.type === 'unresolved_intersection').length,
                 resolvedIntersections,
+                // Junctions where some approaches are settled and others are not. They count as
+                // unresolved — there is still work there — but they are not untouched.
+                partialIntersections,
                 errors: problems.filter(problem => problem.severity === 'error').length,
                 warnings: problems.filter(problem => problem.severity === 'warning').length
             }

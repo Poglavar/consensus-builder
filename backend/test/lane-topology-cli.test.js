@@ -84,6 +84,99 @@ function partlySolvedGraph() {
     };
 }
 
+// One junction node with two approaches: the rules settled the one arriving on s5 and left the one
+// arriving on s2 open. This is what partial resolution produces, and the patch has to honour it —
+// a node with connections is no longer proof that the node is finished.
+function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', reason: 'multi_lane_approach_without_turn_lanes' }]) {
+    const lane = (id, sectionId, fromNode, toNode, coordinates) => ({
+        id, sectionId, fromNode, toNode, geometry: { type: 'LineString', coordinates }
+    });
+    return {
+        schemaVersion: 1,
+        coverage: null,
+        source: {},
+        stats: { sourceWays: 4 },
+        sections: ['s2', 's3', 's4', 's5'].map(id => ({ id })),
+        nodes: [{ id: 'B', degree: 4 }],
+        lanes: [
+            lane('lane:in:s2', 's2', 'w', 'B', [[0, 0], [1, 0]]),
+            lane('lane:in:s5', 's5', 'n', 'B', [[1, 1], [1, 0]]),
+            lane('lane:out:s3', 's3', 'B', 'e', [[1, 0], [2, 0]]),
+            lane('lane:out:s4', 's4', 'B', 's', [[1, 0], [1, -1]])
+        ],
+        connections: [{
+            id: 'connection:B:s5->s3',
+            nodeId: 'B',
+            fromLaneId: 'lane:in:s5',
+            toLaneId: 'lane:out:s3',
+            type: 'turn',
+            source: 'deterministic'
+        }],
+        problems: [{
+            id: 'problem:unresolved-intersection:B',
+            type: 'unresolved_intersection',
+            severity: 'warning',
+            nodeIds: ['B'],
+            declineReason: 'multi_lane_approach_without_turn_lanes',
+            openApproaches
+        }]
+    };
+}
+
+describe('lane-topology partial resolution', () => {
+    it('accepts a movement on the open approach and refuses one on a settled approach', () => {
+        const applied = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'L0', toLaneId: 'L2', type: 'continue', confidence: 0.8 },
+                { fromLaneId: 'L1', toLaneId: 'L3', type: 'turn', confidence: 0.8 }
+            ],
+            problems: []
+        }, partiallyOpenGraph(), 'claude');
+        const fromOpen = applied.connections.filter(connection => connection.fromLaneId === 'lane:in:s2');
+        const fromSettled = applied.connections.filter(connection => connection.fromLaneId === 'lane:in:s5');
+
+        expect(fromOpen).toHaveLength(1);
+        expect(fromOpen[0].source).toBe('claude');
+        // The settled approach keeps exactly what the rules gave it, and nothing is added to it.
+        expect(fromSettled).toHaveLength(1);
+        expect(fromSettled[0].source).toBe('deterministic');
+        expect(applied.problems.find(problem => problem.type === 'movements_outside_the_work').message)
+            .toContain('1 returned movements');
+    });
+
+    it('closes the node only when every open approach has been answered', () => {
+        const twoOpen = partiallyOpenGraph([
+            { sectionId: 's2', name: 'Ilica', reason: 'multi_lane_approach_without_turn_lanes' },
+            { sectionId: 's6', name: 'Savska', reason: 'receiving_lane_undetermined' }
+        ]);
+        const applied = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'L0', toLaneId: 'L2', type: 'continue', confidence: 0.8 }],
+            problems: []
+        }, twoOpen, 'claude');
+        const remaining = applied.problems.find(problem => problem.type === 'unresolved_intersection');
+
+        // Answering one of two leaves the junction unresolved, with only the other still listed.
+        expect(remaining.openApproaches).toHaveLength(1);
+        expect(remaining.openApproaches[0].sectionId).toBe('s6');
+    });
+
+    it('drops the unresolved note once the last open approach is answered', () => {
+        const applied = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'L0', toLaneId: 'L2', type: 'continue', confidence: 0.8 }],
+            problems: []
+        }, partiallyOpenGraph(), 'claude');
+
+        expect(applied.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(false);
+    });
+
+    it('tells the model which approaches are open, not just which node', () => {
+        const prompt = buildRecognitionPrompt({ deterministicGraph: partiallyOpenGraph() });
+
+        expect(prompt).toContain('"openApproaches":[{"section":"s2","street":"Ilica"');
+        expect(prompt).toContain('only traffic ARRIVING on those sections is undecided');
+    });
+});
+
 describe('lane-topology recognition contract', () => {
     it('shows lanes by short handle and names the junctions that are the work', () => {
         const prompt = buildRecognitionPrompt({ deterministicGraph: partlySolvedGraph() });
