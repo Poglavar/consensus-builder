@@ -658,25 +658,37 @@ const ProposalManager = {
         });
         for (const proposal of appliedList) {
             const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
-            // The derive is geometric against LOADED fabric — coverage must not depend on
-            // where the viewport happens to be. Fetch the member's ground first: its declared
-            // base anchors by id, and the footprint's bounds for ground an edit newly covers.
+            // The derive is geometric against LOADED fabric — coverage must not depend on where the
+            // viewport happens to be. So ask the database for the ground this member covers, by its
+            // FOOTPRINT.
+            //
+            // This used to be two approximations of that question and both failed on a long line: a
+            // list of declared ids, which is only as good as whatever the record happened to say, and
+            // then the footprint's BOUNDING BOX for anything the list missed. The imported 17 km
+            // track occupies 9.35 ha in a 56.6 km² box — 605× — so the box asked for 37,164 parcels
+            // to find the 661 that are actually under it, ingested ~98,000 layers, and the tab never
+            // came back. /parcels/under asks the real question and subdivides the geometry so the
+            // spatial index is not defeated by the same diagonal: 661 parcels, 618 ms.
             try {
-                const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                const groundIds = Array.from(new Set([
-                    ...(Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []),
-                    ...(Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [])
-                        .map(id => (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id))
-                ].map(String).filter(Boolean)));
-                if (groundIds.length && typeof fetchParcelsForIds === 'function') {
-                    await fetchParcelsForIds(groundIds);
-                }
                 const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
                 const footprint = (planOrderApi && typeof planOrderApi.footprintOf === 'function')
                     ? planOrderApi.footprintOf(proposal) : null;
-                if (footprint && typeof fetchParcelData === 'function' && typeof L !== 'undefined') {
-                    const bounds = L.geoJSON({ type: 'Feature', properties: {}, geometry: footprint.type === 'Feature' ? footprint.geometry : footprint }).getBounds();
-                    await fetchParcelData(bounds.pad(0.1));
+                let loaded = null;
+                if (footprint && typeof fetchParcelsUnderGeometry === 'function') {
+                    loaded = await fetchParcelsUnderGeometry(footprint);
+                }
+                if (!loaded) {
+                    // No footprint to ask about, or the endpoint is unavailable: fall back to the
+                    // declared ids. Never to a bounding box.
+                    const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
+                    const groundIds = Array.from(new Set([
+                        ...(Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []),
+                        ...(Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [])
+                            .map(id => (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id))
+                    ].map(String).filter(Boolean)));
+                    if (groundIds.length && typeof fetchParcelsForIds === 'function') {
+                        await fetchParcelsForIds(groundIds);
+                    }
                 }
             } catch (fetchError) {
                 console.warn('[rebuildAppliedFabric] ground fetch failed for', key, fetchError);

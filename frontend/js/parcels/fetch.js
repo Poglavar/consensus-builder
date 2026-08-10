@@ -841,7 +841,57 @@
         return task();
     }
 
+    // The parcels a footprint actually covers, asked of the database rather than approximated here.
+    //
+    // Everything else in this file fetches by box or by id, and a proposal is neither: a corridor's
+    // bounding box held 37,164 parcels where the corridor itself touches 661, and an id list is only
+    // as good as whatever the record happened to declare. This asks the one honest question, and the
+    // server subdivides the geometry so its own spatial index is not defeated by the same long
+    // diagonal that defeated us.
+    //
+    // Returns the base cadastral ids it loaded and the server's coverage of the footprint. Coverage
+    // is the DATABASE's answer, over the whole cadastre — the caller may still hold a live fabric
+    // with derived children in it, which no server can know about.
+    async function fetchParcelsUnderGeometry(geometry, options = {}) {
+        const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+        if (!geom || !geom.type) return null;
+
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') return base.replace(/\/$/, '');
+                }
+            } catch (_) { }
+            return 'https://api.urbangametheory.xyz';
+        })();
+
+        const response = await fetch(`${backendBase}/parcels/under`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326 })
+        });
+        if (!response.ok) {
+            let detail = '';
+            try { detail = (await response.json()).error || ''; } catch (_) { }
+            throw new Error(`/parcels/under ${response.status}${detail ? ': ' + detail : ''}`);
+        }
+        const payload = await response.json();
+        const features = Array.isArray(payload.features) ? payload.features : [];
+        if (features.length && typeof ingestParcelFeatures === 'function') {
+            // The endpoint returns WGS84 already.
+            await ingestParcelFeatures(features, { skipConversion: true, replaceExisting: false });
+        }
+        return {
+            ids: features.map(f => f && f.properties && f.properties.parcelId).filter(Boolean),
+            coverage: Number(payload.coverage) || 0,
+            count: Number(payload.count) || features.length,
+            queryMs: Number(payload.queryMs) || null
+        };
+    }
+
     global.fetchParcelData = fetchParcelData;
+    global.fetchParcelsUnderGeometry = fetchParcelsUnderGeometry;
     global.fetchSingleParcelById = fetchSingleParcelById;
     global.fetchParcelsByIds = fetchParcelsByIds;
     global.fetchParcelFeaturesByIds = fetchParcelFeaturesByIds;
