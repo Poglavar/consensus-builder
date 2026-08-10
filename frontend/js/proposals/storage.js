@@ -26,6 +26,26 @@ function resolveProposalResourceUrl(url) {
     }
 }
 
+// Which national parcel-id space each city draws from. Croatia's cities share ONE countrywide
+// dataset, so they share one prefix and cannot be told apart by id — the same rule Zagreb has
+// always used, now stated once rather than per city.
+//
+// This map must cover every city in city-config.js. A city missing from it does not degrade, it
+// fails silently and totally: isInCity answers false for the city's own parcels, rebuildAppliedFabric
+// then filters out every applied proposal there, and the fabric replays zero of them — so proposals
+// mark themselves applied, cut nothing, and vanish on reload, with no error anywhere. Šibenik and
+// Split sat in exactly that state; a test now asserts this map and the config list stay in step.
+const CITY_PARCEL_ID_PREFIXES = {
+    zagreb: 'HR-',
+    split: 'HR-',
+    sibenik: 'HR-',
+    belgrade: 'SR-',
+    ljubljana: 'SI-',
+    buenos_aires: 'AR-',
+    colorado: 'US-CO-',
+    new_york: 'US-NY-'
+};
+
 function isInCity(parcelId, cityId) {
     if (!parcelId) return false;
     const id = parcelId.toString().trim();
@@ -33,25 +53,14 @@ function isInCity(parcelId, cityId) {
     const upper = id.toUpperCase();
     const city = (cityId || '').toString().toLowerCase();
 
-    if (city === 'zagreb') {
-        return upper.startsWith('HR-');
-    }
-    if (city === 'belgrade') {
-        return upper.startsWith('SR-');
-    }
-    if (city === 'ljubljana') {
-        return upper.startsWith('SI-');
-    }
     if (city === 'buenos_aires') {
+        // Buenos Aires ids predate the prefixed form and still occur bare.
         const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;
         return upper.startsWith('AR-') || baPattern.test(upper);
     }
-    if (city === 'colorado') {
-        return upper.startsWith('US-CO-');
-    }
-    if (city === 'new_york') {
-        return upper.startsWith('US-NY-');
-    }
+
+    const prefix = CITY_PARCEL_ID_PREFIXES[city];
+    if (prefix) return upper.startsWith(prefix);
 
     // Unknown city: refuse the parcel rather than silently letting cross-city
     // ids through. Every configured city is enumerated above, so reaching

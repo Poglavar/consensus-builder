@@ -779,10 +779,18 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         // uploaded (has a server serial) → blue, otherwise → amber "Unsaved".
         const downloadEligible = isServerSource && !!proposalId;
         const isDownloaded = downloadEligible && downloadedLookup(proposal);
+        // Where a proposal LIVES is two independent facts, and the mint badge only ever told one of
+        // them: minted / on the server / neither. Held-locally was left implied — true in the Local
+        // tab, and in the Server tab only visible as a greyed-out Download button. So a downloaded
+        // proposal still read "On server" and nothing said the copy in front of you was yours.
+        //
+        // The second badge states it, in both tabs, from the same lookup the Download button uses.
+        const isLocal = typeof downloadedLookup === 'function' ? !!downloadedLookup(proposal) : !isServerSource;
         const mintLabels = {
             minted: t('panel.proposal.lifecycle.minted', 'Minted'),
             onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server'),
-            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved')
+            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved'),
+            local: t('modal.roadWidth.proposalList.labels.local', 'Local')
         };
 
         let mintLabel, mintStyles;
@@ -835,6 +843,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     ${window.__proposalEpoch ? window.__proposalEpoch.epochBadgeHtml(proposal) : ''}
                     <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
                     <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
+                    ${isLocal ? `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${escapeHtml(mintLabels.local)}</span>` : ''}
                     ${buyButtonHtml}
                 </div>
             </div>
@@ -914,6 +923,12 @@ async function handleProposalListItemClick(event) {
             }
             justDownloaded = true;
             updateShowProposalsButton();
+            // The card still said "Download". Downloading by clicking the ROW leaves the same card
+            // on screen as downloading by its own button does, so it has to end in the same state —
+            // otherwise the list keeps offering to fetch something it already holds.
+            if (typeof markProposalCardDownloaded === 'function') {
+                markProposalCardDownloaded(proposalIdAttr, proposal);
+            }
         } catch (error) {
             console.error('Failed to download server proposal on click', serverId, error);
             updateStatus('Failed to download proposal');
@@ -932,10 +947,18 @@ async function handleProposalListItemClick(event) {
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
 
     // A list click only PREVIEWS the proposal: pan/zoom the map to it (framed in the visible area,
-    // clear of the list panel) and mark the row — the list stays open and nothing is committed.
-    // COMMITTING (select + open details + close the list + restore normal, fully-clickable map)
-    // happens when the user clicks the proposal ON THE MAP; see the browse-mode guard in
-    // onParcelClick / the tail of selectAndHighlightProposal.
+    // clear of the list panel) and mark the row — the list stays open and nothing is selected, so
+    // browsing ten proposals costs ten previews rather than ten selections.
+    //
+    // SELECTING it (open details + close the list + restore the normal, fully-clickable map) happens
+    // when the user clicks the proposal ON THE MAP, or when they close the list on the row they were
+    // previewing — see the browse-mode guard in onParcelClick, the tail of
+    // selectAndHighlightProposal, and closeProposalList({ selectPreviewed: true }).
+    //
+    // "Select" is the word on purpose. In this codebase COMMIT means ending an editing session so a
+    // draft becomes a stored record (see reparcellization.js, building-blocks.js), and APPLY means
+    // enacting a stored proposal on the map — two separate axes, two separate columns in the
+    // database. Selection stores nothing and enacts nothing; it is only what the user is looking at.
     try {
         const listModal = document.querySelector('.proposal-list-modal');
         if (listModal) {
@@ -961,11 +984,30 @@ function switchProposalTab(clickedTabOrName, maybeTabName) {
     }
 }
 
+// `selectPreviewed` is opt-in, and deliberately not inferred from `clearHighlights`. Of the six
+// callers, two close the list while a selection is already being made (they pass clearHighlights
+// false), and two more close it bare while LEAVING proposals entirely — returnToParcelInfo, and the
+// clear-all-proposals path, where re-selecting would reopen a proposal the user just dismissed or
+// deleted. Only a genuine dismissal of the list asks for it.
 function closeProposalList(options = {}) {
     const normalized = options && typeof options === 'object' ? options : {};
-    const clearHighlights = normalized.clearHighlights !== false;
-    // Leaving the list also exits browse mode, so the map returns to normal (parcels clickable again).
+    const selectPreviewed = normalized.selectPreviewed === true;
+    const clearHighlights = normalized.clearHighlights !== false && !selectPreviewed;
+    // Leaving the list also exits browse mode, so the map returns to normal (parcels clickable
+    // again). This runs BEFORE any selection below: selectAndHighlightProposal closes the list
+    // itself while browse mode is on, and clearing the flag first is what stops that recursing.
     if (typeof window !== 'undefined') window.proposalListBrowseMode = false;
+
+    // The row the user was looking at when they closed the list. Read from the DOM before the modal
+    // is torn down.
+    let previewedId = null;
+    if (selectPreviewed) {
+        try {
+            const previewing = document.querySelector('.proposal-list-item.is-previewing');
+            previewedId = previewing ? previewing.getAttribute('data-proposal-id') : null;
+        } catch (_) { previewedId = null; }
+    }
+
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
         modal.style.display = 'none';
@@ -975,6 +1017,18 @@ function closeProposalList(options = {}) {
             try { clearProposalHighlights(); } catch (_) { }
         }
         proposalListState.selectedId = null;
+    }
+
+    // Browsing picked a proposal out; closing the list keeps it. Without this the map was left
+    // showing a highlight belonging to nothing selected, so none of the proposal's own buttons were
+    // reachable and the same proposal had to be found and clicked again on the map.
+    //
+    // No re-centring: the preview already framed it, and moving the map again on a close reads as
+    // the app wandering off on its own.
+    if (previewedId && typeof selectAndHighlightProposal === 'function') {
+        try { selectAndHighlightProposal(previewedId, null, false, true); } catch (error) {
+            console.warn('[closeProposalList] could not select the previewed proposal', error);
+        }
     }
 }
 

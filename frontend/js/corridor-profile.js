@@ -38,7 +38,10 @@ const CORRIDOR_LANE_TYPES = {
     median: { label: 'Median', surface: '#4f7f52', height: 0.15, osm: { key: 'median', value: 'yes' } },
     // One TRACK — a single pair of rails and the ballast under it. A rail lane carries a `gauge`, the way
     // a verge carries a `landscape`: it is a property of the lane, and it sets the lane's width.
-    rail: { label: 'Track', surface: '#d3d3d3', height: 0, osm: { key: 'railway', value: 'rail' } }
+    // Ballast grey, and deliberately NOT #d3d3d3: that is the parcel fill, so a track drawn in it
+    // was the same grey as the ground it crossed and disappeared into it. This is the base tone the
+    // 2D ballast pattern is built on, kept here so 2D and 3D read as the same material.
+    rail: { label: 'Track', surface: '#9a9a97', height: 0, osm: { key: 'railway', value: 'rail' } }
 };
 
 const CORRIDOR_GREEN_TYPES = new Set(['verge', 'median']);
@@ -918,11 +921,20 @@ function corridorCenterlineOf(definition) {
     );
     if (!raw || !raw.length) return [];
 
+    // `level` rides along because this is the funnel every consumer of a stored centreline goes
+    // through, including the acquisition footprint — rebuilding a bare {lat,lng} here is precisely
+    // how a vertical profile gets silently discarded and a tunnel starts taking land again. It is
+    // only attached when the stored point actually has one, so a corridor without levels still
+    // yields the identical bare {lat,lng} objects it always did.
     const toPoint = (point) => {
         if (!point) return null;
         const lat = Number(point.lat !== undefined ? point.lat : (Array.isArray(point) ? point[1] : NaN));
         const lng = Number(point.lng !== undefined ? point.lng : (Array.isArray(point) ? point[0] : NaN));
-        return (Number.isFinite(lat) && Number.isFinite(lng)) ? { lat, lng } : null;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        const level = (point && typeof point.level === 'number' && Number.isFinite(point.level))
+            ? point.level
+            : null;
+        return level === null ? { lat, lng } : { lat, lng, level };
     };
 
     const isFlat = !Array.isArray(raw[0]);

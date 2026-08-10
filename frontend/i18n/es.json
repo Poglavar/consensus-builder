@@ -1,4 +1,13 @@
 {
+    "densityStats": {
+        "title": "Estad\u00edsticas geom\u00e9tricas",
+        "parcelArea": "Superficie de la parcela",
+        "footprint": "Huella de los edificios",
+        "siteCoverage": "Ocupaci\u00f3n (kig)",
+        "gbp": "GBP sobre rasante",
+        "kin": "kin",
+        "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura \u00f7 {{height}} m por planta."
+    },
     "multitab": {
         "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar.",
         "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
@@ -843,7 +852,7 @@
                 "edit": "Editar",
                 "resumeDraft": "Continuar borrador",
                 "editUnavailable": "Esta propuesta no se puede editar de forma segura.",
-                "drive": "Conducir por esta vía",
+                "drive": "Conducir",
                 "delete": "Eliminar",
                 "deleteHint": "Elimina el objeto y su idea por completo.",
                 "editGeometry": "Editar geometría",
@@ -1028,6 +1037,13 @@
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
             "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} propuestas de vía separadas.",
             "applyingEdit": "Aplicando…",
+            "buildingRoad": "Construyendo la vía…",
+            "closeDrawnRoadPrompt": "Esta vía aún no se ha construido. ¿Construirla o descartar el trazado?",
+            "closeDrawnTrackPrompt": "Esta línea aún no se ha construido. ¿Construirla o descartar el trazado?",
+            "closeDrawnBuild": "Construir",
+            "closeDrawnDiscard": "Descartar el trazado",
+            "closeDrawnKeep": "Seguir dibujando",
+            "buildingTrack": "Construyendo la línea…",
             "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta",
             "finishButtonShortTrack": "Terminar vía (F)",
             "lengthLabelTrack": "Longitud de la vía:",
@@ -1557,6 +1573,7 @@
                     "conditional": "Condicional",
                     "partial": "Pagos parciales",
                     "onServer": "En el servidor",
+                    "local": "Local",
                     "unsaved": "Sin guardar",
                     "inMemory": "En memoria",
                     "yes": "Sí",

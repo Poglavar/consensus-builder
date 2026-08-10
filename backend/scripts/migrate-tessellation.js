@@ -475,13 +475,25 @@ export function bodyStandsOnRoad(roadDefinition, bodyGeometry, turfRef) {
     } catch (e) { return 0; }
 }
 
-async function proposalColumns(pool) {
+// Resolve the columns through the search_path rather than a hardcoded schema: proposal sits in
+// `public` locally but in `consensus` on the server, and every other statement here addresses the
+// table unqualified. Asking information_schema for 'public' therefore returned nothing on the
+// server, which built `INSERT INTO proposal () SELECT` and died as a syntax error 12 rows into an
+// apply. to_regclass resolves the same table the rest of the script writes to, so the two cannot
+// disagree; an empty list is now a stated failure instead of malformed SQL.
+export async function proposalColumns(pool) {
     const { rows } = await pool.query(
-        `SELECT column_name FROM information_schema.columns
-         WHERE table_schema = 'public' AND table_name = 'proposal' AND column_name <> 'id'
-         ORDER BY ordinal_position`
+        `SELECT attname AS column_name
+         FROM pg_attribute
+         WHERE attrelid = to_regclass('proposal')
+           AND attnum > 0 AND NOT attisdropped AND attname <> 'id'
+         ORDER BY attnum`
     );
-    return rows.map(row => row.column_name);
+    const columns = rows.map(row => row.column_name);
+    if (!columns.length) {
+        throw new Error('proposal table is not visible on the search_path — cannot build the split insert');
+    }
+    return columns;
 }
 
 // Insert one split-off stretch as a sibling row: every column copied from the source row,

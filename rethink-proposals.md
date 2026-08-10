@@ -1850,6 +1850,82 @@ structure-as-victim handling isn't in the amend pass yet. Gov-plan roads applied
 existing applied road keep their authored child polygons un-clipped (double cover) — rare
 direction, unhandled.
 
+## 15e. Open tradeoff 2026-08-10 — where the live fabric is derived (DEFERRED)
+
+Not a decision. A tradeoff, recorded while it was understood, deliberately left open.
+
+### What forced the question
+
+An imported 17 km track (transit project 141) would not apply. The chase ended at the replay's
+per-member ground prefetch, which asked for the footprint's BOUNDING BOX: the corridor occupies
+9.35 ha inside a 56.6 km² box — **605×** — so it asked for 37,164 parcels to find the 661 that touch
+it, ingested ~98,000 layers, and the tab never came back.
+
+The fix was to ask the real question instead of a rectangle: `POST /parcels/under`. Measured on that
+corridor, and the numbers matter for anything similar:
+
+| | |
+|---|---|
+| whole geometry, one query | **20.2 s** |
+| `ST_Subdivide` into 10 pieces, query each | **0.32 s** |
+
+A GIST index prefilters on bounding boxes, so a long diagonal defeats the index exactly as it
+defeated the client. Subdividing is not an optimisation, it is the price of using the index at all.
+Apply went from never finishing to 2.4 s.
+
+### The question that is left
+
+If parents are resolved from geometry (§15a onwards), why does the client resolve them at all?
+
+Two different things wear the word *parent*:
+
+- **the cutter's working set** — the live polygons this footprint cuts. Recomputed from geometry on
+  every apply, never looked up. Not a relationship; a local variable.
+- **the stored declaration** — `cadastre_parcel_ids`, `ownership_flow`: whose land this takes,
+  frozen at publish so consent binds to the effect (§9/§12). Consumed by claims, drill-down,
+  disclosure depth, sharing, the parcel panel. Never by the cutter. This one is a legal record and
+  is not geometry's to remove.
+
+So the client keeps the first only because **the live fabric exists nowhere else**. The server holds
+every applied proposal and its footprint — 313 applied at the time of writing — but **0 of them
+carry derived children**: the replay runs in the browser and its output is never persisted. Observed
+directly, on a page where the corridor was already applied:
+
+```
+server: 649 parcels · coverage 0.9778     (base cadastre)
+client:   3 parcels · coverage 0.9999     (live fabric — the corridor's own 1,167 children)
+```
+
+Neither is wrong. They answer different questions, and only the client can answer the second one
+today. On a clean fabric the two agree exactly — 649 = 649, coverage within 0.01%, which is only the
+projected-versus-geodesic ruler difference of §area-measurement-authority.
+
+### The tradeoff
+
+**Leave the replay in the client** (today): applying works offline and without the server knowing;
+the most intricate logic in the app stays where it is. Cost: the client keeps a geometry engine,
+coverage is computed twice by two rulers, and the O(n²) live-fabric overlap check exists only
+because a client-derived partition cannot be trusted to be one.
+
+**Move the replay to the server**: the fabric becomes a served layer — base cadastre plus the
+ordered replay — and everything else falls out. Parentage stops being a client concept; coverage is
+one number by construction; the overlap check disappears, because a server-derived partition IS a
+partition; the client becomes fetch-and-draw. Cost: the replay is ordering, §15b amendment, junction
+ownership and severance — a project, not a patch — and "applied" stops being something a browser can
+decide alone.
+
+### What was built in the meantime
+
+The half that is right either way: the ground now comes from the database by geometry, so the
+bounding box and the declared-id dependency are both gone from the fetch path, and parentage is
+already only a derivation. The decision above changes *where* that derivation runs, not whether it
+is geometric.
+
+Code: `backend/routes/parcels.js` (`POST /parcels/under`), `frontend/js/parcels/fetch.js`
+(`fetchParcelsUnderGeometry`), `frontend/js/proposal-manager.js` (`_rebuildPass` prefetch, live-fabric
+overlap prefilter). Tests: `backend/test/parcels-under-geometry.test.js`,
+`backend/test/live-fabric-overlap-prefilter.test.js`.
+
 ## 16. Related notes
 
 - `feature-proposal-goals.md` — proposal typologies

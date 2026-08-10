@@ -1,4 +1,13 @@
 {
+    "densityStats": {
+        "title": "Geometry statistics",
+        "parcelArea": "Parcel area",
+        "footprint": "Building footprint",
+        "siteCoverage": "Site coverage (kig)",
+        "gbp": "Above-ground GBP",
+        "kin": "kin",
+        "floorHeightHint": "Calculated from the drawn footprints and height \u00f7 {{height}} m per storey."
+    },
     "multitab": {
         "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
         "notSaved": "Proposal was NOT saved and will be lost on browser reload."
@@ -796,7 +805,7 @@
                 "edit": "Edit",
                 "resumeDraft": "Resume draft",
                 "editUnavailable": "This proposal cannot be edited safely.",
-                "drive": "Drive this track",
+                "drive": "Drive",
                 "delete": "Delete",
                 "deleteHint": "Deletes the object and its idea entirely.",
                 "editGeometry": "Edit geometry",
@@ -981,6 +990,13 @@
             "editRevertedStatus": "Could not complete that road change — reverted.",
             "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road proposals.",
             "applyingEdit": "Applying…",
+            "buildingRoad": "Building the road…",
+            "closeDrawnRoadPrompt": "This road has not been built yet. Build it, or discard the drawing?",
+            "closeDrawnTrackPrompt": "This track has not been built yet. Build it, or discard the drawing?",
+            "closeDrawnBuild": "Build it",
+            "closeDrawnDiscard": "Discard the drawing",
+            "closeDrawnKeep": "Keep drawing",
+            "buildingTrack": "Building the track…",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
             "finishButtonShortTrack": "Finish track (F)",
             "lengthLabelTrack": "Track length:",
@@ -1537,6 +1553,7 @@
                     "conditional": "Conditional",
                     "partial": "Partial payouts",
                     "onServer": "On server",
+                    "local": "Local",
                     "unsaved": "Unsaved",
                     "inMemory": "In-memory",
                     "yes": "Yes",

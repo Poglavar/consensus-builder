@@ -948,9 +948,12 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     } catch (_) { }
 
     // Proposal browse mode: picking a proposal from any of the clickable map surfaces (a parcel that
-    // carries one, a corridor hit target, a building, a station) is the "commit" gesture — its
-    // details are now open, so the list has done its browsing job and closes. Highlights are kept so
-    // the just-selected proposal stays visible on the map.
+    // carries one, a corridor hit target, a building, a station) ends the browse — its details are
+    // now open, so the list has done its browsing job and closes. Highlights are kept so the
+    // just-selected proposal stays visible on the map.
+    //
+    // Not passing selectPreviewed is what keeps closeProposalList from selecting the previewed row
+    // on top of this one: a selection is already in progress here, and it is this one that wins.
     try {
         if (window.proposalListBrowseMode && showDetails && typeof closeProposalList === 'function') {
             closeProposalList({ clearHighlights: false });

@@ -3,12 +3,16 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+const { setProposalApplied } = require('../../frontend/js/proposals/status.js');
 
 describe('ProposalManager mutation boundary', () => {
     let previousStorage;
     let originalApplyBody;
     let originalUnapplyBody;
     let originalRefresh;
+    let originalRebuild;
+    let originalCollectAlternatives;
+    let previousSetProposalApplied;
     let store;
 
     beforeEach(() => {
@@ -16,6 +20,9 @@ describe('ProposalManager mutation boundary', () => {
         originalApplyBody = ProposalManager._applyProposalTransactionBody;
         originalUnapplyBody = ProposalManager._unapplyProposalTransactionBody;
         originalRefresh = ProposalManager._refreshUIAfterProposalChange;
+        originalRebuild = ProposalManager.rebuildAppliedFabric;
+        originalCollectAlternatives = ProposalManager._collectAppliedAlternativesForExplicitApply;
+        previousSetProposalApplied = globalThis.setProposalApplied;
 
         const proposals = new Map([
             ['target', { proposalId: 'target', applied: false, value: 'before' }],
@@ -30,8 +37,10 @@ describe('ProposalManager mutation boundary', () => {
             endBatch() { this.batchDepth -= 1; },
             save() { this.saves += 1; },
             getProposal(id) { return this.proposals.get(String(id)); },
+            getAllProposals() { return [...this.proposals.values()]; }
         };
         globalThis.proposalStorage = store;
+        globalThis.setProposalApplied = setProposalApplied;
         ProposalManager._refreshUIAfterProposalChange = () => {};
     });
 
@@ -39,6 +48,10 @@ describe('ProposalManager mutation boundary', () => {
         ProposalManager._applyProposalTransactionBody = originalApplyBody;
         ProposalManager._unapplyProposalTransactionBody = originalUnapplyBody;
         ProposalManager._refreshUIAfterProposalChange = originalRefresh;
+        ProposalManager.rebuildAppliedFabric = originalRebuild;
+        ProposalManager._collectAppliedAlternativesForExplicitApply = originalCollectAlternatives;
+        if (previousSetProposalApplied === undefined) delete globalThis.setProposalApplied;
+        else globalThis.setProposalApplied = previousSetProposalApplied;
         if (previousStorage === undefined) delete globalThis.proposalStorage;
         else globalThis.proposalStorage = previousStorage;
     });
@@ -84,5 +97,31 @@ describe('ProposalManager mutation boundary', () => {
         await expect(ProposalManager.applyProposal('target', { replay: true })).rejects.toBe(cause);
         expect(store.getProposal('target').value).toBe('before');
         expect(store.batchDepth).toBe(0);
+    });
+
+    it('makes the explicitly applied alternative the only standing member', async () => {
+        ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
+        ProposalManager.rebuildAppliedFabric = async () => ({ ok: true, failed: [] });
+
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
+
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+    });
+
+    it('restores the previous alternative when replay removes the chosen proposal', async () => {
+        let rebuilds = 0;
+        ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
+        ProposalManager.rebuildAppliedFabric = async () => {
+            rebuilds += 1;
+            if (rebuilds === 1) setProposalApplied(store.getProposal('target'), false, { stamp: false });
+            return { ok: true, failed: [] };
+        };
+
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
+
+        expect(rebuilds).toBe(2);
+        expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });
+        expect(store.getProposal('conflict')).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
     });
 });

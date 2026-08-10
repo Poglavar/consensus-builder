@@ -6,6 +6,7 @@
     const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v1';
     const LEGACY_CORRIDOR_DRAFT_KEY = 'consensus-builder.active-corridor-draft.v1';
     const DEFAULT_HISTORY_LIMIT = 100;
+    const DEFAULT_PERSISTED_HISTORY_LIMIT = 12;
     const DEFAULT_COALESCE_MS = 800;
     const VALID_DRAFT_STATES = new Set(['editing', 'review', 'publishing', 'error']);
 
@@ -337,6 +338,25 @@
         };
     }
 
+    // Undo can retain many geometry snapshots during the live editing session, but persisting all
+    // 100 copies of a large block quickly exhausts localStorage. Produce a storage-only copy with
+    // bounded history; the in-memory envelope (and therefore the current session's undo stack) is
+    // deliberately untouched.
+    function envelopeWithHistoryLimit(source, limit) {
+        const output = cloneDraftValue(source) || {};
+        const keep = Math.max(0, Number(limit) || 0);
+        (Array.isArray(output.drafts) ? output.drafts : []).forEach(draft => {
+            if (!draft || !draft.history) return;
+            draft.history.past = Array.isArray(draft.history.past)
+                ? (keep > 0 ? draft.history.past.slice(-keep) : [])
+                : [];
+            draft.history.future = Array.isArray(draft.history.future)
+                ? (keep > 0 ? draft.history.future.slice(-keep) : [])
+                : [];
+        });
+        return output;
+    }
+
     function createProposalDraftStore(options = {}) {
         const storage = options.storage || global.localStorage || null;
         const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
@@ -344,10 +364,18 @@
         const now = options.now || (() => new Date());
         const idFactory = options.idFactory || defaultDraftId;
         const historyLimit = Number.isFinite(Number(options.historyLimit)) ? Math.max(1, Number(options.historyLimit)) : DEFAULT_HISTORY_LIMIT;
+        const persistedHistoryLimit = Number.isFinite(Number(options.persistedHistoryLimit))
+            ? Math.max(0, Number(options.persistedHistoryLimit))
+            : DEFAULT_PERSISTED_HISTORY_LIMIT;
         const coalesceMs = Number.isFinite(Number(options.coalesceMs)) ? Math.max(0, Number(options.coalesceMs)) : DEFAULT_COALESCE_MS;
         const subscribers = new Set();
         let envelope = normalizeStoredEnvelope(null, now);
         let lastLoadWasCorrupt = false;
+        const persistenceTiers = [null]; // null = full in-memory history
+        if (persistedHistoryLimit < historyLimit) persistenceTiers.push(persistedHistoryLimit);
+        if (persistenceTiers[persistenceTiers.length - 1] !== 0) persistenceTiers.push(0);
+        let persistenceTier = 0;
+        let persistenceWarningShown = false;
 
         function readStoredEnvelope() {
             if (!storage || typeof storage.getItem !== 'function') return normalizeStoredEnvelope(null, now);
@@ -378,17 +406,30 @@
                 if (isEmpty && typeof storage.getItem === 'function' && storage.getItem(storageKey) === null) {
                     return true;
                 }
-                // A storage write can fail — most often QuotaExceededError when a draft carries a very
-                // large/complex geometry. This is a background autosave: losing the persisted copy is
-                // not fatal to editing, and it must NEVER throw into the caller (a live autosave firing
-                // mid-build once surfaced the raw "Failed to execute 'setItem'… exceeded the quota" in
-                // the status bar and aborted the flow). Swallow it, warn, and report the failure.
-                try {
-                    storage.setItem(storageKey, JSON.stringify(envelope));
-                } catch (error) {
-                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', error);
-                    return false;
+                // First try the complete undo stack. If the browser quota refuses it, retain full
+                // history in memory but retry with a bounded persisted stack, then current state
+                // only. Remember the smallest successful tier so every slider move does not repeat
+                // the same QuotaExceededError. The live draft itself is never discarded.
+                let lastError = null;
+                for (let tier = persistenceTier; tier < persistenceTiers.length; tier += 1) {
+                    const limit = persistenceTiers[tier];
+                    const persistedEnvelope = limit === null
+                        ? envelope
+                        : envelopeWithHistoryLimit(envelope, limit);
+                    try {
+                        storage.setItem(storageKey, JSON.stringify(persistedEnvelope));
+                        persistenceTier = tier;
+                        persistenceWarningShown = false;
+                        return true;
+                    } catch (error) {
+                        lastError = error;
+                    }
                 }
+                if (!persistenceWarningShown) {
+                    persistenceWarningShown = true;
+                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', lastError);
+                }
+                return false;
             }
             return true;
         }
@@ -950,7 +991,8 @@
             LEGACY_CORRIDOR_DRAFT_KEY,
             createProposalDraftStore,
             cloneDraftValue,
-            normalizeGoalKey
+            normalizeGoalKey,
+            envelopeWithHistoryLimit
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

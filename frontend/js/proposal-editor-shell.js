@@ -1301,7 +1301,12 @@
             else stored.applied = true;
             global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
             global.proposalStorage?.save?.();
-            await global.ProposalManager?.rebuildAppliedFabric?.();
+            // A corridor re-derives only the cadastral parcels it crosses: a parcel it does not
+            // reach has the same inputs it had a moment ago, so it has the same pieces and there is
+            // nothing to redo. Everything else stands ON the ground rather than dividing it, and
+            // still goes through the ordinary whole-plan derivation.
+            const derived = await global.ProposalManager?.deriveCorridorIncrementally?.(stored);
+            if (!derived) await global.ProposalManager?.rebuildAppliedFabric?.();
             try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
         } catch (error) {
             console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);

@@ -1,4 +1,13 @@
 {
+    "densityStats": {
+        "title": "Pokazatelji geometrije",
+        "parcelArea": "Povr\u0161ina \u010destice",
+        "footprint": "Tlocrtna povr\u0161ina zgrada",
+        "siteCoverage": "Izgra\u0111enost (kig)",
+        "gbp": "GBP (nadzemno)",
+        "kin": "kin",
+        "floorHeightHint": "Izra\u010dun iz nacrtanih tlocrta i visine \u00f7 {{height}} m po eta\u017ei."
+    },
     "multitab": {
         "warning": "Aplikacija je već otvorena u drugoj kartici. Da se spremljeni prijedlozi ne izgube, promjene u ovoj kartici neće se spremiti — zatvorite ostale kartice i ponovno učitajte ovu za uređivanje.",
         "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
@@ -821,7 +830,7 @@
                 "edit": "Uredi",
                 "resumeDraft": "Nastavi skicu",
                 "editUnavailable": "Ovaj prijedlog nije moguće sigurno urediti.",
-                "drive": "Vozi ovom prugom",
+                "drive": "Vozi",
                 "delete": "Izbriši",
                 "deleteHint": "Briše objekt i njegovu ideju u potpunosti.",
                 "editGeometry": "Uredi geometriju",
@@ -1006,6 +1015,13 @@
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
             "splitIntoStretches": "Uređivanje je prekinulo cestu — podijeljena je u {{count}} zasebnih prijedloga cesta.",
             "applyingEdit": "Primjenjujem…",
+            "buildingRoad": "Gradim cestu…",
+            "closeDrawnRoadPrompt": "Ova cesta još nije izgrađena. Izgraditi je ili odbaciti nacrt?",
+            "closeDrawnTrackPrompt": "Ova pruga još nije izgrađena. Izgraditi je ili odbaciti nacrt?",
+            "closeDrawnBuild": "Izgradi",
+            "closeDrawnDiscard": "Odbaci nacrt",
+            "closeDrawnKeep": "Nastavi crtati",
+            "buildingTrack": "Gradim prugu…",
             "junctionHint": "Raskrižje — povucite za pomicanje svih krakova · ⌥-klik razdvaja",
             "finishButtonShortTrack": "Završi prugu (F)",
             "lengthLabelTrack": "Duljina pruge:",
@@ -1513,6 +1529,7 @@
                     "conditional": "Uvjetno",
                     "partial": "Djelomične isplate",
                     "onServer": "Na serveru",
+                    "local": "Lokalno",
                     "unsaved": "Nespremljeno",
                     "inMemory": "U memoriji",
                     "yes": "Da",
