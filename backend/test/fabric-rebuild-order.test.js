@@ -65,6 +65,12 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 proposal.updatedAt = 'replay-must-not-become-an-edit';
                 return true;
             }),
+            _loadReplayGround: ProposalManager._loadReplayGround,
+            _replayGroundFetched: new Set(),
+            // The corridor half of the derivation. These proposals carry no road geometry, so
+            // there are no takes and the fabric step is a no-op — the fold is what is under test.
+            _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
+            _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
             _rebuildPass: ProposalManager._rebuildPass
         };
 
@@ -107,6 +113,12 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 setProposalApplied(byId.get(proposalId), true);
                 return true;
             }),
+            _loadReplayGround: ProposalManager._loadReplayGround,
+            _replayGroundFetched: new Set(),
+            // The corridor half of the derivation. These proposals carry no road geometry, so
+            // there are no takes and the fabric step is a no-op — the fold is what is under test.
+            _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
+            _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
             _rebuildPass: ProposalManager._rebuildPass
         };
 

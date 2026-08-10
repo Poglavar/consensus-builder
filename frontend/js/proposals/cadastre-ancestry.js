@@ -90,6 +90,11 @@
     // declared parents are ghosts (§3.1 of rethink-proposals.md). Returns { ids, coverage } where
     // coverage is the share of the footprint the resolved parcels actually cover — callers must
     // treat low coverage as "the land is genuinely absent", not as a rename to paper over.
+    //
+    // Only formations that stand ON the ground ask this. Corridors do not: they are takes, and the
+    // parcels under them are re-derived from the cadastre (proposals/parcel-arrangement.js). The
+    // junction exception this used to carry — discounting ground a standing formation had already
+    // consumed — existed solely because corridors cut each other's leftovers, and went with it.
     function resolveParentsByGeometry(proposal) {
         const api = planOrder();
         const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
@@ -101,6 +106,7 @@
             if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
             const hits = api.computeBaseAncestry(footprint, loadedLiveParcels());
             const coveredM2 = hits.reduce((sum, hit) => sum + (hit.area || 0), 0);
+
             // Live parcels tessellate (consumed parents are excluded), so the hits partition the
             // footprint and the ratio cannot meaningfully exceed 1; clamp for rounding noise.
             return {
