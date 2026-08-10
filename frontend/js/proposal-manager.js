@@ -2252,6 +2252,20 @@ const ProposalManager = {
                 );
                 if (marked !== true) return false;
 
+                // Standing another proposal down is not a detail. It used not to happen at all for
+                // two block designs over the same parcels — both stayed applied — and now that it
+                // does, doing it in silence would be the next surprise.
+                if (switchedAlternatives.length) {
+                    const names = switchedAlternatives
+                        .map(alternative => alternative.title || alternative.name || String(alternative.proposalId))
+                        .join('; ');
+                    const message = `${switchedAlternatives.length} proposal(s) taken off the map — they stand on the same ground: ${names}`;
+                    try {
+                        if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000, 'warning');
+                        else if (typeof updateStatus === 'function') updateStatus(message);
+                    } catch (_) { }
+                }
+
                 try {
                     // Already inside the fabric queue, so the derivation runs here rather than
                     // enqueueing behind the operation it is part of.

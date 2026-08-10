@@ -1894,12 +1894,24 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
 
         // Resolve the seed parcel: prefer the passed layer, else last multi-select parcel, else current parcel layer
         let seedParcel = startParcel;
+        const seedSources = [];
         if (!seedParcel) {
+            // `selectedParcelId` is the app-wide answer to "what is selected", and this gate did not
+            // consult it: turning multi-select on clears the single selection, so by the time the
+            // seed is resolved `currentParcel` can be null and only that id remembers the parcel
+            // whose highlight is still on screen. Being told to select a parcel while looking at a
+            // selected one is the worst possible reply.
             const candidateId = multiParcelSelection.lastSelectedParcelId
                 || (multiParcelSelection.selectedParcels.size > 0 ? Array.from(multiParcelSelection.selectedParcels).slice(-1)[0] : null)
-                || (currentParcel && currentParcel.id ? currentParcel.id : null);
+                || (currentParcel && currentParcel.id ? currentParcel.id : null)
+                || (typeof selectedParcelId !== 'undefined' && selectedParcelId ? selectedParcelId.toString() : null);
+            seedSources.push(`lastSelected=${multiParcelSelection.lastSelectedParcelId || '—'}`);
+            seedSources.push(`multiSelect=${multiParcelSelection.selectedParcels.size}`);
+            seedSources.push(`currentParcel=${(currentParcel && currentParcel.id) || '—'}`);
+            seedSources.push(`selectedParcelId=${(typeof selectedParcelId !== 'undefined' && selectedParcelId) || '—'}`);
             if (candidateId && typeof multiParcelSelection.findParcelById === 'function') {
                 seedParcel = multiParcelSelection.findParcelById(candidateId);
+                if (!seedParcel) seedSources.push(`findParcelById(${candidateId})=miss`);
             }
             if (!seedParcel && currentParcel && currentParcel.layer) {
                 seedParcel = currentParcel.layer;
@@ -1907,6 +1919,9 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
         }
 
         if (!seedParcel) {
+            // Say what was looked at. "Select a parcel first" while one is plainly selected sends
+            // the user hunting for a selection problem that is not theirs.
+            console.warn('[blockDetection] no seed parcel —', seedSources.join(' · '));
             return failBlockDetection(tBlock('alerts.messages.block_needs_a_seed_parcel', {},
                 'Select a parcel first — block detection grows outwards from the parcel you are on.'));
         }

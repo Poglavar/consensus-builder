@@ -61,6 +61,35 @@
         return family;
     }
 
+    // Which cadastral parcels a proposal stands ON.
+    //
+    // A block, a row or a parcel-based design is CONTENT on existing parcels: the parcel is what it
+    // occupies, and its building rings are merely where it put them. Comparing footprints therefore
+    // misses the case that matters — two block designs over overlapping parcels, whose rings sit in
+    // different places and do not touch, both applied, both standing on the same ground. The parcel
+    // is the unit a design competes for, so it is the unit that decides.
+    function occupiedParcelIds(proposal) {
+        const ids = new Set();
+        const add = list => (Array.isArray(list) ? list : []).forEach(id => {
+            if (id === null || id === undefined) return;
+            const text = String(id);
+            if (text) ids.add(text);
+        });
+        add(proposal && proposal.parentParcelIds);
+        add(proposal && proposal.cadastreParcelIds);
+        add(proposal && proposal.parcelIds);
+        add(proposal && proposal.buildingProposal && proposal.buildingProposal.parentParcelIds);
+        return ids;
+    }
+
+    function sharesAnyParcel(left, right) {
+        if (!left || !left.size || !right || !right.size) return false;
+        for (const id of right) {
+            if (left.has(id)) return true;
+        }
+        return false;
+    }
+
     function isBuildingContentProposal(proposal) {
         return !!(proposal && (
             proposal.buildingProposal
@@ -111,12 +140,17 @@
             ? planOrder.footprintOf(proposal)
             : null;
 
+        const targetParcels = isBuildingContentProposal(proposal) ? occupiedParcelIds(proposal) : null;
+
         return list.filter(candidate => {
             const candidateId = proposalRecordId(candidate);
             if (!candidateId || candidateId === targetId || !proposalIsAppliedForReplacement(candidate)) return false;
             if (familyIds.has(candidateId)) return true;
-            if (!targetFootprint || !isBuildingContentProposal(candidate)
-                || !planOrder || typeof planOrder.footprintOf !== 'function'
+            if (!isBuildingContentProposal(candidate)) return false;
+            // One design per parcel: two building designs claiming the same parcel are two answers
+            // to the same question, however far apart the buildings themselves landed.
+            if (sharesAnyParcel(targetParcels, occupiedParcelIds(candidate))) return true;
+            if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'
                 || typeof planOrder.intersectionArea !== 'function') return false;
             const candidateFootprint = planOrder.footprintOf(candidate);
             return candidateFootprint

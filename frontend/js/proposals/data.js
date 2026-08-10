@@ -1421,7 +1421,38 @@ const multiParcelSelection = {
                 this.parcelIdIndexSize = currentLayerCount;
             }
 
-            if (this.parcelIdIndex.has(targetId)) {
+            // The index is invalidated on a COUNT, and a count is not a fingerprint: deriving a
+            // parcel's pieces removes layers and adds layers, so the total comes back identical
+            // while the ids under it have changed completely. The index then answers for a map that
+            // no longer exists — in both directions. A parcel plainly on screen cannot be found, so
+            // a caller resolving a selection through it concludes nothing is selected (block
+            // detection said "Select a parcel first" with a parcel selected in front of you); and a
+            // hit can hand back a layer the map has already taken off.
+            //
+            // So a hit is verified against the live layer group, and a miss is worth one rebuild
+            // before it is believed. Both are the slow path — the common case is a hit on a layer
+            // that is still there, which costs one hasLayer call.
+            const stillOnMap = layer => {
+                if (!layer) return false;
+                if (typeof parcelLayer.hasLayer !== 'function') return true;
+                try { return parcelLayer.hasLayer(layer); } catch (_) { return true; }
+            };
+            const rebuildIndex = () => {
+                this.parcelIdIndex.clear();
+                parcelLayer.eachLayer(layer => {
+                    const layerId = getParcelIdFromFeature(layer.feature);
+                    if (layerId !== undefined && layerId !== null) {
+                        this.parcelIdIndex.set(layerId.toString(), layer);
+                    }
+                });
+                this.parcelIdIndexSize = typeof parcelLayer.getLayers === 'function'
+                    ? parcelLayer.getLayers().length
+                    : this.parcelIdIndex.size;
+            };
+
+            foundParcel = this.parcelIdIndex.get(targetId) || null;
+            if (!indexStale && !stillOnMap(foundParcel)) {
+                rebuildIndex();
                 foundParcel = this.parcelIdIndex.get(targetId) || null;
             }
         } else {
