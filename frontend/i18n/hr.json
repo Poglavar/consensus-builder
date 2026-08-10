@@ -1522,6 +1522,7 @@
                     "conditional": "Uvjetno",
                     "partial": "Djelomične isplate",
                     "onServer": "Na serveru",
+                    "local": "Lokalno",
                     "unsaved": "Nespremljeno",
                     "inMemory": "U memoriji",
                     "yes": "Da",

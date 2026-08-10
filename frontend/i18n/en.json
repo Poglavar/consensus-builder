@@ -1546,6 +1546,7 @@
                     "conditional": "Conditional",
                     "partial": "Partial payouts",
                     "onServer": "On server",
+                    "local": "Local",
                     "unsaved": "Unsaved",
                     "inMemory": "In-memory",
                     "yes": "Yes",

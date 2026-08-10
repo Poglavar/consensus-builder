@@ -1566,6 +1566,7 @@
                     "conditional": "Condicional",
                     "partial": "Pagos parciales",
                     "onServer": "En el servidor",
+                    "local": "Local",
                     "unsaved": "Sin guardar",
                     "inMemory": "En memoria",
                     "yes": "Sí",

@@ -19,27 +19,52 @@ const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), '
 const coreSource = read('../../frontend/js/proposals/core.js');
 const listUiSource = read('../../frontend/js/proposals/list-ui.js');
 
-// Lift the real function out of the classic script and run it with everything it touches stubbed.
-function loadMarker(env) {
-    const start = coreSource.indexOf('function markProposalCardDownloaded(');
-    expect(start, 'markProposalCardDownloaded not found').toBeGreaterThan(-1);
+// Lift the real functions out of the classic script and run them with everything they touch stubbed.
+function lift(name) {
+    const start = coreSource.indexOf(`function ${name}(`);
+    expect(start, `${name} not found`).toBeGreaterThan(-1);
     const end = coreSource.indexOf('\n}', start);
-    const source = coreSource.slice(start, end + 2);
-    // eslint-disable-next-line no-new-func
-    return new Function(
-        'document', 'proposalStorage', 'getProposalI18nHelper', 'CustomEvent',
-        `${source}; return markProposalCardDownloaded;`
-    )(env.document, env.proposalStorage, () => env.t, env.CustomEvent);
+    return coreSource.slice(start, end + 2);
 }
 
-function button(attrs) {
-    return {
-        attrs,
+function loadMarker(env) {
+    const source = `${lift('addLocalBadgeToCard')}\n${lift('markProposalCardDownloaded')}`;
+    // eslint-disable-next-line no-new-func
+    return new Function(
+        'document', 'proposalStorage', 'getProposalI18nHelper', 'CustomEvent', 'escapeHtml',
+        `${source}; return markProposalCardDownloaded;`
+    )(env.document, env.proposalStorage, () => env.t, env.CustomEvent, s => String(s));
+}
+
+// A card is a download button sitting inside an item that also holds the badge row, which is what
+// the Local badge is inserted into.
+function card(attrs) {
+    const badges = [];
+    const mintBadge = {
+        className: 'proposal-mint-state',
+        insertAdjacentHTML: (where, html) => { badges.push({ where, html }); }
+    };
+    const item = {
+        badges,
+        querySelector: sel => {
+            if (sel === '.proposal-local-state') {
+                return badges.some(b => b.html.includes('proposal-local-state')) ? {} : null;
+            }
+            if (sel === '.proposal-mint-state') return mintBadge;
+            return null;
+        }
+    };
+    const btn = {
         textContent: 'Download',
         disabled: false,
-        getAttribute: name => (name in attrs ? attrs[name] : null)
+        getAttribute: name => (name in attrs ? attrs[name] : null),
+        closest: sel => (sel === '.proposal-list-item' ? item : null),
+        card: item
     };
+    return btn;
 }
+
+const button = card;
 
 let env;
 let buttons;
@@ -95,6 +120,28 @@ describe('the card stops offering a download', () => {
     });
 });
 
+describe('the card says it is now held locally', () => {
+    it('adds a Local badge next to the mint state', () => {
+        loadMarker(env)('p-one', { proposalId: 'p-one' });
+        expect(buttons[0].card.badges).toHaveLength(1);
+        expect(buttons[0].card.badges[0].where).toBe('afterend');
+        expect(buttons[0].card.badges[0].html).toContain('proposal-local-state');
+        expect(buttons[0].card.badges[0].html).toContain('Local');
+    });
+
+    it('does not touch the other card', () => {
+        loadMarker(env)('p-one', { proposalId: 'p-one' });
+        expect(buttons[1].card.badges).toEqual([]);
+    });
+
+    it('never stacks a second badge on a card that already has one', () => {
+        const mark = loadMarker(env);
+        mark('p-one', { proposalId: 'p-one' });
+        mark('p-one', { proposalId: 'p-one' });
+        expect(buttons[0].card.badges).toHaveLength(1);
+    });
+});
+
 describe('the thumbnail', () => {
     it('announces an image so the placeholder can be replaced', () => {
         loadMarker(env)('p-one', { proposalId: 'p-one', screenshotUrl: 'https://example.test/a.png' });
@@ -125,6 +172,37 @@ describe('degenerate input', () => {
         buttons = [];
         loadMarker(env)('p-gone', { proposalId: 'p-gone' });
         expect(localToggle.textContent).toBe('Local (8)');
+    });
+});
+
+describe('the renderer shows it in both tabs', () => {
+    const listSection = listUiSource.slice(
+        listUiSource.indexOf('const downloadEligible'),
+        listUiSource.indexOf('function clearProposalListFilterInputDebounce')
+    );
+
+    it('decides "local" from storage, not from which tab is open', () => {
+        // downloadedLookup asks proposalStorage, so a proposal downloaded from the Server tab and one
+        // sitting in the Local tab answer the same way — which is what makes the badge mean one thing.
+        expect(listSection).toMatch(/const isLocal = typeof downloadedLookup === 'function'/);
+    });
+
+    it('renders the badge only when the proposal is held locally', () => {
+        expect(listSection).toMatch(/\$\{isLocal \? `<span class="proposal-mint-state[^`]*proposal-local-state/);
+    });
+
+    it('keeps it distinct from the mint state rather than replacing it', () => {
+        // "On server" and "Local" are independent facts and a downloaded proposal is both.
+        const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));
+        expect(badgeRow).toMatch(/escapeHtml\(mintLabel\)/);
+        expect(badgeRow).toMatch(/escapeHtml\(mintLabels\.local\)/);
+    });
+
+    it.each(['en', 'hr', 'sr', 'es'])('%s has a translation for it', locale => {
+        const dict = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
+        const label = dict.modal.roadWidth.proposalList.labels.local;
+        expect(label, `${locale} is missing labels.local`).toBeTruthy();
+        expect(typeof label).toBe('string');
     });
 });
 

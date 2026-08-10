@@ -774,10 +774,18 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         // uploaded (has a server serial) → blue, otherwise → amber "Unsaved".
         const downloadEligible = isServerSource && !!proposalId;
         const isDownloaded = downloadEligible && downloadedLookup(proposal);
+        // Where a proposal LIVES is two independent facts, and the mint badge only ever told one of
+        // them: minted / on the server / neither. Held-locally was left implied — true in the Local
+        // tab, and in the Server tab only visible as a greyed-out Download button. So a downloaded
+        // proposal still read "On server" and nothing said the copy in front of you was yours.
+        //
+        // The second badge states it, in both tabs, from the same lookup the Download button uses.
+        const isLocal = typeof downloadedLookup === 'function' ? !!downloadedLookup(proposal) : !isServerSource;
         const mintLabels = {
             minted: t('panel.proposal.lifecycle.minted', 'Minted'),
             onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server'),
-            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved')
+            unsaved: t('modal.roadWidth.proposalList.labels.unsaved', 'Unsaved'),
+            local: t('modal.roadWidth.proposalList.labels.local', 'Local')
         };
 
         let mintLabel, mintStyles;
@@ -828,6 +836,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                 <div class="proposal-card-badges">
                     <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
                     <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
+                    ${isLocal ? `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${escapeHtml(mintLabels.local)}</span>` : ''}
                     ${buyButtonHtml}
                 </div>
             </div>

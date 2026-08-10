@@ -548,6 +548,20 @@ function normalizeCityCodeForApi(code) {
 // Shared, because there are TWO ways to download and only one of them used to do this. The card's
 // own Download button did; clicking the ROW — which asks first, then downloads — did not, so a
 // proposal fetched that way sat there still offering to be downloaded.
+// Give one card the "Local" badge the renderer would have given it. Idempotent: a card that already
+// carries one is left alone, so a second download attempt cannot stack badges.
+function addLocalBadgeToCard(card, t) {
+    if (!card || typeof card.querySelector !== 'function') return;
+    if (card.querySelector('.proposal-local-state')) return;
+    const mintBadge = card.querySelector('.proposal-mint-state');
+    if (!mintBadge || typeof mintBadge.insertAdjacentHTML !== 'function') return;
+    const label = t('modal.roadWidth.proposalList.labels.local', 'Local');
+    const safe = (typeof escapeHtml === 'function') ? escapeHtml(label) : label;
+    mintBadge.insertAdjacentHTML('afterend',
+        `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" `
+        + `style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${safe}</span>`);
+}
+
 function markProposalCardDownloaded(cardKey, imported) {
     if (!imported || typeof document === 'undefined') return;
     const t = getProposalI18nHelper();
@@ -562,6 +576,10 @@ function markProposalCardDownloaded(cardKey, imported) {
         if (button) {
             button.textContent = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
             button.disabled = true;
+            // The card also gains a "Local" badge, which the renderer would have given it had this
+            // been a rerender. Without it the card reads "On server" and nothing says the copy in
+            // front of you is now yours — the same half-told state the button had.
+            addLocalBadgeToCard(button.closest ? button.closest('.proposal-list-item') : null, t);
         }
     }
 
