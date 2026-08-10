@@ -24,7 +24,15 @@ describe('road drawing finalization contract', () => {
 
     it('ignores key repeat and funnels every finish trigger through one gate', () => {
         expect(drawingSource).toContain('if (e.repeat || roadFinalizationGate.isRunning() || roadSegmentPlacementInProgress) return;');
-        expect(drawingSource).toContain('return roadFinalizationGate.run(finishRoadDrawingOnce);');
+        // The gate is claimed in exactly one place, and the finalization body is reachable only from
+        // inside it. Asserted as the relationship rather than as one line of source, because the
+        // wrapper around it grew a spinner and a busy pointer without weakening any of that.
+        expect(drawingSource.match(/roadFinalizationGate\.run\(/g)).toHaveLength(1);
+        const calls = drawingSource.match(/finishRoadDrawingOnce\(/g) || [];
+        expect(calls).toHaveLength(2);  // the declaration and the single call
+        const wrapper = sourceSection(drawingSource, 'function finishRoadDrawing()', '\n}');
+        expect(wrapper).toContain('roadFinalizationGate.run(');
+        expect(wrapper).toContain('finishRoadDrawingOnce()');
     });
 
     it('does not discover or prompt for building impacts while handling F', () => {

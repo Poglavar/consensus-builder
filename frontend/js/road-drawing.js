@@ -495,7 +495,7 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
 // edit removes it before it ever becomes visible, so only genuinely slow applies flash the spinner.
 let corridorApplyIndicatorCount = 0;
 let corridorApplyIndicatorEl = null;
-function beginCorridorApplyIndicator() {
+function beginCorridorApplyIndicator(labelText) {
     corridorApplyIndicatorCount += 1;
     if (corridorApplyIndicatorEl || typeof document === 'undefined') return;
     const host = (typeof map !== 'undefined' && map && typeof map.getContainer === 'function') ? map.getContainer() : document.body;
@@ -505,13 +505,16 @@ function beginCorridorApplyIndicator() {
     const spinner = document.createElement('div');
     spinner.className = 'corridor-apply-indicator__spinner';
     const label = document.createElement('span');
-    label.textContent = (typeof translateRoadText === 'function')
+    label.textContent = labelText || ((typeof translateRoadText === 'function')
         ? translateRoadText('panel.road.applyingEdit', 'Applying…')
-        : 'Applying…';
+        : 'Applying…');
     el.appendChild(spinner);
     el.appendChild(label);
     host.appendChild(el);
     corridorApplyIndicatorEl = el;
+    // The pointer is where the user is looking, so it carries the same news: the whole document goes
+    // busy, which survives exitRoadDrawingMode() clearing the map container's inline cursor.
+    try { document.body?.classList.add('corridor-busy'); } catch (_) { }
 }
 function endCorridorApplyIndicator() {
     corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
@@ -520,6 +523,7 @@ function endCorridorApplyIndicator() {
         corridorApplyIndicatorEl.parentNode.removeChild(corridorApplyIndicatorEl);
     }
     corridorApplyIndicatorEl = null;
+    try { document.body?.classList.remove('corridor-busy'); } catch (_) { }
 }
 // True while any corridor re-apply is in flight — the exit/deselect paths wait on this.
 function isCorridorApplyInFlight() {
@@ -1973,8 +1977,10 @@ function setRoadPanelLabelsForMode(mode = 'road') {
 async function requestCorridorDrawingTool(kind) {
     if (roadDrawingMode) {
         // The other button while drawing: end this corridor, then open the tool on the other seed.
-        const finished = await cancelRoadDrawing();
-        if (kind === corridorDrawKind) return finished;
+        const closed = await cancelRoadDrawing();
+        // "Keep drawing" means exactly that — not "close this one and open the other".
+        if (!closed) return false;
+        if (kind === corridorDrawKind) return true;
     }
 
     // The draft store is only the finish-time hand-off to instantCreate — clear any stale active
@@ -2179,23 +2185,85 @@ function toggleRoadDrawTool() {
     }
 }
 
+// Closing the tool on a road that has been drawn: build it, throw it away, or neither. There is no
+// safe default here — finishing puts an object on the map the user may not have wanted, discarding
+// destroys work with no undo — so it is asked rather than guessed, and Escape keeps drawing.
+async function promptCloseDrawnCorridor() {
+    const isTrack = (typeof corridorDrawingIsTrack === 'function') ? corridorDrawingIsTrack() : false;
+    const message = translateRoadText(
+        isTrack ? 'panel.road.closeDrawnTrackPrompt' : 'panel.road.closeDrawnRoadPrompt',
+        isTrack ? 'This track has not been built yet. Build it, or discard the drawing?'
+            : 'This road has not been built yet. Build it, or discard the drawing?'
+    );
+    const choices = [
+        { label: translateRoadText('panel.road.closeDrawnBuild', 'Build it'), value: 'build', primary: true },
+        { label: translateRoadText('panel.road.closeDrawnDiscard', 'Discard the drawing'), value: 'discard' },
+        { label: translateRoadText('panel.road.closeDrawnKeep', 'Keep drawing'), value: 'keep' }
+    ];
+
+    let answer = 'keep';
+    try {
+        answer = (typeof showStyledChoice === 'function')
+            ? await showStyledChoice(message, choices)
+            // No dialog available is not a licence to destroy the drawing: build it, which is the
+            // one outcome that loses nothing.
+            : 'build';
+    } catch (_) {
+        answer = 'build';
+    }
+
+    if (answer === 'build') {
+        await finishRoadDrawing();
+        return 'build';
+    }
+    if (answer === 'discard') {
+        discardRoadDrawing();
+        return 'discard';
+    }
+    return 'keep';   // including Escape / dismissal
+}
+
+// Throw the drawing away and close the tool. The only path that deliberately loses work, and it is
+// reachable only from the prompt above.
+function discardRoadDrawing() {
+    updateGlobalRoadDrawingMode(false);
+    exitRoadDrawingMode();
+}
+
 // Handle keyboard events during road drawing
 function handleRoadKeydown(e) {
-    // Prevent handling if we're in an input field
+    // Prevent handling if we're typing
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+    }
+    if (e.target.isContentEditable) return;
+
+    // Ctrl/Cmd+Z undoes the last segment, exactly as U does. U is this tool's own shortcut, but
+    // every other geometry editor in the app undoes with Ctrl/Cmd+Z (geometry-edit/history.js) —
+    // including the node editor for an ALREADY APPLIED road — so someone who has just been dragging
+    // road nodes should not have to remember that the drawing tool is the odd one out.
+    //
+    // Same conventions as the shared history so the two cannot feel different: Alt excluded, the
+    // browser's own undo always suppressed while the tool is open, and Shift+Z swallowed because
+    // nothing here has a redo to offer.
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && String(e.key).toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) return;
+        undoLastRoadSegment();
         return;
     }
 
     // F (or Enter) finishes the road: the drawing instantly becomes an applied object (SimCity
     // lifecycle). Enter is the natural "I'm done" key, so it mirrors the F shortcut / (F) button.
-    if ((e.key === 'f' || e.key === 'F' || e.key === 'Enter') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+    if ((e.key === 'f' || e.key === 'F' || e.key === 'Enter') && hasDrawableCorridor()) {
         e.preventDefault();
         if (e.repeat || roadFinalizationGate.isRunning() || roadSegmentPlacementInProgress) return;
         finishRoadDrawing();
     }
 
-    // Check for U key (undo last segment)
-    if ((e.key === 'u' || e.key === 'U') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 1)) {
+    // U undoes the last segment. Both undo paths call the same function, which is itself a no-op
+    // when there is nothing to undo — so neither can drift from the other, or from the (U) button.
+    if (e.key === 'u' || e.key === 'U') {
         e.preventDefault(); // Prevent browser default behavior
         undoLastRoadSegment();
     }
@@ -2208,7 +2276,7 @@ function handleRoadKeydown(e) {
         if (roadHasStarted) {
             cancelActiveRoadStroke();
             updateStatus(translateRoadText('panel.road.segmentCancelledStatus', 'Segment cancelled — placed segments stay. Esc again builds the road.'));
-        } else if (getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+        } else if (hasDrawableCorridor()) {
             finishRoadDrawing();
         } else {
             exitRoadDrawingMode();
@@ -4399,8 +4467,95 @@ async function cancelRoadOrTrackDrawing() {
 
 // F is an idempotent "pen up" action. The gate is acquired before any asynchronous work begins, so
 // key repeat, a double-click on Finish, Escape and panel close all share one finalization run.
+//
+// Finishing is not instant — a graph normalization, a parcel query and a full fabric replay run
+// between the keypress and the finished object — and it used to happen with no sign at all that
+// anything was under way. The same ref-counted spinner an applied-corridor edit uses covers the
+// whole run, and the pointer goes busy with it.
 function finishRoadDrawing() {
-    return roadFinalizationGate.run(finishRoadDrawingOnce);
+    // Nothing drawable, nothing to finish. The check belongs here rather than at each call site: the
+    // F key and Escape tested it, the Finish (F) button did not, so pressing that button on an empty
+    // drawing entered finalization and left again — silently before, and with a spinner flash once
+    // one existed, which reads as the tool trying to build a road that was never drawn.
+    if (!hasDrawableCorridor()) return Promise.resolve(false);
+    return roadFinalizationGate.run(async () => {
+        beginCorridorApplyIndicator(corridorFinalizationLabel());
+        corridorFinishProfile = { started: nowMs(), phases: [] };
+        try {
+            // One yield so the indicator is painted BEFORE the synchronous geometry work, which
+            // holds the main thread and would otherwise keep it from ever appearing.
+            await new Promise(resolve => setTimeout(resolve, 0));
+            return await finishRoadDrawingOnce();
+        } finally {
+            endCorridorApplyIndicator();
+            reportCorridorFinishProfile();
+        }
+    });
+}
+
+// Where the seconds between F and a finished road go. Kept in the code rather than reached for with
+// a profiler after the fact: the expensive phase is the whole-plan replay inside the create, and
+// without the split it is impossible to tell that from the geometry work in front of it.
+const nowMs = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
+let corridorFinishProfile = null;
+
+function markCorridorFinishPhase(name) {
+    if (!corridorFinishProfile) return;
+    const at = nowMs();
+    const previous = corridorFinishProfile.phases.length
+        ? corridorFinishProfile.phases[corridorFinishProfile.phases.length - 1].at
+        : corridorFinishProfile.started;
+    corridorFinishProfile.phases.push({ name, at, ms: at - previous });
+}
+
+function reportCorridorFinishProfile() {
+    const profile = corridorFinishProfile;
+    corridorFinishProfile = null;
+    if (!profile || !profile.phases.length) return;
+    try {
+        const total = nowMs() - profile.started;
+        const parts = profile.phases.map(phase => `${phase.name} ${Math.round(phase.ms)}`).join(' · ');
+        console.info(`[finishRoad] ${Math.round(total)} ms — ${parts}`);
+    } catch (_) { }
+}
+
+// Is there anything a corridor could be built from? A stroke of one click is not a line, so it does
+// not count — the same test the F key, Escape and the Finish button all have to agree on.
+function hasDrawableCorridor() {
+    return getAllRoadSegments(true).some(segment => Array.isArray(segment) && segment.length >= 2);
+}
+
+// What the drawing is called while it is being built — the lanes decide, exactly as they do for the
+// finished object.
+function corridorFinalizationLabel() {
+    const isTrack = (typeof corridorDrawingIsTrack === 'function') ? corridorDrawingIsTrack() : false;
+    return translateRoadText(
+        isTrack ? 'panel.road.buildingTrack' : 'panel.road.buildingRoad',
+        isTrack ? 'Building the track…' : 'Building the road…'
+    );
+}
+
+// The drawn corridor is DETACHED, not deleted: tearing the drawing down before the object exists
+// left the map blank for the whole replay, so the very layers the user drew stay exactly where they
+// are — hidden from resetRoadDrawing by nulling the references it would remove them through — until
+// the finished object is on the map to replace them.
+function detachDrawnCorridorAsGhost() {
+    const held = [roadPolygonLayer, roadStripLayer].filter(Boolean);
+    roadPolygonLayer = null;
+    roadStripLayer = null;
+    return corridorGhostDisposer(map, held);
+}
+
+// Removes the held layers once, whichever way finalization ends.
+function corridorGhostDisposer(mapRef, layers) {
+    let disposed = false;
+    return () => {
+        if (disposed) return;
+        disposed = true;
+        (Array.isArray(layers) ? layers : []).forEach(layer => {
+            try { if (mapRef && layer && mapRef.hasLayer(layer)) mapRef.removeLayer(layer); } catch (_) { }
+        });
+    };
 }
 
 async function finishRoadDrawingOnce() {
@@ -4433,6 +4588,7 @@ async function finishRoadDrawingOnce() {
         corridorProtectedEdgeKeySet(roadBuildingTunnels, roadGradeSeparations),
         roadSegmentProfiles
     );
+    markCorridorFinishPhase('graph');
 
     // Immediately stop interactions and preview while finishing
     suspendRoadDrawingInteractivity();
@@ -4463,6 +4619,8 @@ async function finishRoadDrawingOnce() {
         }
     }
 
+    markCorridorFinishPhase('corridor');
+
     // Sanitize the road polygon to fix any remaining self-intersections / coordinate issues
     const sanitizedPolygon = sanitizeRoadPolygon(finalRoadPolygon);
     if (isValidPolygonLatLngs(sanitizedPolygon)) {
@@ -4485,6 +4643,8 @@ async function finishRoadDrawingOnce() {
             findAffectedParcels(finalRoadPolygon);
         }
     } catch (_) { /* ignore */ }
+
+    markCorridorFinishPhase('parcels');
 
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
@@ -4607,14 +4767,24 @@ async function finishRoadDrawingOnce() {
             ...roadDrawingContext,
             kind: corridorKind
         }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
+        // Hold the drawing on the map across the teardown and the replay; the object that replaces
+        // it only exists once instantCreateProposalFromDraft resolves.
+        markCorridorFinishPhase('draft');
+        const dismissGhost = detachDrawnCorridorAsGhost();
         exitRoadDrawingMode();
-        // Every saved drawing is a new immutable proposal snapshot. Connectivity is geometric;
-        // touching an older road never rewrites or absorbs that older record.
-        const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
-        if (createdId && typeof updateStatus === 'function') {
-            const builtKey = isTrack ? 'panel.road.builtStatusTrack' : 'panel.road.builtStatus';
-            const builtFallback = isTrack ? 'Track built — click it to edit or propose.' : 'Road built — click it to edit or propose.';
-            updateStatus(translateRoadText(builtKey, builtFallback));
+        try {
+            // Every saved drawing is a new immutable proposal snapshot. Connectivity is geometric;
+            // touching an older road never rewrites or absorbs that older record.
+            const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
+            markCorridorFinishPhase('create+replay');
+            if (createdId && typeof updateStatus === 'function') {
+                const builtKey = isTrack ? 'panel.road.builtStatusTrack' : 'panel.road.builtStatus';
+                const builtFallback = isTrack ? 'Track built — click it to edit or propose.' : 'Road built — click it to edit or propose.';
+                updateStatus(translateRoadText(builtKey, builtFallback));
+            }
+        } finally {
+            // A failure reopens the drawing tool, which draws its own layers — the ghost goes either way.
+            dismissGhost();
         }
         return;
     }
@@ -4677,14 +4847,20 @@ async function finishRoadDrawingOnce() {
     }
 }
 
-// Closing the drawing tool (X button, or R again) applies what was drawn — there are no drafts,
-// so anything drawable instantly becomes the object. An empty drawing just closes.
+// Closing the drawing tool — the X button, or R again. Anything drawable is ASKED about; an empty
+// drawing just closes. Returns true when the tool is now closed, false when the user chose to keep
+// drawing, so a caller cannot go on to open another tool over a session that is still live.
+//
+// The order here is the whole fix. This used to cancel the active stroke FIRST and only then ask
+// whether there was anything to finish — and a stroke stays "started" until Escape or F, so for a
+// road drawn in one continuous run of clicks the cancel took all of it, `hasDrawableCorridor()` then
+// answered no, and the tool closed having silently destroyed the road. The question has to be asked
+// while the drawing still exists.
 async function cancelRoadDrawing() {
-    if (roadHasStarted) cancelActiveRoadStroke();
-    if (getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
-        await finishRoadDrawing();
-        return true;
+    if (hasDrawableCorridor()) {
+        return (await promptCloseDrawnCorridor()) !== 'keep';
     }
+    if (roadHasStarted) cancelActiveRoadStroke();
     exitRoadDrawingMode();
     return true;
 }

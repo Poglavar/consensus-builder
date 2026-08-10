@@ -681,6 +681,16 @@ button.corridor-lane-standard--reset:hover {
     to { opacity: 1; }
 }
 
+/* The pointer says "busy" for as long as the indicator is up. Leaflet's grab/crosshair cursors are
+   set on descendants, so they are named here rather than left to inherit from body. The map's own
+   inline cursor still wins while it is set — exitRoadDrawingMode clears it, and this outlasts that. */
+body.corridor-busy,
+body.corridor-busy .leaflet-container,
+body.corridor-busy .leaflet-grab,
+body.corridor-busy .leaflet-interactive {
+    cursor: progress;
+}
+
 /* --- Corridor tab: clearance stats, width-profile chart, move-to-fit --- */
 
 .corridor-editor-tabs {

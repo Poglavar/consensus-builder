@@ -505,7 +505,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
         ? `
         <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim('${proposalKey}')">
-            🚋 ${tProposal('panel.proposal.actions.drive', 'Drive this track')}
+            🚋 ${tProposal('panel.proposal.actions.drive', 'Drive')}
         </button>
     `
         : '';
